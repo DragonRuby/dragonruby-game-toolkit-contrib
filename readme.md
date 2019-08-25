@@ -35,4 +35,4 @@ DragonRuby
 ```
 
 5. Open `main.rb` and add the following to the top of the file: `require "app/dragonruby-game-toolkit-contrib/dragon/index.rb"`.
-6. If you are feeling adventurous Open `main.rb` and add `require "app/dragonruby-game-toolkit-contrib/experimental/index.rb"`.
+6. If you are feeling adventurous also add `require "app/dragonruby-game-toolkit-contrib/experimental/index.rb"`.
