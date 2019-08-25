@@ -21,10 +21,18 @@ DragonRuby
       +- repl.rb
       +- documentation/
       |
-      +- dragon/ (this repository)
+      +- dragonruby-game-toolkit-contrib/ (this repository)
          |
-         +- index.rb
-         +- other source files
+         +- dragon/
+         |  |
+         |  +- index.rb
+         |  +- other source files
+         |
+         +- experimental/
+            |
+            + index.rb
+
 ```
 
-5. Open `main.rb` and add the following to the top of the file: `require "app/dragon/index.rb"`
+5. Open `main.rb` and add the following to the top of the file: `require "app/dragonruby-game-toolkit-contrib/dragon/index.rb"`.
+6. If you are feeling adventurous Open `main.rb` and add `require "app/dragonruby-game-toolkit-contrib/experimental/index.rb"`.
