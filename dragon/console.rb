@@ -1,5 +1,5 @@
 # Copyright 2019 DragonRuby LLC
-
+# MIT License
 # console.rb has been released under MIT (*only this file*).
 
 module GTK
@@ -8,7 +8,8 @@ module GTK
                   :text_color, :cursor_color, :font, :animation_duration,
                   :max_log_lines, :max_history, :current_input_str, :log,
                   :last_command_errored, :last_command, :error_color, :shown_at,
-                  :header_color
+                  :header_color, :archived_log, :last_log_lines, :last_log_lines_count,
+                  :suppress_left_arrow_behavior
 
     def initialize
       @disabled = false
@@ -16,9 +17,10 @@ module GTK
       @log_offset = 0
       @visible = false
       @toast_ids = []
+      @archived_log = []
       @log = [ 'Console ready.' ]
-      @max_log_lines = 100  # I guess...?
-      @max_history = 100  # I guess...?
+      @max_log_lines = 1000  # I guess...?
+      @max_history = 1000  # I guess...?
       @command_history = []
       @command_history_index = -1
       @nonhistory_input = ''
@@ -73,13 +75,36 @@ module GTK
     end
 
     def addtext obj
+      @last_log_lines_count ||= 1
+
       str = obj.to_s
+
+      log_lines = []
+
       str.each_line { |s|
-        @log.shift if @log.length > 1000
         s.wrapped_lines(console_text_width).each do |l|
-          @log << l
+          log_lines << l
         end
       }
+
+      if log_lines == @last_log_lines
+        @last_log_lines_count += 1
+        new_log_line_with_count = @last_log_lines.last + " (#{@last_log_lines_count})"
+        if log_lines.length > 1
+          @log = @log[0..-(@log.length - log_lines.length)] + log_lines[0..-2] + [new_log_line_with_count]
+        else
+          @log = @log[0..-(@log.length - log_lines.length)] + [new_log_line_with_count]
+        end
+        return
+      end
+
+      log_lines.each do |l|
+        @log.shift if @log.length > @max_log_lines
+        @log << l
+      end
+
+      @last_log_lines_count = 1
+      @last_log_lines = log_lines
     end
 
     def ready?
@@ -103,6 +128,11 @@ module GTK
     def hide
       if visible?
         toggle
+        @archived_log += @log
+        if @archived_log.length > @max_log_lines
+          @archived_log = @archived_log.drop(@archived_log.length - @max_log_lines)
+        end
+        @log.clear
         @show_reason = nil
         clear_toast
       end
@@ -110,10 +140,6 @@ module GTK
 
     def close
       hide
-    end
-
-    def clear
-      @log.clear
     end
 
     def clear_toast
@@ -193,6 +219,39 @@ S
              args.inputs.keyboard.key_down.ordinal_indicator!
     end
 
+    def eval_the_set_command
+      cmd = @current_input_str.strip
+      if cmd.length != 0
+        @log_offset = 0
+        @current_input_str = ''
+
+        @command_history.pop while @command_history.length >= @max_history
+        @command_history.unshift cmd
+        @command_history_index = -1
+        @nonhistory_input = ''
+
+        if cmd == 'quit' || cmd == ':wq' || cmd == ':q!' || cmd == ':q' || cmd == ':wqa'
+          $gtk.request_quit
+        else
+          puts "-> #{cmd}"
+          begin
+            @last_command = cmd
+            $gtk.ffi_mrb.eval("$results = (#{cmd})")
+            if $results.nil?
+              puts "=> nil"
+            else
+              puts "=> #{$results}"
+            end
+            @last_command_errored = false
+          rescue Exception => e
+            @last_command_errored = true
+            puts "#{e}"
+            log "#{e}"
+          end
+        end
+      end
+    end
+
     def process_inputs args
       if console_toggle_key_down? args
         args.inputs.text.clear
@@ -201,40 +260,38 @@ S
 
       return unless visible?
 
+      if !@suppress_left_arrow_behavior && args.inputs.keyboard.key_down.left && (@current_input_str || '').strip.length > 0
+        log_info "Use repl.rb!", <<-S
+The Console is nice for quick commands, but for more complex edits, use repl.rb.
+
+I've written the current command at the top of a file called ./repl.rb (right next to dragonruby(.exe)). Please open the the file and apply additional edits there.
+S
+        if @last_command_written_to_repl_rb != @current_input_str
+          @last_command_written_to_repl_rb = @current_input_str
+          contents = $gtk.read_file 'repl.rb'
+          contents ||= ''
+          contents = <<-S + contents
+
+# Remove the x from xrepl to run the command.
+xrepl do
+  #{@last_command_written_to_repl_rb}
+end
+
+S
+          $gtk.suppress_hotload = true
+          $gtk.write_file 'repl.rb', contents
+          $gtk.reload_if_needed 'repl.rb', true
+          $gtk.suppress_hotload = false
+        end
+
+        return
+      end
+
       args.inputs.text.each { |str| @current_input_str << str }
       args.inputs.text.clear
 
       if args.inputs.keyboard.key_down.enter
-        cmd = @current_input_str.strip
-        if cmd.length != 0
-          @log_offset = 0
-          @current_input_str = ''
-
-          @command_history.pop while @command_history.length >= @max_history
-          @command_history.unshift cmd
-          @command_history_index = -1
-          @nonhistory_input = ''
-
-          if cmd == 'quit' || cmd == ':wq' || cmd == ':q!' || cmd == ':q' || cmd == ':wqa'
-            $gtk.request_quit
-          else
-            puts "-> #{cmd}"
-            begin
-              @last_command = cmd
-              $gtk.ffi_mrb.eval("$results = (#{cmd})")
-              if $results.nil?
-                puts "=> nil"
-              else
-                puts "=> #{$results}"
-              end
-              @last_command_errored = false
-            rescue Exception => e
-              @last_command_errored = true
-              puts "#{e}"
-              log "#{e}"
-            end
-          end
-        end
+        eval_the_set_command
       elsif args.inputs.keyboard.key_down.v
         if args.inputs.keyboard.key_down.control || args.inputs.keyboard.key_down.meta
           @current_input_str << $gtk.ffi_misc.getclipboard
@@ -279,6 +336,19 @@ S
       args.inputs.keyboard.key_held.clear
     end
 
+    def write_line args, left, y, str, errorinfo, headerinfo, txtinfo
+      str ||= ''
+      if include_error_marker? str
+        args.outputs.reserved << [left + 10, y, str, 1, 0, *errorinfo].label
+      elsif include_subdued_markers? str
+        args.outputs.reserved << [left + 10, y, str, 1, 0, [txtinfo[0..2], txtinfo[3].half]].label
+      elsif str.start_with?("====") || str.include?("app")
+        args.outputs.reserved << [left + 10, y, str, 1, 0, *headerinfo].label
+      else
+        args.outputs.reserved << [left + 10, y, str, 1, 0, *txtinfo].label
+      end
+    end
+
     def render args
       return if !@toggled_at
 
@@ -315,25 +385,46 @@ S
       y += h  # !!! FIXME: remove this when we fix coordinate origin on labels.
 
       ((@log.size - @log_offset) - 1).downto(0) do |idx|
-        str = @log[idx] || ""
-        if include_error_marker? str
-          args.outputs.reserved << [left + 10, y, str, 1, 0, *errorinfo].label
-        elsif str.start_with? "===="
-          args.outputs.reserved << [left + 10, y, str, 1, 0, *headerinfo].label
-        else
-          args.outputs.reserved << [left + 10, y, str, 1, 0, *txtinfo].label
-        end
+        write_line args, left, y, @log[idx], errorinfo, headerinfo, txtinfo
+        y += h
+        break if y > top
+      end
+
+      # past log seperator
+      args.outputs.reserved << [0, y - h.half, 1280, y - h.half, [txtinfo[0..2], txtinfo[3].idiv(4)]].line
+
+      y += h
+
+      txtinfo = [ @text_color[0], @text_color[1], @text_color[2], (@text_color[3].to_f * percent.half).to_i, @font ]
+      errorinfo = [ @error_color[0], @error_color[1], @error_color[2], (@error_color[3].to_f * percent.half).to_i, @font ]
+      cursorinfo = [ @cursor_color[0], @cursor_color[1], @cursor_color[2], (@cursor_color[3].to_f  * percent.half).to_i, @font ]
+      headerinfo = [  @header_color[0], @header_color[1], @header_color[2], (@header_color[3].to_f  * percent.half).to_i, @font ]
+
+      ((@archived_log.size - @log_offset) - 1).downto(0) do |idx|
+        write_line args, left, y, @archived_log[idx], errorinfo, headerinfo, txtinfo
         y += h
         break if y > top
       end
     end
 
     def include_error_marker? text
-      error_markers.any? { |e| text.downcase.include? e }
+      include_any_words? text, error_markers
     end
 
     def error_markers
-      ["exception:", "error:", "undefined method", "failed", "syntax"]
+      ["exception", "error", "undefined method", "failed", "syntax", "deprecated"]
+    end
+
+    def include_subdued_markers? text
+      include_any_words? text, subdued_markers
+    end
+
+    def include_any_words? text, words
+      words.any? { |w| text.downcase.include? w }
+    end
+
+    def subdued_markers
+      ["reloaded", "exported the"]
     end
 
     def calc args
