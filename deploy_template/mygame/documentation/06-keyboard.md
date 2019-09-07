@@ -1,14 +1,14 @@
 # Keyboard
 
-Determining if a key was down:
+Determining if `a` key is in the down state (pressed). This happens once each time the key is pressed:
 
 ```
 if args.inputs.keyboard.key_down.a
-  puts 'The key was in the down state'
+  puts 'The key is pressed'
 end
 ```
 
-Determining if a key is being held:
+Determining if a key is being held. This happens every tick while the key is held down:
 
 ```
 if args.inputs.keyboard.key_held.a
@@ -20,15 +20,15 @@ Determining if a key is in the down state or is being held:
 
 ```
 if args.inputs.keyboard.a
-  puts 'The key is being held'
+  puts 'The key is pressed or being held'
 end
 ```
 
-Determining if a key is released:
+Determining if a key is in the up state (released). This happens once each time the key is released:
 
 ```
 if args.inputs.keyboard.key_up.a
-  puts 'The key is being held'
+  puts 'The key is released'
 end
 ```
 
