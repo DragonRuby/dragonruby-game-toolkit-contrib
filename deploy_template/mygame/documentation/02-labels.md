@@ -108,7 +108,7 @@ Here is an example:
 ```ruby
 # Create type with ALL sprite properties AND primitive_marker
 class Label
-  attr_accessor :x, :y, :text, :size, :alignment, :r, :g, :b, :a
+  attr_accessor :x, :y, :text, :size_enum, :alignment_enum, :font, :r, :g, :b, :a
 
   def primitive_marker
     :label
