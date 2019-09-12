@@ -163,10 +163,18 @@ module GTK
       @runtime
     end
 
+    # @return [OpenEntity] returns `OpenEntity` object that allows for storing state between ticks
+    # @example Storing a value in a state
+    #   args.state.player_score = 0
+    #   args.state.current_time = Time.now
     def state
       @state
     end
 
+    # @param value [OpenEntity] the new state object to use
+    # @return [OpenEntity] the new state object
+    # @example Overwriting the state object
+    #   args.state = OpenEntity.new
     def state= value
       @state = value
     end
