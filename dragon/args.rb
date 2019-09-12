@@ -6,7 +6,12 @@
 module GTK
   class Grid
     include Serialize
+
     SCREEN_Y_DIRECTION = -1.0
+    WIDTH = 1280.0
+    HEIGHT = 720.0
+    WIDTH_HALF = WIDTH / 2
+    HEIGHT_HALF = HEIGHT / 2
 
     attr_accessor :bottom, :left, :right, :top,
                   :rect, :origin_x, :origin_y, :center_x, :center_y,
@@ -122,19 +127,19 @@ ASCII
     end
 
     def w
-      1280.0
+      WIDTH
     end
 
     def w_half
-      640.0
+      WIDTH_HALF
     end
 
     def h
-      720.0
+      HEIGHT
     end
 
     def h_half
-      360.0
+      HEIGHT_HALF
     end
   end
 end
