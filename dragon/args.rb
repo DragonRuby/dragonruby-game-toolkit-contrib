@@ -198,6 +198,7 @@ module GTK
       @render_targets[name]
     end
 
+    # @return [GTK::OutputsArray] The array of solids to render during current tick
     def solids
       @outputs.solids
     end
@@ -206,6 +207,7 @@ module GTK
       @outputs.static_solids
     end
 
+    # @return [GTK::OutputsArray] The array of sprites to render during current tick
     def sprites
       @outputs.sprites
     end
@@ -214,6 +216,7 @@ module GTK
       @outputs.static_sprites
     end
 
+    # @return [GTK::OutputsArray] The array of labels to render during current tick
     def labels
       @outputs.labels
     end
@@ -222,6 +225,7 @@ module GTK
       @outputs.static_labels
     end
 
+    # @return [GTK::OutputsArray] The array of lines to render during current tick
     def lines
       @outputs.lines
     end
@@ -230,6 +234,7 @@ module GTK
       @outputs.static_lines
     end
 
+    # @return [GTK::OutputsArray] The array of borders to render during current tick
     def borders
       @outputs.borders
     end
