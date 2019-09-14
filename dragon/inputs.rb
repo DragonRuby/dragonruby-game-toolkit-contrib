@@ -195,6 +195,10 @@ module GTK
         .map { |k, _| k.to_sym }
     end
 
+    def truthy_keys_hash
+      get(all).to_h.delete_if {|_, v| !v })
+    end
+
     def all? keys
       values = keys_to_get(keys.map { |k| k.without_ending_bang })
       all_true = values.all? do |k, v|
