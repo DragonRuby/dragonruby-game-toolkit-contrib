@@ -268,7 +268,7 @@ I've written the current command at the top of a file called ./repl.rb (right ne
 S
         if @last_command_written_to_repl_rb != @current_input_str
           @last_command_written_to_repl_rb = @current_input_str
-          contents = $gtk.read_file 'repl.rb'
+          contents = $gtk.read_file 'app/repl.rb'
           contents ||= ''
           contents = <<-S + contents
 
@@ -279,8 +279,8 @@ end
 
 S
           $gtk.suppress_hotload = true
-          $gtk.write_file 'repl.rb', contents
-          $gtk.reload_if_needed 'repl.rb', true
+          $gtk.write_file 'app/repl.rb', contents
+          $gtk.reload_if_needed 'app/repl.rb', true
           $gtk.suppress_hotload = false
         end
 
