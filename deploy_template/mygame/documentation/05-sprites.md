@@ -185,7 +185,7 @@ args.outputs.sprites << {
   h: 100,
   path: "sprites/player.png",
   angle: 0,
-  a, 255
+  a: 255,
   r: 255,
   g: 255,
   b: 255,
