@@ -168,7 +168,7 @@ args.outputs.sprites << [                 100,    # X
                                         false,    # FLIP_HORIZONTALLY
                                         false,    # FLIP_VERTICALLY
                                           0.5,    # ANGLE_ANCHOR_X
-                                          1.0]    # ANCHOR_Y
+                                          1.0]    # ANGLE_ANCHOR_Y
 ```
 
 ## Hash (Advanced)
@@ -185,7 +185,7 @@ args.outputs.sprites << {
   h: 100,
   path: "sprites/player.png",
   angle: 0,
-  a, 255
+  a: 255,
   r: 255,
   g: 255,
   b: 255,
