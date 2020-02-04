@@ -9,9 +9,13 @@ module GTK
                   :max_log_lines, :max_history, :current_input_str, :log,
                   :last_command_errored, :last_command, :error_color, :shown_at,
                   :header_color, :archived_log, :last_log_lines, :last_log_lines_count,
-                  :suppress_left_arrow_behavior
+                  :suppress_left_arrow_behavior, :command_set_at,
+                  :toast_ids,
+                  :size_enum, :line_height
 
     def initialize
+      @size_enum = 0
+      @line_height = 1.1
       @disabled = false
       @current_input_str = ''
       @log_offset = 0
@@ -37,6 +41,11 @@ module GTK
       @current_input_str = ''
       @shown_at = -1
       load_history
+    end
+
+    def console_text_width
+      @console_text_width ||= 1260.idiv($gtk.calcstringbox('W', self.size_enum, @font)[0])
+      @console_text_width
     end
 
     def save_history
@@ -70,10 +79,6 @@ module GTK
       @disabled = false
     end
 
-    def console_text_width
-      117
-    end
-
     def addtext obj
       @last_log_lines_count ||= 1
 
@@ -81,11 +86,11 @@ module GTK
 
       log_lines = []
 
-      str.each_line { |s|
-        s.wrapped_lines(console_text_width).each do |l|
+      str.each_line do |s|
+        s.wrapped_lines(self.console_text_width).each do |l|
           log_lines << l
         end
-      }
+      end
 
       if log_lines == @last_log_lines
         @last_log_lines_count += 1
@@ -93,7 +98,7 @@ module GTK
         if log_lines.length > 1
           @log = @log[0..-(@log.length - log_lines.length)] + log_lines[0..-2] + [new_log_line_with_count]
         else
-          @log = @log[0..-(@log.length - log_lines.length)] + [new_log_line_with_count]
+          @log = @log[0..-2] + [new_log_line_with_count]
         end
         return
       end
@@ -163,7 +168,7 @@ module GTK
     def toast_extended id = nil, duration = nil, *messages
       if !id.is_a?(Symbol)
         raise <<-S
-ERROR:
+* ERROR:
 args.gtk.console.toast has the following signature:
 
   def toast id, *messages
@@ -194,14 +199,18 @@ S
       @toasted_at = Kernel.global_tick_count
       log_once_info :perma_toast_tip, "Use console.perma_toast to show the toast for longer."
       dwim_duration = 5.seconds
+      addtext "* toast :#{id}"
+      puts "* TOAST: :#{id}"
       messages.each do |message|
-        lines = message.to_s.wrapped_lines(console_text_width)
+        lines = message.to_s.wrapped_lines(self.nconsole_text_width)
         dwim_duration += lines.length.seconds
-        log message.to_s.wrap(console_text_width)
+        addtext "** #{message}"
+        puts "** #{message}"
       end
       show :toast
       @toast_duration += duration || dwim_duration
       @toast_ids << id
+      set_command "$gtk.console.hide"
     end
 
     def perma_toast id = nil, messages
@@ -236,7 +245,7 @@ S
           puts "-> #{cmd}"
           begin
             @last_command = cmd
-            $gtk.ffi_mrb.eval("$results = (#{cmd})")
+            Kernel.eval("$results = (#{cmd})")
             if $results.nil?
               puts "=> nil"
             else
@@ -250,6 +259,56 @@ S
           end
         end
       end
+    end
+
+    def inputs_scroll_up_full? args
+      args.inputs.keyboard.key_down.pageup ||
+        (args.inputs.keyboard.key_up.b && args.inputs.keyboard.key_up.control)
+    end
+
+    def scroll_up_full
+      fontwidth, fontheight = $gtk.calcstringbox 'W', self.size_enum, @font   # we only need the height of a line of text here.
+      lines_on_one_page = (720.0 / fontheight).to_i - 4
+      @log_offset += lines_on_one_page
+      @log_offset = @log.size if @log_offset > @log.size
+    end
+
+    def inputs_scroll_up_half? args
+      args.inputs.keyboard.ctrl_u
+    end
+
+    def scroll_up_half
+      fontwidth, fontheight = $gtk.calcstringbox 'W', self.size_enum, @font   # we only need the height of a line of text here.
+      lines_on_one_page = (720.0 / fontheight).to_i - 4
+      @log_offset += lines_on_one_page.idiv(2)
+      @log_offset = @log.size if @log_offset > @log.size
+    end
+
+    def inputs_scroll_down_full? args
+      args.inputs.keyboard.key_down.pagedown ||
+        (args.inputs.keyboard.key_up.f && args.inputs.keyboard.key_up.control)
+    end
+
+    def scroll_down_full
+      fontwidth, fontheight = $gtk.calcstringbox 'W', self.size_enum, @font   # we only need the height of a line of text here.
+      lines_on_one_page = (720.0 / fontheight).to_i - 4
+      @log_offset -= lines_on_one_page
+      @log_offset = 0 if @log_offset < 0
+    end
+
+    def inputs_scroll_down_half? args
+      args.inputs.keyboard.ctrl_d
+    end
+
+    def inputs_clear_command? args
+      args.inputs.keyboard.escape || args.inputs.keyboard.ctrl_g
+    end
+
+    def scroll_down_half
+      fontwidth, fontheight = $gtk.calcstringbox 'W', self.size_enum, @font   # we only need the height of a line of text here.
+      lines_on_one_page = (720.0 / fontheight).to_i - 4
+      @log_offset -= lines_on_one_page.idiv(2)
+      @log_offset = 0 if @log_offset < 0
     end
 
     def process_inputs args
@@ -313,17 +372,15 @@ S
           @command_history_index -= 1
           @current_input_str = @command_history[@command_history_index].clone
         end
-      elsif args.inputs.keyboard.key_down.pageup
-        fontwidth, fontheight = $gtk.calcstringbox 'W', 1, @font   # we only need the height of a line of text here.
-        lines_on_one_page = (720.0 / fontheight).to_i - 4
-        @log_offset += lines_on_one_page
-        @log_offset = @log.size if @log_offset > @log.size
-      elsif args.inputs.keyboard.key_down.pagedown
-        fontwidth, fontheight = $gtk.calcstringbox 'W', 1, @font   # we only need the height of a line of text here.
-        lines_on_one_page = (720.0 / fontheight).to_i - 4
-        @log_offset -= lines_on_one_page
-        @log_offset = 0 if @log_offset < 0
-      elsif args.inputs.keyboard.key_down.escape
+      elsif inputs_scroll_up_full? args
+        scroll_up_full
+      elsif inputs_scroll_down_full? args
+        scroll_down_full
+      elsif inputs_scroll_up_half? args
+        scroll_up_half
+      elsif inputs_scroll_down_half? args
+        scroll_down_half
+      elsif inputs_clear_command? args
         @current_input_str.clear
         @command_history_index = -1
         @nonhistory_input = ''
@@ -339,13 +396,13 @@ S
     def write_line args, left, y, str, errorinfo, headerinfo, txtinfo
       str ||= ''
       if include_error_marker? str
-        args.outputs.reserved << [left + 10, y, str, 1, 0, *errorinfo].label
+        args.outputs.reserved << [left + 10, y, str, self.size_enum, 0, *errorinfo].label
       elsif include_subdued_markers? str
-        args.outputs.reserved << [left + 10, y, str, 1, 0, [txtinfo[0..2], txtinfo[3].half]].label
+        args.outputs.reserved << [left + 10, y, str, self.size_enum, 0, [txtinfo[0..2], txtinfo[3].half]].label
       elsif str.start_with?("====") || str.include?("app")
-        args.outputs.reserved << [left + 10, y, str, 1, 0, *headerinfo].label
+        args.outputs.reserved << [left + 10, y, str, self.size_enum, 0, *headerinfo].label
       else
-        args.outputs.reserved << [left + 10, y, str, 1, 0, *txtinfo].label
+        args.outputs.reserved << [left + 10, y, str, self.size_enum, 0, *txtinfo].label
       end
     end
 
@@ -353,14 +410,15 @@ S
       return if !@toggled_at
 
       if visible?
-        percent = @toggled_at.ease_using_global_tick_count(@animation_duration, :flip, :quint, :flip)
+        percent = @toggled_at.global_ease(@animation_duration, :flip, :quint, :flip)
       else
-        percent = @toggled_at.ease_using_global_tick_count(@animation_duration, :flip, :quint)
+        percent = @toggled_at.global_ease(@animation_duration, :flip, :quint)
       end
 
       return if percent == 0
 
-      w, h = $gtk.calcstringbox 'W', 1, @font   # we only need the height of a line of text here.
+      w, h = $gtk.calcstringbox 'W', self.size_enum, @font   # we only need the height of a line of text here.
+      h *= self.line_height
 
       top = $gtk.args.grid.top
       left = $gtk.args.grid.left
@@ -377,8 +435,8 @@ S
       y += 2  # just give us a little padding at the bottom.
       y += h  # !!! FIXME: remove this when we fix coordinate origin on labels.
       args.outputs.reserved << [left + 1280 - 210, logo_y + 540, 200, 200, @logo, 0, (80.0 * percent).to_i].sprite
-      args.outputs.reserved << [left + 10, y, "#{@prompt}#{@current_input_str}", 1, 0, *txtinfo].label
-      args.outputs.reserved << [left + 8, y + 3, (" " * (prompt.length + @current_input_str.length)) + "|", 1, 0, *cursorinfo ].label
+      args.outputs.reserved << [left + 10, y, "#{@prompt}#{@current_input_str}", self.size_enum, 0, *txtinfo].label
+      args.outputs.reserved << [left + 8, y + 3, (" " * (prompt.length + @current_input_str.length)) + "|", self.size_enum, 0, *cursorinfo ].label
       y += h.to_f / 2.0
       args.outputs.reserved << [left + 0, y, 1280, y, *txtinfo].line
       y += h.to_f / 2.0
@@ -405,10 +463,18 @@ S
         y += h
         break if y > top
       end
+
+      render_log_offset args
+    end
+
+    def render_log_offset args
+      return if @log_offset <= 0
+      s =  "[#{@log_offset}/#{@log.size}]"
+      args.outputs.reserved << [1280 - 5, 720 - 5, s, 0, 2, 255, 255, 255].label
     end
 
     def include_error_marker? text
-      include_any_words? text, error_markers
+      include_any_words?(text.gsub('OutputsDeprecated', ''), error_markers)
     end
 
     def error_markers
@@ -420,7 +486,7 @@ S
     end
 
     def include_any_words? text, words
-      words.any? { |w| text.downcase.include? w }
+      words.any? { |w| text.downcase.include?(w) && !text.downcase.include?(":#{w}") }
     end
 
     def subdued_markers
@@ -435,7 +501,7 @@ S
         hide
       end
 
-      if !$gtk.paused? && visible? && show_reason == :exception
+      if !$gtk.paused? && visible? && (show_reason == :exception || show_reason == :exception_on_load)
         hide
       end
 
@@ -454,13 +520,17 @@ S
       rescue Exception => e
         @disabled = true
         $stdout.puts e
-        $stdout.puts "The GTK::Console console threw an unhandled exception and has been reset. You should report this exception (along with reproduction steps) to DragonRuby."
+        $stdout.puts "* FATAL: The GTK::Console console threw an unhandled exception and has been reset. You should report this exception (along with reproduction steps) to DragonRuby."
       end
     end
 
     def set_command command, show_reason = nil
       @command_history << command
-      @current_input_str = command
+      if @command_set_at != Kernel.global_tick_count
+        @current_input_str = command
+      end
+      @command_set_at = Kernel.global_tick_count
+      @command_history_index = -1
       show show_reason
     end
   end
