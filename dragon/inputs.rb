@@ -258,9 +258,9 @@ module GTK
 
       collection.each do |m|
         self.instance_variable_set("@#{m.to_s}".to_sym, value)
-      rescue
-        raise <<-S
-ERROR:
+      rescue Exception => e
+        raise e, <<-S
+* ERROR:
 Attempted to set the a key on the DragonRuby GTK's Keyboard data
 structure, but the property isn't available for raw_key #{raw_key} #{m}.
 
@@ -273,7 +273,8 @@ S
     end
 
     def method_missing m, *args
-      if m.to_s.length != 1 && m.end_with_bang?
+      # determine if it's a ctrl+some_key combination
+   if m.to_s.length != 1 && m.end_with_bang? # creation of args.intputs.SOME_KEY! (where the key is queried and then immediately cleared)
         begin
           define_singleton_method(m) do
             r = self.instance_variable_get("@#{m.without_ending_bang}".to_sym)
@@ -283,12 +284,12 @@ S
 
           return self.send m
         rescue Exception => e
-          log "#{e}}"
+          log_important "#{e}}"
         end
       end
 
       raise <<-S
-ERROR:
+* ERROR:
 There is no member on the keyboard called #{m}. Here is a to_s representation of what's available:
 
 #{KeyboardKeys.char_to_method_hash}
@@ -361,7 +362,14 @@ module GTK
     end
 
     def method_missing m, *args
-      if @key_down.respond_to? m
+      if m.to_s.start_with?("ctrl_")
+        other_key = m.to_s.split("_").last
+        define_singleton_method(m) do
+          return @key_up.send(other_key.to_sym) && key_up.control
+        end
+
+        return send(m)
+      elsif @key_down.respond_to? m
         define_singleton_method(m) do
           @key_down.send(m) || @key_held.send(m)
         end
@@ -501,12 +509,37 @@ module GTK
 end
 
 module GTK
+  class MousePoint
+    include GTK::Geometry
+
+    attr_accessor :x, :y, :point, :created_at, :global_created_at
+
+    def initialize x, y
+      @x = x
+      @y = y
+      @point = [x, y]
+      @created_at = Kernel.tick_count
+      @global_created_at = Kernel.global_tick_count
+    end
+
+    def w; 0; end
+    def h; 0; end
+    def left; x; end
+    def right; x; end
+    def top; y; end
+    def bottom; y; end
+
+    def created_at_elapsed
+      @created_at.elapsed_time
+    end
+  end
+
   class Mouse
     attr_accessor :click,
                   :previous_click,
                   :moved,
                   :moved_at,
-                  :moved_at_time,
+                  :global_moved_at,
                   :x, :y, :up, :has_focus,
                   :button_bits, :button_left,
                   :button_middle, :button_right,
@@ -526,10 +559,15 @@ module GTK
       clear
     end
 
+    def point
+      [@x, @y].point
+    end
+
     def clear
       if @click
-        @previous_click = OpenEntity.new
-        @previous_click.point = [@click.point.x, @click.point.y]
+        @previous_click = MousePoint.new @click.point.x, @click.point.y
+        @previous_click.created_at = @click.created_at
+        @previous_click.global_created_at = @click.global_created_at
       end
 
       @click = nil
@@ -579,6 +617,11 @@ module GTK
       @keyboard = Keyboard.new
       @mouse = Mouse.new
       @text = []
+    end
+
+    def click
+      return nil unless @mouse.click
+      return @mouse.click.point
     end
 
     def controller_one
