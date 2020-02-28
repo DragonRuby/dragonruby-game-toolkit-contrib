@@ -84,16 +84,16 @@ using the helper method (providing all the parameters).
 
 ```ruby
 args.outputs.labels << {
-  x:         200,
-  y:         550,
-  text:      "dragonruby",
-  size:      2,
-  alignment: 1,
-  r:         155,
-  g:         50,
-  b:         50,
-  a:         255,
-  font:      "fonts/manaspc.ttf"
+  x:              200,
+  y:              550,
+  text:           "dragonruby",
+  size_enum:      2,
+  alignment_enum: 1,
+  r:              155,
+  g:              50,
+  b:              50,
+  a:              255,
+  font:           "fonts/manaspc.ttf"
 }
 ```
 

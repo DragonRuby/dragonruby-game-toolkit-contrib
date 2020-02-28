@@ -202,7 +202,7 @@ S
       addtext "* toast :#{id}"
       puts "* TOAST: :#{id}"
       messages.each do |message|
-        lines = message.to_s.wrapped_lines(self.nconsole_text_width)
+        lines = message.to_s.wrapped_lines(self.console_text_width)
         dwim_duration += lines.length.seconds
         addtext "** #{message}"
         puts "** #{message}"
@@ -262,6 +262,7 @@ S
     end
 
     def inputs_scroll_up_full? args
+      return false if @disabled
       args.inputs.keyboard.key_down.pageup ||
         (args.inputs.keyboard.key_up.b && args.inputs.keyboard.key_up.control)
     end
@@ -274,6 +275,7 @@ S
     end
 
     def inputs_scroll_up_half? args
+      return false if @disabled
       args.inputs.keyboard.ctrl_u
     end
 
@@ -285,6 +287,7 @@ S
     end
 
     def inputs_scroll_down_full? args
+      return false if @disabled
       args.inputs.keyboard.key_down.pagedown ||
         (args.inputs.keyboard.key_up.f && args.inputs.keyboard.key_up.control)
     end
@@ -297,10 +300,12 @@ S
     end
 
     def inputs_scroll_down_half? args
+      return false if @disabled
       args.inputs.keyboard.ctrl_d
     end
 
     def inputs_clear_command? args
+      return false if @disabled
       args.inputs.keyboard.escape || args.inputs.keyboard.ctrl_g
     end
 

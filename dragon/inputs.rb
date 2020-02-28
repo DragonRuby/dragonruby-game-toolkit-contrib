@@ -179,14 +179,14 @@ module GTK
     end
 
     def left_right
-      return -1 if @left
-      return  1 if @right
+      return -1 if self.left
+      return  1 if self.right
       return  0
     end
 
     def up_down
-      return  1 if @up
-      return -1 if @down
+      return  1 if self.up
+      return -1 if self.down
       return  0
     end
 
@@ -273,8 +273,7 @@ S
     end
 
     def method_missing m, *args
-      # determine if it's a ctrl+some_key combination
-   if m.to_s.length != 1 && m.end_with_bang? # creation of args.intputs.SOME_KEY! (where the key is queried and then immediately cleared)
+      if m.to_s.length != 1 && m.end_with_bang? # creation of args.intputs.SOME_KEY! (where the key is queried and then immediately cleared)
         begin
           define_singleton_method(m) do
             r = self.instance_variable_get("@#{m.without_ending_bang}".to_sym)
@@ -317,67 +316,20 @@ module GTK
       @has_focus   = false
     end
 
-    def left_right
-      return -1 if left
-      return  1 if right
-      return  0
-    end
-
-    def up_down
-      return  1 if up
-      return -1 if down
-      return  0
-    end
-
     def left
-      @key_down.left || @key_held.left
+      @key_up.left || @key_held.left || a
     end
 
     def right
-      @key_down.right  || @key_held.right
+      @key_up.right || @key_held.right || d
     end
 
     def up
-      @key_down.up || @key_held.up
+      @key_up.up || @key_held.up || w
     end
 
     def down
-      @key_down.down  || @key_held.down
-    end
-
-    def w
-      @key_down.w || @key_held.w
-    end
-
-    def a
-      @key_down.a || @key_held.a
-    end
-
-    def s
-      @key_down.s || @key_held.s
-    end
-
-    def d
-      @key_down.d || @key_held.d
-    end
-
-    def method_missing m, *args
-      if m.to_s.start_with?("ctrl_")
-        other_key = m.to_s.split("_").last
-        define_singleton_method(m) do
-          return @key_up.send(other_key.to_sym) && key_up.control
-        end
-
-        return send(m)
-      elsif @key_down.respond_to? m
-        define_singleton_method(m) do
-          @key_down.send(m) || @key_held.send(m)
-        end
-
-        return send(m)
-      end
-
-      super
+      @key_up.down || @key_held.down || s
     end
 
     def clear
@@ -402,8 +354,11 @@ module GTK
     def to_s
       serialize.to_s
     end
+
+    include DirectionalInputHelperMethods
   end
 end
+
 
 module GTK
   class ControllerKeys
@@ -481,14 +436,14 @@ module GTK
     end
 
     def left_right
-      return -1 if @key_down.left  || @key_held.left
-      return  1 if @key_down.right || @key_held.right
+      return -1 if self.left
+      return  1 if self.right
       return  0
     end
 
     def up_down
-      return  1 if @key_down.up || @key_held.up
-      return -1 if @key_down.down  || @key_held.down
+      return  1 if self.up
+      return -1 if self.down
       return  0
     end
 
@@ -505,6 +460,24 @@ module GTK
       @key_up.clear
       @key_held.clear
     end
+
+    def up
+      @key_up.up || @key_held.up
+    end
+
+    def down
+      @key_up.down || @key_held.down
+    end
+
+    def left
+      @key_up.left || @key_held.left
+    end
+
+    def right
+      @key_up.right || @key_held.right
+    end
+
+    include DirectionalInputHelperMethods
   end
 end
 
@@ -617,6 +590,43 @@ module GTK
       @keyboard = Keyboard.new
       @mouse = Mouse.new
       @text = []
+    end
+
+    def up
+      keyboard.up ||
+        (controller_one && controller_one.up)
+    end
+
+    def down
+      keyboard.down ||
+        (controller_one && controller_one.down)
+    end
+
+    def left
+      keyboard.left ||
+        (controller_one && controller_one.left)
+    end
+
+    def right
+      keyboard.right ||
+        (controller_one && controller_one.right)
+    end
+
+    def directional_vector
+      keyboard.directional_vector ||
+        (controller_one && controller_one.directional_vector)
+    end
+
+    def left_right
+      return -1 if self.left
+      return  1 if self.right
+      return  0
+    end
+
+    def up_down
+      return  1 if self.up
+      return -1 if self.down
+      return  0
     end
 
     def click

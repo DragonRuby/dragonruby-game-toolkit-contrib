@@ -2,10 +2,12 @@
 # You can put some quick verification tests here, any method
 # that starts with the `test_` will be run when you save this file.
 
-# here is an example test and game
+# Here is an example test and game
+
+# To run the test: ./dragonruby mygame --eval tests.rb --no-tick
 
 class MySuperHappyFunGame
-  gtk_args
+  attr_gtk
 
   def tick
     outputs.solids << [100, 100, 300, 300]
@@ -21,4 +23,7 @@ def test_universe args, assert
   puts "test_universe completed successfully"
 end
 
+puts "running tests"
+$gtk.reset 100
+$gtk.log_level = :off
 $gtk.tests.start
