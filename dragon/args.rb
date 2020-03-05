@@ -132,7 +132,7 @@ module GTK
     def click_at
       return nil unless @inputs.mouse.click
 
-      @inpust.mouse.click.created_at
+      @inputs.mouse.click.created_at
     end
 
     def mouse
