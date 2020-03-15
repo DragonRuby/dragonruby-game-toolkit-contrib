@@ -41,15 +41,15 @@ module GTK
         @line_height_px ||= letter_size.y * line_height
       end
 
-      def label(options = {}, x:, y:, text:, color:)
+      def label(x:, y:, text:, color:, alignment_enum: 0)
         {
           x: x,
           y: y.shift_up(line_height_px),  # !!! FIXME: remove .shift_up(line_height_px) when we fix coordinate origin on labels.
           text: text,
           font: font,
           size_enum: size_enum,
+          alignment_enum: alignment_enum,
           **color.to_h,
-          **options
         }.label
       end
     end
@@ -534,8 +534,13 @@ S
 
     def render_log_offset args
       return if @log_offset <= 0
-      s =  "[#{@log_offset}/#{@log.size}]"
-      args.outputs.reserved << [right.shift_left(5), top.shift_down(5), s, 0, 2, 255, 255, 255].label
+      args.outputs.reserved << font_style.label(
+        x: right.shift_left(5),
+        y: top.shift_down(5 + line_height_px),
+        text: "[#{@log_offset}/#{@log.size}]",
+        color: @text_color,
+        alignment_enum: 2
+      )
     end
 
     def include_error_marker? text
