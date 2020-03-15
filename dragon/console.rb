@@ -63,23 +63,71 @@ module GTK
         @font_style = font_style
         @text_color = text_color
         @cursor_color = Color.new [187, 21, 6]
+
+        @last_autocomplete_prefix = nil
+        @next_candidate_index = 0
       end
 
       def <<(str)
         @current_input_str << str
+        reset_autocomplete
       end
 
       def backspace
         @current_input_str.chop!
+        reset_autocomplete
       end
 
       def clear
         @current_input_str = ''
+        reset_autocomplete
+      end
+
+      def autocomplete
+        return unless last_period_index
+
+        if !@last_autocomplete_prefix
+          @last_autocomplete_prefix = current_input_str[(last_period_index + 1)..-1]
+
+          puts method_candidates(@last_autocomplete_prefix)
+        else
+          candidates = method_candidates(@last_autocomplete_prefix)
+          return if candidates.empty?
+
+          candidate = candidates[@next_candidate_index]
+          candidate = candidate[0..-2] + " = " if candidate.end_with? '='
+          @next_candidate_index += 1
+          @next_candidate_index = 0 if @next_candidate_index >= candidates.length
+          @current_input_str = @current_input_str[0..last_period_index] + candidate.to_s
+        end
       end
 
       def render(args, x:, y:)
         args.outputs.reserved << font_style.label(x: x, y: y, text: "#{@prompt}#{current_input_str}", color: @text_color)
         args.outputs.reserved << font_style.label(x: x - 2, y: y + 3, text: (" " * (@prompt.length + current_input_str.length)) + "|", color: @cursor_color)
+      end
+
+      private
+
+      def last_period_index
+        current_input_str.rindex('.')
+      end
+
+      def current_object
+        return nil unless last_period_index
+
+        Kernel.eval(current_input_str[0...last_period_index])
+      rescue NameError
+        nil
+      end
+
+      def method_candidates(prefix)
+        current_object.methods.map(&:to_s).select { |m| m.start_with? prefix }
+      end
+
+      def reset_autocomplete
+        @last_autocomplete_prefix = nil
+        @next_candidate_index = 0
       end
     end
 
@@ -490,6 +538,8 @@ S
         @nonhistory_input = ''
       elsif args.inputs.keyboard.key_down.backspace || args.inputs.keyboard.key_down.delete
         prompt.backspace
+      elsif args.inputs.keyboard.key_down.tab
+        prompt.autocomplete
       end
 
       args.inputs.keyboard.key_down.clear
