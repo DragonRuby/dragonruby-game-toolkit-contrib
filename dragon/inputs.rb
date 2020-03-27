@@ -29,6 +29,7 @@ module GTK
                   :left, :right, :up, :down, :pageup, :pagedown,
                   :char, :plus, :at, :forward_slash, :back_slash, :asterisk,
                   :less_than, :greater_than, :carat, :ampersand, :superscript_two,
+                  :circumflex,
                   :question_mark, :section_sign, :ordinal_indicator,
                   :raw_key
 
@@ -152,12 +153,12 @@ module GTK
         "*"  => [:asterisk],
         "<"  => [:less_than],
         ">"  => [:greater_than],
-        "^"  => [:greater_than],
+        "^"  => [:circumflex],
         "&"  => [:ampersand],
         "²"  => [:superscript_two],
         "§"  => [:section_sign],
         "?"  => [:question_mark],
-        "%"  => [:percent_sign],
+        '%'  => [:percent_sign],
         "º"  => [:ordinal_indicator],
         1073741903 => [:right],
         1073741904 => [:left],
@@ -192,11 +193,11 @@ module GTK
 
     def truthy_keys
       get(all).find_all { |_, v| v }
-        .map { |k, _| k.to_sym }
+              .map { |k, _| k.to_sym }
     end
 
     def all? keys
-      values = keys_to_get(keys.map { |k| k.without_ending_bang })
+      values = get(keys.map { |k| k.without_ending_bang })
       all_true = values.all? do |k, v|
         v
       end
@@ -211,7 +212,7 @@ module GTK
     end
 
     def any? keys
-      values = keys_to_get(keys.map { |k| k.without_ending_bang })
+      values = get(keys.map { |k| k.without_ending_bang })
       any_true = values.any? do |k, v|
         v
       end
@@ -232,8 +233,8 @@ module GTK
 
     def all
       @scrubbed_ivars ||= self.instance_variables
-                            .reject { |i| i == :@all || i == :@scrubbed_ivars }
-                            .map { |i| i.to_s.gsub("@", "") }
+                              .reject { |i| i == :@all || i == :@scrubbed_ivars }
+                              .map { |i| i.to_s.gsub("@", "") }
 
       get(@scrubbed_ivars).map { |k, _| k }
     end
@@ -273,25 +274,23 @@ S
     end
 
     def method_missing m, *args
-      if m.to_s.length != 1 && m.end_with_bang? # creation of args.intputs.SOME_KEY! (where the key is queried and then immediately cleared)
-        begin
-          define_singleton_method(m) do
-            r = self.instance_variable_get("@#{m.without_ending_bang}".to_sym)
-            clear_key m
-            return r
-          end
-
-          return self.send m
-        rescue Exception => e
-          log_important "#{e}}"
+      begin
+        define_singleton_method(m) do
+          r = self.instance_variable_get("@#{m.without_ending_bang}".to_sym)
+          clear_key m
+          return r
         end
+
+        return self.send m
+      rescue Exception => e
+        log_important "#{e}}"
       end
 
       raise <<-S
 * ERROR:
 There is no member on the keyboard called #{m}. Here is a to_s representation of what's available:
 
-#{KeyboardKeys.char_to_method_hash}
+#{KeyboardKeys.char_to_method_hash.map { |k, v| "[#{k} => #{v.join(",")}]" }.join("  ")}
 
 S
     end
@@ -314,6 +313,10 @@ module GTK
       @key_held    = KeyboardKeys.new
       @key_down    = KeyboardKeys.new
       @has_focus   = false
+    end
+
+    def p
+      @key_down.p || @key_held.p
     end
 
     def left
@@ -353,6 +356,19 @@ module GTK
 
     def to_s
       serialize.to_s
+    end
+
+    def keys
+      key
+    end
+
+    def key
+      {
+        down: @key_down.truthy_keys,
+        held: @key_held.truthy_keys,
+        down_or_held: (@key_down.truthy_keys + @key_held.truthy_keys).uniq,
+        up: @key_up.truthy_keys,
+      }
     end
 
     include DirectionalInputHelperMethods
@@ -505,6 +521,27 @@ module GTK
     def created_at_elapsed
       @created_at.elapsed_time
     end
+
+    def to_hash
+      serialize
+    end
+
+    def serialize
+      {
+        x: @x,
+        y: @y,
+        created_at: @created_at,
+        global_created_at: @global_created_at
+      }
+    end
+
+    def inspect
+      serialize.to_s
+    end
+
+    def to_s
+      serialize.to_s
+    end
   end
 
   class Mouse
@@ -565,11 +602,11 @@ module GTK
       result = {}
 
       if @click
-        result[:click] = @click.hash
-        result[:down] = @click.hash
+        result[:click] = @click.to_hash
+        result[:down] = @click.to_hash
       end
 
-      result[:up] = @up.hash if @up
+      result[:up] = @up.to_hash if @up
       result[:x] = @x
       result[:y] = @y
       result[:moved] = @moved
@@ -640,6 +677,19 @@ module GTK
 
     def controller_two
       @controllers.value(1)
+    end
+
+    def clear
+      @mouse.clear
+      @keyboard.key_down.clear
+      @keyboard.key_up.clear
+      @keyboard.key_held.clear
+      @controllers[0].key_down.clear
+      @controllers[0].key_up.clear
+      @controllers[0].key_held.clear
+      @controllers[1].key_down.clear
+      @controllers[1].key_up.clear
+      @controllers[1].key_held.clear
     end
 
     def serialize

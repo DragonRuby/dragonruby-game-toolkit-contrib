@@ -5,6 +5,24 @@
 
 module GTK
   module Geometry
+    def self.cubic_bezier t, a, b, c, d
+      s  = 1 - t
+      s0 = 1
+      s1 = s
+      s2 = s * s
+      s3 = s * s * s
+
+      t0 = 1
+      t1 = t
+      t2 = t * t
+      t3 = t * t * t
+
+      1 * s3 * t0 * a +
+      3 * s2 * t1 * b +
+      3 * s1 * t2 * c +
+      1 * s0 * t3 * d
+    end
+
     def inside_rect? outer
       Geometry.inside_rect? self, outer
     end

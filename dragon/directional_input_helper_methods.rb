@@ -63,15 +63,13 @@ S
 
         return send(m)
       # see if the key is either held or down
-      elsif self.key_down.respond_to? m
+      else
         define_singleton_method(m) do
           self.key_down.send(m) || self.key_held.send(m)
         end
 
         return send(m)
       end
-
-      super
     end
   end
 end

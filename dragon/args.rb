@@ -46,7 +46,7 @@ module GTK
 
     def serialize
       {
-        state: state.hash,
+        state: state.as_hash,
         inputs: inputs.serialize,
         passes: passes.serialize,
         outputs: outputs.serialize,
@@ -65,7 +65,7 @@ module GTK
     def render_target name
       name = name.to_s
       if !@render_targets[name]
-        @render_targets[name] = Outputs.new name
+        @render_targets[name] = Outputs.new(target: name, background_color_override: [255, 255, 255, 0])
         @passes << @render_targets[name]
       end
       @render_targets[name]

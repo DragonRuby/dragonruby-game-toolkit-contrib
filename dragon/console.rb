@@ -44,14 +44,12 @@ module GTK
     end
 
     def console_text_width
-      @console_text_width ||= 1260.idiv($gtk.calcstringbox('W', self.size_enum, @font)[0])
+      @console_text_width ||= (GAME_WIDTH - 20).idiv($gtk.calcstringbox('W', self.size_enum, @font)[0])
       @console_text_width
     end
 
     def save_history
-      str = ''
-      @command_history.reverse_each { |s| str << s ; str << "\n" }
-      $gtk.ffi_file.storefile(@history_fname, str)
+      $gtk.ffi_file.storefile(@history_fname, @command_history.reverse.join("\n"))
     end
 
     def load_history
@@ -69,6 +67,8 @@ module GTK
           break if @command_history.length >= @max_history
         end
       }
+
+      @command_history.uniq!
     end
 
     def disable
@@ -77,6 +77,32 @@ module GTK
 
     def enable
       @disabled = false
+    end
+
+    def addsprite obj
+      obj[:id] ||= "id_#{obj[:path]}_#{Time.now.to_i}".to_sym
+
+      if @last_line_log_index &&
+         @last_sprite_line.is_a?(Hash) &&
+         @last_sprite_line[:id] == obj[:id]
+
+        @log[@last_line_log_index] = obj
+        return
+      end
+
+      @log << obj
+      @last_line_log_index = @log.length - 1
+      @last_sprite_line = obj
+      nil
+    end
+
+    def add_primitive obj
+      if obj.is_a? Hash
+        addsprite obj
+      else
+        addtext obj
+      end
+      nil
     end
 
     def addtext obj
@@ -110,6 +136,7 @@ module GTK
 
       @last_log_lines_count = 1
       @last_log_lines = log_lines
+      nil
     end
 
     def ready?
@@ -221,11 +248,19 @@ S
       toast_extended id, nil, *messages
     end
 
+    def console_toggle_keys
+      [
+        :backtick!,
+        :tilde!,
+        :superscript_two!,
+        :section_sign!,
+        :ordinal_indicator!,
+        :circumflex!,
+      ]
+    end
+
     def console_toggle_key_down? args
-      return args.inputs.keyboard.key_down.backtick! ||
-             args.inputs.keyboard.key_down.superscript_two! ||
-             args.inputs.keyboard.key_down.section_sign! ||
-             args.inputs.keyboard.key_down.ordinal_indicator!
+      args.inputs.keyboard.key_down.any? console_toggle_keys
     end
 
     def eval_the_set_command
@@ -269,7 +304,7 @@ S
 
     def scroll_up_full
       fontwidth, fontheight = $gtk.calcstringbox 'W', self.size_enum, @font   # we only need the height of a line of text here.
-      lines_on_one_page = (720.0 / fontheight).to_i - 4
+      lines_on_one_page = (GAME_HEIGHT.fdiv(fontheight)).to_i - 4
       @log_offset += lines_on_one_page
       @log_offset = @log.size if @log_offset > @log.size
     end
@@ -281,7 +316,7 @@ S
 
     def scroll_up_half
       fontwidth, fontheight = $gtk.calcstringbox 'W', self.size_enum, @font   # we only need the height of a line of text here.
-      lines_on_one_page = (720.0 / fontheight).to_i - 4
+      lines_on_one_page = (GAME_HEIGHT.fdiv(fontheight)).to_i - 4
       @log_offset += lines_on_one_page.idiv(2)
       @log_offset = @log.size if @log_offset > @log.size
     end
@@ -294,7 +329,7 @@ S
 
     def scroll_down_full
       fontwidth, fontheight = $gtk.calcstringbox 'W', self.size_enum, @font   # we only need the height of a line of text here.
-      lines_on_one_page = (720.0 / fontheight).to_i - 4
+      lines_on_one_page = (GAME_HEIGHT.fdiv(fontheight)).to_i - 4
       @log_offset -= lines_on_one_page
       @log_offset = 0 if @log_offset < 0
     end
@@ -311,7 +346,7 @@ S
 
     def scroll_down_half
       fontwidth, fontheight = $gtk.calcstringbox 'W', self.size_enum, @font   # we only need the height of a line of text here.
-      lines_on_one_page = (720.0 / fontheight).to_i - 4
+      lines_on_one_page = (GAME_HEIGHT.fdiv(fontheight)).to_i - 4
       @log_offset -= lines_on_one_page.idiv(2)
       @log_offset = 0 if @log_offset < 0
     end
@@ -398,13 +433,24 @@ S
       args.inputs.keyboard.key_held.clear
     end
 
+    def write_primitive_and_return_offset args, left, y, str, errorinfo, headerinfo, txtinfo, line_height
+      if str.is_a?(Hash)
+        padding = 10
+        args.outputs.reserved << [left + 10, y - padding * 1.66, str[:w], str[:h], str[:path]].sprite
+        return str[:h] + padding
+      else
+        write_line args, left, y, str, errorinfo, headerinfo, txtinfo
+        return line_height
+      end
+    end
+
     def write_line args, left, y, str, errorinfo, headerinfo, txtinfo
       str ||= ''
       if include_error_marker? str
         args.outputs.reserved << [left + 10, y, str, self.size_enum, 0, *errorinfo].label
       elsif include_subdued_markers? str
         args.outputs.reserved << [left + 10, y, str, self.size_enum, 0, [txtinfo[0..2], txtinfo[3].half]].label
-      elsif str.start_with?("====") || str.include?("app")
+      elsif (str.start_with?("====") || str.include?("app")) && !str.include?("apple")
         args.outputs.reserved << [left + 10, y, str, self.size_enum, 0, *headerinfo].label
       else
         args.outputs.reserved << [left + 10, y, str, self.size_enum, 0, *txtinfo].label
@@ -427,8 +473,8 @@ S
 
       top = $gtk.args.grid.top
       left = $gtk.args.grid.left
-      y = top - (720.0 * percent)
-      args.outputs.reserved << [left, y, 1280, 720, @background_color[0], @background_color[1], @background_color[2], (@background_color[3].to_f * percent).to_i].solid
+      y = top - (GAME_HEIGHT * percent)
+      args.outputs.reserved << [left, y, GAME_WIDTH, GAME_HEIGHT, @background_color[0], @background_color[1], @background_color[2], (@background_color[3].to_f * percent).to_i].solid
 
       logo_y = y
 
@@ -439,22 +485,22 @@ S
 
       y += 2  # just give us a little padding at the bottom.
       y += h  # !!! FIXME: remove this when we fix coordinate origin on labels.
-      args.outputs.reserved << [left + 1280 - 210, logo_y + 540, 200, 200, @logo, 0, (80.0 * percent).to_i].sprite
+      args.outputs.reserved << [left + GAME_WIDTH - 210, logo_y + (GAME_HEIGHT - 180), 200, 200, @logo, 0, (80.0 * percent).to_i].sprite
       args.outputs.reserved << [left + 10, y, "#{@prompt}#{@current_input_str}", self.size_enum, 0, *txtinfo].label
       args.outputs.reserved << [left + 8, y + 3, (" " * (prompt.length + @current_input_str.length)) + "|", self.size_enum, 0, *cursorinfo ].label
       y += h.to_f / 2.0
-      args.outputs.reserved << [left + 0, y, 1280, y, *txtinfo].line
+      args.outputs.reserved << [left + 0, y, GAME_WIDTH, y, *txtinfo].line
       y += h.to_f / 2.0
       y += h  # !!! FIXME: remove this when we fix coordinate origin on labels.
 
       ((@log.size - @log_offset) - 1).downto(0) do |idx|
-        write_line args, left, y, @log[idx], errorinfo, headerinfo, txtinfo
-        y += h
+        offset_after_write = write_primitive_and_return_offset args, left, y, @log[idx], errorinfo, headerinfo, txtinfo, h
+        y += offset_after_write
         break if y > top
       end
 
       # past log seperator
-      args.outputs.reserved << [0, y - h.half, 1280, y - h.half, [txtinfo[0..2], txtinfo[3].idiv(4)]].line
+      args.outputs.reserved << [0, y - h.half, GAME_WIDTH, y - h.half, [txtinfo[0..2], txtinfo[3].idiv(4)]].line
 
       y += h
 
@@ -464,8 +510,8 @@ S
       headerinfo = [  @header_color[0], @header_color[1], @header_color[2], (@header_color[3].to_f  * percent.half).to_i, @font ]
 
       ((@archived_log.size - @log_offset) - 1).downto(0) do |idx|
-        write_line args, left, y, @archived_log[idx], errorinfo, headerinfo, txtinfo
-        y += h
+        offset_after_write = write_primitive_and_return_offset args, left, y, @archived_log[idx], errorinfo, headerinfo, txtinfo, h
+        y += offset_after_write
         break if y > top
       end
 
@@ -475,7 +521,7 @@ S
     def render_log_offset args
       return if @log_offset <= 0
       s =  "[#{@log_offset}/#{@log.size}]"
-      args.outputs.reserved << [1280 - 5, 720 - 5, s, 0, 2, 255, 255, 255].label
+      args.outputs.reserved << [GAME_WIDTH - 5, GAME_HEIGHT - 5, s, 0, 2, 255, 255, 255].label
     end
 
     def include_error_marker? text
@@ -529,14 +575,27 @@ S
       end
     end
 
-    def set_command command, show_reason = nil
-      @command_history << command
-      if @command_set_at != Kernel.global_tick_count
-        @current_input_str = command
-      end
+    def set_command_with_history_silent command, histories, show_reason = nil
+      @command_history.concat histories
+      @command_history << command  if @command_history[-1] != command
+      @current_input_str = command if @command_set_at != Kernel.global_tick_count
       @command_set_at = Kernel.global_tick_count
       @command_history_index = -1
+      save_history
+    end
+
+    def set_command_with_history command, histories, show_reason = nil
+      set_command_with_history_silent command, histories, show_reason
       show show_reason
+    end
+
+    def set_command command, show_reason = nil
+      set_command_silent command, show_reason
+      show show_reason
+    end
+
+    def set_command_silent command, show_reason = nil
+      set_command_with_history_silent command, [], show_reason
     end
   end
 end

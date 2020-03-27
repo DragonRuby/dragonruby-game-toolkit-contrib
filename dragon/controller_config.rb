@@ -208,13 +208,13 @@ module GTK
       if @fading == 0
         return 255
       elsif @fading > 0   # fading in
-        percent = @toggled_at.ease_using_global_tick_count(@animation_duration, :flip, :quint, :flip)
+        percent = @toggled_at.global_ease(@animation_duration, :flip, :quint, :flip)
         if percent >= 1.0
           percent = 1.0
           @fading = 0
         end
       else  # fading out
-        percent = @toggled_at.ease_using_global_tick_count(@animation_duration, :flip, :quint)
+        percent = @toggled_at.global_ease(@animation_duration, :flip, :quint)
         if percent <= 0.0
           percent = 0.0
           @fading = 0
@@ -226,10 +226,10 @@ module GTK
 
     def render_basics args, msg, fade=255
       joystickname = @target[1][:name]
-      args.outputs.primitives << [0, 0, 1280, 720, 255, 255, 255, fade].solid
-      args.outputs.primitives << [0, 0, 1280, 720, 'dragonruby-controller.png', 0, fade, 255, 255, 255].sprite
-      args.outputs.primitives << [1280 / 2, 700, joystickname, 2, 1, 0, 0, 0, fade].label
-      args.outputs.primitives << [1280 / 2, 650, msg, 0, 1, 0, 0, 0, 255].label if !msg.empty?
+      args.outputs.primitives << [0, 0, GAME_WIDTH, GAME_HEIGHT, 255, 255, 255, fade].solid
+      args.outputs.primitives << [0, 0, GAME_WIDTH, GAME_HEIGHT, 'dragonruby-controller.png', 0, fade, 255, 255, 255].sprite
+      args.outputs.primitives << [GAME_WIDTH / 2, 700, joystickname, 2, 1, 0, 0, 0, fade].label
+      args.outputs.primitives << [GAME_WIDTH / 2, 650, msg, 0, 1, 0, 0, 0, 255].label if !msg.empty?
     end
 
     def render_part_highlight args, part, alpha=255
@@ -303,7 +303,7 @@ module GTK
       end
 
       render_basics args, 'Now play around with the controller, and make sure it feels right!'
-      args.outputs.primitives << [1280 / 2, 90, '[ESCAPE]: Reconfigure, [SPACE]: Save this configuration', 0, 1, 0, 0, 0, 255].label
+      args.outputs.primitives << [GAME_WIDTH / 2, 90, '[ESCAPE]: Reconfigure, [SPACE]: Save this configuration', 0, 1, 0, 0, 0, 255].label
 
       axes = @joystick_state[:axes]
       if !axes.nil?
@@ -334,6 +334,12 @@ module GTK
       end
 
       return true
+    end
+
+    def should_tick?
+      return true if @play_around
+      return true if @target
+      return false
     end
 
     def tick args
@@ -371,9 +377,9 @@ module GTK
       return true if fade < 255  # all done for now
 
       part = @parts[@current_part]
-      args.outputs.primitives << [1280 / 2, 575, "Please press the #{part[2]}.", 0, 1, 0, 0, 0, 255].label
+      args.outputs.primitives << [GAME_WIDTH / 2, 575, "Please press the #{part[2]}.", 0, 1, 0, 0, 0, 255].label
       render_part_highlight args, part, @part_alpha
-      args.outputs.primitives << [1280 / 2, 90, '[ESCAPE]: Ignore controller, [BACKSPACE]: Go back one button, [SPACE]: Skip this button', 0, 1, 0, 0, 0, 255].label
+      args.outputs.primitives << [GAME_WIDTH / 2, 90, '[ESCAPE]: Ignore controller, [BACKSPACE]: Go back one button, [SPACE]: Skip this button', 0, 1, 0, 0, 0, 255].label
 
       @part_alpha += @part_alpha_increment
       if (@part_alpha_increment > 0) && (@part_alpha >= 255)
