@@ -18,6 +18,10 @@ module GTK
       def to_a
         @color
       end
+
+      def to_h
+        { r: @color[0], g: @color[1], b: @color[2], a: @color[3] }
+      end
     end
 
     class FontStyle
@@ -35,6 +39,18 @@ module GTK
 
       def line_height_px
         @line_height_px ||= letter_size.y * line_height
+      end
+
+      def label(options = {}, x:, y:, text:, color:)
+        {
+          x: x,
+          y: y.shift_up(line_height_px),  # !!! FIXME: remove .shift_up(line_height_px) when we fix coordinate origin on labels.
+          text: text,
+          font: font,
+          size_enum: size_enum,
+          **color.to_h,
+          **options
+        }.label
       end
     end
 
@@ -493,20 +509,17 @@ S
 
       bottom = top - (h * percent)
       args.outputs.reserved << [left, bottom, w, h, *@background_color.mult_alpha(percent)].solid
+      args.outputs.reserved << [right.shift_left(210), bottom.shift_up(540), 200, 200, @logo, 0, (80.0 * percent).to_i].sprite
 
       txtinfo = [*@text_color.mult_alpha(percent), font_style.font]
       errorinfo = [*@error_color.mult_alpha(percent), font_style.font]
-      cursorinfo = [*@cursor_color.mult_alpha(percent), font_style.font]
       headerinfo = [*@header_color.mult_alpha(percent), font_style.font]
 
       y = bottom + 2  # just give us a little padding at the bottom.
-      y += line_height_px  # !!! FIXME: remove this when we fix coordinate origin on labels.
-      args.outputs.reserved << [right.shift_left(210), bottom.shift_up(540), 200, 200, @logo, 0, (80.0 * percent).to_i].sprite
-      args.outputs.reserved << [left.shift_right(10), y, "#{@prompt}#{@current_input_str}", font_style.size_enum, 0, *txtinfo].label
-      args.outputs.reserved << [left.shift_right(8), y + 3, (" " * (prompt.length + @current_input_str.length)) + "|", font_style.size_enum, 0, *cursorinfo ].label
-
-      y += line_height_px.to_f / 2.0
-      args.outputs.reserved << [left, y, right, y, *txtinfo].line
+      args.outputs.reserved << font_style.label(x: left.shift_right(10), y: y, text: "#{@prompt}#{@current_input_str}", color: @text_color)
+      args.outputs.reserved << font_style.label(x: left.shift_right(8), y: y + 3, text: (" " * (prompt.length + @current_input_str.length)) + "|", color: @cursor_color)
+      y += line_height_px * 1.5
+      args.outputs.reserved << line(y: y, color: @text_color.mult_alpha(percent))
       y += line_height_px.to_f / 2.0
       y += line_height_px  # !!! FIXME: remove this when we fix coordinate origin on labels.
 
@@ -517,13 +530,12 @@ S
       end
 
       # past log seperator
-      args.outputs.reserved << [0, y - line_height_px.half, right, y - line_height_px.half, [txtinfo[0..2], txtinfo[3].idiv(4)]].line
+      args.outputs.reserved << line(y: y - line_height_px.half, color: @text_color.mult_alpha(0.25 * percent))
 
       y += line_height_px
 
       txtinfo = [*@text_color.mult_alpha(percent.half), font_style.font]
       errorinfo = [*@error_color.mult_alpha(percent.half), font_style.font]
-      cursorinfo = [*@cursor_color.mult_alpha(percent.half), font_style.font]
       headerinfo = [*@header_color.mult_alpha(percent.half), font_style.font]
 
       ((@archived_log.size - @log_offset) - 1).downto(0) do |idx|
@@ -639,6 +651,10 @@ S
 
     def lines_on_one_page
       (h - 4).idiv(line_height_px)
+    end
+
+    def line(y:, color:)
+      [left, y, right, y, *color].line
     end
   end
 end
