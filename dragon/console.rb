@@ -491,25 +491,22 @@ S
 
       return if percent == 0
 
-      top = $gtk.args.grid.top
-      left = $gtk.args.grid.left
-      y = top - (h * percent)
-      args.outputs.reserved << [left, y, GAME_WIDTH, h, *@background_color.mult_alpha(percent)].solid
-
-      logo_y = y
+      bottom = top - (h * percent)
+      args.outputs.reserved << [left, bottom, w, h, *@background_color.mult_alpha(percent)].solid
 
       txtinfo = [*@text_color.mult_alpha(percent), font_style.font]
       errorinfo = [*@error_color.mult_alpha(percent), font_style.font]
       cursorinfo = [*@cursor_color.mult_alpha(percent), font_style.font]
       headerinfo = [*@header_color.mult_alpha(percent), font_style.font]
 
-      y += 2  # just give us a little padding at the bottom.
+      y = bottom + 2  # just give us a little padding at the bottom.
       y += line_height_px  # !!! FIXME: remove this when we fix coordinate origin on labels.
-      args.outputs.reserved << [left + GAME_WIDTH - 210, logo_y + (GAME_HEIGHT - 180), 200, 200, @logo, 0, (80.0 * percent).to_i].sprite
-      args.outputs.reserved << [left + 10, y, "#{@prompt}#{@current_input_str}", font_style.size_enum, 0, *txtinfo].label
-      args.outputs.reserved << [left + 8, y + 3, (" " * (prompt.length + @current_input_str.length)) + "|", font_style.size_enum, 0, *cursorinfo ].label
+      args.outputs.reserved << [right.shift_left(210), bottom.shift_up(540), 200, 200, @logo, 0, (80.0 * percent).to_i].sprite
+      args.outputs.reserved << [left.shift_right(10), y, "#{@prompt}#{@current_input_str}", font_style.size_enum, 0, *txtinfo].label
+      args.outputs.reserved << [left.shift_right(8), y + 3, (" " * (prompt.length + @current_input_str.length)) + "|", font_style.size_enum, 0, *cursorinfo ].label
+
       y += line_height_px.to_f / 2.0
-      args.outputs.reserved << [left + 0, y, GAME_WIDTH, y, *txtinfo].line
+      args.outputs.reserved << [left, y, right, y, *txtinfo].line
       y += line_height_px.to_f / 2.0
       y += line_height_px  # !!! FIXME: remove this when we fix coordinate origin on labels.
 
@@ -520,7 +517,7 @@ S
       end
 
       # past log seperator
-      args.outputs.reserved << [0, y - line_height_px.half, GAME_WIDTH, y - line_height_px.half, [txtinfo[0..2], txtinfo[3].idiv(4)]].line
+      args.outputs.reserved << [0, y - line_height_px.half, right, y - line_height_px.half, [txtinfo[0..2], txtinfo[3].idiv(4)]].line
 
       y += line_height_px
 
@@ -541,7 +538,7 @@ S
     def render_log_offset args
       return if @log_offset <= 0
       s =  "[#{@log_offset}/#{@log.size}]"
-      args.outputs.reserved << [GAME_WIDTH - 5, GAME_HEIGHT - 5, s, 0, 2, 255, 255, 255].label
+      args.outputs.reserved << [right.shift_left(5), top.shift_down(5), s, 0, 2, 255, 255, 255].label
     end
 
     def include_error_marker? text
@@ -620,8 +617,20 @@ S
 
     private
 
+    def w
+      GAME_WIDTH
+    end
+
     def h
       GAME_HEIGHT
+    end
+
+    # def top; def left; def right
+    # Forward to grid
+    %i[top left right].each do |method|
+      define_method method do
+        $gtk.args.grid.send(method)
+      end
     end
 
     def line_height_px
