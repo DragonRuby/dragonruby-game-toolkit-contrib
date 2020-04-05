@@ -472,28 +472,22 @@ S
       args.inputs.keyboard.key_held.clear
     end
 
-    def write_primitive_and_return_offset args, left, y, str, errorinfo, headerinfo, txtinfo
+    def write_primitive_and_return_offset(args, left, y, str, archived: false)
       if str.is_a?(Hash)
         padding = 10
         args.outputs.reserved << [left + 10, y - padding * 1.66, str[:w], str[:h], str[:path]].sprite
         return str[:h] + padding
       else
-        write_line args, left, y, str, errorinfo, headerinfo, txtinfo
+        write_line args, left, y, str, archived: archived
         return line_height_px
       end
     end
 
-    def write_line args, left, y, str, errorinfo, headerinfo, txtinfo
-      str ||= ''
-      if include_error_marker? str
-        args.outputs.reserved << [left + 10, y, str, font_style.size_enum, 0, *errorinfo].label
-      elsif include_subdued_markers? str
-        args.outputs.reserved << [left + 10, y, str, font_style.size_enum, 0, [txtinfo[0..2], txtinfo[3].half]].label
-      elsif (str.start_with?("====") || str.include?("app")) && !str.include?("apple")
-        args.outputs.reserved << [left + 10, y, str, font_style.size_enum, 0, *headerinfo].label
-      else
-        args.outputs.reserved << [left + 10, y, str, font_style.size_enum, 0, *txtinfo].label
-      end
+    def write_line(args, left, y, str, archived: false)
+      color = color_for_log_entry(str)
+      color = color.mult_alpha(0.5) if archived
+
+      args.outputs.reserved << font_style.label(x: left.shift_right(10), y: y, text: str, color: color)
     end
 
     def render args
@@ -511,35 +505,26 @@ S
       args.outputs.reserved << [left, bottom, w, h, *@background_color.mult_alpha(percent)].solid
       args.outputs.reserved << [right.shift_left(210), bottom.shift_up(540), 200, 200, @logo, 0, (80.0 * percent).to_i].sprite
 
-      txtinfo = [*@text_color.mult_alpha(percent), font_style.font]
-      errorinfo = [*@error_color.mult_alpha(percent), font_style.font]
-      headerinfo = [*@header_color.mult_alpha(percent), font_style.font]
-
       y = bottom + 2  # just give us a little padding at the bottom.
       args.outputs.reserved << font_style.label(x: left.shift_right(10), y: y, text: "#{@prompt}#{@current_input_str}", color: @text_color)
       args.outputs.reserved << font_style.label(x: left.shift_right(8), y: y + 3, text: (" " * (prompt.length + @current_input_str.length)) + "|", color: @cursor_color)
       y += line_height_px * 1.5
       args.outputs.reserved << line(y: y, color: @text_color.mult_alpha(percent))
       y += line_height_px.to_f / 2.0
-      y += line_height_px  # !!! FIXME: remove this when we fix coordinate origin on labels.
 
       ((@log.size - @log_offset) - 1).downto(0) do |idx|
-        offset_after_write = write_primitive_and_return_offset args, left, y, @log[idx], errorinfo, headerinfo, txtinfo
+        offset_after_write = write_primitive_and_return_offset args, left, y, @log[idx]
         y += offset_after_write
         break if y > top
       end
 
       # past log seperator
-      args.outputs.reserved << line(y: y - line_height_px.half, color: @text_color.mult_alpha(0.25 * percent))
+      args.outputs.reserved << line(y: y + line_height_px.half, color: @text_color.mult_alpha(0.25 * percent))
 
       y += line_height_px
 
-      txtinfo = [*@text_color.mult_alpha(percent.half), font_style.font]
-      errorinfo = [*@error_color.mult_alpha(percent.half), font_style.font]
-      headerinfo = [*@header_color.mult_alpha(percent.half), font_style.font]
-
       ((@archived_log.size - @log_offset) - 1).downto(0) do |idx|
-        offset_after_write = write_primitive_and_return_offset args, left, y, @archived_log[idx], errorinfo, headerinfo, txtinfo
+        offset_after_write = write_primitive_and_return_offset args, left, y, @archived_log[idx], archived: true
         y += offset_after_write
         break if y > top
       end
@@ -655,6 +640,18 @@ S
 
     def line(y:, color:)
       [left, y, right, y, *color].line
+    end
+
+    def color_for_log_entry(log_entry)
+      if include_error_marker? log_entry
+        @error_color
+      elsif include_subdued_markers? log_entry
+        @text_color.mult_alpha(0.5)
+      elsif log_entry.start_with?("====") || log_entry.include?("app") && !log_entry.include?("apple")
+        @header_color
+      else
+        @text_color
+      end
     end
   end
 end
