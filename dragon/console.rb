@@ -54,9 +54,38 @@ module GTK
       end
     end
 
-    attr_accessor :show_reason, :log, :prompt, :logo, :background_color,
-                  :text_color, :cursor_color, :animation_duration,
-                  :max_log_lines, :max_history, :current_input_str, :log,
+    class Prompt
+      attr_accessor :current_input_str, :font_style
+
+      def initialize(font_style:, text_color:)
+        @prompt = '-> '
+        @current_input_str = ''
+        @font_style = font_style
+        @text_color = text_color
+        @cursor_color = Color.new [187, 21, 6]
+      end
+
+      def <<(str)
+        @current_input_str << str
+      end
+
+      def backspace
+        @current_input_str.chop!
+      end
+
+      def clear
+        @current_input_str = ''
+      end
+
+      def render(args, x:, y:)
+        args.outputs.reserved << font_style.label(x: x, y: y, text: "#{@prompt}#{current_input_str}", color: @text_color)
+        args.outputs.reserved << font_style.label(x: x - 2, y: y + 3, text: (" " * (@prompt.length + current_input_str.length)) + "|", color: @cursor_color)
+      end
+    end
+
+    attr_accessor :show_reason, :log, :logo, :background_color,
+                  :text_color, :animation_duration,
+                  :max_log_lines, :max_history, :log,
                   :last_command_errored, :last_command, :error_color, :shown_at,
                   :header_color, :archived_log, :last_log_lines, :last_log_lines_count,
                   :suppress_left_arrow_behavior, :command_set_at,
@@ -66,7 +95,6 @@ module GTK
     def initialize
       @font_style = FontStyle.new(font: 'font.ttf', size_enum: 0, line_height: 1.1)
       @disabled = false
-      @current_input_str = ''
       @log_offset = 0
       @visible = false
       @toast_ids = []
@@ -77,16 +105,13 @@ module GTK
       @command_history = []
       @command_history_index = -1
       @nonhistory_input = ''
-      @prompt = '-> '
       @logo = 'console-logo.png'
       @history_fname = 'console_history.txt'
       @background_color = Color.new [0, 0, 0, 224]
       @text_color = Color.new [255, 255, 255]
       @error_color = Color.new [200, 50, 50]
       @header_color = Color.new [100, 200, 220]
-      @cursor_color = Color.new [187, 21, 6]
       @animation_duration = 1.seconds
-      @current_input_str = ''
       @shown_at = -1
       load_history
     end
@@ -311,10 +336,10 @@ S
     end
 
     def eval_the_set_command
-      cmd = @current_input_str.strip
+      cmd = current_input_str.strip
       if cmd.length != 0
         @log_offset = 0
-        @current_input_str = ''
+        prompt.clear
 
         @command_history.pop while @command_history.length >= @max_history
         @command_history.unshift cmd
@@ -398,14 +423,14 @@ S
 
       return unless visible?
 
-      if !@suppress_left_arrow_behavior && args.inputs.keyboard.key_down.left && (@current_input_str || '').strip.length > 0
+      if !@suppress_left_arrow_behavior && args.inputs.keyboard.key_down.left && current_input_str.strip.length > 0
         log_info "Use repl.rb!", <<-S
 The Console is nice for quick commands, but for more complex edits, use repl.rb.
 
 I've written the current command at the top of a file called ./repl.rb (right next to dragonruby(.exe)). Please open the the file and apply additional edits there.
 S
-        if @last_command_written_to_repl_rb != @current_input_str
-          @last_command_written_to_repl_rb = @current_input_str
+        if @last_command_written_to_repl_rb != current_input_str
+          @last_command_written_to_repl_rb = current_input_str
           contents = $gtk.read_file 'app/repl.rb'
           contents ||= ''
           contents = <<-S + contents
@@ -425,31 +450,31 @@ S
         return
       end
 
-      args.inputs.text.each { |str| @current_input_str << str }
+      args.inputs.text.each { |str| prompt << str }
       args.inputs.text.clear
 
       if args.inputs.keyboard.key_down.enter
         eval_the_set_command
       elsif args.inputs.keyboard.key_down.v
         if args.inputs.keyboard.key_down.control || args.inputs.keyboard.key_down.meta
-          @current_input_str << $gtk.ffi_misc.getclipboard
+          prompt << $gtk.ffi_misc.getclipboard
         end
       elsif args.inputs.keyboard.key_down.up
         if @command_history_index == -1
-          @nonhistory_input = @current_input_str
+          @nonhistory_input = current_input_str
         end
         if @command_history_index < (@command_history.length - 1)
           @command_history_index += 1
-          @current_input_str = @command_history[@command_history_index].clone
+          self.current_input_str = @command_history[@command_history_index].clone
         end
       elsif args.inputs.keyboard.key_down.down
         if @command_history_index == 0
           @command_history_index = -1
-          @current_input_str = @nonhistory_input
+          self.current_input_str = @nonhistory_input
           @nonhistory_input = ''
         elsif @command_history_index > 0
           @command_history_index -= 1
-          @current_input_str = @command_history[@command_history_index].clone
+          self.current_input_str = @command_history[@command_history_index].clone
         end
       elsif inputs_scroll_up_full? args
         scroll_up_full
@@ -460,11 +485,11 @@ S
       elsif inputs_scroll_down_half? args
         scroll_down_half
       elsif inputs_clear_command? args
-        @current_input_str.clear
+        prompt.clear
         @command_history_index = -1
         @nonhistory_input = ''
       elsif args.inputs.keyboard.key_down.backspace || args.inputs.keyboard.key_down.delete
-        @current_input_str.chop!
+        prompt.backspace
       end
 
       args.inputs.keyboard.key_down.clear
@@ -506,8 +531,7 @@ S
       args.outputs.reserved << [right.shift_left(210), bottom.shift_up(540), 200, 200, @logo, 0, (80.0 * percent).to_i].sprite
 
       y = bottom + 2  # just give us a little padding at the bottom.
-      args.outputs.reserved << font_style.label(x: left.shift_right(10), y: y, text: "#{@prompt}#{@current_input_str}", color: @text_color)
-      args.outputs.reserved << font_style.label(x: left.shift_right(8), y: y + 3, text: (" " * (prompt.length + @current_input_str.length)) + "|", color: @cursor_color)
+      prompt.render args, x: left.shift_right(10), y: y
       y += line_height_px * 1.5
       args.outputs.reserved << line(y: y, color: @text_color.mult_alpha(percent))
       y += line_height_px.to_f / 2.0
@@ -597,7 +621,7 @@ S
     def set_command_with_history_silent command, histories, show_reason = nil
       @command_history.concat histories
       @command_history << command  if @command_history[-1] != command
-      @current_input_str = command if @command_set_at != Kernel.global_tick_count
+      self.current_input_str = command if @command_set_at != Kernel.global_tick_count
       @command_set_at = Kernel.global_tick_count
       @command_history_index = -1
       save_history
@@ -657,6 +681,18 @@ S
       else
         @text_color
       end
+    end
+
+    def prompt
+      @prompt ||= Prompt.new(font_style: font_style, text_color: @text_color)
+    end
+
+    def current_input_str
+      prompt.current_input_str
+    end
+
+    def current_input_str=(str)
+      prompt.current_input_str = str
     end
   end
 end
