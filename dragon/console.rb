@@ -4,18 +4,51 @@
 
 module GTK
   class Console
+    class Color
+      def initialize(color)
+        @color = color
+        @color << 255 if @color.size == 3
+      end
+
+      def mult_alpha(alpha_modifier)
+        Color.new [@color[0], @color[1], @color[2], (@color[3].to_f * alpha_modifier).to_i]
+      end
+
+      # Support splat operator
+      def to_a
+        @color
+      end
+    end
+
+    class FontStyle
+      attr_reader :font, :size_enum, :line_height
+
+      def initialize(font:, size_enum:, line_height:)
+        @font = font
+        @size_enum = size_enum
+        @line_height = line_height
+      end
+
+      def letter_size
+        @letter_size ||= $gtk.calcstringbox 'W', size_enum, font
+      end
+
+      def line_height_px
+        @line_height_px ||= letter_size.y * line_height
+      end
+    end
+
     attr_accessor :show_reason, :log, :prompt, :logo, :background_color,
-                  :text_color, :cursor_color, :font, :animation_duration,
+                  :text_color, :cursor_color, :animation_duration,
                   :max_log_lines, :max_history, :current_input_str, :log,
                   :last_command_errored, :last_command, :error_color, :shown_at,
                   :header_color, :archived_log, :last_log_lines, :last_log_lines_count,
                   :suppress_left_arrow_behavior, :command_set_at,
                   :toast_ids,
-                  :size_enum, :line_height
+                  :font_style
 
     def initialize
-      @size_enum = 0
-      @line_height = 1.1
+      @font_style = FontStyle.new(font: 'font.ttf', size_enum: 0, line_height: 1.1)
       @disabled = false
       @current_input_str = ''
       @log_offset = 0
@@ -31,12 +64,11 @@ module GTK
       @prompt = '-> '
       @logo = 'console-logo.png'
       @history_fname = 'console_history.txt'
-      @background_color = [ 0, 0, 0, 224 ]
-      @text_color = [ 255, 255, 255, 255 ]
-      @error_color = [ 200, 50, 50, 255]
-      @header_color = [ 100, 200, 220, 255]
-      @cursor_color = [ 187, 21, 6, 255 ]
-      @font = 'font.ttf'
+      @background_color = Color.new [0, 0, 0, 224]
+      @text_color = Color.new [255, 255, 255]
+      @error_color = Color.new [200, 50, 50]
+      @header_color = Color.new [100, 200, 220]
+      @cursor_color = Color.new [187, 21, 6]
       @animation_duration = 1.seconds
       @current_input_str = ''
       @shown_at = -1
@@ -44,8 +76,7 @@ module GTK
     end
 
     def console_text_width
-      @console_text_width ||= (GAME_WIDTH - 20).idiv($gtk.calcstringbox('W', self.size_enum, @font)[0])
-      @console_text_width
+      @console_text_width ||= (GAME_WIDTH - 20).idiv(font_style.letter_size.x)
     end
 
     def save_history
@@ -303,8 +334,6 @@ S
     end
 
     def scroll_up_full
-      fontwidth, fontheight = $gtk.calcstringbox 'W', self.size_enum, @font   # we only need the height of a line of text here.
-      lines_on_one_page = (GAME_HEIGHT.fdiv(fontheight)).to_i - 4
       @log_offset += lines_on_one_page
       @log_offset = @log.size if @log_offset > @log.size
     end
@@ -315,8 +344,6 @@ S
     end
 
     def scroll_up_half
-      fontwidth, fontheight = $gtk.calcstringbox 'W', self.size_enum, @font   # we only need the height of a line of text here.
-      lines_on_one_page = (GAME_HEIGHT.fdiv(fontheight)).to_i - 4
       @log_offset += lines_on_one_page.idiv(2)
       @log_offset = @log.size if @log_offset > @log.size
     end
@@ -328,8 +355,6 @@ S
     end
 
     def scroll_down_full
-      fontwidth, fontheight = $gtk.calcstringbox 'W', self.size_enum, @font   # we only need the height of a line of text here.
-      lines_on_one_page = (GAME_HEIGHT.fdiv(fontheight)).to_i - 4
       @log_offset -= lines_on_one_page
       @log_offset = 0 if @log_offset < 0
     end
@@ -345,8 +370,6 @@ S
     end
 
     def scroll_down_half
-      fontwidth, fontheight = $gtk.calcstringbox 'W', self.size_enum, @font   # we only need the height of a line of text here.
-      lines_on_one_page = (GAME_HEIGHT.fdiv(fontheight)).to_i - 4
       @log_offset -= lines_on_one_page.idiv(2)
       @log_offset = 0 if @log_offset < 0
     end
@@ -433,27 +456,27 @@ S
       args.inputs.keyboard.key_held.clear
     end
 
-    def write_primitive_and_return_offset args, left, y, str, errorinfo, headerinfo, txtinfo, line_height
+    def write_primitive_and_return_offset args, left, y, str, errorinfo, headerinfo, txtinfo
       if str.is_a?(Hash)
         padding = 10
         args.outputs.reserved << [left + 10, y - padding * 1.66, str[:w], str[:h], str[:path]].sprite
         return str[:h] + padding
       else
         write_line args, left, y, str, errorinfo, headerinfo, txtinfo
-        return line_height
+        return line_height_px
       end
     end
 
     def write_line args, left, y, str, errorinfo, headerinfo, txtinfo
       str ||= ''
       if include_error_marker? str
-        args.outputs.reserved << [left + 10, y, str, self.size_enum, 0, *errorinfo].label
+        args.outputs.reserved << [left + 10, y, str, font_style.size_enum, 0, *errorinfo].label
       elsif include_subdued_markers? str
-        args.outputs.reserved << [left + 10, y, str, self.size_enum, 0, [txtinfo[0..2], txtinfo[3].half]].label
+        args.outputs.reserved << [left + 10, y, str, font_style.size_enum, 0, [txtinfo[0..2], txtinfo[3].half]].label
       elsif (str.start_with?("====") || str.include?("app")) && !str.include?("apple")
-        args.outputs.reserved << [left + 10, y, str, self.size_enum, 0, *headerinfo].label
+        args.outputs.reserved << [left + 10, y, str, font_style.size_enum, 0, *headerinfo].label
       else
-        args.outputs.reserved << [left + 10, y, str, self.size_enum, 0, *txtinfo].label
+        args.outputs.reserved << [left + 10, y, str, font_style.size_enum, 0, *txtinfo].label
       end
     end
 
@@ -468,49 +491,46 @@ S
 
       return if percent == 0
 
-      w, h = $gtk.calcstringbox 'W', self.size_enum, @font   # we only need the height of a line of text here.
-      h *= self.line_height
-
       top = $gtk.args.grid.top
       left = $gtk.args.grid.left
-      y = top - (GAME_HEIGHT * percent)
-      args.outputs.reserved << [left, y, GAME_WIDTH, GAME_HEIGHT, @background_color[0], @background_color[1], @background_color[2], (@background_color[3].to_f * percent).to_i].solid
+      y = top - (h * percent)
+      args.outputs.reserved << [left, y, GAME_WIDTH, h, *@background_color.mult_alpha(percent)].solid
 
       logo_y = y
 
-      txtinfo = [ @text_color[0], @text_color[1], @text_color[2], (@text_color[3].to_f * percent).to_i, @font ]
-      errorinfo = [ @error_color[0], @error_color[1], @error_color[2], (@error_color[3].to_f * percent).to_i, @font ]
-      cursorinfo = [ @cursor_color[0], @cursor_color[1], @cursor_color[2], (@cursor_color[3].to_f  * percent).to_i, @font ]
-      headerinfo = [  @header_color[0], @header_color[1], @header_color[2], (@header_color[3].to_f  * percent).to_i, @font ]
+      txtinfo = [*@text_color.mult_alpha(percent), font_style.font]
+      errorinfo = [*@error_color.mult_alpha(percent), font_style.font]
+      cursorinfo = [*@cursor_color.mult_alpha(percent), font_style.font]
+      headerinfo = [*@header_color.mult_alpha(percent), font_style.font]
 
       y += 2  # just give us a little padding at the bottom.
-      y += h  # !!! FIXME: remove this when we fix coordinate origin on labels.
+      y += line_height_px  # !!! FIXME: remove this when we fix coordinate origin on labels.
       args.outputs.reserved << [left + GAME_WIDTH - 210, logo_y + (GAME_HEIGHT - 180), 200, 200, @logo, 0, (80.0 * percent).to_i].sprite
-      args.outputs.reserved << [left + 10, y, "#{@prompt}#{@current_input_str}", self.size_enum, 0, *txtinfo].label
-      args.outputs.reserved << [left + 8, y + 3, (" " * (prompt.length + @current_input_str.length)) + "|", self.size_enum, 0, *cursorinfo ].label
-      y += h.to_f / 2.0
+      args.outputs.reserved << [left + 10, y, "#{@prompt}#{@current_input_str}", font_style.size_enum, 0, *txtinfo].label
+      args.outputs.reserved << [left + 8, y + 3, (" " * (prompt.length + @current_input_str.length)) + "|", font_style.size_enum, 0, *cursorinfo ].label
+      y += line_height_px.to_f / 2.0
       args.outputs.reserved << [left + 0, y, GAME_WIDTH, y, *txtinfo].line
-      y += h.to_f / 2.0
-      y += h  # !!! FIXME: remove this when we fix coordinate origin on labels.
+      y += line_height_px.to_f / 2.0
+      y += line_height_px  # !!! FIXME: remove this when we fix coordinate origin on labels.
 
       ((@log.size - @log_offset) - 1).downto(0) do |idx|
-        offset_after_write = write_primitive_and_return_offset args, left, y, @log[idx], errorinfo, headerinfo, txtinfo, h
+        offset_after_write = write_primitive_and_return_offset args, left, y, @log[idx], errorinfo, headerinfo, txtinfo
         y += offset_after_write
         break if y > top
       end
 
       # past log seperator
-      args.outputs.reserved << [0, y - h.half, GAME_WIDTH, y - h.half, [txtinfo[0..2], txtinfo[3].idiv(4)]].line
+      args.outputs.reserved << [0, y - line_height_px.half, GAME_WIDTH, y - line_height_px.half, [txtinfo[0..2], txtinfo[3].idiv(4)]].line
 
-      y += h
+      y += line_height_px
 
-      txtinfo = [ @text_color[0], @text_color[1], @text_color[2], (@text_color[3].to_f * percent.half).to_i, @font ]
-      errorinfo = [ @error_color[0], @error_color[1], @error_color[2], (@error_color[3].to_f * percent.half).to_i, @font ]
-      cursorinfo = [ @cursor_color[0], @cursor_color[1], @cursor_color[2], (@cursor_color[3].to_f  * percent.half).to_i, @font ]
-      headerinfo = [  @header_color[0], @header_color[1], @header_color[2], (@header_color[3].to_f  * percent.half).to_i, @font ]
+      txtinfo = [*@text_color.mult_alpha(percent.half), font_style.font]
+      errorinfo = [*@error_color.mult_alpha(percent.half), font_style.font]
+      cursorinfo = [*@cursor_color.mult_alpha(percent.half), font_style.font]
+      headerinfo = [*@header_color.mult_alpha(percent.half), font_style.font]
 
       ((@archived_log.size - @log_offset) - 1).downto(0) do |idx|
-        offset_after_write = write_primitive_and_return_offset args, left, y, @archived_log[idx], errorinfo, headerinfo, txtinfo, h
+        offset_after_write = write_primitive_and_return_offset args, left, y, @archived_log[idx], errorinfo, headerinfo, txtinfo
         y += offset_after_write
         break if y > top
       end
@@ -596,6 +616,20 @@ S
 
     def set_command_silent command, show_reason = nil
       set_command_with_history_silent command, [], show_reason
+    end
+
+    private
+
+    def h
+      GAME_HEIGHT
+    end
+
+    def line_height_px
+      font_style.line_height_px
+    end
+
+    def lines_on_one_page
+      (h - 4).idiv(line_height_px)
     end
   end
 end
