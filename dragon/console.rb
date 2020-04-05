@@ -84,10 +84,8 @@ module GTK
       end
 
       def autocomplete
-        return unless last_period_index
-
         if !@last_autocomplete_prefix
-          @last_autocomplete_prefix = current_input_str[(last_period_index + 1)..-1]
+          @last_autocomplete_prefix = calc_autocomplete_prefix
 
           puts method_candidates(@last_autocomplete_prefix)
         else
@@ -98,7 +96,7 @@ module GTK
           candidate = candidate[0..-2] + " = " if candidate.end_with? '='
           @next_candidate_index += 1
           @next_candidate_index = 0 if @next_candidate_index >= candidates.length
-          @current_input_str = @current_input_str[0..last_period_index] + candidate.to_s
+          self.current_input_str = display_autocomplete_candidate(candidate)
         end
       end
 
@@ -113,8 +111,16 @@ module GTK
         current_input_str.rindex('.')
       end
 
+      def calc_autocomplete_prefix
+        if last_period_index
+          current_input_str[(last_period_index + 1)..-1]
+        else
+          current_input_str
+        end
+      end
+
       def current_object
-        return nil unless last_period_index
+        return Kernel unless last_period_index
 
         Kernel.eval(current_input_str[0...last_period_index])
       rescue NameError
@@ -123,6 +129,14 @@ module GTK
 
       def method_candidates(prefix)
         current_object.methods.map(&:to_s).select { |m| m.start_with? prefix }
+      end
+
+      def display_autocomplete_candidate(candidate)
+        if last_period_index
+          @current_input_str[0..last_period_index] + candidate.to_s
+        else
+          candidate.to_s
+        end
       end
 
       def reset_autocomplete
