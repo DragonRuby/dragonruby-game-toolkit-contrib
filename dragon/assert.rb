@@ -47,5 +47,18 @@ module GTK
       end
       nil
     end
+
+    def raises! exception_class, message = nil
+      @assertion_performed = true
+      begin
+        yield
+      rescue exception_class
+        return # Success
+      rescue Exception => e
+        raise "Expected #{exception_class.name} to be raised but instead #{e.class.name} was raised\n#{message}"
+      else
+        raise "Expected #{exception_class.name} to be raised but nothing was raised\n#{message}"
+      end
+    end
   end
 end
