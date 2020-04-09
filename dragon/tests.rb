@@ -16,6 +16,7 @@ module GTK
     def run_test m
       args = Args.new $gtk, nil
       assert = Assert.new
+      setup(args) if respond_to?(:setup)
       begin
         log_test_running m
         send(m, args, assert)
@@ -31,6 +32,7 @@ module GTK
           mark_test_failed m, e
         end
       end
+      teardown if respond_to?(:teardown)
     end
 
     def test_methods_focused
