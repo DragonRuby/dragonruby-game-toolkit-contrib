@@ -5,19 +5,19 @@
 # @private
 module AttrRect
   def left
-    @x
+    x
   end
 
   def right
-    @x + @w
+    x + w
   end
 
   def bottom
-    @y
+    y
   end
 
   def top
-    @y + @h
+    y + h
   end
 end
 
@@ -39,18 +39,18 @@ module AttrSprite
   end
 
   def x1
-    @x
+    x
   end
 
   def x1= value
-    @x = value
+    self.x = value
   end
 
   def y1
-    @y
+    y
   end
 
   def y1= value
-    @y = value
+    self.y = value
   end
 end
