@@ -4,7 +4,7 @@
 # directional_input_helper_methods.rb has been released under MIT (*only this file*).
 
 module GTK
-  # normalization of behavior related to up|down|left|right on keyboards and controllers
+  # This is a module that contains normalization of behavior related to `up`|`down`|`left`|`right` on keyboards and controllers.
   module DirectionalInputHelperMethods
     def self.included klass
       key_state_methods = [:key_held, :key_down]
@@ -29,18 +29,35 @@ S
       end
     end
 
+    # Returns a signal indicating left (`-1`), right (`1`), or neither ('0').
+    #
+    # @return [Integer]
     def left_right
       return -1 if self.left
       return  1 if self.right
       return  0
     end
 
+    # Returns a signal indicating up (`1`), down (`-1`), or neither ('0').
+    #
+    # @return [Integer]
     def up_down
       return  1 if self.up
       return -1 if self.down
       return  0
     end
 
+    # Returns a normal vector (in the form of an Array with two values). If no directionals are held/down, the function returns nil.
+    #
+    # The possible results are:
+    #
+    # - `nil` which denotes that no directional input exists.
+    # - `[ 0,  1]` which denotes that only up is being held/pressed.
+    # - `[ 0, -1]` which denotes that only down is being held/pressed.
+    # - `[ 1,  1]` which denotes that right and up are being pressed/held.
+    # - `[-1, -1]` which denotes that left and down are being pressed/held.
+    #
+    # @gtk
     def directional_vector
       lr, ud = [self.left_right, self.up_down]
 
@@ -62,8 +79,8 @@ S
         end
 
         return send(m)
-      # see if the key is either held or down
       else
+      # see if the key is either held or down
         define_singleton_method(m) do
           self.key_down.send(m) || self.key_held.send(m)
         end

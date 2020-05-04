@@ -3,6 +3,7 @@
 # MIT License
 # attr_gtk.rb has been released under MIT (*only this file*).
 
+# @private
 module AttrGTK
   attr_accessor :args
 

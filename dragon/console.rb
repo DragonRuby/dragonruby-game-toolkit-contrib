@@ -2,6 +2,9 @@
 # MIT License
 # console.rb has been released under MIT (*only this file*).
 
+# Contributors outside of DragonRuby who also hold Copyright:
+# - Kevin Fischer: https://github.com/kfischer-okarin
+
 module GTK
   class Console
     class Color
@@ -55,14 +58,15 @@ module GTK
     end
 
     class Prompt
-      attr_accessor :current_input_str, :font_style
+      attr_accessor :current_input_str, :font_style, :console_text_width
 
-      def initialize(font_style:, text_color:)
+      def initialize(font_style:, text_color:, console_text_width:)
         @prompt = '-> '
         @current_input_str = ''
         @font_style = font_style
         @text_color = text_color
         @cursor_color = Color.new [187, 21, 6]
+        @console_text_width = console_text_width
 
         @last_autocomplete_prefix = nil
         @next_candidate_index = 0
@@ -87,7 +91,8 @@ module GTK
         if !@last_autocomplete_prefix
           @last_autocomplete_prefix = calc_autocomplete_prefix
 
-          puts method_candidates(@last_autocomplete_prefix)
+          puts "* AUTOCOMPLETE CANDIDATES: #{current_input_str}.."
+          pretty_print_strings_as_table method_candidates(@last_autocomplete_prefix)
         else
           candidates = method_candidates(@last_autocomplete_prefix)
           return if candidates.empty?
@@ -98,6 +103,60 @@ module GTK
           @next_candidate_index = 0 if @next_candidate_index >= candidates.length
           self.current_input_str = display_autocomplete_candidate(candidate)
         end
+      end
+
+      def pretty_print_strings_as_table items
+        if items.length == 0
+          puts <<-S.strip
++--------+
+| (none) |
++--------+
+S
+        else
+          # figure out the largest string
+          string_width = items.sort_by { |c| -c.to_s.length }.first
+
+          # add spacing to each side of the string which represents the cell width
+          cell_width = string_width.length + 2
+
+          # add spacing to each side of the cell to represent the column width
+          column_width = cell_width + 2
+
+          # determine the max number of columns that can fit on the screen
+          columns = @console_text_width.idiv column_width
+          columns = items.length if items.length < columns
+
+          # partition the original list of items into a string to be printed
+          items.each_slice(columns).each_with_index do |cells, i|
+            pretty_print_row_seperator string_width, cell_width, column_width, columns
+            pretty_print_row cells, string_width, cell_width, column_width, columns
+          end
+
+          pretty_print_row_seperator string_width, cell_width, column_width, columns
+        end
+      end
+
+      def pretty_print_row cells, string_width, cell_width, column_width, columns
+        # if the number of cells doesn't match the number of columns, then pad the array with empty values
+        cells += (columns - cells.length).map { "" }
+
+        # right align each cell value
+        formated_row = "|" + cells.map do |c|
+          "#{" " * (string_width.length - c.length) } #{c} |"
+        end.join
+
+        # remove seperators between empty values
+        formated_row = formated_row.gsub("  |  ", "     ")
+
+        puts formated_row
+      end
+
+      def pretty_print_row_seperator string_width, cell_width, column_width, columns
+        # this is a joint: +--------
+        column_joint = "+#{"-" * cell_width}"
+
+        # multiple joints create a row seperator: +----+----+
+        puts (column_joint * columns) + "+"
       end
 
       def render(args, x:, y:)
@@ -128,7 +187,7 @@ module GTK
       end
 
       def method_candidates(prefix)
-        current_object.methods.map(&:to_s).select { |m| m.start_with? prefix }
+        current_object.autocomplete_methods.map(&:to_s).select { |m| m.start_with? prefix }
       end
 
       def display_autocomplete_candidate(candidate)
@@ -179,7 +238,7 @@ module GTK
     end
 
     def console_text_width
-      @console_text_width ||= (GAME_WIDTH - 20).idiv(font_style.letter_size.x)
+      @console_text_width ||= ($gtk.logical_width - 20).idiv(font_style.letter_size.x)
     end
 
     def save_history
@@ -285,12 +344,14 @@ module GTK
       @visible
     end
 
+    # @gtk
     def show reason = nil
       @shown_at = Kernel.global_tick_count
       @show_reason = reason
       toggle if hidden?
     end
 
+    # @gtk
     def hide
       if visible?
         toggle
@@ -417,6 +478,7 @@ S
             Kernel.eval("$results = (#{cmd})")
             if $results.nil?
               puts "=> nil"
+            elsif $results == :console_silent_eval
             else
               puts "=> #{$results}"
             end
@@ -696,6 +758,7 @@ S
       show show_reason
     end
 
+    # @gtk
     def set_command command, show_reason = nil
       set_command_silent command, show_reason
       show show_reason
@@ -708,14 +771,14 @@ S
     private
 
     def w
-      GAME_WIDTH
+      $gtk.logical_width
     end
 
     def h
-      GAME_HEIGHT
+      $gtk.logical_height
     end
 
-    # def top; def left; def right
+    # methods top; left; right
     # Forward to grid
     %i[top left right].each do |method|
       define_method method do
@@ -735,8 +798,15 @@ S
       [left, y, right, y, *color].line
     end
 
+    def include_row_marker? log_entry
+      log_entry[0] == "|"
+    end
+
     def color_for_log_entry(log_entry)
-      if include_error_marker? log_entry
+
+      if include_row_marker? log_entry
+        @text_color
+      elsif include_error_marker? log_entry
         @error_color
       elsif include_subdued_markers? log_entry
         @text_color.mult_alpha(0.5)
@@ -748,7 +818,7 @@ S
     end
 
     def prompt
-      @prompt ||= Prompt.new(font_style: font_style, text_color: @text_color)
+      @prompt ||= Prompt.new(font_style: font_style, text_color: @text_color, console_text_width: console_text_width)
     end
 
     def current_input_str
@@ -757,6 +827,13 @@ S
 
     def current_input_str=(str)
       prompt.current_input_str = str
+    end
+
+    def clear
+      @archived_log.clear
+      @log.clear
+      @prompt.clear
+      :console_silent_eval
     end
   end
 end

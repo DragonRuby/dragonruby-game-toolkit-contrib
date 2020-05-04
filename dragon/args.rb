@@ -4,11 +4,50 @@
 # args.rb has been released under MIT (*only this file*).
 
 module GTK
+  # This class is the one you'll interact with the most. It's
+  # constructed by the DragonRuby Runtime and is provided to you on
+  # each tick.
   class Args
     include ArgsDeprecated
+    include Serialize
 
-    attr_accessor :inputs, :outputs, :passes, :runtime,
-                  :grid, :recording, :geometry
+    # Contains information related to input devices and input events.
+    #
+    # @return [Inputs]
+    attr_accessor :inputs
+
+    # Contains the means to interact with output devices such as the screen.
+    #
+    # @return [Outputs]
+    attr_accessor :outputs
+
+    # Contains display size information to assist in positioning things on the screen.
+    #
+    # @return [Grid]
+    attr_accessor :grid
+
+    # Provides access to game play recording facilities within Game Toolkit.
+    #
+    # @return [Recording]
+    attr_accessor :recording
+
+    # Gives you access to geometry related functions.
+    #
+    # @return [Geometry]
+    attr_accessor :geometry
+
+    # This is where you'll put state associated with your video game.
+    #
+    # @return [OpenEntity]
+    attr_accessor :state
+
+    # Gives you access to the top level DragonRuby runtime. 
+    #
+    # @return [Runtime]
+    attr_accessor :runtime
+    alias_method :gtk, :runtime
+
+    attr_accessor :passes
 
     def initialize runtime, recording
       @inputs = Inputs.new
@@ -24,24 +63,15 @@ module GTK
       @geometry = GTK::Geometry
     end
 
+    # The number of ticks since the start of the game.
+    #
+    # @return [Integer]
     def tick_count
       @state.tick_count
     end
 
     def tick_count= value
       @state.tick_count = value
-    end
-
-    def gtk
-      @runtime
-    end
-
-    def state
-      @state
-    end
-
-    def state= value
-      @state = value
     end
 
     def serialize
@@ -139,10 +169,14 @@ module GTK
       @inputs.mouse
     end
 
+    # @see Inputs#controller_one
+    # @return (see Inputs#controller_one)
     def controller_one
       @inputs.controller_one
     end
 
+    # @see Inputs#controller_two
+    # @return (see Inputs#controller_two)
     def controller_two
       @inputs.controller_two
     end

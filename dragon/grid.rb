@@ -7,28 +7,89 @@ module GTK
   class Grid
     include Serialize
     SCREEN_Y_DIRECTION = -1.0
-    attr_accessor :bottom, :left, :right, :top,
-                  :rect, :origin_x, :origin_y, :center_x, :center_y,
-                  :name
+
+    # The coordinate system currently in use.
+    #
+    # @return [Symbol] `:bottom_left` or `:center`
+    attr_accessor :name
+
+    # Returns the "x" coordinate indicating the bottom of the screen.
+    #
+    # @return [Float]
+    attr_accessor :bottom
+
+    # Returns the "x" coordinate indicating the top of the screen.
+    #
+    # @return [Float]
+    attr_accessor :top
+
+    # Returns the "y" coordinate indicating the left of the screen.
+    #
+    # @return [Float]
+    attr_accessor :left
+
+    # Returns the "y" coordinate indicating the right of the screen.
+    #
+    # @return [Float]
+    attr_accessor :right
+
+    # Returns the "x" coordinate indicating the center of the screen.
+    #
+    # @return [Float]
+    attr_accessor :center_x
+
+    # Returns the "y" coordinate indicating the center of the screen.
+    #
+    # @return [Float]
+    attr_accessor :center_y
+
+    # Returns the bottom left and top right coordinates in a single list.
+    #
+    # @return [[Float, Float, Float, Float]]
+    attr_accessor :rect
+
+    # Returns the "x" coordinate of the origin.
+    #
+    # @return [Float]
+    attr_accessor :origin_x
+
+    # Returns the "y" coordinate of the origin.
+    #
+    # @return [Float]
+    attr_accessor :origin_y
+
+    attr_accessor :left_margin, :bottom_margin
 
     def initialize ffi_draw
       @ffi_draw = ffi_draw
       origin_bottom_left!
     end
 
+    # Returns `x` plus the origin "x".
+    #
+    # @return [Float]
     def transform_x x
       @origin_x + x
     end
 
+    # Returns `x` minus the origin "x".
+    #
+    # @return [Float]
     def untransform_x x
       x - @origin_x
     end
 
-    def untransform_y y
+    # Returns `y` plus the origin "y".
+    #
+    # @return [Float]
+    def transform_y y
       @origin_y + y * SCREEN_Y_DIRECTION
     end
 
-    def transform_y y
+    # Returns `y` minus the origin "y".
+    #
+    # @return [Float]
+    def untransform_y y
       @origin_y + y * SCREEN_Y_DIRECTION
     end
 
@@ -40,58 +101,86 @@ module GTK
       @ffi_draw = value
     end
 
+    # Sets the rendering coordinate system to have its origin in the bottom left.
+    #
+    # @return [void]
+    # @gtk
     def origin_bottom_left!
       return if @name == :bottom_left
       @name = :bottom_left
       @origin_x = 0.0
-      @origin_y = GAME_HEIGHT
+      @origin_y = $gtk.logical_height
       @left   = 0.0
-      @right  = GAME_WIDTH
-      @top    = GAME_HEIGHT
+      @right  = $gtk.logical_width
+      @top    = $gtk.logical_height
       @bottom = 0.0
-      @center_x = GAME_WIDTH.half
-      @center_y = GAME_HEIGHT.half
-      @rect   = [@left, @bottom, GAME_WIDTH, GAME_HEIGHT].rect
+      @left_margin = 0.0
+      @bottom_margin = 0.0
+      @center_x = $gtk.logical_width.half
+      @center_y = $gtk.logical_height.half
+      @rect   = [@left, @bottom, $gtk.logical_width, $gtk.logical_height].rect
       @center = [@center_x, @center_y].point
       @ffi_draw.set_gtk_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
     end
 
+    # Sets the rendering coordinate system to have its origin in the center.
+    #
+    # @return [void]
+    # @gtk
     def origin_center!
       return if @name == :center
       @name = :center
-      @origin_x = GAME_WIDTH.half
-      @origin_y = GAME_HEIGHT.half
-      @left   =  -GAME_WIDTH.half
-      @right  =   GAME_WIDTH.half
-      @top    =   GAME_HEIGHT.half
-      @bottom =  -GAME_HEIGHT.half
+      @origin_x = $gtk.logical_width.half
+      @origin_y = $gtk.logical_height.half
+      @left   =  -$gtk.logical_width.half
+      @right  =   $gtk.logical_width.half
+      @top    =   $gtk.logical_height.half
+      @bottom =  -$gtk.logical_height.half
       @center_x = 0.0
       @center_y = 0.0
-      @rect   = [@left, @bottom, GAME_WIDTH, GAME_HEIGHT].rect
+      @rect   = [@left, @bottom, $gtk.logical_width, $gtk.logical_height].rect
       @center = [@center_x, @center_y].point
       @ffi_draw.set_gtk_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
     end
 
+    # The logical width used for rendering.
+    #
+    # @return [Float]
     def w
-      GAME_WIDTH
+      $gtk.logical_width
     end
 
+    # Half the logical width used for rendering.
+    #
+    # @return [Float]
     def w_half
       w.half
     end
 
+    # The logical height used for rendering.
+    #
+    # @return [Float]
     def h
-      GAME_HEIGHT
+      $gtk.logical_height
     end
 
+    # Half the logical height used for rendering.
+    #
+    # @return [Float]
     def h_half
       h.half
     end
 
+    # Returns the coordinates indicating the center of the screen.
+    #
+    # @return [[Float, Float]]
     def center
       @center
     end
 
+    # Returns the coordinates indicating the bottom right of the screen.
+    #
+    # @return [[Float, Float]]
     def bottom_right
       [@right, @bottom].point
     end
