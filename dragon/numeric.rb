@@ -9,24 +9,31 @@ class Numeric
 
   alias_method :gte, :>=
   alias_method :lte, :<=
-  alias_method :gt,  :>
-  alias_method :lt,  :<
-  alias_method(:original_eq_eq, :==) unless Numeric.instance_methods.include?(:original_eq_eq)
 
+  # Converts a numeric value representing seconds into frames.
+  #
+  # @gtk
   def seconds
     self * 60
   end
 
+  # Divides the number by `2.0` and returns a `float`.
+  #
+  # @gtk
   def half
-    return self / 2.0
+    self / 2.0
   end
 
   def to_byte
-    return 0 if self < 0
-    return 255 if self > 255
-    return self.to_i
+    clamp(0, 255).to_i
   end
 
+  # For a given number, the elapsed frames since that number is returned.
+  # `Kernel.tick_count` is used to determine how many frames have elapsed.
+  # An override numeric value can be passed in which will be used instead
+  # of `Kernel.tick_count`.
+  #
+  # @gtk
   def elapsed_time tick_count_override = nil
     (tick_count_override || Kernel.tick_count) - self
   end
@@ -39,10 +46,21 @@ class Numeric
     elapsed_time == 0
   end
 
+  # Returns `true` if the numeric value has passed a duration/offset number.
+  # `Kernel.tick_count` is used to determine if a number represents an elapsed
+  # moment in time.
+  #
+  # @gtk
   def elapsed? offset, tick_count_override = nil
     (self + offset) < (tick_count_override || Kernel.tick_count)
   end
 
+  # This is helpful for determining the index of frame-by-frame sprite animation.
+  # The numeric value `self` represents the moment the animation started. `frame_index`
+  # takes three additional parameters: how many frames exist in the sprite animation;
+  # how long to hold each animation for; and whether the animation should repeat.
+  #
+  # @gtk
   def frame_index frame_count, hold_for, repeat, tick_count_override = nil
     animation_frame_count = frame_count
     animation_frame_hold_time = hold_for
@@ -56,10 +74,6 @@ class Numeric
 
   def zero
     0
-  end
-
-  def zero?
-    self == 0
   end
 
   def one
@@ -78,21 +92,13 @@ class Numeric
     10
   end
 
-  def above? v
-    self > v
-  end
+  alias_method :gt,        :>
+  alias_method :above?,    :>
+  alias_method :right_of?, :>
 
-  def below? v
-    self < v
-  end
-
-  def left_of? v
-    self < v
-  end
-
-  def right_of? v
-    self > v
-  end
+  alias_method :lt,       :<
+  alias_method :below?,   :<
+  alias_method :left_of?, :<
 
   def shift_right i
     self + i
@@ -116,6 +122,10 @@ class Numeric
     raise_immediately e, :shift_down, i
   end
 
+  # This provides a way for a numeric value to be randomized based on a combination
+  # of two options: `:sign` and `:ratio`.
+  #
+  # @gtk
   def randomize *definitions
     result = self
 
@@ -139,31 +149,25 @@ class Numeric
     self * rand
   end
 
-  def between? n, n2
-    self >= n && self <= n2 || self >= n2 && self <= n
-  end
-
   def remainder_of_divide n
     mod n
   end
 
+  # Easing function progress/percentage for a specific point in time.
+  #
+  # @gtk
   def ease_extended tick_count_override, duration, default_before, default_after, *definitions
-    GTK::Easing.exec_definitions(self,
-                                 tick_count_override,
-                                 self + duration,
-                                 default_before,
-                                 default_after,
-                                 *definitions)
+    GTK::Easing.ease_extended self,
+                              tick_count_override,
+                              self + duration,
+                              default_before,
+                              default_after,
+                              *definitions
   end
 
-  def ease_initial_value *definitions
-    GTK::Easing.initial_value(*definitions)
-  end
-
-  def ease_final_value *definitions
-    GTK::Easing.final_value(*definitions)
-  end
-
+  # Easing function progress/percentage for a specific point in time.
+  #
+  # @gtk
   def global_ease duration, *definitions
     ease_extended Kernel.global_tick_count,
                   duration,
@@ -172,6 +176,9 @@ class Numeric
                   *definitions
   end
 
+  # Easing function progress/percentage for a specific point in time.
+  #
+  # @gtk
   def ease duration, *definitions
     ease_extended Kernel.tick_count,
                   duration,
@@ -180,26 +187,75 @@ class Numeric
                   *definitions
   end
 
+  # Easing function progress/percentage for a specific point in time.
+  #
+  # @gtk
+  def ease_spline_extended tick_count_override, duration, spline
+    GTK::Easing.ease_spline_extended self,
+                                     tick_count_override,
+                                     self + duration,
+                                     spline
+  end
+
+  # Easing function progress/percentage for a specific point in time.
+  #
+  # @gtk
+  def global_ease_spline duration, spline
+    ease_spline_extended Kernel.global_tick_count,
+                         duration,
+                         spline
+  end
+
+  # Easing function progress/percentage for a specific point in time.
+  #
+  # @gtk
+  def ease_spline duration, spline
+    ease_spline_extended Kernel.tick_count,
+                         duration,
+                         spline
+  end
+
+  # Converts a number representing an angle in degrees to radians.
+  #
+  # @gtk
   def to_radians
     self * Math::PI.fdiv(180)
   end
 
+  # Converts a number representing an angle in radians to degress.
+  #
+  # @gtk
   def to_degrees
     self / Math::PI.fdiv(180)
   end
 
+  # Given `self`, a rectangle primitive is returned.
+  #
+  # @example
+  #   5.to_square 100, 300 # returns [100, 300, 5, 5]
+  #
+  # @gtk
   def to_square x, y, anchor_x = 0.5, anchor_y = nil
     GTK::Geometry.to_square(self, x, y, anchor_x, anchor_y)
   end
 
+  # Returns a normal vector for a number that represents an angle in degress.
+  #
+  # @gtk
   def vector max_value = 1
     [vector_x(max_value), vector_y(max_value)]
   end
 
+  # Returns the y component of a normal vector for a number that represents an angle in degress.
+  #
+  # @gtk
   def vector_y max_value = 1
     max_value * Math.sin(self.to_radians)
   end
 
+  # Returns the x component of a normal vector for a number that represents an angle in degress.
+  #
+  # @gtk
   def vector_x max_value = 1
     max_value * Math.cos(self.to_radians)
   end
@@ -212,10 +268,12 @@ class Numeric
     vector_y max_value
   end
 
+  # @gtk
   def mod n
     self % n
   end
 
+  # @gtk
   def mod_zero? *ns
     ns.any? { |n| mod(n) == 0 }
   end
@@ -224,14 +282,23 @@ class Numeric
     self * n
   end
 
+  # @gtk
   def fdiv n
     self / n.to_f
   end
 
+  # Divides `self` by a number `n` as a float, and converts it `to_i`.
+  #
+  # @gtk
   def idiv n
     (self / n.to_f).to_i
   end
 
+  # Returns a numeric value that is a quantity `magnitude` closer to
+  #`self`. If the distance between `self` and `target` is less than
+  #the `magnitude` then `target` is returned.
+  #
+  # @gtk
   def towards target, magnitude
     return self if self == target
     delta = (self - target).abs
@@ -240,6 +307,19 @@ class Numeric
     return self + magnitude
   end
 
+  # Given `self` and a number representing `y` of a grid. This
+  # function will return a one dimensional array containing the value
+  # yielded by an implicit block.
+  #
+  # @example
+  #   3.map_with_ys 2 do |x, y|
+  #     x * y
+  #   end
+  #   #     x y   x y  x y  x y  x y  x y
+  #   #     0*0,  0*1  1*0  1*1  2*0  2*1
+  #   # => [  0,    0,   0,   1,   0,   2]
+  #
+  # @gtk
   def map_with_ys ys, &block
     self.times.flat_map do |x|
       ys.map_with_index do |y|
@@ -319,6 +399,7 @@ class Numeric
     return gt other
   end
 
+  alias_method(:original_eq_eq, :==) unless Numeric.instance_methods.include?(:original_eq_eq)
   def == other
     return true if self.original_eq_eq(other)
     if other.is_a?(OpenEntity)
@@ -327,6 +408,7 @@ class Numeric
     return self.original_eq_eq(other)
   end
 
+  # @gtk
   def map
     unless block_given?
       raise <<-S
@@ -341,6 +423,7 @@ S
     end
   end
 
+  # @gtk
   def map_with_index
     unless block_given?
       raise <<-S
@@ -409,11 +492,16 @@ class Fixnum
     super
   end
 
+  # Returns `true` if the numeric value is evenly divisible by 2.
+  #
+  # @gtk
   def even?
-    return true if self % 2 == 1
-    return false
+    return (self % 2) == 0
   end
 
+  # Returns `true` if the numeric value is *NOT* evenly divisible by 2.
+  #
+  # @gtk
   def odd?
     return !even?
   end
@@ -444,24 +532,40 @@ class Fixnum
     return self.original_eq_eq(other)
   end
 
+  # Returns `-1` if the number is less than `0`. `+1` if the number
+  # is greater than `0`. Returns `0` if the number is equal to `0`.
+  #
+  # @gtk
   def sign
     return -1 if self < 0
     return  1 if self > 0
     return  0
   end
 
+  # Returns `true` if number is greater than `0`.
+  #
+  # @gtk
   def pos?
     sign > 0
   end
 
+  # Returns `true` if number is less than `0`.
+  #
+  # @gtk
   def neg?
     sign < 0
   end
 
+  # Returns the cosine of a represented in degrees (NOT radians).
+  #
+  # @gtk
   def cos
     Math.cos(self.to_radians)
   end
 
+  # Returns the cosine of a represented in degrees (NOT radians).
+  #
+  # @gtk
   def sin
     Math.sin(self.to_radians)
   end
@@ -498,12 +602,7 @@ class Float
     self
   end
 
-  def clamp lower, higher
-    return lower  if self < lower
-    return higher if self > higher
-    return self
-  end
-
+  # @gtk
   def sign
     return -1 if self < 0
     return  1 if self > 0
@@ -516,12 +615,12 @@ class Float
     return -scalar if self < 0
     return  scalar if self > 0
   end
+end
 
-  def pos?
-    sign > 0
-  end
+class Integer
+  alias_method(:original_round, :round) unless Fixnum.instance_methods.include?(:original_round)
 
-  def neg?
-    sign < 0
+  def round *args
+    original_round
   end
 end
