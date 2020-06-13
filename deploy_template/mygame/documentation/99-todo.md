@@ -1,12 +1,12 @@
 # Documentation That Needs to be Organized
 
-## Class macro gtk_args
+## Class macro attr_gtk
 
-Here's how you can use the `gtk_args` class method:
+Use the `attr_gtk` class method to help access the different variables provided via `args`:
 
 ```ruby
 class Game
-  gtk_args
+  attr_gtk
   attr_accessor :current_scene, :other_custom_attrs
 
   def tick
