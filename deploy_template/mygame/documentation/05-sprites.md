@@ -29,7 +29,7 @@ args.outputs.sprites << [100, 100,    32,     64, "sprites/player.png"]
 
 ## Rotation / Angle
 
-Unlike `solids` and `borders`, sprites can be rotated. This is how you rotate a sprite 90 degress.
+Unlike `solids` and `borders`, sprites can be rotated. This is how you rotate a sprite 90 degrees.
 
 Note: All angles in DragonRuby Game Toolkit are represented in degrees (not radians).
 
@@ -99,7 +99,7 @@ args.outputs.sprites << [                 100,    # X
 
 A sprite can be flipped horizontally and vertically.
 
-This is a sprite that has been flipped horizontally. The sprites's angle, alpha, color saturations,
+This is a sprite that has been flipped horizontally. The sprite's angle, alpha, color saturations,
 and tile subdivision are unaltered.
 
 ```ruby
@@ -121,7 +121,7 @@ args.outputs.sprites << [                 100,    # X
                                         false]    # FLIP_VERTICALLY
 ```
 
-This is a sprite that has been flipped vertically. The sprites's angle, alpha, color saturations,
+This is a sprite that has been flipped vertically. The sprite's angle, alpha, color saturations,
 and tile subdivision are unaltered.
 
 ```ruby
@@ -147,8 +147,8 @@ args.outputs.sprites << [                 100,    # X
 
 A sprites center of rotation can be altered.
 
-This is a sprite that has its rotation center set to the top-middle. The sprites's angle, alpha, color saturations,
-tile subdivision, and projectsions are unaltered.
+This is a sprite that has its rotation center set to the top-middle. The sprite's angle, alpha, color saturations,
+tile subdivision, and projections are unaltered.
 
 ```ruby
 args.outputs.sprites << [                 100,    # X
