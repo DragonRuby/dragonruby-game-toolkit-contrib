@@ -195,7 +195,7 @@ To initialize your game state, use the `||=` operator. Any value on
 the right side of `||=` will only be assigned `once`.
 
 To assign a value every frame, just use the `=` operator, but _make
-sure_ you've initalized a default value.
+sure_ you've initialized a default value.
 
 ```ruby
 def tick args
