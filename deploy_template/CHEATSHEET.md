@@ -226,7 +226,7 @@ end
 Returns true if a numeric value plus an offset represents a point
 in time that has elapsed. This is related to args.state.tick_count.
 
-```
+```ruby
 args.state.attacked_at ||= args.state.tick_count
 puts args.state.attacked_at.elapsed? 60  # will print false after one second.
 ```
