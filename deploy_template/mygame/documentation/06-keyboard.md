@@ -2,7 +2,7 @@
 
 Determining if `a` key is in the down state (pressed). This happens once each time the key is pressed:
 
-```
+```ruby
 if args.inputs.keyboard.key_down.a
   puts 'The key is pressed'
 end
@@ -10,7 +10,7 @@ end
 
 Determining if a key is being held. This happens every tick while the key is held down:
 
-```
+```ruby
 if args.inputs.keyboard.key_held.a
   puts 'The key is being held'
 end
@@ -18,7 +18,7 @@ end
 
 Determining if a key is in the down state or is being held:
 
-```
+```ruby
 if args.inputs.keyboard.a
   puts 'The key is pressed or being held'
 end
@@ -26,7 +26,7 @@ end
 
 Determining if a key is in the up state (released). This happens once each time the key is released:
 
-```
+```ruby
 if args.inputs.keyboard.key_up.a
   puts 'The key is released'
 end
@@ -39,7 +39,7 @@ You can access all triggered keys through `truthy_keys` on `keyboard`, `controll
 This is how you would right all keys to a file. The game must be in the foreground and have focus for this data
 to be recorded.
 
-```
+```ruby
 def tick args
     [
     [args.inputs.keyboard,       :keyboard],

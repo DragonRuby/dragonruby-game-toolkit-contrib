@@ -2,14 +2,14 @@
 
 There are two controllers you have access to:
 
-```
+```ruby
 args.inputs.controller_one
 args.inputs.controller_two
 ```
 
 Determining if a key was down:
 
-```
+```ruby
 if args.inputs.controller_one.key_down.a
   puts 'The key was in the down state'
 end
@@ -17,7 +17,7 @@ end
 
 Determining if a key is being held:
 
-```
+```ruby
 if args.inputs.controller_one.key_held.a
   puts 'The key is being held'
 end
@@ -25,7 +25,7 @@ end
 
 Determining if a key is released:
 
-```
+```ruby
 if args.inputs.controller_one.key_up.a
   puts 'The key is being held'
 end
@@ -38,7 +38,7 @@ You can access all triggered keys through `thruthy_keys` on `keyboard`, `control
 This is how you would right all keys to a file. The game must be in the foreground and have focus for this data
 to be recorded.
 
-```
+```ruby
 def tick args
     [
     [args.inputs.keyboard,       :keyboard],

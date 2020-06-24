@@ -2,7 +2,7 @@
 
 Determining current position of mouse:
 
-```
+```ruby
 args.inputs.mouse.x
 args.inputs.mouse.y
 ```
@@ -10,7 +10,7 @@ args.inputs.mouse.y
 Determining if the mouse has been clicked, and it's position. Note:
 `click` and `down` are aliases for each other.
 
-```
+```ruby
 if args.inputs.mouse.click
   puts "click: #{args.inputs.mouse.click}"
   puts "x: #{args.inputs.mouse.click.point.x}"
@@ -20,7 +20,7 @@ end
 
 Determining if the mouse button has been released:
 
-```
+```ruby
 if args.inputs.mouse.up
   puts "up: #{args.inputs.mouse.up}"
   puts "x: #{args.inputs.mouse.up.point.x}"
@@ -29,7 +29,8 @@ end
 ```
 
 Determine which mouse button(s) have been clicked (also works for up):
-```
+
+```ruby
 if args.inputs.mouse.click
   puts "left: #{args.inputs.mouse.button_left}"
   puts "middle: #{args.inputs.mouse.button_middle}"
@@ -40,7 +41,8 @@ end
 ```
 
 Determine if the mouse wheel is being used and its values for this tick:
-```
+
+```ruby
 if args.inputs.mouse.wheel
   puts "The wheel moved #{args.inputs.mouse.wheel.x} left/right"
   puts "The wheel moved #{args.inputs.mouse.wheel.y} up/down"
