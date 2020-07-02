@@ -478,7 +478,7 @@ S
             Kernel.eval("$results = (#{cmd})")
             if $results.nil?
               puts "=> nil"
-            elsif $results == :console_silent_eval
+            elsif :console_silent_eval == $results
             else
               puts "=> #{$results}"
             end
