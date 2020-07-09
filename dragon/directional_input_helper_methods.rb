@@ -54,8 +54,8 @@ S
     # - `nil` which denotes that no directional input exists.
     # - `[ 0,  1]` which denotes that only up is being held/pressed.
     # - `[ 0, -1]` which denotes that only down is being held/pressed.
-    # - `[ 1,  1]` which denotes that right and up are being pressed/held.
-    # - `[-1, -1]` which denotes that left and down are being pressed/held.
+    # - `[ 0.5,  0.5]` which denotes that right and up are being pressed/held.
+    # - `[-0.5, -0.5]` which denotes that left and down are being pressed/held.
     #
     # @gtk
     def directional_vector
