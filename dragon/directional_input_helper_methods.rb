@@ -49,7 +49,7 @@ S
 
     # Returns a normal vector (in the form of an Array with two values). If no directionals are held/down, the function returns nil.
     #
-    # The possible results are:
+    # Some of the possible results are:
     #
     # - `nil` which denotes that no directional input exists.
     # - `[ 0,  1]` which denotes that only up is being held/pressed.
