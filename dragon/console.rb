@@ -410,7 +410,7 @@ S
         end
         if @command_history_index < (@command_history.length - 1)
           @command_history_index += 1
-          self.current_input_str = @command_history[@command_history_index].clone
+          self.current_input_str = @command_history[@command_history_index].dup
         end
       elsif args.inputs.keyboard.key_down.down
         if @command_history_index == 0
@@ -419,7 +419,7 @@ S
           @nonhistory_input = ''
         elsif @command_history_index > 0
           @command_history_index -= 1
-          self.current_input_str = @command_history[@command_history_index].clone
+          self.current_input_str = @command_history[@command_history_index].dup
         end
       elsif inputs_scroll_up_full? args
         scroll_up_full
