@@ -49,13 +49,13 @@ S
 
     # Returns a normal vector (in the form of an Array with two values). If no directionals are held/down, the function returns nil.
     #
-    # Some of the possible results are:
+    # The possible results are:
     #
-    # - `nil` which denotes that no directional input exists.
-    # - `[ 0,  1]` which denotes that only up is being held/pressed.
-    # - `[ 0, -1]` which denotes that only down is being held/pressed.
-    # - `[ 0.5,  0.5]` which denotes that right and up are being pressed/held.
-    # - `[-0.5, -0.5]` which denotes that left and down are being pressed/held.
+    # - ~nil~ which denotes that no directional input exists.
+    # - ~[   0,    1]~ which denotes that only up is being held/pressed.
+    # - ~[   0,   -1]~ which denotes that only down is being held/pressed.
+    # - ~[ 0.5,  0.5]~ which denotes that right and up are being pressed/held.
+    # - ~[-0.5, -0.5]~ which denotes that left and down are being pressed/held.
     #
     # @gtk
     def directional_vector

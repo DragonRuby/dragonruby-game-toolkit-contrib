@@ -189,6 +189,10 @@ S
       [x, y]
     end
 
+    def self.contract_intersect_rect?
+      [:left, :right, :top, :bottom]
+    end
+
     # @gtk
     def self.intersect_rect? rect_one, rect_two, tolerance = 0.1
       return false if rect_one.right - tolerance < rect_two.left + tolerance
@@ -197,7 +201,32 @@ S
       return false if rect_one.bottom + tolerance > rect_two.top - tolerance
       return true
     rescue Exception => e
-      raise e, ":intersect_rect? failed for rect_one: #{rect_one} rect_two: #{rect_two}."
+      context_help_rect_one = (rect_one.help_contract_implementation contract_intersect_rect?)[:not_implemented_methods]
+      context_help_rect_two = (rect_two.help_contract_implementation contract_intersect_rect?)[:not_implemented_methods]
+      context_help = ""
+      if context_help_rect_one && context_help_rect_one.length > 0
+        context_help += <<-S
+rect_one needs to implement the following methods: #{context_help_rect_one}
+
+You may want to try include the ~AttrRect~ module which will give you these methods.
+S
+      end
+
+      if context_help_rect_two && context_help_rect_two.length > 0
+        context_help += <<-S
+* FAILURE REASON:
+rect_two needs to implement the following methods: #{context_help_rect_two}
+NOTE: You may want to try include the ~GTK::Geometry~ module which will give you these methods.
+S
+      end
+
+      raise e, <<-S
+* ERROR:
+:intersect_rect? failed for
+- rect_one: #{rect_one}
+- rect_two: #{rect_two}
+#{context_help}
+S
     end
 
     # @gtk

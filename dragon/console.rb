@@ -7,203 +7,6 @@
 
 module GTK
   class Console
-    class Color
-      def initialize(color)
-        @color = color
-        @color << 255 if @color.size == 3
-      end
-
-      def mult_alpha(alpha_modifier)
-        Color.new [@color[0], @color[1], @color[2], (@color[3].to_f * alpha_modifier).to_i]
-      end
-
-      # Support splat operator
-      def to_a
-        @color
-      end
-
-      def to_h
-        { r: @color[0], g: @color[1], b: @color[2], a: @color[3] }
-      end
-    end
-
-    class FontStyle
-      attr_reader :font, :size_enum, :line_height
-
-      def initialize(font:, size_enum:, line_height:)
-        @font = font
-        @size_enum = size_enum
-        @line_height = line_height
-      end
-
-      def letter_size
-        @letter_size ||= $gtk.calcstringbox 'W', size_enum, font
-      end
-
-      def line_height_px
-        @line_height_px ||= letter_size.y * line_height
-      end
-
-      def label(x:, y:, text:, color:, alignment_enum: 0)
-        {
-          x: x,
-          y: y.shift_up(line_height_px),  # !!! FIXME: remove .shift_up(line_height_px) when we fix coordinate origin on labels.
-          text: text,
-          font: font,
-          size_enum: size_enum,
-          alignment_enum: alignment_enum,
-          **color.to_h,
-        }.label
-      end
-    end
-
-    class Prompt
-      attr_accessor :current_input_str, :font_style, :console_text_width
-
-      def initialize(font_style:, text_color:, console_text_width:)
-        @prompt = '-> '
-        @current_input_str = ''
-        @font_style = font_style
-        @text_color = text_color
-        @cursor_color = Color.new [187, 21, 6]
-        @console_text_width = console_text_width
-
-        @last_autocomplete_prefix = nil
-        @next_candidate_index = 0
-      end
-
-      def <<(str)
-        @current_input_str << str
-        reset_autocomplete
-      end
-
-      def backspace
-        @current_input_str.chop!
-        reset_autocomplete
-      end
-
-      def clear
-        @current_input_str = ''
-        reset_autocomplete
-      end
-
-      def autocomplete
-        if !@last_autocomplete_prefix
-          @last_autocomplete_prefix = calc_autocomplete_prefix
-
-          puts "* AUTOCOMPLETE CANDIDATES: #{current_input_str}.."
-          pretty_print_strings_as_table method_candidates(@last_autocomplete_prefix)
-        else
-          candidates = method_candidates(@last_autocomplete_prefix)
-          return if candidates.empty?
-
-          candidate = candidates[@next_candidate_index]
-          candidate = candidate[0..-2] + " = " if candidate.end_with? '='
-          @next_candidate_index += 1
-          @next_candidate_index = 0 if @next_candidate_index >= candidates.length
-          self.current_input_str = display_autocomplete_candidate(candidate)
-        end
-      end
-
-      def pretty_print_strings_as_table items
-        if items.length == 0
-          puts <<-S.strip
-+--------+
-| (none) |
-+--------+
-S
-        else
-          # figure out the largest string
-          string_width = items.sort_by { |c| -c.to_s.length }.first
-
-          # add spacing to each side of the string which represents the cell width
-          cell_width = string_width.length + 2
-
-          # add spacing to each side of the cell to represent the column width
-          column_width = cell_width + 2
-
-          # determine the max number of columns that can fit on the screen
-          columns = @console_text_width.idiv column_width
-          columns = items.length if items.length < columns
-
-          # partition the original list of items into a string to be printed
-          items.each_slice(columns).each_with_index do |cells, i|
-            pretty_print_row_seperator string_width, cell_width, column_width, columns
-            pretty_print_row cells, string_width, cell_width, column_width, columns
-          end
-
-          pretty_print_row_seperator string_width, cell_width, column_width, columns
-        end
-      end
-
-      def pretty_print_row cells, string_width, cell_width, column_width, columns
-        # if the number of cells doesn't match the number of columns, then pad the array with empty values
-        cells += (columns - cells.length).map { "" }
-
-        # right align each cell value
-        formated_row = "|" + cells.map do |c|
-          "#{" " * (string_width.length - c.length) } #{c} |"
-        end.join
-
-        # remove seperators between empty values
-        formated_row = formated_row.gsub("  |  ", "     ")
-
-        puts formated_row
-      end
-
-      def pretty_print_row_seperator string_width, cell_width, column_width, columns
-        # this is a joint: +--------
-        column_joint = "+#{"-" * cell_width}"
-
-        # multiple joints create a row seperator: +----+----+
-        puts (column_joint * columns) + "+"
-      end
-
-      def render(args, x:, y:)
-        args.outputs.reserved << font_style.label(x: x, y: y, text: "#{@prompt}#{current_input_str}", color: @text_color)
-        args.outputs.reserved << font_style.label(x: x - 2, y: y + 3, text: (" " * (@prompt.length + current_input_str.length)) + "|", color: @cursor_color)
-      end
-
-      private
-
-      def last_period_index
-        current_input_str.rindex('.')
-      end
-
-      def calc_autocomplete_prefix
-        if last_period_index
-          current_input_str[(last_period_index + 1)..-1]
-        else
-          current_input_str
-        end
-      end
-
-      def current_object
-        return Kernel unless last_period_index
-
-        Kernel.eval(current_input_str[0...last_period_index])
-      rescue NameError
-        nil
-      end
-
-      def method_candidates(prefix)
-        current_object.autocomplete_methods.map(&:to_s).select { |m| m.start_with? prefix }
-      end
-
-      def display_autocomplete_candidate(candidate)
-        if last_period_index
-          @current_input_str[0..last_period_index] + candidate.to_s
-        else
-          candidate.to_s
-        end
-      end
-
-      def reset_autocomplete
-        @last_autocomplete_prefix = nil
-        @next_candidate_index = 0
-      end
-    end
-
     attr_accessor :show_reason, :log, :logo, :background_color,
                   :text_color, :animation_duration,
                   :max_log_lines, :max_history, :log,
@@ -214,7 +17,7 @@ S
                   :font_style
 
     def initialize
-      @font_style = FontStyle.new(font: 'font.ttf', size_enum: 0, line_height: 1.1)
+      @font_style = FontStyle.new(font: 'font.ttf', size_enum: -1, line_height: 1.1)
       @disabled = false
       @log_offset = 0
       @visible = false
@@ -484,9 +287,16 @@ S
             end
             @last_command_errored = false
           rescue Exception => e
+            string_e = "#{e}"
             @last_command_errored = true
-            puts "#{e}"
-            log "#{e}"
+            if (string_e.include? "wrong number of arguments")
+              method_name = (string_e.split ":")[0].gsub "'", ""
+              results = Kernel.docs_search method_name
+              if !results.include "* DOCS: No results found."
+                puts results
+                log results
+              end
+            end
           end
         end
       end
@@ -539,6 +349,41 @@ S
       @log_offset = 0 if @log_offset < 0
     end
 
+    def mouse_wheel_scroll args
+      @inertia ||= 0
+
+      if args.inputs.mouse.wheel && args.inputs.mouse.wheel.y > 0
+        @inertia = 1
+      elsif args.inputs.mouse.wheel && args.inputs.mouse.wheel.y < 0
+        @inertia = -1
+      end
+
+      if args.inputs.mouse.click
+        @inertia = 0
+      end
+
+      return if @inertia == 0
+
+      if @inertia != 0
+        @inertia = (@inertia * 0.7)
+        if @inertia > 0
+          @log_offset -= 1
+        elsif @inertia < 0
+          @log_offset += 1
+        end
+      end
+
+      if @inertia.abs < 0.01
+        @inertia = 0
+      end
+
+      if @log_offset > @log.size
+        @log_offset = @log.size
+      elsif @log_offset < 0
+        @log_offset = 0
+      end
+    end
+
     def process_inputs args
       if console_toggle_key_down? args
         args.inputs.text.clear
@@ -547,35 +392,11 @@ S
 
       return unless visible?
 
-      if !@suppress_left_arrow_behavior && args.inputs.keyboard.key_down.left && current_input_str.strip.length > 0
-        log_info "Use repl.rb!", <<-S
-The Console is nice for quick commands, but for more complex edits, use repl.rb.
-
-I've written the current command at the top of a file called ./repl.rb (right next to dragonruby(.exe)). Please open the the file and apply additional edits there.
-S
-        if @last_command_written_to_repl_rb != current_input_str
-          @last_command_written_to_repl_rb = current_input_str
-          contents = $gtk.read_file 'app/repl.rb'
-          contents ||= ''
-          contents = <<-S + contents
-
-# Remove the x from xrepl to run the command.
-xrepl do
-  #{@last_command_written_to_repl_rb}
-end
-
-S
-          $gtk.suppress_hotload = true
-          $gtk.write_file 'app/repl.rb', contents
-          $gtk.reload_if_needed 'app/repl.rb', true
-          $gtk.suppress_hotload = false
-        end
-
-        return
-      end
-
       args.inputs.text.each { |str| prompt << str }
       args.inputs.text.clear
+      mouse_wheel_scroll args
+
+      @log_offset = 0 if @log_offset < 0
 
       if args.inputs.keyboard.key_down.enter
         eval_the_set_command
@@ -654,7 +475,7 @@ S
 
       bottom = top - (h * percent)
       args.outputs.reserved << [left, bottom, w, h, *@background_color.mult_alpha(percent)].solid
-      args.outputs.reserved << [right.shift_left(210), bottom.shift_up(540), 200, 200, @logo, 0, (80.0 * percent).to_i].sprite
+      args.outputs.reserved << [right.shift_left(110), bottom.shift_up(630), 100, 100, @logo, 0, (80.0 * percent).to_i].sprite
 
       y = bottom + 2  # just give us a little padding at the bottom.
       prompt.render args, x: left.shift_right(10), y: y
@@ -680,6 +501,29 @@ S
       end
 
       render_log_offset args
+      render_help args, top if percent == 1
+    end
+
+    def render_help args, top
+      [
+        "* Prompt Commands:                   ",
+        "You can type any of the following    ",
+        "commands in the command prompt.      ",
+        "** docs: Provides API docs.          ",
+        "** $gtk: Accesses the global runtime.",
+        "* Shortcut Keys:                     ",
+        "** full page up:   ctrl + b          ",
+        "** full page down: ctrl + f          ",
+        "** half page up:   ctrl + u          ",
+        "** half page down: ctrl + d          ",
+        "** clear prompt:   ctrl + g          ",
+        "** up arrow:       next command      ",
+        "** down arrow:     prev command      ",
+      ].each_with_index do |s, i|
+        args.outputs.reserved << [args.grid.right - 10,
+                                  top - 100 - line_height_px * i * 0.8,
+                                  s, -3, 2, 180, 180, 180].label
+      end
     end
 
     def render_log_offset args
@@ -745,9 +589,23 @@ S
     end
 
     def set_command_with_history_silent command, histories, show_reason = nil
-      @command_history.concat histories
-      @command_history << command  if @command_history[-1] != command
-      self.current_input_str = command if @command_set_at != Kernel.global_tick_count
+      set_command_extended command: command, histories: histories, show_reason: show_reason
+    end
+
+    def defaults_set_command_extended
+      {
+        command: "puts 'Hello World'",
+        histories: [],
+        show_reason: nil,
+        force: false
+      }
+    end
+
+    def set_command_extended opts
+      opts = defaults_set_command_extended.merge opts
+      @command_history.concat opts[:histories]
+      @command_history << opts[:command]  if @command_history[-1] != opts[:command]
+      self.current_input_str = opts[:command] if @command_set_at != Kernel.global_tick_count || opts[:force]
       @command_set_at = Kernel.global_tick_count
       @command_history_index = -1
       save_history
@@ -766,6 +624,22 @@ S
 
     def set_command_silent command, show_reason = nil
       set_command_with_history_silent command, [], show_reason
+    end
+
+    def set_system_command command, show_reason = nil
+      if $gtk.platform == "Mac OS X"
+        set_command_silent "$gtk.system \"open #{command}\""
+      else
+        set_command_silent "$gtk.system \"start #{command}\""
+      end
+    end
+
+    def system_command
+      if $gtk.platform == "Mac OS X"
+        "open"
+      else
+        "start"
+      end
     end
 
     private
@@ -802,14 +676,24 @@ S
       log_entry[0] == "|"
     end
 
-    def color_for_log_entry(log_entry)
+    def include_header_marker? log_entry
+      return false if log_entry.include? "NOTIFY:"
+      return false if log_entry.include? "INFO:"
+      return true if log_entry.include? "DOCS:"
+      (log_entry.start_with? "* ")   ||
+      (log_entry.start_with? "** ")  ||
+      (log_entry.start_with? "*** ")
+    end
 
+    def color_for_log_entry(log_entry)
       if include_row_marker? log_entry
         @text_color
       elsif include_error_marker? log_entry
         @error_color
       elsif include_subdued_markers? log_entry
         @text_color.mult_alpha(0.5)
+      elsif include_header_marker? log_entry
+        @header_color
       elsif log_entry.start_with?("====") || log_entry.include?("app") && !log_entry.include?("apple")
         @header_color
       else
