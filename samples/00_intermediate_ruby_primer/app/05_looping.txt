@@ -1,0 +1,61 @@
+# ====================================================================================
+#  Looping
+# ====================================================================================
+#
+# Looping looks a whole lot different than other languages.
+# But it's pretty awesome when you get used to it.
+
+puts ''
+puts ''
+puts '================================'
+puts ''
+
+# ====================================================================================
+#  times
+# ====================================================================================
+
+
+puts "times block:"
+3.times do |i|
+  puts i
+end
+puts ''
+
+
+# ====================================================================================
+#  ranges
+# ====================================================================================
+
+puts "range block exclusive:"
+(0...3).each do |i|
+  puts i
+end
+puts ''
+
+puts "range block inclusive:"
+(0..3).each do |i|
+  puts i
+end
+puts ''
+
+# ====================================================================================
+#  Enumerables
+# ====================================================================================
+
+puts 'array each'
+colors = ["red", "blue", "yellow"]
+colors.each do |color|
+  puts color
+end
+puts ''
+
+puts 'array each_with_index'
+colors = ["red", "blue", "yellow"]
+colors.each_with_index do |color, i|
+  puts "#{color} at index #{i}"
+end
+
+puts ''
+puts '================================'
+puts ''
+puts ''

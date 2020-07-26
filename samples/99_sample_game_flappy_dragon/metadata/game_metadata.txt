@@ -1,0 +1,6 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=flappydragon
+gametitle=Flappy Dragon
+version=1.3
+icon=sprites/dragon_fly1.png

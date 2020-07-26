@@ -1,0 +1,6 @@
+devid=amirrajan
+devtitle=Amir Rajan
+gameid=the-little-probe
+gametitle=The Little Probe
+version=1.0
+icon=sprites/probe.png

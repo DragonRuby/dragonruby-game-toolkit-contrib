@@ -1,0 +1,6 @@
+devid=amirrajan
+devtitle=Amir Rajan
+gameid=clepto-frog
+gametitle=Clepto Frog
+version=1.0
+icon=sprites/square-green.png

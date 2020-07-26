@@ -1,0 +1,74 @@
+# ====================================================================================
+#  Types and Assignments
+# ====================================================================================
+#
+# Here is how you define various data structures in Ruby. Same deal here. Take the text
+# in this file and paste it into repl.rb and save:
+
+puts ''
+puts ''
+puts '================================'
+puts ''
+
+# ====================================================================================
+#  Strings
+# ====================================================================================
+
+puts '======== strings'
+message = "Hello World"
+puts "The value of message is: " + message
+puts "Any value can be interpolated within a string using \#{}."
+puts "Interpolated message: #{message}."
+puts 'This #{message} is not interpolated because the string uses single quotes.'
+puts ''
+
+# ====================================================================================
+#  Numerics
+# ====================================================================================
+
+puts '======== ints and floats'
+a = 10
+puts "The value of a is: #{a}"
+puts "a + 1 is: #{a + 1}"
+puts "a / 3 is: #{a / 3}"
+puts ''
+
+b = 10.12
+puts "The value of b is: #{b}"
+puts "b + 1 is: #{b + 1}"
+puts "b as an integer is: #{b.to_i}"
+puts ''
+
+# ====================================================================================
+#  Booleans
+# ====================================================================================
+
+puts '======== truthy / falsey values'
+puts "Anything that *isn't* false or nil is true."
+
+c = 30
+puts "The value of c is #{c}."
+
+if c
+  puts "This if statement ran because c is truthy."
+end
+
+d = false
+puts "The value if d is #{d}."
+
+if !d
+  puts "This if statement ran because d is falsey, using the not operator (!)."
+end
+
+e = nil
+
+puts "Nil is also considered falsey. The value of e is: #{e}."
+
+if !e
+  puts "This if statement ran because e is nil (a falsey value)."
+end
+
+puts ''
+puts '================================'
+puts ''
+puts ''
