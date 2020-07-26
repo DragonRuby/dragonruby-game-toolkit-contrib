@@ -184,13 +184,13 @@ S
     final_string = ""
     if self == Kernel
       $docs_classes.each do |k|
-        k.methods_with_docs.each do |m|
+        DocsOrganizer.find_methods_with_docs(k).each do |m|
           s = k.send m
           final_string += s + "\n" if block.call s
         end
       end
     else
-      methods_with_docs.each do |m|
+      DocsOrganizer.find_methods_with_docs(self).each do |m|
         s = send m
         final_string += s + "\n" if block.call s
       end

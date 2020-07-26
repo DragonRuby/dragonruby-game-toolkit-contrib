@@ -5,7 +5,17 @@
 
 module ArrayDocs
   def docs_method_sort_order
-    [:docs_class, :docs_map, :docs_each]
+    [
+      :docs_class,
+      :docs_map,
+      :docs_each,
+      :docs_reject_nil,
+      :docs_reject_false,
+      :docs_product,
+      :docs_map_2d,
+      :docs_include_any?,
+      :docs_any_intersect_rect?
+    ]
   end
 
   def docs_include_any?
