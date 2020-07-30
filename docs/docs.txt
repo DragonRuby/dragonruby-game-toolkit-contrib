@@ -1,27 +1,3 @@
-# coding: utf-8
-# Copyright 2019 DragonRuby LLC
-# MIT License
-# readme_docs.rb has been released under MIT (*only this file*).
-
-module GTK
-  module ReadMeDocs
-    def docs_method_sort_order
-      [
-        :docs_usage,
-        :docs_hello_world,
-        :docs_deployment,
-        :docs_dragonruby_philosophy,
-        :docs_ticks_and_frames,
-        :docs_sprites,
-        :docs_labels,
-        :docs_sounds,
-        :docs_game_state,
-        :docs_faq
-      ]
-    end
-
-    def docs_usage
-      <<-S
 * DragonRuby Game Toolkit Live Docs
 
 The information contained here is all available via the DragonRuby
@@ -36,11 +12,7 @@ to get fancy you can provide a ~lambda~ to filter documentation:
 #+end_src
 
 [[docs_search.gif]]
-S
-    end
 
-    def docs_hello_world
-<<-S
 * Hello World
 
 Welcome to DragonRuby Game Toolkit. Take the steps below to get started.
@@ -386,33 +358,31 @@ description of each sample app.
 42. 14_sprite_limits_static_references: Upper limit for how many sprites can be rendered to the screen using ~static~ output collections (which are updated by reference as opposed to by value).
 43. 15_collision_limits: How many collisions can be processed across many primitives.
 44. 18_moddable_game: How you can make a game where content is authored by the player (modding support).
-45. 19_lowrez_jam: How to use ~render_targets~ to create a low resolution game.
-46. 20_roguelike_starting_point: A starting point for a roguelike and explores concepts such as line of sight.
-47. 20_roguelike_starting_point_two: A starting point for a roguelike where sprites are provided from a tile map/tile sheet.
-48. 21_mailbox_usage: How to do interprocess communication.
-49. 22_trace_debugging: Debugging techniques and tracing execution through your game.
-50. 22_trace_debugging_classes: Debugging techniques and tracing execution through your game.
-51. 23_hexagonal_grid: How to make a tactical grid/map made of hexagons.
-52. 23_isometric_grid: How to make a tactical grid/map made of isometric sprites.
-53. 24_http_example: How to make http requests.
-54. 25_3d_experiment_01_square: How to create 3D objects.
-55. 26_jam_craft: Starting point for crafting game. It also shows how to customize the mouse cursor.
-56. 99_sample_game_basic_gorillas: Reference implementation of a full game. Topics covered: physics, keyboard input, collision, sprite animation.
-57. 99_sample_game_clepto_frog: Reference implementation of a full game. Topics covered: camera control, spring/rope physics, scene orchestration.
-58. 99_sample_game_dueling_starships: Reference implementation that shows local multiplayer. Topics covered: vectors, particles, friction, inertia.
-59. 99_sample_game_flappy_dragon: Reference implementation that is a clone of Flappy Bird. Topics covered: scene orchestration, collision, sound, sprite animations, lerping.
-60. 99_sample_game_pong: Reference implementation of pong.
-61. 99_sample_game_return_of_serenity: Reference implementation of low resolution story based game.
-62. 99_sample_game_the_little_probe: Reference implementation of a full game. Topics covered: Arbitrary collision detection, loading map data, bounce/ball physics.
-63. 99_sample_nddnug_workshop: Reference implementation of a full game. Topics covered: vectors, controller input, sound, trig functions.
-64. 99_sample_snakemoji: Shows that Ruby supports coding with emojis.
-65. 99_zz_gtk_unit_tests: A collection of unit tests that exercise parts of DragonRuby's API.
+45. 19_lowrez_jam_01_hello_world: How to use ~render_targets~ to create a low resolution game.
+46. 19_lowrez_jam_02_buttons: How to use ~render_targets~ to create a low resolution game.
+47. 19_lowrez_jam_03_space_shooter: How to use ~render_targets~ to create a low resolution game.
+48. 20_roguelike_starting_point: A starting point for a roguelike and explores concepts such as line of sight.
+49. 20_roguelike_starting_point_two: A starting point for a roguelike where sprites are provided from a tile map/tile sheet.
+50. 21_mailbox_usage: How to do interprocess communication.
+51. 22_trace_debugging: Debugging techniques and tracing execution through your game.
+52. 22_trace_debugging_classes: Debugging techniques and tracing execution through your game.
+53. 23_hexagonal_grid: How to make a tactical grid/map made of hexagons.
+54. 23_isometric_grid: How to make a tactical grid/map made of isometric sprites.
+55. 24_http_example: How to make http requests.
+56. 25_3d_experiment_01_square: How to create 3D objects.
+57. 26_jam_craft: Starting point for crafting game. It also shows how to customize the mouse cursor.
+58. 99_sample_game_basic_gorillas: Reference implementation of a full game. Topics covered: physics, keyboard input, collision, sprite animation.
+59. 99_sample_game_clepto_frog: Reference implementation of a full game. Topics covered: camera control, spring/rope physics, scene orchestration.
+60. 99_sample_game_dueling_starships: Reference implementation that shows local multiplayer. Topics covered: vectors, particles, friction, inertia.
+61. 99_sample_game_flappy_dragon: Reference implementation that is a clone of Flappy Bird. Topics covered: scene orchestration, collision, sound, sprite animations, lerping.
+62. 99_sample_game_pong: Reference implementation of pong.
+63. 99_sample_game_return_of_serenity: Reference implementation of low resolution story based game.
+64. 99_sample_game_the_little_probe: Reference implementation of a full game. Topics covered: Arbitrary collision detection, loading map data, bounce/ball physics.
+65. 99_sample_nddnug_workshop: Reference implementation of a full game. Topics covered: vectors, controller input, sound, trig functions.
+66. 99_sample_snakemoji: Shows that Ruby supports coding with emojis.
+67. 99_zz_gtk_unit_tests: A collection of unit tests that exercise parts of DragonRuby's API.
 
-S
-    end
 
-    def docs_deployment
-<<-S
 
 * Deploying To Itch.io
 
@@ -482,11 +452,7 @@ friends to go to your game's very own webpage and buy it!
 
 If you make changes to your game, just re-run dragonruby-publish and it'll
 update the downloads for you.
-S
-    end
 
-    def docs_dragonruby_philosophy
-      <<-S
 ** DragonRuby's Philosophy
 
 The following tenants of DragonRuby are what set us apart from other
@@ -572,11 +538,7 @@ anything speculative.
 We want DragonRuby to *actually* help you build the game you
 want to build (as opposed to sell you something piece of demoware that
 doesn't work).
-S
-    end
 
-    def docs_ticks_and_frames
-      <<-S
 * How To Determine What Frame You Are On
 
 There is a property on ~state~ called ~tick_count~ that is incremented
@@ -585,7 +547,7 @@ code renders a label that displays the current ~tick_count~.
 
 #+begin_src ruby
   def tick args
-    args.outputs.labels << [10, 670, "\#{args.state.tick_count}"]
+    args.outputs.labels << [10, 670, "#{args.state.tick_count}"]
   end
 #+end_src
 
@@ -596,18 +558,14 @@ and is accessible via ~args.gtk.current_framerate~.
 
 #+begin_src ruby
   def tick args
-    args.outputs.labels << [10, 710, "framerate: \#{args.gtk.current_framerate.round}"]
+    args.outputs.labels << [10, 710, "framerate: #{args.gtk.current_framerate.round}"]
   end
 #+end_src
-S
-    end
 
-    def docs_sprites
-      <<-S
 * How To Render A Sprite Using An Array
 
 All file paths should use the forward slash ~/~ *not* backslash
-~\~. Game Toolkit includes a number of sprites in the ~sprites~
+~~. Game Toolkit includes a number of sprites in the ~sprites~
 folder (everything about your game is located in the ~mygame~ directory).
 
 The following code renders a sprite with a ~width~ and ~height~ of
@@ -713,11 +671,7 @@ You can represent a sprite as an ~object~:
                                             h: 50)
   end
 #+end_src
-S
-    end
 
-    def docs_labels
-      <<-S
 * How To Render A Label
 
 ~args.outputs.labels~ is used to render labels.
@@ -815,16 +769,12 @@ You can get the render size of any string using ~args.gtk.calcstringbox~.
     args.outputs.labels << [
       10,
       710,
-      # This string uses Ruby's string interpolation literal: \#{}
-      "'some string' has width: \#{w}, and height: \#{h}."
+      # This string uses Ruby's string interpolation literal: #{}
+      "'some string' has width: #{w}, and height: #{h}."
     ]
   end
 #+end_src
-S
-    end
 
-    def docs_sounds
-      <<-S
 * How To Play A Sound
 
 Sounds that end ~.wav~ will play once:
@@ -859,11 +809,7 @@ If you want to play a ~.ogg~ once as if it were a sound effect, you can do:
     end
   end
 #+end_src
-S
-    end
 
-    def docs_game_state
-      <<-S
 * Using ~args.state~ To Store Your Game State
 
 ~args.state~ is a open data structure that allows you to define
@@ -901,45 +847,7 @@ sure_ you've initialized a default value.
     ]
   end
 #+end_src
-S
-    end
 
-    def animate_a_sprite
-      <<-S
-* How To Animate A Sprite Using Separate PNGs
-
-DragonRuby has a property on ~Numeric~ called ~frame_index~ that can
-be used to determine what frame of an animation to show. Here is an
-example of how to cycle through 6 sprites every 4 frames.
-
-#+begin_src ruby
-  def tick args
-    start_looping_at = 0
-    number_of_sprites = 6
-    number_of_frames_to_show_each_sprite = 4
-    does_sprite_loop = true
-
-    sprite_index =
-      start_looping_at.frame_index number_of_sprites,
-                                   number_of_frames_to_show_each_sprite,
-                                   does_sprite_loop
-
-    sprite_index ||= 0
-
-    args.outputs.sprites << [
-      640 - 50,
-      360 - 50,
-      100,
-      100,
-      "sprites/dragon-\#{sprite_index}.png"
-    ]
-  end
-#+end_src
-S
-    end
-
-    def docs_faq
-<<-S
 * Frequently Asked Questions, Comments, and Concerns
 
 Here are questions, comments, and concerns that frequently come
@@ -1156,12 +1064,586 @@ to great lengths to make that happen.
 But, in the event that sad day comes, our partnershiop bylaws state that
 _all_ DragonRuby IP that can be legally open sourced, will be released
 under a permissive license.
-S
+
+* DOCS: ~GTK::Runtime~
+The GTK::Runtime class is the core of DragonRuby. It is globally accessible via ~$gtk~.
+
+* DOCS: ~GTK::Runtime#calcstringbox~
+This function returns the width and height of a string.
+
+#+begin_src ruby
+  def tick args
+    args.state.string_size           ||= args.gtk.calcstringbox "Hello World"
+    args.state.string_size_font_size ||= args.gtk.calcstringbox "Hello World"
+  end
+#+end_src
+
+* DOCS: ~GTK::Runtime#reset~
+This function will reset Kernel.tick_count to 0 and will remove all data from args.state.
+
+* DOCS: ~Array~
+
+The Array class has been extend to provide methods that
+will help in common game development tasks. Array is one of the most
+powerful classes in Ruby and a very fundamental component of Game Toolkit.
+
+
+* DOCS: ~Array#map~
+
+The function given a block returns a new ~Enumerable~ of values.
+
+Example of using ~Array#map~ in conjunction with ~args.state~ and
+~args.outputs.sprites~ to render sprites to the screen.
+
+#+begin_src
+  def tick args
+    # define the colors of the rainbow in ~args.state~
+    # as an ~Array~ of ~Hash~es with :order and :name.
+    # :order will be used to determine render location
+    #  and :name will be used to determine sprite path.
+    args.state.rainbow_colors ||= [
+      { order: 0, name: :red    },
+      { order: 1, name: :orange },
+      { order: 2, name: :yellow },
+      { order: 3, name: :green  },
+      { order: 4, name: :blue   },
+      { order: 5, name: :indigo },
+      { order: 6, name: :violet },
+    ]
+
+    # render sprites diagonally to the screen
+    # with a width and height of 50.
+    args.outputs
+        .sprites << args.state
+                        .rainbow_colors
+                        .map do |color| # <-- ~Array#map~ usage
+                          [
+                            color[:order] * 50,
+                            color[:order] * 50,
+                            50,
+                            50,
+                            "sprites/square-#{color[:name]}.png"
+                          ]
+                        end
+  end
+#+end_src
+
+
+* DOCS: ~Array#each~
+
+The function, given a block, invokes the block for each item in the
+~Array~. ~Array#each~ is synonymous to foreach constructs in other languages.
+
+Example of using ~Array#each~ in conjunction with ~args.state~ and
+~args.outputs.sprites~ to render sprites to the screen:
+
+#+begin_src
+  def tick args
+    # define the colors of the rainbow in ~args.state~
+    # as an ~Array~ of ~Hash~es with :order and :name.
+    # :order will be used to determine render location
+    #  and :name will be used to determine sprite path.
+    args.state.rainbow_colors ||= [
+      { order: 0, name: :red    },
+      { order: 1, name: :orange },
+      { order: 2, name: :yellow },
+      { order: 3, name: :green  },
+      { order: 4, name: :blue   },
+      { order: 5, name: :indigo },
+      { order: 6, name: :violet },
+    ]
+
+    # render sprites diagonally to the screen
+    # with a width and height of 50.
+    args.state
+        .rainbow_colors
+        .map do |color| # <-- ~Array#each~ usage
+          args.outputs.sprites << [
+            color[:order] * 50,
+            color[:order] * 50,
+            50,
+            50,
+            "sprites/square-#{color[:name]}.png"
+          ]
+        end
+  end
+#+end_src
+
+
+* DOCS: ~Array#reject_nil~
+
+Returns an ~Enumerable~ rejecting items that are ~nil~, this is an alias
+for ~Array#compact~:
+
+#+begin_src
+  repl do
+    a = [1, nil, 4, false, :a]
+    puts a.reject_nil
+    # => [1, 4, false, :a]
+    puts a.compact
+    # => [1, 4, false, :a]
+  end
+#+end_src
+
+
+* DOCS: ~Array#reject_false~
+
+Returns an `Enumerable` rejecting items that are `nil` or `false`.
+
+#+begin_src
+  repl do
+    a = [1, nil, 4, false, :a]
+    puts a.reject_false
+    # => [1, 4, :a]
+  end
+#+end_src
+
+
+* DOCS: ~Array#product~
+
+Returns all combinations of values between two arrays.
+
+Here are some examples of using ~product~. Paste the
+following code at the bottom of main.rb and save
+the file to see the results:
+
+#+begin_src
+  repl do
+    a = [0, 1]
+    puts a.product
+    # => [[0, 0], [0, 1], [1, 0], [1, 1]]
+  end
+#+end_src
+
+#+begin_src
+  repl do
+    a = [ 0,  1]
+    b = [:a, :b]
+    puts a.product b
+    # => [[0, :a], [0, :b], [1, :a], [1, :b]]
+  end
+#+end_src
+
+
+* DOCS: ~Array#map_2d~
+
+Assuming the array is an array of arrays, Given a block, each 2D array index invoked against the block.
+A 2D array is a common way to store data/layout for a stage.
+
+#+begin_src
+  repl do
+    stage = [
+      [:enemy, :empty, :player],
+      [:empty, :empty,  :empty],
+      [:enemy, :empty,  :enemy],
+    ]
+
+    occupied_tiles = stage.map_2d do |row, col, tile|
+      if tile == :empty
+        nil
+      else
+        [row, col, tile]
+      end
+    end.reject_nil
+
+    puts "Stage:"
+    puts stage
+
+    puts "Occupied Tiles"
+    puts occupied_tiles
+  end
+#+end_src
+
+
+* DOCS: ~Array#include_any?~
+
+Given a collection of items, the function will return
+~true~ if any of ~self~'s items exists in the collection of items passed in:
+
+
+* DOCS: ~Array#any_intersect_rect?~
+
+Assuming the array contains objects that respond to ~left~, ~right~, ~top~, ~bottom~,
+this method returns ~true~ if any of the elements within
+the array intersect the object being passed in. You are given an optional
+parameter called ~tolerance~ which informs how close to the other rectangles
+the elements need to be for it to be considered intersecting.
+
+The default tolerance is set to ~0.1~, which means that the primitives are not
+considered intersecting unless they are overlapping by more than ~0.1~.
+
+#+begin_src
+  repl do
+    # Here is a player class that has position and implement
+    # the ~attr_rect~ contract.
+    class Player
+      attr_rect
+      attr_accessor :x, :y, :w, :h
+
+      def initialize x, y, w, h
+        @x = x
+        @y = y
+        @w = w
+        @h = h
+      end
+
+      def serialize
+        { x: @x, y: @y, w: @w, h: @h }
+      end
+
+      def inspect
+        "#{serialize}"
+      end
+
+      def to_s
+        "#{serialize}"
+      end
+    end
+
+    # Here is a definition of two walls.
+    walls = [
+       [10, 10, 10, 10],
+       { x: 20, y: 20, w: 10, h: 10 },
+     ]
+
+    # Display the walls.
+    puts "Walls."
+    puts walls
+    puts ""
+
+    # Check any_intersect_rect? on player
+    player = Player.new 30, 20, 10, 10
+    puts "Is Player #{player} touching wall?"
+    puts (walls.any_intersect_rect? player)
+    # => false
+    # The value is false because of the default tolerance is 0.1.
+    # The overlap of the player rect and any of the wall rects is
+    # less than 0.1 (for those that intersect).
+    puts ""
+
+    player = Player.new 9, 10, 10, 10
+    puts "Is Player #{player} touching wall?"
+    puts (walls.any_intersect_rect? player)
+    # => true
+    puts ""
+  end
+#+end_src
+
+
+* DOCS: ~GTK::Outputs~
+
+Outputs is how you render primitives to the screen. The minimal setup for
+rendering something to the screen is via a ~tick~ method defined in
+mygame/app/main.rb
+
+#+begin_src
+  def tick args
+    # code goes here
+  end
+#+end_src
+
+
+* DOCS: ~GTK::Outputs#borders~
+
+Add primitives to this collection to render an unfilled solid to the screen. Take a look at the
+documentation for Outputs#solids.
+
+The only difference between the two primitives is where they are added.
+
+Instead of using ~args.outputs.solids~:
+
+#+begin_src
+  def tick args
+    #                         X    Y  WIDTH  HEIGHT
+    args.outputs.solids << [100, 100,   160,     90]
+  end
+#+end_src
+
+You have to use ~args.outputs.borders~:
+
+#+begin_src
+  def tick args
+    #                           X    Y  WIDTH  HEIGHT
+    args.outputs.borders << [100, 100,   160,     90]
+  end
+#+end_src
+
+
+* DOCS: ~GTK::Outputs#solids~
+
+Add primitives to this collection to render a solid to the screen.
+
+** Rendering a solid using an Array
+
+Creates a solid black rectangle located at 100, 100. 160 pixels
+wide and 90 pixels tall.
+
+#+begin_src
+  def tick args
+    #                         X    Y  WIDTH  HEIGHT
+    args.outputs.solids << [100, 100,   160,     90]
+  end
+#+end_src
+
+** Rendering a solid using an Array with colors and alpha
+
+The value for the color and alpha is an number between ~0~ and ~255~. The
+alpha property is optional and will be set to ~255~ if not specified.
+
+Creates a green solid rectangle with an opacity of 50%.
+
+#+begin_src
+  def tick args
+    #                         X    Y  WIDTH  HEIGHT  RED  GREEN  BLUE  ALPHA
+    args.outputs.solids << [100, 100,   160,     90,   0,   255,    0,   128]
+  end
+#+end_src
+
+** Rendering a solid using a Hash
+
+If you want a more readable invocation. You can use the following hash to create a solid.
+Any parameters that are not specified will be given a default value. The keys of the hash can
+be provided in any order.
+
+#+begin_src
+  def tick args
+    args.outputs.solids << {
+      x:    0,
+      y:    0,
+      w:  100,
+      h:  100,
+      r:    0,
+      g:  255,
+      b:    0,
+      a:  255
+    }
+  end
+#+end_src
+
+** Rendering a solid using a Class
+
+You can also create a class with solid/border properties and render it as a primitive.
+ALL properties must on the class. *Additionally*, a method called ~primitive_marker~
+must be defined on the class.
+
+Here is an example:
+
+#+begin_src
+  # Create type with ALL solid properties AND primitive_marker
+  class Solid
+    attr_accessor :x, :y, :w, :h, :r, :g, :b, :a
+
+    def primitive_marker
+      :solid
     end
   end
 
-  class ReadMe
-    extend Docs
-    extend ReadMeDocs
+  # Inherit from type
+  class Square < Solid
+    # constructor
+    def initialize x, y, size
+      self.x = x
+      self.y = y
+      self.w = size
+      self.h = size
+    end
   end
-end
+
+  def tick args
+    # render solid/border
+    args.outputs.solids  << Square.new(10, 10, 32)
+  end
+#+end_src
+
+
+* DOCS: ~GTK::Mouse~
+
+The mouse is accessible via ~args.inputs.mouse~:
+
+#+begin_src ruby
+  def tick args
+    # Rendering a label that shows the mouse's x and y position (via args.inputs.mouse).
+    args.outputs.labels << [
+      10,
+      710,
+      "The mouse's position is: #{args.inputs.mouse.x} #{args.inputs.mouse.y}."
+    ]
+  end
+#+end_src
+
+The mouse has the following properties.
+
+- ~args.inputs.mouse.x~: Returns the x position of the mouse.
+- ~args.inputs.mouse.y~: Returns the y position of the mouse.
+- ~args.inputs.mouse.moved~: Returns true if the mouse moved during the tick.
+- ~args.inputs.mouse.moved_at~: Returns the tick_count (~args.state.tick_count~) that the mouse was moved at. This property will be ~nil~ if the mouse didn't move.
+- ~args.inputs.mouse.global_moved_at~: Returns the global tick_count (~Kernel.global_tick_count~) that the mouse was moved at. This property will be ~nil~ if the mouse didn't move.
+- ~args.inputs.mouse.click~: Returns a ~GTK::MousePoint~ for that specific frame (~args.state.tick_count~) if the mouse button was pressed.
+- ~args.inputs.mouse.previous_click~: Returns a ~GTK::MousePoint~ for the previous frame (~args.state.tick_count - 1~) if the mouse button was pressed.
+- ~args.inputs.mouse.up~: Returns true if for that specific frame (~args.state.tick_count~) if the mouse button was released.
+- ~args.inputs.mouse.point~ | ~args.inputs.mouse.position~: Returns an ~Array~ which contains the ~x~ and ~y~ position of the mouse.
+- ~args.inputs.mouse.has_focus~: Returns true if the game window has the mouse's focus.
+- ~args.inputs.mouse.wheel~: Returns an ~GTK::OpenEntity~ that contains an ~x~ and ~y~ property which represents how much the wheel has moved. If the wheel has not moved within the tick, this property will be ~nil~.
+- ~args.inputs.mouse.button_left~: Returns true if the left mouse button is down.
+- ~args.inputs.mouse.button_right~: Returns true if the right mouse button is down.
+- ~args.inputs.mouse.button_middle~: Returns true if the middle mouse button is down.
+- ~args.inputs.mouse.button_bits~: Gives the bits for each mouse button and its current state.
+
+* DOCS: ~GTK::MousePoint~
+
+The ~GTK::MousePoint~ has the following properties.
+
+- ~x~: Integer representing the mouse's x.
+- ~y~: Integer representing the mouse's y.
+- ~point~: Array with the ~x~ and ~y~ values.
+- ~w~: Width of the point that always returns ~0~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
+- ~h~: Height of the point that always returns ~0~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
+- ~left~: This value is the same as ~x~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
+- ~right~: This value is the same as ~x~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
+- ~top~: This value is the same as ~y~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
+- ~bottom~: This value is the same as ~y~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
+- ~created_at~: The tick (~args.state.tick_count~) that this structure was created.
+- ~global_created_at~: The global tick (~Kernel.global_tick_count~) that this structure was created.
+
+
+* DOCS: ~GTK::OpenEntity~
+
+~GTK::OpenEntity~ is accessible within the DragonRuby's top level
+~tick~ function via the ~args.state~ property.
+
+#+begin_src
+  def tick args
+    args.state.x ||= 100
+    args.outputs.labels << [10, 710, "value of x is: #{args.state.x}."]
+  end
+#+end_src
+
+The primary benefit of using ~args.state~ as opposed to instance
+variables is that ~GTK::OpenEntity~ allows for arbitrary nesting
+of properties without the need to create intermediate objects.
+
+For example:
+
+#+begin_src
+  def tick args
+    # intermediate player object does not need to be created
+    args.state.player.x ||= 100
+    args.state.player.y ||= 100
+    args.outputs.labels << [
+      10,
+      710,
+      "player x, y is:#{args.state.player.x}, #{args.state.player.y}."
+    ]
+  end
+#+end_src
+
+
+* DOCS: ~GTK::OpenEntity#as_hash~
+
+Returns a reference to the ~GTK::OpenEntity~ as a ~Hash~. This
+property is useful when you want to treat ~args.state~ as a ~Hash~ and
+invoke methods such as ~Hash#each~.
+
+Example:
+
+#+begin_src
+  def tick args
+    args.state.x ||= 100
+    args.state.y ||= 100
+    values = args.state
+                 .as_hash
+                 .map { |k, v| "#{k} #{v}" }
+
+    args.outputs.labels << values.map.with_index do |v, i|
+      [
+        10,
+        710 - (30 * i),
+        v
+      ]
+    end
+  end
+#+end_src
+
+
+* DOCS: ~Numeric#frame_index~
+
+This function is helpful for determining the index of frame-by-frame
+  sprite animation. The numeric value ~self~ represents the moment the
+  animation started.
+
+~frame_index~ takes three additional parameters:
+
+- How many frames exist in the sprite animation.
+- How long to hold each animation for.
+- Whether the animation should repeat.
+
+~frame_index~ will return ~nil~ if the time for the animation is out
+of bounds of the parameter specification.
+
+Example using variables:
+
+#+begin_src ruby
+  def tick args
+    start_looping_at = 0
+    number_of_sprites = 6
+    number_of_frames_to_show_each_sprite = 4
+    does_sprite_loop = true
+
+    sprite_index =
+      start_looping_at.frame_index number_of_sprites,
+                                   number_of_frames_to_show_each_sprite,
+                                   does_sprite_loop
+
+    sprite_index ||= 0
+
+    args.outputs.sprites << [
+      640 - 50,
+      360 - 50,
+      100,
+      100,
+      "sprites/dragon-#{sprite_index}.png"
+    ]
+  end
+#+end_src
+
+Example using named parameters:
+
+#+begin_src ruby
+  def tick args
+    start_looping_at = 0
+
+    sprite_index =
+      start_looping_at.frame_index count: 6,
+                                   hold_for: 4,
+                                   repeat: true,
+                                   tick_count_override: args.state.tick_count
+
+    sprite_index ||= 0
+
+    args.outputs.sprites << [
+      640 - 50,
+      360 - 50,
+      100,
+      100,
+      "sprites/dragon-#{sprite_index}.png"
+    ]
+  end
+#+end_src
+
+
+* DOCS: ~Kernel~
+
+Kernel in the DragonRuby Runtime has patches for how standard out is handled and also
+contains a unit of time in games called a tick.
+
+
+* DOCS: ~Kernel::tick_count~
+
+Returns the current tick of the game. This value is reset if you call $gtk.reset.
+
+
+* DOCS: ~Kernel::global_tick_count~
+
+Returns the current tick of the application from the point it was started. This value is never reset.
+
+

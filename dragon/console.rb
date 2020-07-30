@@ -297,6 +297,9 @@ S
                 log results
               end
             end
+
+            puts "#{e}"
+            log "#{e}"
           end
         end
       end

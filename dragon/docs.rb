@@ -30,6 +30,7 @@ module DocsOrganizer
       GTK::Runtime,
       Array,
       GTK::Outputs,
+      GTK::Mouse,
       GTK::OpenEntity,
       Numeric,
       Kernel,
@@ -352,23 +353,44 @@ S
       text
     end
 
+    close_list_if_needed = lambda do |inside_ul, inside_ol|
+      result = ""
+      if inside_ul
+        result = "</ul>\n"
+      elsif inside_ol
+        result = "</ol>\n"
+      end
+    end
+
+    inside_ol = false
+    inside_ul = false
+
     toc = "<h1>Table Of Contents</h1>\n<ul>\n"
     parse_log << "* Processing Html Given True Lines"
     true_lines.each do |l|
       parse_log << "** Processing line: ~#{l.rstrip}~"
       if l.start_with? "* "
+        content_html += close_list_if_needed.call inside_ul, inside_ol
+        inside_ol = false
+        inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
         link_id = text_to_id.call l
         toc += "<li><a href='##{link_id}'>#{formatted_html}</a></li>\n"
         parse_log << "- H1 detected."
         content_html += "<h1 id='#{link_id}'>#{formatted_html}</h1>\n"
       elsif l.start_with? "** "
+        content_html += close_list_if_needed.call inside_ul, inside_ol
+        inside_ol = false
+        inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
         link_id = text_to_id.call l
         # toc += "<a href='##{link_id}'>#{formatted_html}</a></br>\n"
         parse_log << "- H2 detected."
         content_html += "<h2>#{__docs_line_to_html__ l, parse_log}</h2>\n"
       elsif l.start_with? "*** "
+        content_html += close_list_if_needed.call inside_ul, inside_ol
+        inside_ol = false
+        inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
         link_id = text_to_id.call l
         # toc += "<a href='##{link_id}'>#{formatted_html}</a></br>\n"
@@ -377,14 +399,22 @@ S
       elsif l.strip.length == 0 && !inside_pre
         # do nothing
       elsif l.start_with? "#+begin_src"
+        content_html += close_list_if_needed.call inside_ul, inside_ol
+        inside_ol = false
+        inside_ul = false
         parse_log << "- PRE start detected."
         inside_pre = true
         content_html << "<pre>"
       elsif l.start_with? "#+end_src"
         parse_log << "- PRE end detected."
+        inside_ol = false
+        inside_ul = false
         inside_pre = false
         content_html << "</pre>\n"
       elsif l.start_with? "#+begin_quote"
+        content_html += close_list_if_needed.call inside_ul, inside_ol
+        inside_ol = false
+        inside_ul = false
         parse_log << "- BLOCKQUOTE start detected."
         content_html << "<blockquote>\n"
       elsif l.start_with? "#+end_quote"
@@ -470,6 +500,7 @@ S
 
     tilde_count = line.count "~"
     line_has_link_marker = (line.include? "[[") && (line.include? "]]")
+    parse_log << "- Formatting line: ~#{line}~"
     parse_log << "- Line's tilde count is: #{tilde_count}"
     parse_log << "- Line contains link marker: #{line_has_link_marker}"
 
@@ -488,6 +519,7 @@ S
           line_to_format << "<code>"
         elsif c == "~" && in_code
           line_to_format << "</code>"
+          in_code = false
         else
           line_to_format << c
         end
@@ -510,12 +542,12 @@ S
           in_link = true
           link_url = ""
         elsif in_link && c == "]"
+          in_link = false
           if link_url.end_with? ".gif"
             line_to_format << "<img src='#{link_url}'></img>"
           else
             line_to_format << "<a href='#{link_url}'>#{link_url}</a>"
           end
-          in_link = false
         elsif in_link
           link_url << c
         else

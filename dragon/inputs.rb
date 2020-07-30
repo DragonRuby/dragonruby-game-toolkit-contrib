@@ -476,28 +476,9 @@ module GTK
                   :button_x1, :button_x2,
                   :wheel
 
-    # The current click.
-    #
-    # @return [MousePoint]
-    # @gtk
     attr_accessor :click
-
-    # The previous click.
-    #
-    # @return [MousePoint]
-    # @gtk
     attr_accessor :previous_click
-
-    # The "x" coordinate.
-    #
-    # @return [Integer]
-    # @gtk
     attr_accessor :x
-
-    # The "y" coordinate.
-    #
-    # @return [Integer]
-    # @gtk
     attr_accessor :y
 
     def initialize
@@ -513,13 +494,10 @@ module GTK
       clear
     end
 
-    # The "x" and "y" coordinate pair.
-    #
-    # @return [[Integer, Integer]]
-    # @gtk
     def point
       [@x, @y].point
     end
+
     alias_method :position, :point
 
     def clear
@@ -535,19 +513,14 @@ module GTK
       @wheel = nil
     end
 
-    # @return [MousePoint]
-    # @gtk
     def up
       @up
     end
 
-    # @return [MousePoint]
-    # @gtk
     def down
       @click
     end
 
-    # @return [Hash]
     def serialize
       result = {}
 
@@ -566,10 +539,10 @@ module GTK
       result
     end
 
-    # @return [String]
     def to_s
       serialize.to_s
     end
+
     alias_method :inspect, :to_s
   end
 end

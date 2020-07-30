@@ -1,0 +1,63 @@
+* DOCS: ~Numeric#frame_index~
+
+This function is helpful for determining the index of frame-by-frame
+  sprite animation. The numeric value ~self~ represents the moment the
+  animation started.
+
+~frame_index~ takes three additional parameters:
+
+- How many frames exist in the sprite animation.
+- How long to hold each animation for.
+- Whether the animation should repeat.
+
+~frame_index~ will return ~nil~ if the time for the animation is out
+of bounds of the parameter specification.
+
+Example using variables:
+
+#+begin_src ruby
+  def tick args
+    start_looping_at = 0
+    number_of_sprites = 6
+    number_of_frames_to_show_each_sprite = 4
+    does_sprite_loop = true
+
+    sprite_index =
+      start_looping_at.frame_index number_of_sprites,
+                                   number_of_frames_to_show_each_sprite,
+                                   does_sprite_loop
+
+    sprite_index ||= 0
+
+    args.outputs.sprites << [
+      640 - 50,
+      360 - 50,
+      100,
+      100,
+      "sprites/dragon-#{sprite_index}.png"
+    ]
+  end
+#+end_src
+
+Example using named parameters:
+
+#+begin_src ruby
+  start_looping_at = 0
+
+  sprite_index =
+    start_looping_at.frame_index count: 6,
+                                 hold_for: 4,
+                                 repeat: true
+
+  sprite_index ||= 0
+
+  args.outputs.sprites << [
+    640 - 50,
+    360 - 50,
+    100,
+    100,
+    "sprites/dragon-#{sprite_index}.png"
+  ]
+#+end_src
+
+

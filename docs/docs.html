@@ -1,0 +1,1575 @@
+<html>
+  <head>
+    <title>DragonRuby Game Toolkit Documentation</title>
+    <link href="docs.css" rel="stylesheet" type="text/css" media="all">
+    <script src="docs.js"></script>
+  </head>
+  <body>
+    <div id='toc'>
+    <h1>Table Of Contents</h1>
+<ul>
+<li><a href='#--dragonruby-game-toolkit-live-docs'>DragonRuby Game Toolkit Live Docs</a></li>
+<li><a href='#--hello-world'>Hello World</a></li>
+<li><a href='#--join-the-discord-and-subscribe-to-the-news-letter'>Join the Discord and Subscribe to the News Letter</a></li>
+<li><a href='#--watch-some-intro-videos'>Watch Some Intro Videos</a></li>
+<li><a href='#--getting-started-tutorial'>Getting Started Tutorial</a></li>
+<li><a href='#--deploying-to-itch.io'>Deploying To Itch.io</a></li>
+<li><a href='#--how-to-determine-what-frame-you-are-on'>How To Determine What Frame You Are On</a></li>
+<li><a href='#--how-to-get-current-framerate'>How To Get Current Framerate</a></li>
+<li><a href='#--how-to-render-a-sprite-using-an-array'>How To Render A Sprite Using An Array</a></li>
+<li><a href='#--more-sprite-properties-as-an-array'>More Sprite Properties As An Array</a></li>
+<li><a href='#--different-sprite-representations'>Different Sprite Representations</a></li>
+<li><a href='#--how-to-render-a-label'>How To Render A Label</a></li>
+<li><a href='#--a-colored-label'>A Colored Label</a></li>
+<li><a href='#--extended-label-properties'>Extended Label Properties</a></li>
+<li><a href='#--rendering-a-label-as-a--hash-'>Rendering A Label As A <code>Hash</code></a></li>
+<li><a href='#--getting-the-size-of-a-piece-of-text'>Getting The Size Of A Piece Of Text</a></li>
+<li><a href='#--how-to-play-a-sound'>How To Play A Sound</a></li>
+<li><a href='#--using--args.state--to-store-your-game-state'>Using <code>args.state</code> To Store Your Game State</a></li>
+<li><a href='#--frequently-asked-questions,-comments,-and-concerns'>Frequently Asked Questions, Comments, and Concerns</a></li>
+<li><a href='#--docs---gtk--runtime-'><code>GTK::Runtime</code></a></li>
+<li><a href='#--docs---gtk--runtime#calcstringbox-'><code>GTK::Runtime#calcstringbox</code></a></li>
+<li><a href='#--docs---gtk--runtime#reset-'><code>GTK::Runtime#reset</code></a></li>
+<li><a href='#--docs---array-'><code>Array</code></a></li>
+<li><a href='#--docs---array#map-'><code>Array#map</code></a></li>
+<li><a href='#--docs---array#each-'><code>Array#each</code></a></li>
+<li><a href='#--docs---array#reject_nil-'><code>Array#reject_nil</code></a></li>
+<li><a href='#--docs---array#reject_false-'><code>Array#reject_false</code></a></li>
+<li><a href='#--docs---array#product-'><code>Array#product</code></a></li>
+<li><a href='#--docs---array#map_2d-'><code>Array#map_2d</code></a></li>
+<li><a href='#--docs---array#include_any?-'><code>Array#include_any?</code></a></li>
+<li><a href='#--docs---array#any_intersect_rect?-'><code>Array#any_intersect_rect?</code></a></li>
+<li><a href='#--docs---gtk--outputs-'><code>GTK::Outputs</code></a></li>
+<li><a href='#--docs---gtk--outputs#borders-'><code>GTK::Outputs#borders</code></a></li>
+<li><a href='#--docs---gtk--outputs#solids-'><code>GTK::Outputs#solids</code></a></li>
+<li><a href='#--docs---gtk--mouse-'><code>GTK::Mouse</code></a></li>
+<li><a href='#--docs---gtk--mousepoint-'><code>GTK::MousePoint</code></a></li>
+<li><a href='#--docs---gtk--openentity-'><code>GTK::OpenEntity</code></a></li>
+<li><a href='#--docs---gtk--openentity#as_hash-'><code>GTK::OpenEntity#as_hash</code></a></li>
+<li><a href='#--docs---numeric#frame_index-'><code>Numeric#frame_index</code></a></li>
+<li><a href='#--docs---kernel-'><code>Kernel</code></a></li>
+<li><a href='#--docs---kernel--tick_count-'><code>Kernel::tick_count</code></a></li>
+<li><a href='#--docs---kernel--global_tick_count-'><code>Kernel::global_tick_count</code></a></li>
+</ul>
+    </div>
+    <div id='content'>
+    </ol>
+<h1 id='--dragonruby-game-toolkit-live-docs'>DragonRuby Game Toolkit Live Docs</h1>
+<p>
+The information contained here is all available via the DragonRuby Console. You can Open the DragonRuby Console by pressing [`] [~] [²] [^] [º] or [§] within your game.
+</p>
+<p>
+To search docs you can type <code>docs_search "SEARCH TERM"</code> or if you want to get fancy you can provide a <code>lambda</code> to filter documentation:
+</p>
+</ol>
+<pre>docs_search { |entry| (entry.include? "Array") && (!entry.include? "Enumerable") }
+</pre>
+<p>
+<img src='docs_search.gif'></img>
+</p>
+</ol>
+<h1 id='--hello-world'>Hello World</h1>
+<p>
+Welcome to DragonRuby Game Toolkit. Take the steps below to get started.
+</p>
+</ol>
+<h1 id='--join-the-discord-and-subscribe-to-the-news-letter'>Join the Discord and Subscribe to the News Letter</h1>
+<p>
+Our Discord channel is <a href='http://discord.dragonruby.org'>http://discord.dragonruby.org</a>.
+</p>
+<p>
+The News Letter will keep you in the loop with regards to current DragonRuby Events: <a href='http://dragonrubydispatch.com'>http://dragonrubydispatch.com</a>.
+</p>
+<p>
+Those who use DragonRuby are called Dragon Riders. This identity is incredibly important to us. When someone asks you:
+</p>
+</ol>
+<blockquote>
+<p>
+What game engine do you use?
+</p>
+</blockquote>
+<p>
+Reply with:
+</p>
+</ol>
+<blockquote>
+<p>
+I am a Dragon Rider.
+</p>
+</blockquote>
+</ol>
+<h1 id='--watch-some-intro-videos'>Watch Some Intro Videos</h1>
+<p>
+Each video is only 20 minutes and all of them will fit into a lunch break. So please watch them:
+</p>
+<ol>
+<li> Beginner Introduction to DragonRuby Game Toolkit: <a href='https://youtu.be/ixw7TJhU08E'>https://youtu.be/ixw7TJhU08E</a></li>
+<li> Intermediate Introduction to Ruby Syntax: <a href='https://youtu.be/HG-XRZ5Ppgc'>https://youtu.be/HG-XRZ5Ppgc</a></li>
+<li> Intermediate Introduction to Arrays in Ruby: <a href='https://youtu.be/N72sEYFRqfo'>https://youtu.be/N72sEYFRqfo</a></li>
+</ol>
+<p>
+The second and third videos are not required if you are proficient with Ruby, but *definitely* watch the first one.
+</p>
+<p>
+You may also want to try this free course provided at <a href='http://dragonruby.school'>http://dragonruby.school</a>.
+</p>
+</ol>
+<h1 id='--getting-started-tutorial'>Getting Started Tutorial</h1>
+<p>
+This is a tutorial written by Ryan C Gordon (a Juggernaut in the industry who has contracted to Valve, Epic, Activision, and EA... check out his Wikipedia page: <a href='https://en.wikipedia.org/wiki/Ryan_C._Gordon'>https://en.wikipedia.org/wiki/Ryan_C._Gordon</a>).
+</p>
+</ol>
+<h2>Introduction</h2>
+<p>
+Welcome!
+</p>
+<p>
+Here's just a little push to get you started if you're new to programming or game development.
+</p>
+<p>
+If you want to write a game, it's no different than writing any other program for any other framework: there are a few simple rules that might be new to you, but more or less programming is programming no matter what you are building.
+</p>
+<p>
+Did you not know that? Did you think you couldn't write a game because you're a "web guy" or you're writing Java at a desk job? Stop letting people tell you that you can't, because you already have everything you need.
+</p>
+<p>
+Here, we're going to be programming in a language called "Ruby." In the interest of full disclosure, I (Ryan Gordon) wrote the C parts of this toolkit and Ruby looks a little strange to me (Amir Rajan wrote the Ruby parts, discounting the parts I mangled), but I'm going to walk you through the basics because we're all learning together, and if you mostly think of yourself as someone that writes C (or C++, C#, Objective-C), PHP, or Java, then you're only a step behind me right now.
+</p>
+</ol>
+<h2>Prerequisites</h2>
+<p>
+Here's the most important thing you should know: Ruby lets you do some complicated things really easily, and you can learn that stuff later. I'm going to show you one or two cool tricks, but that's all.
+</p>
+<p>
+Do you know what an if statement is? A for-loop? An array? That's all you'll need to start.
+</p>
+</ol>
+<h2>The Game Loop</h2>
+<p>
+Ok, here are few rules with regards to game development with GTK:
+</p>
+<ul>
+<li>Your game is all going to happen under one function ...</li>
+<li>that runs 60 times a second ...</li>
+<li>and has to tell the computer what to draw each time.</li>
+</ul>
+<p>
+That's an entire video game in one run-on sentence.
+</p>
+<p>
+Here's that function. You're going to want to put this in mygame/app/main.rb, because that's where we'll look for it by default. Load it up in your favorite text editor.
+</p>
+</ol>
+<pre>def tick args
+  args.outputs.labels << [580, 400, 'Hello World!']
+end
+</pre>
+<p>
+Now run <code>dragonruby</code> ...did you get a window with "Hello World!" written in it? Good, you're officially a game developer!
+</p>
+</ol>
+<h2>Breakdown Of The <code>tick</code> Method</h2>
+<p>
+<code>mygame/app/main.rb</code>, is where the Ruby source code is located. This looks a little strange, so I'll break it down line by line. In Ruby, a '#' character starts a single-line comment, so I'll talk about this inline.
+</p>
+</ol>
+<pre># This "def"ines a function, named "tick," which takes a single argument
+# named "args". DragonRuby looks for this function and calls it every
+# frame, 60 times a second. "args" is a magic structure with lots of
+# information in it. You can set variables in there for your own game state,
+# and every frame it will updated if keys are pressed, joysticks moved,
+# mice clicked, etc.
+def tick args
+
+  # One of the things in "args" is the "outputs" object that your game uses
+  # to draw things. Afraid of rendering APIs? No problem. In DragonRuby,
+  # you use arrays to draw things and we figure out the details.
+  # If you want to draw text on the screen, you give it an array (the thing
+  # in the [ brackets ]), with an X and Y coordinate and the text to draw.
+  # The "<<" thing says "append this array onto the list of them at
+  # args.outputs.labels)
+  args.outputs.labels << [580, 400, 'Hello World!']
+end
+</pre>
+<p>
+Once your <code>tick</code> function finishes, we look at all the arrays you made and figure out how to draw it. You don't need to know about graphics APIs. You're just setting up some arrays! DragonRuby clears out these arrays every frame, so you just need to add what you need _right now_ each time.
+</p>
+</ol>
+<h2>Rendering A Sprite</h2>
+<p>
+Now let's spice this up a little.
+</p>
+<p>
+We're going to add some graphics. Each 2D image in DragonRuby is called a "sprite," and to use them, you just make sure they exist in a reasonable file format (png, jpg, gif, bmp, etc) and specify them by filename. The first time you use one, DragonRuby will load it and keep it in video memory for fast access in the future. If you use a filename that doesn't exist, you get a fun checkerboard pattern!
+</p>
+<p>
+There's a "dragonruby.png" file included, just to get you started. Let's have it draw every frame with our text:
+</p>
+</ol>
+<pre>def tick args
+  args.outputs.labels  << [580, 400, 'Hello World!']
+  args.outputs.sprites << [576, 100, 128, 101, 'dragonruby.png']
+end
+</pre>
+<p>
+(Pro Tip: you don't have to restart DragonRuby to test your changes; when you save main.rb, DragonRuby will notice and reload your program.)
+</p>
+<p>
+That <code>.sprites</code> line says "add a sprite to the list of sprites we're drawing, and draw it at position (576, 100) at a size of 128x101 pixels". You can find the image to draw at dragonruby.png.
+</p>
+</ol>
+<h2>Coordinate System and Virtual Canvas</h2>
+<p>
+Quick note about coordinates: (0, 0) is the bottom left corner of the screen, and positive numbers go up and to the right. This is more "geometrically correct," even if it's not how you remember doing 2D graphics, but we chose this for a simpler reason: when you're making Super Mario Brothers and you want Mario to jump, you should be able to add to Mario's y position as he goes up and subtract as he falls. It makes things easier to understand.
+</p>
+<p>
+Also: your game screen is _always_ 1280x720 pixels. If you resize the window, we will scale and letterbox everything appropriately, so you never have to worry about different resolutions.
+</p>
+<p>
+Ok, now we have an image on the screen, let's animate it:
+</p>
+</ol>
+<pre>def tick args
+  args.state.rotation  ||= 0
+  args.outputs.labels  << [580, 400, 'Hello World!' ]
+  args.outputs.sprites << [576, 100, 128, 101, 'dragonruby.png', args.state.rotation]
+  args.state.rotation  -= 1
+end
+</pre>
+<p>
+Now you can see that this function is getting called a lot!
+</p>
+</ol>
+<h2>Game State</h2>
+<p>
+Here's a fun Ruby thing: <code>args.state.rotation ||= 0</code> is shorthand for "if args.state.rotation isn't initialized, set it to zero." It's a nice way to embed your initialization code right next to where you need the variable.
+</p>
+<p>
+<code>args.state</code> is a place you can hang your own data and have it survive past the life of the function call. In this case, the current rotation of our sprite, which is happily spinning at 60 frames per second. If you don't specify rotation (or alpha, or color modulation, or a source rectangle, etc), DragonRuby picks a reasonable default, and the array is ordered by the most likely things you need to tell us: position, size, name.
+</p>
+</ol>
+<h2>There Is No Delta Time</h2>
+<p>
+One thing we decided to do in DragonRuby is not make you worry about delta time: your function runs at 60 frames per second (about 16 milliseconds) and that's that. Having to worry about framerate is something massive triple-AAA games do, but for fun little 2D games? You'd have to work really hard to not hit 60fps. All your drawing is happening on a GPU designed to run Fortnite quickly; it can definitely handle this.
+</p>
+<p>
+Since we didn't make you worry about delta time, you can just move the rotation by 1 every time and it works without you having to keep track of time and math. Want it to move faster? Subtract 2.
+</p>
+</ol>
+<h2>Handling User Input</h2>
+<p>
+Now, let's move that image around.
+</p>
+</ol>
+<pre>def tick args
+  args.state.rotation ||= 0
+  args.state.x ||= 576
+  args.state.y ||= 100
+
+  if args.inputs.mouse.click
+    args.state.x = args.inputs.mouse.click.point.x - 64
+    args.state.y = args.inputs.mouse.click.point.y - 50
+  end
+
+  args.outputs.labels  << [580, 400, 'Hello World!']
+  args.outputs.sprites << [args.state.x,
+                           args.state.y,
+                           128,
+                           101,
+                           'dragonruby.png',
+                           args.state.rotation]
+
+  args.state.rotation -= 1
+end
+</pre>
+<p>
+Everywhere you click your mouse, the image moves there. We set a default location for it with <code>args.state.x ||= 576</code>, and then we change those variables when we see the mouse button in action. You can get at the keyboard and game controllers in similar ways.
+</p>
+</ol>
+<h2>Coding On A Raspberry Pi</h2>
+<p>
+We have only tested DragonRuby on a Raspberry Pi 3, Models B and B+, but we believe it _should_ work on any model with comparable specs.
+</p>
+<p>
+If you're running DragonRuby Game Toolkit on a Raspberry Pi, or trying to run a game made with the Toolkit on a Raspberry Pi, and it's really really slow-- like one frame every few seconds--then there's likely a simple fix.
+</p>
+<p>
+You're probably running a desktop environment: menus, apps, web browsers, etc. This is okay! Launch the terminal app and type:
+</p>
+</ol>
+<pre>do raspi-config
+</pre>
+<p>
+It'll ask you for your password (if you don't know, try "raspberry"), and then give you a menu of options. Find your way to "Advanced Options", then "GL Driver", and change this to "GL (Full KMS)"  ... not "fake KMS," which is also listed there. Save and reboot. In theory, this should fix the problem.
+</p>
+<p>
+If you're _still_ having problems and have a Raspberry Pi 2 or better, go back to raspi-config and head over to "Advanced Options", "Memory split," and give the GPU 256 megabytes. You might be able to avoid this for simple games, as this takes RAM away from the system and reserves it for graphics. You can also try 128 megabytes as a gentler option.
+</p>
+<p>
+Note that you can also run DragonRuby without X11 at all: if you run it from a virtual terminal it will render fullscreen and won't need the "Full KMS" option. This might be attractive if you want to use it as a game console sort of thing, or develop over ssh, or launch it from RetroPie, etc.
+</p>
+</ol>
+<h2>Conclusion</h2>
+<p>
+There is a lot more you can do with DragonRuby, but now you've already got just about everything you need to make a simple game. After all, even the most fancy games are just creating objects and moving them around. Experiment a little. Add a few more things and have them interact in small ways. Want something to go away? Just don't add it to <code>args.output</code> anymore.
+</p>
+</ol>
+<h2>IMPORTANT: Go Through All Of The Sample Apps! Study Them Thoroughly!!</h2>
+<p>
+Now that you've completed the Hello World tutorial. Head over to the `samples` directory. It is very very important that you study the sample apps thoroughly! Go through them in order. Here is a short description of each sample app.
+</p>
+<ol>
+<li> 00_beginner_ruby_primer: This is an interactive tutorial that shows how to render <code>solid</code>s, animated <code>sprite</code>s, <code>label</code>s.</li>
+<li> 00_intermediate_ruby_primer: This is a set of sample Ruby snippets that give you a high level introduction to the programming language.</li>
+<li> 01_api_01_labels: Various ways to render <code>label</code>s.</li>
+<li> 01_api_02_lines: Various ways to render <code>line</code>s.</li>
+<li> 01_api_03_rects: Sample app shows various ways to render <code>solid</code>s and <code>border</code>s.</li>
+<li> 01_api_04_sprites: Sample app shows various ways to render <code>sprite</code>s.</li>
+<li> 01_api_05_keyboard: Hows how to get keyboard input from the user.</li>
+<li> 01_api_06_mouse: Hows how to get mouse mouse position.</li>
+<li> 01_api_07_point_to_rect: How to get mouse input from the user and shows collision/hit detection.</li>
+<li> 01_api_08_rect_to_rect: Hit detection/collision between two rectangles.</li>
+<li> 01_api_10_controller: Interaction with a USB/Bluetooth controller.</li>
+<li> 01_api_99_tech_demo: All the different render primitives along with using <code>render_targets</code>.</li>
+<li> 02_collision_01_simple: Collision detection with dynamically moving bodies.</li>
+<li> 02_collision_02_moving_objects: Collision detection between many primitives, simple platformer physics, and keyboard input.</li>
+<li> 02_collision_03_entities: Collision with entities and serves as a small introduction to ECS (entity component system).</li>
+<li> 02_collision_04_ramp_with_debugging: How ramp trajectory can be calculated.</li>
+<li> 02_collision_05_ramp_with_debugging_two: How ramp trajectory can be calculated.</li>
+<li> 02_sprite_animation_and_keyboard_input: How to animate a sprite based off of keyboard input.</li>
+<li> 03_mouse_click: How to determine what direction/vector a mouse was clicked relative to a player.</li>
+<li> 04_sounds: How to play sounds and work with buttons.</li>
+<li> 05_mouse_move: How to determine what direction/vector a mouse was clicked relative to a player.</li>
+<li> 05_mouse_move_paint_app: Represents a simple paint app.</li>
+<li> 05_mouse_move_tile_editor: A starting point for a tile editor.</li>
+<li> 06_coordinate_systems: Shows the two origin systems within Game Toolkit where the origin is in the center and where the origin is at the bottom left.</li>
+<li> 07_render_targets: Shows a powerful concept called <code>render_target</code>s. You can use this to programatically create sprites (it's also useful for representing parts of a scene as if it was a view port/camera).</li>
+<li> 07_render_targets_advanced: Advanced usage of <code>render_target</code>s.</li>
+<li> 08_platformer_collisions: Axis aligned collision along with platformer physics.</li>
+<li> 08_platformer_collisions_metroidvania: How to save map data and place sprites live within a game.</li>
+<li> 08_platformer_jumping_inertia: Jump physics and how inertia affects collision.</li>
+<li> 09_controller_analog_usage_advanced_sprites: Extended properties of a <code>sprite</code> and how to change the rotation anchor point and render a subset/tile of a sprite.</li>
+<li> 09_sprite_animation_using_tile_sheet: How to perform sprite animates using a tile sheet.</li>
+<li> 10_save_load_game: Save and load game data.</li>
+<li> 11_coersion_of_primitives: How primitives of one specific type can be rendered as another primitive type.</li>
+<li> 11_hash_primitives: How primitives can be represented using a <code>Hash</code>.</li>
+<li> 12_controller_input_sprite_sheet_animations: How to leverage vectors to move a player around the screen.</li>
+<li> 12_top_down_area: How to render a top down map and how to manage collision of a player.</li>
+<li> 13_01_easing_functions: How to use lerping functions to define animations/movement.</li>
+<li> 13_02_cubic_bezier: How to create a bezier curve using lines.</li>
+<li> 13_03_easing_using_spline: How a collection of bezier curves can be used to define an animation.</li>
+<li> 13_04_parametric_enemy_movement: How to define the movement of enemies and projectiles using lerping/parametric functions.</li>
+<li> 14_sprite_limits: Upper limit for how many sprites can be rendered to the screen.</li>
+<li> 14_sprite_limits_static_references: Upper limit for how many sprites can be rendered to the screen using <code>static</code> output collections (which are updated by reference as opposed to by value).</li>
+<li> 15_collision_limits: How many collisions can be processed across many primitives.</li>
+<li> 18_moddable_game: How you can make a game where content is authored by the player (modding support).</li>
+<li> 19_lowrez_jam_01_hello_world: How to use <code>render_targets</code> to create a low resolution game.</li>
+<li> 19_lowrez_jam_02_buttons: How to use <code>render_targets</code> to create a low resolution game.</li>
+<li> 19_lowrez_jam_03_space_shooter: How to use <code>render_targets</code> to create a low resolution game.</li>
+<li> 20_roguelike_starting_point: A starting point for a roguelike and explores concepts such as line of sight.</li>
+<li> 20_roguelike_starting_point_two: A starting point for a roguelike where sprites are provided from a tile map/tile sheet.</li>
+<li> 21_mailbox_usage: How to do interprocess communication.</li>
+<li> 22_trace_debugging: Debugging techniques and tracing execution through your game.</li>
+<li> 22_trace_debugging_classes: Debugging techniques and tracing execution through your game.</li>
+<li> 23_hexagonal_grid: How to make a tactical grid/map made of hexagons.</li>
+<li> 23_isometric_grid: How to make a tactical grid/map made of isometric sprites.</li>
+<li> 24_http_example: How to make http requests.</li>
+<li> 25_3d_experiment_01_square: How to create 3D objects.</li>
+<li> 26_jam_craft: Starting point for crafting game. It also shows how to customize the mouse cursor.</li>
+<li> 99_sample_game_basic_gorillas: Reference implementation of a full game. Topics covered: physics, keyboard input, collision, sprite animation.</li>
+<li> 99_sample_game_clepto_frog: Reference implementation of a full game. Topics covered: camera control, spring/rope physics, scene orchestration.</li>
+<li> 99_sample_game_dueling_starships: Reference implementation that shows local multiplayer. Topics covered: vectors, particles, friction, inertia.</li>
+<li> 99_sample_game_flappy_dragon: Reference implementation that is a clone of Flappy Bird. Topics covered: scene orchestration, collision, sound, sprite animations, lerping.</li>
+<li> 99_sample_game_pong: Reference implementation of pong.</li>
+<li> 99_sample_game_return_of_serenity: Reference implementation of low resolution story based game.</li>
+<li> 99_sample_game_the_little_probe: Reference implementation of a full game. Topics covered: Arbitrary collision detection, loading map data, bounce/ball physics.</li>
+<li> 99_sample_nddnug_workshop: Reference implementation of a full game. Topics covered: vectors, controller input, sound, trig functions.</li>
+<li> 99_sample_snakemoji: Shows that Ruby supports coding with emojis.</li>
+<li> 99_zz_gtk_unit_tests: A collection of unit tests that exercise parts of DragonRuby's API.</li>
+</ol>
+<h1 id='--deploying-to-itch.io'>Deploying To Itch.io</h1>
+<p>
+Once you've built your game, you're all set to deploy! Good luck in your game dev journey and if you get stuck, come to the Discord channel!
+</p>
+</ol>
+<h2>Creating Your Game Landing Page</h2>
+<p>
+Log into Itch.io and go to <a href='https://itch.io/game/new'>https://itch.io/game/new</a>.
+</p>
+<ul>
+<li>Title: Give your game a Title. This value represents your `gametitle`.</li>
+<li>Project URL: Set your project url. This value represents your `gameid`.</li>
+<li>Classification: Keep this as Game.</li>
+<li>Kind of Project: Select HTML from the drop down list. Don't worry,
+  the HTML project type _also supports binary downloads_.</li>
+<li>Uploads: Skip this section for now.</li>
+</ul>
+<p>
+You can fill out all the other options later.
+</p>
+</ol>
+<h2>Update Your Game's Metadata</h2>
+<p>
+Point your text editor at mygame/metadata/game_metadata.txt and make it look like this:
+</p>
+<p>
+NOTE: Remove the <code>#</code> at the beginning of each line.
+</p>
+</ol>
+<pre>vid=bob
+vtitle=Bob The Game Developer
+meid=mygame
+metitle=My Game
+rsion=0.1
+</pre>
+<p>
+The <code>devid</code> property is the username you use to log into Itch.io. The <code>devtitle</code> is your name or company name (it can contain spaces). The <code>gameid</code> is the Project URL value. The <code>gametitle</code> is the name of your game (it can contain spaces). The <code>version</code> can be any <code>major.minor</code> number format.
+</p>
+</ol>
+<h2>Building Your Game For Distribution</h2>
+<p>
+Open up the terminal and run this from the command line:
+</p>
+</ol>
+<pre>dragonruby-publish --only-package mygame
+</pre>
+<p>
+(if you're on Windows, don't put the "./" on the front. That's a Mac and Linux thing.)
+</p>
+<p>
+A directory called <code>./build</code> will be created that contains your binaries. You can upload this to Itch.io manually.
+</p>
+<p>
+For the HTML version of your game after you upload it. Check the checkbox labeled "This file will be played in the browser".
+</p>
+<p>
+For subsequent updates you can use an automated deployment to Itch.io:
+</p>
+</ol>
+<pre>dragonruby-publish mygame
+</pre>
+<p>
+DragonRuby will package _and publish_ your game to itch.io! Tell your friends to go to your game's very own webpage and buy it!
+</p>
+<p>
+If you make changes to your game, just re-run dragonruby-publish and it'll update the downloads for you.
+</p>
+</ol>
+<h2>DragonRuby's Philosophy</h2>
+<p>
+The following tenants of DragonRuby are what set us apart from other game engines. Given that Game Toolkit is a relatively new engine, there are definitely features that are missing. So having a big check list of "all the cool things" is not this engine's forte. This is compensated with a strong commitment to the following principals.
+</p>
+</ol>
+<h3>Challenge The Status Quo</h3>
+<p>
+Game engines of today are in a local maximum and don't take into consideration the challenges of this day and age. Unity and GameMaker specifically rot your brain. It's not sufficient to say:
+</p>
+</ol>
+<blockquote>
+<p>
+But that's how we've always done it.
+</p>
+</blockquote>
+<p>
+It's a hard pill to swallow, but forget blindly accepted best practices and try to figure out the underlying motivation for a specific approach to game development. Collaborate with us.
+</p>
+</ol>
+<h3>Release Often And Quickly</h3>
+<p>
+The biggest mistake game devs make is spending too much time in isolation building their game. Release something, however small, and release it quickly.
+</p>
+<p>
+Stop worrying about everything being pixel perfect. Don't wait until your game is 100% complete. Build your game publicly and iterate. Post in the #show-and-tell channel in the community Discord. You'll find a lot of support and encouragement there.
+</p>
+<p>
+Remember:
+</p>
+</ol>
+<blockquote>
+<p>
+Real artists ship.
+</p>
+</blockquote>
+</ol>
+<h3>Sustainable And Ethical Monetization</h3>
+<p>
+We all aspire to put food on the table doing what we love. Whether it is building games, writing tools to support game development, or anything in between.
+</p>
+<p>
+Charge a fair amount of money for the things you create. It's expected and encouraged within the community. Give what you create away for free to those that can't afford it.
+</p>
+</ol>
+<h3>Sustainable And Ethical Open Source</h3>
+<p>
+This goes hand in hand with sustainable and ethical monetization. The current state of open source is not sustainable. There is an immense amount of contributor burnout. Users of open source expect everything to be free, and few give back. This is a problem we want to fix (we're still trying to figure out the best solution).
+</p>
+<p>
+So, don't be "that guy" in the Discord that says "DragonRuby should be free and open source!" You will be personally flogged by Amir.
+</p>
+</ol>
+<h3>People Over Entities</h3>
+<p>
+We prioritize the endorsement of real people over faceless entities. This game engine, and other products we create, are not insignificant line items of a large company. And you aren't a generic "commodity" or "corporate resource". So be active in the community Discord and you'll reap the benefits as more devs use DragonRuby.
+</p>
+</ol>
+<h3>Building A Game Should Be Fun And Bring Happiness</h3>
+<p>
+We will prioritize the removal of pain. The aesthetics of Ruby make it such a joy to work with, and we want to capture that within the engine.
+</p>
+</ol>
+<h3>Real World Application Drives Features</h3>
+<p>
+We are bombarded by marketing speak day in and day out. We don't do that here. There are things that are really great in the engine, and things that need a lot of work. Collaborate with us so we can help you reach your goals. Ask for features you actually need as opposed to anything speculative.
+</p>
+<p>
+We want DragonRuby to *actually* help you build the game you want to build (as opposed to sell you something piece of demoware that doesn't work).
+</p>
+</ol>
+<h1 id='--how-to-determine-what-frame-you-are-on'>How To Determine What Frame You Are On</h1>
+<p>
+There is a property on <code>state</code> called <code>tick_count</code> that is incremented by DragonRuby every time the <code>tick</code> method is called. The following code renders a label that displays the current <code>tick_count</code>.
+</p>
+</ol>
+<pre>def tick args
+  args.outputs.labels << [10, 670, "#{args.state.tick_count}"]
+end
+</pre>
+</ol>
+<h1 id='--how-to-get-current-framerate'>How To Get Current Framerate</h1>
+<p>
+Current framerate is a top level property on the Game Toolkit Runtime and is accessible via <code>args.gtk.current_framerate</code>.
+</p>
+</ol>
+<pre>def tick args
+  args.outputs.labels << [10, 710, "framerate: #{args.gtk.current_framerate.round}"]
+end
+</pre>
+</ol>
+<h1 id='--how-to-render-a-sprite-using-an-array'>How To Render A Sprite Using An Array</h1>
+<p>
+All file paths should use the forward slash <code>/</code> *not* backslash <code></code>. Game Toolkit includes a number of sprites in the <code>sprites</code> folder (everything about your game is located in the <code>mygame</code> directory).
+</p>
+<p>
+The following code renders a sprite with a <code>width</code> and <code>height</code> of <code>100</code> in the center of the screen.
+</p>
+<p>
+<code>args.outputs.sprites</code> is used to render a sprite.
+</p>
+</ol>
+<pre>def tick args
+  args.outputs.sprites << [
+    640 - 50,                 # X
+    360 - 50,                 # Y
+    100,                      # W
+    100,                      # H
+    'sprites/square-blue.png' # PATH
+ ]
+end
+</pre>
+</ol>
+<h1 id='--more-sprite-properties-as-an-array'>More Sprite Properties As An Array</h1>
+<p>
+Here are all the properties you can set on a sprite.
+</p>
+</ol>
+<pre>def tick args
+  args.outputs.sprites << [
+    100,                       # X
+    100,                       # Y
+    32,                        # W
+    64,                        # H
+    'sprites/square-blue.png', # PATH
+    0,                         # ANGLE
+    255,                       # ALPHA
+    0,                         # RED_SATURATION
+    255,                       # GREEN_SATURATION
+    0                          # BLUE_SATURATION
+  ]
+end
+</pre>
+</ol>
+<h1 id='--different-sprite-representations'>Different Sprite Representations</h1>
+<p>
+Using ordinal positioning can get a little unruly given so many properties you have control over.
+</p>
+<p>
+You can represent a sprite as a <code>Hash</code>:
+</p>
+</ol>
+<pre>def tick args
+  args.outputs.sprites << {
+    x: 640 - 50,
+    y: 360 - 50,
+    w: 100,
+    h: 100,
+    path: 'sprites/square-blue.png',
+    angle: 0,
+    a: 255,
+    r: 255,
+    g: 255,
+    b: 255,
+    source_x:  0,
+    source_y:  0,
+    source_w: -1,
+    source_h: -1,
+    flip_vertically: false,
+    flip_horizontally: false,
+    angle_anchor_x: 0.5,
+    angle_anchor_y: 1.0
+  }
+end
+</pre>
+<p>
+You can represent a sprite as an <code>object</code>:
+</p>
+</ol>
+<pre># Create type with ALL sprite properties AND primitive_marker
+class Sprite
+  attr_accessor :x, :y, :w, :h, :path, :angle, :a, :r, :g, :b,
+                :source_x, :source_y, :source_w, :source_h,
+                :tile_x, :tile_y, :tile_w, :tile_h,
+                :flip_horizontally, :flip_vertically,
+                :angle_anchor_x, :angle_anchor_y
+
+  def primitive_marker
+    :sprite
+  end
+end
+
+class BlueSquare < Sprite
+  def initialize opts
+    @x = opts[:x]
+    @y = opts[:y]
+    @w = opts[:w]
+    @h = opts[:h]
+    @path = 'sprites/square-blue.png'
+  end
+end
+
+def tick args
+  args.outputs.sprites << (BlueSquare.new x: 640 - 50,
+                                          y: 360 - 50,
+                                          w: 50,
+                                          h: 50)
+end
+</pre>
+</ol>
+<h1 id='--how-to-render-a-label'>How To Render A Label</h1>
+<p>
+<code>args.outputs.labels</code> is used to render labels.
+</p>
+<p>
+Labels are how you display text. This code will go directly inside of the <code>def tick args</code> method.
+</p>
+<p>
+Here is the minimum code:
+</p>
+</ol>
+<pre>def tick args
+  #                       X    Y    TEXT
+  args.outputs.labels << [640, 360, "I am a black label."]
+end
+</pre>
+</ol>
+<h1 id='--a-colored-label'>A Colored Label</h1>
+</ol>
+<pre>def tick args
+  # A colored label
+  #                       X    Y    TEXT,                   RED    GREEN  BLUE  ALPHA
+  args.outputs.labels << [640, 360, "I am a redish label.", 255,     128,  128,   255]
+end
+</pre>
+</ol>
+<h1 id='--extended-label-properties'>Extended Label Properties</h1>
+</ol>
+<pre>def tick args
+  # A colored label
+  #                       X    Y     TEXT           SIZE  ALIGNMENT  RED  GREEN  BLUE  ALPHA  FONT FILE
+  args.outputs.labels << [
+    640,                   # X
+    360,                   # Y
+    "Hello world",         # TEXT
+    0,                     # SIZE_ENUM
+    1,                     # ALIGNMENT_ENUM
+    0,                     # RED
+    0,                     # GREEN
+    0,                     # BLUE
+    255,                   # ALPHA
+    "fonts/coolfont.ttf"   # FONT
+  ]
+end
+</pre>
+<p>
+A <code>SIZE_ENUM</code> of <code>0</code> represents "default size". A <code>negative</code> value will decrease the label size. A <code>positive</code> value will increase the label's size.
+</p>
+<p>
+An <code>ALIGNMENT_ENUM</code> of <code>0</code> represents "left aligned". <code>1</code> represents "center aligned". <code>2</code> represents "right aligned".
+</p>
+</ol>
+<h1 id='--rendering-a-label-as-a--hash-'>Rendering A Label As A <code>Hash</code></h1>
+<p>
+You can add additional metadata about your game within a label, which requires you to use a `Hash` instead.
+</p>
+</ol>
+<pre>def tick args
+  args.outputs.labels << {
+    x:              200,
+    y:              550,
+    text:           "dragonruby",
+    size_enum:      2,
+    alignment_enum: 1,
+    r:              155,
+    g:              50,
+    b:              50,
+    a:              255,
+    font:           "fonts/manaspc.ttf",
+    # You can add any properties you like (this will be ignored/won't cause errors)
+    game_data_one:  "Something",
+    game_data_two: {
+       value_1: "value",
+       value_2: "value two",
+       a_number: 15
+    }
+  }
+end
+</pre>
+</ol>
+<h1 id='--getting-the-size-of-a-piece-of-text'>Getting The Size Of A Piece Of Text</h1>
+<p>
+You can get the render size of any string using <code>args.gtk.calcstringbox</code>.
+</p>
+</ol>
+<pre>def tick args
+  #                             TEXT           SIZE_ENUM  FONT
+  w, h = args.gtk.calcstringbox("some string",         0, "font.ttf")
+
+  # NOTE: The SIZE_ENUM and FONT are optional arguments.
+
+  # Render a label showing the w and h of the text:
+  args.outputs.labels << [
+    10,
+    710,
+    # This string uses Ruby's string interpolation literal: #{}
+    "'some string' has width: #{w}, and height: #{h}."
+  ]
+end
+</pre>
+</ol>
+<h1 id='--how-to-play-a-sound'>How To Play A Sound</h1>
+<p>
+Sounds that end <code>.wav</code> will play once:
+</p>
+</ol>
+<pre>def tick args
+  # Play a sound every second
+  if (args.state.tick_count % 60) == 0
+    args.outputs.sounds << 'something.wav'
+  end
+end
+</pre>
+<p>
+Sounds that end <code>.ogg</code> is considered background music and will loop:
+</p>
+</ol>
+<pre>def tick args
+  # Start a sound loop at the beginning of the game
+  if args.state.tick_count == 0
+    args.outputs.sounds << 'background_music.ogg'
+  end
+end
+</pre>
+<p>
+If you want to play a <code>.ogg</code> once as if it were a sound effect, you can do:
+</p>
+</ol>
+<pre>def tick args
+  # Play a sound every second
+  if (args.state.tick_count % 60) == 0
+    args.gtk.queue_sound 'some-ogg.ogg'
+  end
+end
+</pre>
+</ol>
+<h1 id='--using--args.state--to-store-your-game-state'>Using <code>args.state</code> To Store Your Game State</h1>
+<p>
+<code>args.state</code> is a open data structure that allows you to define properties that are arbitrarily nested. You don't need to define any kind of <code>class</code>.
+</p>
+<p>
+To initialize your game state, use the <code>||=</code> operator. Any value on the right side of <code>||=</code> will only be assigned _once_.
+</p>
+<p>
+To assign a value every frame, just use the <code>=</code> operator, but _make sure_ you've initialized a default value.
+</p>
+</ol>
+<pre>def tick args
+  # initialize your game state ONCE
+  args.player.x  ||= 0
+  args.player.y  ||= 0
+  args.player.hp ||= 100
+
+  # increment the x position of the character by one every frame
+  args.player.x += 1
+
+  # Render a sprite with a label above the sprite
+  args.outputs.sprites << [
+    args.player.x,
+    args.player.y,
+    32, 32,
+    "player.png"
+  ]
+
+  args.outputs.labels << [
+    args.player.x,
+    args.player.y - 50,
+    args.player.hp
+  ]
+end
+</pre>
+</ol>
+<h1 id='--frequently-asked-questions,-comments,-and-concerns'>Frequently Asked Questions, Comments, and Concerns</h1>
+<p>
+Here are questions, comments, and concerns that frequently come up.
+</p>
+</ol>
+<h2>Frequently Asked Questions</h2>
+</ol>
+<h3>What is DragonRuby LLP?</h3>
+<p>
+DragonRuby LLP is a partnership of four devs who came together with the goal of bringing the aesthetics and joy of Ruby, everywhere possible.
+</p>
+<p>
+Under DragonRuby LLP, we offer a number of products (with more on the way):
+</p>
+<ul>
+<li>Game Toolkit (GTK): A 2D game engine that is compatible with modern
+  gaming platforms. [Home Page]() [FAQ Page]()</li>
+<li>RubyMotion (RM): A compiler toolchain that allows you to build native, cross-platform mobile
+  apps. [Home Page]() [FAQ Page]()</li>
+<li>Commandline Toolkit (CTK): A zero dependency, zero installation Ruby
+  environment that works on Windows, Mac, and Linux. [Home Page]() [FAQ Page]()</li>
+</ul>
+<p>
+All of the products above leverage a shared core called DragonRuby.
+</p>
+<p>
+NOTE: From an official branding standpoint each one of the products is suffixed with "A DragonRuby LLP Product" tagline. Also, DragonRuby is _one word, title cased_.
+</p>
+<p>
+NOTE: We leave the "A DragonRuby LLP Product" off of this one because that just sounds really weird.
+</p>
+<p>
+NOTE: Devs who use DragonRuby are "Dragon Riders/Riders of Dragons". That's a bad ass identifier huh?
+</p>
+</ol>
+<h3>What is DragonRuby?</h3>
+<p>
+The response to this question requires a few subparts. First we need to clarify some terms. Specifically _language specification_ vs _runtime_.
+</p>
+</ol>
+<h3>Okay... so what is the difference between a language specification and a runtime?</h3>
+<p>
+A runtime is an _implementation_ of a langauge specification. When people say "Ruby," they are usually referring to "the Ruby 3.0+ language specification implemented via the CRuby/MRI Runtime."
+</p>
+<p>
+But, there are many Ruby Runtimes: CRuby/MRI, JRuby, Truffle, Rubinius, Artichoke, and (last but certainly not least) DragonRuby.
+</p>
+</ol>
+<h3>Okay... what language specification does DragonRuby use then?</h3>
+<p>
+DragonRuby's goal is to be compliant with the ISO/IEC 30170:2012 standard. It's syntax is Ruby 2.x compatible, but also contains semantic changes that help it natively interface with platform specific libraries.
+</p>
+</ol>
+<h3>So... why another runtime?</h3>
+<p>
+The elevator pitch is:
+</p>
+<p>
+DragonRuby is a Multilevel Cross-platform Runtime. The "multiple levels" within the runtime allows us to target platforms no other Ruby can target: PC, Mac, Linux, Raspberry Pi, WASM, iOS, Android, Nintendo Switch, PS4, Xbox, and Scadia.
+</p>
+</ol>
+<h3>What does Multilevel Cross-platform mean?</h3>
+<p>
+There are complexities associated with targeting all the platforms we support. Because of this, the runtime had to be architected in such a way that new platforms could be easily added (which lead to us partitioning the runtime internally):
+</p>
+<ul>
+<li>Level 1 we leverage a good portion of mRuby.</li>
+<li>Level 2 consists of optimizations to mRuby we've made given that our
+  target platforms are well known.</li>
+<li>Level 3 consists of portable C libraries and their Ruby
+  C-Extensions.</li>
+</ul>
+<p>
+Levels 1 through 3 are fairly commonplace in many runtime implemenations (with level 1 being the most portable, and level 3 being the fastest). But the DragonRuby Runtime has taken things a bit further:
+</p>
+<ul>
+<li>Level 4 consists of shared abstractions around hardware I/O and operating
+  system resources. This level leverages open source and proprietary   components within Simple DirectMedia Layer (a lowlevel multimedia   component library that has been in active development for 22 years   and counting).</li>
+<li>Level 5 is a codegeneration layer which creates metadata that allows
+  for native interopability with host runtime libraries. It also   includes OS specific message pump orchestrations.</li>
+<li>Level 6 is a Ahead of Time/Just in Time Ruby compiler built with LLVM. This
+  compiler outputs _very_ fast platform specific bitcode, but only   supports a subset of the Ruby language specification.</li>
+</ul>
+<p>
+These levels allow us to stay up to date with open source implementations of Ruby; provide fast, native code execution on proprietary platforms; ensure good seperation between these two worlds; and provides a means to add new platforms without going insane.
+</p>
+</ol>
+<h3>Cool cool. So given that I understand everything to this point, can we answer the original question? What is DragonRuby?</h3>
+<p>
+DragonRuby is a Ruby runtime implentation that takes all the lessons we've learned from MRI/CRuby, and merges it with the latest and greatest compiler and OSS technologies.
+</p>
+</ol>
+<h2>Frequent Comments</h2>
+</ol>
+<h3>But Ruby is dead.</h3>
+<p>
+Let's check the official source for the answer to this question: isrubydead.com: <a href='https://isrubydead.com/'>https://isrubydead.com/</a>.
+</p>
+<p>
+On a more serious note, Ruby's _quantity_ levels aren't what they used to be. And that's totally fine. Every one chases the new and shiny.
+</p>
+<p>
+What really matters is _quality/maturity_. Here is the latest (StackOverflow Survey sorted by highest paid developers)[https://insights.stackoverflow.com/survey/2019#top-paying-technologies].
+</p>
+<p>
+Let's stop making this comment shall we?
+</p>
+</ol>
+<h3>But Ruby is slow.</h3>
+<p>
+That doesn't make any sense. A language specification can't be slow... it's a language spec. Sure, an _implementation/runtime_ can be slow though, but then we'd have to talk about which runtime.
+</p>
+</ol>
+<h3>Dynamic langauges are slow.</h3>
+<p>
+They are certainly slower than statically compiled languages. With the processing power and compiler optimizations we have today, dynamic languages like Ruby are _fast enough_.
+</p>
+<p>
+Unless you are writing in some form of intermediate representation by hand, your langauge of choice also suffers this same fallacy of slow. Like, nothing is faster than a low level assembly-like language. So unless you're writing in that, let's stop making this comment.
+</p>
+<p>
+NOTE: If you _are_ hand writing LLVM IR, we are always open to bringing on new partners with such a skillset. Email us ^_^.
+</p>
+</ol>
+<h2>Frequent Concerns</h2>
+</ol>
+<h3>DragonRuby is not open source. That's not right.</h3>
+<p>
+The current state of open source is unsustainable. Contributors work for free, most all open source repositories are serverly understaffed, and burnout from core members is rampant.
+</p>
+<p>
+We believe in open source very strongly. Parts of DragonRuby are infact, open source. Just not all of it (for legal reasons, and because the IP we've created has value). And we promise that we are looking for (or creating) ways to _sustainably_ open source everything we do.
+</p>
+<p>
+If you have ideas on how we can do this, email us!
+</p>
+<p>
+If the reason above isn't sufficient, then definitely use something else.
+</p>
+</ol>
+<h3>DragonRuby is for pay. You should offer a free version.</h3>
+<p>
+If you can afford to pay for DragonRuby, you should (and will). We don't go around telling writers that they should give us their books for free, and only require payment if we read the entire thing. It's time we stop asking that of software products.
+</p>
+<p>
+That being said, we will _never_ put someone out financially. We have income assistance for anyone that can't afford a license to any one of our products.
+</p>
+<p>
+You qualify for a free, unrestricted license to DragonRuby products if any of the following items pertain to you:
+</p>
+<ul>
+<li>Your income is below $2,000.00 (USD) per month.</li>
+<li>You are under 18 years of age.</li>
+<li>You are a student of any type: traditional public school, home
+  schooling, college, bootcamp, or online.</li>
+<li>You are a teacher, mentor, or parent who wants to teach a kid how to code.</li>
+<li>You work/worked in public service or at a charitable organization:
+  for example public office, army, or any 501(c)(3) organization.</li>
+</ul>
+<p>
+Just contact Amir at amir.rajan@dragonruby.org with a short explanation of your current situation and he'll set you up. No questions asked.
+</p>
+</ol>
+<h3>But still, you should offer a free version. So I can try it out and see if I like it.</h3>
+<p>
+You can try our [web-based sandbox environment](). But it won't do the runtime justice. Or just come to our [Slack]() or [Discord]() channel and ask questions. We'd be happy to have a one on one video chat with you and show off all the cool stuff we're doing.
+</p>
+<p>
+Seriously just buy it. Get a refund if you don't like it. We make it stupid easy to do so.
+</p>
+</ol>
+<h3>I still think you should do a free version. Think of all people who would give it a shot.</h3>
+<p>
+Free isn't a sustainable financial model. We don't want to spam your email. We don't want to collect usage data off of you either. We just want to provide quality toolchains to quality developers (as opposed to a large quantity of developers).
+</p>
+<p>
+The peiple that pay for DragonRuby and make an effort to understand it are the ones we want to build a community around, partner with, and collaborate with. So having that small monetary wall deters entitled individuals that don't value the same things we do.
+</p>
+</ol>
+<h3>What if I build something with DragonRuby, but DragonRuby LLP becomes insolvent.</h3>
+<p>
+That won't happen if the development world stop asking for free stuff and non-trivially compensate open source developers. Look, we want to be able to work on the stuff we love, every day of our lives. And we'll go to great lengths to make that happen.
+</p>
+<p>
+But, in the event that sad day comes, our partnershiop bylaws state that _all_ DragonRuby IP that can be legally open sourced, will be released under a permissive license.
+</p>
+</ol>
+<h1 id='--docs---gtk--runtime-'><code>GTK::Runtime</code></h1>
+<p>
+The GTK::Runtime class is the core of DragonRuby. It is globally accessible via <code>$gtk</code>.
+</p>
+</ol>
+<h1 id='--docs---gtk--runtime#calcstringbox-'><code>GTK::Runtime#calcstringbox</code></h1>
+<p>
+This function returns the width and height of a string.
+</p>
+</ol>
+<pre>def tick args
+  args.state.string_size           ||= args.gtk.calcstringbox "Hello World"
+  args.state.string_size_font_size ||= args.gtk.calcstringbox "Hello World"
+end
+</pre>
+</ol>
+<h1 id='--docs---gtk--runtime#reset-'><code>GTK::Runtime#reset</code></h1>
+<p>
+This function will reset Kernel.tick_count to 0 and will remove all data from args.state.
+</p>
+</ol>
+<h1 id='--docs---array-'><code>Array</code></h1>
+<p>
+The Array class has been extend to provide methods that will help in common game development tasks. Array is one of the most powerful classes in Ruby and a very fundamental component of Game Toolkit.
+</p>
+</ol>
+<h1 id='--docs---array#map-'><code>Array#map</code></h1>
+<p>
+The function given a block returns a new <code>Enumerable</code> of values.
+</p>
+<p>
+Example of using <code>Array#map</code> in conjunction with <code>args.state</code> and <code>args.outputs.sprites</code> to render sprites to the screen.
+</p>
+</ol>
+<pre>def tick args
+  # define the colors of the rainbow in ~args.state~
+  # as an ~Array~ of ~Hash~es with :order and :name.
+  # :order will be used to determine render location
+  #  and :name will be used to determine sprite path.
+  args.state.rainbow_colors ||= [
+    { order: 0, name: :red    },
+    { order: 1, name: :orange },
+    { order: 2, name: :yellow },
+    { order: 3, name: :green  },
+    { order: 4, name: :blue   },
+    { order: 5, name: :indigo },
+    { order: 6, name: :violet },
+  ]
+
+  # render sprites diagonally to the screen
+  # with a width and height of 50.
+  args.outputs
+      .sprites << args.state
+                      .rainbow_colors
+                      .map do |color| # <-- ~Array#map~ usage
+                        [
+                          color[:order] * 50,
+                          color[:order] * 50,
+                          50,
+                          50,
+                          "sprites/square-#{color[:name]}.png"
+                        ]
+                      end
+end
+</pre>
+</ol>
+<h1 id='--docs---array#each-'><code>Array#each</code></h1>
+<p>
+The function, given a block, invokes the block for each item in the <code>Array</code>. <code>Array#each</code> is synonymous to foreach constructs in other languages.
+</p>
+<p>
+Example of using <code>Array#each</code> in conjunction with <code>args.state</code> and <code>args.outputs.sprites</code> to render sprites to the screen:
+</p>
+</ol>
+<pre>def tick args
+  # define the colors of the rainbow in ~args.state~
+  # as an ~Array~ of ~Hash~es with :order and :name.
+  # :order will be used to determine render location
+  #  and :name will be used to determine sprite path.
+  args.state.rainbow_colors ||= [
+    { order: 0, name: :red    },
+    { order: 1, name: :orange },
+    { order: 2, name: :yellow },
+    { order: 3, name: :green  },
+    { order: 4, name: :blue   },
+    { order: 5, name: :indigo },
+    { order: 6, name: :violet },
+  ]
+
+  # render sprites diagonally to the screen
+  # with a width and height of 50.
+  args.state
+      .rainbow_colors
+      .map do |color| # <-- ~Array#each~ usage
+        args.outputs.sprites << [
+          color[:order] * 50,
+          color[:order] * 50,
+          50,
+          50,
+          "sprites/square-#{color[:name]}.png"
+        ]
+      end
+end
+</pre>
+</ol>
+<h1 id='--docs---array#reject_nil-'><code>Array#reject_nil</code></h1>
+<p>
+Returns an <code>Enumerable</code> rejecting items that are <code>nil</code>, this is an alias for <code>Array#compact</code>:
+</p>
+</ol>
+<pre>repl do
+  a = [1, nil, 4, false, :a]
+  puts a.reject_nil
+  # => [1, 4, false, :a]
+  puts a.compact
+  # => [1, 4, false, :a]
+end
+</pre>
+</ol>
+<h1 id='--docs---array#reject_false-'><code>Array#reject_false</code></h1>
+<p>
+Returns an `Enumerable` rejecting items that are `nil` or `false`.
+</p>
+</ol>
+<pre>repl do
+  a = [1, nil, 4, false, :a]
+  puts a.reject_false
+  # => [1, 4, :a]
+end
+</pre>
+</ol>
+<h1 id='--docs---array#product-'><code>Array#product</code></h1>
+<p>
+Returns all combinations of values between two arrays.
+</p>
+<p>
+Here are some examples of using <code>product</code>. Paste the following code at the bottom of main.rb and save the file to see the results:
+</p>
+</ol>
+<pre>repl do
+  a = [0, 1]
+  puts a.product
+  # => [[0, 0], [0, 1], [1, 0], [1, 1]]
+end
+</pre>
+</ol>
+<pre>repl do
+  a = [ 0,  1]
+  b = [:a, :b]
+  puts a.product b
+  # => [[0, :a], [0, :b], [1, :a], [1, :b]]
+end
+</pre>
+</ol>
+<h1 id='--docs---array#map_2d-'><code>Array#map_2d</code></h1>
+<p>
+Assuming the array is an array of arrays, Given a block, each 2D array index invoked against the block. A 2D array is a common way to store data/layout for a stage.
+</p>
+</ol>
+<pre>repl do
+  stage = [
+    [:enemy, :empty, :player],
+    [:empty, :empty,  :empty],
+    [:enemy, :empty,  :enemy],
+  ]
+
+  occupied_tiles = stage.map_2d do |row, col, tile|
+    if tile == :empty
+      nil
+    else
+      [row, col, tile]
+    end
+  end.reject_nil
+
+  puts "Stage:"
+  puts stage
+
+  puts "Occupied Tiles"
+  puts occupied_tiles
+end
+</pre>
+</ol>
+<h1 id='--docs---array#include_any?-'><code>Array#include_any?</code></h1>
+<p>
+Given a collection of items, the function will return <code>true</code> if any of <code>self</code>'s items exists in the collection of items passed in:
+</p>
+</ol>
+<h1 id='--docs---array#any_intersect_rect?-'><code>Array#any_intersect_rect?</code></h1>
+<p>
+Assuming the array contains objects that respond to <code>left</code>, <code>right</code>, <code>top</code>, <code>bottom</code>, this method returns <code>true</code> if any of the elements within the array intersect the object being passed in. You are given an optional parameter called <code>tolerance</code> which informs how close to the other rectangles the elements need to be for it to be considered intersecting.
+</p>
+<p>
+The default tolerance is set to <code>0.1</code>, which means that the primitives are not considered intersecting unless they are overlapping by more than <code>0.1</code>.
+</p>
+</ol>
+<pre>repl do
+  # Here is a player class that has position and implement
+  # the ~attr_rect~ contract.
+  class Player
+    attr_rect
+    attr_accessor :x, :y, :w, :h
+
+    def initialize x, y, w, h
+      @x = x
+      @y = y
+      @w = w
+      @h = h
+    end
+
+    def serialize
+      { x: @x, y: @y, w: @w, h: @h }
+    end
+
+    def inspect
+      "#{serialize}"
+    end
+
+    def to_s
+      "#{serialize}"
+    end
+  end
+
+  # Here is a definition of two walls.
+  walls = [
+     [10, 10, 10, 10],
+     { x: 20, y: 20, w: 10, h: 10 },
+   ]
+
+  # Display the walls.
+  puts "Walls."
+  puts walls
+  puts ""
+
+  # Check any_intersect_rect? on player
+  player = Player.new 30, 20, 10, 10
+  puts "Is Player #{player} touching wall?"
+  puts (walls.any_intersect_rect? player)
+  # => false
+  # The value is false because of the default tolerance is 0.1.
+  # The overlap of the player rect and any of the wall rects is
+  # less than 0.1 (for those that intersect).
+  puts ""
+
+  player = Player.new 9, 10, 10, 10
+  puts "Is Player #{player} touching wall?"
+  puts (walls.any_intersect_rect? player)
+  # => true
+  puts ""
+end
+</pre>
+</ol>
+<h1 id='--docs---gtk--outputs-'><code>GTK::Outputs</code></h1>
+<p>
+Outputs is how you render primitives to the screen. The minimal setup for rendering something to the screen is via a <code>tick</code> method defined in mygame/app/main.rb
+</p>
+</ol>
+<pre>def tick args
+  # code goes here
+end
+</pre>
+</ol>
+<h1 id='--docs---gtk--outputs#borders-'><code>GTK::Outputs#borders</code></h1>
+<p>
+Add primitives to this collection to render an unfilled solid to the screen. Take a look at the documentation for Outputs#solids.
+</p>
+<p>
+The only difference between the two primitives is where they are added.
+</p>
+<p>
+Instead of using <code>args.outputs.solids</code>:
+</p>
+</ol>
+<pre>def tick args
+  #                         X    Y  WIDTH  HEIGHT
+  args.outputs.solids << [100, 100,   160,     90]
+end
+</pre>
+<p>
+You have to use <code>args.outputs.borders</code>:
+</p>
+</ol>
+<pre>def tick args
+  #                           X    Y  WIDTH  HEIGHT
+  args.outputs.borders << [100, 100,   160,     90]
+end
+</pre>
+</ol>
+<h1 id='--docs---gtk--outputs#solids-'><code>GTK::Outputs#solids</code></h1>
+<p>
+Add primitives to this collection to render a solid to the screen.
+</p>
+</ol>
+<h2>Rendering a solid using an Array</h2>
+<p>
+Creates a solid black rectangle located at 100, 100. 160 pixels wide and 90 pixels tall.
+</p>
+</ol>
+<pre>def tick args
+  #                         X    Y  WIDTH  HEIGHT
+  args.outputs.solids << [100, 100,   160,     90]
+end
+</pre>
+</ol>
+<h2>Rendering a solid using an Array with colors and alpha</h2>
+<p>
+The value for the color and alpha is an number between <code>0</code> and <code>255</code>. The alpha property is optional and will be set to <code>255</code> if not specified.
+</p>
+<p>
+Creates a green solid rectangle with an opacity of 50%.
+</p>
+</ol>
+<pre>def tick args
+  #                         X    Y  WIDTH  HEIGHT  RED  GREEN  BLUE  ALPHA
+  args.outputs.solids << [100, 100,   160,     90,   0,   255,    0,   128]
+end
+</pre>
+</ol>
+<h2>Rendering a solid using a Hash</h2>
+<p>
+If you want a more readable invocation. You can use the following hash to create a solid. Any parameters that are not specified will be given a default value. The keys of the hash can be provided in any order.
+</p>
+</ol>
+<pre>def tick args
+  args.outputs.solids << {
+    x:    0,
+    y:    0,
+    w:  100,
+    h:  100,
+    r:    0,
+    g:  255,
+    b:    0,
+    a:  255
+  }
+end
+</pre>
+</ol>
+<h2>Rendering a solid using a Class</h2>
+<p>
+You can also create a class with solid/border properties and render it as a primitive. ALL properties must on the class. *Additionally*, a method called <code>primitive_marker</code> must be defined on the class.
+</p>
+<p>
+Here is an example:
+</p>
+</ol>
+<pre># Create type with ALL solid properties AND primitive_marker
+class Solid
+  attr_accessor :x, :y, :w, :h, :r, :g, :b, :a
+
+  def primitive_marker
+    :solid
+  end
+end
+
+# Inherit from type
+class Square < Solid
+  # constructor
+  def initialize x, y, size
+    self.x = x
+    self.y = y
+    self.w = size
+    self.h = size
+  end
+end
+
+def tick args
+  # render solid/border
+  args.outputs.solids  << Square.new(10, 10, 32)
+end
+</pre>
+</ol>
+<h1 id='--docs---gtk--mouse-'><code>GTK::Mouse</code></h1>
+<p>
+The mouse is accessible via <code>args.inputs.mouse</code>:
+</p>
+</ol>
+<pre>def tick args
+  # Rendering a label that shows the mouse's x and y position (via args.inputs.mouse).
+  args.outputs.labels << [
+    10,
+    710,
+    "The mouse's position is: #{args.inputs.mouse.x} #{args.inputs.mouse.y}."
+  ]
+end
+</pre>
+<p>
+The mouse has the following properties.
+</p>
+<ul>
+<li><code>args.inputs.mouse.x</code>: Returns the x position of the mouse.</li>
+<li><code>args.inputs.mouse.y</code>: Returns the y position of the mouse.</li>
+<li><code>args.inputs.mouse.moved</code>: Returns true if the mouse moved during the tick.</li>
+<li><code>args.inputs.mouse.moved_at</code>: Returns the tick_count (<code>args.state.tick_count</code>) that the mouse was moved at. This property will be <code>nil</code> if the mouse didn't move.</li>
+<li><code>args.inputs.mouse.global_moved_at</code>: Returns the global tick_count (<code>Kernel.global_tick_count</code>) that the mouse was moved at. This property will be <code>nil</code> if the mouse didn't move.</li>
+<li><code>args.inputs.mouse.click</code>: Returns a <code>GTK::MousePoint</code> for that specific frame (<code>args.state.tick_count</code>) if the mouse button was pressed.</li>
+<li><code>args.inputs.mouse.previous_click</code>: Returns a <code>GTK::MousePoint</code> for the previous frame (<code>args.state.tick_count - 1</code>) if the mouse button was pressed.</li>
+<li><code>args.inputs.mouse.up</code>: Returns true if for that specific frame (<code>args.state.tick_count</code>) if the mouse button was released.</li>
+<li><code>args.inputs.mouse.point</code> | <code>args.inputs.mouse.position</code>: Returns an <code>Array</code> which contains the <code>x</code> and <code>y</code> position of the mouse.</li>
+<li><code>args.inputs.mouse.has_focus</code>: Returns true if the game window has the mouse's focus.</li>
+<li><code>args.inputs.mouse.wheel</code>: Returns an <code>GTK::OpenEntity</code> that contains an <code>x</code> and <code>y</code> property which represents how much the wheel has moved. If the wheel has not moved within the tick, this property will be <code>nil</code>.</li>
+<li><code>args.inputs.mouse.button_left</code>: Returns true if the left mouse button is down.</li>
+<li><code>args.inputs.mouse.button_right</code>: Returns true if the right mouse button is down.</li>
+<li><code>args.inputs.mouse.button_middle</code>: Returns true if the middle mouse button is down.</li>
+<li><code>args.inputs.mouse.button_bits</code>: Gives the bits for each mouse button and its current state.</li>
+</ul>
+<h1 id='--docs---gtk--mousepoint-'><code>GTK::MousePoint</code></h1>
+<p>
+The <code>GTK::MousePoint</code> has the following properties.
+</p>
+<ul>
+<li><code>x</code>: Integer representing the mouse's x.</li>
+<li><code>y</code>: Integer representing the mouse's y.</li>
+<li><code>point</code>: Array with the <code>x</code> and <code>y</code> values.</li>
+<li><code>w</code>: Width of the point that always returns <code>0</code> (included so that it can seemlessly work with <code>GTK::Geometry</code> functions).</li>
+<li><code>h</code>: Height of the point that always returns <code>0</code> (included so that it can seemlessly work with <code>GTK::Geometry</code> functions).</li>
+<li><code>left</code>: This value is the same as <code>x</code> (included so that it can seemlessly work with <code>GTK::Geometry</code> functions).</li>
+<li><code>right</code>: This value is the same as <code>x</code> (included so that it can seemlessly work with <code>GTK::Geometry</code> functions).</li>
+<li><code>top</code>: This value is the same as <code>y</code> (included so that it can seemlessly work with <code>GTK::Geometry</code> functions).</li>
+<li><code>bottom</code>: This value is the same as <code>y</code> (included so that it can seemlessly work with <code>GTK::Geometry</code> functions).</li>
+<li><code>created_at</code>: The tick (<code>args.state.tick_count</code>) that this structure was created.</li>
+<li><code>global_created_at</code>: The global tick (<code>Kernel.global_tick_count</code>) that this structure was created.</li>
+</ul>
+<h1 id='--docs---gtk--openentity-'><code>GTK::OpenEntity</code></h1>
+<p>
+<code>GTK::OpenEntity</code> is accessible within the DragonRuby's top level <code>tick</code> function via the <code>args.state</code> property.
+</p>
+</ol>
+<pre>def tick args
+  args.state.x ||= 100
+  args.outputs.labels << [10, 710, "value of x is: #{args.state.x}."]
+end
+</pre>
+<p>
+The primary benefit of using <code>args.state</code> as opposed to instance variables is that <code>GTK::OpenEntity</code> allows for arbitrary nesting of properties without the need to create intermediate objects.
+</p>
+<p>
+For example:
+</p>
+</ol>
+<pre>def tick args
+  # intermediate player object does not need to be created
+  args.state.player.x ||= 100
+  args.state.player.y ||= 100
+  args.outputs.labels << [
+    10,
+    710,
+    "player x, y is:#{args.state.player.x}, #{args.state.player.y}."
+  ]
+end
+</pre>
+</ol>
+<h1 id='--docs---gtk--openentity#as_hash-'><code>GTK::OpenEntity#as_hash</code></h1>
+<p>
+Returns a reference to the <code>GTK::OpenEntity</code> as a <code>Hash</code>. This property is useful when you want to treat <code>args.state</code> as a <code>Hash</code> and invoke methods such as <code>Hash#each</code>.
+</p>
+<p>
+Example:
+</p>
+</ol>
+<pre>def tick args
+  args.state.x ||= 100
+  args.state.y ||= 100
+  values = args.state
+               .as_hash
+               .map { |k, v| "#{k} #{v}" }
+
+  args.outputs.labels << values.map.with_index do |v, i|
+    [
+      10,
+      710 - (30 * i),
+      v
+    ]
+  end
+end
+</pre>
+</ol>
+<h1 id='--docs---numeric#frame_index-'><code>Numeric#frame_index</code></h1>
+<p>
+This function is helpful for determining the index of frame-by-frame   sprite animation. The numeric value <code>self</code> represents the moment the   animation started.
+</p>
+<p>
+<code>frame_index</code> takes three additional parameters:
+</p>
+<ul>
+<li>How many frames exist in the sprite animation.</li>
+<li>How long to hold each animation for.</li>
+<li>Whether the animation should repeat.</li>
+</ul>
+<p>
+<code>frame_index</code> will return <code>nil</code> if the time for the animation is out of bounds of the parameter specification.
+</p>
+<p>
+Example using variables:
+</p>
+</ol>
+<pre>def tick args
+  start_looping_at = 0
+  number_of_sprites = 6
+  number_of_frames_to_show_each_sprite = 4
+  does_sprite_loop = true
+
+  sprite_index =
+    start_looping_at.frame_index number_of_sprites,
+                                 number_of_frames_to_show_each_sprite,
+                                 does_sprite_loop
+
+  sprite_index ||= 0
+
+  args.outputs.sprites << [
+    640 - 50,
+    360 - 50,
+    100,
+    100,
+    "sprites/dragon-#{sprite_index}.png"
+  ]
+end
+</pre>
+<p>
+Example using named parameters:
+</p>
+</ol>
+<pre>def tick args
+  start_looping_at = 0
+
+  sprite_index =
+    start_looping_at.frame_index count: 6,
+                                 hold_for: 4,
+                                 repeat: true,
+                                 tick_count_override: args.state.tick_count
+
+  sprite_index ||= 0
+
+  args.outputs.sprites << [
+    640 - 50,
+    360 - 50,
+    100,
+    100,
+    "sprites/dragon-#{sprite_index}.png"
+  ]
+end
+</pre>
+</ol>
+<h1 id='--docs---kernel-'><code>Kernel</code></h1>
+<p>
+Kernel in the DragonRuby Runtime has patches for how standard out is handled and also contains a unit of time in games called a tick.
+</p>
+</ol>
+<h1 id='--docs---kernel--tick_count-'><code>Kernel::tick_count</code></h1>
+<p>
+Returns the current tick of the game. This value is reset if you call $gtk.reset.
+</p>
+</ol>
+<h1 id='--docs---kernel--global_tick_count-'><code>Kernel::global_tick_count</code></h1>
+<p>
+Returns the current tick of the application from the point it was started. This value is never reset.
+</p>
+
+    </div>
+  </body>
+</html>
