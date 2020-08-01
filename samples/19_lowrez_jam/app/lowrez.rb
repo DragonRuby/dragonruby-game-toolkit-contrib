@@ -19,6 +19,9 @@ LOWREZ_FONT_MD_HEIGHT  = 10
 LOWREZ_FONT_SM         = -8.5
 LOWREZ_FONT_SM_HEIGHT  = 5
 
+LOWREZ_FONT_PATH       = 'fonts/lowrez.ttf'
+
+
 class LowrezOutputs
   attr_accessor :width, :height
 
@@ -65,7 +68,7 @@ class LowrezOutputs
       g: 0,
       b: 0,
       a: 255,
-      font: 'fonts/lowrez.ttf'
+      font: LOWREZ_FONT_PATH
     }
   end
 
@@ -131,7 +134,7 @@ module GTK
       @args.render_target(:lowrez)
            .labels
            .each do |l|
-        l.text = l.text.downcase
+        # l.text = l.text.downcase
         l.y  += 1
       end
 

@@ -103,7 +103,7 @@ def hello_world args
     g: 0,
     b: 0,
     a: 255,
-    font: 'fonts/lowrez.ttf'
+    font: LOWREZ_FONT_PATH
   }
 
   args.lowrez.sprites << {
@@ -128,25 +128,25 @@ def how_to_render_a_label args
   args.lowrez.labels << { x: 0, y: 57, text: "hello world",
                          size_enum: LOWREZ_FONT_XL,
                          r: 0, g: 0, b: 0, a: 255,
-                         font: 'fonts/lowrez.ttf' }
+                         font: LOWREZ_FONT_PATH }
 
   # Render a LARGE/LG label (remove the "#" in front of each line below)
   args.lowrez.labels << { x: 0, y: 36, text: "hello world",
                           size_enum: LOWREZ_FONT_LG,
                           r: 0, g: 0, b: 0, a: 255,
-                          font: 'fonts/lowrez.ttf' }
+                          font: LOWREZ_FONT_PATH }
 
   # Render a MEDIUM/MD label (remove the "#" in front of each line below)
   args.lowrez.labels << { x: 0, y: 20, text: "hello world",
                           size_enum: LOWREZ_FONT_MD,
                           r: 0, g: 0, b: 0, a: 255,
-                          font: 'fonts/lowrez.ttf' }
+                          font: LOWREZ_FONT_PATH }
 
   # Render a SMALL/SM label (remove the "#" in front of each line below)
   args.lowrez.labels << { x: 0, y: 9, text: "hello world",
                           size_enum: LOWREZ_FONT_SM,
                           r: 0, g: 0, b: 0, a: 255,
-                          font: 'fonts/lowrez.ttf' }
+                          font: LOWREZ_FONT_PATH }
 
   # You are provided args.lowrez.default_label which returns a Hash that you
   # can ~merge~ properties with
