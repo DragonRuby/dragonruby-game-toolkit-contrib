@@ -77,7 +77,7 @@ class LowrezOutputs
   end
 
   def primitives
-    @arsg.render_target(:lowrez).primitives
+    @args.render_target(:lowrez).primitives
   end
 
   def click
