@@ -38,23 +38,29 @@ class LowrezOutputs
   def background_color= opts
     @background_color = opts
     @args.outputs.background_color = @background_color
-    @args.render_target(:lowrez).solids << [0, 0, LOWREZ_SIZE, LOWREZ_SIZE, @background_color]
+
+    outputs_lowrez.solids << [0, 0, LOWREZ_SIZE, LOWREZ_SIZE, @background_color]
+  end
+
+  def outputs_lowrez
+    return @args.outputs if @args.state.tick_count <= 0
+    return @args.outputs[:lowrez]
   end
 
   def solids
-    @args.render_target(:lowrez).solids
+    outputs_lowrez.solids
   end
 
   def borders
-    @args.render_target(:lowrez).borders
+    outputs_lowrez.borders
   end
 
   def sprites
-    @args.render_target(:lowrez).sprites
+    outputs_lowrez.sprites
   end
 
   def labels
-    @args.render_target(:lowrez).labels
+    outputs_lowrez.labels
   end
 
   def default_label
@@ -73,11 +79,11 @@ class LowrezOutputs
   end
 
   def lines
-    @args.render_target(:lowrez).lines
+    outputs_lowrez.lines
   end
 
   def primitives
-    @arsg.render_target(:lowrez).primitives
+    outputs_lowrez.primitives
   end
 
   def click
@@ -131,10 +137,12 @@ module GTK
     def tick_core
       @args.init_lowrez
       __original_tick_core__
+
+      return if @args.state.tick_count <= 0
+
       @args.render_target(:lowrez)
            .labels
            .each do |l|
-        # l.text = l.text.downcase
         l.y  += 1
       end
 

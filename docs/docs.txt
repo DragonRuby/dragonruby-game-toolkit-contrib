@@ -358,29 +358,27 @@ description of each sample app.
 42. 14_sprite_limits_static_references: Upper limit for how many sprites can be rendered to the screen using ~static~ output collections (which are updated by reference as opposed to by value).
 43. 15_collision_limits: How many collisions can be processed across many primitives.
 44. 18_moddable_game: How you can make a game where content is authored by the player (modding support).
-45. 19_lowrez_jam_01_hello_world: How to use ~render_targets~ to create a low resolution game.
-46. 19_lowrez_jam_02_buttons: How to use ~render_targets~ to create a low resolution game.
-47. 19_lowrez_jam_03_space_shooter: How to use ~render_targets~ to create a low resolution game.
-48. 20_roguelike_starting_point: A starting point for a roguelike and explores concepts such as line of sight.
-49. 20_roguelike_starting_point_two: A starting point for a roguelike where sprites are provided from a tile map/tile sheet.
-50. 21_mailbox_usage: How to do interprocess communication.
-51. 22_trace_debugging: Debugging techniques and tracing execution through your game.
-52. 22_trace_debugging_classes: Debugging techniques and tracing execution through your game.
-53. 23_hexagonal_grid: How to make a tactical grid/map made of hexagons.
-54. 23_isometric_grid: How to make a tactical grid/map made of isometric sprites.
-55. 24_http_example: How to make http requests.
-56. 25_3d_experiment_01_square: How to create 3D objects.
-57. 26_jam_craft: Starting point for crafting game. It also shows how to customize the mouse cursor.
-58. 99_sample_game_basic_gorillas: Reference implementation of a full game. Topics covered: physics, keyboard input, collision, sprite animation.
-59. 99_sample_game_clepto_frog: Reference implementation of a full game. Topics covered: camera control, spring/rope physics, scene orchestration.
-60. 99_sample_game_dueling_starships: Reference implementation that shows local multiplayer. Topics covered: vectors, particles, friction, inertia.
-61. 99_sample_game_flappy_dragon: Reference implementation that is a clone of Flappy Bird. Topics covered: scene orchestration, collision, sound, sprite animations, lerping.
-62. 99_sample_game_pong: Reference implementation of pong.
-63. 99_sample_game_return_of_serenity: Reference implementation of low resolution story based game.
-64. 99_sample_game_the_little_probe: Reference implementation of a full game. Topics covered: Arbitrary collision detection, loading map data, bounce/ball physics.
-65. 99_sample_nddnug_workshop: Reference implementation of a full game. Topics covered: vectors, controller input, sound, trig functions.
-66. 99_sample_snakemoji: Shows that Ruby supports coding with emojis.
-67. 99_zz_gtk_unit_tests: A collection of unit tests that exercise parts of DragonRuby's API.
+45. 19_lowrez_jam: How to use ~render_targets~ to create a low resolution game.
+46. 20_roguelike_starting_point: A starting point for a roguelike and explores concepts such as line of sight.
+47. 20_roguelike_starting_point_two: A starting point for a roguelike where sprites are provided from a tile map/tile sheet.
+48. 21_mailbox_usage: How to do interprocess communication.
+49. 22_trace_debugging: Debugging techniques and tracing execution through your game.
+50. 22_trace_debugging_classes: Debugging techniques and tracing execution through your game.
+51. 23_hexagonal_grid: How to make a tactical grid/map made of hexagons.
+52. 23_isometric_grid: How to make a tactical grid/map made of isometric sprites.
+53. 24_http_example: How to make http requests.
+54. 25_3d_experiment_01_square: How to create 3D objects.
+55. 26_jam_craft: Starting point for crafting game. It also shows how to customize the mouse cursor.
+56. 99_sample_game_basic_gorillas: Reference implementation of a full game. Topics covered: physics, keyboard input, collision, sprite animation.
+57. 99_sample_game_clepto_frog: Reference implementation of a full game. Topics covered: camera control, spring/rope physics, scene orchestration.
+58. 99_sample_game_dueling_starships: Reference implementation that shows local multiplayer. Topics covered: vectors, particles, friction, inertia.
+59. 99_sample_game_flappy_dragon: Reference implementation that is a clone of Flappy Bird. Topics covered: scene orchestration, collision, sound, sprite animations, lerping.
+60. 99_sample_game_pong: Reference implementation of pong.
+61. 99_sample_game_return_of_serenity: Reference implementation of low resolution story based game.
+62. 99_sample_game_the_little_probe: Reference implementation of a full game. Topics covered: Arbitrary collision detection, loading map data, bounce/ball physics.
+63. 99_sample_nddnug_workshop: Reference implementation of a full game. Topics covered: vectors, controller input, sound, trig functions.
+64. 99_sample_snakemoji: Shows that Ruby supports coding with emojis.
+65. 99_zz_gtk_unit_tests: A collection of unit tests that exercise parts of DragonRuby's API.
 
 
 
@@ -1068,6 +1066,9 @@ under a permissive license.
 * DOCS: ~GTK::Runtime~
 The GTK::Runtime class is the core of DragonRuby. It is globally accessible via ~$gtk~.
 
+* DOCS: ~GTK::Runtime#reset~
+This function will reset Kernel.tick_count to 0 and will remove all data from args.state.
+
 * DOCS: ~GTK::Runtime#calcstringbox~
 This function returns the width and height of a string.
 
@@ -1077,9 +1078,6 @@ This function returns the width and height of a string.
     args.state.string_size_font_size ||= args.gtk.calcstringbox "Hello World"
   end
 #+end_src
-
-* DOCS: ~GTK::Runtime#reset~
-This function will reset Kernel.tick_count to 0 and will remove all data from args.state.
 
 * DOCS: ~Array~
 

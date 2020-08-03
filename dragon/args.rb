@@ -51,7 +51,7 @@ module GTK
 
     def initialize runtime, recording
       @inputs = Inputs.new
-      @outputs = Outputs.new
+      @outputs = Outputs.new args: self
       @passes = []
       @state = OpenEntity.new
       @state.tick_count = -1
@@ -89,13 +89,30 @@ module GTK
     end
 
     def clear_render_targets
+      render_targets_clear
+    end
+
+    def render_targets_clear
       @render_targets = {}
     end
 
+    def render_targets
+      @render_targets
+    end
+
     def render_target name
+      if @state.tick_count == 0
+        log_important <<-S
+* WARNING:
+~render_target~ with name ~#{name}~ was created
+on ~args.state.tick_count == 0~. You cannot create ~render_targets~ on the
+first frame and need to wait until ~args.state.tick_count >= 1~.
+S
+      end
+
       name = name.to_s
       if !@render_targets[name]
-        @render_targets[name] = Outputs.new(target: name, background_color_override: [255, 255, 255, 0])
+        @render_targets[name] = Outputs.new(args: self, target: name, background_color_override: [255, 255, 255, 0])
         @passes << @render_targets[name]
       end
       @render_targets[name]

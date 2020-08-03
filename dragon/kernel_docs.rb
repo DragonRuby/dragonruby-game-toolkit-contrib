@@ -49,6 +49,7 @@ S
     DocsOrganizer.sort_docs_classes!
     final_string = ""
     $docs_classes.each do |k|
+      log "* INFO: Retrieving docs for #{k.name}."
       final_string += k.docs_all
     end
 

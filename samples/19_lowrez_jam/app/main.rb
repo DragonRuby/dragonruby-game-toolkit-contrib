@@ -125,25 +125,25 @@ def how_to_render_a_label args
   # NOTE: Text is aligned from the TOP LEFT corner
 
   # Render an EXTRA LARGE/XL label (remove the "#" in front of each line below)
-  args.lowrez.labels << { x: 0, y: 57, text: "hello world",
+  args.lowrez.labels << { x: 0, y: 57, text: "Hello World",
                          size_enum: LOWREZ_FONT_XL,
                          r: 0, g: 0, b: 0, a: 255,
                          font: LOWREZ_FONT_PATH }
 
   # Render a LARGE/LG label (remove the "#" in front of each line below)
-  args.lowrez.labels << { x: 0, y: 36, text: "hello world",
+  args.lowrez.labels << { x: 0, y: 36, text: "Hello World",
                           size_enum: LOWREZ_FONT_LG,
                           r: 0, g: 0, b: 0, a: 255,
                           font: LOWREZ_FONT_PATH }
 
   # Render a MEDIUM/MD label (remove the "#" in front of each line below)
-  args.lowrez.labels << { x: 0, y: 20, text: "hello world",
+  args.lowrez.labels << { x: 0, y: 20, text: "Hello World",
                           size_enum: LOWREZ_FONT_MD,
                           r: 0, g: 0, b: 0, a: 255,
                           font: LOWREZ_FONT_PATH }
 
   # Render a SMALL/SM label (remove the "#" in front of each line below)
-  args.lowrez.labels << { x: 0, y: 9, text: "hello world",
+  args.lowrez.labels << { x: 0, y: 9, text: "Hello World",
                           size_enum: LOWREZ_FONT_SM,
                           r: 0, g: 0, b: 0, a: 255,
                           font: LOWREZ_FONT_PATH }
@@ -153,13 +153,13 @@ def how_to_render_a_label args
   # Example 1
   args.lowrez.labels << args.lowrez
                             .default_label
-                            .merge(text: "default")
+                            .merge(text: "Default")
 
   # Example 2
   args.lowrez.labels << args.lowrez
                             .default_label
                             .merge(x: 31,
-                                   text: "default",
+                                   text: "Default",
                                    r: 128,
                                    g: 128,
                                    b: 128)
@@ -179,7 +179,7 @@ def how_to_render_solids args
   args.lowrez.solids << { x: 3, y: 3, w: 3, h: 3, r: 255, g: 0, b: 0 }
 
   # Render a red square at 6, 6 with a width and height of 4
-  args.lowrez.solids << { x: 7, y: 7, w: 4, h: 4, r: 255, g: 0, b: 0 }
+  args.lowrez.solids << { x: 6, y: 6, w: 4, h: 4, r: 255, g: 0, b: 0 }
 end
 
 ## # =============================================================================
@@ -266,7 +266,7 @@ def how_to_animate_a_sprite args
                                .default_label
                                .merge(x: 32,
                                       y: 32,
-                                      text: "count down: #{countdown_in_seconds}",
+                                      text: "Count Down: #{countdown_in_seconds}",
                                       alignment_enum: 1)
   end
 
@@ -275,7 +275,7 @@ def how_to_animate_a_sprite args
                                .default_label
                                .merge(x: 0,
                                       y: 11,
-                                      text: "tick: #{args.state.tick_count}")
+                                      text: "Tick: #{args.state.tick_count}")
   args.lowrez.labels  << args.lowrez
                                .default_label
                                .merge(x: 0,
@@ -317,7 +317,7 @@ def how_to_animate_a_sprite_sheet args
                                .default_label
                                .merge(x: 32,
                                       y: 32,
-                                      text: "count down: #{countdown_in_seconds}",
+                                      text: "Count Down: #{countdown_in_seconds}",
                                       alignment_enum: 1)
   end
 
@@ -341,19 +341,19 @@ def how_to_move_a_sprite args
   args.lowrez.labels << args.lowrez
                             .default_label
                             .merge(x: 32,
-                                   y: 62, text: "use arrow keys",
+                                   y: 62, text: "Use Arrow Keys",
                                    alignment_enum: 1)
 
   args.lowrez.labels << args.lowrez
                             .default_label
                             .merge(x: 32,
-                                   y: 56, text: "use wasd",
+                                   y: 56, text: "Use WASD",
                                    alignment_enum: 1)
 
   args.lowrez.labels << args.lowrez
                             .default_label
                             .merge(x: 32,
-                                   y: 50, text: "or click",
+                                   y: 50, text: "Or Click",
                                    alignment_enum: 1)
 
   # set the initial values for x and y using ||= ("or equal operator")
@@ -410,7 +410,7 @@ def how_to_determine_collision args
   args.lowrez.labels << args.lowrez
                             .default_label
                             .merge(x: 32,
-                                   y: 62, text: "click anywhere",
+                                   y: 62, text: "Click Anywhere",
                                    alignment_enum: 1)
 
   # if a mouse click occurs:
@@ -459,7 +459,7 @@ def how_to_determine_collision args
                             .default_label
                             .merge(x: 31,
                                    y: 5,
-                                   text: "collision!",
+                                   text: "Collision!",
                                    alignment_enum: 1)
     else
       # if collision occurred, render the words no collision.
@@ -467,7 +467,7 @@ def how_to_determine_collision args
                             .default_label
                             .merge(x: 31,
                                    y: 5,
-                                   text: "no collision.",
+                                   text: "No Collision.",
                                    alignment_enum: 1)
     end
   else
@@ -490,7 +490,7 @@ def how_to_create_buttons args
   args.state.label_style  = { r: 80, g: 80, b: 80 }
 
   # Render instructions
-  args.state.button_message ||= "press a button!"
+  args.state.button_message ||= "Press a Button!"
   args.lowrez.labels << args.lowrez
                             .default_label
                             .merge(args.state.label_style)
@@ -508,7 +508,7 @@ def how_to_create_buttons args
                              .merge(args.state.label_style)
                              .merge(x: args.state.button_one_border.x + 2,
                                     y: args.state.button_one_border.y + LOWREZ_FONT_SM_HEIGHT + 2,
-                                    text: "button one")
+                                    text: "Button One")
 
   # Creates button two using a border and a label
   args.state.button_two_border = args.state.button_style.merge( x: 1, y: 20)
@@ -519,7 +519,7 @@ def how_to_create_buttons args
                             .merge(args.state.label_style)
                             .merge(x: args.state.button_two_border.x + 2,
                                    y: args.state.button_two_border.y + LOWREZ_FONT_SM_HEIGHT + 2,
-                                   text: "button two")
+                                   text: "Button Two")
 
   # Initialize the state variable that tracks which button was clicked to "" (empty stringI
   args.state.last_button_clicked ||= "--"
@@ -529,9 +529,9 @@ def how_to_create_buttons args
   # set args.state.last_button_clicked accordingly
   if args.lowrez.mouse_click
     if args.lowrez.mouse_click.inside_rect? args.state.button_one_border
-      args.state.last_button_clicked = "one clicked!"
+      args.state.last_button_clicked = "One Clicked!"
     elsif args.lowrez.mouse_click.inside_rect? args.state.button_two_border
-      args.state.last_button_clicked = "two clicked!"
+      args.state.last_button_clicked = "Two Clicked!"
     else
       args.state.last_button_clicked = "--"
     end
