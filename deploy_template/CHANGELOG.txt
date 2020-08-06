@@ -1,3 +1,261 @@
+= 1.14 =
+
+ * [Support] Better HTML5 template. Additional JS events added to
+   handle loss of keyboard input within an iframe.
+ * [Bugfix] `args.outputs.screenshots` regression fixed.
+ * [Docs] Added documentation for a few more Numeric methods.
+ * [Samples] Brand new advanced sample app: 99_sample_sprite_animation_creator.
+   The sample app uses `args.outputs.screenshots` and `render_targets` heavily along with
+   in memory queues as a means to consolidate events coming from
+   different parts of the app.
+
+
+= 1.13 =
+
+ * [API] Sprite angle now accepts fractional degrees.
+ * [Samples] Better font added to LOWREZJAM 2020 template.
+ * [API] Added `args.outputs[RENDER_TARGET_NAME]` as an alias to
+   `args.render_target(RENDER_TARGET_NAME)`. Either of the following will work:
+
+   ```ruby
+   def tick args
+     if args.state.tick_count == 1
+        args.render_target(:camera).width  = 100
+        args.render_target(:camera).height = 100
+        args.render_target(:camera).solids << [0, 0, 50, 50, 255, 0, 0]
+     end
+
+     if args.state.tick_count > 0
+       args.outputs.sprites << { x: 0,
+                                 y: 0,
+                                 w: 500,
+                                 h: 500,
+                                 source_x: 0,
+                                 source_y: 0,
+                                 source_w: 50,
+                                 source_h: 50,
+                                 path: :camera }
+     end
+   end
+
+   $gtk.reset
+   ```
+
+   Is the same as:
+
+   ```ruby
+   def tick args
+     if args.state.tick_count == 1
+        args.outputs[:camera].width  = 100
+        args.outputs[:camera].height = 100
+        args.outputs[:camera].solids << [0, 0, 50, 50, 255, 0, 0]
+     end
+
+     if args.state.tick_count > 0
+       args.outputs.sprites << { x: 0,
+                                 y: 0,
+                                 w: 500,
+                                 h: 500,
+                                 source_x: 0,
+                                 source_y: 0,
+                                 source_w: 50,
+                                 source_h: 50,
+                                 path: :camera }
+     end
+   end
+
+   $gtk.reset
+   ```
+
+= 1.12 =
+
+ * [Samples] LOWREZ Jam sample app reworked in preparation for LOWREZ
+   Jam 2020 (starts on August 1st so hurry and join).
+ * [Docs] Docs added for GTK::Mouse, you can access them via the
+   Console by typing `GTK::Mouse.docs` or `$gtk.args.inputs.mouse.docs`.
+ * [MacOS] Updated minimum OS support to include MacOS 10.9+.
+
+= 1.11 =
+
+ * [Bugfix] Fixed error in docs_search "TERM".
+
+= 1.10 =
+
+ * [Support] Documentation infrastructure added (take a look at docs/docs.html). Bring up the DragonRuby Console and:
+
+   To search docs you can type `docs_search "SEARCH TERM"`
+
+   If you want to get fancy you can provide a `lambda` to filter documentation:
+
+   docs_search { |entry| (entry.include? "Array") && (!entry.include? "Enumerable") }
+
+ * [Bugfix] Fixed sprite rendering issues with source_(x|y|w|h) properties on sprites.
+ * [Support] Removed double buffering of game if framerate drops below 60 fps.
+ * [Support] Console now supports mouse wheel scrolling.
+ * [Support] One time notifications have less noise/easier to read.
+ * [Bugfix] Rogue ~app/main.rb~ directory will no longer be created if you run a sample app.
+
+= 1.9 =
+
+ * [Bugfix] HTTP on windows should now work, for real this time.
+ * [Bugfix] Non-720p render targets now use correct coordinate system.
+
+= 1.8 =
+
+ * [Experimental] Added the ability to control the logical game size. You can use cli
+   arguments to set it. Example ultra-wide support would be:
+   `./dragonruby --window_width 3840 --window_height 1080`
+ * [Bugfix] HTTP on windows should now work.
+ * [Bugfix] `even?` and `odd?` return the correct result for Fixnum.
+ * [Bugfix] args.intputs.mouse_wheel now reports the delta change in x and y correctly.
+ * [Bugfix] Improved analog joystick accuracy when converting to percentages.
+ * [Support] Incorporated pull request from https://github.com/kfischer-okarin that adds
+   autocompletion to the Console. This is the PR:
+   - https://github.com/DragonRuby/dragonruby-game-toolkit-contrib/commit/da0fdcfbd2bd9739fe056eb646920df79a32954c
+   - https://github.com/DragonRuby/dragonruby-game-toolkit-contrib/commit/99305ca79118fa0704c8681f4019738b8c7a500d
+
+= 1.7 =
+
+ * [BREAKING] args.inputs.mouse.wheel.point is gone. Use args.inputs.mouse.x
+   and .y if you need cursor position.
+ * [BREAKING] args.inputs.mouse.wheel.x and .y now represent the amount the
+   mousewheel/trackpad has moved since the last tick and not the mouse cursor
+   position. Use args.inputs.mouse.x and .y if you need cursor position.
+
+= 1.6 =
+
+ * [API] Sprite now supports source_(x|y|w|h). These properties are consistent with the origin
+   being in the bottom left. The existing properties tile_(x|y|w|h) assumes that origin 0, 0 is in the top left.
+   The code below will render the same sprite (in their respective coordinate systems):
+
+   # using tile_(x|y|w|h) properties
+   args.outputs.sprites << { x: 0,
+                             y: 0,
+                             w: 1280,
+                             h: 100,
+                             path: :block,
+                             tile_x: 0,
+                             tile_y: 720 - 100,
+                             tile_w: 1280,
+                             tile_h: 100 }
+
+   is equivalent to:
+
+   # using source_(x|y|w|h) properties
+   args.outputs.sprites << { x: 0,
+                             y: 0,
+                             w: 1280,
+                             h: 100,
+                             path: :block,
+                             source_x: 0,
+                             source_y: 0,
+                             source_w: 1280,
+                             source_h: 100 }
+
+   Note: if you provide both tile_(x|y|w|h) and source_(x|y|w|h). The values of tile_ will "win" so as not to
+   break existing code out there.
+ * [Bugfix] Updated require to remove duplicate requires of the same file (or files that have recently been required).
+ * [Bugfix] Strict entities of different types/names serialize and deserialize correctly.
+ * [Samples] Updated render targets sample app to show two render targets with transparencies.
+ * [API] No really, render targets now have a transparent background and respect opacity.
+
+= 1.5 =
+
+ * [API] Added $gtk.show_cursor and $gtk.hide_cursor to show and hide the mouse cursor. The
+   function only needs to be called once. EG: args.gtk.hide_cursor if args.state.tick_count == 0.
+ * [Samples] Jam Craft 2020 sample app updated to have more comments and demonstrate a custom
+   mouse cursor.
+
+= 1.4 =
+
+ * [Bugfix] Adding $gtk.reset at the bottom of main.rb will no longer cause an infinite loop.
+ * [Samples] Sample app added for Jam Craft 2020.
+
+= 1.3 =
+
+ * [Bugfix] Adding $gtk.reset at the bottom of main.rb will no longer cause an infinite loop.
+ * [Samples] Better instructions added to various sample apps.
+
+= 1.2 =
+
+ * [Bugfix] Top-level require statements within main.rb will load before
+   invoking the rest of the code in main.rb.
+ * [Samples] Better keyboard input sample app.
+ * [Samples] New sample app that shows how to use Numeric#ease_spline.
+ * [Bugfix] Fixed "FFI::Draw cannot be serialized" error message.
+
+= 1.1 =
+
+ * [Bugfix] Fixed exception associated with providing serialization related help.
+ * [Bugfix] Fixed comments on how to run tests from CLI.
+ * [Support] More helpful global variables added. Here's a list:
+   - $gtk
+   - $console
+   - $args
+   - $state
+   - $tests
+   - $record
+   - $replay
+ * [API] inputs.keyboard.key_(down|held|up).any? and inputs.keyboard.key_(down|held|up).all?
+   added.
+ * [Support] Recording gameplay and replaying streamlined a bit more. GIVE THE
+   REPLAY FEATURE A SHOT! IT'S AWESOME!! Bring up the console and run: $record.start SEED_NUMBER.
+ * [Support] Bringing up the console will stop a replay if one is running.
+
+= 1.0 =
+
+ * [News] DragonRuby Game Toolkit turns 1.0. Happy birthday!
+ * [Bugfix] args.state.new_entity_strict serializes and deserializes correctly now.
+ * [BREAKING] Entity#hash has been renamed to Entity#as_hash so as not to redefine
+   Object#hash. This is a "private" method so you probably don't have to worry about
+   anything breaking on your end.
+ * [BREAKING] gtk.save_state and gtk.load_state have been replaced with gtk.serialize_state
+   and gtk.deserialize_state (helpful error messages have been added).
+ * [Support] Console can now render sprites (this is still in its early stages). Try
+   $gtk.console.addsprite(w: 50, h: 50, path: "some_path.png").
+ * [API] Render targets now have a transparent background and respect opacity.
+ * [API] Render targets can be cached/programatically created once and reused.
+ * [Samples] A new render target sample app has been created to show how to cache them.
+ * [Samples] Easing sample app reworked/simplified.
+ * [Support] GTK will keep a backup of your source file changes under the tmp directory.
+   One day this feature will save your ass.
+
+= 20200301 =
+
+ * [Samples] Added sample app that shows how you can draw a cubic bezier curves.
+ * [Support] Keyup event prints key and raw_key to the console.
+ * [Support] Circumflex now opens the console.
+
+= 20200227 =
+
+ * [Bugfix] Game will now auto restart in the event of a syntax error.
+ * [Samples] Sample app added to show how to use a sprite sheet for sprite animations:
+   09_sprite_animation_using_tile_sheet.
+ * [Samples] Sample app added to show how to use a tile sheet for a roguelike:
+   20_roguelike_starting_point_two.
+ * [Samples] Example code added to show how sort an array with a custom sort block:
+   00_intermediate_ruby_primer/07_powerful_arrays.txt
+ * [OSS] The following files have been open sourced at https://github.com/DragonRuby/dragonruby-game-toolkit-contrib:
+   - modified: dragon/args.rb
+   - new file: dragon/assert.rb
+   - new file: dragon/attr_gtk.rb
+   - modified: dragon/console.rb
+   - new file: dragon/docs.rb
+   - new file: dragon/geometry.rb
+   - new file: dragon/help.rb
+   - modified: dragon/index.rb
+   - modified: dragon/inputs.rb
+   - new file: dragon/log.rb
+   - new file: dragon/numeric.rb
+   - new file: dragon/string.rb
+   - new file: dragon/tests.rb
+   - new file: dragon/trace.rb
+ * [Support] Added isometric placeholder sprites.
+ * [Support] Added $gtk.reset_sprite 'path' to refresh a sprite from
+   the file system (while the game is running). Future releases will
+   automatically auto load sprites but you can use this to reload them
+   on demand.
+
 = 20200225 =
 
  * [Bugfix] Fixed macOS compatibility back to Mac OS X 10.9 or so.
@@ -22,9 +280,8 @@
 = 20200217 =
 
   * [Bugfix] `dragonruby-publish` would only build html5. It now builds
-    all of the platforms again. Ryan "The Juggernaut" Gordon has given Amir
-    a warning and has told him to be more careful releasing. Amir cackled
-    in defiance.
+    all of the platforms again. Ryan has given Amir a warning and has told him
+    to be more careful releasing. Amir cackled in defiance.
 
 = 20200213 =
 
@@ -87,7 +344,7 @@
     http.
   * [Support] [Samples] Added a sample app that shows how create
     collision detection associated with constraint points against
-    a ramp. This sample app also demostrates the use of `gtk.slowmo!`
+    a ramp. This sample app also demonstrates the use of `gtk.slowmo!`
     which you can use the slow down the tick execution of your game
     to see things frame by frame (still experimental).
   * [Support] Added sprites to default template folder. The sprites
@@ -165,7 +422,7 @@
 
   * [Samples] Added sample app that shows how trace can be used within a class.
   * [Support] Added $gtk.log_level. Valid values are :on,
-    :off. When the value is set to :on, GTK log mesages will show up
+    :off. When the value is set to :on, GTK log messages will show up
     in the DragonRuby Console *AND* be written to logs/log.txt. When the
     value is set to :off, GTK log messages will *NOT* show up in the
     console, but will *STILL* be written to logs/log.txt
@@ -306,7 +563,7 @@
   * [Samples] New sample app called 02_collisions_02_moving_objects has been added.
   * [Support] Previous console messages are subdued if unhandled exception is resolved.
     This removes visual confusion if another exception is thrown (easier to determine what the current exception is).
-  * [Support] Added api documentation about thruthy_keys for keyboards and controllers.
+  * [Support] Added api documentation about truthy_keys for keyboards and controllers.
   * [API] [Experimental] Hashes now quack like render primitives. For example some_hash[:x] is the same as
     some_hash.x and can be interchangeable with some_array.x (this is a work in progress
     so there may be some geometric/collision apis that aren't covered).
@@ -316,7 +573,7 @@
     loops, and arrays. Special thanks to @raulrita (https://www.twitch.tv/raulrita)
     for live streaming and bringing light to these enhancements.
   * [Support] `puts` statements that begin with "====" are rendered as teal in the Console. This
-    provides a visual seperation that will help with print line debugging.
+    provides a visual separation that will help with print line debugging.
   * [OSS] The DragonRuby Game Toolkit Console has been open sourced under an MIT license. You can find it
     here: https://github.com/DragonRuby/dragonruby-game-toolkit-contrib
 
@@ -325,9 +582,9 @@
   * [Support] The mygame directory now contains a documentation folder that provides high level
     APIs for the engine (it's a work in progress, but a good starting point).
   * [Samples] A sample app called "hash primitives" has been added that shows how you can use a Hash
-    to render a primitive. This will make specifying sprite's advanced properites much easier.
+    to render a primitive. This will make specifying sprite's advanced properties much easier.
   * [Samples] The sprite limits sample app shows how you can ducktype a class and render it as a sprite.
-    Doing this is a tiny bit more work, but there is a huge perfomance benefit.
+    Doing this is a tiny bit more work, but there is a huge performance benefit.
   * [Bugfix] Internal limits total textures/render targets/fonts is removed.
   * [BREAKING] args.dragon has been deprecated, you must now use the new property args.gtk.
   * [BREAKING] args.game has been deprecated, you must now use the new property args.state.
@@ -390,7 +647,7 @@
 
 = release-20190731 =
 
-  * [Bugfix] Fixed bug in dragon ruby console returning evalued value.
+  * [Bugfix] Fixed bug in DragonRuby console returning evaled value.
   * [Support] Updated collisions sample app with comments.
   * [Support] Added comments for sprite animation sample app.
   * [Support] dragonruby-publish will look for your game in the
@@ -472,9 +729,9 @@
   * [API] A new entity type has been introduced and is accessible via `args.state.new_entity_strict`
     the usage of StrictEntity over OpenEntity (`args.state.new_entity`) yield significantly faster
     property access. The downside is that `args.state.new_entity_strict` requires
-    you to define all properties upfront within the implicit block. You will recieve
+    you to define all properties upfront within the implicit block. You will receive
     an exception if you attempt to access a property that hasn't be
-    pre-defined. For usage info and preformance differences, take a look at the Sprite Limit
+    pre-defined. For usage info and performance differences, take a look at the Sprite Limit
     sample app.
   * [Support] Exception messages have been significantly improved. Hashes and Type .to_s
     information is well formatted. "stack too deep" exceptions resolved.
@@ -484,7 +741,7 @@
   * [Support] Framerate warnings wait 10 seconds before calculating the moving average. If your
     framerates begin to drop, consider using `args.state.new_entity_static` for game structures that have been
     fleshed out.
-  * [Performance] Rendering of primitives is can support over twice as many sprites at 60 fps (see Sprit Limits
+  * [Performance] Rendering of primitives is can support over twice as many sprites at 60 fps (see Sprite Limits
     sample app for demonstration).
   * [Support] Headless testing has been added. Take a look at the Basic Gorillas sample app to see
     how headless testing can help you dial into frame-by-frame problems within your game.
@@ -507,7 +764,7 @@
     args.outputs.sprites << create_sprite(x: 0, y: 0, w: 100, h: 100, vflip: true)
     ```
 
-    We're still chewing on the API above before it get's integrated
+    We're still chewing on the API above before it gets integrated
     into GTK proper.
   * [API] "Superscript Two" can be used to bring up the DragonRuby
     Console. People with international keyboards (which don't have a ~
@@ -597,11 +854,11 @@
     course of Ruby the programming language.
   * [Sample] The composition of primitives in DragonRuby GTK are
     incredibly flexible. A sample app called "Fluid Primitives" has
-    been beed added to show this flexibility.
+    been added to show this flexibility.
   * [MacOS] [Linux] [Windows] If your screen resolution is below 720p,
     the game will start at a smaller (but still aspect-correct) resolution.
   * [Sample] Sample added showing `intersects_rect?` collision
-    tollerances as a topdown level (similar to what's
+    tolerances as a topdown level (similar to what's
     in Zelda for the NES).
 
 = release-20190516 =
@@ -675,7 +932,7 @@
     `notepad.exe`.
   * [Packaging] Default icon added to `mygame`.
   * [Samples] Reworked `doomwipe` (render targets tech demo) sample app so that
-    it's less eratic before the effect is revealed.
+    it's less erratic before the effect is revealed.
   * [Windows] Fixed bug where rendering would stop on Windows if the screen was
     resized.
   * [Size] Deleted files that don't need to be packaged with DragonRuby GTK.

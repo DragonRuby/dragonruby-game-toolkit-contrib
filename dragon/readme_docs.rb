@@ -981,7 +981,7 @@ to clarify some terms. Specifically _language specification_ vs _runtime_.
 
 *** Okay... so what is the difference between a language specification and a runtime?
 
-A runtime is an _implementation_ of a langauge specification. When
+A runtime is an _implementation_ of a language specification. When
 people say "Ruby," they are usually referring to "the Ruby 3.0+ language
 specification implemented via the CRuby/MRI Runtime."
 
@@ -1017,18 +1017,18 @@ runtime internally):
   C-Extensions.
 
 Levels 1 through 3 are fairly commonplace in many runtime
-implemenations (with level 1 being the most portable, and level 3
+implementations (with level 1 being the most portable, and level 3
 being the fastest). But the DragonRuby Runtime has taken things a
 bit further:
 
 - Level 4 consists of shared abstractions around hardware I/O and operating
   system resources. This level leverages open source and proprietary
-  components within Simple DirectMedia Layer (a lowlevel multimedia
+  components within Simple DirectMedia Layer (a low level multimedia
   component library that has been in active development for 22 years
   and counting).
 
-- Level 5 is a codegeneration layer which creates metadata that allows
-  for native interopability with host runtime libraries. It also
+- Level 5 is a code generation layer which creates metadata that allows
+  for native interoperability with host runtime libraries. It also
   includes OS specific message pump orchestrations.
 
 - Level 6 is a Ahead of Time/Just in Time Ruby compiler built with LLVM. This
@@ -1037,12 +1037,12 @@ bit further:
 
 These levels allow us to stay up to date with open source
 implementations of Ruby; provide fast, native code execution
-on proprietary platforms; ensure good seperation between these two
+on proprietary platforms; ensure good separation between these two
 worlds; and provides a means to add new platforms without going insane.
 
 *** Cool cool. So given that I understand everything to this point, can we answer the original question? What is DragonRuby?
 
-DragonRuby is a Ruby runtime implentation that takes all the lessons
+DragonRuby is a Ruby runtime implementation that takes all the lessons
 we've learned from MRI/CRuby, and merges it with the latest and greatest
 compiler and OSS technologies.
 
@@ -1067,30 +1067,30 @@ That doesn't make any sense. A language specification can't be
 slow... it's a language spec. Sure, an _implementation/runtime_ can be slow though, but then we'd
 have to talk about which runtime.
 
-*** Dynamic langauges are slow.
+*** Dynamic languages are slow.
 
 They are certainly slower than statically compiled languages. With the
 processing power and compiler optimizations we have today,
 dynamic languages like Ruby are _fast enough_.
 
 Unless you are writing in some form of intermediate representation by hand,
-your langauge of choice also suffers this same fallacy of slow. Like, nothing is
+your language of choice also suffers this same fallacy of slow. Like, nothing is
 faster than a low level assembly-like language. So unless you're
 writing in that, let's stop making this comment.
 
 NOTE: If you _are_ hand writing LLVM IR, we are always open to
-bringing on new partners with such a skillset. Email us ^_^.
+bringing on new partners with such a skill set. Email us ^_^.
 
 ** Frequent Concerns
 
 *** DragonRuby is not open source. That's not right.
 
 The current state of open source is unsustainable. Contributors work
-for free, most all open source repositories are serverly understaffed,
+for free, most all open source repositories are severely under-staffed,
 and burnout from core members is rampant.
 
 We believe in open source very strongly. Parts of DragonRuby are
-infact, open source. Just not all of it (for legal reasons, and
+in fact, open source. Just not all of it (for legal reasons, and
 because the IP we've created has value). And we promise that we are
 looking for (or creating) ways to _sustainably_ open source everything we do.
 
@@ -1141,7 +1141,7 @@ email. We don't want to collect usage data off of you either. We just
 want to provide quality toolchains to quality developers (as opposed
 to a large quantity of developers).
 
-The peiple that pay for DragonRuby and make an effort to understand it are the
+The people that pay for DragonRuby and make an effort to understand it are the
 ones we want to build a community around, partner with, and collaborate
 with. So having that small monetary wall deters entitled individuals
 that don't value the same things we do.
@@ -1153,7 +1153,7 @@ and non-trivially compensate open source developers. Look, we want to be
 able to work on the stuff we love, every day of our lives. And we'll go
 to great lengths to make that happen.
 
-But, in the event that sad day comes, our partnershiop bylaws state that
+But, in the event that sad day comes, our partnership bylaws state that
 _all_ DragonRuby IP that can be legally open sourced, will be released
 under a permissive license.
 S

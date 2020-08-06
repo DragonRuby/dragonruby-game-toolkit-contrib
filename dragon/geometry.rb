@@ -90,6 +90,30 @@ center_inside_rect for self #{self} and other_rect #{other_rect}. Failed with ex
 S
     end
 
+    def center_inside_rect_y other_rect
+      offset_y = (other_rect.h - h).half
+      new_rect = self.shift_rect(0, 0)
+      new_rect.y = other_rect.y + offset_y
+      new_rect
+    rescue Exception => e
+      raise e, <<-S
+* ERROR:
+center_inside_rect_y for self #{self} and other_rect #{other_rect}. Failed with exception #{e}.
+S
+    end
+
+    def center_inside_rect_x other_rect
+      offset_x = (other_rect.w - w).half
+      new_rect = self.shift_rect(0, 0)
+      new_rect.x = other_rect.x + offset_x
+      new_rect
+    rescue Exception => e
+      raise e, <<-S
+* ERROR:
+center_inside_rect_x for self #{self} and other_rect #{other_rect}. Failed with exception #{e}.
+S
+    end
+
     # Returns a primitive that is anchored/repositioned based off its retangle.
     # @gtk
     def anchor_rect anchor_x, anchor_y
