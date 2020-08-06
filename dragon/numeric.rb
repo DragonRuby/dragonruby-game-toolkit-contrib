@@ -9,6 +9,11 @@ class Numeric
 
   alias_method :gte, :>=
   alias_method :lte, :<=
+    
+  # Converts numeric value to distance from top of stage
+  def from_top
+    $gtk.args.grid.h - self
+  end
 
   # Converts a numeric value representing seconds into frames.
   #
