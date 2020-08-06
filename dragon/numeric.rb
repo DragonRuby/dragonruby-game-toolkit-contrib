@@ -9,6 +9,10 @@ class Numeric
 
   alias_method :gte, :>=
   alias_method :lte, :<=
+    
+  def from_top
+    [self, $gtk.args.grid] # TODO
+  end
 
   # Converts a numeric value representing seconds into frames.
   #
