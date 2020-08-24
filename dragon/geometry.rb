@@ -128,6 +128,10 @@ S
       raise ":angle_given_point has been deprecated use :angle_from instead."
     end
 
+    def distance_to other_point
+      Geometry.distance(self, other_point)
+    end
+
     # @gtk
     def self.shift_line line, x, y
       if line.is_a?(Array) || line.is_a?(Hash)
