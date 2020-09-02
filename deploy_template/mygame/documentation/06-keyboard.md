@@ -55,7 +55,7 @@ end
 
 # List of keys:
 
-These are the character and associated properities that will
+These are the character and associated properties that will
 be set to true.
 
 For example `A => :a, :shift` means that `args.inputs.keyboard.a`
