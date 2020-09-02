@@ -354,11 +354,17 @@ S
     end
 
     close_list_if_needed = lambda do |inside_ul, inside_ol|
-      result = ""
-      if inside_ul
-        result = "</ul>\n"
-      elsif inside_ol
-        result = "</ol>\n"
+      begin
+        result = ""
+        if inside_ul
+          result = "</ul>\n"
+        elsif inside_ol
+          result = "</ol>\n"
+        else
+          result
+        end
+      rescue Exception => e
+        raise "* ERROR in determining close_list_if_needed lambda result. #{e}."
       end
     end
 
@@ -370,39 +376,39 @@ S
     true_lines.each do |l|
       parse_log << "** Processing line: ~#{l.rstrip}~"
       if l.start_with? "* "
+        parse_log << "- H1 detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
         inside_ol = false
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
         link_id = text_to_id.call l
         toc += "<li><a href='##{link_id}'>#{formatted_html}</a></li>\n"
-        parse_log << "- H1 detected."
         content_html += "<h1 id='#{link_id}'>#{formatted_html}</h1>\n"
       elsif l.start_with? "** "
+        parse_log << "- H2 detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
         inside_ol = false
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
         link_id = text_to_id.call l
         # toc += "<a href='##{link_id}'>#{formatted_html}</a></br>\n"
-        parse_log << "- H2 detected."
         content_html += "<h2>#{__docs_line_to_html__ l, parse_log}</h2>\n"
       elsif l.start_with? "*** "
+        parse_log << "- H3 detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
         inside_ol = false
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
         link_id = text_to_id.call l
         # toc += "<a href='##{link_id}'>#{formatted_html}</a></br>\n"
-        parse_log << "- H3 detected."
         content_html += "<h3>#{__docs_line_to_html__ l, parse_log}</h3>\n"
       elsif l.strip.length == 0 && !inside_pre
         # do nothing
       elsif l.start_with? "#+begin_src"
+        parse_log << "- PRE start detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
         inside_ol = false
         inside_ul = false
-        parse_log << "- PRE start detected."
         inside_pre = true
         content_html << "<pre>"
       elsif l.start_with? "#+end_src"
@@ -412,16 +418,18 @@ S
         inside_pre = false
         content_html << "</pre>\n"
       elsif l.start_with? "#+begin_quote"
+        parse_log << "- BLOCKQUOTE start detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
         inside_ol = false
         inside_ul = false
-        parse_log << "- BLOCKQUOTE start detected."
         content_html << "<blockquote>\n"
       elsif l.start_with? "#+end_quote"
         parse_log << "- BLOCKQUOTE end detected."
         content_html << "</blockquote>\n"
       elsif (l.start_with? "1. ") && !inside_ol
         parse_log << "- OL start detected."
+        parse_log << "- LI detected."
+
         inside_ol = true
         content_html << "<ol>\n"
 
@@ -432,9 +440,10 @@ S
         elsif l.split(".")[0].length == 3
           l = l[4..-1]
         end
-        parse_log << "- LI detected."
+
         content_html << "<li>#{__docs_line_to_html__ l, parse_log}</li>\n"
       elsif inside_ol && (l[1] == "." || l[2] == "." || l[3] == ".")
+        parse_log << "- LI detected."
 
         if l.split(".")[0].length == 1
           l = l[2..-1]
@@ -444,31 +453,34 @@ S
           l = l[4..-1]
         end
 
-        parse_log << "- LI detected."
         content_html << "<li>#{__docs_line_to_html__ l, parse_log}</li>\n"
       elsif (l.start_with? "- ") && !inside_ul
         parse_log << "- UL start detected."
+        parse_log << "- LI detected."
+
         inside_ul = true
         content_html << "<ul>\n"
         l = l[2..-1]
 
-        parse_log << "- LI detected."
         content_html << "<li>#{__docs_line_to_html__ l, parse_log}</li>\n"
       elsif (l.start_with? "- ") && inside_ul
+        parse_log << "- LI detected."
+
         l = l[2..-1]
 
-        parse_log << "- LI detected."
         content_html << "<li>#{__docs_line_to_html__ l, parse_log}</li>\n"
       else
         if inside_ul
-          inside_ul = false
           parse_log << "- UL end detected."
+
+          inside_ul = false
           content_html << "</ul>\n"
         end
 
         if inside_ol
-          inside_ol = false
           parse_log << "- OL end detected."
+
+          inside_ol = false
           content_html << "</ol>\n"
         end
 
@@ -476,6 +488,7 @@ S
           content_html << "#{l.rstrip[2..-1]}\n"
         else
           parse_log << "- P detected."
+
           content_html << "<p>\n#{__docs_line_to_html__ l, parse_log}\n</p>\n"
         end
       end
@@ -490,6 +503,9 @@ S
       html: final_html,
       parse_log: parse_log
     }
+  rescue Exception => e
+    $gtk.write_file 'docs/parse_log.txt', (parse_log.join "\n")
+    raise "* ERROR in Docs::__docs_to_html__. #{e}"
   end
 
   def __docs_line_to_html__ line, parse_log
@@ -558,7 +574,7 @@ S
 
     return line_to_format
   rescue Exception => e
-    parse_log << "Failed to parse line: ~#{line}~, #{e}"
+    parse_log << "* ERROR: Failed to parse line: ~#{line}~, #{e}"
     return line.rstrip
   end
 end

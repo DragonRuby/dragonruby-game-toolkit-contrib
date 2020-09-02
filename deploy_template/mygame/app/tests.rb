@@ -4,7 +4,7 @@
 
 # Here is an example test and game
 
-# To run the test: ./dragonruby mygame --eval tests.rb --no-tick
+# To run the test: ./dragonruby mygame --eval app/tests.rb --no-tick
 
 class MySuperHappyFunGame
   attr_gtk

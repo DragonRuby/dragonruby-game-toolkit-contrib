@@ -41,7 +41,7 @@ module GTK
     # @return [OpenEntity]
     attr_accessor :state
 
-    # Gives you access to the top level DragonRuby runtime. 
+    # Gives you access to the top level DragonRuby runtime.
     #
     # @return [Runtime]
     attr_accessor :runtime
@@ -49,19 +49,23 @@ module GTK
 
     attr_accessor :passes
 
+    attr_accessor :wizards
+
     def initialize runtime, recording
       @inputs = Inputs.new
-      @outputs = Outputs.new
+      @outputs = Outputs.new args: self
       @passes = []
       @state = OpenEntity.new
       @state.tick_count = -1
       @runtime = runtime
       @recording = recording
-      @grid = Grid.new runtime.ffi_draw
+      @grid = Grid.new runtime
       @render_targets = {}
       @all_tests = []
       @geometry = GTK::Geometry
+      @wizards = Wizards.new
     end
+
 
     # The number of ticks since the start of the game.
     #
@@ -89,13 +93,21 @@ module GTK
     end
 
     def clear_render_targets
+      render_targets_clear
+    end
+
+    def render_targets_clear
       @render_targets = {}
+    end
+
+    def render_targets
+      @render_targets
     end
 
     def render_target name
       name = name.to_s
       if !@render_targets[name]
-        @render_targets[name] = Outputs.new(target: name, background_color_override: [255, 255, 255, 0])
+        @render_targets[name] = Outputs.new(args: self, target: name, background_color_override: [255, 255, 255, 0])
         @passes << @render_targets[name]
       end
       @render_targets[name]

@@ -38,6 +38,7 @@ S
     self[0..-2]
   end
 
+  # @gtk
   def wrapped_lines length
     self.each_line.map do |l|
       l = l.rstrip
@@ -50,20 +51,22 @@ S
     end.flatten
   end
 
+  # @gtk
   def wrap length
     wrapped_lines(length).join.rstrip
   end
 
+  # @gtk
   def multiline?
     include? "\n"
   end
 
-  def indent_lines amount
+  def indent_lines amount, char = " "
     self.each_line.each_with_index.map do |l, i|
       if i == 0
         l
       else
-        " " * amount + l
+        char * amount + l
       end
     end.join
   end

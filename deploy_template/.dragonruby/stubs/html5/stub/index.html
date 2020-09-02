@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="icon" href="favicon.png" type="image/png" />
+    <title>DragonRuby</title>
+    <style>
+      body {
+        font-family: arial;
+        margin: 0;
+        padding: none;
+        background: #000000;
+      }
+
+      .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
+      div.emscripten { text-align: center; }      
+      div.emscripten_border { border: 1px solid black; }
+      /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
+      canvas.emscripten { border: 0px none; background-color: black; }
+
+      #emscripten_logo {
+        display: inline-block;
+        margin: 0;
+      }
+
+      @-webkit-keyframes rotation {
+        from {-webkit-transform: rotate(0deg);}
+        to {-webkit-transform: rotate(360deg);}
+      }
+      @-moz-keyframes rotation {
+        from {-moz-transform: rotate(0deg);}
+        to {-moz-transform: rotate(360deg);}
+      }
+      @-o-keyframes rotation {
+        from {-o-transform: rotate(0deg);}
+        to {-o-transform: rotate(360deg);}
+      }
+      @keyframes rotation {
+        from {transform: rotate(0deg);}
+        to {transform: rotate(360deg);}
+      }
+
+      #status {
+        display: inline-block;
+        font-weight: bold;
+        color: rgb(120, 120, 120);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      #progress {
+        height: 20px;
+        width: 30px;
+      }
+
+      #output {
+        width: 100%;
+        height: 200px;
+        margin: 0 auto;
+        margin-top: 10px;
+        border-left: 0px;
+        border-right: 0px;
+        padding-left: 0px;
+        padding-right: 0px;
+        display: none;
+        background-color: black;
+        color: white;
+        font-family: 'Lucida Console', Monaco, monospace;
+        outline: none;
+      }
+    </style>
+    <link rel="stylesheet" href="game.css" />
+    <title>DragonRuby Game Toolkit Tutorial</title>
+  </head>
+  <body id='toplevel'>
+    <div class="emscripten_border" id='borderdiv'>
+      <input id="game-input" autocomplete="off" />
+      <canvas class="game emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    </div>
+    <br/>
+    <textarea style="display: none;" id="output" rows="8"></textarea>
+
+    <div class="emscripten" id="status"></div>
+    <div class="emscripten" id='progressdiv'>
+      <progress value="0" max="100" id="progress"></progress>
+    </div>
+
+    <script type='text/javascript' src='dragonruby-html5-loader.js'></script>
+  </body>
+</html>

@@ -295,7 +295,7 @@ S
 
         return self.send m
       rescue Exception => e
-        log_important "#{e}}"
+        log_important "#{e}"
       end
 
       raise <<-S
@@ -496,6 +496,10 @@ module GTK
 
     def point
       [@x, @y].point
+    end
+
+    def inside_rect? rect
+      point.inside_rect? rect
     end
 
     alias_method :position, :point

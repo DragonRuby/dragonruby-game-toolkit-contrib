@@ -9,6 +9,11 @@ class Numeric
 
   alias_method :gte, :>=
   alias_method :lte, :<=
+    
+  # Converts numeric value to distance from top of stage
+  def from_top
+    $gtk.args.grid.h - self
+  end
 
   # Converts a numeric value representing seconds into frames.
   #
@@ -28,12 +33,6 @@ class Numeric
     clamp(0, 255).to_i
   end
 
-  # For a given number, the elapsed frames since that number is returned.
-  # `Kernel.tick_count` is used to determine how many frames have elapsed.
-  # An override numeric value can be passed in which will be used instead
-  # of `Kernel.tick_count`.
-  #
-  # @gtk
   def elapsed_time tick_count_override = nil
     (tick_count_override || Kernel.tick_count) - self
   end
@@ -51,25 +50,42 @@ class Numeric
   # moment in time.
   #
   # @gtk
-  def elapsed? offset, tick_count_override = nil
-    (self + offset) < (tick_count_override || Kernel.tick_count)
+  def elapsed? offset = 0, tick_count_override = Kernel.tick_count
+    (self + offset) < tick_count_override
   end
 
-  # This is helpful for determining the index of frame-by-frame sprite animation.
-  # The numeric value `self` represents the moment the animation started. `frame_index`
-  # takes three additional parameters: how many frames exist in the sprite animation;
-  # how long to hold each animation for; and whether the animation should repeat.
-  #
-  # @gtk
-  def frame_index frame_count, hold_for, repeat, tick_count_override = nil
+  def frame_index *opts
+    frame_count_or_hash, hold_for, repeat, tick_count_override = opts
+    if frame_count_or_hash.is_a? Hash
+      frame_count         = frame_count_or_hash[:count]
+      hold_for            = frame_count_or_hash[:hold_for]
+      repeat              = frame_count_or_hash[:repeat]
+      tick_count_override = frame_count_or_hash[:tick_count_override]
+    else
+      frame_count = frame_count_or_hash
+    end
+
+    tick_count_override ||= Kernel.tick_count
     animation_frame_count = frame_count
     animation_frame_hold_time = hold_for
     animation_length = animation_frame_hold_time * animation_frame_count
-    if !repeat && self.+(animation_length) < (tick_count_override || Kernel.tick_count).-(1)
+    return nil if Kernel.tick_count < self
+
+    if !repeat && (self + animation_length) < (tick_count_override - 1)
       return nil
     else
       return self.elapsed_time.-(1).idiv(animation_frame_hold_time) % animation_frame_count
     end
+  rescue Exception => e
+    raise <<-S
+* ERROR:
+#{opts}
+#{e}
+S
+  end
+
+  def zero?
+    self == 0
   end
 
   def zero
@@ -478,6 +494,11 @@ S
 
   def serialize
     self
+  end
+
+  def from_top
+    return 720 - self unless $gtk
+    $gtk.args.grid.h - self
   end
 end
 

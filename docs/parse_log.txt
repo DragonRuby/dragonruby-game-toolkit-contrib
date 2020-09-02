@@ -1054,102 +1054,94 @@ Now that you've completed the Hello World tutorial. Head over to the `samples` d
 - Line was identified as a continuation of a list.
 *** True Line Result
 43. 15_collision_limits: How many collisions can be processed across many primitives.
-** Processing line: ~45. 19_lowrez_jam_01_hello_world: How to use ~render_targets~ to create a low resolution game.~
+** Processing line: ~45. 19_lowrez_jam: How to use ~render_targets~ to create a low resolution game.~
 - Line was identified as a continuation of a list.
 *** True Line Result
 44. 18_moddable_game: How you can make a game where content is authored by the player (modding support).
-** Processing line: ~46. 19_lowrez_jam_02_buttons: How to use ~render_targets~ to create a low resolution game.~
+** Processing line: ~46. 20_roguelike_starting_point: A starting point for a roguelike and explores concepts such as line of sight.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-45. 19_lowrez_jam_01_hello_world: How to use ~render_targets~ to create a low resolution game.
-** Processing line: ~47. 19_lowrez_jam_03_space_shooter: How to use ~render_targets~ to create a low resolution game.~
+45. 19_lowrez_jam: How to use ~render_targets~ to create a low resolution game.
+** Processing line: ~47. 20_roguelike_starting_point_two: A starting point for a roguelike where sprites are provided from a tile map/tile sheet.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-46. 19_lowrez_jam_02_buttons: How to use ~render_targets~ to create a low resolution game.
-** Processing line: ~48. 20_roguelike_starting_point: A starting point for a roguelike and explores concepts such as line of sight.~
+46. 20_roguelike_starting_point: A starting point for a roguelike and explores concepts such as line of sight.
+** Processing line: ~48. 21_mailbox_usage: How to do interprocess communication.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-47. 19_lowrez_jam_03_space_shooter: How to use ~render_targets~ to create a low resolution game.
-** Processing line: ~49. 20_roguelike_starting_point_two: A starting point for a roguelike where sprites are provided from a tile map/tile sheet.~
+47. 20_roguelike_starting_point_two: A starting point for a roguelike where sprites are provided from a tile map/tile sheet.
+** Processing line: ~49. 22_trace_debugging: Debugging techniques and tracing execution through your game.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-48. 20_roguelike_starting_point: A starting point for a roguelike and explores concepts such as line of sight.
-** Processing line: ~50. 21_mailbox_usage: How to do interprocess communication.~
+48. 21_mailbox_usage: How to do interprocess communication.
+** Processing line: ~50. 22_trace_debugging_classes: Debugging techniques and tracing execution through your game.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-49. 20_roguelike_starting_point_two: A starting point for a roguelike where sprites are provided from a tile map/tile sheet.
-** Processing line: ~51. 22_trace_debugging: Debugging techniques and tracing execution through your game.~
+49. 22_trace_debugging: Debugging techniques and tracing execution through your game.
+** Processing line: ~51. 23_hexagonal_grid: How to make a tactical grid/map made of hexagons.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-50. 21_mailbox_usage: How to do interprocess communication.
-** Processing line: ~52. 22_trace_debugging_classes: Debugging techniques and tracing execution through your game.~
+50. 22_trace_debugging_classes: Debugging techniques and tracing execution through your game.
+** Processing line: ~52. 23_isometric_grid: How to make a tactical grid/map made of isometric sprites.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-51. 22_trace_debugging: Debugging techniques and tracing execution through your game.
-** Processing line: ~53. 23_hexagonal_grid: How to make a tactical grid/map made of hexagons.~
+51. 23_hexagonal_grid: How to make a tactical grid/map made of hexagons.
+** Processing line: ~53. 24_http_example: How to make http requests.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-52. 22_trace_debugging_classes: Debugging techniques and tracing execution through your game.
-** Processing line: ~54. 23_isometric_grid: How to make a tactical grid/map made of isometric sprites.~
+52. 23_isometric_grid: How to make a tactical grid/map made of isometric sprites.
+** Processing line: ~54. 25_3d_experiment_01_square: How to create 3D objects.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-53. 23_hexagonal_grid: How to make a tactical grid/map made of hexagons.
-** Processing line: ~55. 24_http_example: How to make http requests.~
+53. 24_http_example: How to make http requests.
+** Processing line: ~55. 26_jam_craft: Starting point for crafting game. It also shows how to customize the mouse cursor.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-54. 23_isometric_grid: How to make a tactical grid/map made of isometric sprites.
-** Processing line: ~56. 25_3d_experiment_01_square: How to create 3D objects.~
+54. 25_3d_experiment_01_square: How to create 3D objects.
+** Processing line: ~56. 99_sample_game_basic_gorillas: Reference implementation of a full game. Topics covered: physics, keyboard input, collision, sprite animation.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-55. 24_http_example: How to make http requests.
-** Processing line: ~57. 26_jam_craft: Starting point for crafting game. It also shows how to customize the mouse cursor.~
+55. 26_jam_craft: Starting point for crafting game. It also shows how to customize the mouse cursor.
+** Processing line: ~57. 99_sample_game_clepto_frog: Reference implementation of a full game. Topics covered: camera control, spring/rope physics, scene orchestration.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-56. 25_3d_experiment_01_square: How to create 3D objects.
-** Processing line: ~58. 99_sample_game_basic_gorillas: Reference implementation of a full game. Topics covered: physics, keyboard input, collision, sprite animation.~
+56. 99_sample_game_basic_gorillas: Reference implementation of a full game. Topics covered: physics, keyboard input, collision, sprite animation.
+** Processing line: ~58. 99_sample_game_dueling_starships: Reference implementation that shows local multiplayer. Topics covered: vectors, particles, friction, inertia.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-57. 26_jam_craft: Starting point for crafting game. It also shows how to customize the mouse cursor.
-** Processing line: ~59. 99_sample_game_clepto_frog: Reference implementation of a full game. Topics covered: camera control, spring/rope physics, scene orchestration.~
+57. 99_sample_game_clepto_frog: Reference implementation of a full game. Topics covered: camera control, spring/rope physics, scene orchestration.
+** Processing line: ~59. 99_sample_game_flappy_dragon: Reference implementation that is a clone of Flappy Bird. Topics covered: scene orchestration, collision, sound, sprite animations, lerping.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-58. 99_sample_game_basic_gorillas: Reference implementation of a full game. Topics covered: physics, keyboard input, collision, sprite animation.
-** Processing line: ~60. 99_sample_game_dueling_starships: Reference implementation that shows local multiplayer. Topics covered: vectors, particles, friction, inertia.~
+58. 99_sample_game_dueling_starships: Reference implementation that shows local multiplayer. Topics covered: vectors, particles, friction, inertia.
+** Processing line: ~60. 99_sample_game_pong: Reference implementation of pong.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-59. 99_sample_game_clepto_frog: Reference implementation of a full game. Topics covered: camera control, spring/rope physics, scene orchestration.
-** Processing line: ~61. 99_sample_game_flappy_dragon: Reference implementation that is a clone of Flappy Bird. Topics covered: scene orchestration, collision, sound, sprite animations, lerping.~
+59. 99_sample_game_flappy_dragon: Reference implementation that is a clone of Flappy Bird. Topics covered: scene orchestration, collision, sound, sprite animations, lerping.
+** Processing line: ~61. 99_sample_game_return_of_serenity: Reference implementation of low resolution story based game.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-60. 99_sample_game_dueling_starships: Reference implementation that shows local multiplayer. Topics covered: vectors, particles, friction, inertia.
-** Processing line: ~62. 99_sample_game_pong: Reference implementation of pong.~
+60. 99_sample_game_pong: Reference implementation of pong.
+** Processing line: ~62. 99_sample_game_the_little_probe: Reference implementation of a full game. Topics covered: Arbitrary collision detection, loading map data, bounce/ball physics.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-61. 99_sample_game_flappy_dragon: Reference implementation that is a clone of Flappy Bird. Topics covered: scene orchestration, collision, sound, sprite animations, lerping.
-** Processing line: ~63. 99_sample_game_return_of_serenity: Reference implementation of low resolution story based game.~
+61. 99_sample_game_return_of_serenity: Reference implementation of low resolution story based game.
+** Processing line: ~63. 99_sample_nddnug_workshop: Reference implementation of a full game. Topics covered: vectors, controller input, sound, trig functions.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-62. 99_sample_game_pong: Reference implementation of pong.
-** Processing line: ~64. 99_sample_game_the_little_probe: Reference implementation of a full game. Topics covered: Arbitrary collision detection, loading map data, bounce/ball physics.~
+62. 99_sample_game_the_little_probe: Reference implementation of a full game. Topics covered: Arbitrary collision detection, loading map data, bounce/ball physics.
+** Processing line: ~64. 99_sample_snakemoji: Shows that Ruby supports coding with emojis.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-63. 99_sample_game_return_of_serenity: Reference implementation of low resolution story based game.
-** Processing line: ~65. 99_sample_nddnug_workshop: Reference implementation of a full game. Topics covered: vectors, controller input, sound, trig functions.~
+63. 99_sample_nddnug_workshop: Reference implementation of a full game. Topics covered: vectors, controller input, sound, trig functions.
+** Processing line: ~65. 99_zz_gtk_unit_tests: A collection of unit tests that exercise parts of DragonRuby's API.~
 - Line was identified as a continuation of a list.
 *** True Line Result
-64. 99_sample_game_the_little_probe: Reference implementation of a full game. Topics covered: Arbitrary collision detection, loading map data, bounce/ball physics.
-** Processing line: ~66. 99_sample_snakemoji: Shows that Ruby supports coding with emojis.~
-- Line was identified as a continuation of a list.
-*** True Line Result
-65. 99_sample_nddnug_workshop: Reference implementation of a full game. Topics covered: vectors, controller input, sound, trig functions.
-** Processing line: ~67. 99_zz_gtk_unit_tests: A collection of unit tests that exercise parts of DragonRuby's API.~
-- Line was identified as a continuation of a list.
-*** True Line Result
-66. 99_sample_snakemoji: Shows that Ruby supports coding with emojis.
+64. 99_sample_snakemoji: Shows that Ruby supports coding with emojis.
 ** Processing line: ~~
 - End of paragraph detected.
 *** True Line Result
-67. 99_zz_gtk_unit_tests: A collection of unit tests that exercise parts of DragonRuby's API.
+65. 99_zz_gtk_unit_tests: A collection of unit tests that exercise parts of DragonRuby's API.
 ** Processing line: ~~
 - End of paragraph detected.
 *** True Line Result
@@ -2888,13 +2880,13 @@ The response to this question requires a few subparts. First we need to clarify 
 - End of paragraph detected.
 *** True Line Result
 
-** Processing line: ~A runtime is an _implementation_ of a langauge specification. When~
+** Processing line: ~A runtime is an _implementation_ of a language specification. When~
 ** Processing line: ~people say "Ruby," they are usually referring to "the Ruby 3.0+ language~
 ** Processing line: ~specification implemented via the CRuby/MRI Runtime."~
 ** Processing line: ~~
 - End of paragraph detected.
 *** True Line Result
-A runtime is an _implementation_ of a langauge specification. When people say "Ruby," they are usually referring to "the Ruby 3.0+ language specification implemented via the CRuby/MRI Runtime."
+A runtime is an _implementation_ of a language specification. When people say "Ruby," they are usually referring to "the Ruby 3.0+ language specification implemented via the CRuby/MRI Runtime."
 ** Processing line: ~But, there are many Ruby Runtimes: CRuby/MRI, JRuby, Truffle, Rubinius, Artichoke,~
 ** Processing line: ~and (last but certainly not least) DragonRuby.~
 ** Processing line: ~~
@@ -2980,37 +2972,37 @@ There are complexities associated with targeting all the platforms we support. B
 - Level 3 consists of portable C libraries and their Ruby
   C-Extensions.
 ** Processing line: ~Levels 1 through 3 are fairly commonplace in many runtime~
-** Processing line: ~implemenations (with level 1 being the most portable, and level 3~
+** Processing line: ~implementations (with level 1 being the most portable, and level 3~
 ** Processing line: ~being the fastest). But the DragonRuby Runtime has taken things a~
 ** Processing line: ~bit further:~
 ** Processing line: ~~
 - End of paragraph detected.
 *** True Line Result
-Levels 1 through 3 are fairly commonplace in many runtime implemenations (with level 1 being the most portable, and level 3 being the fastest). But the DragonRuby Runtime has taken things a bit further:
+Levels 1 through 3 are fairly commonplace in many runtime implementations (with level 1 being the most portable, and level 3 being the fastest). But the DragonRuby Runtime has taken things a bit further:
 ** Processing line: ~- Level 4 consists of shared abstractions around hardware I/O and operating~
 - Line was identified as a list.
 *** True Line Result
 
 ** Processing line: ~  system resources. This level leverages open source and proprietary~
-** Processing line: ~  components within Simple DirectMedia Layer (a lowlevel multimedia~
+** Processing line: ~  components within Simple DirectMedia Layer (a low level multimedia~
 ** Processing line: ~  component library that has been in active development for 22 years~
 ** Processing line: ~  and counting).~
 ** Processing line: ~~
 - End of paragraph detected.
 *** True Line Result
 - Level 4 consists of shared abstractions around hardware I/O and operating
-  system resources. This level leverages open source and proprietary   components within Simple DirectMedia Layer (a lowlevel multimedia   component library that has been in active development for 22 years   and counting).
-** Processing line: ~- Level 5 is a codegeneration layer which creates metadata that allows~
+  system resources. This level leverages open source and proprietary   components within Simple DirectMedia Layer (a low level multimedia   component library that has been in active development for 22 years   and counting).
+** Processing line: ~- Level 5 is a code generation layer which creates metadata that allows~
 - Line was identified as a list.
 *** True Line Result
 
-** Processing line: ~  for native interopability with host runtime libraries. It also~
+** Processing line: ~  for native interoperability with host runtime libraries. It also~
 ** Processing line: ~  includes OS specific message pump orchestrations.~
 ** Processing line: ~~
 - End of paragraph detected.
 *** True Line Result
-- Level 5 is a codegeneration layer which creates metadata that allows
-  for native interopability with host runtime libraries. It also   includes OS specific message pump orchestrations.
+- Level 5 is a code generation layer which creates metadata that allows
+  for native interoperability with host runtime libraries. It also   includes OS specific message pump orchestrations.
 ** Processing line: ~- Level 6 is a Ahead of Time/Just in Time Ruby compiler built with LLVM. This~
 - Line was identified as a list.
 *** True Line Result
@@ -3024,12 +3016,12 @@ Levels 1 through 3 are fairly commonplace in many runtime implemenations (with l
   compiler outputs _very_ fast platform specific bitcode, but only   supports a subset of the Ruby language specification.
 ** Processing line: ~These levels allow us to stay up to date with open source~
 ** Processing line: ~implementations of Ruby; provide fast, native code execution~
-** Processing line: ~on proprietary platforms; ensure good seperation between these two~
+** Processing line: ~on proprietary platforms; ensure good separation between these two~
 ** Processing line: ~worlds; and provides a means to add new platforms without going insane.~
 ** Processing line: ~~
 - End of paragraph detected.
 *** True Line Result
-These levels allow us to stay up to date with open source implementations of Ruby; provide fast, native code execution on proprietary platforms; ensure good seperation between these two worlds; and provides a means to add new platforms without going insane.
+These levels allow us to stay up to date with open source implementations of Ruby; provide fast, native code execution on proprietary platforms; ensure good separation between these two worlds; and provides a means to add new platforms without going insane.
 ** Processing line: ~*** Cool cool. So given that I understand everything to this point, can we answer the original question? What is DragonRuby?~
 - Header detected.
 *** True Line Result
@@ -3040,13 +3032,13 @@ These levels allow us to stay up to date with open source implementations of Rub
 - End of paragraph detected.
 *** True Line Result
 
-** Processing line: ~DragonRuby is a Ruby runtime implentation that takes all the lessons~
+** Processing line: ~DragonRuby is a Ruby runtime implementation that takes all the lessons~
 ** Processing line: ~we've learned from MRI/CRuby, and merges it with the latest and greatest~
 ** Processing line: ~compiler and OSS technologies.~
 ** Processing line: ~~
 - End of paragraph detected.
 *** True Line Result
-DragonRuby is a Ruby runtime implentation that takes all the lessons we've learned from MRI/CRuby, and merges it with the latest and greatest compiler and OSS technologies.
+DragonRuby is a Ruby runtime implementation that takes all the lessons we've learned from MRI/CRuby, and merges it with the latest and greatest compiler and OSS technologies.
 ** Processing line: ~** Frequent Comments~
 - Header detected.
 *** True Line Result
@@ -3107,12 +3099,12 @@ Let's stop making this comment shall we?
 - End of paragraph detected.
 *** True Line Result
 That doesn't make any sense. A language specification can't be slow... it's a language spec. Sure, an _implementation/runtime_ can be slow though, but then we'd have to talk about which runtime.
-** Processing line: ~*** Dynamic langauges are slow.~
+** Processing line: ~*** Dynamic languages are slow.~
 - Header detected.
 *** True Line Result
 
 *** True Line Result
-*** Dynamic langauges are slow.
+*** Dynamic languages are slow.
 ** Processing line: ~~
 - End of paragraph detected.
 *** True Line Result
@@ -3125,19 +3117,19 @@ That doesn't make any sense. A language specification can't be slow... it's a la
 *** True Line Result
 They are certainly slower than statically compiled languages. With the processing power and compiler optimizations we have today, dynamic languages like Ruby are _fast enough_.
 ** Processing line: ~Unless you are writing in some form of intermediate representation by hand,~
-** Processing line: ~your langauge of choice also suffers this same fallacy of slow. Like, nothing is~
+** Processing line: ~your language of choice also suffers this same fallacy of slow. Like, nothing is~
 ** Processing line: ~faster than a low level assembly-like language. So unless you're~
 ** Processing line: ~writing in that, let's stop making this comment.~
 ** Processing line: ~~
 - End of paragraph detected.
 *** True Line Result
-Unless you are writing in some form of intermediate representation by hand, your langauge of choice also suffers this same fallacy of slow. Like, nothing is faster than a low level assembly-like language. So unless you're writing in that, let's stop making this comment.
+Unless you are writing in some form of intermediate representation by hand, your language of choice also suffers this same fallacy of slow. Like, nothing is faster than a low level assembly-like language. So unless you're writing in that, let's stop making this comment.
 ** Processing line: ~NOTE: If you _are_ hand writing LLVM IR, we are always open to~
-** Processing line: ~bringing on new partners with such a skillset. Email us ^_^.~
+** Processing line: ~bringing on new partners with such a skill set. Email us ^_^.~
 ** Processing line: ~~
 - End of paragraph detected.
 *** True Line Result
-NOTE: If you _are_ hand writing LLVM IR, we are always open to bringing on new partners with such a skillset. Email us ^_^.
+NOTE: If you _are_ hand writing LLVM IR, we are always open to bringing on new partners with such a skill set. Email us ^_^.
 ** Processing line: ~** Frequent Concerns~
 - Header detected.
 *** True Line Result
@@ -3159,20 +3151,20 @@ NOTE: If you _are_ hand writing LLVM IR, we are always open to bringing on new p
 *** True Line Result
 
 ** Processing line: ~The current state of open source is unsustainable. Contributors work~
-** Processing line: ~for free, most all open source repositories are serverly understaffed,~
+** Processing line: ~for free, most all open source repositories are severely under-staffed,~
 ** Processing line: ~and burnout from core members is rampant.~
 ** Processing line: ~~
 - End of paragraph detected.
 *** True Line Result
-The current state of open source is unsustainable. Contributors work for free, most all open source repositories are serverly understaffed, and burnout from core members is rampant.
+The current state of open source is unsustainable. Contributors work for free, most all open source repositories are severely under-staffed, and burnout from core members is rampant.
 ** Processing line: ~We believe in open source very strongly. Parts of DragonRuby are~
-** Processing line: ~infact, open source. Just not all of it (for legal reasons, and~
+** Processing line: ~in fact, open source. Just not all of it (for legal reasons, and~
 ** Processing line: ~because the IP we've created has value). And we promise that we are~
 ** Processing line: ~looking for (or creating) ways to _sustainably_ open source everything we do.~
 ** Processing line: ~~
 - End of paragraph detected.
 *** True Line Result
-We believe in open source very strongly. Parts of DragonRuby are infact, open source. Just not all of it (for legal reasons, and because the IP we've created has value). And we promise that we are looking for (or creating) ways to _sustainably_ open source everything we do.
+We believe in open source very strongly. Parts of DragonRuby are in fact, open source. Just not all of it (for legal reasons, and because the IP we've created has value). And we promise that we are looking for (or creating) ways to _sustainably_ open source everything we do.
 ** Processing line: ~If you have ideas on how we can do this, email us!~
 ** Processing line: ~~
 - End of paragraph detected.
@@ -3291,14 +3283,14 @@ Seriously just buy it. Get a refund if you don't like it. We make it stupid easy
 - End of paragraph detected.
 *** True Line Result
 Free isn't a sustainable financial model. We don't want to spam your email. We don't want to collect usage data off of you either. We just want to provide quality toolchains to quality developers (as opposed to a large quantity of developers).
-** Processing line: ~The peiple that pay for DragonRuby and make an effort to understand it are the~
+** Processing line: ~The people that pay for DragonRuby and make an effort to understand it are the~
 ** Processing line: ~ones we want to build a community around, partner with, and collaborate~
 ** Processing line: ~with. So having that small monetary wall deters entitled individuals~
 ** Processing line: ~that don't value the same things we do.~
 ** Processing line: ~~
 - End of paragraph detected.
 *** True Line Result
-The peiple that pay for DragonRuby and make an effort to understand it are the ones we want to build a community around, partner with, and collaborate with. So having that small monetary wall deters entitled individuals that don't value the same things we do.
+The people that pay for DragonRuby and make an effort to understand it are the ones we want to build a community around, partner with, and collaborate with. So having that small monetary wall deters entitled individuals that don't value the same things we do.
 ** Processing line: ~*** What if I build something with DragonRuby, but DragonRuby LLP becomes insolvent.~
 - Header detected.
 *** True Line Result
@@ -3317,13 +3309,13 @@ The peiple that pay for DragonRuby and make an effort to understand it are the o
 - End of paragraph detected.
 *** True Line Result
 That won't happen if the development world stop asking for free stuff and non-trivially compensate open source developers. Look, we want to be able to work on the stuff we love, every day of our lives. And we'll go to great lengths to make that happen.
-** Processing line: ~But, in the event that sad day comes, our partnershiop bylaws state that~
+** Processing line: ~But, in the event that sad day comes, our partnership bylaws state that~
 ** Processing line: ~_all_ DragonRuby IP that can be legally open sourced, will be released~
 ** Processing line: ~under a permissive license.~
 ** Processing line: ~~
 - End of paragraph detected.
 *** True Line Result
-But, in the event that sad day comes, our partnershiop bylaws state that _all_ DragonRuby IP that can be legally open sourced, will be released under a permissive license.
+But, in the event that sad day comes, our partnership bylaws state that _all_ DragonRuby IP that can be legally open sourced, will be released under a permissive license.
 ** Processing line: ~* DOCS: ~GTK::Runtime~~
 - Header detected.
 *** True Line Result
@@ -3335,6 +3327,17 @@ But, in the event that sad day comes, our partnershiop bylaws state that _all_ D
 - End of paragraph detected.
 *** True Line Result
 The GTK::Runtime class is the core of DragonRuby. It is globally accessible via ~$gtk~.
+** Processing line: ~* DOCS: ~GTK::Runtime#reset~~
+- Header detected.
+*** True Line Result
+
+*** True Line Result
+* DOCS: ~GTK::Runtime#reset~
+** Processing line: ~This function will reset Kernel.tick_count to 0 and will remove all data from args.state.~
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+This function will reset Kernel.tick_count to 0 and will remove all data from args.state.
 ** Processing line: ~* DOCS: ~GTK::Runtime#calcstringbox~~
 - Header detected.
 *** True Line Result
@@ -3376,17 +3379,6 @@ This function returns the width and height of a string.
 - End of paragraph detected.
 *** True Line Result
 
-** Processing line: ~* DOCS: ~GTK::Runtime#reset~~
-- Header detected.
-*** True Line Result
-
-*** True Line Result
-* DOCS: ~GTK::Runtime#reset~
-** Processing line: ~This function will reset Kernel.tick_count to 0 and will remove all data from args.state.~
-** Processing line: ~~
-- End of paragraph detected.
-*** True Line Result
-This function will reset Kernel.tick_count to 0 and will remove all data from args.state.
 ** Processing line: ~* DOCS: ~Array~~
 - Header detected.
 *** True Line Result
@@ -4380,101 +4372,6 @@ Outputs is how you render primitives to the screen. The minimal setup for render
 - End of paragraph detected.
 *** True Line Result
 
-** Processing line: ~* DOCS: ~GTK::Outputs#borders~~
-- Header detected.
-*** True Line Result
-
-*** True Line Result
-* DOCS: ~GTK::Outputs#borders~
-** Processing line: ~~
-- End of paragraph detected.
-*** True Line Result
-
-** Processing line: ~Add primitives to this collection to render an unfilled solid to the screen. Take a look at the~
-** Processing line: ~documentation for Outputs#solids.~
-** Processing line: ~~
-- End of paragraph detected.
-*** True Line Result
-Add primitives to this collection to render an unfilled solid to the screen. Take a look at the documentation for Outputs#solids.
-** Processing line: ~The only difference between the two primitives is where they are added.~
-** Processing line: ~~
-- End of paragraph detected.
-*** True Line Result
-The only difference between the two primitives is where they are added.
-** Processing line: ~Instead of using ~args.outputs.solids~:~
-** Processing line: ~~
-- End of paragraph detected.
-*** True Line Result
-Instead of using ~args.outputs.solids~:
-** Processing line: ~#+begin_src~
-- Line was identified as the beginning of a code block.
-*** True Line Result
-
-*** True Line Result
-#+begin_src
-** Processing line: ~  def tick args~
-- Inside source: true
-*** True Line Result
-  def tick args
-** Processing line: ~    #                         X    Y  WIDTH  HEIGHT~
-- Inside source: true
-*** True Line Result
-    #                         X    Y  WIDTH  HEIGHT
-** Processing line: ~    args.outputs.solids << [100, 100,   160,     90]~
-- Inside source: true
-*** True Line Result
-    args.outputs.solids << [100, 100,   160,     90]
-** Processing line: ~  end~
-- Inside source: true
-*** True Line Result
-  end
-** Processing line: ~#+end_src~
-- Line was identified as the end of a code block.
-*** True Line Result
-#+end_src
-** Processing line: ~~
-- End of paragraph detected.
-*** True Line Result
-
-** Processing line: ~You have to use ~args.outputs.borders~:~
-** Processing line: ~~
-- End of paragraph detected.
-*** True Line Result
-You have to use ~args.outputs.borders~:
-** Processing line: ~#+begin_src~
-- Line was identified as the beginning of a code block.
-*** True Line Result
-
-*** True Line Result
-#+begin_src
-** Processing line: ~  def tick args~
-- Inside source: true
-*** True Line Result
-  def tick args
-** Processing line: ~    #                           X    Y  WIDTH  HEIGHT~
-- Inside source: true
-*** True Line Result
-    #                           X    Y  WIDTH  HEIGHT
-** Processing line: ~    args.outputs.borders << [100, 100,   160,     90]~
-- Inside source: true
-*** True Line Result
-    args.outputs.borders << [100, 100,   160,     90]
-** Processing line: ~  end~
-- Inside source: true
-*** True Line Result
-  end
-** Processing line: ~#+end_src~
-- Line was identified as the end of a code block.
-*** True Line Result
-#+end_src
-** Processing line: ~~
-- End of paragraph detected.
-*** True Line Result
-
-** Processing line: ~~
-- End of paragraph detected.
-*** True Line Result
-
 ** Processing line: ~* DOCS: ~GTK::Outputs#solids~~
 - Header detected.
 *** True Line Result
@@ -4786,6 +4683,101 @@ Here is an example:
 - Inside source: true
 *** True Line Result
     args.outputs.solids  << Square.new(10, 10, 32)
+** Processing line: ~  end~
+- Inside source: true
+*** True Line Result
+  end
+** Processing line: ~#+end_src~
+- Line was identified as the end of a code block.
+*** True Line Result
+#+end_src
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+
+** Processing line: ~* DOCS: ~GTK::Outputs#borders~~
+- Header detected.
+*** True Line Result
+
+*** True Line Result
+* DOCS: ~GTK::Outputs#borders~
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+
+** Processing line: ~Add primitives to this collection to render an unfilled solid to the screen. Take a look at the~
+** Processing line: ~documentation for Outputs#solids.~
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+Add primitives to this collection to render an unfilled solid to the screen. Take a look at the documentation for Outputs#solids.
+** Processing line: ~The only difference between the two primitives is where they are added.~
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+The only difference between the two primitives is where they are added.
+** Processing line: ~Instead of using ~args.outputs.solids~:~
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+Instead of using ~args.outputs.solids~:
+** Processing line: ~#+begin_src~
+- Line was identified as the beginning of a code block.
+*** True Line Result
+
+*** True Line Result
+#+begin_src
+** Processing line: ~  def tick args~
+- Inside source: true
+*** True Line Result
+  def tick args
+** Processing line: ~    #                         X    Y  WIDTH  HEIGHT~
+- Inside source: true
+*** True Line Result
+    #                         X    Y  WIDTH  HEIGHT
+** Processing line: ~    args.outputs.solids << [100, 100,   160,     90]~
+- Inside source: true
+*** True Line Result
+    args.outputs.solids << [100, 100,   160,     90]
+** Processing line: ~  end~
+- Inside source: true
+*** True Line Result
+  end
+** Processing line: ~#+end_src~
+- Line was identified as the end of a code block.
+*** True Line Result
+#+end_src
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+
+** Processing line: ~You have to use ~args.outputs.borders~:~
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+You have to use ~args.outputs.borders~:
+** Processing line: ~#+begin_src~
+- Line was identified as the beginning of a code block.
+*** True Line Result
+
+*** True Line Result
+#+begin_src
+** Processing line: ~  def tick args~
+- Inside source: true
+*** True Line Result
+  def tick args
+** Processing line: ~    #                           X    Y  WIDTH  HEIGHT~
+- Inside source: true
+*** True Line Result
+    #                           X    Y  WIDTH  HEIGHT
+** Processing line: ~    args.outputs.borders << [100, 100,   160,     90]~
+- Inside source: true
+*** True Line Result
+    args.outputs.borders << [100, 100,   160,     90]
 ** Processing line: ~  end~
 - Inside source: true
 *** True Line Result
@@ -5461,6 +5453,535 @@ Example using named parameters:
 - End of paragraph detected.
 *** True Line Result
 
+** Processing line: ~* DOCS: ~Numeric#elapsed_time~~
+- Header detected.
+*** True Line Result
+
+*** True Line Result
+* DOCS: ~Numeric#elapsed_time~
+** Processing line: ~For a given number, the elapsed frames since that number is returned.~
+** Processing line: ~`Kernel.tick_count` is used to determine how many frames have elapsed.~
+** Processing line: ~An optional numeric argument can be passed in which will be used instead~
+** Processing line: ~of `Kernel.tick_count`.~
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+For a given number, the elapsed frames since that number is returned. `Kernel.tick_count` is used to determine how many frames have elapsed. An optional numeric argument can be passed in which will be used instead of `Kernel.tick_count`.
+** Processing line: ~Here is an example of how elapsed_time can be used.~
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+Here is an example of how elapsed_time can be used.
+** Processing line: ~#+begin_src ruby~
+- Line was identified as the beginning of a code block.
+*** True Line Result
+
+*** True Line Result
+#+begin_src ruby
+** Processing line: ~  def tick args~
+- Inside source: true
+*** True Line Result
+  def tick args
+** Processing line: ~    args.state.last_click_at ||= 0~
+- Inside source: true
+*** True Line Result
+    args.state.last_click_at ||= 0
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    # record when a mouse click occurs~
+- Inside source: true
+*** True Line Result
+    # record when a mouse click occurs
+** Processing line: ~    if args.inputs.mouse.click~
+- Inside source: true
+*** True Line Result
+    if args.inputs.mouse.click
+** Processing line: ~      args.state.last_click_at = args.state.tick_count~
+- Inside source: true
+*** True Line Result
+      args.state.last_click_at = args.state.tick_count
+** Processing line: ~    end~
+- Inside source: true
+*** True Line Result
+    end
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    # Use Numeric#elapsed_time to determine how long it's been~
+- Inside source: true
+*** True Line Result
+    # Use Numeric#elapsed_time to determine how long it's been
+** Processing line: ~    if args.state.last_click_at.elapsed_time > 120~
+- Inside source: true
+*** True Line Result
+    if args.state.last_click_at.elapsed_time > 120
+** Processing line: ~      args.outputs.labels << [10, 710, "It has been over 2 seconds since the mouse was clicked."]~
+- Inside source: true
+*** True Line Result
+      args.outputs.labels << [10, 710, "It has been over 2 seconds since the mouse was clicked."]
+** Processing line: ~    end~
+- Inside source: true
+*** True Line Result
+    end
+** Processing line: ~  end~
+- Inside source: true
+*** True Line Result
+  end
+** Processing line: ~#+end_src~
+- Line was identified as the end of a code block.
+*** True Line Result
+#+end_src
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+
+** Processing line: ~And here is an example where the override parameter is passed in:~
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+And here is an example where the override parameter is passed in:
+** Processing line: ~#+begin_src ruby~
+- Line was identified as the beginning of a code block.
+*** True Line Result
+
+*** True Line Result
+#+begin_src ruby
+** Processing line: ~  def tick args~
+- Inside source: true
+*** True Line Result
+  def tick args
+** Processing line: ~    args.state.last_click_at ||= 0~
+- Inside source: true
+*** True Line Result
+    args.state.last_click_at ||= 0
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    # create a state variable that tracks time at half the speed of args.state.tick_count~
+- Inside source: true
+*** True Line Result
+    # create a state variable that tracks time at half the speed of args.state.tick_count
+** Processing line: ~    args.state.simulation_tick = args.state.tick_count.idiv 2~
+- Inside source: true
+*** True Line Result
+    args.state.simulation_tick = args.state.tick_count.idiv 2
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    # record when a mouse click occurs~
+- Inside source: true
+*** True Line Result
+    # record when a mouse click occurs
+** Processing line: ~    if args.inputs.mouse.click~
+- Inside source: true
+*** True Line Result
+    if args.inputs.mouse.click
+** Processing line: ~      args.state.last_click_at = args.state.simulation_tick~
+- Inside source: true
+*** True Line Result
+      args.state.last_click_at = args.state.simulation_tick
+** Processing line: ~    end~
+- Inside source: true
+*** True Line Result
+    end
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    # Use Numeric#elapsed_time to determine how long it's been~
+- Inside source: true
+*** True Line Result
+    # Use Numeric#elapsed_time to determine how long it's been
+** Processing line: ~    if (args.state.last_click_at.elapsed_time args.state.simulation_tick) > 120~
+- Inside source: true
+*** True Line Result
+    if (args.state.last_click_at.elapsed_time args.state.simulation_tick) > 120
+** Processing line: ~      args.outputs.labels << [10, 710, "It has been over 4 seconds since the mouse was clicked."]~
+- Inside source: true
+*** True Line Result
+      args.outputs.labels << [10, 710, "It has been over 4 seconds since the mouse was clicked."]
+** Processing line: ~    end~
+- Inside source: true
+*** True Line Result
+    end
+** Processing line: ~  end~
+- Inside source: true
+*** True Line Result
+  end
+** Processing line: ~#+end_src~
+- Line was identified as the end of a code block.
+*** True Line Result
+#+end_src
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+
+** Processing line: ~* DOCS: ~Numeric#elapsed?~~
+- Header detected.
+*** True Line Result
+
+*** True Line Result
+* DOCS: ~Numeric#elapsed?~
+** Processing line: ~Returns true if ~Numeric#elapsed_time~ is greater than the number. An optional parameter can be~
+** Processing line: ~passed into ~elapsed?~ which is added to the number before evaluating whether ~elapsed?~ is true.~
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+Returns true if ~Numeric#elapsed_time~ is greater than the number. An optional parameter can be passed into ~elapsed?~ which is added to the number before evaluating whether ~elapsed?~ is true.
+** Processing line: ~Example usage (no optional parameter):~
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+Example usage (no optional parameter):
+** Processing line: ~#+begin_src ruby~
+- Line was identified as the beginning of a code block.
+*** True Line Result
+
+*** True Line Result
+#+begin_src ruby
+** Processing line: ~  def tick args~
+- Inside source: true
+*** True Line Result
+  def tick args
+** Processing line: ~    args.state.box_queue ||= []~
+- Inside source: true
+*** True Line Result
+    args.state.box_queue ||= []
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    if args.state.box_queue.empty?~
+- Inside source: true
+*** True Line Result
+    if args.state.box_queue.empty?
+** Processing line: ~      args.state.box_queue << { name: :red,~
+- Inside source: true
+*** True Line Result
+      args.state.box_queue << { name: :red,
+** Processing line: ~                                destroy_at: args.state.tick_count + 60 }~
+- Inside source: true
+*** True Line Result
+                                destroy_at: args.state.tick_count + 60 }
+** Processing line: ~      args.state.box_queue << { name: :green,~
+- Inside source: true
+*** True Line Result
+      args.state.box_queue << { name: :green,
+** Processing line: ~                                destroy_at: args.state.tick_count + 60 }~
+- Inside source: true
+*** True Line Result
+                                destroy_at: args.state.tick_count + 60 }
+** Processing line: ~      args.state.box_queue << { name: :blue,~
+- Inside source: true
+*** True Line Result
+      args.state.box_queue << { name: :blue,
+** Processing line: ~                                destroy_at: args.state.tick_count + 120 }~
+- Inside source: true
+*** True Line Result
+                                destroy_at: args.state.tick_count + 120 }
+** Processing line: ~    end~
+- Inside source: true
+*** True Line Result
+    end
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    boxes_to_destroy = args.state~
+- Inside source: true
+*** True Line Result
+    boxes_to_destroy = args.state
+** Processing line: ~                           .box_queue~
+- Inside source: true
+*** True Line Result
+                           .box_queue
+** Processing line: ~                           .find_all { |b| b[:destroy_at].elapsed? }~
+- Inside source: true
+*** True Line Result
+                           .find_all { |b| b[:destroy_at].elapsed? }
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    if !boxes_to_destroy.empty?~
+- Inside source: true
+*** True Line Result
+    if !boxes_to_destroy.empty?
+** Processing line: ~      puts "boxes to destroy count: #{boxes_to_destroy.length}"~
+- Inside source: true
+*** True Line Result
+      puts "boxes to destroy count: #{boxes_to_destroy.length}"
+** Processing line: ~    end~
+- Inside source: true
+*** True Line Result
+    end
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    boxes_to_destroy.each { |b| puts "box #{b} was elapsed? on #{args.state.tick_count}." }~
+- Inside source: true
+*** True Line Result
+    boxes_to_destroy.each { |b| puts "box #{b} was elapsed? on #{args.state.tick_count}." }
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    args.state.box_queue -= boxes_to_destroy~
+- Inside source: true
+*** True Line Result
+    args.state.box_queue -= boxes_to_destroy
+** Processing line: ~  end~
+- Inside source: true
+*** True Line Result
+  end
+** Processing line: ~#+end_src~
+- Line was identified as the end of a code block.
+*** True Line Result
+#+end_src
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+
+** Processing line: ~Example usage (with optional parameter):~
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+Example usage (with optional parameter):
+** Processing line: ~#+begin_src ruby~
+- Line was identified as the beginning of a code block.
+*** True Line Result
+
+*** True Line Result
+#+begin_src ruby
+** Processing line: ~  def tick args~
+- Inside source: true
+*** True Line Result
+  def tick args
+** Processing line: ~    args.state.box_queue ||= []~
+- Inside source: true
+*** True Line Result
+    args.state.box_queue ||= []
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    if args.state.box_queue.empty?~
+- Inside source: true
+*** True Line Result
+    if args.state.box_queue.empty?
+** Processing line: ~      args.state.box_queue << { name: :red,~
+- Inside source: true
+*** True Line Result
+      args.state.box_queue << { name: :red,
+** Processing line: ~                                create_at: args.state.tick_count + 120,~
+- Inside source: true
+*** True Line Result
+                                create_at: args.state.tick_count + 120,
+** Processing line: ~                                lifespan: 60 }~
+- Inside source: true
+*** True Line Result
+                                lifespan: 60 }
+** Processing line: ~      args.state.box_queue << { name: :green,~
+- Inside source: true
+*** True Line Result
+      args.state.box_queue << { name: :green,
+** Processing line: ~                                create_at: args.state.tick_count + 120,~
+- Inside source: true
+*** True Line Result
+                                create_at: args.state.tick_count + 120,
+** Processing line: ~                                lifespan: 60 }~
+- Inside source: true
+*** True Line Result
+                                lifespan: 60 }
+** Processing line: ~      args.state.box_queue << { name: :blue,~
+- Inside source: true
+*** True Line Result
+      args.state.box_queue << { name: :blue,
+** Processing line: ~                                create_at: args.state.tick_count + 120,~
+- Inside source: true
+*** True Line Result
+                                create_at: args.state.tick_count + 120,
+** Processing line: ~                                lifespan: 120 }~
+- Inside source: true
+*** True Line Result
+                                lifespan: 120 }
+** Processing line: ~    end~
+- Inside source: true
+*** True Line Result
+    end
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    # lifespan is passed in as a parameter to ~elapsed?~~
+- Inside source: true
+*** True Line Result
+    # lifespan is passed in as a parameter to ~elapsed?~
+** Processing line: ~    boxes_to_destroy = args.state~
+- Inside source: true
+*** True Line Result
+    boxes_to_destroy = args.state
+** Processing line: ~                           .box_queue~
+- Inside source: true
+*** True Line Result
+                           .box_queue
+** Processing line: ~                           .find_all { |b| b[:create_at].elapsed? b[:lifespan] }~
+- Inside source: true
+*** True Line Result
+                           .find_all { |b| b[:create_at].elapsed? b[:lifespan] }
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    if !boxes_to_destroy.empty?~
+- Inside source: true
+*** True Line Result
+    if !boxes_to_destroy.empty?
+** Processing line: ~      puts "boxes to destroy count: #{boxes_to_destroy.length}"~
+- Inside source: true
+*** True Line Result
+      puts "boxes to destroy count: #{boxes_to_destroy.length}"
+** Processing line: ~    end~
+- Inside source: true
+*** True Line Result
+    end
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    boxes_to_destroy.each { |b| puts "box #{b} was elapsed? on #{args.state.tick_count}." }~
+- Inside source: true
+*** True Line Result
+    boxes_to_destroy.each { |b| puts "box #{b} was elapsed? on #{args.state.tick_count}." }
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    args.state.box_queue -= boxes_to_destroy~
+- Inside source: true
+*** True Line Result
+    args.state.box_queue -= boxes_to_destroy
+** Processing line: ~  end~
+- Inside source: true
+*** True Line Result
+  end
+** Processing line: ~#+end_src~
+- Line was identified as the end of a code block.
+*** True Line Result
+#+end_src
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+
+** Processing line: ~* DOCS: ~Numeric#created?~~
+- Header detected.
+*** True Line Result
+
+*** True Line Result
+* DOCS: ~Numeric#created?~
+** Processing line: ~Returns true if ~Numeric#elapsed_time == 0~. Essentially communicating that~
+** Processing line: ~number is equal to the current frame.~
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+Returns true if ~Numeric#elapsed_time == 0~. Essentially communicating that number is equal to the current frame.
+** Processing line: ~Example usage:~
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+Example usage:
+** Processing line: ~#+begin_src ruby~
+- Line was identified as the beginning of a code block.
+*** True Line Result
+
+*** True Line Result
+#+begin_src ruby
+** Processing line: ~  def tick args~
+- Inside source: true
+*** True Line Result
+  def tick args
+** Processing line: ~    args.state.box_queue ||= []~
+- Inside source: true
+*** True Line Result
+    args.state.box_queue ||= []
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    if args.state.box_queue.empty?~
+- Inside source: true
+*** True Line Result
+    if args.state.box_queue.empty?
+** Processing line: ~      args.state.box_queue << { name: :red,~
+- Inside source: true
+*** True Line Result
+      args.state.box_queue << { name: :red,
+** Processing line: ~                                create_at: args.state.tick_count + 60 }~
+- Inside source: true
+*** True Line Result
+                                create_at: args.state.tick_count + 60 }
+** Processing line: ~    end~
+- Inside source: true
+*** True Line Result
+    end
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    boxes_to_spawn_this_frame = args.state~
+- Inside source: true
+*** True Line Result
+    boxes_to_spawn_this_frame = args.state
+** Processing line: ~                                    .box_queue~
+- Inside source: true
+*** True Line Result
+                                    .box_queue
+** Processing line: ~                                    .find_all { |b| b[:create_at].new? }~
+- Inside source: true
+*** True Line Result
+                                    .find_all { |b| b[:create_at].new? }
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    boxes_to_spawn_this_frame.each { |b| puts "box #{b} was new? on #{args.state.tick_count}." }~
+- Inside source: true
+*** True Line Result
+    boxes_to_spawn_this_frame.each { |b| puts "box #{b} was new? on #{args.state.tick_count}." }
+** Processing line: ~~
+- Inside source: true
+*** True Line Result
+
+** Processing line: ~    args.state.box_queue -= boxes_to_spawn_this_frame~
+- Inside source: true
+*** True Line Result
+    args.state.box_queue -= boxes_to_spawn_this_frame
+** Processing line: ~  end~
+- Inside source: true
+*** True Line Result
+  end
+** Processing line: ~#+end_src~
+- Line was identified as the end of a code block.
+*** True Line Result
+#+end_src
+** Processing line: ~~
+- End of paragraph detected.
+*** True Line Result
+
 ** Processing line: ~* DOCS: ~Kernel~~
 - Header detected.
 *** True Line Result
@@ -5513,10 +6034,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~Returns the current tick of the application from the point it was started. This value is never reset.~
 * Processing Html Given True Lines
 ** Processing line: ~* DragonRuby Game Toolkit Live Docs~
+- H1 detected.
 - Formatting line: ~DragonRuby Game Toolkit Live Docs~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~The information contained here is all available via the DragonRuby Console. You can Open the DragonRuby Console by pressing [`] [~] [²] [^] [º] or [§] within your game.~
 - P detected.
@@ -5544,10 +6065,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - LINK detected.
 ** Processing line: ~~
 ** Processing line: ~* Hello World~
+- H1 detected.
 - Formatting line: ~Hello World~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Welcome to DragonRuby Game Toolkit. Take the steps below to get started.~
 - P detected.
@@ -5556,10 +6077,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~* Join the Discord and Subscribe to the News Letter~
+- H1 detected.
 - Formatting line: ~Join the Discord and Subscribe to the News Letter~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Our Discord channel is [[http://discord.dragonruby.org]].~
 - P detected.
@@ -5607,10 +6128,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* Watch Some Intro Videos~
+- H1 detected.
 - Formatting line: ~Watch Some Intro Videos~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Each video is only 20 minutes and all of them will fit into a lunch break. So please watch them:~
 - P detected.
@@ -5651,10 +6172,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - LINK detected.
 ** Processing line: ~~
 ** Processing line: ~* Getting Started Tutorial~
+- H1 detected.
 - Formatting line: ~Getting Started Tutorial~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~This is a tutorial written by Ryan C Gordon (a Juggernaut in the industry who has contracted to Valve, Epic, Activision, and EA... check out his Wikipedia page: [[https://en.wikipedia.org/wiki/Ryan_C._Gordon]]).~
 - P detected.
@@ -5664,10 +6185,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - LINK detected.
 ** Processing line: ~~
 ** Processing line: ~** Introduction~
+- H2 detected.
 - Formatting line: ~Introduction~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Introduction~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -5699,10 +6220,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~** Prerequisites~
+- H2 detected.
 - Formatting line: ~Prerequisites~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Prerequisites~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -5719,10 +6240,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~** The Game Loop~
+- H2 detected.
 - Formatting line: ~The Game Loop~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~The Game Loop~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -5777,11 +6298,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - CODE detected.
 ** Processing line: ~~
 ** Processing line: ~** Breakdown Of The ~tick~ Method~
+- H2 detected.
 - Formatting line: ~Breakdown Of The ~tick~ Method~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H2 detected.
 - Formatting line: ~Breakdown Of The ~tick~ Method~
 - Line's tilde count is: 2
 - Line contains link marker: false
@@ -5824,10 +6345,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - CODE detected.
 ** Processing line: ~~
 ** Processing line: ~** Rendering A Sprite~
+- H2 detected.
 - Formatting line: ~Rendering A Sprite~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Rendering A Sprite~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -5870,10 +6391,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - CODE detected.
 ** Processing line: ~~
 ** Processing line: ~** Coordinate System and Virtual Canvas~
+- H2 detected.
 - Formatting line: ~Coordinate System and Virtual Canvas~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Coordinate System and Virtual Canvas~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -5912,10 +6433,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~** Game State~
+- H2 detected.
 - Formatting line: ~Game State~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Game State~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -5934,10 +6455,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - CODE detected.
 ** Processing line: ~~
 ** Processing line: ~** There Is No Delta Time~
+- H2 detected.
 - Formatting line: ~There Is No Delta Time~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~There Is No Delta Time~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -5954,10 +6475,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~** Handling User Input~
+- H2 detected.
 - Formatting line: ~Handling User Input~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Handling User Input~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -6001,10 +6522,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - CODE detected.
 ** Processing line: ~~
 ** Processing line: ~** Coding On A Raspberry Pi~
+- H2 detected.
 - Formatting line: ~Coding On A Raspberry Pi~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Coding On A Raspberry Pi~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -6048,10 +6569,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~** Conclusion~
+- H2 detected.
 - Formatting line: ~Conclusion~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Conclusion~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -6064,10 +6585,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - CODE detected.
 ** Processing line: ~~
 ** Processing line: ~** IMPORTANT: Go Through All Of The Sample Apps! Study Them Thoroughly!!~
+- H2 detected.
 - Formatting line: ~IMPORTANT: Go Through All Of The Sample Apps! Study Them Thoroughly!!~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~IMPORTANT: Go Through All Of The Sample Apps! Study Them Thoroughly!!~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -6310,120 +6831,108 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Formatting line: ~ 18_moddable_game: How you can make a game where content is authored by the player (modding support).~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~45. 19_lowrez_jam_01_hello_world: How to use ~render_targets~ to create a low resolution game.~
+** Processing line: ~45. 19_lowrez_jam: How to use ~render_targets~ to create a low resolution game.~
 - LI detected.
-- Formatting line: ~ 19_lowrez_jam_01_hello_world: How to use ~render_targets~ to create a low resolution game.~
+- Formatting line: ~ 19_lowrez_jam: How to use ~render_targets~ to create a low resolution game.~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-** Processing line: ~46. 19_lowrez_jam_02_buttons: How to use ~render_targets~ to create a low resolution game.~
-- LI detected.
-- Formatting line: ~ 19_lowrez_jam_02_buttons: How to use ~render_targets~ to create a low resolution game.~
-- Line's tilde count is: 2
-- Line contains link marker: false
-- CODE detected.
-** Processing line: ~47. 19_lowrez_jam_03_space_shooter: How to use ~render_targets~ to create a low resolution game.~
-- LI detected.
-- Formatting line: ~ 19_lowrez_jam_03_space_shooter: How to use ~render_targets~ to create a low resolution game.~
-- Line's tilde count is: 2
-- Line contains link marker: false
-- CODE detected.
-** Processing line: ~48. 20_roguelike_starting_point: A starting point for a roguelike and explores concepts such as line of sight.~
+** Processing line: ~46. 20_roguelike_starting_point: A starting point for a roguelike and explores concepts such as line of sight.~
 - LI detected.
 - Formatting line: ~ 20_roguelike_starting_point: A starting point for a roguelike and explores concepts such as line of sight.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~49. 20_roguelike_starting_point_two: A starting point for a roguelike where sprites are provided from a tile map/tile sheet.~
+** Processing line: ~47. 20_roguelike_starting_point_two: A starting point for a roguelike where sprites are provided from a tile map/tile sheet.~
 - LI detected.
 - Formatting line: ~ 20_roguelike_starting_point_two: A starting point for a roguelike where sprites are provided from a tile map/tile sheet.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~50. 21_mailbox_usage: How to do interprocess communication.~
+** Processing line: ~48. 21_mailbox_usage: How to do interprocess communication.~
 - LI detected.
 - Formatting line: ~ 21_mailbox_usage: How to do interprocess communication.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~51. 22_trace_debugging: Debugging techniques and tracing execution through your game.~
+** Processing line: ~49. 22_trace_debugging: Debugging techniques and tracing execution through your game.~
 - LI detected.
 - Formatting line: ~ 22_trace_debugging: Debugging techniques and tracing execution through your game.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~52. 22_trace_debugging_classes: Debugging techniques and tracing execution through your game.~
+** Processing line: ~50. 22_trace_debugging_classes: Debugging techniques and tracing execution through your game.~
 - LI detected.
 - Formatting line: ~ 22_trace_debugging_classes: Debugging techniques and tracing execution through your game.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~53. 23_hexagonal_grid: How to make a tactical grid/map made of hexagons.~
+** Processing line: ~51. 23_hexagonal_grid: How to make a tactical grid/map made of hexagons.~
 - LI detected.
 - Formatting line: ~ 23_hexagonal_grid: How to make a tactical grid/map made of hexagons.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~54. 23_isometric_grid: How to make a tactical grid/map made of isometric sprites.~
+** Processing line: ~52. 23_isometric_grid: How to make a tactical grid/map made of isometric sprites.~
 - LI detected.
 - Formatting line: ~ 23_isometric_grid: How to make a tactical grid/map made of isometric sprites.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~55. 24_http_example: How to make http requests.~
+** Processing line: ~53. 24_http_example: How to make http requests.~
 - LI detected.
 - Formatting line: ~ 24_http_example: How to make http requests.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~56. 25_3d_experiment_01_square: How to create 3D objects.~
+** Processing line: ~54. 25_3d_experiment_01_square: How to create 3D objects.~
 - LI detected.
 - Formatting line: ~ 25_3d_experiment_01_square: How to create 3D objects.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~57. 26_jam_craft: Starting point for crafting game. It also shows how to customize the mouse cursor.~
+** Processing line: ~55. 26_jam_craft: Starting point for crafting game. It also shows how to customize the mouse cursor.~
 - LI detected.
 - Formatting line: ~ 26_jam_craft: Starting point for crafting game. It also shows how to customize the mouse cursor.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~58. 99_sample_game_basic_gorillas: Reference implementation of a full game. Topics covered: physics, keyboard input, collision, sprite animation.~
+** Processing line: ~56. 99_sample_game_basic_gorillas: Reference implementation of a full game. Topics covered: physics, keyboard input, collision, sprite animation.~
 - LI detected.
 - Formatting line: ~ 99_sample_game_basic_gorillas: Reference implementation of a full game. Topics covered: physics, keyboard input, collision, sprite animation.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~59. 99_sample_game_clepto_frog: Reference implementation of a full game. Topics covered: camera control, spring/rope physics, scene orchestration.~
+** Processing line: ~57. 99_sample_game_clepto_frog: Reference implementation of a full game. Topics covered: camera control, spring/rope physics, scene orchestration.~
 - LI detected.
 - Formatting line: ~ 99_sample_game_clepto_frog: Reference implementation of a full game. Topics covered: camera control, spring/rope physics, scene orchestration.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~60. 99_sample_game_dueling_starships: Reference implementation that shows local multiplayer. Topics covered: vectors, particles, friction, inertia.~
+** Processing line: ~58. 99_sample_game_dueling_starships: Reference implementation that shows local multiplayer. Topics covered: vectors, particles, friction, inertia.~
 - LI detected.
 - Formatting line: ~ 99_sample_game_dueling_starships: Reference implementation that shows local multiplayer. Topics covered: vectors, particles, friction, inertia.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~61. 99_sample_game_flappy_dragon: Reference implementation that is a clone of Flappy Bird. Topics covered: scene orchestration, collision, sound, sprite animations, lerping.~
+** Processing line: ~59. 99_sample_game_flappy_dragon: Reference implementation that is a clone of Flappy Bird. Topics covered: scene orchestration, collision, sound, sprite animations, lerping.~
 - LI detected.
 - Formatting line: ~ 99_sample_game_flappy_dragon: Reference implementation that is a clone of Flappy Bird. Topics covered: scene orchestration, collision, sound, sprite animations, lerping.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~62. 99_sample_game_pong: Reference implementation of pong.~
+** Processing line: ~60. 99_sample_game_pong: Reference implementation of pong.~
 - LI detected.
 - Formatting line: ~ 99_sample_game_pong: Reference implementation of pong.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~63. 99_sample_game_return_of_serenity: Reference implementation of low resolution story based game.~
+** Processing line: ~61. 99_sample_game_return_of_serenity: Reference implementation of low resolution story based game.~
 - LI detected.
 - Formatting line: ~ 99_sample_game_return_of_serenity: Reference implementation of low resolution story based game.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~64. 99_sample_game_the_little_probe: Reference implementation of a full game. Topics covered: Arbitrary collision detection, loading map data, bounce/ball physics.~
+** Processing line: ~62. 99_sample_game_the_little_probe: Reference implementation of a full game. Topics covered: Arbitrary collision detection, loading map data, bounce/ball physics.~
 - LI detected.
 - Formatting line: ~ 99_sample_game_the_little_probe: Reference implementation of a full game. Topics covered: Arbitrary collision detection, loading map data, bounce/ball physics.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~65. 99_sample_nddnug_workshop: Reference implementation of a full game. Topics covered: vectors, controller input, sound, trig functions.~
+** Processing line: ~63. 99_sample_nddnug_workshop: Reference implementation of a full game. Topics covered: vectors, controller input, sound, trig functions.~
 - LI detected.
 - Formatting line: ~ 99_sample_nddnug_workshop: Reference implementation of a full game. Topics covered: vectors, controller input, sound, trig functions.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~66. 99_sample_snakemoji: Shows that Ruby supports coding with emojis.~
+** Processing line: ~64. 99_sample_snakemoji: Shows that Ruby supports coding with emojis.~
 - LI detected.
 - Formatting line: ~ 99_sample_snakemoji: Shows that Ruby supports coding with emojis.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~67. 99_zz_gtk_unit_tests: A collection of unit tests that exercise parts of DragonRuby's API.~
+** Processing line: ~65. 99_zz_gtk_unit_tests: A collection of unit tests that exercise parts of DragonRuby's API.~
 - LI detected.
 - Formatting line: ~ 99_zz_gtk_unit_tests: A collection of unit tests that exercise parts of DragonRuby's API.~
 - Line's tilde count is: 0
@@ -6432,10 +6941,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* Deploying To Itch.io~
+- H1 detected.
 - Formatting line: ~Deploying To Itch.io~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Once you've built your game, you're all set to deploy! Good luck in your game dev journey and if you get stuck, come to the Discord channel!~
 - P detected.
@@ -6444,10 +6953,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~** Creating Your Game Landing Page~
+- H2 detected.
 - Formatting line: ~Creating Your Game Landing Page~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Creating Your Game Landing Page~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -6495,10 +7004,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~** Update Your Game's Metadata~
+- H2 detected.
 - Formatting line: ~Update Your Game's Metadata~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Update Your Game's Metadata~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -6533,10 +7042,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - CODE detected.
 ** Processing line: ~~
 ** Processing line: ~** Building Your Game For Distribution~
+- H2 detected.
 - Formatting line: ~Building Your Game For Distribution~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Building Your Game For Distribution~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -6593,10 +7102,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~** DragonRuby's Philosophy~
+- H2 detected.
 - Formatting line: ~DragonRuby's Philosophy~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~DragonRuby's Philosophy~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -6608,10 +7117,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** Challenge The Status Quo~
+- H3 detected.
 - Formatting line: ~Challenge The Status Quo~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~Challenge The Status Quo~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -6639,10 +7148,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** Release Often And Quickly~
+- H3 detected.
 - Formatting line: ~Release Often And Quickly~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~Release Often And Quickly~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -6675,10 +7184,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~*** Sustainable And Ethical Monetization~
+- H3 detected.
 - Formatting line: ~Sustainable And Ethical Monetization~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~Sustainable And Ethical Monetization~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -6695,10 +7204,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** Sustainable And Ethical Open Source~
+- H3 detected.
 - Formatting line: ~Sustainable And Ethical Open Source~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~Sustainable And Ethical Open Source~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -6715,10 +7224,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** People Over Entities~
+- H3 detected.
 - Formatting line: ~People Over Entities~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~People Over Entities~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -6730,10 +7239,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** Building A Game Should Be Fun And Bring Happiness~
+- H3 detected.
 - Formatting line: ~Building A Game Should Be Fun And Bring Happiness~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~Building A Game Should Be Fun And Bring Happiness~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -6745,10 +7254,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** Real World Application Drives Features~
+- H3 detected.
 - Formatting line: ~Real World Application Drives Features~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~Real World Application Drives Features~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -6765,10 +7274,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~* How To Determine What Frame You Are On~
+- H1 detected.
 - Formatting line: ~How To Determine What Frame You Are On~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~There is a property on ~state~ called ~tick_count~ that is incremented by DragonRuby every time the ~tick~ method is called. The following code renders a label that displays the current ~tick_count~.~
 - P detected.
@@ -6787,10 +7296,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* How To Get Current Framerate~
+- H1 detected.
 - Formatting line: ~How To Get Current Framerate~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Current framerate is a top level property on the Game Toolkit Runtime and is accessible via ~args.gtk.current_framerate~.~
 - P detected.
@@ -6809,10 +7318,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* How To Render A Sprite Using An Array~
+- H1 detected.
 - Formatting line: ~How To Render A Sprite Using An Array~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~All file paths should use the forward slash ~/~ *not* backslash ~~. Game Toolkit includes a number of sprites in the ~sprites~ folder (everything about your game is located in the ~mygame~ directory).~
 - P detected.
@@ -6849,10 +7358,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* More Sprite Properties As An Array~
+- H1 detected.
 - Formatting line: ~More Sprite Properties As An Array~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Here are all the properties you can set on a sprite.~
 - P detected.
@@ -6881,10 +7390,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* Different Sprite Representations~
+- H1 detected.
 - Formatting line: ~Different Sprite Representations~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Using ordinal positioning can get a little unruly given so many properties you have control over.~
 - P detected.
@@ -6968,10 +7477,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* How To Render A Label~
+- H1 detected.
 - Formatting line: ~How To Render A Label~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~~args.outputs.labels~ is used to render labels.~
 - P detected.
@@ -7002,10 +7511,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* A Colored Label~
+- H1 detected.
 - Formatting line: ~A Colored Label~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~#+begin_src~
@@ -7020,10 +7529,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* Extended Label Properties~
+- H1 detected.
 - Formatting line: ~Extended Label Properties~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~#+begin_src~
@@ -7061,11 +7570,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - CODE detected.
 ** Processing line: ~~
 ** Processing line: ~* Rendering A Label As A ~Hash~~
+- H1 detected.
 - Formatting line: ~Rendering A Label As A ~Hash~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~You can add additional metadata about your game within a label, which requires you to use a `Hash` instead.~
 - P detected.
@@ -7101,10 +7610,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* Getting The Size Of A Piece Of Text~
+- H1 detected.
 - Formatting line: ~Getting The Size Of A Piece Of Text~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~You can get the render size of any string using ~args.gtk.calcstringbox~.~
 - P detected.
@@ -7134,10 +7643,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* How To Play A Sound~
+- H1 detected.
 - Formatting line: ~How To Play A Sound~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Sounds that end ~.wav~ will play once:~
 - P detected.
@@ -7195,11 +7704,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* Using ~args.state~ To Store Your Game State~
+- H1 detected.
 - Formatting line: ~Using ~args.state~ To Store Your Game State~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~~args.state~ is a open data structure that allows you to define properties that are arbitrarily nested. You don't need to define any kind of ~class~.~
 - P detected.
@@ -7250,10 +7759,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* Frequently Asked Questions, Comments, and Concerns~
+- H1 detected.
 - Formatting line: ~Frequently Asked Questions, Comments, and Concerns~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Here are questions, comments, and concerns that frequently come up.~
 - P detected.
@@ -7262,20 +7771,20 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~** Frequently Asked Questions~
+- H2 detected.
 - Formatting line: ~Frequently Asked Questions~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Frequently Asked Questions~
 - Line's tilde count is: 0
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~*** What is DragonRuby LLP?~
+- H3 detected.
 - Formatting line: ~What is DragonRuby LLP?~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~What is DragonRuby LLP?~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -7336,10 +7845,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** What is DragonRuby?~
+- H3 detected.
 - Formatting line: ~What is DragonRuby?~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~What is DragonRuby?~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -7351,17 +7860,17 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** Okay... so what is the difference between a language specification and a runtime?~
-- Formatting line: ~Okay... so what is the difference between a language specification and a runtime?~
-- Line's tilde count is: 0
-- Line contains link marker: false
 - H3 detected.
 - Formatting line: ~Okay... so what is the difference between a language specification and a runtime?~
 - Line's tilde count is: 0
 - Line contains link marker: false
+- Formatting line: ~Okay... so what is the difference between a language specification and a runtime?~
+- Line's tilde count is: 0
+- Line contains link marker: false
 ** Processing line: ~~
-** Processing line: ~A runtime is an _implementation_ of a langauge specification. When people say "Ruby," they are usually referring to "the Ruby 3.0+ language specification implemented via the CRuby/MRI Runtime."~
+** Processing line: ~A runtime is an _implementation_ of a language specification. When people say "Ruby," they are usually referring to "the Ruby 3.0+ language specification implemented via the CRuby/MRI Runtime."~
 - P detected.
-- Formatting line: ~A runtime is an _implementation_ of a langauge specification. When people say "Ruby," they are usually referring to "the Ruby 3.0+ language specification implemented via the CRuby/MRI Runtime."~
+- Formatting line: ~A runtime is an _implementation_ of a language specification. When people say "Ruby," they are usually referring to "the Ruby 3.0+ language specification implemented via the CRuby/MRI Runtime."~
 - Line's tilde count is: 0
 - Line contains link marker: false
 ** Processing line: ~But, there are many Ruby Runtimes: CRuby/MRI, JRuby, Truffle, Rubinius, Artichoke, and (last but certainly not least) DragonRuby.~
@@ -7371,10 +7880,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** Okay... what language specification does DragonRuby use then?~
+- H3 detected.
 - Formatting line: ~Okay... what language specification does DragonRuby use then?~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~Okay... what language specification does DragonRuby use then?~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -7386,10 +7895,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** So... why another runtime?~
+- H3 detected.
 - Formatting line: ~So... why another runtime?~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~So... why another runtime?~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -7406,10 +7915,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** What does Multilevel Cross-platform mean?~
+- H3 detected.
 - Formatting line: ~What does Multilevel Cross-platform mean?~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~What does Multilevel Cross-platform mean?~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -7440,27 +7949,27 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
   C-Extensions.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~Levels 1 through 3 are fairly commonplace in many runtime implemenations (with level 1 being the most portable, and level 3 being the fastest). But the DragonRuby Runtime has taken things a bit further:~
+** Processing line: ~Levels 1 through 3 are fairly commonplace in many runtime implementations (with level 1 being the most portable, and level 3 being the fastest). But the DragonRuby Runtime has taken things a bit further:~
 - UL end detected.
 - P detected.
-- Formatting line: ~Levels 1 through 3 are fairly commonplace in many runtime implemenations (with level 1 being the most portable, and level 3 being the fastest). But the DragonRuby Runtime has taken things a bit further:~
+- Formatting line: ~Levels 1 through 3 are fairly commonplace in many runtime implementations (with level 1 being the most portable, and level 3 being the fastest). But the DragonRuby Runtime has taken things a bit further:~
 - Line's tilde count is: 0
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~- Level 4 consists of shared abstractions around hardware I/O and operating
-  system resources. This level leverages open source and proprietary   components within Simple DirectMedia Layer (a lowlevel multimedia   component library that has been in active development for 22 years   and counting).~
+  system resources. This level leverages open source and proprietary   components within Simple DirectMedia Layer (a low level multimedia   component library that has been in active development for 22 years   and counting).~
 - UL start detected.
 - LI detected.
 - Formatting line: ~Level 4 consists of shared abstractions around hardware I/O and operating
-  system resources. This level leverages open source and proprietary   components within Simple DirectMedia Layer (a lowlevel multimedia   component library that has been in active development for 22 years   and counting).~
+  system resources. This level leverages open source and proprietary   components within Simple DirectMedia Layer (a low level multimedia   component library that has been in active development for 22 years   and counting).~
 - Line's tilde count is: 0
 - Line contains link marker: false
 ** Processing line: ~~
-** Processing line: ~- Level 5 is a codegeneration layer which creates metadata that allows
-  for native interopability with host runtime libraries. It also   includes OS specific message pump orchestrations.~
+** Processing line: ~- Level 5 is a code generation layer which creates metadata that allows
+  for native interoperability with host runtime libraries. It also   includes OS specific message pump orchestrations.~
 - LI detected.
-- Formatting line: ~Level 5 is a codegeneration layer which creates metadata that allows
-  for native interopability with host runtime libraries. It also   includes OS specific message pump orchestrations.~
+- Formatting line: ~Level 5 is a code generation layer which creates metadata that allows
+  for native interoperability with host runtime libraries. It also   includes OS specific message pump orchestrations.~
 - Line's tilde count is: 0
 - Line contains link marker: false
 ** Processing line: ~~
@@ -7471,43 +7980,43 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
   compiler outputs _very_ fast platform specific bitcode, but only   supports a subset of the Ruby language specification.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~These levels allow us to stay up to date with open source implementations of Ruby; provide fast, native code execution on proprietary platforms; ensure good seperation between these two worlds; and provides a means to add new platforms without going insane.~
+** Processing line: ~These levels allow us to stay up to date with open source implementations of Ruby; provide fast, native code execution on proprietary platforms; ensure good separation between these two worlds; and provides a means to add new platforms without going insane.~
 - UL end detected.
 - P detected.
-- Formatting line: ~These levels allow us to stay up to date with open source implementations of Ruby; provide fast, native code execution on proprietary platforms; ensure good seperation between these two worlds; and provides a means to add new platforms without going insane.~
+- Formatting line: ~These levels allow us to stay up to date with open source implementations of Ruby; provide fast, native code execution on proprietary platforms; ensure good separation between these two worlds; and provides a means to add new platforms without going insane.~
 - Line's tilde count is: 0
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** Cool cool. So given that I understand everything to this point, can we answer the original question? What is DragonRuby?~
-- Formatting line: ~Cool cool. So given that I understand everything to this point, can we answer the original question? What is DragonRuby?~
-- Line's tilde count is: 0
-- Line contains link marker: false
 - H3 detected.
 - Formatting line: ~Cool cool. So given that I understand everything to this point, can we answer the original question? What is DragonRuby?~
 - Line's tilde count is: 0
 - Line contains link marker: false
+- Formatting line: ~Cool cool. So given that I understand everything to this point, can we answer the original question? What is DragonRuby?~
+- Line's tilde count is: 0
+- Line contains link marker: false
 ** Processing line: ~~
-** Processing line: ~DragonRuby is a Ruby runtime implentation that takes all the lessons we've learned from MRI/CRuby, and merges it with the latest and greatest compiler and OSS technologies.~
+** Processing line: ~DragonRuby is a Ruby runtime implementation that takes all the lessons we've learned from MRI/CRuby, and merges it with the latest and greatest compiler and OSS technologies.~
 - P detected.
-- Formatting line: ~DragonRuby is a Ruby runtime implentation that takes all the lessons we've learned from MRI/CRuby, and merges it with the latest and greatest compiler and OSS technologies.~
+- Formatting line: ~DragonRuby is a Ruby runtime implementation that takes all the lessons we've learned from MRI/CRuby, and merges it with the latest and greatest compiler and OSS technologies.~
 - Line's tilde count is: 0
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~** Frequent Comments~
+- H2 detected.
 - Formatting line: ~Frequent Comments~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Frequent Comments~
 - Line's tilde count is: 0
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~*** But Ruby is dead.~
+- H3 detected.
 - Formatting line: ~But Ruby is dead.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~But Ruby is dead.~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -7535,10 +8044,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** But Ruby is slow.~
+- H3 detected.
 - Formatting line: ~But Ruby is slow.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~But Ruby is slow.~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -7549,12 +8058,12 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line's tilde count is: 0
 - Line contains link marker: false
 ** Processing line: ~~
-** Processing line: ~*** Dynamic langauges are slow.~
-- Formatting line: ~Dynamic langauges are slow.~
+** Processing line: ~*** Dynamic languages are slow.~
+- H3 detected.
+- Formatting line: ~Dynamic languages are slow.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
-- Formatting line: ~Dynamic langauges are slow.~
+- Formatting line: ~Dynamic languages are slow.~
 - Line's tilde count is: 0
 - Line contains link marker: false
 ** Processing line: ~~
@@ -7563,44 +8072,44 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Formatting line: ~They are certainly slower than statically compiled languages. With the processing power and compiler optimizations we have today, dynamic languages like Ruby are _fast enough_.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~Unless you are writing in some form of intermediate representation by hand, your langauge of choice also suffers this same fallacy of slow. Like, nothing is faster than a low level assembly-like language. So unless you're writing in that, let's stop making this comment.~
+** Processing line: ~Unless you are writing in some form of intermediate representation by hand, your language of choice also suffers this same fallacy of slow. Like, nothing is faster than a low level assembly-like language. So unless you're writing in that, let's stop making this comment.~
 - P detected.
-- Formatting line: ~Unless you are writing in some form of intermediate representation by hand, your langauge of choice also suffers this same fallacy of slow. Like, nothing is faster than a low level assembly-like language. So unless you're writing in that, let's stop making this comment.~
+- Formatting line: ~Unless you are writing in some form of intermediate representation by hand, your language of choice also suffers this same fallacy of slow. Like, nothing is faster than a low level assembly-like language. So unless you're writing in that, let's stop making this comment.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~NOTE: If you _are_ hand writing LLVM IR, we are always open to bringing on new partners with such a skillset. Email us ^_^.~
+** Processing line: ~NOTE: If you _are_ hand writing LLVM IR, we are always open to bringing on new partners with such a skill set. Email us ^_^.~
 - P detected.
-- Formatting line: ~NOTE: If you _are_ hand writing LLVM IR, we are always open to bringing on new partners with such a skillset. Email us ^_^.~
+- Formatting line: ~NOTE: If you _are_ hand writing LLVM IR, we are always open to bringing on new partners with such a skill set. Email us ^_^.~
 - Line's tilde count is: 0
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~** Frequent Concerns~
+- H2 detected.
 - Formatting line: ~Frequent Concerns~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Frequent Concerns~
 - Line's tilde count is: 0
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~*** DragonRuby is not open source. That's not right.~
-- Formatting line: ~DragonRuby is not open source. That's not right.~
-- Line's tilde count is: 0
-- Line contains link marker: false
 - H3 detected.
 - Formatting line: ~DragonRuby is not open source. That's not right.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~~
-** Processing line: ~The current state of open source is unsustainable. Contributors work for free, most all open source repositories are serverly understaffed, and burnout from core members is rampant.~
-- P detected.
-- Formatting line: ~The current state of open source is unsustainable. Contributors work for free, most all open source repositories are serverly understaffed, and burnout from core members is rampant.~
+- Formatting line: ~DragonRuby is not open source. That's not right.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~We believe in open source very strongly. Parts of DragonRuby are infact, open source. Just not all of it (for legal reasons, and because the IP we've created has value). And we promise that we are looking for (or creating) ways to _sustainably_ open source everything we do.~
+** Processing line: ~~
+** Processing line: ~The current state of open source is unsustainable. Contributors work for free, most all open source repositories are severely under-staffed, and burnout from core members is rampant.~
 - P detected.
-- Formatting line: ~We believe in open source very strongly. Parts of DragonRuby are infact, open source. Just not all of it (for legal reasons, and because the IP we've created has value). And we promise that we are looking for (or creating) ways to _sustainably_ open source everything we do.~
+- Formatting line: ~The current state of open source is unsustainable. Contributors work for free, most all open source repositories are severely under-staffed, and burnout from core members is rampant.~
+- Line's tilde count is: 0
+- Line contains link marker: false
+** Processing line: ~We believe in open source very strongly. Parts of DragonRuby are in fact, open source. Just not all of it (for legal reasons, and because the IP we've created has value). And we promise that we are looking for (or creating) ways to _sustainably_ open source everything we do.~
+- P detected.
+- Formatting line: ~We believe in open source very strongly. Parts of DragonRuby are in fact, open source. Just not all of it (for legal reasons, and because the IP we've created has value). And we promise that we are looking for (or creating) ways to _sustainably_ open source everything we do.~
 - Line's tilde count is: 0
 - Line contains link marker: false
 ** Processing line: ~If you have ideas on how we can do this, email us!~
@@ -7615,10 +8124,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** DragonRuby is for pay. You should offer a free version.~
+- H3 detected.
 - Formatting line: ~DragonRuby is for pay. You should offer a free version.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~DragonRuby is for pay. You should offer a free version.~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -7677,10 +8186,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** But still, you should offer a free version. So I can try it out and see if I like it.~
+- H3 detected.
 - Formatting line: ~But still, you should offer a free version. So I can try it out and see if I like it.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~But still, you should offer a free version. So I can try it out and see if I like it.~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -7697,10 +8206,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** I still think you should do a free version. Think of all people who would give it a shot.~
+- H3 detected.
 - Formatting line: ~I still think you should do a free version. Think of all people who would give it a shot.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~I still think you should do a free version. Think of all people who would give it a shot.~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -7710,17 +8219,17 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Formatting line: ~Free isn't a sustainable financial model. We don't want to spam your email. We don't want to collect usage data off of you either. We just want to provide quality toolchains to quality developers (as opposed to a large quantity of developers).~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~The peiple that pay for DragonRuby and make an effort to understand it are the ones we want to build a community around, partner with, and collaborate with. So having that small monetary wall deters entitled individuals that don't value the same things we do.~
+** Processing line: ~The people that pay for DragonRuby and make an effort to understand it are the ones we want to build a community around, partner with, and collaborate with. So having that small monetary wall deters entitled individuals that don't value the same things we do.~
 - P detected.
-- Formatting line: ~The peiple that pay for DragonRuby and make an effort to understand it are the ones we want to build a community around, partner with, and collaborate with. So having that small monetary wall deters entitled individuals that don't value the same things we do.~
+- Formatting line: ~The people that pay for DragonRuby and make an effort to understand it are the ones we want to build a community around, partner with, and collaborate with. So having that small monetary wall deters entitled individuals that don't value the same things we do.~
 - Line's tilde count is: 0
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~*** What if I build something with DragonRuby, but DragonRuby LLP becomes insolvent.~
+- H3 detected.
 - Formatting line: ~What if I build something with DragonRuby, but DragonRuby LLP becomes insolvent.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H3 detected.
 - Formatting line: ~What if I build something with DragonRuby, but DragonRuby LLP becomes insolvent.~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -7730,18 +8239,18 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Formatting line: ~That won't happen if the development world stop asking for free stuff and non-trivially compensate open source developers. Look, we want to be able to work on the stuff we love, every day of our lives. And we'll go to great lengths to make that happen.~
 - Line's tilde count is: 0
 - Line contains link marker: false
-** Processing line: ~But, in the event that sad day comes, our partnershiop bylaws state that _all_ DragonRuby IP that can be legally open sourced, will be released under a permissive license.~
+** Processing line: ~But, in the event that sad day comes, our partnership bylaws state that _all_ DragonRuby IP that can be legally open sourced, will be released under a permissive license.~
 - P detected.
-- Formatting line: ~But, in the event that sad day comes, our partnershiop bylaws state that _all_ DragonRuby IP that can be legally open sourced, will be released under a permissive license.~
+- Formatting line: ~But, in the event that sad day comes, our partnership bylaws state that _all_ DragonRuby IP that can be legally open sourced, will be released under a permissive license.~
 - Line's tilde count is: 0
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~* DOCS: ~GTK::Runtime~~
+- H1 detected.
 - Formatting line: ~~GTK::Runtime~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~The GTK::Runtime class is the core of DragonRuby. It is globally accessible via ~$gtk~.~
 - P detected.
 - Formatting line: ~The GTK::Runtime class is the core of DragonRuby. It is globally accessible via ~$gtk~.~
@@ -7749,12 +8258,24 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 - CODE detected.
 ** Processing line: ~~
+** Processing line: ~* DOCS: ~GTK::Runtime#reset~~
+- H1 detected.
+- Formatting line: ~~GTK::Runtime#reset~~
+- Line's tilde count is: 2
+- Line contains link marker: false
+- CODE detected.
+** Processing line: ~This function will reset Kernel.tick_count to 0 and will remove all data from args.state.~
+- P detected.
+- Formatting line: ~This function will reset Kernel.tick_count to 0 and will remove all data from args.state.~
+- Line's tilde count is: 0
+- Line contains link marker: false
+** Processing line: ~~
 ** Processing line: ~* DOCS: ~GTK::Runtime#calcstringbox~~
+- H1 detected.
 - Formatting line: ~~GTK::Runtime#calcstringbox~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~This function returns the width and height of a string.~
 - P detected.
 - Formatting line: ~This function returns the width and height of a string.~
@@ -7771,24 +8292,12 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - PRE end detected.
 ** Processing line: ~~
 ** Processing line: ~~
-** Processing line: ~* DOCS: ~GTK::Runtime#reset~~
-- Formatting line: ~~GTK::Runtime#reset~~
-- Line's tilde count is: 2
-- Line contains link marker: false
-- CODE detected.
-- H1 detected.
-** Processing line: ~This function will reset Kernel.tick_count to 0 and will remove all data from args.state.~
-- P detected.
-- Formatting line: ~This function will reset Kernel.tick_count to 0 and will remove all data from args.state.~
-- Line's tilde count is: 0
-- Line contains link marker: false
-** Processing line: ~~
 ** Processing line: ~* DOCS: ~Array~~
+- H1 detected.
 - Formatting line: ~~Array~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~The Array class has been extend to provide methods that will help in common game development tasks. Array is one of the most powerful classes in Ruby and a very fundamental component of Game Toolkit.~
 - P detected.
@@ -7798,11 +8307,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* DOCS: ~Array#map~~
+- H1 detected.
 - Formatting line: ~~Array#map~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~The function given a block returns a new ~Enumerable~ of values.~
 - P detected.
@@ -7855,11 +8364,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* DOCS: ~Array#each~~
+- H1 detected.
 - Formatting line: ~~Array#each~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~The function, given a block, invokes the block for each item in the ~Array~. ~Array#each~ is synonymous to foreach constructs in other languages.~
 - P detected.
@@ -7911,11 +8420,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* DOCS: ~Array#reject_nil~~
+- H1 detected.
 - Formatting line: ~~Array#reject_nil~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Returns an ~Enumerable~ rejecting items that are ~nil~, this is an alias for ~Array#compact~:~
 - P detected.
@@ -7939,11 +8448,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* DOCS: ~Array#reject_false~~
+- H1 detected.
 - Formatting line: ~~Array#reject_false~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Returns an `Enumerable` rejecting items that are `nil` or `false`.~
 - P detected.
@@ -7964,11 +8473,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* DOCS: ~Array#product~~
+- H1 detected.
 - Formatting line: ~~Array#product~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Returns all combinations of values between two arrays.~
 - P detected.
@@ -8007,11 +8516,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* DOCS: ~Array#map_2d~~
+- H1 detected.
 - Formatting line: ~~Array#map_2d~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Assuming the array is an array of arrays, Given a block, each 2D array index invoked against the block. A 2D array is a common way to store data/layout for a stage.~
 - P detected.
@@ -8048,11 +8557,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* DOCS: ~Array#include_any?~~
+- H1 detected.
 - Formatting line: ~~Array#include_any?~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Given a collection of items, the function will return ~true~ if any of ~self~'s items exists in the collection of items passed in:~
 - P detected.
@@ -8063,11 +8572,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* DOCS: ~Array#any_intersect_rect?~~
+- H1 detected.
 - Formatting line: ~~Array#any_intersect_rect?~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Assuming the array contains objects that respond to ~left~, ~right~, ~top~, ~bottom~, this method returns ~true~ if any of the elements within the array intersect the object being passed in. You are given an optional parameter called ~tolerance~ which informs how close to the other rectangles the elements need to be for it to be considered intersecting.~
 - P detected.
@@ -8144,11 +8653,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* DOCS: ~GTK::Outputs~~
+- H1 detected.
 - Formatting line: ~~GTK::Outputs~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Outputs is how you render primitives to the screen. The minimal setup for rendering something to the screen is via a ~tick~ method defined in mygame/app/main.rb~
 - P detected.
@@ -8167,63 +8676,12 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~~
-** Processing line: ~* DOCS: ~GTK::Outputs#borders~~
-- Formatting line: ~~GTK::Outputs#borders~~
-- Line's tilde count is: 2
-- Line contains link marker: false
-- CODE detected.
-- H1 detected.
-** Processing line: ~~
-** Processing line: ~Add primitives to this collection to render an unfilled solid to the screen. Take a look at the documentation for Outputs#solids.~
-- P detected.
-- Formatting line: ~Add primitives to this collection to render an unfilled solid to the screen. Take a look at the documentation for Outputs#solids.~
-- Line's tilde count is: 0
-- Line contains link marker: false
-** Processing line: ~The only difference between the two primitives is where they are added.~
-- P detected.
-- Formatting line: ~The only difference between the two primitives is where they are added.~
-- Line's tilde count is: 0
-- Line contains link marker: false
-** Processing line: ~Instead of using ~args.outputs.solids~:~
-- P detected.
-- Formatting line: ~Instead of using ~args.outputs.solids~:~
-- Line's tilde count is: 2
-- Line contains link marker: false
-- CODE detected.
-** Processing line: ~~
-** Processing line: ~#+begin_src~
-- PRE start detected.
-** Processing line: ~  def tick args~
-** Processing line: ~    #                         X    Y  WIDTH  HEIGHT~
-** Processing line: ~    args.outputs.solids << [100, 100,   160,     90]~
-** Processing line: ~  end~
-** Processing line: ~#+end_src~
-- PRE end detected.
-** Processing line: ~~
-** Processing line: ~You have to use ~args.outputs.borders~:~
-- P detected.
-- Formatting line: ~You have to use ~args.outputs.borders~:~
-- Line's tilde count is: 2
-- Line contains link marker: false
-- CODE detected.
-** Processing line: ~~
-** Processing line: ~#+begin_src~
-- PRE start detected.
-** Processing line: ~  def tick args~
-** Processing line: ~    #                           X    Y  WIDTH  HEIGHT~
-** Processing line: ~    args.outputs.borders << [100, 100,   160,     90]~
-** Processing line: ~  end~
-** Processing line: ~#+end_src~
-- PRE end detected.
-** Processing line: ~~
-** Processing line: ~~
-** Processing line: ~~
 ** Processing line: ~* DOCS: ~GTK::Outputs#solids~~
+- H1 detected.
 - Formatting line: ~~GTK::Outputs#solids~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Add primitives to this collection to render a solid to the screen.~
 - P detected.
@@ -8232,10 +8690,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - Line contains link marker: false
 ** Processing line: ~~
 ** Processing line: ~** Rendering a solid using an Array~
+- H2 detected.
 - Formatting line: ~Rendering a solid using an Array~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Rendering a solid using an Array~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -8257,10 +8715,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~** Rendering a solid using an Array with colors and alpha~
+- H2 detected.
 - Formatting line: ~Rendering a solid using an Array with colors and alpha~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Rendering a solid using an Array with colors and alpha~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -8288,10 +8746,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~** Rendering a solid using a Hash~
+- H2 detected.
 - Formatting line: ~Rendering a solid using a Hash~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Rendering a solid using a Hash~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -8321,10 +8779,10 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~** Rendering a solid using a Class~
+- H2 detected.
 - Formatting line: ~Rendering a solid using a Class~
 - Line's tilde count is: 0
 - Line contains link marker: false
-- H2 detected.
 - Formatting line: ~Rendering a solid using a Class~
 - Line's tilde count is: 0
 - Line contains link marker: false
@@ -8372,12 +8830,63 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~~
+** Processing line: ~* DOCS: ~GTK::Outputs#borders~~
+- H1 detected.
+- Formatting line: ~~GTK::Outputs#borders~~
+- Line's tilde count is: 2
+- Line contains link marker: false
+- CODE detected.
+** Processing line: ~~
+** Processing line: ~Add primitives to this collection to render an unfilled solid to the screen. Take a look at the documentation for Outputs#solids.~
+- P detected.
+- Formatting line: ~Add primitives to this collection to render an unfilled solid to the screen. Take a look at the documentation for Outputs#solids.~
+- Line's tilde count is: 0
+- Line contains link marker: false
+** Processing line: ~The only difference between the two primitives is where they are added.~
+- P detected.
+- Formatting line: ~The only difference between the two primitives is where they are added.~
+- Line's tilde count is: 0
+- Line contains link marker: false
+** Processing line: ~Instead of using ~args.outputs.solids~:~
+- P detected.
+- Formatting line: ~Instead of using ~args.outputs.solids~:~
+- Line's tilde count is: 2
+- Line contains link marker: false
+- CODE detected.
+** Processing line: ~~
+** Processing line: ~#+begin_src~
+- PRE start detected.
+** Processing line: ~  def tick args~
+** Processing line: ~    #                         X    Y  WIDTH  HEIGHT~
+** Processing line: ~    args.outputs.solids << [100, 100,   160,     90]~
+** Processing line: ~  end~
+** Processing line: ~#+end_src~
+- PRE end detected.
+** Processing line: ~~
+** Processing line: ~You have to use ~args.outputs.borders~:~
+- P detected.
+- Formatting line: ~You have to use ~args.outputs.borders~:~
+- Line's tilde count is: 2
+- Line contains link marker: false
+- CODE detected.
+** Processing line: ~~
+** Processing line: ~#+begin_src~
+- PRE start detected.
+** Processing line: ~  def tick args~
+** Processing line: ~    #                           X    Y  WIDTH  HEIGHT~
+** Processing line: ~    args.outputs.borders << [100, 100,   160,     90]~
+** Processing line: ~  end~
+** Processing line: ~#+end_src~
+- PRE end detected.
+** Processing line: ~~
+** Processing line: ~~
+** Processing line: ~~
 ** Processing line: ~* DOCS: ~GTK::Mouse~~
+- H1 detected.
 - Formatting line: ~~GTK::Mouse~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~The mouse is accessible via ~args.inputs.mouse~:~
 - P detected.
@@ -8498,11 +9007,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 - CODE detected.
 ** Processing line: ~~
 ** Processing line: ~* DOCS: ~GTK::MousePoint~~
+- H1 detected.
 - Formatting line: ~~GTK::MousePoint~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~The ~GTK::MousePoint~ has the following properties.~
 - P detected.
@@ -8581,11 +9090,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* DOCS: ~GTK::OpenEntity~~
+- H1 detected.
 - Formatting line: ~~GTK::OpenEntity~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~~GTK::OpenEntity~ is accessible within the DragonRuby's top level ~tick~ function via the ~args.state~ property.~
 - P detected.
@@ -8633,11 +9142,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* DOCS: ~GTK::OpenEntity#as_hash~~
+- H1 detected.
 - Formatting line: ~~GTK::OpenEntity#as_hash~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Returns a reference to the ~GTK::OpenEntity~ as a ~Hash~. This property is useful when you want to treat ~args.state~ as a ~Hash~ and invoke methods such as ~Hash#each~.~
 - P detected.
@@ -8674,11 +9183,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* DOCS: ~Numeric#frame_index~~
+- H1 detected.
 - Formatting line: ~~Numeric#frame_index~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~This function is helpful for determining the index of frame-by-frame   sprite animation. The numeric value ~self~ represents the moment the   animation started.~
 - P detected.
@@ -8780,12 +9289,204 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~~
+** Processing line: ~* DOCS: ~Numeric#elapsed_time~~
+- H1 detected.
+- Formatting line: ~~Numeric#elapsed_time~~
+- Line's tilde count is: 2
+- Line contains link marker: false
+- CODE detected.
+** Processing line: ~For a given number, the elapsed frames since that number is returned. `Kernel.tick_count` is used to determine how many frames have elapsed. An optional numeric argument can be passed in which will be used instead of `Kernel.tick_count`.~
+- P detected.
+- Formatting line: ~For a given number, the elapsed frames since that number is returned. `Kernel.tick_count` is used to determine how many frames have elapsed. An optional numeric argument can be passed in which will be used instead of `Kernel.tick_count`.~
+- Line's tilde count is: 0
+- Line contains link marker: false
+** Processing line: ~Here is an example of how elapsed_time can be used.~
+- P detected.
+- Formatting line: ~Here is an example of how elapsed_time can be used.~
+- Line's tilde count is: 0
+- Line contains link marker: false
+** Processing line: ~~
+** Processing line: ~#+begin_src ruby~
+- PRE start detected.
+** Processing line: ~  def tick args~
+** Processing line: ~    args.state.last_click_at ||= 0~
+** Processing line: ~~
+** Processing line: ~    # record when a mouse click occurs~
+** Processing line: ~    if args.inputs.mouse.click~
+** Processing line: ~      args.state.last_click_at = args.state.tick_count~
+** Processing line: ~    end~
+** Processing line: ~~
+** Processing line: ~    # Use Numeric#elapsed_time to determine how long it's been~
+** Processing line: ~    if args.state.last_click_at.elapsed_time > 120~
+** Processing line: ~      args.outputs.labels << [10, 710, "It has been over 2 seconds since the mouse was clicked."]~
+** Processing line: ~    end~
+** Processing line: ~  end~
+** Processing line: ~#+end_src~
+- PRE end detected.
+** Processing line: ~~
+** Processing line: ~And here is an example where the override parameter is passed in:~
+- P detected.
+- Formatting line: ~And here is an example where the override parameter is passed in:~
+- Line's tilde count is: 0
+- Line contains link marker: false
+** Processing line: ~~
+** Processing line: ~#+begin_src ruby~
+- PRE start detected.
+** Processing line: ~  def tick args~
+** Processing line: ~    args.state.last_click_at ||= 0~
+** Processing line: ~~
+** Processing line: ~    # create a state variable that tracks time at half the speed of args.state.tick_count~
+** Processing line: ~    args.state.simulation_tick = args.state.tick_count.idiv 2~
+** Processing line: ~~
+** Processing line: ~    # record when a mouse click occurs~
+** Processing line: ~    if args.inputs.mouse.click~
+** Processing line: ~      args.state.last_click_at = args.state.simulation_tick~
+** Processing line: ~    end~
+** Processing line: ~~
+** Processing line: ~    # Use Numeric#elapsed_time to determine how long it's been~
+** Processing line: ~    if (args.state.last_click_at.elapsed_time args.state.simulation_tick) > 120~
+** Processing line: ~      args.outputs.labels << [10, 710, "It has been over 4 seconds since the mouse was clicked."]~
+** Processing line: ~    end~
+** Processing line: ~  end~
+** Processing line: ~#+end_src~
+- PRE end detected.
+** Processing line: ~~
+** Processing line: ~~
+** Processing line: ~~
+** Processing line: ~* DOCS: ~Numeric#elapsed?~~
+- H1 detected.
+- Formatting line: ~~Numeric#elapsed?~~
+- Line's tilde count is: 2
+- Line contains link marker: false
+- CODE detected.
+** Processing line: ~Returns true if ~Numeric#elapsed_time~ is greater than the number. An optional parameter can be passed into ~elapsed?~ which is added to the number before evaluating whether ~elapsed?~ is true.~
+- P detected.
+- Formatting line: ~Returns true if ~Numeric#elapsed_time~ is greater than the number. An optional parameter can be passed into ~elapsed?~ which is added to the number before evaluating whether ~elapsed?~ is true.~
+- Line's tilde count is: 6
+- Line contains link marker: false
+- CODE detected.
+** Processing line: ~Example usage (no optional parameter):~
+- P detected.
+- Formatting line: ~Example usage (no optional parameter):~
+- Line's tilde count is: 0
+- Line contains link marker: false
+** Processing line: ~~
+** Processing line: ~#+begin_src ruby~
+- PRE start detected.
+** Processing line: ~  def tick args~
+** Processing line: ~    args.state.box_queue ||= []~
+** Processing line: ~~
+** Processing line: ~    if args.state.box_queue.empty?~
+** Processing line: ~      args.state.box_queue << { name: :red,~
+** Processing line: ~                                destroy_at: args.state.tick_count + 60 }~
+** Processing line: ~      args.state.box_queue << { name: :green,~
+** Processing line: ~                                destroy_at: args.state.tick_count + 60 }~
+** Processing line: ~      args.state.box_queue << { name: :blue,~
+** Processing line: ~                                destroy_at: args.state.tick_count + 120 }~
+** Processing line: ~    end~
+** Processing line: ~~
+** Processing line: ~    boxes_to_destroy = args.state~
+** Processing line: ~                           .box_queue~
+** Processing line: ~                           .find_all { |b| b[:destroy_at].elapsed? }~
+** Processing line: ~~
+** Processing line: ~    if !boxes_to_destroy.empty?~
+** Processing line: ~      puts "boxes to destroy count: #{boxes_to_destroy.length}"~
+** Processing line: ~    end~
+** Processing line: ~~
+** Processing line: ~    boxes_to_destroy.each { |b| puts "box #{b} was elapsed? on #{args.state.tick_count}." }~
+** Processing line: ~~
+** Processing line: ~    args.state.box_queue -= boxes_to_destroy~
+** Processing line: ~  end~
+** Processing line: ~#+end_src~
+- PRE end detected.
+** Processing line: ~~
+** Processing line: ~Example usage (with optional parameter):~
+- P detected.
+- Formatting line: ~Example usage (with optional parameter):~
+- Line's tilde count is: 0
+- Line contains link marker: false
+** Processing line: ~~
+** Processing line: ~#+begin_src ruby~
+- PRE start detected.
+** Processing line: ~  def tick args~
+** Processing line: ~    args.state.box_queue ||= []~
+** Processing line: ~~
+** Processing line: ~    if args.state.box_queue.empty?~
+** Processing line: ~      args.state.box_queue << { name: :red,~
+** Processing line: ~                                create_at: args.state.tick_count + 120,~
+** Processing line: ~                                lifespan: 60 }~
+** Processing line: ~      args.state.box_queue << { name: :green,~
+** Processing line: ~                                create_at: args.state.tick_count + 120,~
+** Processing line: ~                                lifespan: 60 }~
+** Processing line: ~      args.state.box_queue << { name: :blue,~
+** Processing line: ~                                create_at: args.state.tick_count + 120,~
+** Processing line: ~                                lifespan: 120 }~
+** Processing line: ~    end~
+** Processing line: ~~
+** Processing line: ~    # lifespan is passed in as a parameter to ~elapsed?~~
+** Processing line: ~    boxes_to_destroy = args.state~
+** Processing line: ~                           .box_queue~
+** Processing line: ~                           .find_all { |b| b[:create_at].elapsed? b[:lifespan] }~
+** Processing line: ~~
+** Processing line: ~    if !boxes_to_destroy.empty?~
+** Processing line: ~      puts "boxes to destroy count: #{boxes_to_destroy.length}"~
+** Processing line: ~    end~
+** Processing line: ~~
+** Processing line: ~    boxes_to_destroy.each { |b| puts "box #{b} was elapsed? on #{args.state.tick_count}." }~
+** Processing line: ~~
+** Processing line: ~    args.state.box_queue -= boxes_to_destroy~
+** Processing line: ~  end~
+** Processing line: ~#+end_src~
+- PRE end detected.
+** Processing line: ~~
+** Processing line: ~~
+** Processing line: ~~
+** Processing line: ~* DOCS: ~Numeric#created?~~
+- H1 detected.
+- Formatting line: ~~Numeric#created?~~
+- Line's tilde count is: 2
+- Line contains link marker: false
+- CODE detected.
+** Processing line: ~Returns true if ~Numeric#elapsed_time == 0~. Essentially communicating that number is equal to the current frame.~
+- P detected.
+- Formatting line: ~Returns true if ~Numeric#elapsed_time == 0~. Essentially communicating that number is equal to the current frame.~
+- Line's tilde count is: 2
+- Line contains link marker: false
+- CODE detected.
+** Processing line: ~Example usage:~
+- P detected.
+- Formatting line: ~Example usage:~
+- Line's tilde count is: 0
+- Line contains link marker: false
+** Processing line: ~~
+** Processing line: ~#+begin_src ruby~
+- PRE start detected.
+** Processing line: ~  def tick args~
+** Processing line: ~    args.state.box_queue ||= []~
+** Processing line: ~~
+** Processing line: ~    if args.state.box_queue.empty?~
+** Processing line: ~      args.state.box_queue << { name: :red,~
+** Processing line: ~                                create_at: args.state.tick_count + 60 }~
+** Processing line: ~    end~
+** Processing line: ~~
+** Processing line: ~    boxes_to_spawn_this_frame = args.state~
+** Processing line: ~                                    .box_queue~
+** Processing line: ~                                    .find_all { |b| b[:create_at].new? }~
+** Processing line: ~~
+** Processing line: ~    boxes_to_spawn_this_frame.each { |b| puts "box #{b} was new? on #{args.state.tick_count}." }~
+** Processing line: ~~
+** Processing line: ~    args.state.box_queue -= boxes_to_spawn_this_frame~
+** Processing line: ~  end~
+** Processing line: ~#+end_src~
+- PRE end detected.
+** Processing line: ~~
+** Processing line: ~~
 ** Processing line: ~* DOCS: ~Kernel~~
+- H1 detected.
 - Formatting line: ~~Kernel~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Kernel in the DragonRuby Runtime has patches for how standard out is handled and also contains a unit of time in games called a tick.~
 - P detected.
@@ -8795,11 +9496,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* DOCS: ~Kernel::tick_count~~
+- H1 detected.
 - Formatting line: ~~Kernel::tick_count~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Returns the current tick of the game. This value is reset if you call $gtk.reset.~
 - P detected.
@@ -8809,11 +9510,11 @@ Returns the current tick of the game. This value is reset if you call $gtk.reset
 ** Processing line: ~~
 ** Processing line: ~~
 ** Processing line: ~* DOCS: ~Kernel::global_tick_count~~
+- H1 detected.
 - Formatting line: ~~Kernel::global_tick_count~~
 - Line's tilde count is: 2
 - Line contains link marker: false
 - CODE detected.
-- H1 detected.
 ** Processing line: ~~
 ** Processing line: ~Returns the current tick of the application from the point it was started. This value is never reset.~
 - P detected.

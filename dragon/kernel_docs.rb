@@ -49,8 +49,11 @@ S
     DocsOrganizer.sort_docs_classes!
     final_string = ""
     $docs_classes.each do |k|
+      log "* INFO: Retrieving docs for #{k.name}."
       final_string += k.docs_all
     end
+
+    final_string += "\n" + (($gtk.read_file "docs/source.txt") || "")
 
     html_parse_result = (__docs_to_html__ final_string)
 

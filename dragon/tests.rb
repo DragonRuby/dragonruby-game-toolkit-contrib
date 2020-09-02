@@ -16,7 +16,6 @@ module GTK
     def run_test m
       args = Args.new $gtk, nil
       assert = Assert.new
-      setup(args) if respond_to?(:setup)
       begin
         log_test_running m
         send(m, args, assert)
@@ -32,7 +31,6 @@ module GTK
           mark_test_failed m, e
         end
       end
-      teardown if respond_to?(:teardown)
     end
 
     def test_methods_focused
@@ -43,6 +41,7 @@ module GTK
       Object.methods.find_all { |m| m.start_with? "test_" }
     end
 
+    # @gtk
     def start
       log "* TEST: gtk.test.start has been invoked."
       if test_methods_focused.length != 0
@@ -73,10 +72,6 @@ module GTK
     def log_inconclusive m
       self.inconclusive << {m: m}
       log "Inconclusive."
-      log_once :assertion_ok_note, <<-S
-NOTE FOR INCONCLUSIVE TESTS: No assertion was performed in the test.
-Add assert.ok! at the end of the test if you are using your own assertions.
-S
     end
 
     def log_passed m
@@ -125,6 +120,12 @@ S
       log "#{self.passed.length} test(s) passed."
       self.passed.each { |h| log "**** :#{h[:m]}" }
       log "*** Inconclusive"
+      if self.inconclusive.length > 0
+        log_once :assertion_ok_note, <<-S
+NOTE FOR INCONCLUSIVE TESTS: No assertion was performed in the test.
+Add assert.ok! at the end of the test if you are using your own assertions.
+S
+      end
       log "#{self.inconclusive.length} test(s) inconclusive."
       self.inconclusive.each { |h| log "**** :#{h[:m]}" }
       log "*** Failed"

@@ -76,8 +76,8 @@ end
 
 def tick_reset_button
   return unless state.hello_dragonruby_confirmed
-  $gtk.reserved_primitives << state.reset_button.background
-  $gtk.reserved_primitives << state.reset_button.label
+  $gtk.args.outputs.reserved << state.reset_button.background
+  $gtk.args.outputs.reserved << state.reset_button.label
   if inputs.mouse.click && inputs.mouse.click.point.inside_rect?(state.reset_button.background)
     restart_tutorial
   end

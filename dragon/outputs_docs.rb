@@ -4,6 +4,14 @@
 # outputs_docs.rb has been released under MIT (*only this file*).
 
 module OutputsDocs
+  def docs_method_sort_order
+    [
+      :docs_class,
+      :docs_solids,
+      :docs_borders
+    ]
+  end
+
   def docs_class
     <<-S
 * DOCS: ~GTK::Outputs~
