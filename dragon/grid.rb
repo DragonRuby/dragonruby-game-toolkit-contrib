@@ -60,8 +60,9 @@ module GTK
 
     attr_accessor :left_margin, :bottom_margin
 
-    def initialize ffi_draw
-      @ffi_draw = ffi_draw
+    def initialize runtime
+      @runtime = runtime
+      @ffi_draw = runtime.ffi_draw
       origin_bottom_left!
     end
 
@@ -109,18 +110,18 @@ module GTK
       return if @name == :bottom_left
       @name = :bottom_left
       @origin_x = 0.0
-      @origin_y = $gtk.logical_height
+      @origin_y = @runtime.logical_height
       @left   = 0.0
-      @right  = $gtk.logical_width
-      @top    = $gtk.logical_height
+      @right  = @runtime.logical_width
+      @top    = @runtime.logical_height
       @bottom = 0.0
       @left_margin = 0.0
       @bottom_margin = 0.0
-      @center_x = $gtk.logical_width.half
-      @center_y = $gtk.logical_height.half
-      @rect   = [@left, @bottom, $gtk.logical_width, $gtk.logical_height].rect
+      @center_x = @runtime.logical_width.half
+      @center_y = @runtime.logical_height.half
+      @rect   = [@left, @bottom, @runtime.logical_width, @runtime.logical_height].rect
       @center = [@center_x, @center_y].point
-      @ffi_draw.set_gtk_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
+      @ffi_draw.set_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
     end
 
     # Sets the rendering coordinate system to have its origin in the center.
@@ -130,24 +131,24 @@ module GTK
     def origin_center!
       return if @name == :center
       @name = :center
-      @origin_x = $gtk.logical_width.half
-      @origin_y = $gtk.logical_height.half
-      @left   =  -$gtk.logical_width.half
-      @right  =   $gtk.logical_width.half
-      @top    =   $gtk.logical_height.half
-      @bottom =  -$gtk.logical_height.half
+      @origin_x = @runtime.logical_width.half
+      @origin_y = @runtime.logical_height.half
+      @left   =  -@runtime.logical_width.half
+      @right  =   @runtime.logical_width.half
+      @top    =   @runtime.logical_height.half
+      @bottom =  -@runtime.logical_height.half
       @center_x = 0.0
       @center_y = 0.0
-      @rect   = [@left, @bottom, $gtk.logical_width, $gtk.logical_height].rect
+      @rect   = [@left, @bottom, @runtime.logical_width, @runtime.logical_height].rect
       @center = [@center_x, @center_y].point
-      @ffi_draw.set_gtk_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
+      @ffi_draw.set_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
     end
 
     # The logical width used for rendering.
     #
     # @return [Float]
     def w
-      $gtk.logical_width
+      @runtime.logical_width
     end
 
     # Half the logical width used for rendering.
@@ -161,7 +162,7 @@ module GTK
     #
     # @return [Float]
     def h
-      $gtk.logical_height
+      @runtime.logical_height
     end
 
     # Half the logical height used for rendering.

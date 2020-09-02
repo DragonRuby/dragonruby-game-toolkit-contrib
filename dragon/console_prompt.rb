@@ -8,7 +8,7 @@
 module GTK
   class Console
     class Prompt
-      attr_accessor :current_input_str, :font_style, :console_text_width
+      attr_accessor :current_input_str, :font_style, :console_text_width, :last_input_str, :last_input_str_changed
 
       def initialize(font_style:, text_color:, console_text_width:)
         @prompt = '-> '
@@ -24,6 +24,7 @@ module GTK
 
       def <<(str)
         @current_input_str << str
+        @current_input_changed_at = Kernel.global_tick_count
         reset_autocomplete
       end
 
@@ -112,6 +113,18 @@ S
       def render(args, x:, y:)
         args.outputs.reserved << font_style.label(x: x, y: y, text: "#{@prompt}#{current_input_str}", color: @text_color)
         args.outputs.reserved << font_style.label(x: x - 2, y: y + 3, text: (" " * (@prompt.length + current_input_str.length)) + "|", color: @cursor_color)
+      end
+
+      def tick
+        if (@current_input_changed_at) &&
+           (@current_input_changed_at < Kernel.global_tick_count) &&
+           (@last_input_str != @current_input_str)
+          @last_input_str_changed = true
+          @last_input_str = "#{@current_input_str}"
+          @current_input_changed_at = nil
+        else
+          @last_input_str_changed = false
+        end
       end
 
       private

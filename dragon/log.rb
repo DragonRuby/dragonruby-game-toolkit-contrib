@@ -81,6 +81,30 @@ module GTK
 "
     end
 
+    def self.puts_error *args
+      args ||= []
+      title = args[0]
+      additional = args[1..-1] || []
+      additional = "" if additional.length == 0
+      if !title.multiline? && join_lines(additional).multiline?
+        message = headline "ERROR: #{title}" do
+          dynamic_block do
+            additional
+          end
+        end
+      elsif title.multiline?
+        message = headline "ERROR: " do
+          dynamic_block do
+            args
+          end
+        end
+      else
+        message = "* ERROR: #{title} #{additional}".strip
+      end
+
+      self.puts message
+    end
+
     def self.puts_info *args
       args ||= []
       title = args[0]
@@ -110,14 +134,14 @@ module GTK
       @once ||= {}
       return if @once[id]
       @once[id] = id
+      if !$gtk.cli_arguments[:replay] && !$gtk.cli_arguments[:record]
+        $gtk.notify!("Open the DragonRuby Console by pressing [`] [~] [²] [^] [º] or [§]. [Message ID: #{id}].")
+      end
       write_to_log_and_puts ""
       write_to_log_and_puts "#{message.strip}"
       write_to_log_and_puts ""
       write_to_log_and_puts "[Message ID: #{id}]"
       write_to_log_and_puts ""
-      return if $gtk.cli_arguments[:replay]
-      return if $gtk.cli_arguments[:record]
-      $gtk.notify!("One time notification occurred. [Message ID: #{id}] (Open console for more info.)")
     end
 
     def self.puts_once_info *ids, message
@@ -220,6 +244,10 @@ class Object
 
   def log_bright_white *args
     log_with_color XTERM_COLOR[:bright_white], *args
+  end
+
+  def log_error *args
+    GTK::Log.puts_error(*args)
   end
 
   def log_info *args

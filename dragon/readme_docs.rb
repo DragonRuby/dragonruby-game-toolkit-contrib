@@ -509,7 +509,22 @@ It's a hard pill to swallow, but forget blindly accepted best
 practices and try to figure out the underlying motivation for a
 specific approach to game development. Collaborate with us.
 
-*** Release Often And Quickly
+*** Continuity of Design
+
+There is a programming idiom in software called "the pit of
+success". The term normalizes up front pain as a necessity in the
+(hopes that the investment will yield dividends "when you become
+successful"). This results in more "Enterprise TM" code upfront, and
+makes it more difficult to get started when you are new to programming.
+
+DragonRuby's philosophy is to provide a spectrum across the "make it
+fast" vs "make it right" spectrum and provide incremental, intuitive
+transitions between points on that spectrum. This is captured in how
+render primitives can be represented as tuples/arrays, hashes, open
+structs/entities, and then finally classes (as opposed to forcing devs
+to use classes upfront).
+
+*** Release Often And Soon
 
 The biggest mistake game devs make is spending too much time in
 isolation building their game. Release something, however small, and

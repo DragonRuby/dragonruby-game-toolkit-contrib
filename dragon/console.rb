@@ -13,11 +13,12 @@ module GTK
                   :last_command_errored, :last_command, :error_color, :shown_at,
                   :header_color, :archived_log, :last_log_lines, :last_log_lines_count,
                   :suppress_left_arrow_behavior, :command_set_at,
-                  :toast_ids,
-                  :font_style
+                  :toast_ids, :bottom,
+                  :font_style, :menu
 
     def initialize
       @font_style = FontStyle.new(font: 'font.ttf', size_enum: -1, line_height: 1.1)
+      @menu = Menu.new self
       @disabled = false
       @log_offset = 0
       @visible = false
@@ -26,6 +27,7 @@ module GTK
       @log = [ 'Console ready.' ]
       @max_log_lines = 1000  # I guess...?
       @max_history = 1000  # I guess...?
+      @log_invocation_count = 0
       @command_history = []
       @command_history_index = -1
       @nonhistory_input = ''
@@ -76,6 +78,7 @@ module GTK
     end
 
     def addsprite obj
+      @log_invocation_count += 1
       obj[:id] ||= "id_#{obj[:path]}_#{Time.now.to_i}".to_sym
 
       if @last_line_log_index &&
@@ -103,6 +106,7 @@ module GTK
 
     def addtext obj
       @last_log_lines_count ||= 1
+      @log_invocation_count += 1
 
       str = obj.to_s
 
@@ -450,7 +454,7 @@ S
     def write_primitive_and_return_offset(args, left, y, str, archived: false)
       if str.is_a?(Hash)
         padding = 10
-        args.outputs.reserved << [left + 10, y - padding * 1.66, str[:w], str[:h], str[:path]].sprite
+        args.outputs.reserved << [left + 10, y + 5, str[:w], str[:h], str[:path]].sprite
         return str[:h] + padding
       else
         write_line args, left, y, str, archived: archived
@@ -465,25 +469,25 @@ S
       args.outputs.reserved << font_style.label(x: left.shift_right(10), y: y, text: str, color: color)
     end
 
+    def should_tick?
+      return false if !@toggled_at
+      return false if slide_progress == 0
+      return false if @disabled
+      return visible?
+    end
+
     def render args
       return if !@toggled_at
+      return if slide_progress == 0
 
-      if visible?
-        percent = @toggled_at.global_ease(@animation_duration, :flip, :quint, :flip)
-      else
-        percent = @toggled_at.global_ease(@animation_duration, :flip, :quint)
-      end
+      @bottom = top - (h * slide_progress)
+      args.outputs.reserved << [left, @bottom, w, h, *@background_color.mult_alpha(slide_progress)].solid
+      args.outputs.reserved << [right.shift_left(110), @bottom.shift_up(630), 100, 100, @logo, 0, (80.0 * slide_progress).to_i].sprite
 
-      return if percent == 0
-
-      bottom = top - (h * percent)
-      args.outputs.reserved << [left, bottom, w, h, *@background_color.mult_alpha(percent)].solid
-      args.outputs.reserved << [right.shift_left(110), bottom.shift_up(630), 100, 100, @logo, 0, (80.0 * percent).to_i].sprite
-
-      y = bottom + 2  # just give us a little padding at the bottom.
+      y = @bottom + 2  # just give us a little padding at the bottom.
       prompt.render args, x: left.shift_right(10), y: y
       y += line_height_px * 1.5
-      args.outputs.reserved << line(y: y, color: @text_color.mult_alpha(percent))
+      args.outputs.reserved << line(y: y, color: @text_color.mult_alpha(slide_progress))
       y += line_height_px.to_f / 2.0
 
       ((@log.size - @log_offset) - 1).downto(0) do |idx|
@@ -492,8 +496,8 @@ S
         break if y > top
       end
 
-      # past log seperator
-      args.outputs.reserved << line(y: y + line_height_px.half, color: @text_color.mult_alpha(0.25 * percent))
+      # past log separator
+      args.outputs.reserved << line(y: y + line_height_px.half, color: @text_color.mult_alpha(0.25 * slide_progress))
 
       y += line_height_px
 
@@ -504,10 +508,19 @@ S
       end
 
       render_log_offset args
-      render_help args, top if percent == 1
     end
 
-    def render_help args, top
+    def tick_help args
+      tick_help_debounce args
+      alpha_rate = 20
+      @render_help_target_alpha  ||= 255
+      @render_help_current_alpha ||= 255
+      @render_help_target_alpha  += 4 if @render_help_current_alpha == @render_help_target_alpha
+      @render_help_current_alpha = (@render_help_current_alpha.towards @render_help_target_alpha, 20)
+
+      @render_help_target_alpha  = @render_help_target_alpha.clamp(-255, 255)
+      @render_help_current_alpha = @render_help_current_alpha.clamp(-255, 255)
+
       [
         "* Prompt Commands:                   ",
         "You can type any of the following    ",
@@ -525,8 +538,33 @@ S
       ].each_with_index do |s, i|
         args.outputs.reserved << [args.grid.right - 10,
                                   top - 100 - line_height_px * i * 0.8,
-                                  s, -3, 2, 180, 180, 180].label
+                                  s, -3, 2, 180, 180, 180, (@render_help_current_alpha.clamp 0, 255)].label
       end
+    end
+
+    def tick_help_debounce args
+      hide_log_alpha = -255
+      if hidden?
+        @render_help_current_alpha = -255
+      end
+
+      if prompt.last_input_str_changed
+        @render_help_target_alpha = hide_log_alpha
+      end
+
+      if args.inputs.mouse.moved
+        @render_help_target_alpha = hide_log_alpha
+      end
+
+      if args.inputs.mouse.wheel
+        @render_help_target_alpha = hide_log_alpha
+      end
+
+      if @render_help_last_log_invocation_count != @log_invocation_count
+        @render_help_target_alpha = hide_log_alpha
+      end
+
+      @render_help_last_log_invocation_count = @log_invocation_count
     end
 
     def render_log_offset args
@@ -582,9 +620,18 @@ S
       begin
         return if @disabled
         render args
-        calc args
         process_inputs args
+        return unless should_tick?
+        calc args
+        tick_help args
+        prompt.tick
+        menu.tick args
       rescue Exception => e
+        begin
+          puts "#{e}"
+          puts "* FATAL: The GTK::Console console threw an unhandled exception and has been reset. You should report this exception (along with reproduction steps) to DragonRuby."
+        rescue
+        end
         @disabled = true
         $stdout.puts e
         $stdout.puts "* FATAL: The GTK::Console console threw an unhandled exception and has been reset. You should report this exception (along with reproduction steps) to DragonRuby."
@@ -721,6 +768,16 @@ S
       @log.clear
       @prompt.clear
       :console_silent_eval
+    end
+
+    def slide_progress
+      return 0 if !@toggled_at
+      if visible?
+        @slide_progress = @toggled_at.global_ease(@animation_duration, :flip, :quint, :flip)
+      else
+        @slide_progress = @toggled_at.global_ease(@animation_duration, :flip, :quint)
+      end
+      @slide_progress
     end
   end
 end

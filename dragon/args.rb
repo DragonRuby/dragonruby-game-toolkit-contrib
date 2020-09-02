@@ -41,13 +41,15 @@ module GTK
     # @return [OpenEntity]
     attr_accessor :state
 
-    # Gives you access to the top level DragonRuby runtime. 
+    # Gives you access to the top level DragonRuby runtime.
     #
     # @return [Runtime]
     attr_accessor :runtime
     alias_method :gtk, :runtime
 
     attr_accessor :passes
+
+    attr_accessor :wizards
 
     def initialize runtime, recording
       @inputs = Inputs.new
@@ -57,11 +59,13 @@ module GTK
       @state.tick_count = -1
       @runtime = runtime
       @recording = recording
-      @grid = Grid.new runtime.ffi_draw
+      @grid = Grid.new runtime
       @render_targets = {}
       @all_tests = []
       @geometry = GTK::Geometry
+      @wizards = Wizards.new
     end
+
 
     # The number of ticks since the start of the game.
     #
@@ -101,15 +105,6 @@ module GTK
     end
 
     def render_target name
-      if @state.tick_count == 0
-        log_important <<-S
-* WARNING:
-~render_target~ with name ~#{name}~ was created
-on ~args.state.tick_count == 0~. You cannot create ~render_targets~ on the
-first frame and need to wait until ~args.state.tick_count >= 1~.
-S
-      end
-
       name = name.to_s
       if !@render_targets[name]
         @render_targets[name] = Outputs.new(args: self, target: name, background_color_override: [255, 255, 255, 0])

@@ -65,7 +65,7 @@ module GTK
       @traced_classes.clear
       $trace_enabled = false
       if !$gtk.production
-        $gtk.write_file 'logs/trace.txt', "Add trace!(SOMEOBJECT) to the top of `tick` and this file will be populated with invocation information.\n"
+        $gtk.write_file 'logs/trace.txt', "Add trace!(SOMEOBJECT) to the top of ~tick~ and this file will be populated with invocation information.\n"
       end
     end
 
@@ -95,6 +95,7 @@ module GTK
       $trace_puts.clear
     end
 
+    # @gtk
     def self.trace! instance = nil
       $trace_history ||= []
       $trace_enabled = true
