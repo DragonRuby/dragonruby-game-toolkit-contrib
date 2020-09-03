@@ -4,16 +4,13 @@
 
 # @private
 module AttrRect
-  def left
-    x
+  def self.included(klass)
+    klass.alias_method :left, :x
+    klass.alias_method :bottom, :y
   end
 
   def right
     x + w
-  end
-
-  def bottom
-    y
   end
 
   def top
@@ -22,13 +19,14 @@ module AttrRect
 end
 
 module AttrSprite
-  include AttrRect
   include GTK::Geometry
 
   attr_accessor :x, :y, :w, :h, :path, :angle, :a, :r, :g, :b, :tile_x,
                 :tile_y, :tile_w, :tile_h, :flip_horizontally,
                 :flip_vertically, :angle_anchor_x, :angle_anchor_y, :id,
                 :source_x, :source_y, :source_w, :source_h
+
+  include AttrRect
 
   def primitive_marker
     :sprite
@@ -38,19 +36,8 @@ module AttrSprite
     self
   end
 
-  def x1
-    x
-  end
-
-  def x1= value
-    self.x = value
-  end
-
-  def y1
-    y
-  end
-
-  def y1= value
-    self.y = value
-  end
+  alias_method :x1, :x
+  alias_method :x1=, :x=
+  alias_method :y1, :y
+  alias_method :y1=, :y=
 end
