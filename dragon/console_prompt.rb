@@ -18,23 +18,35 @@ module GTK
         @cursor_color = Color.new [187, 21, 6]
         @console_text_width = console_text_width
 
+        @cursor_position = 0
+
         @last_autocomplete_prefix = nil
         @next_candidate_index = 0
       end
 
+      def current_input_str=(str)
+        @current_input_str = str
+        @cursor_position = str.length
+      end
+
       def <<(str)
-        @current_input_str << str
+        @current_input_str = @current_input_str[0...@cursor_position] + str + @current_input_str[@cursor_position..-1]
+        @cursor_position += str.length
         @current_input_changed_at = Kernel.global_tick_count
         reset_autocomplete
       end
 
       def backspace
-        @current_input_str.chop!
+        return if current_input_str.length.zero? || @cursor_position.zero?
+
+        @current_input_str = @current_input_str[0...(@cursor_position - 1)] + @current_input_str[@cursor_position..-1]
+        @cursor_position -= 1
         reset_autocomplete
       end
 
       def clear
         @current_input_str = ''
+        @cursor_position = 0
         reset_autocomplete
       end
 
