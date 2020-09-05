@@ -44,6 +44,14 @@ module GTK
         reset_autocomplete
       end
 
+      def move_cursor_left
+        @cursor_position -= 1 if @cursor_position > 0
+      end
+
+      def move_cursor_right
+        @cursor_position += 1 if @cursor_position < current_input_str.length
+      end
+
       def clear
         @current_input_str = ''
         @cursor_position = 0
@@ -124,7 +132,7 @@ S
 
       def render(args, x:, y:)
         args.outputs.reserved << font_style.label(x: x, y: y, text: "#{@prompt}#{current_input_str}", color: @text_color)
-        args.outputs.reserved << font_style.label(x: x - 2, y: y + 3, text: (" " * (@prompt.length + current_input_str.length)) + "|", color: @cursor_color)
+        args.outputs.reserved << font_style.label(x: x - 4, y: y + 3, text: (" " * (@prompt.length + @cursor_position)) + "|", color: @cursor_color)
       end
 
       def tick
