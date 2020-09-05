@@ -2,7 +2,7 @@
 
 APIs that haven't been encountered in a previous sample apps:
 
-- args.outputus.borders: An array. Values in this array will be rendered as
+- args.outputs.borders: An array. Values in this array will be rendered as
   unfilled rectangles on the screen.
 - ARRAY#inside_rect?: An array with at least two values is considered a point. An array
   with at least four values is considered a rect. The inside_rect? function returns true

@@ -894,25 +894,25 @@ sure_ you've initialized a default value.
 #+begin_src
   def tick args
     # initialize your game state ONCE
-    args.player.x  ||= 0
-    args.player.y  ||= 0
-    args.player.hp ||= 100
+    args.state.player.x  ||= 0
+    args.state.player.y  ||= 0
+    args.state.player.hp ||= 100
 
     # increment the x position of the character by one every frame
-    args.player.x += 1
+    args.state.player.x += 1
 
     # Render a sprite with a label above the sprite
     args.outputs.sprites << [
-      args.player.x,
-      args.player.y,
+      args.state.player.x,
+      args.state.player.y,
       32, 32,
       "player.png"
     ]
 
     args.outputs.labels << [
-      args.player.x,
-      args.player.y - 50,
-      args.player.hp
+      args.state.player.x,
+      args.state.player.y - 50,
+      args.state.player.hp
     ]
   end
 #+end_src
