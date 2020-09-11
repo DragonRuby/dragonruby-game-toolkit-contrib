@@ -727,12 +727,11 @@ S
     end
 
     def include_header_marker? log_entry
-      return false if log_entry.include? "NOTIFY:"
-      return false if log_entry.include? "INFO:"
-      return true if log_entry.include? "DOCS:"
-      (log_entry.start_with? "* ")   ||
-      (log_entry.start_with? "** ")  ||
-      (log_entry.start_with? "*** ")
+      return false if (log_entry.strip.include? ".rb")
+      (log_entry.start_with? "* ")    ||
+      (log_entry.start_with? "** ")   ||
+      (log_entry.start_with? "*** ")  ||
+      (log_entry.start_with? "**** ")
     end
 
     def color_for_log_entry(log_entry)
@@ -744,7 +743,7 @@ S
         @text_color.mult_alpha(0.5)
       elsif include_header_marker? log_entry
         @header_color
-      elsif log_entry.start_with?("====") || log_entry.include?("app") && !log_entry.include?("apple")
+      elsif log_entry.start_with?("====")
         @header_color
       else
         @text_color

@@ -240,13 +240,16 @@ Here's a fun Ruby thing: ~args.state.rotation ||= 0~ is shorthand for
 nice way to embed your initialization code right next to where you
 need the variable.
 
-~args.state~ is a place you can hang your own data and have it survive
-past the life of the function call. In this case, the current rotation
-of our sprite, which is happily spinning at 60 frames per second. If
-you don't specify rotation (or alpha, or color modulation, or a source
-rectangle, etc), DragonRuby picks a reasonable default, and the array
-is ordered by the most likely things you need to tell us: position,
-size, name.
+
+~args.state~ is a place you can hang your own data. It's an open data
+structure that allows you to define properties that are arbitrarily
+nested. You don't need to define any kind of class.
+
+In this case, the current rotation of our sprite, which is happily
+spinning at 60 frames per second. If you don't specify rotation (or
+alpha, or color modulation, or a source rectangle, etc), DragonRuby
+picks a reasonable default, and the array is ordered by the most
+likely things you need to tell us: position, size, name.
 
 ** There Is No Delta Time
 
@@ -894,25 +897,25 @@ sure_ you've initialized a default value.
 #+begin_src
   def tick args
     # initialize your game state ONCE
-    args.player.x  ||= 0
-    args.player.y  ||= 0
-    args.player.hp ||= 100
+    args.state.player.x  ||= 0
+    args.state.player.y  ||= 0
+    args.state.player.hp ||= 100
 
     # increment the x position of the character by one every frame
-    args.player.x += 1
+    args.state.player.x += 1
 
     # Render a sprite with a label above the sprite
     args.outputs.sprites << [
-      args.player.x,
-      args.player.y,
+      args.state.player.x,
+      args.state.player.y,
       32, 32,
       "player.png"
     ]
 
     args.outputs.labels << [
-      args.player.x,
-      args.player.y - 50,
-      args.player.hp
+      args.state.player.x,
+      args.state.player.y - 50,
+      args.state.player.hp
     ]
   end
 #+end_src

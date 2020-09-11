@@ -29,22 +29,39 @@ module GTK
         @console.scroll_down_half
       end
 
+      def show_menu_clicked
+        @menu_shown = :visible
+      end
+
       def close_clicked
+        @menu_shown = :hidden
         @console.hide
+      end
+
+      def framerate_diagnostics_clicked
+        $gtk.framerate_diagnostics
       end
 
       def tick args
         return unless @console.visible?
 
-        # defaults
-        @buttons = [
-          (button id: :record,      row: 0, col: 15, text: "record",      method: :record_clicked),
-          (button id: :replay,      row: 0, col: 16, text: "replay",      method: :replay_clicked),
-          (button id: :reset,       row: 0, col: 17, text: "reset",       method: :reset_clicked),
-          (button id: :scroll_up,   row: 0, col: 18, text: "scroll up",   method: :scroll_up_clicked),
-          (button id: :scroll_down, row: 0, col: 19, text: "scroll down", method: :scroll_down_clicked),
-          (button id: :close,       row: 0, col: 20, text: "close",       method: :close_clicked),
-        ]
+        @menu_shown ||= :hidden
+
+        if @menu_shown == :hidden
+          @buttons = [
+            (button id: :show_menu,       row: 0, col: 10, text: "show menu", method: :show_menu_clicked),
+          ]
+        else
+          @buttons = [
+            (button id: :record,      row: 0, col:  4, text: "framerate diagnostics",   method: :framerate_diagnostics_clicked),
+            (button id: :record,      row: 0, col:  5, text: "record",      method: :record_clicked),
+            (button id: :replay,      row: 0, col:  6, text: "replay",      method: :replay_clicked),
+            (button id: :reset,       row: 0, col:  7, text: "reset",       method: :reset_clicked),
+            (button id: :scroll_up,   row: 0, col:  8, text: "scroll up",   method: :scroll_up_clicked),
+            (button id: :scroll_down, row: 0, col:  9, text: "scroll down", method: :scroll_down_clicked),
+            (button id: :close,       row: 0, col: 10, text: "close",       method: :close_clicked),
+          ]
+        end
 
         # render
         args.outputs.reserved << @buttons.map { |b| b[:primitives] }
@@ -59,13 +76,13 @@ module GTK
       end
 
       def rect_for_layout row, col
-        col_width  = 50
+        col_width  = 100
         row_height = 50
         col_margin = 5
         row_margin = 5
         x = (col_margin + (col * col_width)  + (col * col_margin))
         y = (row_margin + (row * row_height) + (row * row_margin) + row_height).from_top
-        { x: x, y: y, w: row_height, h: col_width }
+        { x: x, y: y, w: col_width, h: row_height }
       end
 
       def button args
