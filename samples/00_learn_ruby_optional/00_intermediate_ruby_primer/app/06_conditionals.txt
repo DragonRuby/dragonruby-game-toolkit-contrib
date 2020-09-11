@@ -1,0 +1,114 @@
+# ====================================================================================
+#  Conditionals
+# ====================================================================================
+#
+# Here is how you create conditionals in Ruby. Take the text
+# in this file and paste it into repl.rb and save:
+
+repl do
+  puts "* RUBY PRIMER: Conditionals"
+end
+
+# ====================================================================================
+#  if
+# ====================================================================================
+
+repl do
+  puts "** INFO: if statement"
+  i_am_one = 1
+  if i_am_one
+    puts "This was printed because i_am_one is truthy."
+  end
+end
+
+# ====================================================================================
+#  if/else
+# ====================================================================================
+
+repl do
+  puts "** INFO: if/else statement"
+  i_am_false = false
+  if i_am_false
+    puts "This will NOT get printed because i_am_false is false."
+  else
+    puts "This was printed because i_am_false is false."
+  end
+end
+
+
+# ====================================================================================
+#  if/elsif/else
+# ====================================================================================
+
+repl do
+  puts "** INFO: if/elsif/else statement"
+  i_am_false = false
+  i_am_true  = true
+  if i_am_false
+    puts "This will NOT get printed because i_am_false is false."
+  elsif i_am_true
+    puts "This was printed because i_am_true is true."
+  else
+    puts "This will NOT get printed i_am_true was true."
+  end
+end
+
+# ====================================================================================
+#  case
+# ====================================================================================
+
+repl do
+  puts "** INFO case statement"
+  i_am_one = 1 # change this value to see different results
+
+  case i_am_one
+  when 10
+    puts "the value of i_am_one is 10"
+  when 9
+    puts "the value of i_am_one is 9"
+  when 5
+    puts "the value of i_am_one is 5"
+  when 1
+    puts "the value of i_am_one is 1"
+  else
+    puts "Value wasn't cased."
+  end
+end
+
+# ====================================================================================
+#  comparison operators
+# ====================================================================================
+
+repl do
+  puts "** INFO: Different types of comparisons"
+  if 4 == 4
+    puts "4 equals 4 (==)"
+  end
+
+  if 4 != 3
+    puts "4 does not equal 3 (!=)"
+  end
+
+  if 3 < 4
+    puts "3 is less than 4 (<)"
+  end
+
+  if 4 > 3
+    puts "4 is greater than 3 (>)"
+  end
+end
+
+# ====================================================================================
+#  and/or conditionals
+# ====================================================================================
+
+repl do
+  puts "** INFO: AND, OR operator (&&, ||)"
+  if (4 > 3) || (3 < 4) || false
+    puts "print this if 4 is greater than 3 OR 3 is less than 4 OR false is true (||)"
+  end
+
+  if (4 > 3) && (3 < 4)
+    puts "print this if 4 is greater than 3 AND 3 is less than 4 (&&)"
+  end
+end

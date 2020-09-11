@@ -1,0 +1,69 @@
+# ====================================================================================
+# Functions
+# ====================================================================================
+
+# The last statement of a function is implictly returned. Parenthesis for functions
+# are optional as long as the statement can be envaluated disambiguously.
+
+repl do
+  puts "* RUBY PRIMER: Functions"
+end
+
+# ====================================================================================
+# Functions single parameter
+# ====================================================================================
+
+repl do
+  puts "* INFO: Function with one parameter"
+
+  # function definition
+  def add_one_to n
+    n + 1
+  end
+
+  # Parenthesis are optional in Ruby as long as the
+  # parsing is disambiguous. Here are a couple of variations.
+  # Generally speaking, don't put parenthesis is you don't have to.
+
+  # Conventional Usage of Parenthesis.
+  puts add_one_to(3)
+
+  # DragonRuby's recommended use of parenthesis (inner function has parenthesis).
+  puts (add_one_to 3)
+
+  # Full parens.
+  puts(add_one_to(3))
+
+  # Outer function has parenthesis
+  puts(add_one_to 3)
+end
+
+# ====================================================================================
+# Functions with default parameter values
+# ====================================================================================
+
+repl do
+  puts "* INFO: Function with default value"
+  def function_with_default_value v = 10
+    v * 10
+  end
+
+  puts "Passing the argument three yields: #{function_with_default_value 3}"
+  puts "Passing no argument yields: #{function_with_default_value}"
+end
+
+# ====================================================================================
+# Nil default parameter value and ||= operator.
+# ====================================================================================
+
+repl do
+  puts "* INFO: Using the OR EQUAL operator (||=)"
+  def function_with_nil_default_with_local a = nil
+    result   = a
+    result ||= "DEFAULT_VALUE_OF_A_IS_NIL_OR_FALSE"
+    "value is #{result}."
+  end
+
+  puts "Passing 'hi' as the argument yields: #{function_with_nil_default_with_local 'hi'}"
+  puts "Passing nil: #{function_with_nil_default_with_local}"
+end

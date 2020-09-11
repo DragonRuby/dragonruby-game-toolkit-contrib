@@ -1,0 +1,32 @@
+# ====================================================================================
+#  Booleans
+# ====================================================================================
+#
+# Here is how you work with numbers in Ruby. Take the text
+# in this file and paste it into repl.rb and save:
+
+repl do
+  puts '* RUBY PRIMER: TrueClass, FalseClass, NilClass (truthy / falsey values)'
+  puts "Anything that *isn't* false or nil is true."
+
+  c = 30
+  puts "The value of c is #{c}."
+
+  if c
+    puts "This if statement ran because c is truthy."
+  end
+
+  d = false
+  puts "The value if d is #{d}. The type for d is #{d.class}."
+
+  if !d
+    puts "This if statement ran because d is falsey, using the not operator (!)."
+  end
+
+  e = nil
+  puts "Nil is also considered falsey. The value of e is: #{e} (a blank string when printed). Which is of type #{e.class}."
+
+  if !e
+    puts "This if statement ran because e is nil and the if statement applied the NOT operator. !e yields a type of #{(!e).class}."
+  end
+end
