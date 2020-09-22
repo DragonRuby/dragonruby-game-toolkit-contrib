@@ -5,6 +5,8 @@
 module GTK
   class Console
     class Menu
+      attr_accessor :buttons
+
       def initialize console
         @console = console
       end
@@ -38,8 +40,31 @@ module GTK
         @console.hide
       end
 
+      def hide_menu_clicked
+        @menu_shown = :hidden
+      end
+
       def framerate_diagnostics_clicked
+        @console.scroll_to_bottom
         $gtk.framerate_diagnostics
+      end
+
+      def itch_wizard_clicked
+        @console.scroll_to_bottom
+        $wizards.itch.start
+      end
+
+      def docs_clicked
+        @console.scroll_to_bottom
+        log Kernel.docs_classes
+      end
+
+      def scroll_end_clicked
+        @console.scroll_to_bottom
+      end
+
+      def custom_buttons
+        []
       end
 
       def tick args
@@ -47,19 +72,31 @@ module GTK
 
         @menu_shown ||= :hidden
 
-        if @menu_shown == :hidden
+        if $gtk.production
+          @buttons = [
+            (button id: :record,      row: 0, col:   9, text: "record gameplay",       method: :record_clicked),
+            (button id: :replay,      row: 0, col:  10, text: "start replay",          method: :replay_clicked),
+          ]
+        elsif @menu_shown == :hidden
           @buttons = [
             (button id: :show_menu,       row: 0, col: 10, text: "show menu", method: :show_menu_clicked),
           ]
         else
           @buttons = [
-            (button id: :record,      row: 0, col:  4, text: "framerate diagnostics",   method: :framerate_diagnostics_clicked),
-            (button id: :record,      row: 0, col:  5, text: "record",      method: :record_clicked),
-            (button id: :replay,      row: 0, col:  6, text: "replay",      method: :replay_clicked),
-            (button id: :reset,       row: 0, col:  7, text: "reset",       method: :reset_clicked),
-            (button id: :scroll_up,   row: 0, col:  8, text: "scroll up",   method: :scroll_up_clicked),
-            (button id: :scroll_down, row: 0, col:  9, text: "scroll down", method: :scroll_down_clicked),
-            (button id: :close,       row: 0, col: 10, text: "close",       method: :close_clicked),
+            (button id: :scroll_up,   row: 0, col:  6, text: "scroll up",             method: :scroll_up_clicked),
+            (button id: :scroll_down, row: 0, col:  7, text: "scroll down",           method: :scroll_down_clicked),
+            (button id: :scroll_down, row: 0, col:  8, text: "scroll end",            method: :scroll_end_clicked),
+            (button id: :close,       row: 0, col:  9, text: "close console",         method: :close_clicked),
+            (button id: :hide,        row: 0, col: 10, text: "hide menu",             method: :hide_menu_clicked),
+
+            (button id: :record,      row: 1, col:  7, text: "record gameplay",       method: :record_clicked),
+            (button id: :replay,      row: 1, col:  8, text: "start replay",          method: :replay_clicked),
+            (button id: :record,      row: 1, col:  9, text: "framerate diagnostics", method: :framerate_diagnostics_clicked),
+            (button id: :reset,       row: 1, col: 10, text: "reset game",            method: :reset_clicked),
+
+            (button id: :reset,       row: 2, col: 10, text: "docs",                  method: :docs_clicked),
+            (button id: :reset,       row: 2, col:  9, text: "itch wizard",           method: :itch_wizard_clicked),
+            *custom_buttons
           ]
         end
 
@@ -92,10 +129,11 @@ module GTK
         {
           id: id,
           rect: (rect_for_layout row, col),
+          text: text,
           method: method
         }.let do |entity|
           primitives = []
-          primitives << entity[:rect].merge(a: 80).solid
+          primitives << entity[:rect].merge(a: 164).solid
           primitives << entity[:rect].merge(r: 255, g: 255, b: 255).border
           primitives << text.wrapped_lines(5)
                             .map_with_index do |l, i|

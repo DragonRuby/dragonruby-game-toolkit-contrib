@@ -1,0 +1,55 @@
+# ====================================================================================
+#  Looping
+# ====================================================================================
+#
+# Looping looks a whole lot different than other languages.
+# But it's pretty awesome when you get used to it.
+
+repl do
+  puts "* RUBY PRIMER: Loops"
+end
+
+# ====================================================================================
+#  times
+# ====================================================================================
+
+repl do
+  puts "** INFO: ~Numeric#times~ (for loop)"
+  3.times do |i|
+    puts i
+  end
+end
+
+# ====================================================================================
+#  foreach
+# ====================================================================================
+
+repl do
+  puts "** INFO: ~Array#each~ (for each loop)"
+  array = ["a", "b", "c", "d"]
+  array.each do |char|
+    puts char
+  end
+
+  puts "** INFO: ~Array#each_with_index~ (for each loop)"
+  array = ["a", "b", "c", "d"]
+  array.each do |char, i|
+    puts "index #{i}: #{char}"
+  end
+end
+
+# ====================================================================================
+#  ranges
+# ====================================================================================
+
+repl do
+  puts "** INFO: range block exclusive (three dots)"
+  (0...3).each do |i|
+    puts i
+  end
+
+  puts "** INFO: range block inclusive (two dots)"
+  (0..3).each do |i|
+    puts i
+  end
+end

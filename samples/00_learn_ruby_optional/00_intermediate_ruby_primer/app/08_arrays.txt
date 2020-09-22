@@ -1,0 +1,210 @@
+# ====================================================================================
+# Arrays
+# ====================================================================================
+
+# Arrays are incredibly powerful in Ruby. Learn to use them well.
+
+repl do
+  puts "* RUBY PRIMER: ARRAYS"
+end
+
+# ====================================================================================
+# Enumerable ranges and .to_a
+# ====================================================================================
+
+repl do
+  puts "** INFO: Create an array with the numbers 1 to 10."
+  one_to_ten = (1..10).to_a
+  puts one_to_ten
+end
+
+# ====================================================================================
+# Finding elements
+# ====================================================================================
+
+repl do
+  puts "** INFO: Finding elements in an array using ~Array#find_all~."
+  puts "Create a new array that only contains even numbers from the previous array."
+
+  one_to_ten = (1..10).to_a
+  evens = one_to_ten.find_all do |number|
+    number % 2 == 0
+  end
+
+  puts evens
+end
+
+# ====================================================================================
+# Rejecting elements
+# ====================================================================================
+
+repl do
+  puts "** INFO: Removing elements in an array using ~Array#reject~."
+  puts "Create a new array that rejects odd numbers."
+
+  one_to_ten = (1..10).to_a
+  also_even = one_to_ten.reject do |number|
+    number % 2 != 0
+  end
+
+  puts also_even
+end
+
+# ====================================================================================
+# Array transform using the map function.
+# ====================================================================================
+
+repl do
+  puts "** INFO: Creating new derived values from an array using ~Array#map~."
+  puts "Create an array that doubles every number."
+
+  one_to_ten = (1..10).to_a
+  doubled = one_to_ten.map do |number|
+    number * 2
+  end
+
+  puts doubled
+end
+
+# ====================================================================================
+# Combining array functions.
+# ====================================================================================
+
+repl do
+  puts "** INFO: Combining ~Array#find_all~ along with ~Array#map~."
+  puts "Create an array that selects only odd numbers and then multiply those by 10."
+
+  one_to_ten = (1..10).to_a
+  odd_doubled = one_to_ten.find_all do |number|
+    number % 2 != 0
+  end.map do |odd_number|
+    odd_number * 10
+  end
+
+  puts odd_doubled
+end
+
+# ====================================================================================
+# Product function.
+# ====================================================================================
+
+repl do
+  puts "** INFO: Create all combinations of array values using ~Array#product~."
+  puts "All two-item pairs of numbers 1 to 10."
+  one_to_ten = (1..10).to_a
+  all_combinations = one_to_ten.product(one_to_ten)
+  puts all_combinations
+end
+
+# ====================================================================================
+# Uniq and sort function.
+# ====================================================================================
+
+repl do
+  puts "** INFO: Providing uniq values using ~Array#uniq~ and ~Array#sort~."
+  puts "All uniq combinations of numbers regardless of order."
+  puts "For example: [1, 2] is the same as [2, 1]."
+  one_to_ten = (1..10).to_a
+  uniq_combinations =
+    one_to_ten.product(one_to_ten)
+              .map do |unsorted_number|
+                unsorted_number.sort
+              end.uniq
+  puts uniq_combinations
+end
+
+# ====================================================================================
+# Example of an advanced array transform.
+# ====================================================================================
+
+repl do
+  puts "** INFO: Advanced chaining. Combining ~Array's ~map~, ~find_all~, ~sort~, and ~sort_by~."
+  puts "All unique Pythagorean Triples between 1 and 100 sorted by area of the triangle."
+
+  one_to_hundred = (1..100).to_a
+
+  triples =
+    one_to_hundred.product(one_to_hundred).map do |width, height|
+                [width, height, Math.sqrt(width ** 2 + height ** 2)]
+              end.find_all do |_, _, hypotenuse|
+                hypotenuse.to_i == hypotenuse
+              end.map do |triangle|
+                triangle.map(&:to_i)
+              end.uniq do |triangle|
+                triangle.sort
+              end.map do |width, height, hypotenuse|
+                [width, height, hypotenuse, (width * height) / 2]
+              end.sort_by do |_, _, _, area|
+                area
+              end
+
+  triples.each do |width, height, hypotenuse, _|
+    puts "(#{width}, #{height}, #{hypotenuse})"
+  end
+end
+
+# ====================================================================================
+# Example of an sorting.
+# ====================================================================================
+
+repl do
+  puts "** INFO: Implementing a custom sort function that operates on the ~Hash~ datatype."
+
+  things_to_sort = [
+    { type: :background, order: 1 },
+    { type: :foreground, order: 1 },
+    { type: :foreground, order: 2 }
+  ]
+  puts "*** Original array."
+  puts things_to_sort
+
+  puts "*** Simple sort using key."
+  # For a simple sort, you can use sort_by
+  results = things_to_sort.sort_by do |hash|
+    hash[:order]
+  end
+
+  puts results
+
+  puts "*** Custom sort."
+  puts "**** Sorting process."
+  # for a more complicated sort, you can provide a block that returns
+  # -1, 0, 1 for a left and right operand
+  results = things_to_sort.sort do |l, r|
+    sort_result = 0
+    puts "here is l: #{l}"
+    puts "here is r: #{r || "nil"}"
+    # if either value is nil/false return 0
+    if !l || !r
+      sort_result = 0
+    # if the type of "left" is background and the
+    # type of "right" is foreground, then return
+    # -1 (which means "left" is less than "right"
+    elsif l[:type] == :background && r[:type] == :foreground
+      sort_result = -1
+    # if the type of "left" is foreground and the
+    # type of "right" is background, then return
+    #  1 (which means "left" is greater than "right"
+    elsif l[:type] == :foreground && r[:type] == :background
+      sort_result = 1
+    # if "left" and "right"'s type are the same, then
+    # use the order as the tie breaker
+    elsif l[:order] < r[:order]
+      sort_result = -1
+    elsif l[:order] > r[:order]
+      sort_result = 1
+    # returning 0 means both values are equal
+    else
+      sort_result = 0
+    end
+    sort_result
+  end.to_a
+
+  puts "**** Sort result."
+  puts results
+end
+
+# ====================================================================================
+# Api documention for Array that is worth commiting to memory because arrays are so
+# awesome in Ruby: https://docs.ruby-lang.org/en/2.0.0/Array.html
+# ====================================================================================

@@ -1,0 +1,31 @@
+# ====================================================================================
+# Commenting Code
+# ====================================================================================
+#
+# Prefixing text with a pound sign (#) is how you comment code in Ruby. Example:
+#
+# I am commented code. And so are the lines above.
+#
+# I you want more than a quick primer on Ruby, check out https://poignant.guide/. It's
+# an entertaining read. Otherwise, go to the next txt file.
+#
+# Follow along by visiting:
+# https://s3.amazonaws.com/s3.dragonruby.org/dragonruby-gtk-intermediate.mp4
+
+# ====================================================================================
+#  Printing to the Console:
+# ====================================================================================
+#
+# Every time you save repl.rb file, DragonRuby runs the code within it. Copy this text
+# to repl.rb and save to see Hello World printed to the console.
+
+repl do
+  puts '* RUBY PRIMER: Printing to the console using the ~puts~ function.'
+  puts '===='
+  puts '======'
+  puts '================================'
+  puts 'Hello World'
+  puts '================================'
+  puts '======'
+  puts '===='
+end

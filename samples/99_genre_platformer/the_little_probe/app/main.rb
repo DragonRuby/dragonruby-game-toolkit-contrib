@@ -256,8 +256,8 @@ class FallingCircle
     if circle.floor
       outputs.labels << [circle.x + camera.x + 30, circle.y + camera.y + 100, "point: #{circle.floor_point.slice(:x, :y).values}", -2, 0]
       outputs.labels << [circle.x + camera.x + 31, circle.y + camera.y + 101, "point: #{circle.floor_point.slice(:x, :y).values}", -2, 0, 255, 255, 255]
-      outputs.labels << [circle.x + camera.x + 30, circle.y + camera.y +  85, "circle: #{circle.hash.slice(:x, :y).values}", -2, 0]
-      outputs.labels << [circle.x + camera.x + 31, circle.y + camera.y +  86, "circle: #{circle.hash.slice(:x, :y).values}", -2, 0, 255, 255, 255]
+      outputs.labels << [circle.x + camera.x + 30, circle.y + camera.y +  85, "circle: #{circle.as_hash.slice(:x, :y).values}", -2, 0]
+      outputs.labels << [circle.x + camera.x + 31, circle.y + camera.y +  86, "circle: #{circle.as_hash.slice(:x, :y).values}", -2, 0, 255, 255, 255]
       outputs.labels << [circle.x + camera.x + 30, circle.y + camera.y +  70, "rel: #{circle.floor_relative_x} #{circle.floor_relative_y}", -2, 0]
       outputs.labels << [circle.x + camera.x + 31, circle.y + camera.y +  71, "rel: #{circle.floor_relative_x} #{circle.floor_relative_y}", -2, 0, 255, 255, 255]
     end
@@ -402,11 +402,11 @@ class FallingCircle
   end
 
   def load_terrain
-    load_lines 'level.txt'
+    load_lines 'data/level.txt'
   end
 
   def load_lava
-    load_lines 'level_lava.txt'
+    load_lines 'data/level_lava.txt'
   end
 
   def load_level force: false

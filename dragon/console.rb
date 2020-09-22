@@ -292,18 +292,17 @@ S
             @last_command_errored = false
           rescue Exception => e
             string_e = "#{e}"
+            puts "* EXCEPTION: #{e}"
+            log  "* EXCEPTION: #{e}"
             @last_command_errored = true
             if (string_e.include? "wrong number of arguments")
               method_name = (string_e.split ":")[0].gsub "'", ""
-              results = Kernel.docs_search method_name
-              if !results.include "* DOCS: No results found."
+              results = (Kernel.docs_search method_name).strip
+              if !results.include? "* DOCS: No results found."
                 puts results
                 log results
               end
             end
-
-            puts "#{e}"
-            log "#{e}"
           end
         end
       end
@@ -313,6 +312,10 @@ S
       return false if @disabled
       args.inputs.keyboard.key_down.pageup ||
         (args.inputs.keyboard.key_up.b && args.inputs.keyboard.key_up.control)
+    end
+
+    def scroll_to_bottom
+      @log_offset = 0
     end
 
     def scroll_up_full
@@ -510,63 +513,6 @@ S
       render_log_offset args
     end
 
-    def tick_help args
-      tick_help_debounce args
-      alpha_rate = 20
-      @render_help_target_alpha  ||= 255
-      @render_help_current_alpha ||= 255
-      @render_help_target_alpha  += 4 if @render_help_current_alpha == @render_help_target_alpha
-      @render_help_current_alpha = (@render_help_current_alpha.towards @render_help_target_alpha, 20)
-
-      @render_help_target_alpha  = @render_help_target_alpha.clamp(-255, 255)
-      @render_help_current_alpha = @render_help_current_alpha.clamp(-255, 255)
-
-      [
-        "* Prompt Commands:                   ",
-        "You can type any of the following    ",
-        "commands in the command prompt.      ",
-        "** docs: Provides API docs.          ",
-        "** $gtk: Accesses the global runtime.",
-        "* Shortcut Keys:                     ",
-        "** full page up:   ctrl + b          ",
-        "** full page down: ctrl + f          ",
-        "** half page up:   ctrl + u          ",
-        "** half page down: ctrl + d          ",
-        "** clear prompt:   ctrl + g          ",
-        "** up arrow:       next command      ",
-        "** down arrow:     prev command      ",
-      ].each_with_index do |s, i|
-        args.outputs.reserved << [args.grid.right - 10,
-                                  top - 100 - line_height_px * i * 0.8,
-                                  s, -3, 2, 180, 180, 180, (@render_help_current_alpha.clamp 0, 255)].label
-      end
-    end
-
-    def tick_help_debounce args
-      hide_log_alpha = -255
-      if hidden?
-        @render_help_current_alpha = -255
-      end
-
-      if prompt.last_input_str_changed
-        @render_help_target_alpha = hide_log_alpha
-      end
-
-      if args.inputs.mouse.moved
-        @render_help_target_alpha = hide_log_alpha
-      end
-
-      if args.inputs.mouse.wheel
-        @render_help_target_alpha = hide_log_alpha
-      end
-
-      if @render_help_last_log_invocation_count != @log_invocation_count
-        @render_help_target_alpha = hide_log_alpha
-      end
-
-      @render_help_last_log_invocation_count = @log_invocation_count
-    end
-
     def render_log_offset args
       return if @log_offset <= 0
       args.outputs.reserved << font_style.label(
@@ -623,7 +569,6 @@ S
         process_inputs args
         return unless should_tick?
         calc args
-        tick_help args
         prompt.tick
         menu.tick args
       rescue Exception => e

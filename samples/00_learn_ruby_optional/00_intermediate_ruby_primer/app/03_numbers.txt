@@ -1,0 +1,21 @@
+# ====================================================================================
+#  Numerics
+# ====================================================================================
+#
+# Here is how you work with numbers in Ruby. Take the text
+# in this file and paste it into repl.rb and save:
+
+repl do
+  puts '* RUBY PRIMER: Fixnum and Floats'
+  a = 10
+  puts "The value of a is: #{a}"
+  puts "a + 1 is: #{a + 1}"
+  puts "a / 3 is: #{a / 3}"
+  puts ''
+
+  b = 10.12
+  puts "The value of b is: #{b}"
+  puts "b + 1 is: #{b + 1}"
+  puts "b as an integer is: #{b.to_i}"
+  puts ''
+end

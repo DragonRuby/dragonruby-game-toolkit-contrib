@@ -1,0 +1,15 @@
+# ====================================================================================
+#  Strings
+# ====================================================================================
+#
+# Here is how you work with strings in Ruby. Take the text
+# in this file and paste it into repl.rb and save:
+
+repl do
+  puts '* RUBY PRIMER: strings'
+  message = "Hello World"
+  puts "The value of message is: " + message
+  puts "Any value can be interpolated within a string using \#{}."
+  puts "Interpolated message: #{message}."
+  puts 'This #{message} is not interpolated because the string uses single quotes.'
+end

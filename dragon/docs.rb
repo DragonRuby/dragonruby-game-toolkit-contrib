@@ -89,7 +89,7 @@ module Docs
 
   def docs_classes
     DocsOrganizer.sort_docs_classes!
-    list = $docs_classes.map { |mod| "** #{mod.name}" }.join "\n"
+    list = $docs_classes.map { |mod| "** #{mod.name}.docs" }.join "\n"
     <<-S
 
 * DOCS:
@@ -107,7 +107,7 @@ S
   end
 
   def docs
-    docs_methods = [DocsOrganizer.find_methods_with_docs(self), :docs_classes].flatten.map { |d| "** #{d}" }.join "\n"
+    docs_methods = [DocsOrganizer.find_methods_with_docs(self), :docs_classes].flatten.map { |d| "** #{self.name}.#{d}" }.join "\n"
     if self == Kernel
       <<-S
 
@@ -201,8 +201,10 @@ S
       final_string = "* DOCS: No results found."
     end
 
-    $gtk.write_file "docs/search_results.txt", final_string
-    log "* INFO: Search results have been written to docs/search_results.txt."
+    $gtk.write_file_root "docs/search_results.txt", final_string
+    if !final_string.include? "* DOCS: No results found."
+      log "* INFO: Search results have been written to docs/search_results.txt."
+    end
 
     "\n" + final_string
   end
@@ -216,7 +218,7 @@ S
       (send m).ltrim + "\n"
     end.join "\n"
     file_path = "docs/#{self.name}.txt"
-    $gtk.write_file "#{file_path}", content
+    $gtk.write_file_root "#{file_path}", content
     puts "* INFO: Documentation for #{self.name} has been exported to #{file_path}."
     $gtk.console.set_system_command file_path
     nil
@@ -235,19 +237,21 @@ S
   # may god have mercy on your soul if you try to expand this
   def __docs_to_html__ string
     parse_log = []
-    html_string = <<-S
+
+    html_start_to_toc_start = <<-S
 <html>
   <head>
     <title>DragonRuby Game Toolkit Documentation</title>
-    <link href="docs.css" rel="stylesheet" type="text/css" media="all">
-    <script src="docs.js"></script>
+    <link href="docs.css?ver=#{Time.now.to_i}" rel="stylesheet" type="text/css" media="all">
   </head>
   <body>
     <div id='toc'>
-    {{toc}}
+S
+    html_toc_end_to_content_start = <<-S
     </div>
     <div id='content'>
-    {{content}}
+S
+    html_content_end_to_html_end = <<-S
     </div>
   </body>
 </html>
@@ -319,6 +323,11 @@ S
         __docs_append_true_line__ true_lines, current_true_line, parse_log
         __docs_append_true_line__ true_lines, l, parse_log
         current_true_line = ""
+      elsif l.start_with? "**** "
+        parse_log << "- Header detected."
+        __docs_append_true_line__ true_lines, current_true_line, parse_log
+        __docs_append_true_line__ true_lines, l, parse_log
+        current_true_line = ""
       else
         current_true_line += l.rstrip + " "
       end
@@ -330,7 +339,7 @@ S
       true_lines = true_lines[1..-1]
     end
 
-    toc = ""
+    toc_html = ""
     content_html = ""
 
     inside_pre = false
@@ -371,7 +380,7 @@ S
     inside_ol = false
     inside_ul = false
 
-    toc = "<h1>Table Of Contents</h1>\n<ul>\n"
+    toc_html = "<h1>Table Of Contents</h1>\n<ul>\n"
     parse_log << "* Processing Html Given True Lines"
     true_lines.each do |l|
       parse_log << "** Processing line: ~#{l.rstrip}~"
@@ -382,7 +391,7 @@ S
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
         link_id = text_to_id.call l
-        toc += "<li><a href='##{link_id}'>#{formatted_html}</a></li>\n"
+        toc_html += "<li><a href='##{link_id}'>#{formatted_html}</a></li>\n"
         content_html += "<h1 id='#{link_id}'>#{formatted_html}</h1>\n"
       elsif l.start_with? "** "
         parse_log << "- H2 detected."
@@ -391,7 +400,7 @@ S
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
         link_id = text_to_id.call l
-        # toc += "<a href='##{link_id}'>#{formatted_html}</a></br>\n"
+        # toc_html += "<a href='##{link_id}'>#{formatted_html}</a></br>\n"
         content_html += "<h2>#{__docs_line_to_html__ l, parse_log}</h2>\n"
       elsif l.start_with? "*** "
         parse_log << "- H3 detected."
@@ -400,8 +409,17 @@ S
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
         link_id = text_to_id.call l
-        # toc += "<a href='##{link_id}'>#{formatted_html}</a></br>\n"
+        # toc_html += "<a href='##{link_id}'>#{formatted_html}</a></br>\n"
         content_html += "<h3>#{__docs_line_to_html__ l, parse_log}</h3>\n"
+      elsif l.start_with? "**** "
+        parse_log << "- H4 detected."
+        content_html += close_list_if_needed.call inside_ul, inside_ol
+        inside_ol = false
+        inside_ul = false
+        formatted_html = __docs_line_to_html__ l, parse_log
+        link_id = text_to_id.call l
+        # toc_html += "<a href='##{link_id}'>#{formatted_html}</a></br>\n"
+        content_html += "<h4>#{__docs_line_to_html__ l, parse_log}</h4>\n"
       elsif l.strip.length == 0 && !inside_pre
         # do nothing
       elsif l.start_with? "#+begin_src"
@@ -451,6 +469,8 @@ S
           l = l[3..-1]
         elsif l.split(".")[0].length == 3
           l = l[4..-1]
+        elsif l.split(".")[0].length == 4
+          l = l[5..-1]
         end
 
         content_html << "<li>#{__docs_line_to_html__ l, parse_log}</li>\n"
@@ -493,10 +513,13 @@ S
         end
       end
     end
-    toc += "</ul>"
+    toc_html += "</ul>"
 
-    final_html = (html_string.gsub "{{toc}}", toc)
-    final_html = (final_html.gsub "{{content}}", content_html)
+    final_html = html_start_to_toc_start +
+                 toc_html +
+                 html_toc_end_to_content_start +
+                 content_html +
+                 html_content_end_to_html_end
 
     {
       original: string,
@@ -504,15 +527,30 @@ S
       parse_log: parse_log
     }
   rescue Exception => e
-    $gtk.write_file 'docs/parse_log.txt', (parse_log.join "\n")
+    $gtk.write_file_root 'docs/parse_log.txt', (parse_log.join "\n")
     raise "* ERROR in Docs::__docs_to_html__. #{e}"
   end
 
   def __docs_line_to_html__ line, parse_log
-    line = line.gsub "* DOCS: ", "" if line.start_with? "* DOCS: "
-    line = line.gsub "* ", ""       if line.start_with? "* "
-    line = line.gsub "** ", ""      if line.start_with? "** "
-    line = line.gsub "*** ", ""     if line.start_with? "*** "
+    parse_log << "- Determining if line is a header."
+    if line.start_with? "**** "
+      line = line.gsub "**** ", ""
+      parse_log << "- Line contains ~**** ~... gsub-ing empty string"
+    elsif line.start_with? "*** "
+      line = line.gsub "*** ", ""
+      parse_log << "- Line contains ~*** ~... gsub-ing empty string"
+    elsif line.start_with? "** "
+      line = line.gsub "** ", ""
+      parse_log << "- Line contains ~** ~... gsub-ing empty string"
+    elsif line.start_with? "* "
+      line = line.gsub "* ", ""
+      parse_log << "- Line contains ~* ~... gsub-ing empty string"
+    elsif line.start_with? "* DOCS: "
+      line = line.gsub "* DOCS: ", ""
+      parse_log << "- Line contains ~* DOCS:~... gsub-ing empty string"
+    else
+      parse_log << "- Line does not appear to be a header."
+    end
 
     tilde_count = line.count "~"
     line_has_link_marker = (line.include? "[[") && (line.include? "]]")

@@ -31,6 +31,23 @@ This function returns the width and height of a string.
 #+end_src
 S
   end
+
+  def docs_write_file
+    <<-S
+* DOCS: ~GTK::Runtime#write_file~
+This function takes in two parameters. The first paramter is the file path and assumes the the game
+directory is the root. The second parameter is the string that will be written. The method overwrites whatever
+is currently in the file. Use ~GTK::Runtime#append_file~ to append to the file as opposed to overwriting.
+
+#+begin_src ruby
+  def tick args
+    if args.inputs.mouse.click
+      args.gtk.write_file "last-mouse-click.txt", "Mouse was clicked at \#{args.state.tick_count}."
+    end
+  end
+#+end_src
+S
+  end
 end
 
 class GTK::Runtime
