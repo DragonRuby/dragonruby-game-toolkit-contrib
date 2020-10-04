@@ -431,6 +431,10 @@ S
           @command_history_index -= 1
           self.current_input_str = @command_history[@command_history_index].dup
         end
+      elsif args.inputs.keyboard.key_down.left
+        prompt.move_cursor_left
+      elsif args.inputs.keyboard.key_down.right
+        prompt.move_cursor_right
       elsif inputs_scroll_up_full? args
         scroll_up_full
       elsif inputs_scroll_down_full? args
