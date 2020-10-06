@@ -149,6 +149,33 @@ Here is an example:
 
 S
   end
+
+  def docs_screenshots
+    <<-S
+* DOCS: ~GTK::Outputs#screenshots~
+
+Add a hash to this collection to take a screenshot and save as png file.
+The keys of the hash can be provided in any order.
+
+#+begin_src
+  def tick args
+    args.outputs.screenshots << {
+      x: 0, y: 0, w: 100, h: 100,    # Which portion of the screen should be captured
+      path: 'screenshot.png',        # Output path of PNG file (inside game directory)
+      r: 255, g: 255, b: 255, a: 0   # Optional chroma key
+    }
+  end
+#+end_src
+
+** Chroma key (Making a color transparent)
+
+By specifying the r, g, b and a keys of the hash you change the transparency of a color in the resulting PNG file.
+This can be useful if you want to create files with transparent background like spritesheets.
+The transparency of the color specified by ~r~, ~g~, ~b~ will be set to the transparency specified by ~a~.
+
+The example above sets the color white (255, 255, 255) as transparent.
+S
+  end
 end
 
 class GTK::Outputs
