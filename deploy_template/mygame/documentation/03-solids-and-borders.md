@@ -2,7 +2,7 @@
 
 Solids and Borders are great to use as place holders for sprites.
 
-## Sample Apps Releated to Solid/Borders Usage (ordered by size of codebase increasing)
+## Sample Apps Related to Solid/Borders Usage (ordered by size of codebase increasing)
 
 - 01_api_03_rects
 - 01_api_99_tech_demo (includes recording)

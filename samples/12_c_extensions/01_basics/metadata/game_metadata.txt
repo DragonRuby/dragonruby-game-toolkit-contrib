@@ -1,0 +1,5 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=cbasics
+gametitle=C Basics
+version=1.0

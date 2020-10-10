@@ -14,6 +14,7 @@ body {
 }
 
 a {
+    word-wrap: break-word;
     color: #0077CC;
     text-decoration: none;
 }
@@ -46,7 +47,14 @@ h3 {
     border-bottom: solid 1px silver;
 }
 
+h4 {
+    font-size: 14px;
+    border-bottom: solid 1px silver;
+}
+
+
 img {
+    width: 100%;
     padding: 2px;
     max-width: 640px;
     max-height: 320px;
@@ -84,7 +92,7 @@ hr:before {
 pre {
     border: solid 1px silver;
     padding: 10px;
-    font-size: 16px;
+    font-size: 12px;
     white-space: pre-wrap;
     white-space: -moz-pre-wrap;
     white-space: -pre-wrap;
@@ -117,4 +125,28 @@ iframe {
 
 blockquote {
     font-style: italic;
+}
+
+#toc {
+    font-size: smaller;
+}
+
+@media only screen and (min-width: 1280px) {
+    #content {
+        width: 720px;
+        max-width: 720px;
+        padding-left: 310px;
+    }
+
+    #toc {
+        border: solid 1px silver;
+        padding: 10px;
+        padding-bottom: 30px;
+        position: fixed;
+        width: 400px;
+        height: 90%;
+        left: 10px;
+        top: 10px;
+        overflow-y: scroll;
+    }
 }

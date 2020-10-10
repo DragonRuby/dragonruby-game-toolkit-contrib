@@ -53,11 +53,13 @@ S
       final_string += k.docs_all
     end
 
+    final_string += "\n" + (($gtk.read_file_root "docs/source.txt") || "")
+
     html_parse_result = (__docs_to_html__ final_string)
 
-    $gtk.write_file 'docs/docs.txt', "#{final_string}"
-    $gtk.write_file 'docs/docs.html', html_parse_result[:html]
-    $gtk.write_file 'docs/parse_log.txt', (html_parse_result[:parse_log].join "\n")
+    $gtk.write_file_root 'docs/docs.txt', "#{final_string}"
+    $gtk.write_file_root 'docs/docs.html', html_parse_result[:html]
+    $gtk.write_file_root 'docs/parse_log.txt', (html_parse_result[:parse_log].join "\n")
 
     log "* INFO: All docs have been exported to docs/docs.txt."
     log "* INFO: All docs have been exported to docs/docs.html."

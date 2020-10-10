@@ -8,7 +8,7 @@
 module GTK
   class Console
     class Prompt
-      attr_accessor :current_input_str, :font_style, :console_text_width
+      attr_accessor :current_input_str, :font_style, :console_text_width, :last_input_str, :last_input_str_changed
 
       def initialize(font_style:, text_color:, console_text_width:)
         @prompt = '-> '
@@ -18,22 +18,43 @@ module GTK
         @cursor_color = Color.new [187, 21, 6]
         @console_text_width = console_text_width
 
+        @cursor_position = 0
+
         @last_autocomplete_prefix = nil
         @next_candidate_index = 0
       end
 
+      def current_input_str=(str)
+        @current_input_str = str
+        @cursor_position = str.length
+      end
+
       def <<(str)
-        @current_input_str << str
+        @current_input_str = @current_input_str[0...@cursor_position] + str + @current_input_str[@cursor_position..-1]
+        @cursor_position += str.length
+        @current_input_changed_at = Kernel.global_tick_count
         reset_autocomplete
       end
 
       def backspace
-        @current_input_str.chop!
+        return if current_input_str.length.zero? || @cursor_position.zero?
+
+        @current_input_str = @current_input_str[0...(@cursor_position - 1)] + @current_input_str[@cursor_position..-1]
+        @cursor_position -= 1
         reset_autocomplete
+      end
+
+      def move_cursor_left
+        @cursor_position -= 1 if @cursor_position > 0
+      end
+
+      def move_cursor_right
+        @cursor_position += 1 if @cursor_position < current_input_str.length
       end
 
       def clear
         @current_input_str = ''
+        @cursor_position = 0
         reset_autocomplete
       end
 
@@ -111,7 +132,19 @@ S
 
       def render(args, x:, y:)
         args.outputs.reserved << font_style.label(x: x, y: y, text: "#{@prompt}#{current_input_str}", color: @text_color)
-        args.outputs.reserved << font_style.label(x: x - 2, y: y + 3, text: (" " * (@prompt.length + current_input_str.length)) + "|", color: @cursor_color)
+        args.outputs.reserved << font_style.label(x: x - 4, y: y + 3, text: (" " * (@prompt.length + @cursor_position)) + "|", color: @cursor_color)
+      end
+
+      def tick
+        if (@current_input_changed_at) &&
+           (@current_input_changed_at < Kernel.global_tick_count) &&
+           (@last_input_str != @current_input_str)
+          @last_input_str_changed = true
+          @last_input_str = "#{@current_input_str}"
+          @current_input_changed_at = nil
+        else
+          @last_input_str_changed = false
+        end
       end
 
       private

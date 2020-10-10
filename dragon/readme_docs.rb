@@ -240,13 +240,16 @@ Here's a fun Ruby thing: ~args.state.rotation ||= 0~ is shorthand for
 nice way to embed your initialization code right next to where you
 need the variable.
 
-~args.state~ is a place you can hang your own data and have it survive
-past the life of the function call. In this case, the current rotation
-of our sprite, which is happily spinning at 60 frames per second. If
-you don't specify rotation (or alpha, or color modulation, or a source
-rectangle, etc), DragonRuby picks a reasonable default, and the array
-is ordered by the most likely things you need to tell us: position,
-size, name.
+
+~args.state~ is a place you can hang your own data. It's an open data
+structure that allows you to define properties that are arbitrarily
+nested. You don't need to define any kind of class.
+
+In this case, the current rotation of our sprite, which is happily
+spinning at 60 frames per second. If you don't specify rotation (or
+alpha, or color modulation, or a source rectangle, etc), DragonRuby
+picks a reasonable default, and the array is ordered by the most
+likely things you need to tell us: position, size, name.
 
 ** There Is No Delta Time
 
@@ -335,79 +338,43 @@ around. Experiment a little. Add a few more things and have them
 interact in small ways. Want something to go away? Just don't add it
 to ~args.output~ anymore.
 
-** IMPORTANT: Go Through All Of The Sample Apps! Study Them Thoroughly!!
+* IMPORTANT: Go through all of the sample apps! Study them thoroughly!! No really, you should definitely do this!
 
 Now that you've completed the Hello World tutorial. Head over to the
 `samples` directory. It is very very important that you study the
 sample apps thoroughly! Go through them in order. Here is a short
 description of each sample app.
 
-1. 00_beginner_ruby_primer: This is an interactive tutorial that shows how to render ~solid~s, animated ~sprite~s, ~label~s.
-2. 00_intermediate_ruby_primer: This is a set of sample Ruby snippets that give you a high level introduction to the programming language.
-3. 01_api_01_labels: Various ways to render ~label~s.
-4. 01_api_02_lines: Various ways to render ~line~s.
-5. 01_api_03_rects: Sample app shows various ways to render ~solid~s and ~border~s.
-6. 01_api_04_sprites: Sample app shows various ways to render ~sprite~s.
-7. 01_api_05_keyboard: Hows how to get keyboard input from the user.
-8. 01_api_06_mouse: Hows how to get mouse mouse position.
-9. 01_api_07_point_to_rect: How to get mouse input from the user and shows collision/hit detection.
-10. 01_api_08_rect_to_rect: Hit detection/collision between two rectangles.
-11. 01_api_10_controller: Interaction with a USB/Bluetooth controller.
-12. 01_api_99_tech_demo: All the different render primitives along with using ~render_targets~.
-13. 02_collision_01_simple: Collision detection with dynamically moving bodies.
-14. 02_collision_02_moving_objects: Collision detection between many primitives, simple platformer physics, and keyboard input.
-15. 02_collision_03_entities: Collision with entities and serves as a small introduction to ECS (entity component system).
-16. 02_collision_04_ramp_with_debugging: How ramp trajectory can be calculated.
-17. 02_collision_05_ramp_with_debugging_two: How ramp trajectory can be calculated.
-18. 02_sprite_animation_and_keyboard_input: How to animate a sprite based off of keyboard input.
-19. 03_mouse_click: How to determine what direction/vector a mouse was clicked relative to a player.
-20. 04_sounds: How to play sounds and work with buttons.
-21. 05_mouse_move: How to determine what direction/vector a mouse was clicked relative to a player.
-22. 05_mouse_move_paint_app: Represents a simple paint app.
-23. 05_mouse_move_tile_editor: A starting point for a tile editor.
-24. 06_coordinate_systems: Shows the two origin systems within Game Toolkit where the origin is in the center and where the origin is at the bottom left.
-25. 07_render_targets: Shows a powerful concept called ~render_target~s. You can use this to programatically create sprites (it's also useful for representing parts of a scene as if it was a view port/camera).
-26. 07_render_targets_advanced: Advanced usage of ~render_target~s.
-27. 08_platformer_collisions: Axis aligned collision along with platformer physics.
-28. 08_platformer_collisions_metroidvania: How to save map data and place sprites live within a game.
-29. 08_platformer_jumping_inertia: Jump physics and how inertia affects collision.
-30. 09_controller_analog_usage_advanced_sprites: Extended properties of a ~sprite~ and how to change the rotation anchor point and render a subset/tile of a sprite.
-31. 09_sprite_animation_using_tile_sheet: How to perform sprite animates using a tile sheet.
-32. 10_save_load_game: Save and load game data.
-33. 11_coersion_of_primitives: How primitives of one specific type can be rendered as another primitive type.
-34. 11_hash_primitives: How primitives can be represented using a ~Hash~.
-35. 12_controller_input_sprite_sheet_animations: How to leverage vectors to move a player around the screen.
-36. 12_top_down_area: How to render a top down map and how to manage collision of a player.
-37. 13_01_easing_functions: How to use lerping functions to define animations/movement.
-38. 13_02_cubic_bezier: How to create a bezier curve using lines.
-39. 13_03_easing_using_spline: How a collection of bezier curves can be used to define an animation.
-40. 13_04_parametric_enemy_movement: How to define the movement of enemies and projectiles using lerping/parametric functions.
-41. 14_sprite_limits: Upper limit for how many sprites can be rendered to the screen.
-42. 14_sprite_limits_static_references: Upper limit for how many sprites can be rendered to the screen using ~static~ output collections (which are updated by reference as opposed to by value).
-43. 15_collision_limits: How many collisions can be processed across many primitives.
-44. 18_moddable_game: How you can make a game where content is authored by the player (modding support).
-45. 19_lowrez_jam: How to use ~render_targets~ to create a low resolution game.
-46. 20_roguelike_starting_point: A starting point for a roguelike and explores concepts such as line of sight.
-47. 20_roguelike_starting_point_two: A starting point for a roguelike where sprites are provided from a tile map/tile sheet.
-48. 21_mailbox_usage: How to do interprocess communication.
-49. 22_trace_debugging: Debugging techniques and tracing execution through your game.
-50. 22_trace_debugging_classes: Debugging techniques and tracing execution through your game.
-51. 23_hexagonal_grid: How to make a tactical grid/map made of hexagons.
-52. 23_isometric_grid: How to make a tactical grid/map made of isometric sprites.
-53. 24_http_example: How to make http requests.
-54. 25_3d_experiment_01_square: How to create 3D objects.
-55. 26_jam_craft: Starting point for crafting game. It also shows how to customize the mouse cursor.
-56. 99_sample_game_basic_gorillas: Reference implementation of a full game. Topics covered: physics, keyboard input, collision, sprite animation.
-57. 99_sample_game_clepto_frog: Reference implementation of a full game. Topics covered: camera control, spring/rope physics, scene orchestration.
-58. 99_sample_game_dueling_starships: Reference implementation that shows local multiplayer. Topics covered: vectors, particles, friction, inertia.
-59. 99_sample_game_flappy_dragon: Reference implementation that is a clone of Flappy Bird. Topics covered: scene orchestration, collision, sound, sprite animations, lerping.
-60. 99_sample_game_pong: Reference implementation of pong.
-61. 99_sample_game_return_of_serenity: Reference implementation of low resolution story based game.
-62. 99_sample_game_the_little_probe: Reference implementation of a full game. Topics covered: Arbitrary collision detection, loading map data, bounce/ball physics.
-63. 99_sample_nddnug_workshop: Reference implementation of a full game. Topics covered: vectors, controller input, sound, trig functions.
-64. 99_sample_snakemoji: Shows that Ruby supports coding with emojis.
-65. 99_zz_gtk_unit_tests: A collection of unit tests that exercise parts of DragonRuby's API.
+** Guided Samples
 
+1. ~samples/00_learn_ruby_optional~: This directory contains sample apps that will help you learn the language.
+2. ~samples/01_rendering_basics~: This set of samples will show you how to render basic primitives such as ~labels~, ~solids~, ~borders~, ~lines~, ~sprites~, and how to play ~sounds~.
+3. ~samples/02_input_basics~: This set of samples show you how to accept input from the ~mouse~, ~keyboard~, and ~controllers~.
+4. ~samples/03_rendering_sprites~: This set of samples shows you all the different ways to render sprites (including how to use a sprite sheet).
+4. ~samples/04_physics_and_collision~: This set of samples shows how to do various types of collisions and physics.
+5. ~samples/05_mouse~: This set of samples show more advanced usages of the mouse.
+6. ~samples/06_save_load~: This set of samples show how to save and load game data.
+7. ~samples/07_advanced_rendering~: This set of samples show how to programmatically render sprites using render targets.
+8. ~samples/08_tweening_lerping_easing_functions~: This set of samples show how to perform animations.
+9. ~samples/09_performance~: This set of samples show how to handle performance issues when a large number of sprites on the screen.
+10. ~samples/10_advanced_debugging~: This set of samples show how advanced debugging techniques and testing techniques.
+11. ~samples/11_http~: This set of samples show how use http.
+
+** Sample Games
+
+There are samples that contain the path ~samples/99_*~. The sample apps that are prefixed with ~99_~ show non-trivial implemementations for a real game:
+
+1. 3D Cube: Shows how to do faux 3D in DragonRuby.
+2. Dueling Starships: A two player top-down versus game where each player controls a ship.
+3. Flappy Dragon: DragonRuby's clone of Flappy Bird.
+4. Pong: A simple implementation of the game Pong.
+5. Snakemoji: The classic game of Snake but with all of the code written using emojis (sometimes you just have to have a little fun).
+6. Solar System: A simulation of our solar system.
+7. Crafting Starting Point: A starting point for those that want to build a crafting game.
+8. Dev Tools: A set of sample apps that show how you can extend DragonRuby's Console, starting point for a tile editor, and a starting point for a paint app.
+9. LOWREZ: Sample apps that show how to render at different resolutions.
+10. RPG: Various sample apps that show how to create narrative, topdown, tactical grid-based, and roguelike RPGs.
+11. Platformers: Various sample apps that show how to create different kinds of physics/collision based platformers.
 S
     end
 
@@ -441,11 +408,11 @@ make it look like this:
 NOTE: Remove the ~#~ at the beginning of each line.
 
 #+begin_src
-devid=bob
-devtitle=Bob The Game Developer
-gameid=mygame
-gametitle=My Game
-version=0.1
+  devid=bob
+  devtitle=Bob The Game Developer
+  gameid=mygame
+  gametitle=My Game
+  version=0.1
 #+end_src
 
 The ~devid~ property is the username you use to log into Itch.io.
@@ -459,7 +426,7 @@ The ~version~ can be any ~major.minor~ number format.
 Open up the terminal and run this from the command line:
 
 #+begin_src
-./dragonruby-publish --only-package mygame
+  ./dragonruby-publish --only-package mygame
 #+end_src
 
 (if you're on Windows, don't put the "./" on the front. That's a Mac and
@@ -474,7 +441,7 @@ For the HTML version of your game after you upload it. Check the checkbox labele
 For subsequent updates you can use an automated deployment to Itch.io:
 
 #+begin_src
-./dragonruby-publish mygame
+  ./dragonruby-publish mygame
 #+end_src
 
 DragonRuby will package _and publish_ your game to itch.io! Tell your
@@ -487,7 +454,7 @@ S
 
     def docs_dragonruby_philosophy
       <<-S
-** DragonRuby's Philosophy
+* DragonRuby's Philosophy
 
 The following tenants of DragonRuby are what set us apart from other
 game engines. Given that Game Toolkit is a relatively new engine,
@@ -495,7 +462,7 @@ there are definitely features that are missing. So having a big check
 list of "all the cool things" is not this engine's forte. This is
 compensated with a strong commitment to the following principals.
 
-*** Challenge The Status Quo
+** Challenge The Status Quo
 
 Game engines of today are in a local maximum and don't take into
 consideration the challenges of this day and age. Unity and GameMaker
@@ -509,7 +476,22 @@ It's a hard pill to swallow, but forget blindly accepted best
 practices and try to figure out the underlying motivation for a
 specific approach to game development. Collaborate with us.
 
-*** Release Often And Quickly
+** Continuity of Design
+
+There is a programming idiom in software called "the pit of
+success". The term normalizes up front pain as a necessity in the
+(hopes that the investment will yield dividends "when you become
+successful"). This results in more "Enterprise TM" code upfront, and
+makes it more difficult to get started when you are new to programming.
+
+DragonRuby's philosophy is to provide a spectrum across the "make it
+fast" vs "make it right" spectrum and provide incremental, intuitive
+transitions between points on that spectrum. This is captured in how
+render primitives can be represented as tuples/arrays, hashes, open
+structs/entities, and then finally classes (as opposed to forcing devs
+to use classes upfront).
+
+** Release Often And Soon
 
 The biggest mistake game devs make is spending too much time in
 isolation building their game. Release something, however small, and
@@ -526,7 +508,7 @@ Remember:
 Real artists ship.
 #+end_quote
 
-*** Sustainable And Ethical Monetization
+** Sustainable And Ethical Monetization
 
 We all aspire to put food on the table doing what we love. Whether it
 is building games, writing tools to support game development, or
@@ -536,7 +518,7 @@ Charge a fair amount of money for the things you create. It's expected
 and encouraged within the community. Give what you create away for
 free to those that can't afford it.
 
-*** Sustainable And Ethical Open Source
+** Sustainable And Ethical Open Source
 
 This goes hand in hand with sustainable and ethical monetization. The
 current state of open source is not sustainable. There is an immense
@@ -547,7 +529,7 @@ still trying to figure out the best solution).
 So, don't be "that guy" in the Discord that says "DragonRuby should be
 free and open source!" You will be personally flogged by Amir.
 
-*** People Over Entities
+** People Over Entities
 
 We prioritize the endorsement of real people over faceless
 entities. This game engine, and other products we create, are not
@@ -555,13 +537,13 @@ insignificant line items of a large company. And you aren't a generic
 "commodity" or "corporate resource". So be active in the community
 Discord and you'll reap the benefits as more devs use DragonRuby.
 
-*** Building A Game Should Be Fun And Bring Happiness
+** Building A Game Should Be Fun And Bring Happiness
 
 We will prioritize the removal of pain. The aesthetics of Ruby make it
 such a joy to work with, and we want to capture that within the
 engine.
 
-*** Real World Application Drives Features
+** Real World Application Drives Features
 
 We are bombarded by marketing speak day in and day out. We don't do
 that here. There are things that are really great in the engine, and
@@ -879,25 +861,25 @@ sure_ you've initialized a default value.
 #+begin_src
   def tick args
     # initialize your game state ONCE
-    args.player.x  ||= 0
-    args.player.y  ||= 0
-    args.player.hp ||= 100
+    args.state.player.x  ||= 0
+    args.state.player.y  ||= 0
+    args.state.player.hp ||= 100
 
     # increment the x position of the character by one every frame
-    args.player.x += 1
+    args.state.player.x += 1
 
     # Render a sprite with a label above the sprite
     args.outputs.sprites << [
-      args.player.x,
-      args.player.y,
+      args.state.player.x,
+      args.state.player.y,
       32, 32,
       "player.png"
     ]
 
     args.outputs.labels << [
-      args.player.x,
-      args.player.y - 50,
-      args.player.hp
+      args.state.player.x,
+      args.state.player.y - 50,
+      args.state.player.hp
     ]
   end
 #+end_src
@@ -956,11 +938,9 @@ Under DragonRuby LLP, we offer a number of products (with more on the
 way):
 
 - Game Toolkit (GTK): A 2D game engine that is compatible with modern
-  gaming platforms. [Home Page]() [FAQ Page]()
+  gaming platforms.
 - RubyMotion (RM): A compiler toolchain that allows you to build native, cross-platform mobile
-  apps. [Home Page]() [FAQ Page]()
-- Commandline Toolkit (CTK): A zero dependency, zero installation Ruby
-  environment that works on Windows, Mac, and Linux. [Home Page]() [FAQ Page]()
+  apps. [[http://rubymotion.com]]
 
 All of the products above leverage a shared core called DragonRuby.
 
@@ -979,7 +959,7 @@ identifier huh?
 The response to this question requires a few subparts. First we need
 to clarify some terms. Specifically _language specification_ vs _runtime_.
 
-*** Okay... so what is the difference between a language specification and a runtime?
+**** Okay... so what is the difference between a language specification and a runtime?
 
 A runtime is an _implementation_ of a language specification. When
 people say "Ruby," they are usually referring to "the Ruby 3.0+ language
@@ -988,13 +968,13 @@ specification implemented via the CRuby/MRI Runtime."
 But, there are many Ruby Runtimes: CRuby/MRI, JRuby, Truffle, Rubinius, Artichoke,
 and (last but certainly not least) DragonRuby.
 
-*** Okay... what language specification does DragonRuby use then?
+**** Okay... what language specification does DragonRuby use then?
 
 DragonRuby's goal is to be compliant with the ISO/IEC 30170:2012 standard. It's
 syntax is Ruby 2.x compatible, but also contains semantic changes that help
 it natively interface with platform specific libraries.
 
-*** So... why another runtime?
+**** So... why another runtime?
 
 The elevator pitch is:
 
@@ -1003,7 +983,7 @@ within the runtime allows us to target platforms no other Ruby can
 target: PC, Mac, Linux, Raspberry Pi, WASM, iOS, Android, Nintendo
 Switch, PS4, Xbox, and Scadia.
 
-*** What does Multilevel Cross-platform mean?
+**** What does Multilevel Cross-platform mean?
 
 There are complexities associated with targeting all the platforms we
 support. Because of this, the runtime had to be architected in such a
@@ -1040,13 +1020,87 @@ implementations of Ruby; provide fast, native code execution
 on proprietary platforms; ensure good separation between these two
 worlds; and provides a means to add new platforms without going insane.
 
-*** Cool cool. So given that I understand everything to this point, can we answer the original question? What is DragonRuby?
+**** Cool cool. So given that I understand everything to this point, can we answer the original question? What is DragonRuby?
 
 DragonRuby is a Ruby runtime implementation that takes all the lessons
 we've learned from MRI/CRuby, and merges it with the latest and greatest
 compiler and OSS technologies.
 
-** Frequent Comments
+*** How is DragonRuby different than MRI?
+
+DragonRuby supports a subset of MRI apis. Our target is to support all
+of mRuby's standard lib. There are challenges to this given the number
+of platforms we are trying to support (specifically console).
+
+**** Does DragonRuby support Gems?
+
+DragonRuby does not support gems because that requires the
+installation of MRI Ruby on the developer's machine (which is a
+non-starter given that we want DragonRuby to be a zero dependency
+runtime). While this seems easy for Mac and Linux, it is much harder
+on Windows and Raspberry Pi. mRuby has taken the approach of having a
+git repository for compatible gems and we will most likely follow
+suite: [[https://github.com/mruby/mgem-list]].
+
+**** Does DragonRuby have a REPL/IRB?
+
+You can use DragonRuby's Console within the game to inspect object and
+execute small pieces of code. For more complex pieces of code create a
+file called ~repl.rb~ and put it in ~mygame/app/repl.rb~:
+
+- Any code you write in there will be executed when you change the file. You can organize different pieces of code using the ~repl~ method:
+
+#+begin_src ruby
+  repl do
+    puts "hello world"
+    puts 1 + 1
+  end
+#+end_src
+
+- If you use the `repl` method, the code will be executed and the DragonRuby Console will automatically open so you can see the results (on Mac and Linux, the results will also be printed to the terminal).
+
+- All ~puts~ statements will also be saved to ~logs/log.txt~. So if you want to stay in your editor and not look at the terminal, or the DragonRuby Console, you can ~tail~ this file.
+
+4. To ignore code in ~repl.rb~, instead of commenting it out, prefix ~repl~ with the letter ~x~ and it'll be ignored.
+
+#+begin_src ruby
+  xrepl do # <------- line is prefixed with an "x"
+    puts "hello world"
+    puts 1 + 1
+  end
+
+  # This code will be executed when you save the file.
+  repl do
+    puts "Hello"
+  end
+
+  repl do
+    puts "This code will also be executed."
+  end
+
+  # use xrepl to "comment out" code
+  xrepl do
+    puts "This code will not be executed because of the x infront of repl".
+  end
+#+end_src
+
+**** Does DragonRuby support ~pry~ or have any other debugging facilities?
+
+~pry~ is a gem that assumes you are using the MRI Runtime (which is
+incompatible with DragonRuby). Eventually DragonRuby will have a pry
+based experience that is compatible with a debugging infrastructure
+called LLDB. Take the time to read about LLDB as it shows the
+challenges in creating something that is compatible.
+
+You can use DragonRuby's replay capabilities to troubleshoot:
+
+1. DragonRuby is hot loaded which gives you a very fast feedback loop (if the game throws an exception, it's because of the code you just added).
+2. Use ~./dragonruby mygame --record~ to create a game play recording that you can use to find the exception (you can replay a recoding by executing ~./dragonruby mygame --replay last_replay.txt~ or through the DragonRuby Console using ~$gtk.recording.start_replay "last_replay.txt"~.
+3. DragonRuby also ships with a unit testing facility. You can invoke the following command to run a test: ~./dragonruby . --eval some_ruby_file.rb --no-tick~.
+4. Get into the habit of adding debugging facilities within the game itself. You can add drawing primitives to ~args.outputs.debug~ that will render on top of your game but will be ignored in a production release.
+5. Debugging something that runs at 60fps is (imo) not that helpful. The exception you are seeing could have been because of a change that occurred many frames ago.
+
+** Frequent Comments About Ruby as a Language Choice
 
 *** But Ruby is dead.
 
@@ -1097,6 +1151,8 @@ looking for (or creating) ways to _sustainably_ open source everything we do.
 If you have ideas on how we can do this, email us!
 
 If the reason above isn't sufficient, then definitely use something else.
+
+All this being said, we do have parts of the engine open sourced on GitHub: [[https://github.com/dragonruby/dragonruby-game-toolkit-contrib/]]
 
 *** DragonRuby is for pay. You should offer a free version.
 
