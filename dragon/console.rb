@@ -47,12 +47,12 @@ module GTK
     end
 
     def save_history
-      $gtk.ffi_file.storefile(@history_fname, @command_history.reverse.join("\n"))
+      $gtk.ffi_file.write_root @history_fname, (@command_history.reverse.join "\n")
     end
 
     def load_history
       @command_history.clear
-      str = $gtk.ffi_file.loadfile(@history_fname)
+      str = $gtk.ffi_file.read @history_fname
       return if str.nil?  # no history to load.
 
       str.chomp!("\n")  # Don't let endlines at the end cause extra blank line.
@@ -265,6 +265,36 @@ S
       args.inputs.keyboard.key_down.any? console_toggle_keys
     end
 
+    def try_search_docs exception
+      string_e = "#{exception}"
+      @last_command_errored = true
+
+      if (string_e.include? "wrong number of arguments")
+        method_name = ((string_e.split ":")[0].gsub "'", "")
+        if !(method_name.include? " ")
+          results = (Kernel.__docs_search_results__ method_name)
+          if !results.include? "* DOCS: No results found."
+            puts (results.join "\n")
+            puts <<-S
+* INFO: #{results.length} matches(s) found in DOCS for ~#{method_name}~ (see above).
+You can search the documentation yourself using the following command in the Console:
+#+begin_src ruby
+  docs_search \"#{method_name}\"
+#+end_src
+S
+            log_once_info :exported_search_results, "The search results above has been seen in logs/puts.txt and docs/search_results.txt."
+          end
+        end
+      end
+    rescue Exception => se
+      puts <<-S
+* FATAL: ~GTK::Console#try_search_docs~
+There was an exception searching for docs (~GTK::Console#try_search_docs~). You might want to let DragonRuby know about this.
+** INNER EXCEPTION
+#{se}
+S
+    end
+
     def eval_the_set_command
       cmd = current_input_str.strip
       if cmd.length != 0
@@ -291,18 +321,8 @@ S
             end
             @last_command_errored = false
           rescue Exception => e
-            string_e = "#{e}"
-            puts "* EXCEPTION: #{e}"
-            log  "* EXCEPTION: #{e}"
-            @last_command_errored = true
-            if (string_e.include? "wrong number of arguments")
-              method_name = (string_e.split ":")[0].gsub "'", ""
-              results = (Kernel.docs_search method_name).strip
-              if !results.include? "* DOCS: No results found."
-                puts results
-                log results
-              end
-            end
+            try_search_docs e
+            puts  "* EXCEPTION: #{e}"
           end
         end
       end

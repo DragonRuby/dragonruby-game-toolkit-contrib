@@ -3,6 +3,9 @@
 # MIT License
 # trace.rb has been released under MIT (*only this file*).
 
+# Contributors outside of DragonRuby who also hold Copyright:
+# - Dan Healy: https://github.com/danhealy
+
 module GTK
   module Trace
     IGNORED_METHODS = [

@@ -1,10 +1,19 @@
 #!/bin/sh
-DRB_ROOT=../../..
-mkdir -p build.dir
 
-$DRB_ROOT/dragonruby-bind --output=build.dir/ext-bindings.c app/ext.c
+OSTYPE=`uname -s`
+if [ "x$OSTYPE" = "xDarwin" ]; then
+  PLATFORM=macos
+  DLLEXT=dylib
+else
+  PLATFORM=linux-amd64
+  DLLEXT=so
+fi
+
+DRB_ROOT=../../..
+mkdir -p native/$PLATFORM
+
+$DRB_ROOT/dragonruby-bind --output=native/ext-bindings.c app/ext.c
 clang \
   -isystem $DRB_ROOT/include -I. \
-  -undefined dynamic_lookup \
-  -fPIC -shared build.dir/ext-bindings.c -o build.dir/ext.lib
+  -fPIC -shared native/ext-bindings.c -o native/$PLATFORM/ext.$DLLEXT
 

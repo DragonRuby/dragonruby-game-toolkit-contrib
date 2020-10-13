@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>DragonRuby Game Toolkit Documentation</title>
-    <link href="docs.css?ver=1600750589" rel="stylesheet" type="text/css" media="all">
+    <link href="docs.css?ver=1602116477" rel="stylesheet" type="text/css" media="all">
   </head>
   <body>
     <div id='toc'>
@@ -14,20 +14,22 @@
 <li><a href='#--getting-started-tutorial'>Getting Started Tutorial</a></li>
 <li><a href='#--important--go-through-all-of-the-sample-apps!-study-them-thoroughly!!-no-really,-you-should-definitely-do-this!'>IMPORTANT: Go through all of the sample apps! Study them thoroughly!! No really, you should definitely do this!</a></li>
 <li><a href='#--deploying-to-itch.io'>Deploying To Itch.io</a></li>
+<li><a href='#--deploying-to-mobile-devices'>Deploying To Mobile Devices</a></li>
 <li><a href='#--dragonruby's-philosophy'>DragonRuby's Philosophy</a></li>
-<li><a href='#--how-to-determine-what-frame-you-are-on'>How To Determine What Frame You Are On</a></li>
-<li><a href='#--how-to-get-current-framerate'>How To Get Current Framerate</a></li>
-<li><a href='#--how-to-render-a-sprite-using-an-array'>How To Render A Sprite Using An Array</a></li>
-<li><a href='#--more-sprite-properties-as-an-array'>More Sprite Properties As An Array</a></li>
-<li><a href='#--different-sprite-representations'>Different Sprite Representations</a></li>
-<li><a href='#--how-to-render-a-label'>How To Render A Label</a></li>
-<li><a href='#--a-colored-label'>A Colored Label</a></li>
-<li><a href='#--extended-label-properties'>Extended Label Properties</a></li>
-<li><a href='#--rendering-a-label-as-a--hash-'>Rendering A Label As A <code>Hash</code></a></li>
-<li><a href='#--getting-the-size-of-a-piece-of-text'>Getting The Size Of A Piece Of Text</a></li>
-<li><a href='#--how-to-play-a-sound'>How To Play A Sound</a></li>
-<li><a href='#--using--args.state--to-store-your-game-state'>Using <code>args.state</code> To Store Your Game State</a></li>
 <li><a href='#--frequently-asked-questions,-comments,-and-concerns'>Frequently Asked Questions, Comments, and Concerns</a></li>
+<li><a href='#--cheatsheet--how-to-determine-what-frame-you-are-on'>CHEATSHEET: How To Determine What Frame You Are On</a></li>
+<li><a href='#--cheatsheet--how-to-get-current-framerate'>CHEATSHEET: How To Get Current Framerate</a></li>
+<li><a href='#--cheatsheet--how-to-render-a-sprite-using-an-array'>CHEATSHEET: How To Render A Sprite Using An Array</a></li>
+<li><a href='#--cheatsheet--more-sprite-properties-as-an-array'>CHEATSHEET: More Sprite Properties As An Array</a></li>
+<li><a href='#--cheatsheet--different-sprite-representations'>CHEATSHEET: Different Sprite Representations</a></li>
+<li><a href='#--cheatsheet--how-to-render-a-label'>CHEATSHEET: How To Render A Label</a></li>
+<li><a href='#--cheatsheet--a-colored-label'>CHEATSHEET: A Colored Label</a></li>
+<li><a href='#--cheatsheet--extended-label-properties'>CHEATSHEET: Extended Label Properties</a></li>
+<li><a href='#--cheatsheet--rendering-a-label-as-a--hash-'>CHEATSHEET: Rendering A Label As A <code>Hash</code></a></li>
+<li><a href='#--cheatsheet--getting-the-size-of-a-piece-of-text'>CHEATSHEET: Getting The Size Of A Piece Of Text</a></li>
+<li><a href='#--cheatsheet--how-to-play-a-sound'>CHEATSHEET: How To Play A Sound</a></li>
+<li><a href='#--cheatsheet--using--args.state--to-store-your-game-state'>CHEATSHEET: Using <code>args.state</code> To Store Your Game State</a></li>
+<li><a href='#--cheatsheet--troubleshoot-performance'>CHEATSHEET: Troubleshoot Performance</a></li>
 <li><a href='#--docs---gtk--runtime-'>DOCS: <code>GTK::Runtime</code></a></li>
 <li><a href='#--docs---gtk--runtime#reset-'>DOCS: <code>GTK::Runtime#reset</code></a></li>
 <li><a href='#--docs---gtk--runtime#calcstringbox-'>DOCS: <code>GTK::Runtime#calcstringbox</code></a></li>
@@ -94,7 +96,7 @@
 <li><a href='#--mouse---coordinate-systems---main.rb'>Mouse - Coordinate Systems - main.rb</a></li>
 <li><a href='#--save-load---save-load-game---main.rb'>Save Load - Save Load Game - main.rb</a></li>
 <li><a href='#--advanced-rendering---simple-render-targets---main.rb'>Advanced Rendering - Simple Render Targets - main.rb</a></li>
-<li><a href='#--advanced-rendering---render-targets-with-alphas---main.rb'>Advanced Rendering - Render Targets With Alphas - main.rb</a></li>
+<li><a href='#--advanced-rendering---render-targets-with-tile-manipulation---main.rb'>Advanced Rendering - Render Targets With Tile Manipulation - main.rb</a></li>
 <li><a href='#--advanced-rendering---render-target-viewports---main.rb'>Advanced Rendering - Render Target Viewports - main.rb</a></li>
 <li><a href='#--advanced-rendering---render-primitive-hierarchies---main.rb'>Advanced Rendering - Render Primitive Hierarchies - main.rb</a></li>
 <li><a href='#--advanced-rendering---render-primitives-as-hash---main.rb'>Advanced Rendering - Render Primitives As Hash - main.rb</a></li>
@@ -529,6 +531,21 @@ DragonRuby will package _and publish_ your game to itch.io! Tell your friends to
 <p>
 If you make changes to your game, just re-run dragonruby-publish and it'll update the downloads for you.
 </p>
+<h1 id='--deploying-to-mobile-devices'>Deploying To Mobile Devices</h1>
+<p>
+If you have a Pro subscription, you also have the capability to deploy to mobile devices.
+</p>
+<p>
+To deploy to iOS, you need to have a Mac running MacOS Catalina, an iOS device, and an active/paid Developer Account with Apple. From the Console type: <code>$wizards.ios.start</code> and you will be guided through the deployment process.
+</p>
+<p>
+To deploy to Android, you need to have an Android emulator/device, and a environment that is able to run Android SDK. <code>dragonruby-publish</code> will create an APK for you. From there, you can sign the APK and install it to your device. The signing and installation procedure varies from OS to OS. Here's an example of what the command might look like:
+</p>
+<pre>> adb logcat -e mygame # you'll want to run this in a separate terminal
+> keytool -genkey -v -keystore mygame.keystore -alias mygame -keyalg RSA -keysize 2048 -validity 10000
+> apksigner sign --ks mygame.keystore mygame-android.apk
+> adb install mygame-android.apk
+</pre>
 <h1 id='--dragonruby's-philosophy'>DragonRuby's Philosophy</h1>
 <p>
 The following tenants of DragonRuby are what set us apart from other game engines. Given that Game Toolkit is a relatively new engine, there are definitely features that are missing. So having a big check list of "all the cool things" is not this engine's forte. This is compensated with a strong commitment to the following principals.
@@ -596,280 +613,6 @@ We are bombarded by marketing speak day in and day out. We don't do that here. T
 <p>
 We want DragonRuby to *actually* help you build the game you want to build (as opposed to sell you something piece of demoware that doesn't work).
 </p>
-<h1 id='--how-to-determine-what-frame-you-are-on'>How To Determine What Frame You Are On</h1>
-<p>
-There is a property on <code>state</code> called <code>tick_count</code> that is incremented by DragonRuby every time the <code>tick</code> method is called. The following code renders a label that displays the current <code>tick_count</code>.
-</p>
-<pre>def tick args
-  args.outputs.labels << [10, 670, "#{args.state.tick_count}"]
-end
-</pre>
-<h1 id='--how-to-get-current-framerate'>How To Get Current Framerate</h1>
-<p>
-Current framerate is a top level property on the Game Toolkit Runtime and is accessible via <code>args.gtk.current_framerate</code>.
-</p>
-<pre>def tick args
-  args.outputs.labels << [10, 710, "framerate: #{args.gtk.current_framerate.round}"]
-end
-</pre>
-<h1 id='--how-to-render-a-sprite-using-an-array'>How To Render A Sprite Using An Array</h1>
-<p>
-All file paths should use the forward slash <code>/</code> *not* backslash <code></code>. Game Toolkit includes a number of sprites in the <code>sprites</code> folder (everything about your game is located in the <code>mygame</code> directory).
-</p>
-<p>
-The following code renders a sprite with a <code>width</code> and <code>height</code> of <code>100</code> in the center of the screen.
-</p>
-<p>
-<code>args.outputs.sprites</code> is used to render a sprite.
-</p>
-<pre>def tick args
-  args.outputs.sprites << [
-    640 - 50,                 # X
-    360 - 50,                 # Y
-    100,                      # W
-    100,                      # H
-    'sprites/square-blue.png' # PATH
- ]
-end
-</pre>
-<h1 id='--more-sprite-properties-as-an-array'>More Sprite Properties As An Array</h1>
-<p>
-Here are all the properties you can set on a sprite.
-</p>
-<pre>def tick args
-  args.outputs.sprites << [
-    100,                       # X
-    100,                       # Y
-    32,                        # W
-    64,                        # H
-    'sprites/square-blue.png', # PATH
-    0,                         # ANGLE
-    255,                       # ALPHA
-    0,                         # RED_SATURATION
-    255,                       # GREEN_SATURATION
-    0                          # BLUE_SATURATION
-  ]
-end
-</pre>
-<h1 id='--different-sprite-representations'>Different Sprite Representations</h1>
-<p>
-Using ordinal positioning can get a little unruly given so many properties you have control over.
-</p>
-<p>
-You can represent a sprite as a <code>Hash</code>:
-</p>
-<pre>def tick args
-  args.outputs.sprites << {
-    x: 640 - 50,
-    y: 360 - 50,
-    w: 100,
-    h: 100,
-    path: 'sprites/square-blue.png',
-    angle: 0,
-    a: 255,
-    r: 255,
-    g: 255,
-    b: 255,
-    source_x:  0,
-    source_y:  0,
-    source_w: -1,
-    source_h: -1,
-    flip_vertically: false,
-    flip_horizontally: false,
-    angle_anchor_x: 0.5,
-    angle_anchor_y: 1.0
-  }
-end
-</pre>
-<p>
-You can represent a sprite as an <code>object</code>:
-</p>
-<pre># Create type with ALL sprite properties AND primitive_marker
-class Sprite
-  attr_accessor :x, :y, :w, :h, :path, :angle, :a, :r, :g, :b,
-                :source_x, :source_y, :source_w, :source_h,
-                :tile_x, :tile_y, :tile_w, :tile_h,
-                :flip_horizontally, :flip_vertically,
-                :angle_anchor_x, :angle_anchor_y
-
-  def primitive_marker
-    :sprite
-  end
-end
-
-class BlueSquare < Sprite
-  def initialize opts
-    @x = opts[:x]
-    @y = opts[:y]
-    @w = opts[:w]
-    @h = opts[:h]
-    @path = 'sprites/square-blue.png'
-  end
-end
-
-def tick args
-  args.outputs.sprites << (BlueSquare.new x: 640 - 50,
-                                          y: 360 - 50,
-                                          w: 50,
-                                          h: 50)
-end
-</pre>
-<h1 id='--how-to-render-a-label'>How To Render A Label</h1>
-<p>
-<code>args.outputs.labels</code> is used to render labels.
-</p>
-<p>
-Labels are how you display text. This code will go directly inside of the <code>def tick args</code> method.
-</p>
-<p>
-Here is the minimum code:
-</p>
-<pre>def tick args
-  #                       X    Y    TEXT
-  args.outputs.labels << [640, 360, "I am a black label."]
-end
-</pre>
-<h1 id='--a-colored-label'>A Colored Label</h1>
-<pre>def tick args
-  # A colored label
-  #                       X    Y    TEXT,                   RED    GREEN  BLUE  ALPHA
-  args.outputs.labels << [640, 360, "I am a redish label.", 255,     128,  128,   255]
-end
-</pre>
-<h1 id='--extended-label-properties'>Extended Label Properties</h1>
-<pre>def tick args
-  # A colored label
-  #                       X    Y     TEXT           SIZE  ALIGNMENT  RED  GREEN  BLUE  ALPHA  FONT FILE
-  args.outputs.labels << [
-    640,                   # X
-    360,                   # Y
-    "Hello world",         # TEXT
-    0,                     # SIZE_ENUM
-    1,                     # ALIGNMENT_ENUM
-    0,                     # RED
-    0,                     # GREEN
-    0,                     # BLUE
-    255,                   # ALPHA
-    "fonts/coolfont.ttf"   # FONT
-  ]
-end
-</pre>
-<p>
-A <code>SIZE_ENUM</code> of <code>0</code> represents "default size". A <code>negative</code> value will decrease the label size. A <code>positive</code> value will increase the label's size.
-</p>
-<p>
-An <code>ALIGNMENT_ENUM</code> of <code>0</code> represents "left aligned". <code>1</code> represents "center aligned". <code>2</code> represents "right aligned".
-</p>
-<h1 id='--rendering-a-label-as-a--hash-'>Rendering A Label As A <code>Hash</code></h1>
-<p>
-You can add additional metadata about your game within a label, which requires you to use a `Hash` instead.
-</p>
-<pre>def tick args
-  args.outputs.labels << {
-    x:              200,
-    y:              550,
-    text:           "dragonruby",
-    size_enum:      2,
-    alignment_enum: 1,
-    r:              155,
-    g:              50,
-    b:              50,
-    a:              255,
-    font:           "fonts/manaspc.ttf",
-    # You can add any properties you like (this will be ignored/won't cause errors)
-    game_data_one:  "Something",
-    game_data_two: {
-       value_1: "value",
-       value_2: "value two",
-       a_number: 15
-    }
-  }
-end
-</pre>
-<h1 id='--getting-the-size-of-a-piece-of-text'>Getting The Size Of A Piece Of Text</h1>
-<p>
-You can get the render size of any string using <code>args.gtk.calcstringbox</code>.
-</p>
-<pre>def tick args
-  #                             TEXT           SIZE_ENUM  FONT
-  w, h = args.gtk.calcstringbox("some string",         0, "font.ttf")
-
-  # NOTE: The SIZE_ENUM and FONT are optional arguments.
-
-  # Render a label showing the w and h of the text:
-  args.outputs.labels << [
-    10,
-    710,
-    # This string uses Ruby's string interpolation literal: #{}
-    "'some string' has width: #{w}, and height: #{h}."
-  ]
-end
-</pre>
-<h1 id='--how-to-play-a-sound'>How To Play A Sound</h1>
-<p>
-Sounds that end <code>.wav</code> will play once:
-</p>
-<pre>def tick args
-  # Play a sound every second
-  if (args.state.tick_count % 60) == 0
-    args.outputs.sounds << 'something.wav'
-  end
-end
-</pre>
-<p>
-Sounds that end <code>.ogg</code> is considered background music and will loop:
-</p>
-<pre>def tick args
-  # Start a sound loop at the beginning of the game
-  if args.state.tick_count == 0
-    args.outputs.sounds << 'background_music.ogg'
-  end
-end
-</pre>
-<p>
-If you want to play a <code>.ogg</code> once as if it were a sound effect, you can do:
-</p>
-<pre>def tick args
-  # Play a sound every second
-  if (args.state.tick_count % 60) == 0
-    args.gtk.queue_sound 'some-ogg.ogg'
-  end
-end
-</pre>
-<h1 id='--using--args.state--to-store-your-game-state'>Using <code>args.state</code> To Store Your Game State</h1>
-<p>
-<code>args.state</code> is a open data structure that allows you to define properties that are arbitrarily nested. You don't need to define any kind of <code>class</code>.
-</p>
-<p>
-To initialize your game state, use the <code>||=</code> operator. Any value on the right side of <code>||=</code> will only be assigned _once_.
-</p>
-<p>
-To assign a value every frame, just use the <code>=</code> operator, but _make sure_ you've initialized a default value.
-</p>
-<pre>def tick args
-  # initialize your game state ONCE
-  args.state.player.x  ||= 0
-  args.state.player.y  ||= 0
-  args.state.player.hp ||= 100
-
-  # increment the x position of the character by one every frame
-  args.state.player.x += 1
-
-  # Render a sprite with a label above the sprite
-  args.outputs.sprites << [
-    args.state.player.x,
-    args.state.player.y,
-    32, 32,
-    "player.png"
-  ]
-
-  args.outputs.labels << [
-    args.state.player.x,
-    args.state.player.y - 50,
-    args.state.player.hp
-  ]
-end
-</pre>
 <h1 id='--frequently-asked-questions,-comments,-and-concerns'>Frequently Asked Questions, Comments, and Concerns</h1>
 <p>
 Here are questions, comments, and concerns that frequently come up.
@@ -1098,6 +841,304 @@ That won't happen if the development world stop asking for free stuff and non-tr
 </p>
 <p>
 But, in the event that sad day comes, our partnership bylaws state that _all_ DragonRuby IP that can be legally open sourced, will be released under a permissive license.
+</p>
+<h1 id='--cheatsheet--how-to-determine-what-frame-you-are-on'>CHEATSHEET: How To Determine What Frame You Are On</h1>
+<p>
+There is a property on <code>state</code> called <code>tick_count</code> that is incremented by DragonRuby every time the <code>tick</code> method is called. The following code renders a label that displays the current <code>tick_count</code>.
+</p>
+<pre>def tick args
+  args.outputs.labels << [10, 670, "#{args.state.tick_count}"]
+end
+</pre>
+<h1 id='--cheatsheet--how-to-get-current-framerate'>CHEATSHEET: How To Get Current Framerate</h1>
+<p>
+Current framerate is a top level property on the Game Toolkit Runtime and is accessible via <code>args.gtk.current_framerate</code>.
+</p>
+<pre>def tick args
+  args.outputs.labels << [10, 710, "framerate: #{args.gtk.current_framerate.round}"]
+end
+</pre>
+<h1 id='--cheatsheet--how-to-render-a-sprite-using-an-array'>CHEATSHEET: How To Render A Sprite Using An Array</h1>
+<p>
+All file paths should use the forward slash <code>/</code> *not* backslash <code></code>. Game Toolkit includes a number of sprites in the <code>sprites</code> folder (everything about your game is located in the <code>mygame</code> directory).
+</p>
+<p>
+The following code renders a sprite with a <code>width</code> and <code>height</code> of <code>100</code> in the center of the screen.
+</p>
+<p>
+<code>args.outputs.sprites</code> is used to render a sprite.
+</p>
+<pre>def tick args
+  args.outputs.sprites << [
+    640 - 50,                 # X
+    360 - 50,                 # Y
+    100,                      # W
+    100,                      # H
+    'sprites/square-blue.png' # PATH
+ ]
+end
+</pre>
+<h1 id='--cheatsheet--more-sprite-properties-as-an-array'>CHEATSHEET: More Sprite Properties As An Array</h1>
+<p>
+Here are all the properties you can set on a sprite.
+</p>
+<pre>def tick args
+  args.outputs.sprites << [
+    100,                       # X
+    100,                       # Y
+    32,                        # W
+    64,                        # H
+    'sprites/square-blue.png', # PATH
+    0,                         # ANGLE
+    255,                       # ALPHA
+    0,                         # RED_SATURATION
+    255,                       # GREEN_SATURATION
+    0                          # BLUE_SATURATION
+  ]
+end
+</pre>
+<h1 id='--cheatsheet--different-sprite-representations'>CHEATSHEET: Different Sprite Representations</h1>
+<p>
+Using ordinal positioning can get a little unruly given so many properties you have control over.
+</p>
+<p>
+You can represent a sprite as a <code>Hash</code>:
+</p>
+<pre>def tick args
+  args.outputs.sprites << {
+    x: 640 - 50,
+    y: 360 - 50,
+    w: 100,
+    h: 100,
+    path: 'sprites/square-blue.png',
+    angle: 0,
+    a: 255,
+    r: 255,
+    g: 255,
+    b: 255,
+    source_x:  0,
+    source_y:  0,
+    source_w: -1,
+    source_h: -1,
+    flip_vertically: false,
+    flip_horizontally: false,
+    angle_anchor_x: 0.5,
+    angle_anchor_y: 1.0
+  }
+end
+</pre>
+<p>
+You can represent a sprite as an <code>object</code>:
+</p>
+<pre># Create type with ALL sprite properties AND primitive_marker
+class Sprite
+  attr_accessor :x, :y, :w, :h, :path, :angle, :a, :r, :g, :b,
+                :source_x, :source_y, :source_w, :source_h,
+                :tile_x, :tile_y, :tile_w, :tile_h,
+                :flip_horizontally, :flip_vertically,
+                :angle_anchor_x, :angle_anchor_y
+
+  def primitive_marker
+    :sprite
+  end
+end
+
+class BlueSquare < Sprite
+  def initialize opts
+    @x = opts[:x]
+    @y = opts[:y]
+    @w = opts[:w]
+    @h = opts[:h]
+    @path = 'sprites/square-blue.png'
+  end
+end
+
+def tick args
+  args.outputs.sprites << (BlueSquare.new x: 640 - 50,
+                                          y: 360 - 50,
+                                          w: 50,
+                                          h: 50)
+end
+</pre>
+<h1 id='--cheatsheet--how-to-render-a-label'>CHEATSHEET: How To Render A Label</h1>
+<p>
+<code>args.outputs.labels</code> is used to render labels.
+</p>
+<p>
+Labels are how you display text. This code will go directly inside of the <code>def tick args</code> method.
+</p>
+<p>
+Here is the minimum code:
+</p>
+<pre>def tick args
+  #                       X    Y    TEXT
+  args.outputs.labels << [640, 360, "I am a black label."]
+end
+</pre>
+<h1 id='--cheatsheet--a-colored-label'>CHEATSHEET: A Colored Label</h1>
+<pre>def tick args
+  # A colored label
+  #                       X    Y    TEXT,                   RED    GREEN  BLUE  ALPHA
+  args.outputs.labels << [640, 360, "I am a redish label.", 255,     128,  128,   255]
+end
+</pre>
+<h1 id='--cheatsheet--extended-label-properties'>CHEATSHEET: Extended Label Properties</h1>
+<pre>def tick args
+  # A colored label
+  #                       X    Y     TEXT           SIZE  ALIGNMENT  RED  GREEN  BLUE  ALPHA  FONT FILE
+  args.outputs.labels << [
+    640,                   # X
+    360,                   # Y
+    "Hello world",         # TEXT
+    0,                     # SIZE_ENUM
+    1,                     # ALIGNMENT_ENUM
+    0,                     # RED
+    0,                     # GREEN
+    0,                     # BLUE
+    255,                   # ALPHA
+    "fonts/coolfont.ttf"   # FONT
+  ]
+end
+</pre>
+<p>
+A <code>SIZE_ENUM</code> of <code>0</code> represents "default size". A <code>negative</code> value will decrease the label size. A <code>positive</code> value will increase the label's size.
+</p>
+<p>
+An <code>ALIGNMENT_ENUM</code> of <code>0</code> represents "left aligned". <code>1</code> represents "center aligned". <code>2</code> represents "right aligned".
+</p>
+<h1 id='--cheatsheet--rendering-a-label-as-a--hash-'>CHEATSHEET: Rendering A Label As A <code>Hash</code></h1>
+<p>
+You can add additional metadata about your game within a label, which requires you to use a `Hash` instead.
+</p>
+<pre>def tick args
+  args.outputs.labels << {
+    x:              200,
+    y:              550,
+    text:           "dragonruby",
+    size_enum:      2,
+    alignment_enum: 1,
+    r:              155,
+    g:              50,
+    b:              50,
+    a:              255,
+    font:           "fonts/manaspc.ttf",
+    # You can add any properties you like (this will be ignored/won't cause errors)
+    game_data_one:  "Something",
+    game_data_two: {
+       value_1: "value",
+       value_2: "value two",
+       a_number: 15
+    }
+  }
+end
+</pre>
+<h1 id='--cheatsheet--getting-the-size-of-a-piece-of-text'>CHEATSHEET: Getting The Size Of A Piece Of Text</h1>
+<p>
+You can get the render size of any string using <code>args.gtk.calcstringbox</code>.
+</p>
+<pre>def tick args
+  #                             TEXT           SIZE_ENUM  FONT
+  w, h = args.gtk.calcstringbox("some string",         0, "font.ttf")
+
+  # NOTE: The SIZE_ENUM and FONT are optional arguments.
+
+  # Render a label showing the w and h of the text:
+  args.outputs.labels << [
+    10,
+    710,
+    # This string uses Ruby's string interpolation literal: #{}
+    "'some string' has width: #{w}, and height: #{h}."
+  ]
+end
+</pre>
+<h1 id='--cheatsheet--how-to-play-a-sound'>CHEATSHEET: How To Play A Sound</h1>
+<p>
+Sounds that end <code>.wav</code> will play once:
+</p>
+<pre>def tick args
+  # Play a sound every second
+  if (args.state.tick_count % 60) == 0
+    args.outputs.sounds << 'something.wav'
+  end
+end
+</pre>
+<p>
+Sounds that end <code>.ogg</code> is considered background music and will loop:
+</p>
+<pre>def tick args
+  # Start a sound loop at the beginning of the game
+  if args.state.tick_count == 0
+    args.outputs.sounds << 'background_music.ogg'
+  end
+end
+</pre>
+<p>
+If you want to play a <code>.ogg</code> once as if it were a sound effect, you can do:
+</p>
+<pre>def tick args
+  # Play a sound every second
+  if (args.state.tick_count % 60) == 0
+    args.gtk.queue_sound 'some-ogg.ogg'
+  end
+end
+</pre>
+<h1 id='--cheatsheet--using--args.state--to-store-your-game-state'>CHEATSHEET: Using <code>args.state</code> To Store Your Game State</h1>
+<p>
+<code>args.state</code> is a open data structure that allows you to define properties that are arbitrarily nested. You don't need to define any kind of <code>class</code>.
+</p>
+<p>
+To initialize your game state, use the <code>||=</code> operator. Any value on the right side of <code>||=</code> will only be assigned _once_.
+</p>
+<p>
+To assign a value every frame, just use the <code>=</code> operator, but _make sure_ you've initialized a default value.
+</p>
+<pre>def tick args
+  # initialize your game state ONCE
+  args.state.player.x  ||= 0
+  args.state.player.y  ||= 0
+  args.state.player.hp ||= 100
+
+  # increment the x position of the character by one every frame
+  args.state.player.x += 1
+
+  # Render a sprite with a label above the sprite
+  args.outputs.sprites << [
+    args.state.player.x,
+    args.state.player.y,
+    32, 32,
+    "player.png"
+  ]
+
+  args.outputs.labels << [
+    args.state.player.x,
+    args.state.player.y - 50,
+    args.state.player.hp
+  ]
+end
+</pre>
+<h1 id='--cheatsheet--troubleshoot-performance'>CHEATSHEET: Troubleshoot Performance</h1>
+<ol>
+<li> If you're using <code>Array</code>s for your primitives (<code>args.outputs.sprites << []</code>), use <code>Hash</code> instead (<code>args.outputs.sprites << { x: ... }</code>).</li>
+<li> If you're using <code>Entity</code> for your primitives (<code>args.outputs.sprites << args.state.new_entity</code>), use <code>StrictEntity</code> instead (<code>args.outputs.sprites << args.state.new_entity_strict</code>).</li>
+<li> Use <code>.each</code> instead of <code>.map</code> if you don't care about the return value.</li>
+<li> When concatenating primitives to outputs, do them in bulk. Instead of:</li>
+</ol>
+<pre>args.state.bullets.each do |bullet|
+  args.outputs.sprites << bullet.sprite
+end
+</pre>
+<p>
+do
+</p>
+<pre>args.outputs.sprites << args.state.bullets.map do |b|
+  b.sprite
+end
+</pre>
+<p>
+5. Use <code>args.outputs.static_</code> variant for things that don't change often (take a look at the Basic Gorillas sample app and Dueling Starships sample app to see how <code>static_</code> is leveraged.
+</p>
+<p>
+6. Consider using a <code>render_target</code> if you're doing some form of a camera that moves a lot of primitives (take a look at the Render Target sample apps for more info).
 </p>
 <h1 id='--docs---gtk--runtime-'>DOCS: <code>GTK::Runtime</code></h1>
 <p>
@@ -7412,8 +7453,8 @@ end
 $gtk.reset
 
 </pre>
-<h1 id='--advanced-rendering---render-targets-with-alphas---main.rb'>Advanced Rendering - Render Targets With Alphas - main.rb</h1>
-<pre># ./samples/07_advanced_rendering/02_render_targets_with_alphas/app/main.rb
+<h1 id='--advanced-rendering---render-targets-with-tile-manipulation---main.rb'>Advanced Rendering - Render Targets With Tile Manipulation - main.rb</h1>
+<pre># ./samples/07_advanced_rendering/02_render_targets_with_tile_manipulation/app/main.rb
 # This sample is meant to show you how to do that dripping transition thing
 #  at the start of the original Doom. Most of this file is here to animate
 #  a scene to wipe away; the actual wipe effect is in the last 20 lines or
@@ -8796,6 +8837,7 @@ end
 </pre>
 <h1 id='--performance---sprites-as-hash---main.rb'>Performance - Sprites As Hash - main.rb</h1>
 <pre># ./samples/09_performance/01_sprites_as_hash/app/main.rb
+
 # Sprites represented as Hashes using the queue ~args.outputs.sprites~
 # code up, but are the "slowest" to render.
 # The reason for this is the access of the key in the Hash and also
@@ -9821,11 +9863,14 @@ end
 </pre>
 <h1 id='--12-c-extensions---basics---main.rb'>12 C Extensions - Basics - main.rb</h1>
 <pre># ./samples/12_c_extensions/01_basics/app/main.rb
-$gtk.ffi_misc.gtk_dlopen("./samples/12_c_extensions/01_basics/build.dir/ext.lib")
+$gtk.ffi_misc.gtk_dlopen("ext")
 include FFI::CExt
 
 def tick args
-  args.outputs.labels << [460, 600, "square(42) = #{square(42)}"]
+  args.outputs.labels  << [640, 500, "mouse.x = #{args.mouse.x.to_i}", 5, 1]
+  args.outputs.labels  << [640, 460, "square(mouse.x) = #{square(args.mouse.x.to_i)}", 5, 1]
+  args.outputs.labels  << [640, 420, "mouse.y = #{args.mouse.y.to_i}", 5, 1]
+  args.outputs.labels  << [640, 380, "square(mouse.y) = #{square(args.mouse.y.to_i)}", 5, 1]
 end
 
 
@@ -22111,12 +22156,12 @@ module GTK
     end
 
     def save_history
-      $gtk.ffi_file.storefile(@history_fname, @command_history.reverse.join("\n"))
+      $gtk.ffi_file.write_root @history_fname, (@command_history.reverse.join "\n")
     end
 
     def load_history
       @command_history.clear
-      str = $gtk.ffi_file.loadfile(@history_fname)
+      str = $gtk.ffi_file.read @history_fname
       return if str.nil?  # no history to load.
 
       str.chomp!("\n")  # Don't let endlines at the end cause extra blank line.
@@ -22329,6 +22374,36 @@ S
       args.inputs.keyboard.key_down.any? console_toggle_keys
     end
 
+    def try_search_docs exception
+      string_e = "#{exception}"
+      @last_command_errored = true
+
+      if (string_e.include? "wrong number of arguments")
+        method_name = ((string_e.split ":")[0].gsub "'", "")
+        if !(method_name.include? " ")
+          results = (Kernel.__docs_search_results__ method_name)
+          if !results.include? "* DOCS: No results found."
+            puts (results.join "\n")
+            puts <<-S
+* INFO: #{results.length} matches(s) found in DOCS for ~#{method_name}~ (see above).
+You can search the documentation yourself using the following command in the Console:
+#+begin_src ruby
+  docs_search \"#{method_name}\"
+#+end_src
+S
+            log_once_info :exported_search_results, "The search results above has been seen in logs/puts.txt and docs/search_results.txt."
+          end
+        end
+      end
+    rescue Exception => se
+      puts <<-S
+* FATAL: ~GTK::Console#try_search_docs~
+There was an exception searching for docs (~GTK::Console#try_search_docs~). You might want to let DragonRuby know about this.
+** INNER EXCEPTION
+#{se}
+S
+    end
+
     def eval_the_set_command
       cmd = current_input_str.strip
       if cmd.length != 0
@@ -22355,18 +22430,8 @@ S
             end
             @last_command_errored = false
           rescue Exception => e
-            string_e = "#{e}"
-            puts "* EXCEPTION: #{e}"
-            log  "* EXCEPTION: #{e}"
-            @last_command_errored = true
-            if (string_e.include? "wrong number of arguments")
-              method_name = (string_e.split ":")[0].gsub "'", ""
-              results = (Kernel.docs_search method_name).strip
-              if !results.include? "* DOCS: No results found."
-                puts results
-                log results
-              end
-            end
+            try_search_docs e
+            puts  "* EXCEPTION: #{e}"
           end
         end
       end
@@ -22980,6 +23045,7 @@ module GTK
         if args.inputs.mouse.click
           clicked = @buttons.find { |b| args.inputs.mouse.inside_rect? b[:rect] }
           if clicked
+            args.inputs.mouse.click = nil
             send clicked[:method]
           end
         end
@@ -25043,6 +25109,10 @@ module GTK
       point.inside_rect? rect
     end
 
+    def inside_circle? center, radius
+      point.point_inside_circle? center, radius
+    end
+
     alias_method :position, :point
 
     def clear
@@ -25626,6 +25696,8 @@ S
 
     if definitions.include?(:ratio)
       result = rand * result
+    elsif definitions.include?(:int)
+      result = (rand result)
     end
 
     result
@@ -26138,7 +26210,12 @@ module GTK
 You can display these diagnostics using:
 
 #+begin_src
-  args.outputs.debug << args.gtk.framerate_diagnostics_primitives
+  def tick args
+    # ....
+
+    # IMPORTANT: Put this at the END of the ~tick~ method.
+    args.outputs.debug << args.gtk.framerate_diagnostics_primitives
+  end
 #+end_src
 
 ** Draw Calls: ~<<~ Invocation Perf Counter

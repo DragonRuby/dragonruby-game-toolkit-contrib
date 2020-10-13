@@ -146,6 +146,8 @@ S
 
     if definitions.include?(:ratio)
       result = rand * result
+    elsif definitions.include?(:int)
+      result = (rand result)
     end
 
     result

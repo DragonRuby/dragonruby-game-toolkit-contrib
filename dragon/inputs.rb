@@ -502,6 +502,10 @@ module GTK
       point.inside_rect? rect
     end
 
+    def inside_circle? center, radius
+      point.point_inside_circle? center, radius
+    end
+
     alias_method :position, :point
 
     def clear

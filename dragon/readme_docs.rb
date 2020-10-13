@@ -10,13 +10,15 @@ module GTK
         :docs_usage,
         :docs_hello_world,
         :docs_deployment,
+        :docs_deployment_mobile,
         :docs_dragonruby_philosophy,
+        :docs_faq,
         :docs_ticks_and_frames,
         :docs_sprites,
         :docs_labels,
         :docs_sounds,
         :docs_game_state,
-        :docs_faq
+        :docs_troubleshooting_performance
       ]
     end
 
@@ -452,6 +454,35 @@ update the downloads for you.
 S
     end
 
+    def docs_deployment_mobile
+<<-S
+
+* Deploying To Mobile Devices
+
+If you have a Pro subscription, you also have the capability to deploy
+to mobile devices.
+
+To deploy to iOS, you need to have a Mac running MacOS Catalina, an
+iOS device, and an active/paid Developer Account with Apple. From the
+Console type: ~$wizards.ios.start~ and you will be guided through the
+deployment process.
+
+To deploy to Android, you need to have an Android emulator/device, and
+a environment that is able to run Android SDK. ~dragonruby-publish~
+will create an APK for you. From there, you can sign the APK and
+install it to your device. The signing and installation procedure
+varies from OS to OS. Here's an example of what the command might look
+like:
+
+#+begin_src
+  > adb logcat -e mygame # you'll want to run this in a separate terminal
+  > keytool -genkey -v -keystore mygame.keystore -alias mygame -keyalg RSA -keysize 2048 -validity 10000
+  > apksigner sign --ks mygame.keystore mygame-android.apk
+  > adb install mygame-android.apk
+#+end_src
+S
+    end
+
     def docs_dragonruby_philosophy
       <<-S
 * DragonRuby's Philosophy
@@ -559,7 +590,7 @@ S
 
     def docs_ticks_and_frames
       <<-S
-* How To Determine What Frame You Are On
+* CHEATSHEET: How To Determine What Frame You Are On
 
 There is a property on ~state~ called ~tick_count~ that is incremented
 by DragonRuby every time the ~tick~ method is called. The following
@@ -571,7 +602,7 @@ code renders a label that displays the current ~tick_count~.
   end
 #+end_src
 
-* How To Get Current Framerate
+* CHEATSHEET: How To Get Current Framerate
 
 Current framerate is a top level property on the Game Toolkit Runtime
 and is accessible via ~args.gtk.current_framerate~.
@@ -586,7 +617,7 @@ S
 
     def docs_sprites
       <<-S
-* How To Render A Sprite Using An Array
+* CHEATSHEET: How To Render A Sprite Using An Array
 
 All file paths should use the forward slash ~/~ *not* backslash
 ~\~. Game Toolkit includes a number of sprites in the ~sprites~
@@ -609,7 +640,7 @@ The following code renders a sprite with a ~width~ and ~height~ of
   end
 #+end_src
 
-* More Sprite Properties As An Array
+* CHEATSHEET: More Sprite Properties As An Array
 
 Here are all the properties you can set on a sprite.
 
@@ -630,7 +661,7 @@ Here are all the properties you can set on a sprite.
   end
 #+end_src
 
-* Different Sprite Representations
+* CHEATSHEET: Different Sprite Representations
 
 Using ordinal positioning can get a little unruly given so many
 properties you have control over.
@@ -700,7 +731,7 @@ S
 
     def docs_labels
       <<-S
-* How To Render A Label
+* CHEATSHEET: How To Render A Label
 
 ~args.outputs.labels~ is used to render labels.
 
@@ -716,7 +747,7 @@ Here is the minimum code:
   end
 #+end_src
 
-* A Colored Label
+* CHEATSHEET: A Colored Label
 
 #+begin_src
   def tick args
@@ -726,7 +757,7 @@ Here is the minimum code:
   end
 #+end_src
 
-* Extended Label Properties
+* CHEATSHEET: Extended Label Properties
 
 #+begin_src
   def tick args
@@ -754,7 +785,7 @@ label's size.
 An ~ALIGNMENT_ENUM~ of ~0~ represents "left aligned". ~1~ represents
 "center aligned". ~2~ represents "right aligned".
 
-* Rendering A Label As A ~Hash~
+* CHEATSHEET: Rendering A Label As A ~Hash~
 
 You can add additional metadata about your game within a label, which requires you to use a `Hash` instead.
 
@@ -782,7 +813,7 @@ You can add additional metadata about your game within a label, which requires y
   end
 #+end_src
 
-* Getting The Size Of A Piece Of Text
+* CHEATSHEET: Getting The Size Of A Piece Of Text
 
 You can get the render size of any string using ~args.gtk.calcstringbox~.
 
@@ -807,7 +838,7 @@ S
 
     def docs_sounds
       <<-S
-* How To Play A Sound
+* CHEATSHEET: How To Play A Sound
 
 Sounds that end ~.wav~ will play once:
 
@@ -846,7 +877,7 @@ S
 
     def docs_game_state
       <<-S
-* Using ~args.state~ To Store Your Game State
+* CHEATSHEET: Using ~args.state~ To Store Your Game State
 
 ~args.state~ is a open data structure that allows you to define
 properties that are arbitrarily nested. You don't need to define any kind of
@@ -888,7 +919,7 @@ S
 
     def animate_a_sprite
       <<-S
-* How To Animate A Sprite Using Separate PNGs
+* CHEATSHEET: How To Animate A Sprite Using Separate PNGs
 
 DragonRuby has a property on ~Numeric~ called ~frame_index~ that can
 be used to determine what frame of an animation to show. Here is an
@@ -917,6 +948,30 @@ example of how to cycle through 6 sprites every 4 frames.
     ]
   end
 #+end_src
+S
+    end
+
+    def docs_troubleshooting_performance
+<<-S
+* CHEATSHEET: Troubleshoot Performance
+
+1. If you're using ~Array~s for your primitives (~args.outputs.sprites << []~), use ~Hash~ instead (~args.outputs.sprites << { x: ... }~).
+2. If you're using ~Entity~ for your primitives (~args.outputs.sprites << args.state.new_entity~), use ~StrictEntity~ instead (~args.outputs.sprites << args.state.new_entity_strict~).
+3. Use ~.each~ instead of ~.map~ if you don't care about the return value.
+4. When concatenating primitives to outputs, do them in bulk. Instead of:
+#+begin_src ruby
+  args.state.bullets.each do |bullet|
+    args.outputs.sprites << bullet.sprite
+  end
+#+end_src
+do
+#+begin_src
+  args.outputs.sprites << args.state.bullets.map do |b|
+    b.sprite
+  end
+#+end_src
+5. Use ~args.outputs.static_~ variant for things that don't change often (take a look at the Basic Gorillas sample app and Dueling Starships sample app to see how ~static_~ is leveraged.
+6. Consider using a ~render_target~ if you're doing some form of a camera that moves a lot of primitives (take a look at the Render Target sample apps for more info).
 S
     end
 

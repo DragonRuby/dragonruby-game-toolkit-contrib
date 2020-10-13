@@ -98,7 +98,7 @@ end
       @assertion_performed = true
       if actual != expected
         actual_string = "#{actual}#{actual.nil? ? " (nil) " : " " }".strip
-        message = "actual:\n#{actual_string} did not equal\nexpected:\n#{expected}.\n#{message}"
+        message = "actual:\n#{actual_string}\n\ndid not equal\n\nexpected:\n#{expected}.\n#{message}"
         raise message
       end
       nil

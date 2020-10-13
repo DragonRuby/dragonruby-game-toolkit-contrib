@@ -53,7 +53,7 @@ S
       final_string += k.docs_all
     end
 
-    final_string += "\n" + (($gtk.read_file_root "docs/source.txt") || "")
+    final_string += "\n" + (($gtk.read_file "docs/source.txt") || "")
 
     html_parse_result = (__docs_to_html__ final_string)
 

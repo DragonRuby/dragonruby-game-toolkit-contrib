@@ -151,17 +151,8 @@ S
 
   end
 
-  def docs_search words = nil, &block
-    words ||= ""
-    if words.strip.length != 0
-      each_word = words.split(' ').find_all { |w| w.strip.length > 0 }
-      block = lambda do |entry|
-        each_word.any? { |w| entry.downcase.include? w.downcase }
-      end
-    end
-
-    if !block
-      return <<-S
+  def __docs_search_help_text__
+    <<-S
 * DOCS: How To Search The Docs
 To search docs you can use Kernel.docs_search (or just ~docs_search~) by providing it a search term.
 For example:
@@ -178,30 +169,52 @@ You can do more advanced searches by providing a block:
   end
 #+end_src
 S
+  end
+
+  def __docs_search_results__ words = nil, &block
+    words ||= ""
+
+    if words.strip.length != 0
+      each_word = words.split(' ').find_all { |w| w.strip.length > 3 }
+      block = lambda do |entry|
+        each_word.any? { |w| entry.downcase.include? w.downcase }
+      end
     end
 
+    return [__docs_search_help_text__] if !block
+
     DocsOrganizer.sort_docs_classes!
+
     this_block = block
-    final_string = ""
+
+    search_results = []
+
     if self == Kernel
       $docs_classes.each do |k|
         DocsOrganizer.find_methods_with_docs(k).each do |m|
           s = k.send m
-          final_string += s + "\n" if block.call s
+          search_results << s if block.call s
         end
       end
     else
       DocsOrganizer.find_methods_with_docs(self).each do |m|
         s = send m
-        final_string += s + "\n" if block.call s
+        search_results << s if block.call s
       end
     end
 
-    if final_string.strip.length == 0
-      final_string = "* DOCS: No results found."
-    end
+    search_results
+  end
+
+  def docs_search words = nil, &block
+    results = __docs_search_results__ words, &block
+
+    final_string = results.join "\n"
+
+    final_string = "* DOCS: No results found." if final_string.strip.length == 0
 
     $gtk.write_file_root "docs/search_results.txt", final_string
+
     if !final_string.include? "* DOCS: No results found."
       log "* INFO: Search results have been written to docs/search_results.txt."
     end

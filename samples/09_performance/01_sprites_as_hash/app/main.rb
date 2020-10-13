@@ -1,3 +1,4 @@
+
 # Sprites represented as Hashes using the queue ~args.outputs.sprites~
 # code up, but are the "slowest" to render.
 # The reason for this is the access of the key in the Hash and also

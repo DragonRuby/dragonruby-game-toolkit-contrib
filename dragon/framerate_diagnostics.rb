@@ -12,7 +12,12 @@ module GTK
 You can display these diagnostics using:
 
 #+begin_src
-  args.outputs.debug << args.gtk.framerate_diagnostics_primitives
+  def tick args
+    # ....
+
+    # IMPORTANT: Put this at the END of the ~tick~ method.
+    args.outputs.debug << args.gtk.framerate_diagnostics_primitives
+  end
 #+end_src
 
 ** Draw Calls: ~<<~ Invocation Perf Counter

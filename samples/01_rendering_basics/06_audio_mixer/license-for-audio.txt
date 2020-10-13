@@ -1,0 +1,48 @@
+The audio files in this sample are used under various Creative Common licenses:
+
+
+sounds/1.wav:
+
+  Party Pack, Horn Coil 01, Long, 01.wav by InspectorJ (www.jshaw.co.uk) of Freesound.org
+  (We converted this to mono output.)
+  Original: https://freesound.org/s/484267/
+  License: https://creativecommons.org/licenses/by/3.0/
+
+
+sounds/2.wav:
+
+  SPLASH.wav by petenice
+  Original: https://freesound.org/s/9508/
+  License: https://creativecommons.org/publicdomain/zero/1.0/
+
+
+sounds/3.wav:
+
+  buzz roll.wav by bigjoedrummer
+  (We converted this to mono output.)
+  Original: https://freesound.org/s/77305/
+  License: https://creativecommons.org/publicdomain/zero/1.0/
+
+
+sounds/4.wav:
+
+  sword04.wav by Erdie
+  Original: https://freesound.org/s/27858/
+  License: https://creativecommons.org/licenses/by/3.0/
+
+
+sounds/5.wav:
+
+  Game Over Arcade.wav by myfox14
+  (We converted this to mono output.)
+  Original: https://freesound.org/s/382310/
+  License: https://creativecommons.org/publicdomain/zero/1.0/
+
+
+sounds/6.ogg:
+
+  Arcade Music Loop.wav by joshuaempyre ( https://www.empyreanma.com/welcome )
+  (We converted this to Ogg Vorbis format, and mono output.)
+  Original: https://freesound.org/s/251461/
+  License: https://creativecommons.org/licenses/by/3.0/
+

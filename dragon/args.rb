@@ -21,6 +21,11 @@ module GTK
     # @return [Outputs]
     attr_accessor :outputs
 
+    # Contains the means to interact with the audio mixer.
+    #
+    # @return [Hash]
+    attr_accessor :audio
+
     # Contains display size information to assist in positioning things on the screen.
     #
     # @return [Grid]
@@ -54,6 +59,7 @@ module GTK
     def initialize runtime, recording
       @inputs = Inputs.new
       @outputs = Outputs.new args: self
+      @audio = {}
       @passes = []
       @state = OpenEntity.new
       @state.tick_count = -1

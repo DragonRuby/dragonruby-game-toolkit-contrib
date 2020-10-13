@@ -98,4 +98,8 @@ S
   def rtrim!
     rstrip!
   end
+
+  def serialize
+    self
+  end
 end
