@@ -82,10 +82,19 @@ module GTK
       methods.reject { |m| m.start_with? "__trace_" }.reject { |m| IGNORED_METHODS.include? m }
     end
 
+    def self.trace_times_string
+      str = []
+      $trace_performance.sort_by {|method_name, times| -times[:avg] }.each do |method_name, times|
+        str << "#{method_name}: #{times[:sum].round(2)}/#{times[:count]} #{times[:min]}ms min, #{times[:avg].round(2)}ms avg, #{times[:max]}ms max"
+      end
+      str.join("\n")
+    end
+
     def self.flush_trace pad_with_newline = false
       $trace_puts ||= []
+      puts "(Trace info flushed!)"
       if $trace_puts.length > 0
-        text = $trace_puts.join("")
+        text = $trace_puts.join("").strip + "\n" + self.trace_times_string + "\n"
         if pad_with_newline
           $gtk.append_file_root 'logs/trace.txt', "\n" + text.strip
         else
@@ -100,6 +109,15 @@ module GTK
       $trace_history ||= []
       $trace_enabled = true
       $trace_call_depth ||=0
+      $trace_performance = Hash.new {|h,k|
+        h[k] = {
+          min:   100000,
+          max:   0,
+          avg:   0,
+          sum:   0,
+          count: 0
+        }
+      }
       flush_trace
       instance = $top_level unless instance
       return if Trace.traced_classes.include? instance.class
@@ -117,15 +135,27 @@ module GTK
             instance.__trace_call_depth__ += 1
             $trace_call_depth = instance.__trace_call_depth__
             parameters = "#{args}"[1..-2]
+
             $trace_puts << "\n  #{tab_width}#{m}(#{parameters})"
-            execution_time = Time.new.to_i
+
+            execution_time = Time.new
+
             $last_method_traced = trace_method_name
             $trace_history << [m, parameters]
+
             result = send(trace_method_name, *args)
-            completion_time = Time.new.to_i
+
+            class_m = "#{instance.class}##{m}"
+            completion_time = ((Time.new - execution_time).to_f * 1000).round(2)
+            $trace_performance[class_m][:min] = [$trace_performance[class_m][:min], completion_time].min
+            $trace_performance[class_m][:max] = [$trace_performance[class_m][:max], completion_time].max
+            $trace_performance[class_m][:count] += 1
+            $trace_performance[class_m][:sum] += completion_time
+            $trace_performance[class_m][:avg] = $trace_performance[class_m][:sum].fdiv($trace_performance[class_m][:count])
+
             instance.__trace_call_depth__ -= 1
             instance.__trace_call_depth__ = instance.__trace_call_depth__.greater 0
-            $trace_puts << "\n #{tab_width} success: #{m}"
+            $trace_puts << "\n #{tab_width} #{completion_time > 10 ? '!!! ' : ''}#{completion_time}ms success: #{m}"
             if instance.__trace_call_depth__ == 0
               $trace_puts << "\n"
               $trace_history.clear
