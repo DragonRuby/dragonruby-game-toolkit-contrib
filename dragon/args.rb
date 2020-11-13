@@ -56,6 +56,8 @@ module GTK
 
     attr_accessor :wizards
 
+    attr_accessor :layout
+
     def initialize runtime, recording
       @inputs = Inputs.new
       @outputs = Outputs.new args: self
@@ -67,9 +69,11 @@ module GTK
       @recording = recording
       @grid = Grid.new runtime
       @render_targets = {}
+      @pixel_arrays = {}
       @all_tests = []
       @geometry = GTK::Geometry
       @wizards = Wizards.new
+      @layout = GTK::Layout.new @grid.w, @grid.h
     end
 
 
@@ -96,6 +100,26 @@ module GTK
 
     def destructure
       [grid, inputs, state, outputs, runtime, passes]
+    end
+
+    def clear_pixel_arrays
+      pixel_arrays_clear
+    end
+
+    def pixel_arrays_clear
+      @pixel_arrays = {}
+    end
+
+    def pixel_arrays
+      @pixel_arrays
+    end
+
+    def pixel_array name
+      name = name.to_s
+      if !@pixel_arrays[name]
+        @pixel_arrays[name] = PixelArray.new
+      end
+      @pixel_arrays[name]
     end
 
     def clear_render_targets

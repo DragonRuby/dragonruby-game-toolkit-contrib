@@ -19,9 +19,14 @@ module GTK
         @console_text_width = console_text_width
 
         @cursor_position = 0
+        update_cursor_position_px
 
         @last_autocomplete_prefix = nil
         @next_candidate_index = 0
+      end
+
+      def update_cursor_position_px
+        @cursor_position_px = ($gtk.calcstringbox (@prompt + @current_input_str[0...@cursor_position]), @font_style.size_enum, @font_style.font).x
       end
 
       def current_input_str=(str)
@@ -32,6 +37,7 @@ module GTK
       def <<(str)
         @current_input_str = @current_input_str[0...@cursor_position] + str + @current_input_str[@cursor_position..-1]
         @cursor_position += str.length
+        update_cursor_position_px
         @current_input_changed_at = Kernel.global_tick_count
         reset_autocomplete
       end
@@ -41,20 +47,24 @@ module GTK
 
         @current_input_str = @current_input_str[0...(@cursor_position - 1)] + @current_input_str[@cursor_position..-1]
         @cursor_position -= 1
+        update_cursor_position_px
         reset_autocomplete
       end
 
       def move_cursor_left
         @cursor_position -= 1 if @cursor_position > 0
+        update_cursor_position_px
       end
 
       def move_cursor_right
         @cursor_position += 1 if @cursor_position < current_input_str.length
+        update_cursor_position_px
       end
 
       def clear
         @current_input_str = ''
         @cursor_position = 0
+        update_cursor_position_px
         reset_autocomplete
       end
 
@@ -73,7 +83,10 @@ module GTK
           @next_candidate_index += 1
           @next_candidate_index = 0 if @next_candidate_index >= candidates.length
           self.current_input_str = display_autocomplete_candidate(candidate)
+          update_cursor_position_px
         end
+      rescue Exception => e
+        puts "* BUG: Tab autocompletion failed. Let us know about this.\n#{e}"
       end
 
       def pretty_print_strings_as_table items
@@ -132,7 +145,21 @@ S
 
       def render(args, x:, y:)
         args.outputs.reserved << font_style.label(x: x, y: y, text: "#{@prompt}#{current_input_str}", color: @text_color)
-        args.outputs.reserved << font_style.label(x: x - 4, y: y + 3, text: (" " * (@prompt.length + @cursor_position)) + "|", color: @cursor_color)
+        args.outputs.reserved << (@cursor_color.to_h.merge x: x + @cursor_position_px + 0.5,
+                                                           y: y + 5,
+                                                           x2: x + @cursor_position_px + 0.5,
+                                                           y2: y + @font_style.letter_size.y + 5)
+
+        args.outputs.reserved << (@cursor_color.to_h.merge x: x + @cursor_position_px + 1,
+                                                           y: y + 5,
+                                                           x2: x + @cursor_position_px + 1,
+                                                           y2: y + @font_style.letter_size.y + 5)
+
+        # debugging rectangle for string
+        # args.outputs.reserved << (@cursor_color.to_h.merge x: x,
+        #                                                    y: y + 5,
+        #                                                    w: @cursor_position_px,
+        #                                                    h: @font_style.letter_size.y).border
       end
 
       def tick

@@ -7,6 +7,8 @@
 
 module GTK
   class Console
+    include ConsoleDeprecated
+
     attr_accessor :show_reason, :log, :logo, :background_color,
                   :text_color, :animation_duration,
                   :max_log_lines, :max_history, :log,
@@ -77,7 +79,7 @@ module GTK
       @disabled = false
     end
 
-    def addsprite obj
+    def add_sprite obj
       @log_invocation_count += 1
       obj[:id] ||= "id_#{obj[:path]}_#{Time.now.to_i}".to_sym
 
@@ -97,14 +99,14 @@ module GTK
 
     def add_primitive obj
       if obj.is_a? Hash
-        addsprite obj
+        add_sprite obj
       else
-        addtext obj
+        add_text obj
       end
       nil
     end
 
-    def addtext obj
+    def add_text obj
       @last_log_lines_count ||= 1
       @log_invocation_count += 1
 
@@ -228,12 +230,12 @@ S
       @toasted_at = Kernel.global_tick_count
       log_once_info :perma_toast_tip, "Use console.perma_toast to show the toast for longer."
       dwim_duration = 5.seconds
-      addtext "* toast :#{id}"
+      add_text "* toast :#{id}"
       puts "* TOAST: :#{id}"
       messages.each do |message|
         lines = message.to_s.wrapped_lines(self.console_text_width)
         dwim_duration += lines.length.seconds
-        addtext "** #{message}"
+        add_text "** #{message}"
         puts "** #{message}"
       end
       show :toast

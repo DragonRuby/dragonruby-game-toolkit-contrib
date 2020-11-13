@@ -497,6 +497,11 @@ S
     return 720 - self unless $gtk
     $gtk.args.grid.h - self
   end
+
+  def from_right
+    return 1280 - self unless $gtk
+    $gtk.args.grid.w - self
+  end
 end
 
 class Fixnum

@@ -1167,19 +1167,6 @@ do
 * DOCS: ~GTK::Runtime~
 The GTK::Runtime class is the core of DragonRuby. It is globally accessible via ~$gtk~.
 
-* DOCS: ~GTK::Runtime#reset~
-This function will reset Kernel.tick_count to 0 and will remove all data from args.state.
-
-* DOCS: ~GTK::Runtime#calcstringbox~
-This function returns the width and height of a string.
-
-#+begin_src ruby
-  def tick args
-    args.state.string_size           ||= args.gtk.calcstringbox "Hello World"
-    args.state.string_size_font_size ||= args.gtk.calcstringbox "Hello World"
-  end
-#+end_src
-
 * DOCS: ~GTK::Runtime#write_file~
 This function takes in two parameters. The first paramter is the file path and assumes the the game
 directory is the root. The second parameter is the string that will be written. The method overwrites whatever
@@ -1190,6 +1177,19 @@ is currently in the file. Use ~GTK::Runtime#append_file~ to append to the file a
     if args.inputs.mouse.click
       args.gtk.write_file "last-mouse-click.txt", "Mouse was clicked at #{args.state.tick_count}."
     end
+  end
+#+end_src
+
+* DOCS: ~GTK::Runtime#reset~
+This function will reset Kernel.tick_count to 0 and will remove all data from args.state.
+
+* DOCS: ~GTK::Runtime#calcstringbox~
+This function returns the width and height of a string.
+
+#+begin_src ruby
+  def tick args
+    args.state.string_size           ||= args.gtk.calcstringbox "Hello World"
+    args.state.string_size_font_size ||= args.gtk.calcstringbox "Hello World"
   end
 #+end_src
 
@@ -1567,6 +1567,29 @@ You have to use ~args.outputs.borders~:
   end
 #+end_src
 
+
+* DOCS: ~GTK::Outputs#screenshots~
+
+Add a hash to this collection to take a screenshot and save as png file.
+The keys of the hash can be provided in any order.
+
+#+begin_src
+  def tick args
+    args.outputs.screenshots << {
+      x: 0, y: 0, w: 100, h: 100,    # Which portion of the screen should be captured
+      path: 'screenshot.png',        # Output path of PNG file (inside game directory)
+      r: 255, g: 255, b: 255, a: 0   # Optional chroma key
+    }
+  end
+#+end_src
+
+** Chroma key (Making a color transparent)
+
+By specifying the r, g, b and a keys of the hash you change the transparency of a color in the resulting PNG file.
+This can be useful if you want to create files with transparent background like spritesheets.
+The transparency of the color specified by ~r~, ~g~, ~b~ will be set to the transparency specified by ~a~.
+
+The example above sets the color white (255, 255, 255) as transparent.
 
 * DOCS: ~GTK::Mouse~
 
@@ -2953,12 +2976,6 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-* Learn Ruby Optional - Intermediate Ruby Primer - repl.rb
-#+begin_src ruby
-  # ./samples/00_learn_ruby_optional/00_intermediate_ruby_primer/app/repl.rb
-
-#+end_src
-
 * Rendering Basics - Labels - main.rb
 #+begin_src ruby
   # ./samples/01_rendering_basics/01_labels/app/main.rb
@@ -3437,6 +3454,534 @@ Follows is a source code listing for all files that have been open sourced. This
     args.outputs.debug << [640, y, text, 1, 1, 255, 255, 255].label
     args.outputs.debug << [640, y - 25, "(click to dismiss instructions)" , -2, 1, 255, 255, 255].label
   end
+
+#+end_src
+
+* Rendering Basics - Audio Mixer - main.rb
+#+begin_src ruby
+  # ./samples/01_rendering_basics/06_audio_mixer/app/main.rb
+  $gtk.reset
+  
+  $boxsize = 30
+  
+  def render_sources args
+    mouse_in_panel = (args.state.selected != 0) && args.inputs.mouse.position.inside_rect?([900, 450, 340, 250])
+    mouse_new_down = (args.state.mouse_held == 1)
+  
+    if (mouse_new_down && !mouse_in_panel)
+      args.state.selected = 0  # will reset below if we hit something.
+    end
+  
+    args.audio.keys.each { |k|
+      s = args.audio[k]
+  
+      if (mouse_new_down) && !mouse_in_panel && args.inputs.mouse.position.inside_rect?([s[:screenx], s[:screeny], $boxsize, $boxsize])
+        args.state.selected = k
+        args.state.dragging_source = true
+      end
+  
+      isselected = (k == args.state.selected)
+  
+      if isselected && args.state.dragging_source
+        # you can hang anything on the audio hashes you want, so we store the
+        #  actual screen position so it doesn't scale weirdly vs your mouse.
+        s[:screenx] = args.inputs.mouse.x - ($boxsize / 2)
+        s[:screeny] = args.inputs.mouse.y - ($boxsize / 2)
+  
+        s[:screeny] = 50 if s[:screeny] < 50
+        s[:screeny] = (719 - $boxsize) if s[:screeny] > (719 - $boxsize)
+        s[:screenx] = 0 if s[:screenx] < 0
+        s[:screenx] = (1279 - $boxsize) if s[:screenx] > (1279 - $boxsize)
+  
+        s[:x] = ((s[:screenx] / 1279.0) * 2.0) - 1.0  # scale to -1.0 - 1.0 range
+        s[:y] = ((s[:screeny] / 719.0) * 2.0) - 1.0   # scale to -1.0 - 1.0 range
+      end
+  
+      color = isselected ? [ 0, 255, 0, 255 ] : [ 0, 0, 255, 255 ]
+      args.outputs.primitives << [s[:screenx], s[:screeny], $boxsize, $boxsize, *color].solid
+    }
+  end
+  
+  def render_panel args
+    s = args.audio[args.state.selected]
+    return if s.nil?
+    mouse_down = (args.state.mouse_held > 0)
+  
+    args.outputs.primitives << [900, 450, 340, 250, 127, 127, 200, 255].solid
+    args.outputs.primitives << [1075, 690, "Source ##{args.state.selected}", 3, 1, 255, 255, 255].label
+    args.outputs.primitives << [910, 660, 1230, 660, 255, 255, 255].line
+    args.outputs.primitives << [910, 650, "screen:    (#{s[:screenx].to_i}, #{s[:screeny].to_i})", 0, 0, 255, 255, 255].label
+    args.outputs.primitives << [910, 625, "position:  (#{s[:x].round(5).to_s[0..6]}, #{s[:y].round(5).to_s[0..6]})", 0, 0, 255, 255, 255].label
+  
+    slider = [1022, 586, 200, 7]
+    if mouse_down && args.inputs.mouse.position.inside_rect?(slider)
+      s[:pitch] = ((args.inputs.mouse.x - slider[0]).to_f / (slider[2]-1.0)) * 2.0
+    end
+    slidercolor = (s[:pitch] / 2.0) * 255
+    args.outputs.primitives << [*slider, slidercolor, slidercolor, slidercolor, 255].solid
+    args.outputs.primitives << [910, 600, "pitch: #{s[:pitch].round(3).to_s[0..2]}", 0, 0, 255, 255, 255].label
+  
+    slider = [1022, 561, 200, 7]
+    if mouse_down && args.inputs.mouse.position.inside_rect?(slider)
+      s[:gain] = (args.inputs.mouse.x - slider[0]).to_f / (slider[2]-1.0)
+    end
+    slidercolor = s[:gain] * 255
+    args.outputs.primitives << [*slider, slidercolor, slidercolor, slidercolor, 255].solid
+    args.outputs.primitives << [910, 575, "gain: #{s[:gain].round(3).to_s[0..2]}", 0, 0, 255, 255, 255].label
+  
+    checkbox = [1022, 533, 10, 12]
+    if (args.state.mouse_held == 1) && args.inputs.mouse.position.inside_rect?(checkbox)
+      s[:looping] = !s[:looping]
+    end
+    checkboxcolor = s[:looping] ? 255 : 0
+    args.outputs.primitives << [*checkbox, checkboxcolor, checkboxcolor, checkboxcolor, 255].solid
+    args.outputs.primitives << [910, 550, "looping:", 0, 0, 255, 255, 255].label
+  
+    checkbox = [1022, 508, 10, 12]
+    if (args.state.mouse_held == 1) && args.inputs.mouse.position.inside_rect?(checkbox)
+      s[:paused] = !s[:paused]
+    end
+    checkboxcolor = s[:paused] ? 255 : 0
+    args.outputs.primitives << [*checkbox, checkboxcolor, checkboxcolor, checkboxcolor, 255].solid
+    args.outputs.primitives << [910, 525, "paused:", 0, 0, 255, 255, 255].label
+  
+    button = [910, 460, 320, 20]
+    if (args.state.mouse_held == 1) && args.inputs.mouse.position.inside_rect?(button)
+      args.audio.delete(args.state.selected)
+      args.state.selected = 0
+    end
+    args.outputs.primitives << [*button, 255, 0, 0, 255].solid
+    args.outputs.primitives << [button[0] + (button[2] / 2), button[1]+20, "DELETE SOURCE", 0, 1, 255, 255, 0].label
+  end
+  
+  def spawn_new_sound args, num
+    input = nil
+    input = "sounds/#{num}.#{(num == 6) ? 'ogg' : 'wav'}"
+  
+    # Spawn randomly in an area that won't be covered by UI.
+    screenx = (rand * 600.0) + 200.0
+    screeny = (rand * 400.0) + 100.0
+  
+    args.state.next_sound_index += 1
+  
+    # you can hang anything on the audio hashes you want, so we store the
+    #  actual screen position in here for convenience.
+    args.audio[args.state.next_sound_index] = {
+      input: input,
+      screenx: screenx,
+      screeny: screeny,
+      x: ((screenx / 1279.0) * 2.0) - 1.0,  # scale to -1.0 - 1.0 range
+      y: ((screeny / 719.0) * 2.0) - 1.0,   # scale to -1.0 - 1.0 range
+      z: 0.0,
+      gain: 1.0,
+      pitch: 1.0,
+      looping: true,
+      paused: false
+    }
+  
+    args.state.selected = args.state.next_sound_index
+  end
+  
+  def render_launcher args
+    total = 6
+    x = (1280 - (total * $boxsize * 3)) / 2
+    y = 10
+    args.outputs.primitives << [0, 0, 1280, ((y*2) + $boxsize), 127, 127, 127, 255].solid
+    for i in 1..total
+      args.outputs.primitives << [x, y, $boxsize, $boxsize, 255, 255, 255, 255].solid
+      args.outputs.primitives << [x+8, y+28, i.to_s, 3, 0, 0, 0, 255, 255].label
+      if args.inputs.mouse.click && args.inputs.mouse.click.point.inside_rect?([x, y, $boxsize, $boxsize])
+        spawn_new_sound args, i
+      end
+      x = x + ($boxsize * 3)
+    end
+  end
+  
+  def render_ui args
+    render_launcher args
+    render_panel args
+  end
+  
+  def tick args
+    args.state.mouse_held ||= 0
+    args.state.dragging_source ||= false
+    args.state.selected ||= 0
+    args.state.next_sound_index ||= 0
+  
+    if args.inputs.mouse.up
+      args.state.mouse_held = 0
+      args.state.dragging_source = false
+    elsif args.inputs.mouse.down || (args.state.mouse_held > 0)
+      args.state.mouse_held += 1
+    else
+    end
+  
+    args.outputs.background_color = [ 0, 0, 0, 255 ]
+    render_sources args
+    render_ui args
+  end
+
+#+end_src
+
+* Rendering Basics - Sound Synthesis - main.rb
+#+begin_src ruby
+  # ./samples/01_rendering_basics/07_sound_synthesis/app/main.rb
+  def tick args
+    defaults args
+    render args
+    input args
+    process_audio_queue args
+  end
+  
+  def defaults args
+    args.state.sine_waves  ||= {}
+    args.state.audio_queue ||= []
+    args.state.buttons     ||= [
+      (frequency_buttons args),
+      (note_buttons args),
+      (bell_buttons args)
+    ].flatten
+  end
+  
+  def frequency_buttons args
+    [
+      (button args,
+              row: 4.0, col: 0, text: "300hz",
+              frequency: 300,
+              method_to_call: :play_sine_wave),
+      (button args,
+              row: 5.0, col: 0, text: "400hz",
+              frequency: 400,
+              method_to_call: :play_sine_wave),
+      (button args,
+              row: 6.0, col: 0, text: "500hz",
+              frequency: 500,
+              method_to_call: :play_sine_wave),
+    ]
+  end
+  
+  def play_sine_wave args, sender
+    queue_sine_wave args,
+                    frequency: sender[:frequency],
+                    duration: 1.seconds,
+                    fade_out: true
+  end
+  
+  
+  def note_buttons args
+    [
+      (button args,
+              row: 1.5, col: 3, text: "C4",
+              note: :c, octave: 4, method_to_call: :play_note),
+      (button args,
+              row: 2.5, col: 3, text: "D4",
+              note: :d, octave: 4, method_to_call: :play_note),
+      (button args,
+              row: 3.5, col: 3, text: "E4",
+              note: :e, octave: 4, method_to_call: :play_note),
+      (button args,
+              row: 4.5, col: 3, text: "F4",
+              note: :f, octave: 4, method_to_call: :play_note),
+      (button args,
+              row: 5.5, col: 3, text: "G4",
+              note: :g, octave: 4, method_to_call: :play_note),
+      (button args,
+              row: 6.5, col: 3, text: "A5",
+              note: :a, octave: 5, method_to_call: :play_note),
+      (button args,
+              row: 7.5, col: 3, text: "B5",
+              note: :b, octave: 5, method_to_call: :play_note),
+      (button args,
+              row: 8.5, col: 3, text: "C5",
+              note: :c, octave: 5, method_to_call: :play_note),
+    ]
+  end
+  
+  def play_note args, sender
+    queue_sine_wave args,
+                    frequency: (frequency_for note:   sender[:note],
+                                              octave: sender[:octave]),
+                    duration: 1.seconds,
+                    fade_out: true
+  end
+  
+  def bell_buttons args
+    [
+      (button args,
+              row: 1.5, col: 6, text: "Bell C4",
+              note: :c, octave: 4, method_to_call: :play_bell),
+      (button args,
+              row: 2.5, col: 6, text: "Bell D4",
+              note: :d, octave: 4, method_to_call: :play_bell),
+      (button args,
+              row: 3.5, col: 6, text: "Bell E4",
+              note: :e, octave: 4, method_to_call: :play_bell),
+      (button args,
+              row: 4.5, col: 6, text: "Bell F4",
+              note: :f, octave: 4, method_to_call: :play_bell),
+      (button args,
+              row: 5.5, col: 6, text: "Bell G4",
+              note: :g, octave: 4, method_to_call: :play_bell),
+      (button args,
+              row: 6.5, col: 6, text: "Bell A5",
+              note: :a, octave: 5, method_to_call: :play_bell),
+      (button args,
+              row: 7.5, col: 6, text: "Bell B5",
+              note: :b, octave: 5, method_to_call: :play_bell),
+      (button args,
+              row: 8.5, col: 6, text: "Bell C5",
+              note: :c, octave: 5, method_to_call: :play_bell),
+    ]
+  end
+  
+  def play_bell args, sender
+    queue_bell args,
+               frequency: (frequency_for note:   sender[:note],
+                                         octave: sender[:octave]),
+               duration: 2.seconds,
+               fade_out: true
+  end
+  
+  def render args
+    args.outputs.borders << args.state.buttons.map { |b| b[:border] }
+    args.outputs.labels  << args.state.buttons.map { |b| b[:label]  }
+    args.outputs.labels  << args.layout
+                                .rect(row: 0,
+                                      col: 11.5)
+                                .yield_self { |r| r.merge y: r.y + r.h }
+                                .merge(text: "This is a Pro only feature. Click here to watch the YouTube video if you are on the Standard License.",
+                                       alignment_enum: 1)
+  end
+  
+  def input args
+    args.state.buttons.each do |b|
+      if args.inputs.mouse.click.inside_rect? b[:rect]
+        parameter_string = (b.slice :frequency, :note, :octave).map { |k, v| "#{k}: #{v}" }.join ", "
+        args.gtk.notify! "#{b[:method_to_call]} #{parameter_string}"
+        send b[:method_to_call], args, b
+      end
+    end
+  
+    if args.inputs.mouse.click.inside_rect? (args.layout.rect(row: 0).yield_self { |r| r.merge y: r.y + r.h.half, h: r.h.half })
+      args.gtk.openurl 'https://www.youtube.com/watch?v=zEzovM5jT-k&ab_channel=AmirRajan'
+    end
+  end
+  
+  def process_audio_queue args
+    to_queue = args.state.audio_queue.find_all { |v| v[:queue_at] <= args.tick_count }
+    args.state.audio_queue -= to_queue
+  
+    to_queue.each do |a|
+      args.audio[a[:id]] = a
+    end
+  
+    args.audio.each do |k, v|
+      if v[:decay_rate]
+        v[:gain] -= v[:decay_rate]
+      end
+    end
+  
+    sounds_to_stop = args.audio.find_all do |k, v|
+      v[:stop_at] && args.state.tick_count >= v[:stop_at]
+    end
+  
+    sounds_to_stop.each do |(k, v)|
+      args.audio.delete k
+    end
+  end
+  
+  def graph_sine_wave args, sine_wave, frequency
+    if args.state.tick_count != args.state.graphed_at
+      args.outputs.static_lines.clear
+      args.outputs.static_sprites.clear
+    end
+  
+    r, g, b = frequency.to_i % 80, frequency.to_i % 128, frequency.to_i % 255
+    center_row = args.layout.rect(row: 5, col: 9)
+    x_scale    = 20
+    y_scale    = 100
+    max_points = 20
+  
+    points = sine_wave
+    if sine_wave.length > max_points
+      resolution = sine_wave.length.idiv max_points
+      points = sine_wave.find_all
+                        .with_index { |y, i| i % resolution == 0 }
+    end
+  
+    args.outputs.static_lines << points.map_with_index do |y, x|
+      next_y = points[x + 1]
+  
+      if next_y
+        {
+          x:  center_row.x + (x * x_scale),
+          y:  center_row.y + center_row.h.half + y_scale * y,
+          x2: center_row.x + ((x + 1) * x_scale),
+          y2: center_row.y + center_row.h.half + y_scale * next_y,
+          r:  r,
+          g:  g,
+          b:  b
+        }
+      end
+    end
+  
+    args.outputs.static_sprites << points.map_with_index do |y, x|
+      {
+        x:  (center_row.x + (x * x_scale)) - 1,
+        y:  (center_row.y + center_row.h.half + y_scale * y) - 1,
+        w:  2,
+        h:  2,
+        path: 'sprites/square-black.png'
+      }
+    end
+  
+    args.state.graphed_at = args.state.tick_count
+  end
+  
+  def defaults_period_sine_wave_for
+    { frequency: 440, sample_rate: 48000 }
+  end
+  
+  def sine_wave_for opts = { }
+    opts = defaults_period_sine_wave_for.merge opts
+    frequency   = opts[:frequency]
+    sample_rate = opts[:sample_rate]
+    period_size = (sample_rate.fdiv frequency).ceil
+    period_size.map_with_index do |i|
+      Math::sin((2.0 * Math::PI) / (sample_rate.to_f / frequency.to_f) * i)
+    end.to_a
+  end
+  
+  def generate_audio_data sine_wave, sample_rate
+    sample_size = (sample_rate.fdiv (1000.fdiv 60)).ceil
+    copy_count  = (sample_size.fdiv sine_wave.length).ceil
+    sine_wave * copy_count
+  end
+  
+  def defaults_queue_sine_wave
+    { frequency: 440, duration: 60, gain: 1.0, fade_out: false, queue_in: 0 }
+  end
+  
+  def queue_sine_wave args, opts = { }
+    opts        = defaults_queue_sine_wave.merge opts
+    decay_rate  = 0
+    decay_rate  = 1.fdiv(opts[:duration]) * opts[:gain] if opts[:fade_out]
+    frequency   = opts[:frequency]
+    sample_rate = 48000
+  
+    audio_state = {
+      id:               (new_id! args),
+      frequency:        frequency,
+      sample_rate:      48000,
+      stop_at:          args.tick_count + opts[:queue_in] + opts[:duration],
+      gain:             opts[:gain].to_f,
+      queue_at:         args.state.tick_count + opts[:queue_in],
+      decay_rate:       decay_rate,
+      pitch:            1.0,
+      looping:          true,
+      paused:           false
+    }
+  
+    sine_wave = sine_wave_for frequency: frequency, sample_rate: sample_rate
+    args.state.sine_waves[frequency] ||= sine_wave_for frequency: frequency, sample_rate: sample_rate
+  
+    proc = lambda do
+      generate_audio_data args.state.sine_waves[frequency], sample_rate
+    end
+  
+    audio_state[:input] = [1, sample_rate, proc]
+    graph_sine_wave args, sine_wave, frequency
+    args.state.audio_queue << audio_state
+  end
+  
+  def defaults_queue_bell
+    { frequency: 440, duration: 1.seconds, queue_in: 0 }
+  end
+  
+  def queue_bell args, opts = {}
+    (bell_to_sine_waves (defaults_queue_bell.merge opts)).each { |b| queue_sine_wave args, b }
+  end
+  
+  def bell_harmonics
+    [
+      { frequency_ratio: 0.5, duration_ratio: 1.00 },
+      { frequency_ratio: 1.0, duration_ratio: 0.80 },
+      { frequency_ratio: 2.0, duration_ratio: 0.60 },
+      { frequency_ratio: 3.0, duration_ratio: 0.40 },
+      { frequency_ratio: 4.2, duration_ratio: 0.25 },
+      { frequency_ratio: 5.4, duration_ratio: 0.20 },
+      { frequency_ratio: 6.8, duration_ratio: 0.15 }
+    ]
+  end
+  
+  def bell_to_sine_waves opts
+    bell_harmonics.map do |b|
+      {
+        frequency: opts[:frequency] * b[:frequency_ratio],
+        duration:  opts[:duration] * b[:duration_ratio],
+        queue_in:  opts[:queue_in],
+        gain:      (1.fdiv bell_harmonics.length),
+        fade_out:  true
+      }
+    end
+  end
+  
+  def defaults_frequency_for
+    { note: :a, octave: 5, sharp:  false, flat:   false }
+  end
+  
+  def frequency_for opts = {}
+    opts = defaults_frequency_for.merge opts
+    octave_offset_multiplier  = opts[:octave] - 5
+    note = note_frequencies_octave_5[opts[:note]]
+    if octave_offset_multiplier < 0
+      note = note * 1 / (octave_offset_multiplier.abs + 1)
+    elsif octave_offset_multiplier > 0
+      note = note * (octave_offset_multiplier.abs + 1) / 1
+    end
+    note
+  end
+  
+  def note_frequencies_octave_5
+    {
+      a: 440.0,
+      a_sharp: 466.16, b_flat: 466.16,
+      b: 493.88,
+      c: 523.25,
+      c_sharp: 554.37, d_flat: 587.33,
+      d: 587.33,
+      d_sharp: 622.25, e_flat: 659.25,
+      e: 659.25,
+      f: 698.25,
+      f_sharp: 739.99, g_flat: 739.99,
+      g: 783.99,
+      g_sharp: 830.61, a_flat: 830.61
+    }
+  end
+  
+  def new_id! args
+    args.state.audio_id ||= 0
+    args.state.audio_id  += 1
+  end
+  
+  def button args, opts
+    button_def = opts.merge rect: (args.layout.rect (opts.merge w: 2, h: 1))
+  
+    button_def[:border] = button_def[:rect].merge r: 0, g: 0, b: 0
+  
+    font_size_enum = args.layout.font_relative_size_enum 0
+    label_offset_x = 4
+    label_offset_y = button_def[:rect].h.half + button_def[:rect].h.idiv(4)
+  
+    button_def[:label]  = button_def[:rect].merge text: opts[:text],
+                                                  size_enum: font_size_enum,
+                                                  x: button_def[:rect].x + label_offset_x,
+                                                  y: button_def[:rect].y + label_offset_y
+  
+    button_def
+  end
+  
+  $gtk.reset
 
 #+end_src
 
@@ -4037,6 +4582,54 @@ Follows is a source code listing for all files that have been open sourced. This
     args.outputs.debug << [640, y, text, 1, 1, 255, 255, 255].label
     args.outputs.debug << [640, y - 25, "(click to dismiss instructions)" , -2, 1, 255, 255, 255].label
   end
+
+#+end_src
+
+* Input Basics - Touch - main.rb
+#+begin_src ruby
+  # ./samples/02_input_basics/06_touch/app/main.rb
+  def tick args
+    args.outputs.background_color = [ 0, 0, 0 ]
+    args.outputs.primitives << [640, 700, "Touch your screen.", 5, 1, 255, 255, 255].label
+  
+    # If you don't want to get fancy, you can just look for finger_one
+    #  (and _two, if you like), which are assigned in the order new touches hit
+    #  the screen. If not nil, they are touching right now, and are just
+    #  references to specific items in the args.input.touch hash.
+    # If finger_one lifts off, it will become nil, but finger_two, if it was
+    #  touching, remains until it also lifts off. When all fingers lift off, the
+    #  the next new touch will be finger_one again, but until then, new touches
+    #  don't fill in earlier slots.
+    if !args.inputs.finger_one.nil?
+      args.outputs.primitives << [640, 650, "Finger #1 is touching at (#{args.inputs.finger_one.x}, #{args.inputs.finger_one.y}).", 5, 1, 255, 255, 255].label
+    end
+    if !args.inputs.finger_two.nil?
+      args.outputs.primitives << [640, 600, "Finger #2 is touching at (#{args.inputs.finger_two.x}, #{args.inputs.finger_two.y}).", 5, 1, 255, 255, 255].label
+    end
+  
+    # Here's the more flexible interface: this will report as many simultaneous
+    #  touches as the system can handle, but it's a little more effort to track
+    #  them. Each item in the args.input.touch hash has a unique key (an
+    #  incrementing integer) that exists until the finger lifts off. You can
+    #  tell which order the touches happened globally by the key value, or
+    #  by the touch[id].touch_order field, which resets to zero each time all
+    #  touches have lifted.
+  
+    args.state.colors ||= [
+      0xFF0000, 0x00FF00, 0x1010FF, 0xFFFF00, 0xFF00FF, 0x00FFFF, 0xFFFFFF
+    ]
+  
+    size = 100
+    args.inputs.touch.each { |k,v|
+      color = args.state.colors[v.touch_order % 7]
+      r = (color & 0xFF0000) >> 16
+      g = (color & 0x00FF00) >> 8
+      b = (color & 0x0000FF)
+      args.outputs.primitives << [v.x - (size / 2), v.y + (size / 2), size, size, r, g, b, 255].solid
+      args.outputs.primitives << [v.x, v.y + size, k.to_s, 0, 1, 0, 0, 0].label
+    }
+  end
+  
 
 #+end_src
 
@@ -8587,6 +9180,53 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
+* Advanced Rendering - Pixel Arrays - main.rb
+#+begin_src ruby
+  # ./samples/07_advanced_rendering/06_pixel_arrays/app/main.rb
+  $gtk.reset
+  
+  def tick args
+    args.state.posinc ||= 1
+    args.state.pos ||= 0
+    args.state.rotation ||= 0
+  
+    dimension = 10  # keep it small and let the GPU scale it when rendering the sprite.
+  
+    # Set up our "scanner" pixel array and fill it with black pixels.
+    args.pixel_array(:scanner).width = dimension
+    args.pixel_array(:scanner).height = dimension
+    args.pixel_array(:scanner).pixels.fill(0xFF000000, 0, dimension * dimension)  # black, full alpha
+  
+    # Draw a green line that bounces up and down the sprite.
+    args.pixel_array(:scanner).pixels.fill(0xFF00FF00, dimension * args.state.pos, dimension)  # green, full alpha
+  
+    # Adjust position for next frame.
+    args.state.pos += args.state.posinc
+    if args.state.posinc > 0 && args.state.pos >= dimension
+      args.state.posinc = -1
+      args.state.pos = dimension - 1
+    elsif args.state.posinc < 0 && args.state.pos < 0
+      args.state.posinc = 1
+      args.state.pos = 1
+    end
+  
+    # New/changed pixel arrays get uploaded to the GPU before we render
+    #  anything. At that point, they can be scaled, rotated, and otherwise
+    #  used like any other sprite.
+    w = 100
+    h = 100
+    x = (1280 - w) / 2
+    y = (720 - h) / 2
+    args.outputs.background_color = [64, 0, 128]
+    args.outputs.primitives << [x, y, w, h, :scanner, args.state.rotation].sprite
+    args.state.rotation += 1
+  
+    args.outputs.primitives << args.gtk.current_framerate_primitives
+  end
+  
+
+#+end_src
+
 * Tweening Lerping Easing Functions - Easing Functions - main.rb
 #+begin_src ruby
   # ./samples/08_tweening_lerping_easing_functions/01_easing_functions/app/main.rb
@@ -9840,12 +10480,12 @@ Follows is a source code listing for all files that have been open sourced. This
     GTK::Entity.__reset_id__!
     args.state.player_one = "test"
     result = args.gtk.serialize_state args.state
-    assert.equal! result, "{:entity_id=>3, :tick_count=>-1, :player_one=>\"test\"}"
+    assert.equal! result, "{:entity_id=>3, :entity_keys_by_ref=>{}, :tick_count=>-1, :player_one=>\"test\"}"
   
     GTK::Entity.__reset_id__!
     args.gtk.write_file 'state.txt', ''
     result = args.gtk.serialize_state 'state.txt', args.state
-    assert.equal! result, "{:entity_id=>3, :tick_count=>-1, :player_one=>\"test\"}"
+    assert.equal! result, "{:entity_id=>3, :entity_keys_by_ref=>{}, :tick_count=>-1, :player_one=>\"test\"}"
   end
   
   def test_deserialize args, assert
@@ -9876,8 +10516,9 @@ Follows is a source code listing for all files that have been open sourced. This
     args.state.player_two = args.state.new_entity_strict(:player_strict, name: "Ken")
   
     serialized_state = args.gtk.serialize_state args.state
-    assert.equal! serialized_state, '{:entity_id=>1, :tick_count=>-1, :player_one=>{:entity_id=>1, :entity_name=>:player, :entity_type=>:player, :created_at=>-1, :global_created_at=>-1, :name=>"Ryu"}, :player_two=>{:entity_id=>3, :entity_name=>:player_strict, :created_at=>-1, :global_created_at_elapsed=>-1, :entity_strict=>true, :name=>"Ken"}}'
+    assert.equal! serialized_state, '{:entity_id=>1, :entity_keys_by_ref=>{}, :tick_count=>-1, :player_one=>{:entity_id=>1, :entity_name=>:player, :entity_keys_by_ref=>{}, :entity_type=>:player, :created_at=>-1, :global_created_at=>-1, :name=>"Ryu"}, :player_two=>{:entity_id=>3, :entity_name=>:player_strict, :entity_type=>:player_strict, :created_at=>-1, :global_created_at_elapsed=>-1, :entity_strict=>true, :entity_keys_by_ref=>{:entity_type=>:entity_name, :global_created_at_elapsed=>:created_at}, :name=>"Ken"}}'
   
+    GTK::Entity.__reset_id__!
     deserialize_state = args.gtk.deserialize_state serialized_state
   
     assert.equal! args.state.player_one.name, deserialize_state.player_one.name
@@ -9893,8 +10534,9 @@ Follows is a source code listing for all files that have been open sourced. This
     args.state.player_two = args.state.new_entity_strict(:player_strict, name: "Ken", blood_type: nil)
   
     serialized_state = args.gtk.serialize_state args.state
-    assert.equal! serialized_state, '{:entity_id=>3, :tick_count=>-1, :player_one=>{:entity_id=>1, :entity_name=>:player, :entity_type=>:player, :created_at=>-1, :global_created_at=>-1, :name=>"Ryu"}, :player_two=>{:entity_id=>3, :entity_name=>:player_strict, :created_at=>-1, :global_created_at_elapsed=>-1, :entity_strict=>true, :name=>"Ken", :blood_type=>nil}}'
+    assert.equal! serialized_state, '{:entity_id=>9, :entity_keys_by_ref=>{}, :tick_count=>-1, :player_one=>{:entity_id=>1, :entity_name=>:player, :entity_keys_by_ref=>{}, :entity_type=>:player, :created_at=>-1, :global_created_at=>-1, :name=>"Ryu"}, :player_two=>{:entity_id=>2, :entity_name=>:player_strict, :entity_type=>:player_strict, :created_at=>-1, :global_created_at_elapsed=>-1, :entity_strict=>true, :entity_keys_by_ref=>{:entity_type=>:entity_name, :global_created_at_elapsed=>:created_at}, :name=>"Ken", :blood_type=>nil}}'
   
+    GTK::Entity.__reset_id__!
     deserialized_state = args.gtk.deserialize_state serialized_state
   
     assert.equal! args.state.player_one.name, deserialized_state.player_one.name
@@ -9915,10 +10557,39 @@ Follows is a source code listing for all files that have been open sourced. This
     args.state.enemy = args.state.new_entity_strict(:enemy, name: "Bison", other_property: 'extra mean')
   
     serialized_state = args.gtk.serialize_state args.state
+  
+    GTK::Entity.__reset_id__!
     deserialized_state = args.gtk.deserialize_state serialized_state
   
     assert.equal! deserialized_state.player.name, "Ryu"
     assert.equal! deserialized_state.enemy.other_property, "extra mean"
+  end
+  
+  def test_by_reference_state args, assert
+    GTK::Entity.__reset_id__!
+    args.state.a = { name: "Jane Doe" }
+    args.state.b = args.state.a
+    assert.equal! args.state.a.object_id, args.state.b.object_id
+    serialized_state = args.gtk.serialize_state args.state
+  
+    GTK::Entity.__reset_id__!
+    deserialized_state = args.gtk.deserialize_state serialized_state
+    assert.equal! deserialized_state.a.object_id, deserialized_state.b.object_id
+  end
+  
+  def test_by_reference_state_strict_entities args, assert
+    GTK::Entity.__reset_id__!
+    args.state.a = { name: "Jane Doe" }
+    args.state.strict_entity = args.state.new_entity_strict(:couple) do |e|
+      e.one = args.state.new_entity_strict(:person, name: "Jane")
+      e.two = e.one
+    end
+    assert.equal! args.state.strict_entity.one, args.state.strict_entity.two
+    serialized_state = args.gtk.serialize_state args.state
+  
+    GTK::Entity.__reset_id__!
+    deserialized_state = args.gtk.deserialize_state serialized_state
+    assert.equal! deserialized_state.strict_entity.one, deserialized_state.strict_entity.two
   end
   
   $tests.start
@@ -10108,6 +10779,59 @@ Follows is a source code listing for all files that have been open sourced. This
     args.outputs.labels  << [640, 460, "square(mouse.x) = #{square(args.mouse.x.to_i)}", 5, 1]
     args.outputs.labels  << [640, 420, "mouse.y = #{args.mouse.y.to_i}", 5, 1]
     args.outputs.labels  << [640, 380, "square(mouse.y) = #{square(args.mouse.y.to_i)}", 5, 1]
+  end
+  
+
+#+end_src
+
+* 12 C Extensions - Intermediate - main.rb
+#+begin_src ruby
+  # ./samples/12_c_extensions/02_intermediate/app/main.rb
+  $gtk.ffi_misc.gtk_dlopen("ext")
+  include FFI::RE
+  
+  def split_words(input)
+    words = []
+    last = IntPointer.new
+    re = re_compile("\\w+")
+    first = re_matchp(re, input, last)
+    while first != -1
+      words << input.slice(first, last.value)
+      input = input.slice(last.value + first, input.length)
+      first = re_matchp(re, input, last)
+    end
+    words
+  end
+  
+  def tick args
+    args.outputs.labels  << [640, 500, split_words("hello, dragonriders!").join(' '), 5, 1]
+  end
+
+#+end_src
+
+* 12 C Extensions - Native Pixel Arrays - main.rb
+#+begin_src ruby
+  # ./samples/12_c_extensions/03_native_pixel_arrays/app/main.rb
+  $gtk.ffi_misc.gtk_dlopen("ext")
+  include FFI::CExt
+  
+  def tick args
+    args.state.rotation ||= 0
+  
+    update_scanner_texture   # this calls into a C extension!
+  
+    # New/changed pixel arrays get uploaded to the GPU before we render
+    #  anything. At that point, they can be scaled, rotated, and otherwise
+    #  used like any other sprite.
+    w = 100
+    h = 100
+    x = (1280 - w) / 2
+    y = (720 - h) / 2
+    args.outputs.background_color = [64, 0, 128]
+    args.outputs.primitives << [x, y, w, h, :scanner, args.state.rotation].sprite
+    args.state.rotation += 1
+  
+    args.outputs.primitives << args.gtk.current_framerate_primitives
   end
   
 
@@ -15792,29 +16516,6 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-* Platformer - Gorillas Basic - repl.rb
-#+begin_src ruby
-  # ./samples/99_genre_platformer/gorillas_basic/app/repl.rb
-  begin
-    if $gtk.args.state.current_turn == :player_1_angle
-      $gtk.args.state.player_1_angle = "#{60 + 10.randomize(:ratio).to_i}"
-      $you_so_basic_gorillas.input_execute_turn
-      $gtk.args.state.player_1_velocity = "#{30 + 20.randomize(:ratio).to_i}"
-      $you_so_basic_gorillas.input_execute_turn
-    elsif $gtk.args.state.current_turn == :player_2_angle
-      $gtk.args.state.player_2_angle = "#{60 + 10.randomize(:ratio).to_i}"
-      $you_so_basic_gorillas.input_execute_turn
-      $gtk.args.state.player_2_velocity = "#{30 + 20.randomize(:ratio).to_i}"
-      $you_so_basic_gorillas.input_execute_turn
-    else
-      $you_so_basic_gorillas.input_execute_turn
-    end
-  rescue Exception => e
-    puts e
-  end
-
-#+end_src
-
 * Platformer - Gorillas Basic - tests.rb
 #+begin_src ruby
   # ./samples/99_genre_platformer/gorillas_basic/app/tests.rb
@@ -19222,13 +19923,6 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-* Rpg Narrative - Return Of Serenity - repl.rb
-#+begin_src ruby
-  # ./samples/99_genre_rpg_narrative/return_of_serenity/app/repl.rb
-  puts $gtk.args.state.current_scene
-
-#+end_src
-
 * Rpg Narrative - Return Of Serenity - require.rb
 #+begin_src ruby
   # ./samples/99_genre_rpg_narrative/return_of_serenity/app/require.rb
@@ -22026,6 +22720,11 @@ Follows is a source code listing for all files that have been open sourced. This
       # @return [Outputs]
       attr_accessor :outputs
   
+      # Contains the means to interact with the audio mixer.
+      #
+      # @return [Hash]
+      attr_accessor :audio
+  
       # Contains display size information to assist in positioning things on the screen.
       #
       # @return [Grid]
@@ -22056,9 +22755,12 @@ Follows is a source code listing for all files that have been open sourced. This
   
       attr_accessor :wizards
   
+      attr_accessor :layout
+  
       def initialize runtime, recording
         @inputs = Inputs.new
         @outputs = Outputs.new args: self
+        @audio = {}
         @passes = []
         @state = OpenEntity.new
         @state.tick_count = -1
@@ -22066,9 +22768,11 @@ Follows is a source code listing for all files that have been open sourced. This
         @recording = recording
         @grid = Grid.new runtime
         @render_targets = {}
+        @pixel_arrays = {}
         @all_tests = []
         @geometry = GTK::Geometry
         @wizards = Wizards.new
+        @layout = GTK::Layout.new @grid.w, @grid.h
       end
   
   
@@ -22095,6 +22799,26 @@ Follows is a source code listing for all files that have been open sourced. This
   
       def destructure
         [grid, inputs, state, outputs, runtime, passes]
+      end
+  
+      def clear_pixel_arrays
+        pixel_arrays_clear
+      end
+  
+      def pixel_arrays_clear
+        @pixel_arrays = {}
+      end
+  
+      def pixel_arrays
+        @pixel_arrays
+      end
+  
+      def pixel_array name
+        name = name.to_s
+        if !@pixel_arrays[name]
+          @pixel_arrays[name] = PixelArray.new
+        end
+        @pixel_arrays[name]
       end
   
       def clear_render_targets
@@ -22305,7 +23029,7 @@ Follows is a source code listing for all files that have been open sourced. This
         @assertion_performed = true
         if actual != expected
           actual_string = "#{actual}#{actual.nil? ? " (nil) " : " " }".strip
-          message = "actual:\n#{actual_string} did not equal\nexpected:\n#{expected}.\n#{message}"
+          message = "actual:\n#{actual_string}\n\ndid not equal\n\nexpected:\n#{expected}.\n#{message}"
           raise message
         end
         nil
@@ -22374,6 +23098,10 @@ Follows is a source code listing for all files that have been open sourced. This
   
     def passes
       args.passes
+    end
+  
+    def pixel_arrays
+      args.pixel_arrays
     end
   
     def geometry
@@ -22457,6 +23185,8 @@ Follows is a source code listing for all files that have been open sourced. This
   
   module GTK
     class Console
+      include ConsoleDeprecated
+  
       attr_accessor :show_reason, :log, :logo, :background_color,
                     :text_color, :animation_duration,
                     :max_log_lines, :max_history, :log,
@@ -22527,7 +23257,7 @@ Follows is a source code listing for all files that have been open sourced. This
         @disabled = false
       end
   
-      def addsprite obj
+      def add_sprite obj
         @log_invocation_count += 1
         obj[:id] ||= "id_#{obj[:path]}_#{Time.now.to_i}".to_sym
   
@@ -22547,14 +23277,14 @@ Follows is a source code listing for all files that have been open sourced. This
   
       def add_primitive obj
         if obj.is_a? Hash
-          addsprite obj
+          add_sprite obj
         else
-          addtext obj
+          add_text obj
         end
         nil
       end
   
-      def addtext obj
+      def add_text obj
         @last_log_lines_count ||= 1
         @log_invocation_count += 1
   
@@ -22678,12 +23408,12 @@ Follows is a source code listing for all files that have been open sourced. This
         @toasted_at = Kernel.global_tick_count
         log_once_info :perma_toast_tip, "Use console.perma_toast to show the toast for longer."
         dwim_duration = 5.seconds
-        addtext "* toast :#{id}"
+        add_text "* toast :#{id}"
         puts "* TOAST: :#{id}"
         messages.each do |message|
           lines = message.to_s.wrapped_lines(self.console_text_width)
           dwim_duration += lines.length.seconds
-          addtext "** #{message}"
+          add_text "** #{message}"
           puts "** #{message}"
         end
         show :toast
@@ -22901,6 +23631,10 @@ Follows is a source code listing for all files that have been open sourced. This
             @command_history_index -= 1
             self.current_input_str = @command_history[@command_history_index].dup
           end
+        elsif args.inputs.keyboard.key_down.left
+          prompt.move_cursor_left
+        elsif args.inputs.keyboard.key_down.right
+          prompt.move_cursor_right
         elsif inputs_scroll_up_full? args
           scroll_up_full
         elsif inputs_scroll_down_full? args
@@ -23468,23 +24202,53 @@ Follows is a source code listing for all files that have been open sourced. This
           @cursor_color = Color.new [187, 21, 6]
           @console_text_width = console_text_width
   
+          @cursor_position = 0
+          update_cursor_position_px
+  
           @last_autocomplete_prefix = nil
           @next_candidate_index = 0
         end
   
+        def update_cursor_position_px
+          @cursor_position_px = ($gtk.calcstringbox (@prompt + @current_input_str[0...@cursor_position]), @font_style.size_enum, @font_style.font).x
+        end
+  
+        def current_input_str=(str)
+          @current_input_str = str
+          @cursor_position = str.length
+        end
+  
         def <<(str)
-          @current_input_str << str
+          @current_input_str = @current_input_str[0...@cursor_position] + str + @current_input_str[@cursor_position..-1]
+          @cursor_position += str.length
+          update_cursor_position_px
           @current_input_changed_at = Kernel.global_tick_count
           reset_autocomplete
         end
   
         def backspace
-          @current_input_str.chop!
+          return if current_input_str.length.zero? || @cursor_position.zero?
+  
+          @current_input_str = @current_input_str[0...(@cursor_position - 1)] + @current_input_str[@cursor_position..-1]
+          @cursor_position -= 1
+          update_cursor_position_px
           reset_autocomplete
+        end
+  
+        def move_cursor_left
+          @cursor_position -= 1 if @cursor_position > 0
+          update_cursor_position_px
+        end
+  
+        def move_cursor_right
+          @cursor_position += 1 if @cursor_position < current_input_str.length
+          update_cursor_position_px
         end
   
         def clear
           @current_input_str = ''
+          @cursor_position = 0
+          update_cursor_position_px
           reset_autocomplete
         end
   
@@ -23503,7 +24267,10 @@ Follows is a source code listing for all files that have been open sourced. This
             @next_candidate_index += 1
             @next_candidate_index = 0 if @next_candidate_index >= candidates.length
             self.current_input_str = display_autocomplete_candidate(candidate)
+            update_cursor_position_px
           end
+        rescue Exception => e
+          puts "* BUG: Tab autocompletion failed. Let us know about this.\n#{e}"
         end
   
         def pretty_print_strings_as_table items
@@ -23562,7 +24329,21 @@ Follows is a source code listing for all files that have been open sourced. This
   
         def render(args, x:, y:)
           args.outputs.reserved << font_style.label(x: x, y: y, text: "#{@prompt}#{current_input_str}", color: @text_color)
-          args.outputs.reserved << font_style.label(x: x - 2, y: y + 3, text: (" " * (@prompt.length + current_input_str.length)) + "|", color: @cursor_color)
+          args.outputs.reserved << (@cursor_color.to_h.merge x: x + @cursor_position_px + 0.5,
+                                                             y: y + 5,
+                                                             x2: x + @cursor_position_px + 0.5,
+                                                             y2: y + @font_style.letter_size.y + 5)
+  
+          args.outputs.reserved << (@cursor_color.to_h.merge x: x + @cursor_position_px + 1,
+                                                             y: y + 5,
+                                                             x2: x + @cursor_position_px + 1,
+                                                             y2: y + @font_style.letter_size.y + 5)
+  
+          # debugging rectangle for string
+          # args.outputs.reserved << (@cursor_color.to_h.merge x: x,
+          #                                                    y: y + 5,
+          #                                                    w: @cursor_position_px,
+          #                                                    h: @font_style.letter_size.y).border
         end
   
         def tick
@@ -25525,6 +26306,59 @@ Follows is a source code listing for all files that have been open sourced. This
   
       alias_method :inspect, :to_s
     end
+  
+    # Provides access to multitouch input
+    #
+    # @gtk
+    class FingerTouch
+  
+      # @gtk
+      attr_accessor :moved,
+                    :moved_at,
+                    :global_moved_at,
+                    :touch_order,
+                    :x, :y
+  
+      def initialize
+        @moved = false
+        @moved_at = 0
+        @global_moved_at = 0
+        @touch_order = 0
+        @x = 0
+        @y = 0
+      end
+  
+      def point
+        [@x, @y].point
+      end
+  
+      def inside_rect? rect
+        point.inside_rect? rect
+      end
+  
+      def inside_circle? center, radius
+        point.point_inside_circle? center, radius
+      end
+  
+      alias_method :position, :point
+  
+      def serialize
+        result = {}
+        result[:x] = @x
+        result[:y] = @y
+        result[:touch_order] = @touch_order
+        result[:moved] = @moved
+        result[:moved_at] = @moved_at
+  
+        result
+      end
+  
+      def to_s
+        serialize.to_s
+      end
+  
+      alias_method :inspect, :to_s
+    end
   end
   
   module GTK
@@ -25545,6 +26379,11 @@ Follows is a source code listing for all files that have been open sourced. This
       # @gtk
       attr_reader :mouse
   
+      # @return {FingerTouch}
+      # @gtk
+      attr_reader :touch
+      attr_accessor :finger_one, :finger_two
+  
       # @gtk
       attr_accessor :text, :history
   
@@ -25552,6 +26391,9 @@ Follows is a source code listing for all files that have been open sourced. This
         @controllers = [Controller.new, Controller.new]
         @keyboard = Keyboard.new
         @mouse = Mouse.new
+        @touch = {}
+        @finger_one = nil
+        @finger_two = nil
         @text = []
       end
   
@@ -25627,6 +26469,9 @@ Follows is a source code listing for all files that have been open sourced. This
         @mouse.clear
         @keyboard.clear
         @controllers.each(&:clear)
+        @touch.clear
+        @finger_one = nil
+        @finger_two = nil
       end
   
       # @return [Hash]
@@ -25638,6 +26483,1388 @@ Follows is a source code listing for all files that have been open sourced. This
           mouse: mouse.serialize,
           text: text.serialize
         }
+      end
+    end
+  end
+
+#+end_src
+
+* ios_wizard.rb
+#+begin_src ruby
+  # ./dragon/ios_wizard.rb
+  # Copyright 2019 DragonRuby LLC
+  # MIT License
+  # ios_wizard.rb has been released under MIT (*only this file*).
+  
+  class WizardException < Exception
+    attr_accessor :console_primitives
+  
+    def initialize *console_primitives
+      @console_primitives = console_primitives
+    end
+  end
+  
+  class IOSWizard
+    def initialize
+      @doctor_executed_at = 0
+    end
+  
+    def relative_path
+      (File.dirname $gtk.binary_path)
+    end
+  
+    def steps
+      [
+        :check_for_xcode,
+        :check_for_brew,
+        :check_for_certs,
+        :check_for_device,
+        :check_for_dev_profile,
+        :determine_app_name,
+        :determine_app_id,
+        :blow_away_temp,
+        :stage_app,
+        :write_info_plist,
+        :write_entitlements_plist,
+        :code_sign,
+        :create_ipa,
+        :deploy,
+      ]
+    end
+  
+    def get_reserved_sprite png
+      sprite_path = ".dragonruby/sprites/wizards/ios/#{png}"
+  
+      if !$gtk.ivar :rcb_release_mode
+        sprite_path = "deploy_template/#{sprite_path}"
+        $gtk.reset_sprite sprite_path
+      end
+  
+      if !$gtk.read_file sprite_path
+        log_error "png #{png} not found."
+      end
+  
+      sprite_path
+    end
+  
+    def start
+      @certificate_name = nil
+      init_wizard_status
+      log_info "Starting iOS Wizard so we can deploy to your device."
+      @start_at = Kernel.global_tick_count
+      steps.each do |m|
+        begin
+          result = (send m) || :success if @wizard_status[m][:result] != :success
+          @wizard_status[m][:result] = result
+        rescue Exception => e
+          if e.is_a? WizardException
+            $console.log.clear
+            $console.archived_log.clear
+            log "=" * $console.console_text_width
+            e.console_primitives.each do |p|
+              $console.add_primitive p
+            end
+            log "=" * $console.console_text_width
+          else
+            log_error "Step #{m} failed."
+            log_error e.to_s
+          end
+  
+          $console.set_command "$wizards.ios.start"
+  
+          break
+        end
+      end
+  
+      return nil
+    end
+  
+    def always_fail
+      return false if $gtk.ivar :rcb_release_mode
+      return true
+    end
+  
+    def check_for_xcode
+      if !cli_app_exist?(xcodebuild_cli_app)
+        raise WizardException.new(
+          "* You need Xcode to use $wizards.ios.start.",
+          { w: 75, h: 75, path: get_reserved_sprite("xcode.png") },
+          "** 1. Go to http://developer.apple.com and register.",
+          "** 2. Download Xcode 11.3+ from http://developer.apple.com/downloads.",
+          "   NOTE: DO NOT install Xcode from the App Store. Use the link above.",
+          { w: 700, h: 359, path: get_reserved_sprite("xcode-downloads.png") },
+          "** 3. After installing. Open up Xcode to accept the EULA."
+        )
+      end
+    end
+  
+    def check_for_brew
+      if !cli_app_exist?('brew')
+        raise WizardException.new(
+          "* You need to install Brew.",
+          { w: 700, h: 388, path: get_reserved_sprite("brew.png") },
+          "** 1. Go to http://brew.sh.",
+          "** 2. Copy the command that starts with `/bin/bash -c` on the site.",
+          "** 3. Open Terminal and run the command you copied from the website.",
+          { w: 700, h: 99, path: get_reserved_sprite("terminal.png") },
+        )
+      end
+    end
+  
+    def init_wizard_status
+      @wizard_status = {}
+      steps.each do |m|
+        @wizard_status[m] = { result: :not_started }
+      end
+  
+      previous_step = nil
+      next_step = nil
+      steps.each_cons(2) do |current_step, next_step|
+        @wizard_status[current_step][:next_step] = next_step
+      end
+  
+      steps.reverse.each_cons(2) do |current_step, previous_step|
+        @wizard_status[current_step][:previous_step] = previous_step
+      end
+    end
+  
+    def restart
+      init_wizard_status
+      start
+    end
+  
+    def check_for_dev_profile
+      if !($gtk.read_file 'profiles/development.mobileprovision')
+        $gtk.system "mkdir -p #{relative_path}/profiles"
+        $gtk.system "open #{relative_path}/profiles"
+        $gtk.system "echo Download the mobile provisioning profile and place it here with the name development.mobileprovision > #{relative_path}/profiles/README.txt"
+        raise WizardException.new(
+          "* I didn't find a mobile provision.",
+          "** 1. Go to http://developer.apple.com and click \"Certificates, IDs & Profiles\".",
+          "** 2. Add an App Identifier.",
+          "** 3. Select the App IDs option from the list.",
+          { w: 700, h: 75, path: get_reserved_sprite("identifiers.png") },
+          "** 4. Add your Device next. You can use idevice_id -l to get the UUID of your device.",
+          { w: 365, h: 69, path: get_reserved_sprite("device-link.png") },
+          "** 5. Create a Profile. Associate your certs, id, and device.",
+          { w: 300, h: 122, path: get_reserved_sprite("profiles.png") },
+          "** 6. Download the mobile provision and save it to 'profiles/development.mobileprovision'.",
+          { w: 200, h: 124, path: get_reserved_sprite("profiles-folder.png") },
+        )
+      end
+    end
+  
+    def determine_app_name
+      @app_name = dev_profile_xml[:children].first[:children].first[:children][1][:children].first[:data]
+      log_info "App name is: #{@app_name}."
+    end
+  
+    def dev_profile_xml
+      xml = $gtk.read_file 'profiles/development.mobileprovision'
+      scrubbed = xml.each_line.map do |l|
+        if l.strip.start_with? "<"
+          if l.start_with? '</plist>'
+            '</plist>'
+          elsif l.include? "Apple Inc."
+            nil
+          elsif l.include? '<data>'
+            nil
+          else
+            l
+          end
+        else
+          nil
+        end
+      end.reject { |l| !l }.join
+      $gtk.parse_xml scrubbed
+    end
+  
+    def determine_app_id
+      # lol
+      @app_id = dev_profile_xml[:children].first[:children].first[:children][13][:children][1][:children].first[:data]
+      log_info "App Identifier is set to : #{@app_id}"
+    end
+  
+    def set_app_name name
+      @app_name = name
+      start
+    end
+  
+    def set_dev_profile path
+      if !$gtk.read_file path
+        log_error "I couldn't find a development profile at #{path}."
+        ask_for_dev_profile
+      else
+        @dev_profile_path = path
+        start
+      end
+    end
+  
+    def blow_away_temp
+      sh "rm -rf #{tmp_directory}"
+    end
+  
+    def stage_app
+      log_info "Staging."
+      sh "mkdir -p #{tmp_directory}"
+      sh "cp -R #{relative_path}/dragonruby-ios.app \"#{tmp_directory}/#{@app_name}.app\""
+    end
+  
+    def set_app_id id
+      log_info = "App Id set to: #{id}"
+      @app_id = id
+      start
+    end
+  
+    def check_for_device
+      log_info "Looking for device."
+  
+      if !cli_app_exist?(idevice_id_cli_app)
+        raise WizardException.new(
+           "* It doesn't look like you have the libimobiledevice iOS protocol library installed.",
+           "** 1. Open Terminal.",
+           { w: 700, h: 99, path: get_reserved_sprite("terminal.png") },
+           "** 2. Run: `brew install libimobiledevice`.",
+           { w: 500, h: 93, path: get_reserved_sprite("brew-install-libimobiledevice.png") },
+        )
+      end
+  
+      if connected_devices.length == 0
+        raise WizardException.new("* I couldn't find any connected devices. Connect your iOS device to your Mac and try again.")
+      end
+  
+      @device_id = connected_devices.first
+      log_info "I will be using device with UUID #{@device_id}"
+    end
+  
+    def check_for_certs
+      log_info "Attempting to find certificates on your computer."
+  
+      if !cli_app_exist?(security_cli_app)
+        raise WizardException.new(
+                "* It doesn't look like you have #{security_cli_app}.",
+                "** 1. Open Disk Utility and run First Aid.",
+                { w: 700, h: 148, path: get_reserved_sprite("disk-utility.png") },
+              )
+      end
+  
+      if valid_certs.length == 0
+        raise WizardException.new(
+                "* It doesn't look like you have any valid certs installed.",
+                "** 1. Open Xcode.",
+                "** 2. Log into your developer account. Xcode -> Preferences -> Accounts.",
+                { w: 700, h: 98, path: get_reserved_sprite("login-xcode.png") },
+                "** 3. After loggin in, select Manage Certificates...",
+                { w: 700, h: 115, path: get_reserved_sprite("manage-certificates.png") },
+                "** 4. Add a certificate for Apple Development.",
+                { w: 700, h: 217, path: get_reserved_sprite("add-cert.png") },
+        )
+        raise "You do not have any Apple development certs on this computer."
+      end
+  
+      @certificate_name = valid_certs.first[:name]
+      log_info "I will be using '#{@certificate_name}' to deploy to your device."
+    end
+  
+    def idevice_id_cli_app
+      "idevice_id"
+    end
+  
+    def security_cli_app
+      "/usr/bin/security"
+    end
+  
+    def xcodebuild_cli_app
+      "xcodebuild"
+    end
+  
+    def valid_certs
+      certs = sh("#{security_cli_app} -q find-identity -p codesigning -v").each_line.map do |l|
+        if l.include?(")") && !l.include?("Developer ID") && l.include?("Development")
+          l.strip
+        else
+          nil
+        end
+      end.reject_nil.map do |l|
+        number, id, name = l.split(' ', 3)
+        name = name.gsub("\"", "") if name
+        {
+          number: 1,
+          id: id,
+          name: name
+        }
+      end
+    end
+  
+    def connected_devices
+      sh("idevice_id -l").strip.each_line.map do |l|
+        l.strip
+      end.reject { |l| l.length == 0 }
+    end
+  
+    def cli_app_exist? app
+      `which #{app}`.strip.length != 0
+    end
+  
+    def write_entitlements_plist
+      entitlement_plist_string = <<-XML
+  <?xml version="1.0" encoding="UTF-8"?>
+  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+  <plist version="1.0">
+  	<dict>
+  		<key>application-identifier</key>
+  		<string>:app_id</string>
+  		<key>get-task-allow</key>
+  		<true/>
+  	</dict>
+  </plist>
+  XML
+  
+      log_info "Creating Entitlements.plist"
+  
+      $gtk.write_file_root "tmp/ios/Entitlements.plist", entitlement_plist_string.gsub(":app_id", @app_id).strip
+  
+      sh "/usr/bin/plutil -convert binary1 \"#{tmp_directory}/Entitlements.plist\""
+      sh "/usr/bin/plutil -convert xml1 \"#{tmp_directory}/Entitlements.plist\""
+  
+      @entitlement_plist_written = true
+    end
+  
+    def code_sign
+      sh "cp #{@dev_profile_path} \"#{app_path}/embedded.mobileprovision\""
+  
+      log_info "Signing app with #{@certificate_name}."
+  
+      sh "/usr/bin/plutil -convert binary1 \"#{app_path}/Info.plist\""
+  
+      sh "CODESIGN_ALLOCATE=\"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\" /usr/bin/codesign -f -s \"#{@certificate_name}\" --entitlements #{tmp_directory}/Entitlements.plist \"#{tmp_directory}/#{@app_name}.app\""
+  
+      @code_sign_completed = true
+    end
+  
+    def write_info_plist
+      log_info "Adding Info.plist."
+  
+      info_plist_string = <<-XML
+  <?xml version="1.0" encoding="UTF-8"?>
+  <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+  <plist version="1.0">
+  <dict>
+          <key>NSAppTransportSecurity</key>
+          <dict>
+                  <key>NSAllowsArbitraryLoads</key>
+                  <true/>
+                  <key>NSExceptionDomains</key>
+                  <dict>
+                          <key>google.com</key>
+                          <dict>
+                                  <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                                  <true/>
+                                  <key>NSIncludesSubdomains</key>
+                                  <true/>
+                          </dict>
+                  </dict>
+          </dict>
+  	<key>BuildMachineOSBuild</key>
+  	<string>19C57</string>
+  	<key>CFBundleDevelopmentRegion</key>
+  	<string>en</string>
+  	<key>CFBundleDisplayName</key>
+  	<string>:app_name</string>
+  	<key>CFBundleExecutable</key>
+  	<string>Runtime</string>
+  	<key>CFBundleIconFiles</key>
+  	<array>
+  		<string>AppIcon60x60</string>
+  	</array>
+  	<key>CFBundleIcons</key>
+  	<dict>
+  		<key>CFBundlePrimaryIcon</key>
+  		<dict>
+  			<key>CFBundleIconFiles</key>
+  			<array>
+  				<string>AppIcon60x60</string>
+  			</array>
+  			<key>CFBundleIconName</key>
+  			<string>AppIcon</string>
+  		</dict>
+  	</dict>
+  	<key>CFBundleIcons~ipad</key>
+  	<dict>
+  		<key>CFBundlePrimaryIcon</key>
+  		<dict>
+  			<key>CFBundleIconFiles</key>
+  			<array>
+  				<string>AppIcon60x60</string>
+  				<string>AppIcon76x76</string>
+  			</array>
+  			<key>CFBundleIconName</key>
+  			<string>AppIcon</string>
+  		</dict>
+  	</dict>
+  	<key>CFBundleIdentifier</key>
+  	<string>com.carlile.swisscheese</string>
+  	<key>CFBundleInfoDictionaryVersion</key>
+  	<string>6.0</string>
+  	<key>CFBundleName</key>
+  	<string>:app_name</string>
+  	<key>CFBundlePackageType</key>
+  	<string>APPL</string>
+  	<key>CFBundleShortVersionString</key>
+  	<string>1.0</string>
+  	<key>CFBundleSignature</key>
+  	<string>????</string>
+  	<key>CFBundleSupportedPlatforms</key>
+  	<array>
+  		<string>iPhoneOS</string>
+  	</array>
+  	<key>CFBundleVersion</key>
+  	<string>1.0</string>
+  	<key>DTCompiler</key>
+  	<string>com.apple.compilers.llvm.clang.1_0</string>
+  	<key>DTPlatformBuild</key>
+  	<string>17B102</string>
+  	<key>DTPlatformName</key>
+  	<string>iphoneos</string>
+  	<key>DTPlatformVersion</key>
+  	<string>13.2</string>
+  	<key>DTSDKBuild</key>
+  	<string>17B102</string>
+  	<key>DTSDKName</key>
+  	<string>iphoneos13.2</string>
+  	<key>DTXcode</key>
+  	<string>01131</string>
+  	<key>DTXcodeBuild</key>
+  	<string>11C505</string>
+  	<key>ITSAppUsesNonExemptEncryption</key>
+  	<false/>
+  	<key>MinimumOSVersion</key>
+  	<string>11.0</string>
+  	<key>UIAppFonts</key>
+  	<array/>
+  	<key>UIBackgroundModes</key>
+  	<array/>
+  	<key>UIDeviceFamily</key>
+  	<array>
+  		<integer>1</integer>
+  		<integer>2</integer>
+  	</array>
+  	<key>UILaunchImages</key>
+  	<array>
+  		<dict>
+  			<key>UILaunchImageMinimumOSVersion</key>
+  			<string>11.0</string>
+  			<key>UILaunchImageName</key>
+  			<string>LaunchImage-1100-Portrait-2436h</string>
+  			<key>UILaunchImageOrientation</key>
+  			<string>Portrait</string>
+  			<key>UILaunchImageSize</key>
+  			<string>{375, 812}</string>
+  		</dict>
+  		<dict>
+  			<key>UILaunchImageMinimumOSVersion</key>
+  			<string>8.0</string>
+  			<key>UILaunchImageName</key>
+  			<string>LaunchImage-800-Portrait-736h</string>
+  			<key>UILaunchImageOrientation</key>
+  			<string>Portrait</string>
+  			<key>UILaunchImageSize</key>
+  			<string>{414, 736}</string>
+  		</dict>
+  		<dict>
+  			<key>UILaunchImageMinimumOSVersion</key>
+  			<string>8.0</string>
+  			<key>UILaunchImageName</key>
+  			<string>LaunchImage-800-667h</string>
+  			<key>UILaunchImageOrientation</key>
+  			<string>Portrait</string>
+  			<key>UILaunchImageSize</key>
+  			<string>{375, 667}</string>
+  		</dict>
+  		<dict>
+  			<key>UILaunchImageMinimumOSVersion</key>
+  			<string>7.0</string>
+  			<key>UILaunchImageName</key>
+  			<string>LaunchImage-700</string>
+  			<key>UILaunchImageOrientation</key>
+  			<string>Portrait</string>
+  			<key>UILaunchImageSize</key>
+  			<string>{320, 480}</string>
+  		</dict>
+  		<dict>
+  			<key>UILaunchImageMinimumOSVersion</key>
+  			<string>7.0</string>
+  			<key>UILaunchImageName</key>
+  			<string>LaunchImage-700-568h</string>
+  			<key>UILaunchImageOrientation</key>
+  			<string>Portrait</string>
+  			<key>UILaunchImageSize</key>
+  			<string>{320, 568}</string>
+  		</dict>
+  		<dict>
+  			<key>UILaunchImageMinimumOSVersion</key>
+  			<string>7.0</string>
+  			<key>UILaunchImageName</key>
+  			<string>LaunchImage-700-Portrait</string>
+  			<key>UILaunchImageOrientation</key>
+  			<string>Portrait</string>
+  			<key>UILaunchImageSize</key>
+  			<string>{768, 1024}</string>
+  		</dict>
+  	</array>
+  	<key>UIRequiredDeviceCapabilities</key>
+  	<array>
+  		<string>arm64</string>
+  	</array>
+  	<key>UIRequiresFullScreen</key>
+  	<true/>
+  	<key>UIStatusBarStyle</key>
+  	<string>UIStatusBarStyleDefault</string>
+  	<key>UISupportedInterfaceOrientations</key>
+  	<array>
+  		<string>#{device_orientation_xml}</string>
+  	</array>
+  </dict>
+  </plist>
+  XML
+  
+      # <string>UIInterfaceOrientationPortrait</string>
+      # <string>UIInterfaceOrientationLandscapeRight</string>
+  
+      $gtk.write_file_root "tmp/ios/#{@app_name}.app/Info.plist", info_plist_string.gsub(":app_name", @app_name).strip
+  
+      @info_plist_written = true
+    end
+  
+    def device_orientation_xml
+      return "UIInterfaceOrientationLandscapeRight" if $gtk.logical_width > $gtk.logical_height
+      return "UIInterfaceOrientationPortrait"
+    end
+  
+    def tmp_directory
+      "#{relative_path}/tmp/ios"
+    end
+  
+    def app_path
+      "#{tmp_directory}/#{@app_name}.app"
+    end
+  
+    def root_folder
+      "#{relative_path}/#{$gtk.cli_arguments[:dragonruby]}"
+    end
+  
+    def write_ip_address
+      $gtk.write_file "app/server_ip_address.txt", $gtk.ffi_misc.get_local_ip_address.strip
+    end
+  
+    def create_ipa
+      write_ip_address
+      sh "rm \"#{@app_name}\".ipa"
+      sh "rm -rf \"#{app_path}/app\""
+      sh "rm -rf \"#{app_path}/sounds\""
+      sh "rm -rf \"#{app_path}/sprites\""
+      sh "rm -rf \"#{app_path}/data\""
+      sh "rm -rf \"#{app_path}/fonts\""
+      sh "cp -r \"#{root_folder}/app/\" \"#{app_path}/app/\""
+      sh "cp -r \"#{root_folder}/sounds/\" \"#{app_path}/sounds/\""
+      sh "cp -r \"#{root_folder}/sprites/\" \"#{app_path}/sprites/\""
+      sh "cp -r \"#{root_folder}/data/\" \"#{app_path}/data/\""
+      sh "cp -r \"#{root_folder}/fonts/\" \"#{app_path}/fonts/\""
+      sh "mkdir -p #{tmp_directory}/ipa_root/Payload"
+      sh "cp -r \"#{app_path}\" \"#{tmp_directory}/ipa_root/Payload\""
+      sh "chmod -R 755 \"#{tmp_directory}/ipa_root/Payload\""
+      do_zip
+      sh "cp \"#{tmp_directory}/ipa_root/archive.zip\" \"#{tmp_directory}/#{@app_name}.ipa\""
+      sh "XCODE_DIR=\"/Applications/Xcode.app/Contents/Developer\" \"#{relative_path}/dragonruby-deploy-ios\" -d \"#{@device_id}\" \"#{tmp_directory}/#{@app_name}.ipa\""
+      cmd_result = `ps -e | grep civetweb`
+      is_civet_running = (`ps -e | grep civetweb`).strip.each_line.to_a.length > 2
+      if !is_civet_running
+        $gtk.system "cp \"#{relative_path}/civetweb\" \"#{tmp_directory}/../src_backup/civetweb\""
+        $gtk.system "open \"#{tmp_directory}/../src_backup/civetweb\" -g"
+      else
+        log "* INFO: civetweb is running already running. No need to start another instance."
+      end
+      log_info "Check your device!!"
+    end
+  
+    def do_zip
+      $gtk.write_file_root "tmp/ios/do_zip.sh", <<-SCRIPT
+  pushd #{tmp_directory}/ipa_root/
+  zip -q -r archive.zip Payload
+  popd
+  SCRIPT
+  
+      sh "sh #{tmp_directory}/do_zip.sh"
+    end
+  
+    def sh cmd
+      log_info cmd.strip
+      result = `#{cmd}`
+      if result.strip.length > 0
+        log_info result.strip.each_line.map(&:strip).join("\n")
+      end
+      result
+    end
+  
+    def deploy
+    end
+  end
+
+#+end_src
+
+* itch_wizard.rb
+#+begin_src ruby
+  # ./dragon/itch_wizard.rb
+  # Copyright 2019 DragonRuby LLC
+  # MIT License
+  # itch_wizard.rb has been released under MIT (*only this file*).
+  
+  class ItchWizard
+    def steps
+      [
+        :check_metadata,
+        :deploy
+      ]
+    end
+  
+    def metadata_file_path
+      "metadata/game_metadata.txt"
+    end
+  
+    def get_metadata
+      metadata = $gtk.read_file metadata_file_path
+  
+      if !metadata
+        write_blank_metadata
+        metadata = $gtk.read_file metadata_file_path
+      end
+  
+      dev_id, dev_title, game_id, game_title, version, icon = *metadata.each_line.to_a
+  
+      {
+        dev_id: dev_id.strip,
+        dev_title: dev_title.strip,
+        game_id: game_id.strip,
+        game_title: game_title.strip,
+        version: version.strip,
+        icon: icon.strip
+      }
+    end
+  
+    def write_blank_metadata
+        $gtk.write_file metadata_file_path, <<-S.strip
+  #devid=myname
+  #devtitle=My Name
+  #gameid=mygame
+  #gametitle=My Game
+  #version=0.1
+  #icon=metadata/icon.png
+  S
+    end
+  
+    def check_metadata
+      metadata_text = $gtk.read_file metadata_file_path
+      if !metadata_text
+        write_blank_metadata
+      end
+  
+      if metadata_text.each_line.to_a.length != 6
+        write_blank_metadata
+      end
+  
+      log "* INFO: Contents of #{metadata_file_path}:"
+      log "#+begin_src txt"
+      metadata_text.each_line { |l| log "  #{l}" }
+      log "#+end_src"
+      metadata = get_metadata
+  
+      if metadata[:dev_id].start_with?("#") || !@dev_id
+        log "* PROMPT: Please provide your username for Itch."
+        $console.set_command "$wizards.itch.set_dev_id \"your-itch-username\""
+        return :need_dev_id
+      end
+  
+      if metadata[:dev_title].start_with?("#") || !@dev_title
+        log "* PROMPT: Please provide developer's/company's name that you want displayed."
+        $console.set_command "$wizards.itch.set_dev_title \"Your Name\""
+        return :need_dev_title
+      end
+  
+      if metadata[:game_id].start_with?("#") || !@game_id
+        log "* PROMPT: Please provide the id for you game. This is the id you specified when you set up a new game page on Itch."
+        $console.set_command "$wizards.itch.set_game_id \"your-game-id\""
+        return :need_game_id
+      end
+  
+      if metadata[:game_title].start_with?("#") || !@game_title
+        log "* PROMPT: Please provide the display name for your game. (This can include spaces)"
+        $console.set_command "$wizards.itch.set_game_title \"Your Game\""
+        return :need_game_title
+      end
+  
+      if metadata[:version].start_with?("#") || !@version
+        log "* PROMPT: Please provide the version for your game."
+        $console.set_command "$wizards.itch.set_version \"1.0\""
+        return :need_version
+      end
+  
+      if metadata[:icon].start_with?("#") || !@icon
+        log "* PROPT: Please provide icon path for your game."
+        $console.set_command "$wizards.itch.set_icon \"icon.png\""
+        return :need_icon
+      end
+  
+      return :success
+    end
+  
+    def set_dev_id value
+      @dev_id = value
+      write_metadata
+      start
+    end
+  
+    def set_dev_title value
+      @dev_title = value
+      write_metadata
+      start
+    end
+  
+    def set_game_id value
+      @game_id = value
+      write_metadata
+      start
+    end
+  
+    def set_game_title value
+      @game_title = value
+      write_metadata
+      start
+    end
+  
+    def set_version value
+      @version = value
+      write_metadata
+      start
+    end
+  
+    def set_icon value
+      @icon = value
+      write_metadata
+      start
+    end
+  
+    def write_metadata
+      text = ""
+      if @dev_id
+        text += "devid=#{@dev_id}\n"
+      else
+        text += "#devid=myname\n"
+      end
+  
+      if @dev_title
+        text += "devtitle=#{@dev_title}\n"
+      else
+        text += "#devtitle=My Name\n"
+      end
+  
+      if @game_id
+        text += "gameid=#{@game_id}\n"
+      else
+        text += "#gameid=gameid\n"
+      end
+  
+      if @game_title
+        text += "gametitle=#{@game_title}\n"
+      else
+        text += "#gametitle=Game Name\n"
+      end
+  
+      if @version
+        text += "version=#{@version}\n"
+      else
+        text += "#version=0.1\n"
+      end
+  
+      if @icon
+        text += "icon=metadata/#{@icon}\n"
+      else
+        text += "#icon=metadata/icon.png\n"
+      end
+  
+      $gtk.write_file metadata_file_path, text
+    end
+  
+    def relative_path
+      (File.dirname $gtk.binary_path)
+    end
+  
+    def package_command
+      "#{File.join $gtk.get_base_dir, 'dragonruby-publish'}"
+    end
+  
+    def deploy
+      log_info "* Running dragonruby-publish: #{package_command}"
+      results = $gtk.exec package_command
+      log "#+begin_src"
+      log results
+      log "#+end_src"
+      :success
+    end
+  
+    def start
+      log "================"
+      log "* INFO: Starting Itch Wizard."
+      @start_at = Kernel.global_tick_count
+      steps.each do |m|
+        begin
+          log_info "Running Itch Wizard Step: ~$wizards.itch.#{m}~"
+          result = (send m) || :success if @wizard_status[m][:result] != :success
+          @wizard_status[m][:result] = result
+          if result != :success
+            log_info "Exiting wizard. :#{result}"
+            break
+          end
+        rescue Exception => e
+          if e.is_a? WizardException
+            $console.log.clear
+            $console.archived_log.clear
+            log "=" * $console.console_text_width
+            e.console_primitives.each do |p|
+              $console.add_primitive p
+            end
+            log "=" * $console.console_text_width
+            $console.set_command (e.console_command || "$wizards.itch.start")
+          else
+            log_error "Step #{m} failed."
+            log_error e.to_s
+            $console.set_command "$wizards.itch.start"
+          end
+  
+          break
+        end
+      end
+    end
+  
+    def reset
+      @dev_id = nil
+      @dev_title = nil
+      @game_id = nil
+      @game_title = nil
+      @version = nil
+      @icon = nil
+      init_wizard_status
+    end
+  
+    def restart
+      reset
+      start
+    end
+  
+    def initialize
+      reset
+    end
+  
+    def init_wizard_status
+      @wizard_status = {}
+  
+      steps.each do |m|
+        @wizard_status[m] = { result: :not_started }
+      end
+  
+      previous_step = nil
+      next_step = nil
+  
+      steps.each_cons(2) do |current_step, next_step|
+        @wizard_status[current_step][:next_step] = next_step
+      end
+  
+      steps.reverse.each_cons(2) do |current_step, previous_step|
+        @wizard_status[current_step][:previous_step] = previous_step
+      end
+    end
+  end
+
+#+end_src
+
+* layout.rb
+#+begin_src ruby
+  # ./dragon/layout.rb
+  # Copyright 2019 DragonRuby LLC
+  # MIT License
+  # layout.rb has been released under MIT (*only this file*).
+  
+  module GTK
+    class Margin
+      attr :left, :right, :top, :bottom
+  
+      def initialize
+        @left   = 0
+        @right  = 0
+        @top    = 0
+        @bottom = 0
+      end
+  
+      def serialize
+        {
+          left:   @left,
+          right:  @right,
+          top:    @top,
+          bottom: @bottom,
+        }
+      end
+  
+      def inspect
+        serialize.to_s
+      end
+  
+      def to_s
+        serialize.to_s
+      end
+    end
+  
+    class SafeArea
+      attr :w, :h, :margin
+  
+      def initialize
+        @w      = 0
+        @h      = 0
+        @margin = Margin.new
+      end
+  
+      def serialize
+        {
+          w:      @w,
+          h:      @h,
+          margin: @margin.serialize
+        }
+      end
+  
+      def inspect
+        serialize.to_s
+      end
+  
+      def to_s
+        serialize.to_s
+      end
+    end
+  
+    class GridArea
+      attr :w, :h, :margin, :gutter, :col_count, :row_count, :cell_w, :cell_h, :outer_gutter
+  
+      def initialize
+        @w            = 0
+        @h            = 0
+        @gutter       = 0
+        @outer_gutter = 0
+        @col_count    = 0
+        @row_count    = 0
+        @margin       = Margin.new
+      end
+  
+      def serialize
+        {
+          w:            @w,
+          h:            @h,
+          gutter:       @gutter,
+          outer_gutter: @outer_gutter,
+          col_count:    @col_count,
+          row_count:    @row_count,
+          margin:       @margin.serialize
+        }
+      end
+  
+      def inspect
+        serialize.to_s
+      end
+  
+      def to_s
+        serialize.to_s
+      end
+    end
+  
+    class ControlArea
+      attr :cell_size, :w, :h, :margin
+  
+      def initialize
+        @margin = Margin.new
+      end
+  
+      def serialize
+        {
+          cell_size: @cell_size,
+          w:         @w,
+          h:         @h,
+          margin:    @margin.serialize,
+        }
+      end
+  
+      def inspect
+        serialize.to_s
+      end
+  
+      def to_s
+        serialize.to_s
+      end
+    end
+  
+    class Device
+      attr :w, :h, :safe_area, :grid_area, :control_area, :name, :aspect
+  
+      def initialize
+        @name         = ""
+        @w            = 0
+        @h            = 0
+        @safe_area    = SafeArea.new
+        @grid_area    = GridArea.new
+        @control_area = ControlArea.new
+        @aspect       = AspectRatio.new
+      end
+  
+      def assert! result, message
+        return if result
+        raise message
+      end
+  
+      def check_math!
+        assert! (@control_area.w + @control_area.margin.left + @control_area.margin.right) == @w, "Math for Width didn't pan out."
+        assert! (@control_area.h + @control_area.margin.top + @control_area.margin.bottom) == @h, "Math for Height didn't pan out."
+      end
+  
+      def serialize
+        {
+          name:         @name,
+          w:            @w,
+          h:            @h,
+          aspect:       @aspect.serialize,
+          safe_area:    @safe_area.serialize,
+          grid_area:    @grid_area.serialize,
+          control_area: @control_area.serialize
+        }
+      end
+  
+      def inspect
+        serialize.to_s
+      end
+  
+      def to_s
+        serialize.to_s
+      end
+    end
+  
+    class AspectRatio
+      attr :w, :h, :u
+  
+      def initialize
+        @w = 0
+        @h = 0
+        @u = 0
+      end
+  
+      def serialize
+        {
+          w: @w,
+          h: @h,
+          u: @u
+        }
+      end
+  
+      def inspect
+        serialize.to_s
+      end
+  
+      def to_s
+        serialize.to_s
+      end
+    end
+  
+    class Layout
+      attr :w, :h, :rect_cache
+  
+      def initialize w, h
+        @w = w
+        @h = h
+        @rect_cache = {}
+        init_device @w, @h
+      end
+  
+      def u_for_16x9 w, h
+        u = (w.fdiv 16).floor
+        u = (h.fdiv 9).floor if (u * 9) > h
+  
+        {
+          u: u,
+          w: u * 16,
+          h: u * 9
+        }
+      end
+  
+      def font_relative_size_enum size_enum
+        base_line_logical = 22
+        base_line_actual = font_size_med
+        target_logical = size_enum
+        target_logical = 1 if target_logical <= 0
+        (base_line_actual / base_line_logical) * target_logical
+      end
+  
+      def font_px_to_pt px
+        (px / 1.33333).floor
+      end
+  
+      def font_pt_to_px pt
+        pt * 1.333333
+      end
+  
+      def font_size_cell
+        (cell_height / 1.33333)
+      end
+  
+      def font_size_xl
+        font_size_cell
+      end
+  
+      def font_size_lg
+        font_size_cell * 0.8
+      end
+  
+      def font_size_med
+        font_size_cell * 0.7
+      end
+  
+      def font_size_sm
+        font_size_cell * 0.6
+      end
+  
+      def font_size_xs
+        font_size_cell * 0.5
+      end
+  
+      def font_size
+        font_size_cell * 0.7
+      end
+  
+      def logical_rect
+        @logical_rect ||= { x: 0,
+                            y: 0,
+                            w: @w,
+                            h: @h }
+      end
+  
+      def safe_rect
+        @safe_rect ||= { x: 0,
+                         y: 0,
+                         w: @w,
+                         h: @h }
+      end
+  
+      def control_rect
+        @control_rect ||= { x: device.control_area.margin.left,
+                            y: device.control_area.margin.top,
+                            w: device.control_area.w,
+                            h: device.control_area.h }
+      end
+  
+      def row_count
+        device.grid_area.row_count
+      end
+  
+      def col_count
+        device.grid_area.col_count
+      end
+  
+      def gutter_height
+        device.grid_area.gutter
+      end
+  
+      def gutter_width
+        device.grid_area.gutter
+      end
+  
+      def outer_gutter
+        device.grid_area.outer_gutter
+      end
+  
+      def cell_height
+        device.control_area.cell_size
+      end
+  
+      def cell_width
+        device.control_area.cell_size
+      end
+  
+      def rect_defaults
+        {
+          row: nil,
+          col: nil,
+          h:   1,
+          w:   1,
+          dx:  0,
+          dy:  0,
+          rect: :control_rect
+        }
+      end
+  
+      def rect opts
+        opts = rect_defaults.merge opts
+        result = send opts[:rect]
+        if opts[:row] && opts[:col] && opts[:w] && opts[:h]
+          col = rect_col opts[:col], opts[:w]
+          row = rect_row opts[:row], opts[:h]
+          result = control_rect.merge x: col.x,
+                                      y: row.y,
+                                      w: col.w,
+                                      h: row.h
+        elsif opts[:row] && !opts[:col]
+          result = rect_row opts[:row], opts[:h]
+        elsif !opts[:row] && opts[:col]
+          result = rect_col opts[:col], opts[:w]
+        else
+          raise "LayoutTheory::rect unable to process opts #{opts}."
+        end
+  
+        if opts[:max_height] && opts[:max_height] >= 0
+          if result[:h] > opts[:max_height]
+            delta = (result[:h] - opts[:max_height]) * 2
+            result[:y] += delta
+            result[:h] = opts[:max_height]
+          end
+        end
+  
+        if opts[:max_width] && opts[:max_width] >= 0
+          if result[:w] > opts[:max_width]
+            delta = (result[:w] - opts[:max_width]) * 2
+            result[:x] += delta
+            result[:w] = opts[:max_width]
+          end
+        end
+  
+        result[:x] += opts[:dx]
+        result[:y] += opts[:dy]
+  
+        if opts[:include_row_gutter]
+          result[:x] -= device.grid_area.gutter
+          result[:w] += device.grid_area.gutter * 2
+        end
+  
+        if opts[:include_col_gutter]
+          result[:y] -= device.grid_area.gutter
+          result[:h] += device.grid_area.gutter * 2
+        end
+  
+        result
+      end
+  
+      def rect_center reference, target
+        delta_x = (reference.w - target.w).fdiv 2
+        delta_y = (reference.h - target.h).fdiv 2
+        [target.x - delta_x, target.y - delta_y, target.w, target.h]
+      end
+  
+      def rect_row index, h
+        @rect_cache[:row] ||= {}
+        @rect_cache[:row][index] ||= {}
+        return @rect_cache[:row][index][h] if @rect_cache[:row][index][h]
+        row_h = (device.grid_area.gutter * (h - 1)) +
+                (device.control_area.cell_size * h)
+  
+        row_h = row_h.to_i
+        row_h -= 1 if row_h.odd?
+  
+        row_y = (control_rect.y) +
+                (device.grid_area.gutter * index) +
+                (device.control_area.cell_size * index)
+  
+        row_y = row_y.to_i
+        row_y += 1 if row_y.odd? && (index + 1) > @device.grid_area.row_count.half
+        row_y += 1 if row_y.odd? && (index + 1) <= @device.grid_area.row_count.half
+  
+        row_y = device.h - row_y - row_h
+  
+        result = control_rect.merge y: row_y, h: row_h
+        @rect_cache[:row][index][h] = result
+        @rect_cache[:row][index][h]
+      end
+  
+      def rect_col index, w
+        @rect_cache[:col] ||= {}
+        @rect_cache[:col][index] ||= {}
+        return @rect_cache[:col][index][w] if @rect_cache[:col][index][w]
+        col_x = (control_rect.x) +
+                (device.grid_area.gutter * index) +
+                (device.control_area.cell_size * index)
+  
+        col_x = col_x.to_i
+        col_x -= 1 if col_x.odd? && (index + 1) < @device.grid_area.col_count.half
+        col_x += 1 if col_x.odd? && (index + 1) >= @device.grid_area.col_count.half
+  
+        col_w = (device.grid_area.gutter * (w - 1)) +
+                (device.control_area.cell_size * w)
+  
+        col_w = col_w.to_i
+        col_w -= 1 if col_w.odd?
+  
+        result = control_rect.merge x: col_x, w: col_w
+        @rect_cache[:col][index][w] = result
+        @rect_cache[:col][index][w]
+      end
+  
+      def device
+        @device
+      end
+  
+      def init_device w, h
+        @device      = Device.new
+        @device.w    = w
+        @device.h    = h
+        @device.name = "Device"
+        @device.aspect.w = (u_for_16x9 w, h)[:w]
+        @device.aspect.h = (u_for_16x9 w, h)[:h]
+        @device.aspect.u = (u_for_16x9 w, h)[:u]
+        @device.safe_area.w             = @device.aspect.u * 16
+        @device.safe_area.h             = @device.aspect.u * 9
+        @device.safe_area.margin.left   = ((@device.w - @device.safe_area.w).fdiv 2).floor
+        @device.safe_area.margin.right  = ((@device.w - @device.safe_area.w).fdiv 2).floor
+        @device.safe_area.margin.top    = ((@device.h - @device.safe_area.h).fdiv 2).floor
+        @device.safe_area.margin.bottom = ((@device.h - @device.safe_area.h).fdiv 2).floor
+        @device.grid_area.outer_gutter  = @device.w / 80
+        @device.grid_area.gutter        = @device.w / 160
+  
+        @device.grid_area.w = @device.safe_area.w - (@device.grid_area.outer_gutter * 2)
+        @device.grid_area.h = @device.safe_area.h - (@device.grid_area.outer_gutter * 2)
+  
+        @device.grid_area.margin.left   = ((@device.w - @device.grid_area.w).fdiv 2).floor
+        @device.grid_area.margin.right  = ((@device.w - @device.grid_area.w).fdiv 2).floor
+        @device.grid_area.margin.top    = ((@device.h - @device.grid_area.h).fdiv 2).floor
+        @device.grid_area.margin.bottom = ((@device.h - @device.grid_area.h).fdiv 2).floor
+  
+        @device.grid_area.col_count = 24
+        @device.grid_area.row_count = 12
+        @device.grid_area.cell_w = ((@device.aspect.w - (@device.grid_area.outer_gutter * 2)) - ((@device.grid_area.col_count - 1) * @device.grid_area.gutter)).fdiv @device.grid_area.col_count
+        @device.grid_area.cell_h = ((@device.aspect.h - (@device.grid_area.outer_gutter * 2)) - ((@device.grid_area.row_count - 1) * @device.grid_area.gutter)).fdiv @device.grid_area.row_count
+  
+        @device.control_area.cell_size = @device.grid_area.cell_w
+        @device.control_area.cell_size = @device.grid_area.cell_h if @device.grid_area.cell_h < @device.grid_area.cell_w && @device.grid_area.cell_h > 0
+        @device.control_area.cell_size = @device.control_area.cell_size.floor
+        @device.control_area.w = (@device.control_area.cell_size * @device.grid_area.col_count) + (@device.grid_area.gutter * (@device.grid_area.col_count - 1))
+        @device.control_area.h = (@device.control_area.cell_size * @device.grid_area.row_count) + (@device.grid_area.gutter * (@device.grid_area.row_count - 1))
+        @device.control_area.margin.left  = (@device.w - @device.control_area.w).fdiv 2
+        @device.control_area.margin.right  = (@device.w - @device.control_area.w).fdiv 2
+        @device.control_area.margin.top  = (@device.h - @device.control_area.h).fdiv 2
+        @device.control_area.margin.bottom  = (@device.h - @device.control_area.h).fdiv 2
+        @device
+      end
+  
+      def serialize
+        {
+          device: @device.serialize,
+        }
+      end
+  
+      def inspect
+        serialize.to_s
+      end
+  
+      def to_s
+        serialize.to_s
       end
     end
   end
@@ -26416,6 +28643,11 @@ Follows is a source code listing for all files that have been open sourced. This
       return 720 - self unless $gtk
       $gtk.args.grid.h - self
     end
+  
+    def from_right
+      return 1280 - self unless $gtk
+      $gtk.args.grid.w - self
+    end
   end
   
   class Fixnum
@@ -26559,6 +28791,247 @@ Follows is a source code listing for all files that have been open sourced. This
   
     def round *args
       original_round
+    end
+  end
+
+#+end_src
+
+* runtime/draw.rb
+#+begin_src ruby
+  # ./dragon/runtime/draw.rb
+  # Copyright 2019 DragonRuby LLC
+  # MIT License
+  # draw.rb has been released under MIT (*only this file*).
+  
+  module GTK
+    class Runtime
+      module Draw
+        def primitives pass
+          if $top_level.respond_to? :primitives_override
+            return $top_level.tick_render @args, pass
+          end
+  
+          # Don't change this draw order unless you understand
+          # the implications.
+  
+          # pass.solids.each            { |s| draw_solid s }
+          # while loops are faster than each with block
+          idx = 0
+          while idx < pass.solids.length
+            draw_solid (pass.solids.value idx) # accessing an array using .value instead of [] is faster
+            idx += 1
+          end
+  
+          # pass.static_solids.each     { |s| draw_solid s }
+          idx = 0
+          while idx < pass.static_solids.length
+            draw_solid (pass.static_solids.value idx)
+            idx += 1
+          end
+  
+          # pass.sprites.each           { |s| draw_sprite s }
+          idx = 0
+          while idx < pass.sprites.length
+            draw_sprite (pass.sprites.value idx)
+            idx += 1
+          end
+  
+          # pass.static_sprites.each    { |s| draw_sprite s }
+          idx = 0
+          while idx < pass.static_sprites.length
+            draw_sprite (pass.static_sprites.value idx)
+            idx += 1
+          end
+  
+          # pass.primitives.each        { |p| draw_primitive p }
+          idx = 0
+          while idx < pass.primitives.length
+            draw_primitive (pass.primitives.value idx)
+            idx += 1
+          end
+  
+          # pass.static_primitives.each { |p| draw_primitive p }
+          idx = 0
+          while idx < pass.static_primitives.length
+            draw_primitive (pass.static_primitives.value idx)
+            idx += 1
+          end
+  
+          # pass.labels.each            { |l| draw_label l }
+          idx = 0
+          while idx < pass.labels.length
+            draw_label (pass.labels.value idx)
+            idx += 1
+          end
+  
+          # pass.static_labels.each     { |l| draw_label l }
+          idx = 0
+          while idx < pass.static_labels.length
+            draw_label (pass.static_labels.value idx)
+            idx += 1
+          end
+  
+          # pass.lines.each             { |l| draw_line l }
+          idx = 0
+          while idx < pass.lines.length
+            draw_line (pass.lines.value idx)
+            idx += 1
+          end
+  
+          # pass.static_lines.each      { |l| draw_line l }
+          idx = 0
+          while idx < pass.static_lines.length
+            draw_line (pass.static_lines.value idx)
+            idx += 1
+          end
+  
+          # pass.borders.each           { |b| draw_border b }
+          idx = 0
+          while idx < pass.borders.length
+            draw_border (pass.borders.value idx)
+            idx += 1
+          end
+  
+          # pass.static_borders.each    { |b| draw_border b }
+          idx = 0
+          while idx < pass.static_borders.length
+            draw_border (pass.static_borders.value idx)
+            idx += 1
+          end
+  
+          if !$gtk.production
+            # pass.debug.each        { |r| draw_primitive r }
+            idx = 0
+            while idx < pass.debug.length
+              draw_primitive (pass.debug.value idx)
+              idx += 1
+            end
+  
+            # pass.static_debug.each { |r| draw_primitive r }
+            idx = 0
+            while idx < pass.static_debug.length
+              draw_primitive (pass.static_debug.value idx)
+              idx += 1
+            end
+          end
+  
+          # pass.reserved.each          { |r| draw_primitive r }
+          idx = 0
+          while idx < pass.reserved.length
+            draw_primitive (pass.reserved.value idx)
+            idx += 1
+          end
+  
+          # pass.static_reserved.each   { |r| draw_primitive r }
+          idx = 0
+          while idx < pass.static_reserved.length
+            draw_primitive (pass.static_reserved.value idx)
+            idx += 1
+          end
+        rescue Exception => e
+          pause!
+          pretty_print_exception_and_export! e
+        end
+  
+        def draw_solid s
+          return unless s
+          if s.respond_to? :draw_override
+            s.draw_override @ffi_draw
+          else
+            @ffi_draw.draw_solid s.x, s.y, s.w, s.h, s.r, s.g, s.b, s.a
+          end
+        rescue Exception => e
+          raise_conversion_for_rendering_failed s, e, :solid
+        end
+  
+        def draw_sprite s
+          return unless s
+          if s.respond_to? :draw_override
+            s.draw_override @ffi_draw
+          else
+            @ffi_draw.draw_sprite_3 s.x, s.y, s.w, s.h,
+                                    s.path.s_or_default,
+                                    s.angle,
+                                    s.a, s.r, s.g, s.b,
+                                    s.tile_x, s.tile_y, s.tile_w, s.tile_h,
+                                    !!s.flip_horizontally, !!s.flip_vertically,
+                                    s.angle_anchor_x, s.angle_anchor_y,
+                                    s.source_x, s.source_y, s.source_w, s.source_h
+          end
+        rescue Exception => e
+          raise_conversion_for_rendering_failed s, e, :sprite
+        end
+  
+        def draw_screenshot s
+          return unless s
+          if s.respond_to? :draw_override
+            s.draw_override @ffi_draw
+          else
+            @ffi_draw.draw_screenshot s.path.s_or_default,
+                                      s.x, s.y, s.w, s.h,
+                                      s.angle,
+                                      s.a, s.r, s.g, s.b,
+                                      s.tile_x, s.tile_y, s.tile_w, s.tile_h,
+                                      !!s.flip_horizontally, !!s.flip_vertically,
+                                      s.angle_anchor_x, s.angle_anchor_y,
+                                      s.source_x, s.source_y, s.source_w, s.source_h
+          end
+        rescue Exception => e
+          raise_conversion_for_rendering_failed s, e, :screenshot
+        end
+  
+        def draw_label l
+          return unless l
+          if l.respond_to? :draw_override
+            l.draw_override @ffi_draw
+          else
+            @ffi_draw.draw_label l.x, l.y, l.text.s_or_default,
+                                 l.size_enum, l.alignment_enum,
+                                 l.r, l.g, l.b, l.a,
+                                 l.font.s_or_default(nil)
+          end
+        rescue Exception => e
+          raise_conversion_for_rendering_failed l, e, :label
+        end
+  
+        def draw_line l
+          return unless l
+          if l.respond_to? :draw_override
+            l.draw_override @ffi_draw
+          else
+            @ffi_draw.draw_line l.x, l.y, l.x2, l.y2, l.r, l.g, l.b, l.a
+          end
+        rescue Exception => e
+          raise_conversion_for_rendering_failed l, e, :line
+        end
+  
+        def draw_border s
+          return unless s
+          if s.respond_to? :draw_override
+            s.draw_override @ffi_draw
+          else
+            @ffi_draw.draw_border s.x, s.y, s.w, s.h, s.r, s.g, s.b, s.a
+          end
+        rescue Exception => e
+          raise_conversion_for_rendering_failed s, e, :border
+        end
+  
+        def draw_screenshots
+          @args.outputs.screenshots.each { |s| draw_screenshot s }
+        end
+  
+        def pixel_arrays
+          @args.pixel_arrays.each { |k,v|
+            if v.pixels.length == (v.width * v.height)  # !!! FIXME: warning? exception? Different API?
+              @ffi_draw.upload_pixel_array k.to_s, v.width.to_i, v.height.to_i, v.pixels
+            end
+          }
+        rescue Exception => e
+          pause!
+          pretty_print_exception_and_export! e
+        end
+  
+      end
     end
   end
 
@@ -26843,6 +29316,10 @@ Follows is a source code listing for all files that have been open sourced. This
     def rtrim!
       rstrip!
     end
+  
+    def serialize
+      self
+    end
   end
 
 #+end_src
@@ -27000,6 +29477,9 @@ Follows is a source code listing for all files that have been open sourced. This
   # MIT License
   # trace.rb has been released under MIT (*only this file*).
   
+  # Contributors outside of DragonRuby who also hold Copyright:
+  # - Dan Healy: https://github.com/danhealy
+  
   module GTK
     module Trace
       IGNORED_METHODS = [
@@ -27079,10 +29559,19 @@ Follows is a source code listing for all files that have been open sourced. This
         methods.reject { |m| m.start_with? "__trace_" }.reject { |m| IGNORED_METHODS.include? m }
       end
   
+      def self.trace_times_string
+        str = []
+        $trace_performance.sort_by {|method_name, times| -times[:avg] }.each do |method_name, times|
+          str << "#{method_name}: #{times[:sum].round(2)}/#{times[:count]} #{times[:min]}ms min, #{times[:avg].round(2)}ms avg, #{times[:max]}ms max"
+        end
+        str.join("\n")
+      end
+  
       def self.flush_trace pad_with_newline = false
         $trace_puts ||= []
+        puts "(Trace info flushed!)"
         if $trace_puts.length > 0
-          text = $trace_puts.join("")
+          text = $trace_puts.join("").strip + "\n" + self.trace_times_string + "\n"
           if pad_with_newline
             $gtk.append_file_root 'logs/trace.txt', "\n" + text.strip
           else
@@ -27097,6 +29586,15 @@ Follows is a source code listing for all files that have been open sourced. This
         $trace_history ||= []
         $trace_enabled = true
         $trace_call_depth ||=0
+        $trace_performance = Hash.new {|h,k|
+          h[k] = {
+            min:   100000,
+            max:   0,
+            avg:   0,
+            sum:   0,
+            count: 0
+          }
+        }
         flush_trace
         instance = $top_level unless instance
         return if Trace.traced_classes.include? instance.class
@@ -27114,15 +29612,27 @@ Follows is a source code listing for all files that have been open sourced. This
               instance.__trace_call_depth__ += 1
               $trace_call_depth = instance.__trace_call_depth__
               parameters = "#{args}"[1..-2]
+  
               $trace_puts << "\n  #{tab_width}#{m}(#{parameters})"
-              execution_time = Time.new.to_i
+  
+              execution_time = Time.new
+  
               $last_method_traced = trace_method_name
               $trace_history << [m, parameters]
+  
               result = send(trace_method_name, *args)
-              completion_time = Time.new.to_i
+  
+              class_m = "#{instance.class}##{m}"
+              completion_time = ((Time.new - execution_time).to_f * 1000).round(2)
+              $trace_performance[class_m][:min] = [$trace_performance[class_m][:min], completion_time].min
+              $trace_performance[class_m][:max] = [$trace_performance[class_m][:max], completion_time].max
+              $trace_performance[class_m][:count] += 1
+              $trace_performance[class_m][:sum] += completion_time
+              $trace_performance[class_m][:avg] = $trace_performance[class_m][:sum].fdiv($trace_performance[class_m][:count])
+  
               instance.__trace_call_depth__ -= 1
               instance.__trace_call_depth__ = instance.__trace_call_depth__.greater 0
-              $trace_puts << "\n #{tab_width} success: #{m}"
+              $trace_puts << "\n #{tab_width} #{completion_time > 10 ? '!!! ' : ''}#{completion_time}ms success: #{m}"
               if instance.__trace_call_depth__ == 0
                 $trace_puts << "\n"
                 $trace_history.clear
@@ -27143,6 +29653,26 @@ Follows is a source code listing for all files that have been open sourced. This
           end
         end
         mark_class_as_traced! instance.class
+      end
+    end
+  end
+
+#+end_src
+
+* wizards.rb
+#+begin_src ruby
+  # ./dragon/wizards.rb
+  # Copyright 2019 DragonRuby LLC
+  # MIT License
+  # wizards.rb has been released under MIT (*only this file*).
+  
+  module GTK
+    class Wizards
+      attr_accessor :ios, :itch
+  
+      def initialize
+        @ios = IOSWizard.new
+        @itch = ItchWizard.new
       end
     end
   end

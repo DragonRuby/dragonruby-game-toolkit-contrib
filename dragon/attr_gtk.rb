@@ -35,6 +35,10 @@ module AttrGTK
     args.passes
   end
 
+  def pixel_arrays
+    args.pixel_arrays
+  end
+
   def geometry
     args.geometry
   end

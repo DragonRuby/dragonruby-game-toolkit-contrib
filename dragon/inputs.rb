@@ -553,6 +553,59 @@ module GTK
 
     alias_method :inspect, :to_s
   end
+
+  # Provides access to multitouch input
+  #
+  # @gtk
+  class FingerTouch
+
+    # @gtk
+    attr_accessor :moved,
+                  :moved_at,
+                  :global_moved_at,
+                  :touch_order,
+                  :x, :y
+
+    def initialize
+      @moved = false
+      @moved_at = 0
+      @global_moved_at = 0
+      @touch_order = 0
+      @x = 0
+      @y = 0
+    end
+
+    def point
+      [@x, @y].point
+    end
+
+    def inside_rect? rect
+      point.inside_rect? rect
+    end
+
+    def inside_circle? center, radius
+      point.point_inside_circle? center, radius
+    end
+
+    alias_method :position, :point
+
+    def serialize
+      result = {}
+      result[:x] = @x
+      result[:y] = @y
+      result[:touch_order] = @touch_order
+      result[:moved] = @moved
+      result[:moved_at] = @moved_at
+
+      result
+    end
+
+    def to_s
+      serialize.to_s
+    end
+
+    alias_method :inspect, :to_s
+  end
 end
 
 module GTK
@@ -573,6 +626,11 @@ module GTK
     # @gtk
     attr_reader :mouse
 
+    # @return {FingerTouch}
+    # @gtk
+    attr_reader :touch
+    attr_accessor :finger_one, :finger_two
+
     # @gtk
     attr_accessor :text, :history
 
@@ -580,6 +638,9 @@ module GTK
       @controllers = [Controller.new, Controller.new]
       @keyboard = Keyboard.new
       @mouse = Mouse.new
+      @touch = {}
+      @finger_one = nil
+      @finger_two = nil
       @text = []
     end
 
@@ -655,6 +716,9 @@ module GTK
       @mouse.clear
       @keyboard.clear
       @controllers.each(&:clear)
+      @touch.clear
+      @finger_one = nil
+      @finger_two = nil
     end
 
     # @return [Hash]

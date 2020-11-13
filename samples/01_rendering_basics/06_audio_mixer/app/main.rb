@@ -93,6 +93,9 @@ def render_panel args
 end
 
 def spawn_new_sound args, num
+  input = nil
+  input = "sounds/#{num}.#{(num == 6) ? 'ogg' : 'wav'}"
+
   # Spawn randomly in an area that won't be covered by UI.
   screenx = (rand * 600.0) + 200.0
   screeny = (rand * 400.0) + 100.0
@@ -102,7 +105,7 @@ def spawn_new_sound args, num
   # you can hang anything on the audio hashes you want, so we store the
   #  actual screen position in here for convenience.
   args.audio[args.state.next_sound_index] = {
-    filename: "sounds/#{num}.#{(num == 6) ? 'ogg' : 'wav'}",
+    input: input,
     screenx: screenx,
     screeny: screeny,
     x: ((screenx / 1279.0) * 2.0) - 1.0,  # scale to -1.0 - 1.0 range
@@ -155,4 +158,3 @@ def tick args
   render_sources args
   render_ui args
 end
-

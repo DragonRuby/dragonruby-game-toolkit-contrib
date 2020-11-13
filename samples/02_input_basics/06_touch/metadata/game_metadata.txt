@@ -1,0 +1,6 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=touchexample
+gametitle=DragonRuby GTK Touch Example
+version=0.1
+icon=metadata/icon.png

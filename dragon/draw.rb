@@ -218,6 +218,18 @@ module GTK
       def draw_screenshots
         @args.outputs.screenshots.each { |s| draw_screenshot s }
       end
+
+      def pixel_arrays
+        @args.pixel_arrays.each { |k,v|
+          if v.pixels.length == (v.width * v.height)  # !!! FIXME: warning? exception? Different API?
+            @ffi_draw.upload_pixel_array k.to_s, v.width.to_i, v.height.to_i, v.pixels
+          end
+        }
+      rescue Exception => e
+        pause!
+        pretty_print_exception_and_export! e
+      end
+
     end
   end
 end
