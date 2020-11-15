@@ -140,7 +140,8 @@ class IOSWizard
   end
 
   def check_for_dev_profile
-    if !($gtk.read_file 'profiles/development.mobileprovision')
+    @dev_profile_path = "profiles/development.mobileprovision"
+    if !($gtk.read_file @dev_profile_path)
       $gtk.system "mkdir -p #{relative_path}/profiles"
       $gtk.system "open #{relative_path}/profiles"
       $gtk.system "echo Download the mobile provisioning profile and place it here with the name development.mobileprovision > #{relative_path}/profiles/README.txt"
@@ -409,7 +410,7 @@ XML
 		</dict>
 	</dict>
 	<key>CFBundleIdentifier</key>
-	<string>com.carlile.swisscheese</string>
+	<string>:app_id</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
