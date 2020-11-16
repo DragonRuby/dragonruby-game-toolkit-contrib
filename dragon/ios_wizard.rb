@@ -538,7 +538,10 @@ XML
     # <string>UIInterfaceOrientationPortrait</string>
     # <string>UIInterfaceOrientationLandscapeRight</string>
 
-    $gtk.write_file_root "tmp/ios/#{@app_name}.app/Info.plist", info_plist_string.gsub(":app_name", @app_name).strip
+    info_plist_string.gsub!(":app_name", @app_name)
+    info_plist_string.gsub!(":app_id", @app_id)
+
+    $gtk.write_file_root "tmp/ios/#{@app_name}.app/Info.plist", info_plist_string.strip
 
     @info_plist_written = true
   end
