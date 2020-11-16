@@ -26,8 +26,8 @@ module GTK
 
     # Returns true if a primitive's rectangle is entirely inside another primitive's rectangle.
     # @gtk
-    def inside_rect? outer
-      Geometry.inside_rect? self, outer
+    def inside_rect? outer, tolerance = 0.0
+      Geometry.inside_rect? self, outer, tolerance
     end
 
     # Returns true if a primitive's rectangle overlaps another primitive's rectangle.
@@ -308,11 +308,11 @@ S
     end
 
     # @gtk
-    def self.inside_rect? inner_rect, outer_rect
-      inner_rect.x >= outer_rect.x &&
-      inner_rect.right <= outer_rect.right &&
-      inner_rect.y >= outer_rect.y &&
-      inner_rect.top <= outer_rect.top
+    def self.inside_rect? inner_rect, outer_rect, tolerance = 0.0
+      inner_rect.x     + tolerance >= outer_rect.x     - tolerance &&
+      inner_rect.right - tolerance <= outer_rect.right + tolerance &&
+      inner_rect.y     + tolerance >= outer_rect.y     - tolerance &&
+      inner_rect.top   - tolerance <= outer_rect.top   + tolerance
     rescue Exception => e
       raise e, ":inside_rect? failed for inner_rect: #{inner_rect} outer_rect: #{outer_rect}."
     end
