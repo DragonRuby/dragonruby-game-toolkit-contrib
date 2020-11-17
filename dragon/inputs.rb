@@ -29,6 +29,10 @@ module GTK
                   :q, :r, :s, :t, :u, :v, :w, :x,
                   :y, :z,
                   :shift, :control, :alt, :meta,
+                  :shift_left, :shift_right,
+                  :control_left, :control_right,
+                  :alt_left, :alt_right,
+                  :meta_left, :meta_right,
                   :left, :right, :up, :down, :pageup, :pagedown,
                   :char, :plus, :at, :forward_slash, :back_slash, :asterisk,
                   :less_than, :greater_than, :carat, :ampersand, :superscript_two,
@@ -43,7 +47,8 @@ module GTK
                         raw_key == 1073741905 ||
                         raw_key == 1073741906 ||
                         raw_key == 1073741899 ||
-                        raw_key == 1073741902
+                        raw_key == 1073741902 ||
+                        (raw_key >= 1073742048 && raw_key <= 1073742055) # Modifier Keys
 
       char = KeyboardKeys.char_with_shift raw_key, modifier
       names = KeyboardKeys.char_to_method char, raw_key
@@ -87,32 +92,32 @@ module GTK
 
     def self.char_to_method_hash
       @char_to_method ||= {
-        'A'  => [:a, :shift],
-        'B'  => [:b, :shift],
-        'C'  => [:c, :shift],
-        'D'  => [:d, :shift],
-        'E'  => [:e, :shift],
-        'F'  => [:f, :shift],
-        'G'  => [:g, :shift],
-        'H'  => [:h, :shift],
-        'I'  => [:i, :shift],
-        'J'  => [:j, :shift],
-        'K'  => [:k, :shift],
-        'L'  => [:l, :shift],
-        'M'  => [:m, :shift],
-        'N'  => [:n, :shift],
-        'O'  => [:o, :shift],
-        'P'  => [:p, :shift],
-        'Q'  => [:q, :shift],
-        'R'  => [:r, :shift],
-        'S'  => [:s, :shift],
-        'T'  => [:t, :shift],
-        'U'  => [:u, :shift],
-        'V'  => [:v, :shift],
-        'W'  => [:w, :shift],
-        'X'  => [:x, :shift],
-        'Y'  => [:y, :shift],
-        'Z'  => [:z, :shift],
+        'A'  => [:a],
+        'B'  => [:b],
+        'C'  => [:c],
+        'D'  => [:d],
+        'E'  => [:e],
+        'F'  => [:f],
+        'G'  => [:g],
+        'H'  => [:h],
+        'I'  => [:i],
+        'J'  => [:j],
+        'K'  => [:k],
+        'L'  => [:l],
+        'M'  => [:m],
+        'N'  => [:n],
+        'O'  => [:o],
+        'P'  => [:p],
+        'Q'  => [:q],
+        'R'  => [:r],
+        'S'  => [:s],
+        'T'  => [:t],
+        'U'  => [:u],
+        'V'  => [:v],
+        'W'  => [:w],
+        'X'  => [:x],
+        'Y'  => [:y],
+        'Z'  => [:z],
         "!"  => [:exclamation_point],
         "0"  => [:zero],
         "1"  => [:one],
@@ -169,12 +174,21 @@ module GTK
         1073741906 => [:up],
         1073741899 => [:pageup],
         1073741902 => [:pagedown],
-        127 => [:delete]
+        127 => [:delete],
+        1073742049 => [:shift_left, :shift],
+        1073742053 => [:shift_right, :shift],
+        1073742048 => [:control_left, :control],
+        1073742052 => [:control_right, :control],
+        1073742050 => [:alt_left, :alt],
+        1073742054 => [:alt_right, :alt],
+        1073742051 => [:meta_left, :meta],
+        1073742055 => [:meta_right, :meta]
       }
     end
 
     def self.char_to_method char, int = nil
-      char_to_method_hash[char] || char_to_method_hash[int] || [char.to_sym || int]
+      methods = char_to_method_hash[char] || char_to_method_hash[int]
+      methods ? methods.dup : [char.to_sym || int]
     end
 
     def clear
