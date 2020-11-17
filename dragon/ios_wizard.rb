@@ -85,11 +85,6 @@ class IOSWizard
     return nil
   end
 
-  def always_fail
-    return false if $gtk.ivar :rcb_release_mode
-    return true
-  end
-
   def check_for_xcode
     if !cli_app_exist?(xcodebuild_cli_app)
       raise WizardException.new(
@@ -132,11 +127,6 @@ class IOSWizard
     steps.reverse.each_cons(2) do |current_step, previous_step|
       @wizard_status[current_step][:previous_step] = previous_step
     end
-  end
-
-  def restart
-    init_wizard_status
-    start
   end
 
   def check_for_dev_profile
@@ -192,21 +182,6 @@ class IOSWizard
     log_info "App Identifier is set to : #{@app_id}"
   end
 
-  def set_app_name name
-    @app_name = name
-    start
-  end
-
-  def set_dev_profile path
-    if !$gtk.read_file path
-      log_error "I couldn't find a development profile at #{path}."
-      ask_for_dev_profile
-    else
-      @dev_profile_path = path
-      start
-    end
-  end
-
   def blow_away_temp
     sh "rm -rf #{tmp_directory}"
   end
@@ -215,12 +190,6 @@ class IOSWizard
     log_info "Staging."
     sh "mkdir -p #{tmp_directory}"
     sh "cp -R #{relative_path}/dragonruby-ios.app \"#{tmp_directory}/#{@app_name}.app\""
-  end
-
-  def set_app_id id
-    log_info = "App Id set to: #{id}"
-    @app_id = id
-    start
   end
 
   def check_for_device
