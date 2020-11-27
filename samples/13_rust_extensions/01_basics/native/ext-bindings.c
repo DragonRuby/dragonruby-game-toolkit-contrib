@@ -33,19 +33,19 @@ static struct RClass *(*mrb_exc_get_f)(mrb_state *, const char *);
 static void drb_free_foreign_object_indirect(mrb_state *state, void *pointer) {
     drb_free_foreign_object_f(state, pointer);
 }
-static int drb_ffi__ZTSi_FromRuby(mrb_state *state, mrb_value self) {
+static int64_t drb_ffi__ZTSx_FromRuby(mrb_state *state, mrb_value self) {
     return mrb_fixnum(self);
 }
-static mrb_value drb_ffi__ZTSi_ToRuby(mrb_state *state, int value) {
+static mrb_value drb_ffi__ZTSx_ToRuby(mrb_state *state, int64_t value) {
     return mrb_fixnum_value(value);
 }
 static mrb_value drb_ffi_square_Binding(mrb_state *state, mrb_value value) {
     mrb_value *args = 0;
     mrb_int argc = 0;
     mrb_get_args_f(state, "*", &args, &argc);
-    int x_0 = drb_ffi__ZTSi_FromRuby(state, args[0]);
-    int ret_val = square(x_0);
-    return drb_ffi__ZTSi_ToRuby(state, ret_val);
+    int64_t x_0 = drb_ffi__ZTSx_FromRuby(state, args[0]);
+    int64_t ret_val = square(x_0);
+    return drb_ffi__ZTSx_ToRuby(state, ret_val);
 }
 static int drb_ffi_init_indirect_functions(void *(*lookup)(const char *));
 DRB_FFI_EXPORT

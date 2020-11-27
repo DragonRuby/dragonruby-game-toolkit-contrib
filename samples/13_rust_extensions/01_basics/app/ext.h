@@ -2,5 +2,6 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "dragonruby.h"
 
-int64_t square(int64_t x);
+DRB_FFI int64_t square(int64_t x);
