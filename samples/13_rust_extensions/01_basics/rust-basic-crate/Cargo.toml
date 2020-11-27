@@ -1,0 +1,12 @@
+[package]
+name = "rust-basic-crate"
+version = "0.1.0"
+authors = ["Mike Martin <mike@unsupported.me>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]

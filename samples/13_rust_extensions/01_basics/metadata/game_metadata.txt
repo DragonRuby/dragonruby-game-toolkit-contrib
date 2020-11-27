@@ -1,0 +1,5 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=rustbasics
+gametitle=Rust Basics
+version=1.0
