@@ -12,7 +12,7 @@ This sample currently only runs on macos but should run on any target that Rust 
 
 ## Regular Expressions
 
-This sample shows how to use a third-party C library. We use a library for
+This sample shows how to use a third-party Rust library. We use a library for
 regular expressions: https://github.com/rust-lang/regex.
 
 This library comes with C bindings which we have extracted and lightly modified to work with this example. The changes made were to the bundled C header file in `regex-capi/include/rure.h` to add Dragonruby FFI annotations and to the `regex-capi/Cargo.toml` file to add an explicit dependency on regex version 1.4.2 which is the release these C bindings were extracted from.
