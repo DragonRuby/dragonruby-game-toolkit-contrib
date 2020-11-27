@@ -108,4 +108,4 @@ end
 
 When you run the game now, you will see something like this:
 
-![Rust basics Demo](rust-basics-demo.png)
+![Rust basics Demo](rust-basic-demo.png)
