@@ -1,1 +1,4 @@
 language = "C"
+includes = ["dragonruby.h"]
+[fn]
+prefix = "DRB_FFI"

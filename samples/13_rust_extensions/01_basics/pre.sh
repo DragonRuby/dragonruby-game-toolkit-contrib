@@ -12,13 +12,12 @@ fi
 DRB_ROOT=../../..
 mkdir -p native/$PLATFORM
 
-pushd rust-basic-crate
+cd rust-basic-crate
 cargo build --release
 cbindgen --config cbindgen.toml --crate rust-basic-crate --output ../app/ext.h
-popd
+cd ../
 
-$DRB_ROOT/dragonruby-bind --output=native/ext-bindings.c app/ext.h
-echo "\nIgnore the above error about #include\n"
+$DRB_ROOT/dragonruby-bind --compiler-flags="-isysroot $(xcrun --show-sdk-path) $(clang -E -xc++ -Wp,-v /dev/null 2>&1 | sed -n '/^#include <...>/,/^End of search/p'| sed '1d;$d;s/\/\(.*\)/-I \/\1/;s/ (framework directory)//') -isystem $DRB_ROOT/include -I." --output=native/ext-bindings.c app/ext.h
 clang \
   -isystem $DRB_ROOT/include -I. \
   -fPIC -shared native/ext-bindings.c rust-basic-crate/target/release/librust_basic_crate.$DLLEXT -o native/$PLATFORM/ext.$DLLEXT
