@@ -1,0 +1,7 @@
+#!/bin/sh
+cd "`dirname "$0"`"
+./pre.sh
+cd ..
+cd ..
+cd ..
+exec ./dragonruby samples/13_rust_extensions/02_intermediate

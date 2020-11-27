@@ -1,0 +1,5 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=cintermediate
+gametitle=C Extensions Intermediate
+version=1.0
