@@ -975,6 +975,33 @@ do
 S
     end
 
+    def scale_sprites
+      <<-S
+* CHEATSHEET: How to Scale a Sprite
+
+The ~scale_rect~ method can be used to change the scale of a sprite by a given ~ratio~.
+
+Optionally, you can scale the sprite around a specified anchor point. In the example below, setting both ~anchor_x~ and ~anchor_y~ to 0.5 scales the sprite proportionally on all four sides).
+
+See also: DOCS: GTK::Geometry#scale_rect
+
+#+begin_src ruby
+  def tick args
+    #            x,   y,   w,   h,   path
+    my_sprite = [590, 310, 100, 100, 'sprites/circle.png']
+
+    # scale a sprite with a ratio of 2 (double the size)
+    # and anchor the transformation around the center of the sprite
+
+    #                                       ratio, anchor_x, anchor_y
+    my_scaled_sprite = my_sprite.scale_rect(2,     0.5,      0.5)
+
+    args.outputs.sprites << [my_scaled_sprite, "sprites/circle.png"]
+  end
+#+end_src
+S
+    end
+
     def docs_faq
 <<-S
 * Frequently Asked Questions, Comments, and Concerns
