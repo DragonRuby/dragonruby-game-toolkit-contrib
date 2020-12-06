@@ -44,6 +44,7 @@ The ~scale_rect~ method can be applied directly to a sprite or other primitives.
 
 S
   end
+end
 
 module Geometry
   extend Docs
