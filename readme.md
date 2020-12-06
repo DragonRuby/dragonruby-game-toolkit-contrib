@@ -25,14 +25,15 @@ DragonRuby
          |
          +- dragon/
          |  |
-         |  +- index.rb
-         |  +- other source files
-         |
-         +- experimental/
-            |
-            + index.rb
-
+         |  +- docs.rb
+         |  +- [other source files]
 ```
 
-5. Open `main.rb` and add the following to the top of the file: `require "app/dragonruby-game-toolkit-contrib/dragon/index.rb"`.
-6. If you are feeling adventurous also add `require "app/dragonruby-game-toolkit-contrib/experimental/index.rb"`.
+5. Open `main.rb` and add the source file you want to edit. For example, if you want to edit `docs.rb`, your `mygame/main.rb` would look like this:
+
+```ruby
+require 'app/dragonruby-game-toolkit-contrib/dragon/docs.rb'
+
+def tick args
+end
+```
