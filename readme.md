@@ -8,8 +8,8 @@ If your income is below $1000 per month, are a "student", or are a "big time Ras
 2. Unzip.
 3. Navigate to your game folder using terminal (the default game folder is `./mygame/app`)
 4. `git clone https://github.com/DragonRuby/dragonruby-game-toolkit-contrib` or download and unzip into the `./mygame/app` directory
-  - _do not_ try to symlink it or anything fancy, the DragonRuby Runtime requires everything to reside in the game directory and will not allow access outside of it).
-  - make sure `/r/n` is converted to `/n`: `git config --system --get core.autocrlf`
+  a. _do not_ try to symlink it or anything fancy, the DragonRuby Runtime requires everything to reside in the game directory and will not allow access outside of it).
+  b. make sure `/r/n` is converted to `/n`: `git config --system --get core.autocrlf`
 5. Your directory structures should look  like the following:
 
 ```
