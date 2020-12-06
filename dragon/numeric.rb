@@ -140,16 +140,16 @@ S
   def randomize *definitions
     result = self
 
-    if definitions.include?(:sign)
-      result = rand_sign
-    end
-
     if definitions.include?(:ratio)
       result = rand * result
     elsif definitions.include?(:int)
       result = (rand result)
     end
-
+    
+    if definitions.include?(:sign)
+      result = result.rand_sign
+    end
+    
     result
   end
 
