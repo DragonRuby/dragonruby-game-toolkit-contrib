@@ -43,4 +43,4 @@ def tick args
 end
 ```
 
-Here is the final result: ![Watch Video](https://github.com/DragonRuby/dragonruby-game-toolkit-contrib/blob/master/final-result.mp4)
+[Here is the final result](final-result.mp4)
