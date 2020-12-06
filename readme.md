@@ -11,7 +11,7 @@ If your income is below $1000 per month, are a "student", or are a "big time Ras
 
 IMPORTANT: _do not_ try to symlink the git repo into the `./mygame/app` directory (or anything else fancy), the DragonRuby Runtime requires everything to reside in the game directory and will not allow access outside of it.
 
-IMPORTANT: make sure Git is configured to convert `/r/n` to `/n`:
+IMPORTANT: make sure Git is configured to not change line endings (especially if you're cloning on Windows):
 
 ```
 git config --system core.autocrlf false
