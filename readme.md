@@ -6,7 +6,7 @@ If your income is below $1000 per month, are a "student", or are a "big time Ras
 
 1. Download DragonRuby Game Toolkit.
 2. Unzip.
-3. Navigate to your game folder using terminal (the default game folder is `./mygame/app`)
+3. Navigate to your game folder using terminal (the default game folder is `./mygame/app`).
 4. `git clone https://github.com/DragonRuby/dragonruby-game-toolkit-contrib` or download and unzip into the `./mygame/app` directory. 
 
 IMPORTANT: _do not_ try to symlink the git repo into the `./mygame/app` directory (or anything else fancy), the DragonRuby Runtime requires everything to reside in the game directory and will not allow access outside of it.
