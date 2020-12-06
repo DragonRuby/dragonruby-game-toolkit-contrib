@@ -42,3 +42,5 @@ require 'app/dragonruby-game-toolkit-contrib/dragon/docs.rb'
 def tick args
 end
 ```
+
+Here is the final result: ![Watch Video](https://github.com/DragonRuby/dragonruby-game-toolkit-contrib/blob/master/final-result.mp4)
