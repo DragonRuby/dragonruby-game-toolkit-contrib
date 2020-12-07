@@ -23,7 +23,7 @@ S
 
 Given an array with 4 elements representing a rect [x, y, w, h], this function returns a scaled rect. It accepts three arguments:
 
-~ratio~: the ratio by which to scale the sprite. A ratio of 2 will double the dimensions of the sprite while a ratio of 0.5 will halve its dimensions. 
+~ratio~: the ratio by which to scale the rect. A ratio of 2 will double the dimensions of the rect while a ratio of 0.5 will halve its dimensions. 
 
 ~anchor_x~ and ~anchor_y~ specify the point within the rect from which to resize it. Setting both to 0 will affect the width and height of the rect, leaving x and y unchanged. Setting both to 0.5 will scale all sides of the rect proportionally from the center.
 
