@@ -251,15 +251,19 @@ S
   def __docs_to_html__ string
     parse_log = []
 	
-	favicon_data = Docs.const_defined?(:FAVICON_BASE64) ? FAVICON_BASE64 : ""
-	log "* WARN: FAVICON_BASE64 not defined. Please require 'docs_assets.rb'." if !Docs.const_defined?(:FAVICON_BASE64)
+    if Docs&.const_defined?(:FAVICON_BASE64)
+      favicon_tag = "<link rel=\"icon\" type=\"image/x-icon\" href=\"data:image/x-icon;base64,#{FAVICON_BASE64}\" />"
+    else
+      favicon_tag = ''
+      log "* WARN: FAVICON_BASE64 not defined. Please require 'docs_assets.rb'."
+    end
 
     html_start_to_toc_start = <<-S
 <html>
   <head>
     <title>DragonRuby Game Toolkit Documentation</title>
     <link href="docs.css?ver=#{Time.now.to_i}" rel="stylesheet" type="text/css" media="all">
-    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,#{favicon_data}" />
+    #{favicon_tag}
   </head>
   <body>
     <div id='toc'>
