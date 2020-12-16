@@ -469,8 +469,10 @@ S
         prompt.clear
         @command_history_index = -1
         @nonhistory_input = ''
-      elsif args.inputs.keyboard.key_down.backspace || args.inputs.keyboard.key_down.delete
+      elsif args.inputs.keyboard.key_down.backspace
         prompt.backspace
+      elsif args.inputs.keyboard.key_down.delete
+        prompt.delete
       elsif args.inputs.keyboard.key_down.tab
         prompt.autocomplete
       end

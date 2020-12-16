@@ -51,6 +51,13 @@ module GTK
         reset_autocomplete
       end
 
+      def delete
+        return if current_input_str.length.zero? || @cursor_position == current_input_str.length
+
+        @cursor_position += 1
+        backspace
+      end
+
       def move_cursor_left
         @cursor_position -= 1 if @cursor_position > 0
         update_cursor_position_px
