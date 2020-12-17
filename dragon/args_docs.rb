@@ -14,7 +14,8 @@ module ArgsDocs
     <<-S
 * DOCS: ~GTK::Args#audio~
 
-Hash that contains audio sources that are playing. If you want to add a new sound add a hash with following
+Hash that contains audio sources that are playing. If you want to add a new sound add a hash with keys/values as
+in the following example:
 
 #+begin_src
   def tick args
