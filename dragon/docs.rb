@@ -29,6 +29,7 @@ module DocsOrganizer
       GTK::ReadMe,
       GTK::Runtime,
       Array,
+      GTK::Args,
       GTK::Outputs,
       GTK::Mouse,
       GTK::OpenEntity,
