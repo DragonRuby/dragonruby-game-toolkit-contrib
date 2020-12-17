@@ -37,7 +37,7 @@ Looping sounds or sounds that should stop early must be removed manually.
 
 ** Audio synthesis (Pro only)
 
-Instead of a path to a audio file you can specify an array ~[channels, sample_rate, sound_source]~ for ~input~
+Instead of a path to an audio file you can specify an array ~[channels, sample_rate, sound_source]~ for ~input~
 to procedurally generate sound. You do this by providing an array of float values between -1.0 and 1.0 that
 describe the waveform you want to play.
 
