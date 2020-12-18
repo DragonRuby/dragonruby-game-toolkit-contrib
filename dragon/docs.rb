@@ -256,6 +256,8 @@ S
   <head>
     <title>DragonRuby Game Toolkit Documentation</title>
     <link href="docs.css?ver=#{Time.now.to_i}" rel="stylesheet" type="text/css" media="all">
+    <link href="prism.css?ver=#{Time.now.to_i}" rel="stylesheet" type="text/css" media="all">
+    <script src="prism.js?ver=#{Time.now.to_i}"></script>
   </head>
   <body>
     <div id='toc'>
@@ -441,13 +443,13 @@ S
         inside_ol = false
         inside_ul = false
         inside_pre = true
-        content_html << "<pre>"
+        content_html << '<pre><code class="language-ruby">'
       elsif l.start_with? "#+end_src"
         parse_log << "- PRE end detected."
         inside_ol = false
         inside_ul = false
         inside_pre = false
-        content_html << "</pre>\n"
+        content_html << "</code></pre>\n"
       elsif l.start_with? "#+begin_quote"
         parse_log << "- BLOCKQUOTE start detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
