@@ -436,6 +436,10 @@ S
         if args.inputs.keyboard.key_down.control || args.inputs.keyboard.key_down.meta
           prompt << $gtk.ffi_misc.getclipboard
         end
+      elsif args.inputs.keyboard.key_down.home
+        prompt.move_cursor_home
+      elsif args.inputs.keyboard.key_down.end
+        prompt.move_cursor_end
       elsif args.inputs.keyboard.key_down.up
         if @command_history_index == -1
           @nonhistory_input = current_input_str
@@ -454,9 +458,17 @@ S
           self.current_input_str = @command_history[@command_history_index].dup
         end
       elsif args.inputs.keyboard.key_down.left
-        prompt.move_cursor_left
+        if args.inputs.keyboard.key_down.control
+          prompt.move_cursor_left_word
+        else
+          prompt.move_cursor_left
+        end
       elsif args.inputs.keyboard.key_down.right
-        prompt.move_cursor_right
+        if args.inputs.keyboard.key_down.control
+          prompt.move_cursor_right_word
+        else
+          prompt.move_cursor_right
+        end
       elsif inputs_scroll_up_full? args
         scroll_up_full
       elsif inputs_scroll_down_full? args

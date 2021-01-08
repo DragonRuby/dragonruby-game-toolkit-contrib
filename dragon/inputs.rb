@@ -33,6 +33,7 @@ module GTK
                   :control_left, :control_right,
                   :alt_left, :alt_right,
                   :meta_left, :meta_right,
+                  :home, :end,
                   :left, :right, :up, :down, :pageup, :pagedown,
                   :char, :plus, :at, :forward_slash, :back_slash, :asterisk,
                   :less_than, :greater_than, :carat, :ampersand, :superscript_two,
@@ -48,6 +49,8 @@ module GTK
                         raw_key == 1073741906 ||
                         raw_key == 1073741899 ||
                         raw_key == 1073741902 ||
+                        raw_key == 1073741898 ||
+                        raw_key == 1073741901 ||
                         (raw_key >= 1073742048 && raw_key <= 1073742055) # Modifier Keys
 
       char = KeyboardKeys.char_with_shift raw_key, modifier
@@ -168,6 +171,8 @@ module GTK
         "?"  => [:question_mark],
         '%'  => [:percent_sign],
         "º"  => [:ordinal_indicator],
+        1073741898 => [:home],
+        1073741901 => [:end],
         1073741903 => [:right],
         1073741904 => [:left],
         1073741905 => [:down],
@@ -270,7 +275,6 @@ module GTK
         if m.end_with_bang?
           clear_after_return = true
         end
-
         value = self.instance_variable_get("@#{m.without_ending_bang}".to_sym)
         clear_key m if clear_after_return
         [m.without_ending_bang, value]
