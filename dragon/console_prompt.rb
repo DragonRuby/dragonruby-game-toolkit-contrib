@@ -67,6 +67,7 @@ module GTK
         update_cursor_position_px
       end
 
+<<<<<<< HEAD
       def move_cursor_left_word
         return if @cursor_position.zero?
 
@@ -79,12 +80,28 @@ module GTK
         update_cursor_position_px
       end
         
+=======
+      # ? Works well enough, could be better
+      # TODO: Maybe possibly add skipping multiple word-breaking characters
+      # TODO: (requires re-writing a lot of the code most likely)
+      # ?? how can we put in regex? the code would be cleaner that way \ amir please fix :P \\ abolish consoles :>
+      def move_cursor_left_word
+        str = @current_input_str[0..[@cursor_position - 1, 0].sort[1]]
+        # ? Can be changed, it was just taken from my editor settings :>
+        @cursor_position = ("`~!@#$%^&*-=+()[]{}\|;:'\",.<>/?_ \t\n\0".chars.map { |char|
+          (val = str.rindex char) ? (val + 1 == @cursor_position ? val : val + 1) : 0
+        }.sort.reverse[0])
+        update_cursor_position_px
+      end
+
+>>>>>>> 32214ee (Added support for `HOME`, `END`, `Ctrl+left` and `Ctrl+right`)
       def move_cursor_right
         @cursor_position += 1 if @cursor_position < current_input_str.length
         update_cursor_position_px
       end
 
       def move_cursor_right_word
+<<<<<<< HEAD
         return if @cursor_position.equal? str_len
 
         new_pos = @cursor_position + 1
@@ -93,6 +110,14 @@ module GTK
             (new_pos += 1 until (is_word_boundary? @current_input_str[new_pos]) || (new_pos.equal? str_len))
         
         @cursor_position = new_pos
+=======
+        str = @current_input_str[@cursor_position..@current_input_str.length]
+        # ? Can be changed, it was just taken from my editor settings :>
+        cand = ("`~!@#$%^&*-=+()[]{}\|;:'\",.<>/?_ \t\n\0".chars.map { |char|
+          (val = str.index char) ? val : 0
+        }.sort - [0])
+        (cand == []) ? @cursor_position = @current_input_str.length : @cursor_position += (cand[0]+0)
+>>>>>>> 32214ee (Added support for `HOME`, `END`, `Ctrl+left` and `Ctrl+right`)
         update_cursor_position_px
       end
 
@@ -102,7 +127,11 @@ module GTK
       end
 
       def move_cursor_end
+<<<<<<< HEAD
         @cursor_position = str_len
+=======
+        @cursor_position = @current_input_str.length
+>>>>>>> 32214ee (Added support for `HOME`, `END`, `Ctrl+left` and `Ctrl+right`)
         update_cursor_position_px
       end
 

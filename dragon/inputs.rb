@@ -275,7 +275,6 @@ module GTK
         if m.end_with_bang?
           clear_after_return = true
         end
-
         value = self.instance_variable_get("@#{m.without_ending_bang}".to_sym)
         clear_key m if clear_after_return
         [m.without_ending_bang, value]
