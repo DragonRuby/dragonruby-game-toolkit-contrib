@@ -32,6 +32,7 @@ module GTK
       def current_input_str=(str)
         @current_input_str = str
         @cursor_position = str.length
+        update_cursor_position_px
       end
 
       def <<(str)
@@ -63,8 +64,41 @@ module GTK
         update_cursor_position_px
       end
 
+      # ? Works well enough, could be better
+      # TODO: Maybe possibly add skipping multiple word-breaking characters
+      # TODO: (requires re-writing a lot of the code most likely)
+      # ?? how can we put in regex? the code would be cleaner that way \ amir please fix :P \\ abolish consoles :>
+      def move_cursor_left_word
+        str = @current_input_str[0..[@cursor_position - 1, 0].sort[1]]
+        # ? Can be changed, it was just taken from my editor settings :>
+        @cursor_position = ("`~!@#$%^&*-=+()[]{}\|;:'\",.<>/?_ \t\n\0".chars.map { |char|
+          (val = str.rindex char) ? (val + 1 == @cursor_position ? val : val + 1) : 0
+        }.sort.reverse[0])
+        update_cursor_position_px
+      end
+
       def move_cursor_right
         @cursor_position += 1 if @cursor_position < current_input_str.length
+        update_cursor_position_px
+      end
+
+      def move_cursor_right_word
+        str = @current_input_str[@cursor_position..@current_input_str.length]
+        # ? Can be changed, it was just taken from my editor settings :>
+        cand = ("`~!@#$%^&*-=+()[]{}\|;:'\",.<>/?_ \t\n\0".chars.map { |char|
+          (val = str.index char) ? val : 0
+        }.sort - [0])
+        (cand == []) ? @cursor_position = @current_input_str.length : @cursor_position += (cand[0]+0)
+        update_cursor_position_px
+      end
+
+      def move_cursor_home
+        @cursor_position = 0
+        update_cursor_position_px
+      end
+
+      def move_cursor_end
+        @cursor_position = @current_input_str.length
         update_cursor_position_px
       end
 
