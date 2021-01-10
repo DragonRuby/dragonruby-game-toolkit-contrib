@@ -67,32 +67,32 @@ module GTK
         update_cursor_position_px
       end
 
-      # ? Works well enough, could be better
-      # TODO: Maybe possibly add skipping multiple word-breaking characters
-      # TODO: (requires re-writing a lot of the code most likely)
-      # ?? how can we put in regex? the code would be cleaner that way \ amir please fix :P \\ abolish consoles :>
       def move_cursor_left_word
-        str = @current_input_str[0..[@cursor_position - 1, 0].max]
-        cand = WORD_LIMITER_CHARS.map { |char|
-          (val = str.rindex char) ? (val + 1 == @cursor_position ? val : val + 1) : 0
-        }
-        @cursor_position = cand.max
+        return if @cursor_position.zero?
+
+        new_pos = @cursor_position - 1
+        (is_word_boundary? @current_input_str[new_pos]) ? 
+            (new_pos -= 1 until !(is_word_boundary? @current_input_str[new_pos - 1]) || new_pos.zero?):
+            (new_pos -= 1 until (is_word_boundary? @current_input_str[new_pos - 1]) || new_pos.zero?)
+
+        @cursor_position = new_pos
         update_cursor_position_px
       end
-
+        
       def move_cursor_right
         @cursor_position += 1 if @cursor_position < current_input_str.length
         update_cursor_position_px
       end
 
-      # ? Not sure if this is the most efficient solution
-      # ? but it does sure work
       def move_cursor_right_word
-        str = @current_input_str[@cursor_position..@current_input_str.length]
-        cand = (WORD_LIMITER_CHARS.map { |char|
-          (val = str.index char) ? val : 0
-        }.sort - [0])
-        (cand == []) ? @cursor_position = @current_input_str.length : @cursor_position += (cand[0])
+        return if @cursor_position.equal? str_len
+
+        new_pos = @cursor_position + 1
+        (is_word_boundary? @current_input_str[new_pos]) ?
+            (new_pos += 1 until !(is_word_boundary? @current_input_str[new_pos]) || (new_pos.equal? str_len)):
+            (new_pos += 1 until (is_word_boundary? @current_input_str[new_pos]) || (new_pos.equal? str_len))
+        
+        @cursor_position = new_pos
         update_cursor_position_px
       end
 
@@ -102,7 +102,7 @@ module GTK
       end
 
       def move_cursor_end
-        @cursor_position = @current_input_str.length
+        @cursor_position = str_len
         update_cursor_position_px
       end
 
@@ -256,6 +256,17 @@ S
       def reset_autocomplete
         @last_autocomplete_prefix = nil
         @next_candidate_index = 0
+      end
+
+      def is_word_boundary? char
+        # Alternative method
+        # (WORD_LIMITER_CHARS - [char]).length != WORD_LIMITER_CHARS.length
+        # Production code
+        WORD_LIMITER_CHARS.include? char
+      end
+
+      def str_len
+        @current_input_str.length
       end
     end
   end
