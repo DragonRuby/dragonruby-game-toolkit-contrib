@@ -43,6 +43,10 @@ module GTK
       @animation_duration = 1.seconds
       @shown_at = -1
       load_history
+
+      @config_fname = 'console_config.txt'
+      @bindings = []
+      load_config
     end
 
     def console_text_width
@@ -70,6 +74,77 @@ module GTK
       }
 
       @command_history.uniq!
+    end
+
+    def gen_def_config
+      <<-S
+# Config syntax:
+#   command < binding1 | binding2 | etc
+
+eval                    < enter
+getclipboard            < control+v | meta+v
+previous_history        < up
+next_history            < down
+move_cursor_left        < left
+move_cursor_right       < right
+move_cursor_left_word   < control+left
+move_cursor_right_word  < control+right
+move_cursor_home        < home
+move_cursor_end         < end
+scroll_up_full          < pageup | control+b
+scroll_down_full        < pagedown | control+f
+scroll_up_half          < control+u
+scroll_down_half        < control+d
+clear                   < escape | control+g
+backspace               < backspace
+delete                  < delete
+autocomplete            < tab
+      S
+    end
+
+    def parse_config str
+      bindings = []
+      str.lines.each do |line|
+        next if line.strip.start_with? '#'
+        next if line.split.empty?
+        tokens = line.split '<'
+        return false, "#{line}\n#{'^'*line.length}" if tokens.length < 2
+        cmd = tokens[0].strip
+        (tokens[1].split '|').each do |token|
+          syms = (token.strip.split '+').map &:to_sym
+          bindings << {
+            name: :"cmd_#{cmd}",
+            keys: syms
+          }
+        end
+      end
+      return true, bindings
+    end
+
+    def save_config cfg
+      $gtk.ffi_file.write_root @config_fname, cfg
+      return cfg
+    end
+
+    def load_config
+      str = $gtk.ffi_file.read @config_fname
+      str = (save_config gen_def_config) if str.nil?
+      success, value = parse_config str
+      begin
+        if success
+          @bindings = value
+          return
+        end
+        _, @bindings = parse_config gen_def_config
+        raise Exception, value
+      rescue Exception => se
+        puts <<-S
+* FATAL: ~GTK::Console~
+There was an error parsing #{@config_fname} on this line:
+#{se}
+Default bindings used instead
+        S
+      end
     end
 
     def disable
@@ -420,6 +495,93 @@ S
       end
     end
 
+    def cmd_eval
+      eval_the_set_command
+    end
+
+    def cmd_getclipboard
+      prompt << $gtk.ffi_misc.getclipboard
+    end
+
+    def cmd_previous_history
+      if @command_history_index == -1
+        @nonhistory_input = current_input_str
+      end
+      if @command_history_index < (@command_history.length - 1)
+        @command_history_index += 1
+        self.current_input_str = @command_history[@command_history_index].dup
+      end
+    end
+
+    def cmd_next_history
+      if @command_history_index == 0
+        @command_history_index = -1
+        self.current_input_str = @nonhistory_input
+        @nonhistory_input = ''
+      elsif @command_history_index > 0
+        @command_history_index -= 1
+        self.current_input_str = @command_history[@command_history_index].dup
+      end
+    end
+
+    def cmd_move_cursor_left_word
+      prompt.move_cursor_left_word
+    end
+
+    def cmd_move_cursor_left
+      prompt.move_cursor_left
+    end
+
+    def cmd_move_cursor_right_word
+      prompt.move_cursor_right_word
+    end
+
+    def cmd_move_cursor_right
+      prompt.move_cursor_right
+    end
+
+    def cmd_move_cursor_home
+      prompt.move_cursor_home
+    end
+
+    def cmd_move_cursor_end
+      prompt.move_cursor_end
+    end
+
+    def cmd_scroll_up_full
+      scroll_up_full
+    end
+
+    def cmd_scroll_down_full
+      scroll_down_full
+    end
+
+    def cmd_scroll_up_half
+      scroll_up_half
+    end
+
+    def cmd_scroll_down_half
+      scroll_down_half
+    end
+
+    def cmd_clear
+      prompt.clear
+      @command_history_index = -1
+      @nonhistory_input = ''
+    end
+
+    def cmd_backspace
+      prompt.backspace
+    end
+
+    def cmd_delete
+      prompt.delete
+    end
+
+    def cmd_autocomplete
+      prompt.autocomplete
+    end
+
     def process_inputs args
       if console_toggle_key_down? args
         args.inputs.text.clear
@@ -434,63 +596,10 @@ S
 
       @log_offset = 0 if @log_offset < 0
 
-      if args.inputs.keyboard.key_down.enter
-        eval_the_set_command
-      elsif args.inputs.keyboard.key_down.v
-        if args.inputs.keyboard.key_down.control || args.inputs.keyboard.key_down.meta
-          prompt << $gtk.ffi_misc.getclipboard
+      @bindings&.each do |bind|
+        if args.inputs.keyboard.key_down.all? bind[:keys]
+          send bind[:name]
         end
-      elsif args.inputs.keyboard.key_down.home
-        prompt.move_cursor_home
-      elsif args.inputs.keyboard.key_down.end
-        prompt.move_cursor_end
-      elsif args.inputs.keyboard.key_down.up
-        if @command_history_index == -1
-          @nonhistory_input = current_input_str
-        end
-        if @command_history_index < (@command_history.length - 1)
-          @command_history_index += 1
-          self.current_input_str = @command_history[@command_history_index].dup
-        end
-      elsif args.inputs.keyboard.key_down.down
-        if @command_history_index == 0
-          @command_history_index = -1
-          self.current_input_str = @nonhistory_input
-          @nonhistory_input = ''
-        elsif @command_history_index > 0
-          @command_history_index -= 1
-          self.current_input_str = @command_history[@command_history_index].dup
-        end
-      elsif args.inputs.keyboard.key_down.left
-        if args.inputs.keyboard.key_down.control
-          prompt.move_cursor_left_word
-        else
-          prompt.move_cursor_left
-        end
-      elsif args.inputs.keyboard.key_down.right
-        if args.inputs.keyboard.key_down.control
-          prompt.move_cursor_right_word
-        else
-          prompt.move_cursor_right
-        end
-      elsif inputs_scroll_up_full? args
-        scroll_up_full
-      elsif inputs_scroll_down_full? args
-        scroll_down_full
-      elsif inputs_scroll_up_half? args
-        scroll_up_half
-      elsif inputs_scroll_down_half? args
-        scroll_down_half
-      elsif inputs_clear_command? args
-        prompt.clear
-        @command_history_index = -1
-        @nonhistory_input = ''
-      elsif args.inputs.keyboard.key_down.backspace
-        prompt.backspace
-      elsif args.inputs.keyboard.key_down.delete
-        prompt.delete
-      elsif args.inputs.keyboard.key_down.tab
-        prompt.autocomplete
       end
 
       args.inputs.keyboard.key_down.clear
