@@ -49,3 +49,7 @@ end
 ```
 
 [Here is the final result](final-result.mp4)
+
+# Instructions on how to fork and contribute
+
+TODO
