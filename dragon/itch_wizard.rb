@@ -92,7 +92,7 @@ S
     end
 
     if metadata[:icon].start_with?("#") || !@icon
-      log "* PROPT: Please provide icon path for your game."
+      log "* PROMPT: Please provide icon path for your game."
       $console.set_command "$wizards.itch.set_icon \"icon.png\""
       return :need_icon
     end
