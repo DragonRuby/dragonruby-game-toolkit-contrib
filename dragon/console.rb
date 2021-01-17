@@ -448,6 +448,7 @@ S
           @command_history_index += 1
           self.current_input_str = @command_history[@command_history_index].dup
         end
+        prompt.move_cursor_end
       elsif args.inputs.keyboard.key_down.down
         if @command_history_index == 0
           @command_history_index = -1
@@ -457,6 +458,7 @@ S
           @command_history_index -= 1
           self.current_input_str = @command_history[@command_history_index].dup
         end
+        prompt.move_cursor_end
       elsif args.inputs.keyboard.key_down.left
         if args.inputs.keyboard.key_down.control
           prompt.move_cursor_left_word
