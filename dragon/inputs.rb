@@ -525,6 +525,10 @@ module GTK
       point.point_inside_circle? center, radius
     end
 
+    def intersect_rect? other_rect
+      { x: point.x, y: point.y, w: 0, h: 0 }.intersect_rect? other_rect
+    end
+
     alias_method :position, :point
 
     def clear
@@ -583,6 +587,7 @@ module GTK
                   :moved_at,
                   :global_moved_at,
                   :touch_order,
+                  :first_tick_down,
                   :x, :y
 
     def initialize
@@ -590,6 +595,7 @@ module GTK
       @moved_at = 0
       @global_moved_at = 0
       @touch_order = 0
+      @first_tick_down = true
       @x = 0
       @y = 0
     end

@@ -359,6 +359,13 @@ module GTK
         result[:h] += device.grid_area.gutter * 2
       end
 
+      result[:x] += opts[:dx] if opts[:dx]
+      result[:y] += opts[:dy] if opts[:dy]
+      result[:w] += opts[:dw] if opts[:dw]
+      result[:h] += opts[:dh] if opts[:dh]
+      result[:row] = opts[:row]
+      result[:col] = opts[:col]
+
       result
     end
 

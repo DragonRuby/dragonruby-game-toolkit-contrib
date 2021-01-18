@@ -113,5 +113,3 @@ def test_by_reference_state_strict_entities args, assert
   deserialized_state = args.gtk.deserialize_state serialized_state
   assert.equal! deserialized_state.strict_entity.one, deserialized_state.strict_entity.two
 end
-
-$tests.start

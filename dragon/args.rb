@@ -222,5 +222,9 @@ module GTK
     def controller_two
       @inputs.controller_two
     end
+
+    def autocomplete_methods
+      [:inputs, :outputs, :gtk, :state, :geometry, :audio, :grid, :layout]
+    end
   end
 end

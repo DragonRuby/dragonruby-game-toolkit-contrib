@@ -4,7 +4,6 @@
 
 module GTK
   class Runtime
-    # @visibility private
     module FramerateDiagnostics
       def framerate_get_diagnostics
         <<-S
