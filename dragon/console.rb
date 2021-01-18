@@ -569,7 +569,7 @@ S
     end
 
     def error_markers
-      ["exception", "error", "undefined method", "failed", "syntax", "deprecated"]
+      ["exception:", "error:", "undefined method", "failed", "syntax", "deprecated"]
     end
 
     def include_subdued_markers? text
@@ -581,7 +581,7 @@ S
     end
 
     def subdued_markers
-      ["reloaded", "exported the"]
+      ["reloaded", "exported the", "~require~"]
     end
 
     def calc args

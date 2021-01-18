@@ -1,0 +1,6 @@
+devid=canicvs
+devtitle=UTD Students
+gameid=physics-holedown-sample
+gametitle=Physics Holedown Sample App
+version=0.1
+icon=metadata/icon.png

@@ -509,35 +509,36 @@ specific approach to game development. Collaborate with us.
 
 ** Continuity of Design
 
-There is a programming idiom in software called "the pit of
-success". The term normalizes up front pain as a necessity in the
-(hopes that the investment will yield dividends "when you become
-successful"). This results in more "Enterprise TM" code upfront, and
-makes it more difficult to get started when you are new to programming.
+There is a programming idiom in software called "The Pit of
+Success". The term normalizes upfront pain as a necessity/requirement in the
+hopes that the investment will yield dividends "when you become
+successful" or "when the code becomes more complicated". This approach to
+development is strongly discouraged by us. It leads to over-architected
+and unnessary code; creates barriers to rapid prototyping and shipping a game; and
+overwhelms beginners who are new to the engine or programming in general.
 
-DragonRuby's philosophy is to provide a spectrum across the "make it
-fast" vs "make it right" spectrum and provide incremental, intuitive
-transitions between points on that spectrum. This is captured in how
-render primitives can be represented as tuples/arrays, hashes, open
-structs/entities, and then finally classes (as opposed to forcing devs
-to use classes upfront).
+DragonRuby's philosophy is to provide multiple options across the "make it
+fast" vs "make it right" spectrum, with incremental/intuitive
+transitions between the options provided. A concrete example of this philosophy
+would be render primitives: the spectrum of options allows renderable constructs take
+the form of tuples/arrays (easy to pickup, simple, and fast to code/prototype with),
+hashes (a little more work, but gives you the ability to add additional properties),
+open and string entities (more work than hashes, but yields cleaner apis),
+and finally - if you really need full power/flexibility in rendering - classes
+(which take the most amount of code and programming knowledge to create).
 
-** Release Often And Soon
+** Release Early and Often
 
 The biggest mistake game devs make is spending too much time in
 isolation building their game. Release something, however small, and
-release it quickly.
+release it soon.
 
 Stop worrying about everything being pixel perfect. Don't wait until
 your game is 100% complete. Build your game publicly and
 iterate. Post in the #show-and-tell channel in the community Discord.
 You'll find a lot of support and encouragement there.
 
-Remember:
-
-#+begin_quote
-Real artists ship.
-#+end_quote
+Real artists ship. Remember that.
 
 ** Sustainable And Ethical Monetization
 
@@ -548,6 +549,10 @@ anything in between.
 Charge a fair amount of money for the things you create. It's expected
 and encouraged within the community. Give what you create away for
 free to those that can't afford it.
+
+If you are gainfully employed, pay full price for the things you use. If you
+do end up getting something at a discount, pay the differnce "forward" to
+someone else.
 
 ** Sustainable And Ethical Open Source
 

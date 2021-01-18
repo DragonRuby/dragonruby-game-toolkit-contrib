@@ -15,7 +15,5 @@ def test_exception_in_newing_object args, assert
   end
 end
 
-puts "running tests"
 $gtk.reset 100
 $gtk.log_level = :off
-$gtk.tests.start
