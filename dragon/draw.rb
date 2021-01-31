@@ -16,115 +16,131 @@ module GTK
         # pass.solids.each            { |s| draw_solid s }
         # while loops are faster than each with block
         idx = 0
+        length = pass.solids.length
         while idx < pass.solids.length
-          draw_solid (pass.solids.value idx) # accessing an array using .value instead of [] is faster
+          draw_solid (pass.solids.at idx) # accessing an array using .value instead of [] is faster
           idx += 1
         end
 
         # pass.static_solids.each     { |s| draw_solid s }
         idx = 0
-        while idx < pass.static_solids.length
-          draw_solid (pass.static_solids.value idx)
+        length = pass.static_solids.length
+        while idx < length
+          draw_solid (pass.static_solids.at idx)
           idx += 1
         end
 
         # pass.sprites.each           { |s| draw_sprite s }
         idx = 0
-        while idx < pass.sprites.length
-          draw_sprite (pass.sprites.value idx)
+        length = pass.sprites.length
+        while idx < length
+          draw_sprite (pass.sprites.at idx)
           idx += 1
         end
 
         # pass.static_sprites.each    { |s| draw_sprite s }
         idx = 0
-        while idx < pass.static_sprites.length
-          draw_sprite (pass.static_sprites.value idx)
+        length = pass.static_sprites.length
+        while idx < length
+          draw_sprite (pass.static_sprites.at idx)
           idx += 1
         end
 
         # pass.primitives.each        { |p| draw_primitive p }
         idx = 0
-        while idx < pass.primitives.length
-          draw_primitive (pass.primitives.value idx)
+        length = pass.primitives.length
+        while idx < length
+          draw_primitive (pass.primitives.at idx)
           idx += 1
         end
 
         # pass.static_primitives.each { |p| draw_primitive p }
         idx = 0
-        while idx < pass.static_primitives.length
-          draw_primitive (pass.static_primitives.value idx)
+        length = pass.static_primitives.length
+        while idx < length
+          draw_primitive (pass.static_primitives.at idx)
           idx += 1
         end
 
         # pass.labels.each            { |l| draw_label l }
         idx = 0
-        while idx < pass.labels.length
-          draw_label (pass.labels.value idx)
+        length = pass.labels.length
+        while idx < length
+          draw_label (pass.labels.at idx)
           idx += 1
         end
 
         # pass.static_labels.each     { |l| draw_label l }
         idx = 0
-        while idx < pass.static_labels.length
-          draw_label (pass.static_labels.value idx)
+        length = pass.static_labels.length
+        while idx < length
+          draw_label (pass.static_labels.at idx)
           idx += 1
         end
 
         # pass.lines.each             { |l| draw_line l }
         idx = 0
-        while idx < pass.lines.length
-          draw_line (pass.lines.value idx)
+        length = pass.lines.length
+        while idx < length
+          draw_line (pass.lines.at idx)
           idx += 1
         end
 
         # pass.static_lines.each      { |l| draw_line l }
         idx = 0
+        length = pass.static_lines.length
         while idx < pass.static_lines.length
-          draw_line (pass.static_lines.value idx)
+          draw_line (pass.static_lines.at idx)
           idx += 1
         end
 
         # pass.borders.each           { |b| draw_border b }
         idx = 0
-        while idx < pass.borders.length
-          draw_border (pass.borders.value idx)
+        length = pass.borders.length
+        while idx < length
+          draw_border (pass.borders.at idx)
           idx += 1
         end
 
         # pass.static_borders.each    { |b| draw_border b }
         idx = 0
-        while idx < pass.static_borders.length
-          draw_border (pass.static_borders.value idx)
+        length = pass.static_borders.length
+        while idx < length
+          draw_border (pass.static_borders.at idx)
           idx += 1
         end
 
         if !$gtk.production
           # pass.debug.each        { |r| draw_primitive r }
           idx = 0
-          while idx < pass.debug.length
-            draw_primitive (pass.debug.value idx)
+          length = pass.debug.length
+          while idx < length
+            draw_primitive (pass.debug.at idx)
             idx += 1
           end
 
           # pass.static_debug.each { |r| draw_primitive r }
           idx = 0
-          while idx < pass.static_debug.length
-            draw_primitive (pass.static_debug.value idx)
+          length = pass.static_debug.length
+          while idx < length
+            draw_primitive (pass.static_debug.at idx)
             idx += 1
           end
         end
 
         # pass.reserved.each          { |r| draw_primitive r }
         idx = 0
-        while idx < pass.reserved.length
-          draw_primitive (pass.reserved.value idx)
+        length = pass.reserved.length
+        while idx < length
+          draw_primitive (pass.reserved.at idx)
           idx += 1
         end
 
         # pass.static_reserved.each   { |r| draw_primitive r }
         idx = 0
-        while idx < pass.static_reserved.length
-          draw_primitive (pass.static_reserved.value idx)
+        length = pass.static_reserved.length
+        while idx < length
+          draw_primitive (pass.static_reserved.at idx)
           idx += 1
         end
       rescue Exception => e

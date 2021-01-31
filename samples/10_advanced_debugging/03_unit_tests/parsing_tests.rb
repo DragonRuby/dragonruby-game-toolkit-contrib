@@ -23,7 +23,5 @@ S
  assert.equal! result, expected, "Parsing xml failed."
 end
 
-puts "running tests"
 $gtk.reset 100
 $gtk.log_level = :off
-$gtk.tests.start

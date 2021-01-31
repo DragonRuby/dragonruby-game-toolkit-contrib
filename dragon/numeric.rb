@@ -281,14 +281,16 @@ S
     vector_y max_value
   end
 
-  # @gtk
   def mod n
     self % n
   end
 
-  # @gtk
   def mod_zero? *ns
     ns.any? { |n| mod(n) == 0 }
+  end
+
+  def zmod? n
+    (self % n) == 0
   end
 
   def mult n
@@ -592,6 +594,14 @@ class Fixnum
   def sin
     Math.sin(self.to_radians)
   end
+
+  def to_sf
+    "%.2f" % self
+  end
+
+  def ifloor int
+    (self.idiv int.to_i) * int.to_i
+  end
 end
 
 class Float
@@ -637,6 +647,14 @@ class Float
     return self unless self.infinite?
     return -scalar if self < 0
     return  scalar if self > 0
+  end
+
+  def to_sf
+    "%.2f" % self
+  end
+
+  def ifloor int
+    (self.idiv int.to_i) * int.to_i
   end
 end
 

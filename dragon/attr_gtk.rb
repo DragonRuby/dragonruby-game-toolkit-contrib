@@ -42,4 +42,8 @@ module AttrGTK
   def geometry
     args.geometry
   end
+
+  def layout
+    args.layout
+  end
 end

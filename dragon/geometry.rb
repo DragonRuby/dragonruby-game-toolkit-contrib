@@ -76,10 +76,10 @@ module GTK
       Geometry.point_inside_circle? self, circle_center_point, radius
     end
 
-    def center_inside_rect other_rect
-      offset_x = (other_rect.w - w).half
-      offset_y = (other_rect.h - h).half
-      new_rect = self.shift_rect(0, 0)
+    def self.center_inside_rect rect, other_rect
+      offset_x = (other_rect.w - rect.w).half
+      offset_y = (other_rect.h - rect.h).half
+      new_rect = rect.shift_rect(0, 0)
       new_rect.x = other_rect.x + offset_x
       new_rect.y = other_rect.y + offset_y
       new_rect
@@ -90,9 +90,31 @@ center_inside_rect for self #{self} and other_rect #{other_rect}. Failed with ex
 S
     end
 
-    def center_inside_rect_y other_rect
-      offset_y = (other_rect.h - h).half
-      new_rect = self.shift_rect(0, 0)
+    def center_inside_rect other_rect
+      Geometry.center_inside_rect self, other_rect
+    end
+
+    def self.center_inside_rect_x rect, other_rect
+      offset_x   = (other_rect.w - rect.w).half
+      new_rect   = rect.shift_rect(0, 0)
+      new_rect.x = other_rect.x + offset_x
+      new_rect.y = other_rect.y
+      new_rect
+    rescue Exception => e
+      raise e, <<-S
+* ERROR:
+center_inside_rect_x for self #{self} and other_rect #{other_rect}. Failed with exception #{e}.
+S
+    end
+
+    def center_inside_rect_x other_rect
+      Geometry.center_inside_rect_x self, other_rect
+    end
+
+    def self.center_inside_rect_y rect, other_rect
+      offset_y = (other_rect.h - rect.h).half
+      new_rect = rect.shift_rect(0, 0)
+      new_rect.x = other_rect.x
       new_rect.y = other_rect.y + offset_y
       new_rect
     rescue Exception => e
@@ -102,17 +124,10 @@ center_inside_rect_y for self #{self} and other_rect #{other_rect}. Failed with 
 S
     end
 
-    def center_inside_rect_x other_rect
-      offset_x = (other_rect.w - w).half
-      new_rect = self.shift_rect(0, 0)
-      new_rect.x = other_rect.x + offset_x
-      new_rect
-    rescue Exception => e
-      raise e, <<-S
-* ERROR:
-center_inside_rect_x for self #{self} and other_rect #{other_rect}. Failed with exception #{e}.
-S
+    def center_inside_rect_y other_rect
+      Geometry.center_inside_rect_y self, other_rect
     end
+
 
     # Returns a primitive that is anchored/repositioned based off its retangle.
     # @gtk
@@ -170,8 +185,25 @@ S
 
     # @gtk
     def self.line_slope line, replace_infinity: nil
+      return replace_infinity if line.x2 == line.x
       (line.y2 - line.y).fdiv(line.x2 - line.x)
                         .replace_infinity(replace_infinity)
+    end
+
+    def self.line_rise_run line
+      rise = (line.y2 - line.y).to_f
+      run  = (line.x2 - line.x).to_f
+      if rise.abs > run.abs && rise != 0
+        rise = rise.fdiv rise.abs
+        run = run.fdiv rise.abs
+      elsif run.abs > rise.abs && run != 0
+        rise = rise.fdiv run.abs
+        run = run.fdiv run.abs
+      else
+        rise = rise / rise.abs if rise != 0
+        run = run / run.abs if run != 0
+      end
+      return { x: run , y: rise }
     end
 
     # @gtk
@@ -239,8 +271,8 @@ S
       return false if rect_one.bottom + tolerance > rect_two.top - tolerance
       return true
     rescue Exception => e
-      context_help_rect_one = (rect_one.help_contract_implementation contract_intersect_rect?)[:not_implemented_methods]
-      context_help_rect_two = (rect_two.help_contract_implementation contract_intersect_rect?)[:not_implemented_methods]
+      context_help_rect_one = (rect_one.__help_contract_implementation contract_intersect_rect?)[:not_implemented_methods]
+      context_help_rect_two = (rect_two.__help_contract_implementation contract_intersect_rect?)[:not_implemented_methods]
       context_help = ""
       if context_help_rect_one && context_help_rect_one.length > 0
         context_help += <<-S

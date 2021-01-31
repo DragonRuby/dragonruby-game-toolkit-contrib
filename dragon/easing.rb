@@ -31,12 +31,12 @@ module GTK
 
     def self.initial_value *definitions
       definitions.flatten!
-      return Easing.exec_definition (definitions.value(-1) || :identity), 0, 10, 0
+      return Easing.exec_definition (definitions.at(-1) || :identity), 0, 10, 0
     end
 
     def self.final_value *definitions
       definitions.flatten!
-      return Easing.exec_definition (definitions.value(-1) || :identity), 0, 10, 1.0
+      return Easing.exec_definition (definitions.at(-1) || :identity), 0, 10, 1.0
     end
 
     def self.exec_definition definition, start_tick, duration, x

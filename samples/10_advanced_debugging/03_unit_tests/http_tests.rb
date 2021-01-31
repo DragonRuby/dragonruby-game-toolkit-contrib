@@ -18,7 +18,5 @@ def test_http args, assert
   try_assert_or_schedule args, assert
 end
 
-puts "running tests"
 $gtk.reset 100
 $gtk.log_level = :off
-$gtk.tests.start

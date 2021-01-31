@@ -16,11 +16,11 @@ module DocsOrganizer
 
   def self.reserved_methods
     [
-     :docs_export_docs!,
-     :docs_all,
-     :docs_method_sort_order,
-     :docs_classes,
-     :docs_search
+      :docs_export_docs!,
+      :docs_all,
+      :docs_method_sort_order,
+      :docs_classes,
+      :docs_search,
     ]
   end
 
@@ -29,6 +29,7 @@ module DocsOrganizer
       GTK::ReadMe,
       GTK::Runtime,
       Array,
+      GTK::Args,
       GTK::Outputs,
       GTK::Mouse,
       GTK::OpenEntity,
@@ -43,7 +44,7 @@ module DocsOrganizer
     end
 
     unsorted.each do |k|
-        puts <<-S
+      puts <<-S
 * WARNING: #{klass.name} is not included in DocsOrganizer::class_sort_order. Please place this
 module in it's correct topilogical order.
 S
@@ -56,7 +57,7 @@ S
     end
   end
 
-  def self.sort_method_delegate l, r, method_sort_order
+  def self.sort_method_delegate(l, r, method_sort_order)
     l_index = (method_sort_order.find_index l) || 50000
     r_index = (method_sort_order.find_index r) || 50000
     l_index = 51000 if l == :docs_classes
@@ -66,18 +67,18 @@ S
     l_index <=> r_index
   end
 
-  def self.find_methods_with_docs klass
+  def self.find_methods_with_docs(klass)
     klass_method_sort_order = klass.docs_method_sort_order
-    klass.methods.find_all { |m| m.start_with? 'docs_' }
-                 .reject { |m| reserved_methods.include? m }
-                 .sort do |l, r|
-                   sort_method_delegate l, r, klass_method_sort_order
-                 end
+    klass.methods.find_all { |m| m.start_with? "docs_" }
+      .reject { |m| reserved_methods.include? m }
+      .sort do |l, r|
+      sort_method_delegate l, r, klass_method_sort_order
+    end
   end
 end
 
 module Docs
-  def self.extended klass
+  def self.extended(klass)
     $docs_classes ||= []
     $docs_classes << klass
     $docs_classes.uniq!
@@ -147,8 +148,7 @@ S
     end
   end
 
-  def self.__docs_search__ words = nil, &block
-
+  def self.__docs_search__(words = nil, &block)
   end
 
   def __docs_search_help_text__
@@ -171,11 +171,11 @@ You can do more advanced searches by providing a block:
 S
   end
 
-  def __docs_search_results__ words = nil, &block
+  def __docs_search_results__(words = nil, &block)
     words ||= ""
 
     if words.strip.length != 0
-      each_word = words.split(' ').find_all { |w| w.strip.length > 3 }
+      each_word = words.split(" ").find_all { |w| w.strip.length > 3 }
       block = lambda do |entry|
         each_word.any? { |w| entry.downcase.include? w.downcase }
       end
@@ -206,7 +206,7 @@ S
     search_results
   end
 
-  def docs_search words = nil, &block
+  def docs_search(words = nil, &block)
     results = __docs_search_results__ words, &block
 
     final_string = results.join "\n"
@@ -222,7 +222,7 @@ S
     "\n" + final_string
   end
 
-  def __export_docs__! opts = {}
+  def __export_docs__!(opts = {})
     DocsOrganizer.sort_docs_classes!
     opts = defaults_export_docs!.merge opts
     opts[:methods] = methods_with_docs.reject { |m| m == :docs_classes } if opts[:methods].include? :all
@@ -237,24 +237,24 @@ S
     nil
   end
 
-  def export_docs! opts = {}
+  def export_docs!(opts = {})
     __export_docs__! opts
   end
 
-  def __docs_append_true_line__ true_lines, true_line, parse_log
+  def __docs_append_true_line__(true_lines, true_line, parse_log)
     true_line.rstrip!
     parse_log << "*** True Line Result\n#{true_line}"
     true_lines << true_line
   end
 
   # may god have mercy on your soul if you try to expand this
-  def __docs_to_html__ string
+  def __docs_to_html__(string)
     parse_log = []
-	
+
     if Docs&.const_defined?(:FAVICON_BASE64)
       favicon_tag = "<link rel=\"icon\" type=\"image/x-icon\" href=\"data:image/x-icon;base64,#{FAVICON_BASE64}\" />"
     else
-      favicon_tag = ''
+      favicon_tag = ""
       log "* WARN: FAVICON_BASE64 not defined. Please require 'docs_assets.rb'."
     end
 
@@ -264,6 +264,8 @@ S
     <title>DragonRuby Game Toolkit Documentation</title>
     <link href="docs.css?ver=#{Time.now.to_i}" rel="stylesheet" type="text/css" media="all">
     #{favicon_tag}
+    <link href="prism.css?ver=#{Time.now.to_i}" rel="stylesheet" type="text/css" media="all">
+    <script src="prism.js?ver=#{Time.now.to_i}"></script>
   </head>
   <body>
     <div id='toc'>
@@ -364,13 +366,13 @@ S
     content_html = ""
 
     inside_pre = false
-    inside_being_src    = false
-    inside_paragraph    = false
-    inside_literal      = false
-    inside_h1           = false
+    inside_being_src = false
+    inside_paragraph = false
+    inside_literal = false
+    inside_h1 = false
     inside_ordered_list = false
-    inside_ul           = false
-    inside_ol           = false
+    inside_ul = false
+    inside_ol = false
 
     text_to_id = lambda do |text|
       text = text.strip.downcase
@@ -449,13 +451,13 @@ S
         inside_ol = false
         inside_ul = false
         inside_pre = true
-        content_html << "<pre>"
+        content_html << '<pre><code class="language-ruby">'
       elsif l.start_with? "#+end_src"
         parse_log << "- PRE end detected."
         inside_ol = false
         inside_ul = false
         inside_pre = false
-        content_html << "</pre>\n"
+        content_html << "</code></pre>\n"
       elsif l.start_with? "#+begin_quote"
         parse_log << "- BLOCKQUOTE start detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
@@ -545,14 +547,14 @@ S
     {
       original: string,
       html: final_html,
-      parse_log: parse_log
+      parse_log: parse_log,
     }
   rescue Exception => e
-    $gtk.write_file_root 'docs/parse_log.txt', (parse_log.join "\n")
+    $gtk.write_file_root "docs/parse_log.txt", (parse_log.join "\n")
     raise "* ERROR in Docs::__docs_to_html__. #{e}"
   end
 
-  def __docs_line_to_html__ line, parse_log
+  def __docs_line_to_html__(line, parse_log)
     parse_log << "- Determining if line is a header."
     if line.start_with? "**** "
       line = line.gsub "**** ", ""

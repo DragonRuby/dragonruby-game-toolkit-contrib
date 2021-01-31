@@ -33,6 +33,7 @@ module GTK
                   :control_left, :control_right,
                   :alt_left, :alt_right,
                   :meta_left, :meta_right,
+                  :home, :end,
                   :left, :right, :up, :down, :pageup, :pagedown,
                   :char, :plus, :at, :forward_slash, :back_slash, :asterisk,
                   :less_than, :greater_than, :carat, :ampersand, :superscript_two,
@@ -48,6 +49,8 @@ module GTK
                         raw_key == 1073741906 ||
                         raw_key == 1073741899 ||
                         raw_key == 1073741902 ||
+                        raw_key == 1073741898 ||
+                        raw_key == 1073741901 ||
                         (raw_key >= 1073742048 && raw_key <= 1073742055) # Modifier Keys
 
       char = KeyboardKeys.char_with_shift raw_key, modifier
@@ -168,6 +171,8 @@ module GTK
         "?"  => [:question_mark],
         '%'  => [:percent_sign],
         "º"  => [:ordinal_indicator],
+        1073741898 => [:home],
+        1073741901 => [:end],
         1073741903 => [:right],
         1073741904 => [:left],
         1073741905 => [:down],
@@ -520,6 +525,10 @@ module GTK
       point.point_inside_circle? center, radius
     end
 
+    def intersect_rect? other_rect
+      { x: point.x, y: point.y, w: 0, h: 0 }.intersect_rect? other_rect
+    end
+
     alias_method :position, :point
 
     def clear
@@ -578,6 +587,7 @@ module GTK
                   :moved_at,
                   :global_moved_at,
                   :touch_order,
+                  :first_tick_down,
                   :x, :y
 
     def initialize
@@ -585,6 +595,7 @@ module GTK
       @moved_at = 0
       @global_moved_at = 0
       @touch_order = 0
+      @first_tick_down = true
       @x = 0
       @y = 0
     end
