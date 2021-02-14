@@ -52,4 +52,20 @@ end
 
 # Instructions on how to fork and contribute
 
-TODO
+Welcome to forking and contributing to this wonderful project. To officially make changes to the OSS you must first fork this repo. To do this you must navigate that lovely cursor up to the top right of this page. You will see three icons: Watch, star and fork. By now you probably know which one you want to click (It is the one titled fork).
+ 
+![](readme_resources/fork_button.png)
+ 
+Once you have clicked the fork button, a new window will pop up asking you what identity or organization you want to fork to. Choose your main profile. In my case I have already forked to my identity, but you should be able to find your's here.
+ 
+![](readme_resources/where_to_fork.png)
+ 
+After cloning your forked version to your local machine, you can make changes to relevant files. When you have wrapped up, you will want to put your name at the top of the file under `#Contributors outside of DragonRuby who also hold Copyright:`. If this string does not exist go ahead and add it under the top comments. Then you can add to your next commit, commit, and push your changes up to your repo. Now that we have our changes in github we can make a pull request. You are going to want to head on back to your fancy dragonruby-game-toolkit-contrib fork on github. Right below the repo title, you will see a good number of tabs. You are going to click on the one titled Pull requests (It is right next to Code). We are almost contributors! Yay!
+ 
+Now that we are in the Pull requests tab, you can go ahead and click the nice green button titled New pull request.
+
+![](readme_resources/pull_request_page.png)
+ 
+You will now be in the pull request compare stage. It goes over all the changes you have made to the base code. This will take you too the comment page. You should always leave a few comments about what you changed and why. It helps people who follow you understand why you made these changes. Now hit that button (It is another green one)!
+ 
+Congratulations! Once an admin merges your changes, you will be a DragonRubyGTK contributor. Wear that title with pride!
