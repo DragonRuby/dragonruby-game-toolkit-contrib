@@ -4,6 +4,7 @@
 
 # Contributors outside of DragonRuby who also hold Copyright:
 # - Kevin Fischer: https://github.com/kfischer-okarin
+# - Austin Meyer: https://github.com/Niyy
 
 module GTK
   class Console
@@ -523,7 +524,7 @@ S
       return if !@toggled_at
       return if slide_progress == 0
 
-      @bottom = top - (h * slide_progress)
+      @bottom = h - (h * slide_progress)
       args.outputs.reserved << [left, @bottom, w, h, *@background_color.mult_alpha(slide_progress)].solid
       args.outputs.reserved << [right.shift_left(110), @bottom.shift_up(630), 100, 100, @logo, 0, (80.0 * slide_progress).to_i].sprite
 
