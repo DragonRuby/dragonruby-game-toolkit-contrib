@@ -48,12 +48,10 @@
  - ARRAY#intersect_rect?: Returns true or false depending on if the two rectangles intersect.
 
  - args.inputs.mouse.click: This property will be set if the mouse was clicked.
-   For more information about the mouse, go to mygame/documentation/07-mouse.md.
 
  - args.inputs.keyboard.key_up.KEY: The value of the properties will be set
    to the frame  that the key_up event occurred (the frame correlates
    to args.state.tick_count).
-   For more information about the keyboard, go to mygame/documentation/06-keyboard.md.
 
  - args.state.labels:
    The parameters for a label are
@@ -63,7 +61,6 @@
    4. the alignment
    5. the color (red, green, and blue saturations)
    6. the alpha (or transparency)
-   For more information about labels, go to mygame/documentation/02-labels.md.
 
  - args.state.lines:
    The parameters for a line are
@@ -71,7 +68,6 @@
    2. the ending position (x2, y2)
    3. the color (red, green, and blue saturations)
    4. the alpha (or transparency)
-   For more information about lines, go to mygame/documentation/04-lines.md.
 
  - args.state.solids (and args.state.borders):
    The parameters for a solid (or border) are
@@ -80,7 +76,6 @@
    3. the height (h)
    4. the color (r, g, b)
    5. the alpha (or transparency)
-   For more information about solids and borders, go to mygame/documentation/03-solids-and-borders.md.
 
  - args.state.sprites:
    The parameters for a sprite are
@@ -90,7 +85,7 @@
    4. the image path
    5. the angle
    6. the alpha (or transparency)
-   For more information about sprites, go to mygame/documentation/05-sprites.md.
+
 =end
 
 # This sample app shows different objects that can be used when making games, such as labels,

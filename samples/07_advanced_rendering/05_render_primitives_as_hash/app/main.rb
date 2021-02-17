@@ -16,23 +16,18 @@
 
  - args.outputs.sprites: An array. The values generate a sprite.
    The parameters are [X, Y, WIDTH, HEIGHT, PATH, ANGLE, ALPHA, RED, GREEN, BLUE]
-   For more information about sprites, go to mygame/documentation/05-sprites.md.
 
  - args.outputs.labels: An array. The values generate a label.
    The parameters are [X, Y, TEXT, SIZE, ALIGNMENT, RED, GREEN, BLUE, ALPHA, FONT STYLE]
-   For more information about labels, go to mygame/documentation/02-labels.md.
 
  - args.outputs.solids: An array. The values generate a solid.
    The parameters are [X, Y, WIDTH, HEIGHT, RED, GREEN, BLUE, ALPHA]
-   For more information about solids, go to mygame/documentation/03-solids-and-borders.md.
 
  - args.outputs.borders: An array. The values generate a border.
    The parameters are the same as a solid.
-   For more information about borders, go to mygame/documentation/03-solids-and-borders.md.
 
  - args.outputs.lines: An array. The values generate a line.
    The parameters are [X1, Y1, X2, Y2, RED, GREEN, BLUE]
-   For more information about labels, go to mygame/documentation/02-labels.md.
 
 =end
 

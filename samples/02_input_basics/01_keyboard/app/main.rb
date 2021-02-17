@@ -4,8 +4,7 @@ APIs listing that haven't been encountered in a previous sample apps:
 
 - args.inputs.keyboard.key_up.KEY: The value of the properties will be set
   to the frame  that the key_up event occurred (the frame correlates
-  to args.state.tick_count). Otherwise the value will be nil. For a
-  full listing of keys, take a look at mygame/documentation/06-keyboard.md.
+  to args.state.tick_count). Otherwise the value will be nil. 
 - args.state.PROPERTY: The state property on args is a dynamic
   structure. You can define ANY property here with ANY type of
   arbitrary nesting. Properties defined on args.state will be retained
