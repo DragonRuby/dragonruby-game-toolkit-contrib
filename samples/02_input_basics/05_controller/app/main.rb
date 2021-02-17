@@ -7,8 +7,6 @@
    If there is more than one controller being used, they can be differentiated by
    using names like controller_one and controller_two.
 
-   For a full listing of buttons, take a look at mygame/documentation/08-controllers.md.
-
  Reminder:
 
  - args.state.PROPERTY: The state property on args is a dynamic

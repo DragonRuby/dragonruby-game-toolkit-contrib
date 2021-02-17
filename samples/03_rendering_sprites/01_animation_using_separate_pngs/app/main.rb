@@ -10,15 +10,12 @@
 
  - args.outputs.sprites: An array. Values in this array generate sprites on the screen.
    The parameters are [X, Y, WIDTH, HEIGHT, IMAGE PATH]
-   For more information about sprites, go to mygame/documentation/05-sprites.md.
 
  - args.outputs.labels: An array. Values in the array generate labels on the screen.
    The parameters are [X, Y, TEXT, SIZE, ALIGNMENT, RED, GREEN, BLUE, ALPHA, FONT STYLE]
-   For more information about labels, go to mygame/documentation/02-labels.md.
 
  - args.inputs.keyboard.key_down.KEY: Determines if a key is in the down state, or pressed.
    Stores the frame that key was pressed on.
-   For more information about the keyboard, go to mygame/documentation/06-keyboard.md.
 
 =end
 

@@ -9,7 +9,6 @@
 
  - args.outputs.solids: An array. The values generate a solid.
    The parameters for a solid are [X, Y, WIDTH, HEIGHT, RED, GREEN, BLUE]
-   For more information about solids, go to mygame/documentation/03-solids-and-borders.md.
 
  - num1.greater(num2): Returns the greater value.
 

@@ -33,11 +33,9 @@
 
  - args.outputs.borders: An array. The values generate a border.
    The parameters are [X, Y, WIDTH, HEIGHT, RED, GREEN, BLUE]
-   For more information about borders, go to mygame/documentation/03-solids-and-borders.md.
 
  - args.outputs.labels: An array. The values generate a label.
    The parameters are [X, Y, TEXT, SIZE, ALIGNMENT, RED, GREEN, BLUE, ALPHA, FONT STYLE]
-   For more information about labels, go to mygame/documentation/02-labels.
 
 =end
 

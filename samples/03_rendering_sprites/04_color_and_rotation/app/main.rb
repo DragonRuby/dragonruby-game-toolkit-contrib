@@ -21,14 +21,10 @@
 
  - args.outputs.sprites: An array. The values generate a sprite.
    The parameters are [X, Y, WIDTH, HEIGHT, PATH, ANGLE, ALPHA, RED, GREEN, BLUE]
-   Before continuing with this sample app, it is HIGHLY recommended that you look
-   at mygame/documentation/05-sprites.md.
 
  - args.inputs.keyboard.key_held.KEY: Determines if a key is being pressed.
-   For more information about the keyboard, go to mygame/documentation/06-keyboard.md.
 
  - args.inputs.controller_one: Takes input from the controller based on what key is pressed.
-   For more information about the controller, go to mygame/documentation/08-controllers.md.
 
  - num1.lesser(num2): Finds the lower value of the given options.
 

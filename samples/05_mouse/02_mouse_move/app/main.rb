@@ -14,11 +14,9 @@
 
  - args.inputs.keyboard.key_down.KEY: Determines if a key is being held or pressed.
    Stores the frame the "down" event occurred.
-   For more information about the keyboard, go to mygame/documentation/06-keyboard.md.
 
  - args.outputs.sprites: An array. The values generate a sprite.
    The parameters are [X, Y, WIDTH, HEIGHT, PATH, ANGLE, ALPHA, RED, GREEN, BLUE]
-   For more information about sprites, go to mygame/documentation/05-sprites.md.
 
  - args.state.new_entity: Used when we want to create a new object, like a sprite or button.
    When we want to create a new object, we can declare it as a new entity and then define

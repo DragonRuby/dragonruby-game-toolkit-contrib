@@ -36,7 +36,6 @@
 
  - args.outputs.labels: An array. Values generate a label.
    Parameters are [X, Y, TEXT, SIZE, ALIGN, RED, GREEN, BLUE, ALPHA, FONT STYLE]
-   For more information, go to mygame/documentation/02-labels.md.
 
  - ARRAY#inside_rect?: An array with at least two values is considered a point. An array
    with at least four values is considered a rect. The inside_rect? function returns true

@@ -48,13 +48,11 @@
  Reminders:
 
  - args.inputs.keyboard.KEY: Determines if a key has been pressed.
-   For more information about the keyboard, take a look at mygame/documentation/06-keyboard.md.
 
  - ARRAY#intersect_rect?: Returns true or false depending on if the two rectangles intersect.
 
  - args.outputs.solids: An array. The values generate a solid.
    The parameters are [X, Y, WIDTH, HEIGHT, RED, GREEN, BLUE]
-   For more information about solids, go to mygame/documentation/03-solids-and-borders.md.
 
 =end
 
