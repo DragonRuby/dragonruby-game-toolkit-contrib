@@ -10,10 +10,10 @@ module GTK
       def execute_draw_order pass
         # Don't change this draw order unless you understand
         # the implications.
-        render_static_sprites pass
         render_solids pass
-        render_sprites pass
         render_static_solids pass
+        render_sprites pass
+        render_static_sprites pass
         render_primitives pass
         render_static_primitives pass
         render_labels pass
