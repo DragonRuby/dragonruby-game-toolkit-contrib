@@ -586,6 +586,8 @@ module GTK
     attr_accessor :moved,
                   :moved_at,
                   :global_moved_at,
+                  :down_at,
+                  :global_down_at,
                   :touch_order,
                   :first_tick_down,
                   :x, :y
@@ -594,6 +596,8 @@ module GTK
       @moved = false
       @moved_at = 0
       @global_moved_at = 0
+      @down_at = 0
+      @global_down_at = 0
       @touch_order = 0
       @first_tick_down = true
       @x = 0
@@ -621,6 +625,9 @@ module GTK
       result[:touch_order] = @touch_order
       result[:moved] = @moved
       result[:moved_at] = @moved_at
+      result[:global_moved_at] = @global_moved_at
+      result[:down_at] = @down_at
+      result[:global_down_at] = @global_down_at
 
       result
     end
@@ -651,6 +658,10 @@ module GTK
     # @gtk
     attr_reader :mouse
 
+    # @return [HTTPRequest[]]
+    # @gtk
+    attr_accessor :http_requests
+
     # @return {FingerTouch}
     # @gtk
     attr_reader :touch
@@ -667,6 +678,7 @@ module GTK
       @finger_one = nil
       @finger_two = nil
       @text = []
+      @http_requests = []
     end
 
     def up
@@ -742,6 +754,7 @@ module GTK
       @keyboard.clear
       @controllers.each(&:clear)
       @touch.clear
+      @http_requests.clear
       @finger_one = nil
       @finger_two = nil
     end

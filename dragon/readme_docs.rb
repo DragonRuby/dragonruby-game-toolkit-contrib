@@ -339,44 +339,6 @@ even the most fancy games are just creating objects and moving them
 around. Experiment a little. Add a few more things and have them
 interact in small ways. Want something to go away? Just don't add it
 to ~args.output~ anymore.
-
-* IMPORTANT: Go through all of the sample apps! Study them thoroughly!! No really, you should definitely do this!
-
-Now that you've completed the Hello World tutorial. Head over to the
-`samples` directory. It is very very important that you study the
-sample apps thoroughly! Go through them in order. Here is a short
-description of each sample app.
-
-** Guided Samples
-
-1. ~samples/00_learn_ruby_optional~: This directory contains sample apps that will help you learn the language.
-2. ~samples/01_rendering_basics~: This set of samples will show you how to render basic primitives such as ~labels~, ~solids~, ~borders~, ~lines~, ~sprites~, and how to play ~sounds~.
-3. ~samples/02_input_basics~: This set of samples show you how to accept input from the ~mouse~, ~keyboard~, and ~controllers~.
-4. ~samples/03_rendering_sprites~: This set of samples shows you all the different ways to render sprites (including how to use a sprite sheet).
-4. ~samples/04_physics_and_collision~: This set of samples shows how to do various types of collisions and physics.
-5. ~samples/05_mouse~: This set of samples show more advanced usages of the mouse.
-6. ~samples/06_save_load~: This set of samples show how to save and load game data.
-7. ~samples/07_advanced_rendering~: This set of samples show how to programmatically render sprites using render targets.
-8. ~samples/08_tweening_lerping_easing_functions~: This set of samples show how to perform animations.
-9. ~samples/09_performance~: This set of samples show how to handle performance issues when a large number of sprites on the screen.
-10. ~samples/10_advanced_debugging~: This set of samples show how advanced debugging techniques and testing techniques.
-11. ~samples/11_http~: This set of samples show how use http.
-
-** Sample Games
-
-There are samples that contain the path ~samples/99_*~. The sample apps that are prefixed with ~99_~ show non-trivial implemementations for a real game:
-
-1. 3D Cube: Shows how to do faux 3D in DragonRuby.
-2. Dueling Starships: A two player top-down versus game where each player controls a ship.
-3. Flappy Dragon: DragonRuby's clone of Flappy Bird.
-4. Pong: A simple implementation of the game Pong.
-5. Snakemoji: The classic game of Snake but with all of the code written using emojis (sometimes you just have to have a little fun).
-6. Solar System: A simulation of our solar system.
-7. Crafting Starting Point: A starting point for those that want to build a crafting game.
-8. Dev Tools: A set of sample apps that show how you can extend DragonRuby's Console, starting point for a tile editor, and a starting point for a paint app.
-9. LOWREZ: Sample apps that show how to render at different resolutions.
-10. RPG: Various sample apps that show how to create narrative, topdown, tactical grid-based, and roguelike RPGs.
-11. Platformers: Various sample apps that show how to create different kinds of physics/collision based platformers.
 S
     end
 
@@ -514,7 +476,7 @@ Success". The term normalizes upfront pain as a necessity/requirement in the
 hopes that the investment will yield dividends "when you become
 successful" or "when the code becomes more complicated". This approach to
 development is strongly discouraged by us. It leads to over-architected
-and unnessary code; creates barriers to rapid prototyping and shipping a game; and
+and unnecessary code; creates barriers to rapid prototyping and shipping a game; and
 overwhelms beginners who are new to the engine or programming in general.
 
 DragonRuby's philosophy is to provide multiple options across the "make it
@@ -551,7 +513,7 @@ and encouraged within the community. Give what you create away for
 free to those that can't afford it.
 
 If you are gainfully employed, pay full price for the things you use. If you
-do end up getting something at a discount, pay the differnce "forward" to
+do end up getting something at a discount, pay the difference "forward" to
 someone else.
 
 ** Sustainable And Ethical Open Source
@@ -595,7 +557,8 @@ S
 
     def docs_ticks_and_frames
       <<-S
-* CHEATSHEET: How To Determine What Frame You Are On
+* RECIPIES:
+** How To Determine What Frame You Are On
 
 There is a property on ~state~ called ~tick_count~ that is incremented
 by DragonRuby every time the ~tick~ method is called. The following
@@ -607,7 +570,7 @@ code renders a label that displays the current ~tick_count~.
   end
 #+end_src
 
-* CHEATSHEET: How To Get Current Framerate
+** How To Get Current Framerate
 
 Current framerate is a top level property on the Game Toolkit Runtime
 and is accessible via ~args.gtk.current_framerate~.
@@ -622,7 +585,7 @@ S
 
     def docs_sprites
       <<-S
-* CHEATSHEET: How To Render A Sprite Using An Array
+** How To Render A Sprite Using An Array
 
 All file paths should use the forward slash ~/~ *not* backslash
 ~\~. Game Toolkit includes a number of sprites in the ~sprites~
@@ -645,7 +608,7 @@ The following code renders a sprite with a ~width~ and ~height~ of
   end
 #+end_src
 
-* CHEATSHEET: More Sprite Properties As An Array
+** More Sprite Properties As An Array
 
 Here are all the properties you can set on a sprite.
 
@@ -666,7 +629,7 @@ Here are all the properties you can set on a sprite.
   end
 #+end_src
 
-* CHEATSHEET: Different Sprite Representations
+** Different Sprite Representations
 
 Using ordinal positioning can get a little unruly given so many
 properties you have control over.
@@ -736,7 +699,7 @@ S
 
     def docs_labels
       <<-S
-* CHEATSHEET: How To Render A Label
+** How To Render A Label
 
 ~args.outputs.labels~ is used to render labels.
 
@@ -752,7 +715,7 @@ Here is the minimum code:
   end
 #+end_src
 
-* CHEATSHEET: A Colored Label
+** A Colored Label
 
 #+begin_src
   def tick args
@@ -762,7 +725,7 @@ Here is the minimum code:
   end
 #+end_src
 
-* CHEATSHEET: Extended Label Properties
+** Extended Label Properties
 
 #+begin_src
   def tick args
@@ -790,7 +753,7 @@ label's size.
 An ~ALIGNMENT_ENUM~ of ~0~ represents "left aligned". ~1~ represents
 "center aligned". ~2~ represents "right aligned".
 
-* CHEATSHEET: Rendering A Label As A ~Hash~
+** Rendering A Label As A ~Hash~
 
 You can add additional metadata about your game within a label, which requires you to use a `Hash` instead.
 
@@ -818,7 +781,7 @@ You can add additional metadata about your game within a label, which requires y
   end
 #+end_src
 
-* CHEATSHEET: Getting The Size Of A Piece Of Text
+** Getting The Size Of A Piece Of Text
 
 You can get the render size of any string using ~args.gtk.calcstringbox~.
 
@@ -843,7 +806,7 @@ S
 
     def docs_sounds
       <<-S
-* CHEATSHEET: How To Play A Sound
+** How To Play A Sound
 
 Sounds that end ~.wav~ will play once:
 
@@ -882,7 +845,7 @@ S
 
     def docs_game_state
       <<-S
-* CHEATSHEET: Using ~args.state~ To Store Your Game State
+** Using ~args.state~ To Store Your Game State
 
 ~args.state~ is a open data structure that allows you to define
 properties that are arbitrarily nested. You don't need to define any kind of
@@ -924,7 +887,7 @@ S
 
     def animate_a_sprite
       <<-S
-* CHEATSHEET: How To Animate A Sprite Using Separate PNGs
+** How To Animate A Sprite Using Separate PNGs
 
 DragonRuby has a property on ~Numeric~ called ~frame_index~ that can
 be used to determine what frame of an animation to show. Here is an
@@ -958,7 +921,7 @@ S
 
     def docs_troubleshooting_performance
 <<-S
-* CHEATSHEET: Troubleshoot Performance
+** Troubleshoot Performance
 
 1. If you're using ~Array~s for your primitives (~args.outputs.sprites << []~), use ~Hash~ instead (~args.outputs.sprites << { x: ... }~).
 2. If you're using ~Entity~ for your primitives (~args.outputs.sprites << args.state.new_entity~), use ~StrictEntity~ instead (~args.outputs.sprites << args.state.new_entity_strict~).
@@ -982,7 +945,7 @@ S
 
     def scale_sprites
       <<-S
-* CHEATSHEET: How to Scale a Sprite
+** How to Scale a Sprite
 
 The ~scale_rect~ method can be used to change the scale of a sprite by a given ~ratio~.
 
@@ -1167,7 +1130,7 @@ file called ~repl.rb~ and put it in ~mygame/app/repl.rb~:
 
   # use xrepl to "comment out" code
   xrepl do
-    puts "This code will not be executed because of the x infront of repl".
+    puts "This code will not be executed because of the x in front of repl".
   end
 #+end_src
 

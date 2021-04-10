@@ -6,7 +6,7 @@
 class String
   include ValueType
 
-  def wrapped_lines_recur word, rest, length, aggregate
+  def self.wrapped_lines_recur word, rest, length, aggregate
     if word.nil?
       return aggregate
     elsif rest[0].nil?
@@ -38,9 +38,8 @@ S
     self[0..-2]
   end
 
-  # @gtk
-  def wrapped_lines length
-    self.each_line.map do |l|
+  def self.wrapped_lines string, length
+    string.each_line.map do |l|
       l = l.rstrip
       if l.length < length
         l + "\n"
@@ -49,6 +48,10 @@ S
         wrapped_lines_recur(words[0], words[1..-1], length, []).flatten
       end
     end.flatten
+  end
+
+  def wrapped_lines length
+    String.wrapped_lines self, length
   end
 
   # @gtk

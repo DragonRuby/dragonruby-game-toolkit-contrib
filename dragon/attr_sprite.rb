@@ -4,26 +4,35 @@
 
 # @private
 module AttrRect
+  include GTK::Geometry
+
   def left
-    @x
+    (@x || self.x)
   end
 
   def right
-    @x + @w
+    (@x || self.x) + (@w || self.w)
   end
 
   def bottom
-    @y
+    (@y || self.y)
   end
 
   def top
-    @y + @h
+    (@y || self.y) + (@h || self.h)
+  end
+
+  def x1
+    (@x || self.x)
+  end
+
+  def y1
+    (@y || self.y)
   end
 end
 
 module AttrSprite
   include AttrRect
-  include GTK::Geometry
 
   attr_accessor :x, :y, :w, :h, :path, :angle, :a, :r, :g, :b, :tile_x,
                 :tile_y, :tile_w, :tile_h, :flip_horizontally,
@@ -38,16 +47,8 @@ module AttrSprite
     self
   end
 
-  def x1
-    @x
-  end
-
   def x1= value
     @x = value
-  end
-
-  def y1
-    @y
   end
 
   def y1= value

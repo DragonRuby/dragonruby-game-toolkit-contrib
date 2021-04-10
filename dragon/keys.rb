@@ -19,7 +19,7 @@ module GTK
       ].freeze
 
       LABELS.each do |label|
-        attr_reader label
+        attr label
       end
 
       # Activate a key.

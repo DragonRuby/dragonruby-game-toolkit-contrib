@@ -5,6 +5,15 @@
 
 module GTK
   module Easing
+    def self.ease start_tick, current_tick, duration, *definitions
+      ease_extended start_tick,
+                    current_tick,
+                    start_tick + duration,
+                    (initial_value *definitions),
+                    (final_value *definitions),
+                    *definitions
+    end
+
     def self.ease_extended start_tick, current_tick, end_tick, default_before, default_after, *definitions
       definitions.flatten!
       definitions = [:identity] if definitions.length == 0
@@ -19,7 +28,12 @@ module GTK
       y
     end
 
+    def self.ease_spline start_tick, current_tick, duration, spline
+      ease_spline_extended start_tick, current_tick, start_tick + duration, spline
+    end
+
     def self.ease_spline_extended start_tick, current_tick, end_tick, spline
+      return spline[-1][-1] if current_tick >= end_tick
       duration = end_tick - start_tick
       t = (current_tick - start_tick).fdiv duration
       time_allocation_per_curve = 1.fdiv(spline.length)

@@ -60,7 +60,7 @@ module GTK
                    :meta!,
                    :new?,
                    :old?,
-                   :original_eq_eq, :set!,
+                   :__original_eq_eq__, :set!,
                    :update_entity_keys_by_ref,
                    :with_meta] +
                  ignores + keys.find_all { |k| k.to_s.to_i.to_s == k.to_s }
@@ -82,20 +82,25 @@ module GTK
 
         if word[-1] == "." && token
           lookup = {
-            'args'     => lambda { $gtk.args },
-            'inputs'   => lambda { $gtk.args.inputs },
-            'outputs'  => lambda { $gtk.args.outputs },
-            'layout'  => lambda { $gtk.args.outputs },
-            'keyboard' => lambda { $gtk.args.keyboard },
-            'key_down' => lambda { $gtk.args.keyboard.key_down },
-            'key_up'   => lambda { $gtk.args.keyboard.key_up },
-            'state'    => lambda { $gtk.args.state },
-            '$gtk'     => lambda { $gtk }
+            'args'     => lambda { $gtk.args.autocomplete_methods },
+            'inputs'   => lambda { $gtk.args.inputs.autocomplete_methods },
+            'geometry' => lambda { $gtk.args.geometry.autocomplete_methods },
+            'outputs'  => lambda { $gtk.args.outputs.autocomplete_methods },
+            'layout'   => lambda { $gtk.args.layouts.autocomplete_methods },
+            'keyboard' => lambda { $gtk.args.keyboard.autocomplete_methods },
+            'key_down' => lambda { $gtk.args.keyboard.key_down.autocomplete_methods },
+            'key_up'   => lambda { $gtk.args.keyboard.key_up.autocomplete_methods },
+            'state'    => lambda { $gtk.args.state.autocomplete_methods },
+            'fn'       => lambda { $gtk.args.fn.autocomplete_methods },
+            '$gtk'     => lambda { $gtk.autocomplete_methods },
+            'gtk'      => lambda { $gtk.autocomplete_methods },
+            'mouse'    => lambda { $gtk.args.inputs.mouse.autocomplete_methods },
+            'click'    => lambda { [:x, :y, :point] }
           }
 
           lookup_result = lookup[dot]
 
-          return autocomplete_filter_methods lookup_result.call.autocomplete_methods if lookup_result
+          return autocomplete_filter_methods lookup_result.call if lookup_result
 
           start_collecting = false
           dots_after_state = dots.find_all do |s|

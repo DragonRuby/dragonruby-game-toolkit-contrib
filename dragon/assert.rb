@@ -104,6 +104,16 @@ end
       nil
     end
 
+    def not_equal! actual, expected, message = nil
+      @assertion_performed = true
+      if actual == expected
+        actual_string = "#{actual}#{actual.nil? ? " (nil) " : " " }".strip
+        message = "actual:\n#{actual_string}\n\nequaled\n\nexpected:\n#{expected}.\n#{message}"
+        raise message
+      end
+      nil
+    end
+
 =begin
 Assert if a value is explicitly nil (not false).
 

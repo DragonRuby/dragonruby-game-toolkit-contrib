@@ -154,7 +154,10 @@ module GTK
       @visible
     end
 
-    # @gtk
+    def open reason = nil
+      show reason
+    end
+
     def show reason = nil
       @shown_at = Kernel.global_tick_count
       @show_reason = reason
@@ -524,7 +527,7 @@ S
       return if !@toggled_at
       return if slide_progress == 0
 
-      @bottom = h - (h * slide_progress)
+      @bottom = top - (h * slide_progress)
       args.outputs.reserved << [left, @bottom, w, h, *@background_color.mult_alpha(slide_progress)].solid
       args.outputs.reserved << [right.shift_left(110), @bottom.shift_up(630), 100, 100, @logo, 0, (80.0 * slide_progress).to_i].sprite
 

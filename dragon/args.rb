@@ -41,6 +41,8 @@ module GTK
     # @return [Geometry]
     attr_accessor :geometry
 
+    attr_accessor :fn
+
     # This is where you'll put state associated with your video game.
     #
     # @return [OpenEntity]
@@ -58,6 +60,10 @@ module GTK
 
     attr_accessor :layout
 
+    attr_accessor :easing
+
+    attr_accessor :string
+
     def initialize runtime, recording
       @inputs = Inputs.new
       @outputs = Outputs.new args: self
@@ -72,8 +78,11 @@ module GTK
       @pixel_arrays = {}
       @all_tests = []
       @geometry = GTK::Geometry
+      @fn = GTK::Fn
       @wizards = Wizards.new
       @layout = GTK::Layout.new @grid.w, @grid.h
+      @easing = GTK::Easing
+      @string = String
     end
 
 
@@ -224,7 +233,7 @@ module GTK
     end
 
     def autocomplete_methods
-      [:inputs, :outputs, :gtk, :state, :geometry, :audio, :grid, :layout]
+      [:inputs, :outputs, :gtk, :state, :geometry, :audio, :grid, :layout, :fn]
     end
   end
 end

@@ -7,12 +7,6 @@
    of available notes.
 
  Reminders:
- - args.grid.(left|right|top|bottom): Pixel value for the boundaries of the virtual
-   720 p screen (Dragon Ruby Game Toolkits's virtual resolution is always 1280x720).
-
- - args.state.new_entity: Used when we want to create a new object, like a sprite or button.
-   For example, if we want to create a new button, we would declare it as a new entity and
-   then define its properties.
 
  - String interpolation: Uses #{} syntax; everything between the #{ and the } is evaluated
    as Ruby code, and the placeholder is replaced with its corresponding value or result.

@@ -7,8 +7,12 @@ class Numeric
   include ValueType
   include NumericDeprecated
 
+  alias_method :gt,  :>
   alias_method :gte, :>=
+  alias_method :lt,  :<
   alias_method :lte, :<=
+  alias_method :__original_eq_eq__, :== unless Numeric.instance_methods.include? :__original_eq_eq__
+
 
   # Converts a numeric value representing seconds into frames.
   #
@@ -26,6 +30,23 @@ class Numeric
 
   def to_byte
     clamp(0, 255).to_i
+  end
+
+  def clamp_wrap min, max
+    max, min = min, max if min > max
+    return self if self >= min && self <= max
+    return min if min == max
+    if self < min
+      overflow = min - self
+      return (max - overflow).clamp_wrap min, max
+    end
+
+    if self > max
+      overflow = self - max
+      return (min + overflow).clamp_wrap min, max
+    end
+
+    return self
   end
 
   def elapsed_time tick_count_override = nil
@@ -140,16 +161,16 @@ S
   def randomize *definitions
     result = self
 
+    if definitions.include?(:sign)
+      result = rand_sign
+    end
+
     if definitions.include?(:ratio)
       result = rand * result
     elsif definitions.include?(:int)
       result = (rand result)
     end
-    
-    if definitions.include?(:sign)
-      result = result.rand_sign
-    end
-    
+
     result
   end
 
@@ -414,13 +435,10 @@ S
     return gt other
   end
 
-  alias_method(:original_eq_eq, :==) unless Numeric.instance_methods.include?(:original_eq_eq)
   def == other
-    return true if self.original_eq_eq(other)
-    if other.is_a?(OpenEntity)
-      return self.original_eq_eq(other.entity_id)
-    end
-    return self.original_eq_eq(other)
+    return true if __original_eq_eq__ other
+    return __original_eq_eq__ other.entity_id if other.is_a? OpenEntity
+    return false
   end
 
   # @gtk
@@ -435,6 +453,48 @@ S
 
     self.to_i.times.map do
       yield
+    end
+  end
+
+  def each
+    unless block_given?
+      raise <<-S
+* ERROR:
+A block is required for Numeric#each.
+
+S
+    end
+
+    self.to_i.times do
+      yield
+    end
+  end
+
+  def times_with_index
+    unless block_given?
+      raise <<-S
+* ERROR:
+A block is required for Numeric#times_with_index.
+
+S
+    end
+
+    self.to_i.times.with_index do |i|
+      yield i
+    end
+  end
+
+  def each_with_index
+    unless block_given?
+      raise <<-S
+* ERROR:
+A block is required for Numeric#each_with_index.
+
+S
+    end
+
+    self.to_i.times.with_index do |i|
+      yield i
     end
   end
 
@@ -453,69 +513,82 @@ S
     end
   end
 
-  def check_numeric! sender, other
-    return if other.is_a? Numeric
-
+  def __raise_arithmetic_exception__ other, m, e
     raise <<-S
 * ERROR:
-Attempted to invoke :+ on #{self} with the right hand argument of:
+Attempted to invoke :#{m} on #{self} with the right hand argument of:
 
 #{other}
 
 The object above is not a Numeric.
 
+#{e}
 S
   end
 
   def - other
     return nil unless other
-    check_numeric! :-, other
     super
+  rescue Exception => e
+    __raise_arithmetic_exception__ other, :-, e
   end
 
   def + other
     return nil unless other
-    check_numeric! :+, other
     super
+  rescue Exception => e
+    __raise_arithmetic_exception__ other, :+, e
   end
 
   def * other
     return nil unless other
-    check_numeric! :*, other
     super
+  rescue Exception => e
+    __raise_arithmetic_exception__ other, :*, e
   end
 
   def / other
     return nil unless other
-    check_numeric! :/, other
     super
+  rescue Exception => e
+    __raise_arithmetic_exception__ other, :/, e
   end
 
   def serialize
     self
   end
 
+  def self.from_top n
+    return 720 - n unless $gtk
+    $gtk.args.grid.top - n
+  end
+
   def from_top
-    return 720 - self unless $gtk
-    $gtk.args.grid.h - self
+    Numeric.from_top self
+  end
+
+  def self.from_right n
+    return 1280 - n unless $gtk
+    $gtk.args.grid.right - n
   end
 
   def from_right
-    return 1280 - self unless $gtk
-    $gtk.args.grid.w - self
+    Numeric.from_right self
+  end
+
+  def self.clamp n, min, max
+    n.clamp min, max
   end
 end
 
 class Fixnum
   include ValueType
 
-  alias_method(:original_eq_eq, :==) unless Fixnum.instance_methods.include?(:original_eq_eq)
-
-  def - other
-    return nil unless other
-    check_numeric! :-, other
-    super
-  end
+  alias_method :__original_eq_eq__,    :== unless Fixnum.instance_methods.include? :__original_eq_eq__
+  alias_method :__original_add__,      :+  unless Fixnum.instance_methods.include? :__original_add__
+  alias_method :__original_subtract__, :-  unless Fixnum.instance_methods.include? :__original_subtract__
+  alias_method :__original_multiply__, :*  unless Fixnum.instance_methods.include? :__original_multiply__
+  alias_method :__original_divide__,   :-  unless Fixnum.instance_methods.include? :__original_divide__
 
   # Returns `true` if the numeric value is evenly divisible by 2.
   #
@@ -533,28 +606,36 @@ class Fixnum
 
   def + other
     return nil unless other
-    check_numeric! :+, other
     super
+  rescue Exception => e
+    __raise_arithmetic_exception__ other, :+, e
   end
 
   def * other
     return nil unless other
-    check_numeric! :*, other
     super
+  rescue Exception => e
+    __raise_arithmetic_exception__ other, :*, e
   end
 
   def / other
     return nil unless other
-    check_numeric! :/, other
     super
+  rescue Exception => e
+    __raise_arithmetic_exception__ other, :/, e
+  end
+
+  def - other
+    return nil unless other
+    super
+  rescue Exception => e
+    __raise_arithmetic_exception__ other, :-, e
   end
 
   def == other
-    return true if self.original_eq_eq(other)
-    if other.is_a?(GTK::OpenEntity)
-      return self.original_eq_eq(other.entity_id)
-    end
-    return self.original_eq_eq(other)
+    return true if __original_eq_eq__ other
+    return __original_eq_eq__ other.entity_id if other.is_a? GTK::OpenEntity
+    return false
   end
 
   # Returns `-1` if the number is less than `0`. `+1` if the number
@@ -607,28 +688,37 @@ end
 class Float
   include ValueType
 
+  alias_method :__original_add__,      :+ unless Float.instance_methods.include? :__original_add__
+  alias_method :__original_subtract__, :- unless Float.instance_methods.include? :__original_subtract__
+  alias_method :__original_multiply__, :* unless Float.instance_methods.include? :__original_multiply__
+  alias_method :__original_divide__,   :- unless Float.instance_methods.include? :__original_divide__
+
   def - other
     return nil unless other
-    check_numeric! :-, other
     super
+  rescue Exception => e
+    __raise_arithmetic_exception__ other, :-, e
   end
 
   def + other
     return nil unless other
-    check_numeric! :+, other
     super
+  rescue Exception => e
+    __raise_arithmetic_exception__ other, :+, e
   end
 
   def * other
     return nil unless other
-    check_numeric! :*, other
     super
+  rescue Exception => e
+    __raise_arithmetic_exception__ other, :*, e
   end
 
   def / other
     return nil unless other
-    check_numeric! :/, other
     super
+  rescue Exception => e
+    __raise_arithmetic_exception__ other, :/, e
   end
 
   def serialize
@@ -659,9 +749,17 @@ class Float
 end
 
 class Integer
-  alias_method(:original_round, :round) unless Fixnum.instance_methods.include?(:original_round)
+  alias_method :__original_round__,    :round  unless Integer.instance_methods.include? :__original_round__
+  alias_method :__original_add__,      :+      unless Integer.instance_methods.include? :__original_add__
+  alias_method :__original_subtract__, :-      unless Integer.instance_methods.include? :__original_subtract__
+  alias_method :__original_multiply__, :*      unless Integer.instance_methods.include? :__original_multiply__
+  alias_method :__original_divide__,   :-      unless Integer.instance_methods.include? :__original_divide__
 
   def round *args
-    original_round
+    __original_round__
+  end
+
+  def nan?
+    false
   end
 end

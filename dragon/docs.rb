@@ -257,8 +257,6 @@ S
   <head>
     <title>DragonRuby Game Toolkit Documentation</title>
     <link href="docs.css?ver=#{Time.now.to_i}" rel="stylesheet" type="text/css" media="all">
-    <link href="prism.css?ver=#{Time.now.to_i}" rel="stylesheet" type="text/css" media="all">
-    <script src="prism.js?ver=#{Time.now.to_i}"></script>
   </head>
   <body>
     <div id='toc'>
@@ -407,7 +405,7 @@ S
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
         link_id = text_to_id.call l
-        toc_html += "<li><a href='##{link_id}'>#{formatted_html}</a></li>\n"
+        toc_html += "<li><a class='header-1' href='##{link_id}'>#{formatted_html}</a></li>\n"
         content_html += "<h1 id='#{link_id}'>#{formatted_html}</h1>\n"
       elsif l.start_with? "** "
         parse_log << "- H2 detected."
@@ -416,8 +414,8 @@ S
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
         link_id = text_to_id.call l
-        # toc_html += "<a href='##{link_id}'>#{formatted_html}</a></br>\n"
-        content_html += "<h2>#{__docs_line_to_html__ l, parse_log}</h2>\n"
+        toc_html += "<ul><li><a class='header-2' href='##{link_id}'>#{formatted_html}</a></li></ul>"
+        content_html += "<h2 id='#{link_id}'>#{__docs_line_to_html__ l, parse_log}</h2>\n"
       elsif l.start_with? "*** "
         parse_log << "- H3 detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
@@ -425,8 +423,8 @@ S
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
         link_id = text_to_id.call l
-        # toc_html += "<a href='##{link_id}'>#{formatted_html}</a></br>\n"
-        content_html += "<h3>#{__docs_line_to_html__ l, parse_log}</h3>\n"
+        toc_html += "<ul><ul><li><a class='header-3' href='##{link_id}'>#{formatted_html}</a></li></ul></ul>"
+        content_html += "<h3 id='#{link_id}'>#{__docs_line_to_html__ l, parse_log}</h3>\n"
       elsif l.start_with? "**** "
         parse_log << "- H4 detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
@@ -434,7 +432,7 @@ S
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
         link_id = text_to_id.call l
-        # toc_html += "<a href='##{link_id}'>#{formatted_html}</a></br>\n"
+        # toc_html += "<ul><ul><ul><li><a href='##{link_id}'>#{formatted_html}</a></li></ul></ul></ul>"
         content_html += "<h4>#{__docs_line_to_html__ l, parse_log}</h4>\n"
       elsif l.strip.length == 0 && !inside_pre
         # do nothing

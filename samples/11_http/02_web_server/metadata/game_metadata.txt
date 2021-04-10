@@ -1,0 +1,6 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=httpserverexample
+gametitle=DragonRuby GTK HTTP Server Example
+version=0.1
+icon=metadata/icon.png

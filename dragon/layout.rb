@@ -366,6 +366,11 @@ module GTK
       result[:row] = opts[:row]
       result[:col] = opts[:col]
 
+      if $gtk.args.grid.name == :center
+        result[:x] -= 640
+        result[:y] -= 360
+      end
+
       result
     end
 
