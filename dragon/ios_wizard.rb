@@ -1,3 +1,4 @@
+# Contributors outside of DragonRuby who also hold Copyright: Michał Dudziński
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # ios_wizard.rb has been released under MIT (*only this file*).
@@ -11,6 +12,8 @@ class WizardException < Exception
 end
 
 class IOSWizard
+  include Metadata
+
   def initialize
     @doctor_executed_at = 0
   end
@@ -84,15 +87,19 @@ class IOSWizard
   def start opts = nil
     @opts = opts || {}
 
-    if !(@opts.is_a? Hash) || !($gtk.args.fn.eq_any? @opts[:env], :dev, :prod)
+    unless $gtk.args.fn.eq_any? @opts[:env], :dev, :prod
       raise WizardException.new(
-              "* $wizards.ios.start needs to be provided an environment option.",
-              "** For development builds type: $wizards.ios.start env: :dev",
-              "** For production builds type: $wizards.ios.start env: :prod"
-            )
+        "* $wizards.ios.start needs to be provided an environment option.",
+        "** For development builds type: $wizards.ios.start env: :dev",
+        "** For production builds type: $wizards.ios.start env: :prod"
+      )
     end
 
     @production_build = (@opts[:env] == :prod)
+
+    @version = determine_app_version @opts
+    log_info "I will be using version: '#{@version}'" if @production_build
+
     @steps = steps_development_build
     @steps = steps_production_build if @production_build
     @certificate_name = nil
@@ -233,6 +240,15 @@ class IOSWizard
   def determine_app_name
     @app_name = (provisioning_profile_xml @opts[:env])[:children].first[:children].first[:children][1][:children].first[:data]
     log_info "App name is: #{@app_name}."
+  end
+
+  def determine_app_version opts
+    version = @opts[:version]
+    unless version
+      version = get_metadata[:version]
+      version = version.start_with?('#') ? '1.0' : version.split('=').last
+    end
+    version.to_s
   end
 
   def provisioning_profile_xml environment
@@ -798,7 +814,7 @@ XML
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleShortVersionString</key>
-        <string>5.2</string>
+        <string>:version</string>
         <key>CFBundleSignature</key>
         <string>????</string>
         <key>CFBundleSupportedPlatforms</key>
@@ -806,7 +822,7 @@ XML
                 <string>iPhoneOS</string>
         </array>
         <key>CFBundleVersion</key>
-        <string>5.2</string>
+        <string>:version</string>
         <key>DTCompiler</key>
         <string>com.apple.compilers.llvm.clang.1_0</string>
         <key>DTPlatformBuild</key>
@@ -890,6 +906,7 @@ XML
 
     info_plist_string.gsub!(":app_name", @app_name)
     info_plist_string.gsub!(":app_id", @app_id)
+    info_plist_string.gsub!(":version", @version);
 
     $gtk.write_file_root "tmp/ios/#{@app_name}.app/Info.plist", info_plist_string.strip
 
