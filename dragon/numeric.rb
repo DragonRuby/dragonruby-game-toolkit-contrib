@@ -451,8 +451,8 @@ A block is required for Numeric#map.
 S
     end
 
-    self.to_i.times.map do
-      yield
+    self.to_i.times.map do |i|
+      yield i
     end
   end
 
@@ -465,8 +465,8 @@ A block is required for Numeric#each.
 S
     end
 
-    self.to_i.times do
-      yield
+    self.to_i.times do |i|
+      yield i
     end
   end
 
@@ -737,6 +737,21 @@ class Float
     return self unless self.infinite?
     return -scalar if self < 0
     return  scalar if self > 0
+  end
+
+  # Shamelessly stolen from `Fixnum`
+  # Returns the cosine of a represented in degrees (NOT radians).
+  #
+  # @gtk
+  def cos
+    Math.cos(self.to_radians)
+  end
+
+  # Returns the cosine of a represented in degrees (NOT radians).
+  #
+  # @gtk
+  def sin
+    Math.sin(self.to_radians)
   end
 
   def to_sf
