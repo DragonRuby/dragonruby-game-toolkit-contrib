@@ -86,11 +86,11 @@ module GTK
       # TODO: (requires re-writing a lot of the code most likely)
       # ?? how can we put in regex? the code would be cleaner that way \ amir please fix :P \\ abolish consoles :>
       def move_cursor_left_word
-        str = @current_input_str[0..[@cursor_position - 1, 0].sort[1]]
-        # ? Can be changed, it was just taken from my editor settings :>
-        @cursor_position = ("`~!@#$%^&*-=+()[]{}\|;:'\",.<>/?_ \t\n\0".chars.map { |char|
+        str = @current_input_str[0..[@cursor_position - 1, 0].max]
+        cand = WORD_LIMITER_CHARS.map { |char|
           (val = str.rindex char) ? (val + 1 == @cursor_position ? val : val + 1) : 0
-        }.sort.reverse[0])
+        }
+        @cursor_position = cand.max
         update_cursor_position_px
       end
 
@@ -100,6 +100,8 @@ module GTK
         update_cursor_position_px
       end
 
+      # ? Not sure if this is the most efficient solution
+      # ? but it does sure work
       def move_cursor_right_word
 <<<<<<< HEAD
         return if @cursor_position.equal? str_len
@@ -112,12 +114,15 @@ module GTK
         @cursor_position = new_pos
 =======
         str = @current_input_str[@cursor_position..@current_input_str.length]
-        # ? Can be changed, it was just taken from my editor settings :>
-        cand = ("`~!@#$%^&*-=+()[]{}\|;:'\",.<>/?_ \t\n\0".chars.map { |char|
+        cand = (WORD_LIMITER_CHARS.map { |char|
           (val = str.index char) ? val : 0
         }.sort - [0])
+<<<<<<< HEAD
         (cand == []) ? @cursor_position = @current_input_str.length : @cursor_position += (cand[0]+0)
 >>>>>>> 32214ee (Added support for `HOME`, `END`, `Ctrl+left` and `Ctrl+right`)
+=======
+        (cand == []) ? @cursor_position = @current_input_str.length : @cursor_position += (cand[0])
+>>>>>>> 8792225 (Fixes to the code according to @kfischer-okarin 's suggestions. Some minor deletions of code that isn't needed)
         update_cursor_position_px
       end
 
