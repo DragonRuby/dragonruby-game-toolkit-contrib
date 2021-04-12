@@ -60,7 +60,11 @@ module GTK
                    :meta!,
                    :new?,
                    :old?,
+<<<<<<< HEAD
                    :__original_eq_eq__, :set!,
+=======
+                   :original_eq_eq, :set!,
+>>>>>>> 7b9fc2b8c7df352e379c6d14dfd205e6800a2a0e
                    :update_entity_keys_by_ref,
                    :with_meta] +
                  ignores + keys.find_all { |k| k.to_s.to_i.to_s == k.to_s }
@@ -82,6 +86,7 @@ module GTK
 
         if word[-1] == "." && token
           lookup = {
+<<<<<<< HEAD
             'args'     => lambda { $gtk.args.autocomplete_methods },
             'inputs'   => lambda { $gtk.args.inputs.autocomplete_methods },
             'geometry' => lambda { $gtk.args.geometry.autocomplete_methods },
@@ -96,11 +101,26 @@ module GTK
             'gtk'      => lambda { $gtk.autocomplete_methods },
             'mouse'    => lambda { $gtk.args.inputs.mouse.autocomplete_methods },
             'click'    => lambda { [:x, :y, :point] }
+=======
+            'args'     => lambda { $gtk.args },
+            'inputs'   => lambda { $gtk.args.inputs },
+            'outputs'  => lambda { $gtk.args.outputs },
+            'layout'  => lambda { $gtk.args.outputs },
+            'keyboard' => lambda { $gtk.args.keyboard },
+            'key_down' => lambda { $gtk.args.keyboard.key_down },
+            'key_up'   => lambda { $gtk.args.keyboard.key_up },
+            'state'    => lambda { $gtk.args.state },
+            '$gtk'     => lambda { $gtk }
+>>>>>>> 7b9fc2b8c7df352e379c6d14dfd205e6800a2a0e
           }
 
           lookup_result = lookup[dot]
 
+<<<<<<< HEAD
           return autocomplete_filter_methods lookup_result.call if lookup_result
+=======
+          return autocomplete_filter_methods lookup_result.call.autocomplete_methods if lookup_result
+>>>>>>> 7b9fc2b8c7df352e379c6d14dfd205e6800a2a0e
 
           start_collecting = false
           dots_after_state = dots.find_all do |s|

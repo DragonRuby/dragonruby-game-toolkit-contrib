@@ -233,7 +233,11 @@ module GTK
     end
 
     def autocomplete_methods
+<<<<<<< HEAD
       [:inputs, :outputs, :gtk, :state, :geometry, :audio, :grid, :layout, :fn]
+=======
+      [:inputs, :outputs, :gtk, :state, :geometry, :audio, :grid, :layout]
+>>>>>>> 7b9fc2b8c7df352e379c6d14dfd205e6800a2a0e
     end
   end
 end

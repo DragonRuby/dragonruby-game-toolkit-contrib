@@ -127,6 +127,11 @@ class IOSWizard
     return true
   end
 
+  def always_fail
+    return false if $gtk.ivar :rcb_release_mode
+    return true
+  end
+
   def check_for_xcode
     if !cli_app_exist?(xcodebuild_cli_app)
       raise WizardException.new(
@@ -176,6 +181,7 @@ class IOSWizard
     start
   end
 
+<<<<<<< HEAD
   def check_for_distribution_profile
     @provisioning_profile_path = "profiles/distribution.mobileprovision"
     if !($gtk.read_file @provisioning_profile_path)
@@ -198,6 +204,8 @@ class IOSWizard
     end
   end
 
+=======
+>>>>>>> 7b9fc2b8c7df352e379c6d14dfd205e6800a2a0e
   def check_for_dev_profile
     @provisioning_profile_path = "profiles/development.mobileprovision"
     if !($gtk.read_file @provisioning_profile_path)
@@ -298,7 +306,11 @@ class IOSWizard
       log_error "I couldn't find a development profile at #{path}."
       ask_for_dev_profile
     else
+<<<<<<< HEAD
       @provisioning_profile_path = path
+=======
+      @dev_profile_path = path
+>>>>>>> 7b9fc2b8c7df352e379c6d14dfd205e6800a2a0e
       start
     end
   end
