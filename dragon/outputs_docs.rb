@@ -8,7 +8,8 @@ module OutputsDocs
     [
       :docs_class,
       :docs_solids,
-      :docs_borders
+      :docs_borders,
+      :docs_sprites
     ]
   end
 
@@ -149,6 +150,114 @@ Here is an example:
 
 S
   end
+  
+  def docs_sprites
+    <<-S
+* DOCS: ~GTK::Outputs#sprites~
+
+Add primitives to this collection to render a sprite to the screen.
+
+** Rendering a sprite using an Array
+
+Creates a sprite of a white circle located at 100, 100. 160 pixels
+wide and 90 pixels tall.
+
+#+begin_src
+  def tick args
+    #                         X    Y   WIDTH   HEIGHT                        PATH
+    args.outputs.sprites << [100, 100,   160,     90, "sprites/circle/white.png]
+  end
+#+end_src
+
+** Rendering a sprite using an Array with colors and alpha
+
+The value for the color and alpha is an number between ~0~ and ~255~. The
+alpha property is optional and will be set to ~255~ if not specified.
+
+Creates a green circle sprite with an opacity of 50%.
+
+#+begin_src
+  def tick args
+    #                         X    Y  WIDTH  HEIGHT           PATH                ANGLE  ALPHA  RED  GREEN  BLUE
+    args.outputs.sprites << [100, 100,  160,     90, "sprites/circle/white.png",     0,    128,   0,   255,    0]
+  end
+#+end_src
+
+** Rendering a sprite using a Hash
+
+If you want a more readable invocation. You can use the following hash to create a sprite.
+Any parameters that are not specified will be given a default value. The keys of the hash can
+be provided in any order.
+
+#+begin_src
+  def tick args
+    args.outputs.sprites << {
+      x:                             0,
+      y:                             0,
+      w:                           100,
+      h:                           100,
+      path: "sprites/circle/white.png",
+      angle:                         0,
+      a:                           255,
+      r:                             0,
+      g:                           255,
+      b:                             0
+    }
+  end
+#+end_src
+
+** Rendering a solid using a Class
+
+You can also create a class with solid/border properties and render it as a primitive.
+ALL properties must on the class. *Additionally*, a method called ~primitive_marker~
+must be defined on the class.
+
+Here is an example:
+
+#+begin_src
+  # Create type with ALL sprite properties AND primitive_marker
+  class Sprite
+    attr_accessor :x, :y, :w, :h, :path, :angle, :angle_anchor_x, :angle_anchor_y,  :tile_x, :tile_y, :tile_w, :tile_h, :source_x, :source_y, :source_w, :source_h, :flip_horizontally, :flip_vertically, :a, :r, :g, :b
+
+    def primitive_marker
+      :sprite
+    end
+  end
+
+  # Inherit from type
+  class Circle < Sprite
+  # constructor
+    def initialize x, y, size, path
+      self.x = x
+      self.y = y
+      self.w = size
+      self.h = size
+      self.path = path
+      self.angle = 0
+      self.angle_anchor_x = 0
+      self.angle_anchor_y = 0
+    end
+    def serlialize
+      {x:self.x, y:self.y, w:self.w, h:self.h, path:self.path}
+    end
+
+    def inspect
+      serlialize.to_s
+    end
+
+    def to_s
+      serlialize.to_s
+    end
+  end
+  def tick args
+    # render circle sprite
+    args.outputs.sprites  << Circle.new(10, 10, 32,"sprites/circle/white.png")
+  end
+#+end_src
+
+S
+  end
+
 
   def docs_screenshots
     <<-S
