@@ -164,7 +164,7 @@ wide and 90 pixels tall.
 
 #+begin_src
   def tick args
-    #                         X    Y   WIDTH   HEIGHT                        PATH
+    #                         X    Y   WIDTH   HEIGHT                      PATH
     args.outputs.sprites << [100, 100,   160,     90, "sprites/circle/white.png]
   end
 #+end_src
@@ -233,9 +233,6 @@ Here is an example:
       self.w = size
       self.h = size
       self.path = path
-      self.angle = 0
-      self.angle_anchor_x = 0
-      self.angle_anchor_y = 0
     end
     def serlialize
       {x:self.x, y:self.y, w:self.w, h:self.h, path:self.path}
