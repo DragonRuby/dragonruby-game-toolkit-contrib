@@ -257,8 +257,8 @@ S
   <head>
     <title>DragonRuby Game Toolkit Documentation</title>
     <link href="docs.css?ver=#{Time.now.to_i}" rel="stylesheet" type="text/css" media="all">
+    <link href="prism.css" rel="stylesheet" />
   </head>
-  <body>
     <div id='toc'>
 S
     html_toc_end_to_content_start = <<-S
@@ -267,6 +267,37 @@ S
 S
     html_content_end_to_html_end = <<-S
     </div>
+    <script src="prism.js" data-manual></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+              var lazyloadElements = document.querySelectorAll("code");
+              var lazyloadThrottleTimeout;
+
+              function lazyload () {
+                      if(lazyloadThrottleTimeout) {
+                              clearTimeout(lazyloadThrottleTimeout);
+                            }
+
+                      lazyloadThrottleTimeout = setTimeout(function() {
+                              var scrollTop = window.pageYOffset;
+                              lazyloadElements.forEach(function(elem) {
+                                      if(elem.offsetTop < (window.innerHeight + scrollTop)) {
+                                              Prism.highlightElement(elem);
+                                            }
+                                    });
+                              if(lazyloadElements.length == 0) {
+                                      document.removeEventListener("scroll", lazyload);
+                                      window.removeEventListener("resize", lazyload);
+                                      window.removeEventListener("orientationChange", lazyload);
+                                    }
+                            }, 20);
+                    }
+
+              document.addEventListener("scroll", lazyload);
+              window.addEventListener("resize", lazyload);
+              window.addEventListener("orientationChange", lazyload);
+            });
+    </script>
   </body>
 </html>
 S
