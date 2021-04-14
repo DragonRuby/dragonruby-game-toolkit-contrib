@@ -2,6 +2,8 @@
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # docs.rb has been released under MIT (*only this file*).
+# Contributors outside of DragonRuby who also hold Copyright:
+# - Jeff Schoolcraft: https://github.com/jschoolcraft
 
 module DocsOrganizer
   def self.sort_docs_classes!
