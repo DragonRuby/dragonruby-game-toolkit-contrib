@@ -259,6 +259,7 @@ S
     <link href="docs.css?ver=#{Time.now.to_i}" rel="stylesheet" type="text/css" media="all">
     <link href="prism.css" rel="stylesheet" />
   </head>
+  <body class="language-ruby">
     <div id='toc'>
 S
     html_toc_end_to_content_start = <<-S
