@@ -274,12 +274,12 @@ S
     <script>
       highlight = function() {
         document.querySelectorAll('pre>code').forEach(function(elem, index) {
-          Prism.highlightElement(elem);
+          setTimeout(Prism.highlightElement, index * 50, elem);
         })
       }
 
       document.addEventListener("DOMContentLoaded", function() {
-        setTimeout(highlight, 500);
+        setTimeout(highlight, 250);
       });
     </script>
   </body>
