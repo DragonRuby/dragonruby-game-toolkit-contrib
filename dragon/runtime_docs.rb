@@ -3,6 +3,9 @@
 # MIT License
 # runtime_docs.rb has been released under MIT (*only this file*).
 
+# Contributors outside of DragonRuby who also hold Copyright:
+# Ketan Patel: https://github.com/cookieoverflow
+
 module RuntimeDocs
   def docs_method_sort_order
     [
@@ -82,7 +85,7 @@ Returns ~true~ if: the ~right~ arrow or ~d~ key is pressed or held on the ~keybo
 *** ~.left_right~
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.left~ and ~args.inputs.right~.
 *** ~.up_down~
-Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.up~ and ~args.inputs.down~.
+Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.down~ and ~args.inputs.up~.
 *** ~.text~ OR ~.history~
 Returns a string that represents the last key that was pressed on the keyboard.
 *** ~.mouse~
@@ -127,7 +130,7 @@ Returns ~true~ if ~right~ is pressed or held on the directional or left analog.
 **** ~.left_right
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.controller_(one|two).left~ and ~args.inputs.controller_(one|two).right~.
 **** ~.up_down
-Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.controller_(one|two).up~ and ~args.inputs.controller_(one|two).down~.
+Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.controller_(one|two).down~ and ~args.inputs.controller_(one|two).up~.
 **** ~.(left_analog_x_raw|right_analog_x_raw)~
 Returns the raw integer value for the analog's horizontal movement (~-32,000 to +32,000~).
 **** ~.left_analog_y_raw|right_analog_y_raw)~
@@ -167,7 +170,7 @@ Returns ~true~ if ~right~ or ~d~ is pressed or held on the keyboard.
 **** ~.left_right~
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.keyboard.left~ and ~args.inputs.keyboard.right~.
 **** ~.up_down~
-Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.keyboard.up~ and ~args.inputs.keyboard.up~.
+Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.keyboard.down~ and ~args.inputs.keyboard.up~.
 **** keyboard properties
 The following properties represent keys on the keyboard and are available on ~args.inputs.keyboard.KEY~, ~args.inputs.keyboard.key_down.KEY~, ~args.inputs.keyboard.key_held.KEY~, and ~args.inputs.keyboard.key_up.KEY~:
 - ~alt~
