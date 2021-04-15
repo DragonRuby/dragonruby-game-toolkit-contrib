@@ -272,34 +272,15 @@ S
     </div>
     <script src="prism.js" data-manual></script>
     <script>
+      highlight = function() {
+        document.querySelectorAll('pre>code').forEach(function(elem, index) {
+          Prism.highlightElement(elem);
+        })
+      }
+
       document.addEventListener("DOMContentLoaded", function() {
-              var lazyloadElements = document.querySelectorAll("pre>code");
-              var lazyloadThrottleTimeout;
-
-              function lazyload () {
-                      if(lazyloadThrottleTimeout) {
-                              clearTimeout(lazyloadThrottleTimeout);
-                            }
-
-                      lazyloadThrottleTimeout = setTimeout(function() {
-                              var scrollTop = window.pageYOffset;
-                              lazyloadElements.forEach(function(elem) {
-                                      if(elem.offsetTop < (window.innerHeight + scrollTop)) {
-                                              Prism.highlightElement(elem);
-                                            }
-                                    });
-                              if(lazyloadElements.length == 0) {
-                                      document.removeEventListener("scroll", lazyload);
-                                      window.removeEventListener("resize", lazyload);
-                                      window.removeEventListener("orientationChange", lazyload);
-                                    }
-                            }, 20);
-                    }
-
-              document.addEventListener("scroll", lazyload);
-              window.addEventListener("resize", lazyload);
-              window.addEventListener("orientationChange", lazyload);
-            });
+        setTimeout(highlight, 500);
+      });
     </script>
   </body>
 </html>
