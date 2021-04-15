@@ -655,7 +655,7 @@ S
   end
 
   def scale_color
-    self * 255
+    (self * 255).to_byte
   end
 end
 
