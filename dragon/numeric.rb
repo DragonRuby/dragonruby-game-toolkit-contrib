@@ -451,8 +451,8 @@ A block is required for Numeric#map.
 S
     end
 
-    self.to_i.times.map do
-      yield
+    self.to_i.times.map do |i|
+      yield i
     end
   end
 
@@ -465,8 +465,8 @@ A block is required for Numeric#each.
 S
     end
 
-    self.to_i.times do
-      yield
+    self.to_i.times do |i|
+      yield i
     end
   end
 
@@ -513,12 +513,12 @@ S
     end
   end
 
-  def __raise_arithmetic_exception__ other, m, e
+  def __raise_arithmetic_exception__ other, m, e = nil
     raise <<-S
 * ERROR:
-Attempted to invoke :#{m} on #{self} with the right hand argument of:
+Attempted to invoke :#{m} on #{self.inspect} with the right hand argument of:
 
-#{other}
+#{other.inspect}
 
 The object above is not a Numeric.
 
@@ -526,32 +526,60 @@ The object above is not a Numeric.
 S
   end
 
-  def - other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :-, e
+  # def - other
+  #   return nil unless other
+  #   super
+  # rescue Exception => e
+  #   __raise_arithmetic_exception__ other, :-, e
+  # end
+
+  # def + other
+  #   return nil unless other
+  #   super
+  # rescue Exception => e
+  #   __raise_arithmetic_exception__ other, :+, e
+  # end
+
+  # def * other
+  #   return nil unless other
+  #   super
+  # rescue Exception => e
+  #   __raise_arithmetic_exception__ other, :*, e
+  # end
+
+  # def / other
+  #   return nil unless other
+  #   super
+  # rescue Exception => e
+  #   __raise_arithmetic_exception__ other, :/, e
+  # end
+
+  def self.is_numeric? other
+    other.class.ancestors.include? Numeric
+  end
+
+  def is_numeric? other
+    Numeric.is_numeric? other
   end
 
   def + other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :+, e
+    raise unless is_numeric? other
+    self + (other || 0)
+  end
+
+  def - other
+    raise unless is_numeric? other
+    self - (other || 0)
   end
 
   def * other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :*, e
+    raise unless is_numeric? other
+    self * (other || 0)
   end
 
   def / other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :/, e
+    raise unless is_numeric? other
+    self / (other || 0)
   end
 
   def serialize
@@ -579,16 +607,66 @@ S
   def self.clamp n, min, max
     n.clamp min, max
   end
+
+  # Returns the cosine of a represented in degrees (NOT radians).
+  #
+  # @gtk
+  def cos
+    Math.cos(self.to_radians)
+  end
+
+  def rcos
+    Math.cos(self)
+  end
+
+  # Returns the sine of a represented in degrees (NOT radians).
+  #
+  # @gtk
+  def sin
+    Math.sin(self.to_radians)
+  end
+
+  def rsin
+    Math.sin(self)
+  end
+
+  def tan
+    Math.tan(self.to_radians)
+  end
+
+  def rtan
+    Math.tan(self)
+  end
+
+  def atan
+    Math.atan(self)
+  end
+
+  def log(base = Math::E)
+    Math.log(self, base)
+  end
+
+  def hypot(other)
+    Math.hypot(self, other)
+  end
+
+  def exp
+    Math.exp(self)
+  end
+
+  def float_to_color
+    self * 255
+  end
 end
 
 class Fixnum
   include ValueType
 
-  alias_method :__original_eq_eq__,    :== unless Fixnum.instance_methods.include? :__original_eq_eq__
-  alias_method :__original_add__,      :+  unless Fixnum.instance_methods.include? :__original_add__
-  alias_method :__original_subtract__, :-  unless Fixnum.instance_methods.include? :__original_subtract__
-  alias_method :__original_multiply__, :*  unless Fixnum.instance_methods.include? :__original_multiply__
-  alias_method :__original_divide__,   :-  unless Fixnum.instance_methods.include? :__original_divide__
+  # alias_method :__original_eq_eq__,    :== unless Fixnum.instance_methods.include? :__original_eq_eq__
+  # alias_method :__original_add__,      :+  unless Fixnum.instance_methods.include? :__original_add__
+  # alias_method :__original_subtract__, :-  unless Fixnum.instance_methods.include? :__original_subtract__
+  # alias_method :__original_multiply__, :*  unless Fixnum.instance_methods.include? :__original_multiply__
+  # alias_method :__original_divide__,   :-  unless Fixnum.instance_methods.include? :__original_divide__
 
   # Returns `true` if the numeric value is evenly divisible by 2.
   #
@@ -604,33 +682,33 @@ class Fixnum
     return !even?
   end
 
-  def + other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :+, e
-  end
+  # def + other
+  #   return nil unless other
+  #   super
+  # rescue Exception => e
+  #   __raise_arithmetic_exception__ other, :+, e
+  # end
 
-  def * other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :*, e
-  end
+  # def * other
+  #   return nil unless other
+  #   super
+  # rescue Exception => e
+  #   __raise_arithmetic_exception__ other, :*, e
+  # end
 
-  def / other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :/, e
-  end
+  # def / other
+  #   return nil unless other
+  #   super
+  # rescue Exception => e
+  #   __raise_arithmetic_exception__ other, :/, e
+  # end
 
-  def - other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :-, e
-  end
+  # def - other
+  #   return nil unless other
+  #   super
+  # rescue Exception => e
+  #   __raise_arithmetic_exception__ other, :-, e
+  # end
 
   def == other
     return true if __original_eq_eq__ other
@@ -662,20 +740,6 @@ class Fixnum
     sign < 0
   end
 
-  # Returns the cosine of a represented in degrees (NOT radians).
-  #
-  # @gtk
-  def cos
-    Math.cos(self.to_radians)
-  end
-
-  # Returns the cosine of a represented in degrees (NOT radians).
-  #
-  # @gtk
-  def sin
-    Math.sin(self.to_radians)
-  end
-
   def to_sf
     "%.2f" % self
   end
@@ -688,38 +752,38 @@ end
 class Float
   include ValueType
 
-  alias_method :__original_add__,      :+ unless Float.instance_methods.include? :__original_add__
-  alias_method :__original_subtract__, :- unless Float.instance_methods.include? :__original_subtract__
-  alias_method :__original_multiply__, :* unless Float.instance_methods.include? :__original_multiply__
-  alias_method :__original_divide__,   :- unless Float.instance_methods.include? :__original_divide__
+  # alias_method :__original_add__,      :+ unless Float.instance_methods.include? :__original_add__
+  # alias_method :__original_subtract__, :- unless Float.instance_methods.include? :__original_subtract__
+  # alias_method :__original_multiply__, :* unless Float.instance_methods.include? :__original_multiply__
+  # alias_method :__original_divide__,   :- unless Float.instance_methods.include? :__original_divide__
 
-  def - other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :-, e
-  end
+  # def - other
+  #   return nil unless other
+  #   super
+  # rescue Exception => e
+  #   __raise_arithmetic_exception__ other, :-, e
+  # end
 
-  def + other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :+, e
-  end
+  # def + other
+  #   return nil unless other
+  #   super
+  # rescue Exception => e
+  #   __raise_arithmetic_exception__ other, :+, e
+  # end
 
-  def * other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :*, e
-  end
+  # def * other
+  #   return nil unless other
+  #   super
+  # rescue Exception => e
+  #   __raise_arithmetic_exception__ other, :*, e
+  # end
 
-  def / other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :/, e
-  end
+  # def / other
+  #   return nil unless other
+  #   super
+  # rescue Exception => e
+  #   __raise_arithmetic_exception__ other, :/, e
+  # end
 
   def serialize
     self
