@@ -654,7 +654,7 @@ S
     Math.exp(self)
   end
 
-  def float_to_color
+  def scale_color
     self * 255
   end
 end
