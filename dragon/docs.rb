@@ -274,7 +274,7 @@ S
     <script>
       highlight = function() {
         document.querySelectorAll('pre>code').forEach(function(elem, index) {
-          setTimeout(Prism.highlightElement, index * 50, elem);
+          Prism.highlightElement(elem);
         })
       }
 
