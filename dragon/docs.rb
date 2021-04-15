@@ -273,7 +273,7 @@ S
     <script src="prism.js" data-manual></script>
     <script>
       document.addEventListener("DOMContentLoaded", function() {
-              var lazyloadElements = document.querySelectorAll("code");
+              var lazyloadElements = document.querySelectorAll("pre>code");
               var lazyloadThrottleTimeout;
 
               function lazyload () {
