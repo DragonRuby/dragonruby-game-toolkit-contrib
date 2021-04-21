@@ -1,3 +1,12 @@
+# coding: utf-8
+# MIT License
+# tweetcart.rb has been released under MIT (*only this file*).
+
+# Contributors outside of DragonRuby who also hold Copyright:
+# - https://github.com/HIRO-R-B
+# - https://github.com/oeloeloel
+# - https://github.com/leviongit
+
 module GTK
   module Args::Tweetcart
     def t
