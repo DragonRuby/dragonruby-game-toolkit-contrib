@@ -157,11 +157,11 @@ S
 
           # partition the original list of items into a string to be printed
           items.each_slice(columns).each_with_index do |cells, i|
-            pretty_print_row_seperator string_width, cell_width, column_width, columns
+            pretty_print_row_separator string_width, cell_width, column_width, columns
             pretty_print_row cells, string_width, cell_width, column_width, columns
           end
 
-          pretty_print_row_seperator string_width, cell_width, column_width, columns
+          pretty_print_row_separator string_width, cell_width, column_width, columns
         end
       end
 
@@ -174,17 +174,17 @@ S
           "#{" " * (string_width.length - c.length) } #{c} |"
         end.join
 
-        # remove seperators between empty values
+        # remove separators between empty values
         formated_row = formated_row.gsub("  |  ", "     ")
 
         puts formated_row
       end
 
-      def pretty_print_row_seperator string_width, cell_width, column_width, columns
+      def pretty_print_row_separator string_width, cell_width, column_width, columns
         # this is a joint: +--------
         column_joint = "+#{"-" * cell_width}"
 
-        # multiple joints create a row seperator: +----+----+
+        # multiple joints create a row separator: +----+----+
         puts (column_joint * columns) + "+"
       end
 
