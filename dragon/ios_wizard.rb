@@ -265,21 +265,21 @@ class IOSWizard
     end
 
     app_id_with_team_identifier = (provisioning_profile_xml environment)[:children].first[:children].first[:children][13][:children][application_identifier_index + 1][:children].first[:data]
-    team_identifer = team_identifier_from_provisioning_profile environment
-    app_id_with_team_identifier.gsub "#{team_identifer}.", ""
+    team_identifier = team_identifier_from_provisioning_profile environment
+    app_id_with_team_identifier.gsub "#{team_identifier}.", ""
   end
 
   def team_identifier_from_provisioning_profile environment
-    team_identifer_index = (provisioning_profile_xml environment)[:children][0][:children][0][:children][13][:children][0][:children][0][:data]
+    team_identifier_index = (provisioning_profile_xml environment)[:children][0][:children][0][:children][13][:children][0][:children][0][:data]
 
     (provisioning_profile_xml environment)[:children][0][:children][0][:children][13][:children].each.with_index do |node, i|
       if node[:children] && node[:children][0] && node[:children][0][:data] == "com.apple.developer.team-identifier"
-        team_identifer_index = i
+        team_identifier_index = i
         break
       end
     end
 
-    (provisioning_profile_xml environment)[:children].first[:children].first[:children][13][:children][team_identifer_index + 1][:children].first[:data]
+    (provisioning_profile_xml environment)[:children].first[:children].first[:children][13][:children][team_identifier_index + 1][:children].first[:data]
   end
 
   def determine_app_id
