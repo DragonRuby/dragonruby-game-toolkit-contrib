@@ -13,7 +13,7 @@ module GTK
 
       error_message = <<-S
 * ERROR
-The GTK::DirectionalKeys module should only be included in objects that respond to the following api heirarchy:
+The GTK::DirectionalKeys module should only be included in objects that respond to the following api hierarchy:
 
 - (#{ directional_methods.join("|") })
 - key_held.(#{ directional_methods.join("|") })

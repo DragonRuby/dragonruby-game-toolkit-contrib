@@ -203,7 +203,7 @@ args.outputs.sprites << {
 ## Duck Typing (Advanced)
 
 You can also create a class with sprite properties and render it as a primitive.
-ALL properties must on the class. ADDITIONALLY, a method called `primitive_marker`
+ALL properties must be on the class. ADDITIONALLY, a method called `primitive_marker`
 must be defined on the class.
 
 Here is an example:

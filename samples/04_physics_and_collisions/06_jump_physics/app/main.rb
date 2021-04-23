@@ -36,7 +36,7 @@ class VerticalPlatformer
     s.new_entity_strict(:platform, hash) # platform key
   end
 
-  # calls methods needed for game to run properly
+  # calls methods needed for the game to run properly
   def tick
     defaults
     render

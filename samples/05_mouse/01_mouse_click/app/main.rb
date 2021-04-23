@@ -120,7 +120,7 @@ class TicTacToe
     space.piece = state.current_turn
 
     # This ternary operator statement allows us to change the current player's turn.
-    # If it is currently x's turn, it becomes o's turn. If it is not x's turn, it become's x's turn.
+    # If it is currently x's turn, it becomes o's turn. If it is not x's turn, it becomes x's turn.
     state.current_turn = state.current_turn == :x ? :o : :x
   end
 

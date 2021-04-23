@@ -69,7 +69,7 @@ end
 # This function shows how to animate a sprite that executes
 # only once when the "f" key is pressed.
 def one_time_animation args
-  # This is just a label the shows instructions within the game.
+  # This is just a label that shows instructions within the game.
   args.outputs.labels << [220, 350, "(press f to animate)"]
 
   # If "f" is pressed on the keyboard...
@@ -104,7 +104,7 @@ def one_time_animation args
   # This line sets the frame index to zero, if
   # the animation duration has passed (frame_index returned nil).
 
-  # Remeber: we are not looping forever here.
+  # Remember: we are not looping forever here.
   sprite_index ||= 0
 
   # Present the sprite.

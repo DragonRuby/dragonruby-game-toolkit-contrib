@@ -129,7 +129,7 @@ S
     end
 
 
-    # Returns a primitive that is anchored/repositioned based off its retangle.
+    # Returns a primitive that is anchored/repositioned based off its rectangle.
     # @gtk
     def anchor_rect anchor_x, anchor_y
       current_w = self.w

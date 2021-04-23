@@ -97,7 +97,7 @@ def tile_extended x, y, w, h, r, g, b, a, tile_row_column_or_key
 
   if !row
     member_name = member_name_as_code tile_row_column_or_key
-    raise "Unabled to find a sprite for #{member_name}. Make sure the value exists in app/sprite_lookup.rb."
+    raise "Unable to find a sprite for #{member_name}. Make sure the value exists in app/sprite_lookup.rb."
   end
 
   # Sprite provided by Rogue Yun

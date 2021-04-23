@@ -24,10 +24,10 @@ To add an assertion open up this class and write:
 
 class Assert
   def custom_assertion actual, expected, message = nil
-    # this tell Game Toolkit that an assertion was performed (so that the test isn't marked inconclusive).
+    # this tells Game Toolkit that an assertion was performed (so that the test isn't marked inconclusive).
     @assertion_performed = true
 
-    # perform your custom logic here and rais an exception to denote a failure.
+    # perform your custom logic here and raise an exception to denote a failure.
 
     raise "Some Error. #{message}."
   end
@@ -37,14 +37,14 @@ end
     attr :assertion_performed
 
 =begin
-Us this if you are throwing your own exceptions and you want to mark the tests as ran (so that it wont be marked as inconclusive).
+Use this if you are throwing your own exceptions and you want to mark the tests as ran (so that it wont be marked as inconclusive).
 =end
     def ok!
       @assertion_performed = true
     end
 
 =begin
-Assert if a value is a thruthy value. All assert method take an optional final parameter that is the message to display to the user.
+Assert if a value is a truthy value. All assert methods take an optional final parameter that is the message to display to the user.
 
 @example
 

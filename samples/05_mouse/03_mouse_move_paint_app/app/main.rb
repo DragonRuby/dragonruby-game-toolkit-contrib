@@ -40,7 +40,7 @@
 =end
 
 # This sample app shows an empty grid that the user can paint on.
-# To paint, the user must keep their mouse presssed and drag it around the grid.
+# To paint, the user must keep their mouse pressed and drag it around the grid.
 # The "clear" button allows users to clear the grid so they can start over.
 
 class PaintApp

@@ -47,7 +47,7 @@ module GTK
     def local_state
       @local_state ||= OpenEntity.new
       @local_state.hotload_client ||= @local_state.new_entity(:hotload_client,
-                                                              notes: "This enitity is used by DragonRuby Game Toolkit to provide you hotloading on remote machines.",
+                                                              notes: "This entity is used by DragonRuby Game Toolkit to provide you hotloading on remote machines.",
                                                               changes: { },
                                                               changes_queue: [],
                                                               reloaded_files_times: [])

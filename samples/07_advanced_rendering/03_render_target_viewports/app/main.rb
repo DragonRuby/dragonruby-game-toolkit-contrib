@@ -25,7 +25,7 @@
    would print "How are you, Ruby?" to the console.
    (Remember, string interpolation only works with double quotes!)
 
- - Ternary operator (?): Similar to if statement; first evalulates whether a statement is
+ - Ternary operator (?): Similar to if statement; first evaluates whether a statement is
    true or false, and then executes a command depending on that result.
    For example, if we had a variable
    grade = 75
@@ -39,7 +39,7 @@
    720 p screen (Dragon Ruby Game Toolkits's virtual resolution is always 1280x720).
 
  - Numeric#shift_(left|right|up|down): Shifts the Numeric in the correct direction
-   by adding or subracting.
+   by adding or subtracting.
 
  - ARRAY#inside_rect?: An array with at least two values is considered a point. An array
    with at least four values is considered a rect. The inside_rect? function returns true

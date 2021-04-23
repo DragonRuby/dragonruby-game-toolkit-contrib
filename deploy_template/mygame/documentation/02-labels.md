@@ -43,7 +43,7 @@ args.outputs.labels << [640, 360, "Hello world",    0,         1]
 
 ## RGBA - Colors and Alpha
 
-Labels can have colors. The value for the color is an number between
+Labels can have colors. The value for the color is a number between
 `0` and `255`.
 
 A green label with 50% opacity.
@@ -100,7 +100,7 @@ args.outputs.labels << {
 ## Duck Typing (Advanced)
 
 You can also create a class with line properties and render it as a primitive.
-ALL properties must on the class. ADDITIONALLY, a method called
+ALL properties must be on the class. ADDITIONALLY, a method called
 `primitive_marker` must be defined on the class.
 
 Here is an example:
