@@ -33,7 +33,7 @@ end
 
 # Truthy Keys
 
-You can access all triggered keys through `thruthy_keys` on `keyboard`, `controller_one`, and `controller_two`.
+You can access all triggered keys through `truthy_keys` on `keyboard`, `controller_one`, and `controller_two`.
 
 This is how you would write all keys to a file. The game must be in the foreground and have focus for this data
 to be recorded.

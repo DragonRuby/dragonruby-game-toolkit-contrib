@@ -1,4 +1,4 @@
-#The LinearCollider (theoretically) produces collisions upon a line segment defined point.y two x,y cordinates
+#The LinearCollider (theoretically) produces collisions upon a line segment defined point.y two x,y coordinates
 
 class LinearCollider
 
@@ -6,13 +6,13 @@ class LinearCollider
   #last [Array of length 2] end of the line segment as a x,y cordinate
 
   #inorder for the LinearCollider to be functional the line segment must be said to have a thickness
-  #(as it is unlikly that a colliding object will land exactly on the linesegment)
+  #(as it is unlikely that a colliding object will land exactly on the linesegment)
 
   #extension defines if the line's thickness extends negatively or positively
   #extension :pos     extends positively
   #extension :neg     extends negatively
 
-  #thickness [float] how thick the line should be (should always be atleast as large as the magnitude of the colliding object)
+  #thickness [float] how thick the line should be (should always be at least as large as the magnitude of the colliding object)
   def initialize (pointA, pointB, extension=:neg, thickness=10)
     @pointA = pointA
     @pointB = pointB

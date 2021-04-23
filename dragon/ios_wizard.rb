@@ -227,7 +227,7 @@ class IOSWizard
 
   def determine_team_identifier
     @team_name = (team_identifier_from_provisioning_profile @opts[:env])
-    log_info "Team Identifer is: #{@team_name}"
+    log_info "Team Identifier is: #{@team_name}"
   end
 
   def determine_app_name
@@ -357,7 +357,7 @@ class IOSWizard
               "** 1. Open Xcode.",
               "** 2. Log into your developer account. Xcode -> Preferences -> Accounts.",
               { w: 700, h: 98, path: get_reserved_sprite("login-xcode.png") },
-              "** 3. After loggin in, select Manage Certificates...",
+              "** 3. After logging in, select Manage Certificates...",
               { w: 700, h: 115, path: get_reserved_sprite("manage-certificates.png") },
               "** 4. Add a certificate for Apple Development.",
               { w: 700, h: 217, path: get_reserved_sprite("add-cert.png") },

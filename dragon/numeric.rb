@@ -256,7 +256,7 @@ S
     self * Math::PI.fdiv(180)
   end
 
-  # Converts a number representing an angle in radians to degress.
+  # Converts a number representing an angle in radians to degrees.
   #
   # @gtk
   def to_degrees
@@ -273,21 +273,21 @@ S
     GTK::Geometry.to_square(self, x, y, anchor_x, anchor_y)
   end
 
-  # Returns a normal vector for a number that represents an angle in degress.
+  # Returns a normal vector for a number that represents an angle in degrees.
   #
   # @gtk
   def vector max_value = 1
     [vector_x(max_value), vector_y(max_value)]
   end
 
-  # Returns the y component of a normal vector for a number that represents an angle in degress.
+  # Returns the y component of a normal vector for a number that represents an angle in degrees.
   #
   # @gtk
   def vector_y max_value = 1
     max_value * Math.sin(self.to_radians)
   end
 
-  # Returns the x component of a normal vector for a number that represents an angle in degress.
+  # Returns the x component of a normal vector for a number that represents an angle in degrees.
   #
   # @gtk
   def vector_x max_value = 1

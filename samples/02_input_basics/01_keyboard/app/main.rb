@@ -4,7 +4,7 @@ APIs listing that haven't been encountered in a previous sample apps:
 
 - args.inputs.keyboard.key_up.KEY: The value of the properties will be set
   to the frame  that the key_up event occurred (the frame correlates
-  to args.state.tick_count). Otherwise the value will be nil. 
+  to args.state.tick_count). Otherwise the value will be nil.
 - args.state.PROPERTY: The state property on args is a dynamic
   structure. You can define ANY property here with ANY type of
   arbitrary nesting. Properties defined on args.state will be retained
@@ -28,7 +28,7 @@ def tick args
   args.outputs.labels << [460, row_to_px(args, 2), "Keyboard input: args.inputs.keyboard.key_up.h", small_font]
   args.outputs.labels << [460, row_to_px(args, 3), "Press \"h\" on the keyboard.", small_font]
 
-  # Input on a specifc key can be found through args.inputs.keyboard.key_up followed by the key
+  # Input on a specific key can be found through args.inputs.keyboard.key_up followed by the key
   if args.inputs.keyboard.key_up.h
     args.state.h_pressed_at = args.state.tick_count
   end

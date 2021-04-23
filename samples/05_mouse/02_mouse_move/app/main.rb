@@ -198,13 +198,13 @@ class ProtectThePuppiesFromTheZombies
     state.zombies = state.zombies - killed_this_frame # remove newly killed zombies from zombies collection
     state.killed_zombies += killed_this_frame # add newly killed zombies to killed zombies
 
-    if killed_this_frame.length > 0 # if atleast one zombie was killed in the frame
+    if killed_this_frame.length > 0 # if at least one zombie was killed in the frame
       state.flash_at = state.tick_count # flash_at set to the frame when the zombie was killed
     # Don't forget, the rendered flash lasts for 10 frames after the zombie is killed (look at render_flash method)
     end
 
     # Sets the tick_count (passage of time) as the value of the death_at variable for each killed zombie.
-    # Death_at stores the frame a zombie was killed.
+    # Death_at stores the frame where a zombie was killed.
     killed_this_frame.each do |z|
       z.death_at = state.tick_count
     end

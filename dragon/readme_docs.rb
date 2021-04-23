@@ -430,7 +430,7 @@ Console type: ~$wizards.ios.start~ and you will be guided through the
 deployment process.
 
 To deploy to Android, you need to have an Android emulator/device, and
-a environment that is able to run Android SDK. ~dragonruby-publish~
+an environment that is able to run Android SDK. ~dragonruby-publish~
 will create an APK for you. From there, you can sign the APK and
 install it to your device. The signing and installation procedure
 varies from OS to OS. Here's an example of what the command might look
@@ -453,7 +453,7 @@ The following tenants of DragonRuby are what set us apart from other
 game engines. Given that Game Toolkit is a relatively new engine,
 there are definitely features that are missing. So having a big check
 list of "all the cool things" is not this engine's forte. This is
-compensated with a strong commitment to the following principals.
+compensated with a strong commitment to the following principles.
 
 ** Challenge The Status Quo
 
@@ -1145,7 +1145,7 @@ challenges in creating something that is compatible.
 You can use DragonRuby's replay capabilities to troubleshoot:
 
 1. DragonRuby is hot loaded which gives you a very fast feedback loop (if the game throws an exception, it's because of the code you just added).
-2. Use ~./dragonruby mygame --record~ to create a game play recording that you can use to find the exception (you can replay a recoding by executing ~./dragonruby mygame --replay last_replay.txt~ or through the DragonRuby Console using ~$gtk.recording.start_replay "last_replay.txt"~.
+2. Use ~./dragonruby mygame --record~ to create a game play recording that you can use to find the exception (you can replay a recording by executing ~./dragonruby mygame --replay last_replay.txt~ or through the DragonRuby Console using ~$gtk.recording.start_replay "last_replay.txt"~.
 3. DragonRuby also ships with a unit testing facility. You can invoke the following command to run a test: ~./dragonruby . --eval some_ruby_file.rb --no-tick~.
 4. Get into the habit of adding debugging facilities within the game itself. You can add drawing primitives to ~args.outputs.debug~ that will render on top of your game but will be ignored in a production release.
 5. Debugging something that runs at 60fps is (imo) not that helpful. The exception you are seeing could have been because of a change that occurred many frames ago.
@@ -1158,7 +1158,7 @@ Let's check the official source for the answer to this question:
 isrubydead.com: [[https://isrubydead.com/]].
 
 On a more serious note, Ruby's _quantity_ levels aren't what they used
-to be. And that's totally fine. Every one chases the new and shiny.
+to be. And that's totally fine. Everyone chases the new and shiny.
 
 What really matters is _quality/maturity_. Here is the latest (StackOverflow
 Survey sorted by highest paid developers)[https://insights.stackoverflow.com/survey/2019#top-paying-technologies].

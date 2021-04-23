@@ -36,7 +36,7 @@ APIs that haven't been encountered in a previous sample apps:
 # This is useful to determine if a click occurred in a rect
 
 def tick args
-  tick_instructions args, "Sample app shows how to determing if a click happened inside a rectangle."
+  tick_instructions args, "Sample app shows how to determine if a click happened inside a rectangle."
 
   x = 460
 

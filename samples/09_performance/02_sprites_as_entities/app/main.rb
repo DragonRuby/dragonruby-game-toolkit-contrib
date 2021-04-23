@@ -1,5 +1,5 @@
 # Sprites represented as Entities using the queue ~args.outputs.sprites~
-# yields nicer access apis over Hashes, but require a bit more code upfront.
+# yields nicer access apis over Hashes, but requires a bit more code upfront.
 # The hash sample has to use star[:s] to get the speed of the star, but
 # an entity can use .s instead.
 def random_x args

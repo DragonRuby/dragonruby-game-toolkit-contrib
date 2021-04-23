@@ -64,7 +64,7 @@ def move_enemies args
     theta   = Math.atan2(enemy.y - args.state.player.y, enemy.x - args.state.player.x)
     # Convert the angle to a vector pointing at the player
     dx, dy  = theta.to_degrees.vector 5
-    # Move the enemy towards thr player
+    # Move the enemy towards the player
     enemy.x -= dx
     enemy.y -= dy
   end

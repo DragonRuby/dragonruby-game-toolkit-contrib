@@ -57,7 +57,7 @@ S
 * :sprite (if :primitive_marker returns :sprite)
 ** :x, :y, :w, :h
 ** :angle, :angle_anchor_x, :angle_anchor_y
-default for angle: 0 (0 to 360 degress)
+default for angle: 0 (0 to 360 degrees)
 default for angle_anchor_(x|y): 0 (decimal value between 0 and 1.0, 0.5 means center)
 ** :r, :g, :b, :a
 ** :tile_x, :tile_y

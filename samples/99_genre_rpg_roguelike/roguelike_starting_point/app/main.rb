@@ -338,7 +338,7 @@ class Game
     state.enemies.find { |e| e.x == x && e.y == y && !e.is_dead }
   end
 
-  #M oves the user based on their keyboard input and sets values for target cell
+  # Moves the user based on their keyboard input and sets values for target cell
   def input_target_cell
     if inputs.keyboard.key_down.up # if "up" key is in "down" state
       [state.x, state.y + 1,  0,  1] # user moves up
