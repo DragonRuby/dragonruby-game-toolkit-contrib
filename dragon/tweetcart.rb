@@ -6,7 +6,6 @@
 # - https://github.com/HIRO-R-B
 # - https://github.com/oeloeloel
 # - https://github.com/leviongit
-
 module GTK
   module Args::Tweetcart
     def t
@@ -155,6 +154,14 @@ module GTK
       self.outputs.pc
     end
 
+    def g
+      self.grid
+    end
+
+    def gre
+      self.grid.rect
+    end
+
     def w
       self.grid.w
     end
@@ -199,6 +206,8 @@ module GTK
         :_bo, 'outputs.static_borders',
         :p,   'outputs.p',
         :pc,  'outputs.pc',
+        :g,   'grid',
+        :gre, 'grid.rect',
         :w,   'grid.width',
         :h,   'grid.height',
       ]
@@ -777,6 +786,7 @@ module GTK
     F = 255
     W = $args.grid.w
     H = $args.grid.h
+    Z = [0]
 
     def CI(x, y, radius, r = 0, g = 0, b = 0, a = 255)
       [radius.to_square(x, y), :c, 0, a, r, g, b].sprite
