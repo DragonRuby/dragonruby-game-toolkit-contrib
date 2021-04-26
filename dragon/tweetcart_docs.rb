@@ -111,6 +111,7 @@ S
   F  | 255
   W  | args.grid.w
   H  | args.grid.h
+  Z  | [0]
   PI | Math::PI
   E  | Math::E
 #+end_src
