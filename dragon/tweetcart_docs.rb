@@ -25,7 +25,8 @@ module TweetcartDocs
       :docs_enumerable,
       :docs_array,
       :docs_hash,
-      :docs_numerics,
+      :docs_numeric,
+      :docs_fixnum,
       :docs_symbol,
       :docs_module,
       :docs_object
@@ -209,22 +210,45 @@ S
 S
   end
 
-  def docs_numerics
+  def docs_numeric
     <<-S
-*** Numerics
+*** Numeric
 **** ~#r~
 #+begin_src
   def r
     rand_ratio.to_i
   end
 #+end_src
+
 **** ~#dm~
 #+begin_src
   def dm x
     divmod x
   end
 #+end_src
-#{ TweetcartDocs.format_aliases GTK::NumericTweetcart.aliases + GTK::FixnumTweetcart.aliases }
+
+**** ~#sin~
+#+begin_src
+  def sin
+    Math.sin(self.to_radians)
+  end
+#+end_src
+
+**** ~#cos~
+#+begin_src
+  def cos
+    Math.cos(self.to_radians)
+  end
+#+end_src
+#{ TweetcartDocs.format_aliases GTK::NumericTweetcart.aliases }
+
+S
+  end
+
+  def docs_fixnum
+    <<-S
+*** Fixnum
+#{ TweetcartDocs.format_aliases GTK::FixnumTweetcart.aliases }
 
 S
   end
