@@ -630,6 +630,14 @@ module GTK
       divmod(x)
     end
 
+    def sin
+      Math.sin(self.to_radians)
+    end
+
+    def cos
+      Math.cos(self.to_radians)
+    end
+
     def self.aliases
       [
         :a,   :abs,
