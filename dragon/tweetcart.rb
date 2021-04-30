@@ -723,7 +723,7 @@ module GTK
     end
 
     def LI! *opts
-      $args.outputs.labels << opts
+      $args.outputs.lines << opts
     end
 
     def BO! *opts
@@ -747,7 +747,7 @@ module GTK
     end
 
     def _LI! *opts
-      $args.outputs.static_labels << opts
+      $args.outputs.static_lines << opts
     end
 
     def _BO! *opts
