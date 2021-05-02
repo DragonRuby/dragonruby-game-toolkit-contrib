@@ -74,7 +74,7 @@ S
     <<-S
 ** Persistent Outputs
 ~GTK::Tweetcart~ provides a "persistent" outputs render target and whatever you draw with it persists to later frames.\n
-You can access it using ~outputs.ps~ and clear it with ~outputs.psc~
+You can access it using ~outputs.p~ and clear it with ~outputs.pc~
 #+begin_src
   def t a
     a.bg = [0, 0, 0]
