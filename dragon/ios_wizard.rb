@@ -84,8 +84,8 @@ class IOSWizard
     sprite_path
   end
 
-  def start opts = nil
-    @opts = opts || {}
+  def start opts = {}
+    @opts = opts
 
     unless $gtk.args.fn.eq_any? @opts[:env], :dev, :prod
       raise WizardException.new(
@@ -104,7 +104,11 @@ class IOSWizard
     @steps = steps_production_build if @production_build
     @certificate_name = nil
     init_wizard_status
-    log_info "Starting iOS Wizard so we can deploy to your device."
+    if @production_build
+      log_info "Starting iOS Wizard so we can create a production build."
+    else
+      log_info "Starting iOS Wizard so we can deploy to your device."
+    end
     @start_at = Kernel.global_tick_count
     steps.each do |m|
       log_info "Running step ~:#{m}~."
