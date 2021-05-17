@@ -8,167 +8,463 @@
 # - https://github.com/leviongit
 
 module GTK
+  ##
+  # Tweetcart: The main module
+  module Tweetcart
+    ##
+    # Tweetcart Modules can extend `Tweetcart::(Include|Extend)`
+    #
+    # Provide an included/extended that define aliases (or log if they're missing)
+    # on a base when the module's mixed
+    ##
+
+    ##
+    # `aliases` must be defined on the module
+    # and return an array of the form
+    # [ new_method_alias, old_method_name,
+    #   new_method_alias, old_method_name,
+    #   ... ]
+    module Include
+      def included(base)
+        tweetcart_aliases = aliases
+        base.class_eval do
+          tweetcart_aliases.each_slice(2) do |new, old|
+            begin
+              alias_method new, old
+            rescue NameError => e
+              Tweetcart.error_log << "#{e}"
+            end
+          end
+        end
+      end
+    end
+
+    ##
+    # `singleton_aliases` must be defined on the module
+    module Extend
+      def extended(base)
+        tweetcart_aliases = singleton_aliases
+        base.singleton_class.class_eval do
+          tweetcart_aliases.each_slice(2) do |new, old|
+            begin
+              alias_method new, old
+            rescue NameError => e
+              Tweetcart.error_log << "#{e}"
+            end
+          end
+        end
+      end
+    end
+
+    ##
+    # Depreciated/Nonexistent methods will get collected here when Tweetcart modules get included
+    def self.error_log
+      @error_log ||= []
+    end
+
+    def self.error_log?
+      !@error_log.nil?
+    end
+
+    ##
+    # Tweetcart entry point
+    def self.setup args
+      setup_patches
+      setup_textures args
+    end
+
+    def self.setup_patches
+      GTK::Args.include                              ::GTK::Args::Tweetcart
+      GTK::Outputs.include                           ::GTK::Outputs::Tweetcart
+      GTK::Inputs.include                            ::GTK::Inputs::Tweetcart
+      GTK::Keyboard.include                          ::GTK::Keyboard::Tweetcart
+      GTK::KeyboardKeys.include                      ::GTK::KeyboardKeys::Tweetcart
+      GTK::Mouse.include                             ::GTK::Mouse::Tweetcart
+      GTK::Grid.include                              ::GTK::Grid::Tweetcart
+      GTK::Geometry.include                          ::GTK::Geometry::Tweetcart
+      GTK::Geometry.extend                           ::GTK::Geometry::Tweetcart
+      GTK::Primitive::ConversionCapabilities.include ::GTK::Primitive::ConversionCapabilities::Tweetcart
+      FFI::Draw.include                              ::GTK::FFIDrawTweetcart
+      Enumerator.include                             ::GTK::EnumeratorTweetcart
+      Enumerable.include                             ::GTK::EnumerableTweetcart
+      Array.include                                  ::GTK::ArrayTweetcart
+      Hash.include                                   ::GTK::HashTweetcart
+      Numeric.include                                ::GTK::NumericTweetcart
+      Integral.include                               ::GTK::IntegralTweetcart
+      Fixnum.include                                 ::GTK::FixnumTweetcart
+      Symbol.include                                 ::GTK::SymbolTweetcart
+      Module.include                                 ::GTK::ModuleTweetcart
+      Object.include                                 ::GTK::ObjectTweetcart
+      $top_level.include                             ::GTK::MainTweetcart
+    end
+
+    def self.setup_textures args
+      # setup :p 1 pixel texture
+      args.outputs[:p].w = 1
+      args.outputs[:p].h = 1
+      args.outputs[:p].solids << { x: 0, y: 0, w: 1, h: 1, r: 255, g: 255, b: 255 }
+
+      # setup :c 720 diameter circle
+      r = 360
+      d = r * 2
+
+      args.outputs[:c].w = d
+      args.outputs[:c].h = d
+
+      d.times do |i|
+        h = i - r
+        l = Math.sqrt(r * r - h * h)
+        args.outputs[:c].lines << { x: i, y: r - l, x2: i, y2: r + l, r: 255, g: 255, b: 255 }
+      end
+
+      # setup :t, an equilateral triangle with 720 px sides
+      m = Math.sqrt(3) / 2
+      b = 720
+      h = m * b
+
+      v1 = [  0, 0]
+      v2 = [720, 0]
+      v3 = [360, h]
+
+      is1 = (v3.x - v1.x) / (v3.y - v1.y)
+      is2 = (v3.x - v2.x) / (v3.y - v2.y)
+
+      x1 = x2 = v3.x
+
+      args.outputs[:t].w = b
+      args.outputs[:t].h = h
+      args.outputs[:t].lines << v3.y.downto(v1.y).map do |y|
+        line = [x1, y, x2, y, 255, 255, 255]
+        x1 -= is1
+        x2 -= is2
+        line
+      end
+
+      # setup :tr, an isosceles right triangle
+      v3 = [  0, b]
+
+      is1 = (v3.x - v1.x) / (v3.y - v1.y)
+      is2 = (v3.x - v2.x) / (v3.y - v2.y)
+
+      x1 = x2 = v3.x
+
+      args.outputs[:tr].w = b
+      args.outputs[:tr].h = b
+      args.outputs[:tr].lines << v3.y.downto(v1.y).map do |y|
+        line = [x1, y, x2, y, 255, 255, 255]
+        x1 -= is1
+        x2 -= is2
+        line
+      end
+    end
+  end
+
+  module MainTweetcart
+    include Math
+
+    F   = 255
+    G   = 127
+    W   = $args.grid.w
+    H   = $args.grid.h
+    N   = [nil]
+    Z   = [0]
+    S30 = 30.sin
+    S60 = 60.sin
+
+    ##
+    # Provides methods to define classes in a shorter manner
+    module P
+      def self.do *attrs, &block
+        Class.new do
+          attr_accessor *attrs
+
+          ##
+          # NOTE: Yea, this class might not be a sprite,
+          # but you can't push instances into primitives without a valid primitive marker
+          # even if you have draw_override defined
+          # So... ehh, for all intents and purposes, it's a "sprite"
+          def primitive_marker
+            :sprite
+          end
+
+          def initialize **opts
+            opts.each { |k, v| send :"#{k}=", v }
+          end
+
+          define_method :draw_override, &block
+        end
+      end
+
+      def self.so *attrs, &block
+        self.do(:x, :y, :w, :h, :r, :g, :b, :a, *attrs, &block)
+      end
+
+      def self.sp *attrs, &block
+        self.do(:x, :y, :w, :h, :p, :an, :a,
+                :r, :g, :b,
+                :tx, :ty, :tw, :th,
+                :fh, :fv,
+                :aax, :aay,
+                :sx, :sy, :sw, :sh,
+                *attrs, &block)
+      end
+
+      def self.la *attrs, &block
+        self.do(:x, :y, :t, :sen, :aen, :r, :g, :b, :a, :f, *attrs, &block)
+      end
+
+      def self.li *attrs, &block
+        self.do(:x, :y, :x2, :y2, :r, :g, :b, :a, *attrs, &block)
+      end
+
+      def self.bo *attrs, &block
+        self.so(*attrs, &block)
+      end
+
+      def self.dso *attrs, &draw_call
+        Class.new do
+          attr_accessor :x, :y, :w, :h, :r, :g, :b, :a
+          attr_accessor *attrs
+
+          def primitive_marker
+            :solid
+          end
+
+          def initialize x=nil, y=nil, w=nil, h=nil, r=nil, g=nil, b=nil, a=nil, **opts
+            @x = x
+            @y = y
+            @w = w
+            @h = h
+            @r = r
+            @g = g
+            @b = b
+            @a = a
+            opts.each { |k, v| send :"#{k}=", v }
+          end
+
+          define_method :draw_call, &draw_call
+
+          def draw_override(ffi)
+            draw_call
+            ffi.draw_solid(@x, @y, @w, @h, @r, @g, @b, @a)
+          end
+        end
+      end
+
+      def self.dsp path=nil, *attrs, &draw_call
+        path &&= path.to_s
+
+        Class.new do
+          attr_accessor :x, :y, :w, :h, :p, :an, :a,
+                        :r, :g, :b,
+                        :tx, :ty, :tw, :th,
+                        :fh, :fv,
+                        :aax, :aay,
+                        :sx, :sy, :sw, :sh
+          attr_accessor *attrs
+
+          def primitive_marker
+            :sprite
+          end
+
+          # Yea this is long... sorry
+          define_method :initialize do |x=nil, y=nil, w=nil, h=nil, p=path, an=nil, a=nil, r=nil, g=nil, b=nil, tx=nil, ty=nil, tw=nil, th=nil, fh=nil, fv=nil, aax=nil, aay=nil, sx=nil, sy=nil, sw=nil, sh=nil, **opts|
+            @x   = x
+            @y   = y
+            @w   = w
+            @h   = h
+            @p   = p
+            @an  = an
+            @a   = a
+            @r   = r
+            @g   = g
+            @b   = b
+            @tx  = tx
+            @ty  = ty
+            @tw  = tw
+            @th  = th
+            @fh  = fh
+            @fv  = fv
+            @aax = aax
+            @aay = aay
+            @sx  = sx
+            @sy  = sy
+            @sw  = sw
+            @sh  = sh
+            opts.each { |k, v| send :"#{k}=", v }
+          end
+
+          define_method :draw_call, &draw_call
+
+          def draw_override(ffi)
+            draw_call
+            ffi.draw_sprite_3(@x, @y, @w, @h, @p, @an, @a,
+                              @r, @g, @b,
+                              @tx, @ty, @tw, @th,
+                              @fh, @fv,
+                              @aax, @aay,
+                              @sx, @sy, @sw, @sh)
+          end
+        end
+      end
+
+      def self.dla *attrs, &draw_call
+        Class.new do
+          attr_accessor :x, :y, :t, :sen, :aen, :r, :g, :b, :a, :f
+          attr_accessor *attrs
+
+          def primitive_marker
+            :label
+          end
+
+          def initialize x=nil, y=nil, t=nil, sen=nil, aen=nil, r=nil, g=nil, b=nil, a=nil, f=nil, **opts
+            @x   = x
+            @y   = y
+            @t   = t
+            @sen = sen
+            @aen = aen
+            @r   = r
+            @g   = g
+            @b   = b
+            @a   = a
+            @f   = f
+            opts.each { |k, v| send :"#{k}=", v }
+          end
+
+          define_method :draw_call, &draw_call
+
+          def draw_override(ffi)
+            draw_call
+            ffi.draw_label(@x, @y, @t, @sen, @aen, @r, @g, @b, @a, @f)
+          end
+        end
+      end
+
+      def self.dli *attrs, &draw_call
+        Class.new do
+          attr_accessor :x, :y, :x2, :y2, :r, :g, :b, :a
+          attr_accessor *attrs
+
+          def primitive_marker
+            :line
+          end
+
+          def initialize x=nil, y=nil, x2=nil, y2=nil, r=nil, g=nil, b=nil, a=nil, **opts
+            @x  = x
+            @y  = y
+            @x2 = x2
+            @y2 = y2
+            @r  = r
+            @g  = g
+            @b  = b
+            @a  = a
+            opts.each { |k, v| send :"#{k}=", v }
+          end
+
+          define_method :draw_call, &draw_call
+
+          def draw_override(ffi)
+            draw_call
+            ffi.draw_line(@x, @y, @x2, @y2, @r, @g, @b, @a)
+          end
+        end
+      end
+
+      def self.dbo *attrs, &draw_call
+        Class.new do
+          attr_accessor :x, :y, :w, :h, :r, :g, :b, :a
+          attr_accessor *attrs
+
+          def primitive_marker
+            :border
+          end
+
+          def initialize x=nil, y=nil, w=nil, h=nil, r=nil, g=nil, b=nil, a=nil, **opts
+            @x = x
+            @y = y
+            @w = w
+            @h = h
+            @r = r
+            @g = g
+            @b = b
+            @a = a
+            opts.each { |k, v| send :"#{k}=", v }
+          end
+
+          define_method :draw_call, &draw_call
+
+          def draw_override(ffi)
+            draw_call
+            ffi.draw_border(@x, @y, @w, @h, @r, @g, @b, @a)
+          end
+        end
+      end
+    end
+
+    ##
+    # General circle centered at x and y
+    def CI(x, y, radius, r=0, g=0, b=0, a=255)
+      [(2*radius).to_square(x, y), :c, 0, a, r, g, b].sprite
+    end
+
+    ##
+    # Equilateral triangle centered at x and y
+    def TR(x, y, side_length, angle=0, r=0, g=0, b=0, a=255)
+      height = side_length * S60
+      { x: x - side_length / 2,
+        y: y - height / 3,
+        w: side_length,
+        h: height,
+        path: :t, angle: angle,
+        a: a, r: r, g: g, b: b,
+        angle_anchor_y: 0.333 }
+    end
+
+    ##
+    # Closed polygon
+    def PLY(points, r=nil, g=nil, b=nil, a=nil)
+      ply = PLYP(points, r, g, b, a)
+      l1  = ply[0]
+      l2  = ply[-1]
+      ply << [l1[0], l2[1], r, g, b, a]
+    end
+
+    ##
+    # Poly path (array of connected lines)
+    def PLYP(points, r=nil, g=nil, b=nil, a=nil)
+      points.flatten.each_slice(2).each_cons(2).map { |p1, p2| [p1, p2, r, g, b, a] }
+    end
+
+    ##
+    # Alias for calcstringbox
+    def csb(string, size_enum=nil, font='font.ttf')
+      $gtk.calcstringbox(string, size_enum, font)
+    end
+
+    ##
+    # Quick sum option
+    def sum(*args)
+      $args.fn.+(*args)
+    end
+
+    def self.aliases
+      [
+        :csb, 'args.gtk.calcstringbox',
+        :sum, 'args.fn.+',
+      ]
+    end
+  end
+
   module Args::Tweetcart
-    def t
-      self.tick_count
-    end
-
-    def s
-      self.state
-    end
-
-    def i
-      self.inputs
-    end
-
-    def it
-      self.inputs.text
-    end
-
-    def k
-      self.inputs.keyboard
-    end
-
-    def l
-      self.inputs.left
-    end
-
-    def r
-      self.inputs.right
-    end
-
-    def u
-      self.inputs.up
-    end
-
-    def d
-      self.inputs.down
-    end
-
-    def kd
-      self.inputs.keyboard.key_down
-    end
-
-    def kh
-      self.inputs.keyboard.key_held
-    end
-
-    def ku
-      self.inputs.keyboard.key_up
-    end
-
-    def m
-      self.inputs.mouse
-    end
-
-    def mx
-      self.inputs.mouse.x
-    end
-
-    def my
-      self.inputs.mouse.y
-    end
-
-    def mc
-      self.inputs.mouse.click
-    end
-
-    def mw
-      self.inputs.mouse.wheel
-    end
-
-    def ml
-      self.inputs.mouse.button_left
-    end
-
-    def mm
-      self.inputs.mouse.button_middle
-    end
-
-    def mr
-      self.inputs.mouse.button_right
-    end
-
-    def o
-      self.outputs
-    end
-
-    def bg= color
-      self.outputs.background_color= color
-    end
-
-    def so
-      self.outputs.solids
-    end
-
-    def _so
-      self.outputs.static_solids
-    end
-
-    def sp
-      self.outputs.sprites
-    end
-
-    def _sp
-      self.outputs.static_sprites
-    end
-
-    def pr
-      self.outputs.primitives
-    end
-
-    def _pr
-      self.outputs.static_primitives
-    end
-
-    def la
-      self.outputs.labels
-    end
-
-    def _la
-      self.outputs.static_labels
-    end
-
-    def li
-      self.outputs.lines
-    end
-
-    def _li
-      self.outputs.static_lines
-    end
-
-    def bo
-      self.outputs.borders
-    end
-
-    def _bo
-      self.outputs.static_borders
-    end
-
-    # Persistent Outputs
-    def p 
-      self.outputs.p
-    end
-
-    # Persistent Outputs Clear
-    def pc
-      self.outputs.pc
-    end
-
-    def g
-      self.grid
-    end
-
-    def gre
-      self.grid.rect
-    end
-
-    def w
-      self.grid.w
-    end
-
-    def h
-      self.grid.h
+    ##
+    # Viewport
+    def vp(x, y, w, h, r = 0, g = 0, b = 0)
+      self.outputs.primitives << [
+        {x: 0, y: 0, w: x, h: self.grid.h, r: r, g: g, b: b}.solid,
+        {x: 0, y: 0, w: self.grid.w, h: y, r: r, g: g, b: b}.solid,
+        {x: x + w, y: 0, w: self.grid.w - x, h: self.grid.h, r: r, g: g, b: b}.solid,
+        {x: 0, y: y + h, w: self.grid.w, h: self.grid.h - y, r: r, g: g, b: b}.solid
+      ]
     end
 
     def self.aliases
@@ -186,6 +482,8 @@ module GTK
         :kh,  'inputs.keyboard.key_held',
         :ku,  'inputs.keyboard.key_up',
         :m,   'inputs.mouse',
+        :mx,  'inputs.mouse.x',
+        :my,  'inputs.mouse.y',
         :mc,  'inputs.mouse.click',
         :mw,  'inputs.mouse.wheel',
         :ml,  'inputs.mouse.button_left',
@@ -205,31 +503,29 @@ module GTK
         :_li, 'outputs.static_lines',
         :bo,  'outputs.borders',
         :_bo, 'outputs.static_borders',
-        :p,   'outputs.p',
-        :pc,  'outputs.pc',
+        :p,   'outputs.p',  # Persistent Outputs
+        :pc,  'outputs.pc', # Persistent Outputs clear
         :g,   'grid',
         :gre, 'grid.rect',
-        :w,   'grid.width',
-        :h,   'grid.height',
+        :w,   'grid.w',
+        :h,   'grid.h'
       ]
     end
-  end
 
-  tweetcart_included = Module.new do
-    def included(base)
-      tweetcart_aliases = aliases
-      base.class_eval do
-        tweetcart_aliases.each_slice(2) { |new, old| alias_method new, old }
-      end
+    aliases.each_slice(2) do |m, ref|
+      next instance_eval "define_method(:#{m}) { |arg| #{ref} arg }" if m.include?('=')
+      instance_eval "define_method(:#{m}) { #{ref} }"
     end
   end
 
-  Outputs::Tweetcart = Module.new do
-    extend tweetcart_included
+  module Outputs::Tweetcart
+    extend Tweetcart::Include
 
-    def p # Persistent Outputs
+    ##
+    # Persistent Outputs
+    def p
       if @persistence_initialized
-        unless @buffer_swap.new?
+        if !@buffer_swap.new? # Swap buffers if haven't done so
           @buffer_a, @buffer_b = @buffer_b, @buffer_a
           @buffer[:path] = @buffer_b
 
@@ -254,6 +550,8 @@ module GTK
       self[@buffer_a]
     end
 
+    ##
+    # Persistent Outputs Clear
     def pc
       self[@buffer_a]
       self[@buffer_b]
@@ -277,13 +575,13 @@ module GTK
         :_li, :static_lines,
         :_bo, :static_borders,
         :_de, :static_debug,
-        :bg=, :background_color=,
+        :bg=, :background_color=
       ]
     end
   end
 
-  Inputs::Tweetcart = Module.new do
-    extend tweetcart_included
+  module Inputs::Tweetcart
+    extend Tweetcart::Include
 
     def self.aliases
       [
@@ -304,8 +602,8 @@ module GTK
     end
   end
 
-  Keyboard::Tweetcart = Module.new do
-    extend tweetcart_included
+  module Keyboard::Tweetcart
+    extend Tweetcart::Include
 
     def self.aliases
       [
@@ -322,8 +620,8 @@ module GTK
     end
   end
 
-  KeyboardKeys::Tweetcart = Module.new do
-    extend tweetcart_included
+  module KeyboardKeys::Tweetcart
+    extend Tweetcart::Include
 
     def self.aliases
       [
@@ -334,8 +632,8 @@ module GTK
     end
   end
 
-  Mouse::Tweetcart = Module.new do
-    extend tweetcart_included
+  module Mouse::Tweetcart
+    extend Tweetcart::Include
 
     def self.aliases
       [
@@ -362,8 +660,8 @@ module GTK
     end
   end
 
-  Grid::Tweetcart = Module.new do
-    extend tweetcart_included
+  module Grid::Tweetcart
+    extend Tweetcart::Include
 
     def self.aliases
       [
@@ -379,8 +677,9 @@ module GTK
     end
   end
 
-  Geometry::Tweetcart = Module.new do
-    extend tweetcart_included
+  module Geometry::Tweetcart
+    extend Tweetcart::Include
+    extend Tweetcart::Extend
 
     def self.aliases
       [
@@ -397,8 +696,9 @@ module GTK
       ]
     end
 
-    def self.aliases_extended
-      [
+    # NOTE:: `anchor_rect` doesn't exist on the Geometry Class, I assume that'll be added in the future?
+    def self.singleton_aliases
+      aliases + [
         :sl,  :shift_line,
         :lyi, :line_y_intercept,
         :abl, :angle_between_lines,
@@ -411,18 +711,10 @@ module GTK
         :cb,  :cubic_bezier
       ]
     end
-
-    def self.extended(base)
-      tweetcart_aliases = aliases + aliases_extended
-      tweetcart_aliases -= [:ar, :anchor_rect] # FIXME:: Anchor rect doesn't exist on the Geometry Class atm
-      base.singleton_class.module_eval do
-        tweetcart_aliases.each_slice(2) { |new, old| alias_method new, old }
-      end
-    end
   end
 
-  Primitive::ConversionCapabilities::Tweetcart = Module.new do
-    extend tweetcart_included
+  module Primitive::ConversionCapabilities::Tweetcart
+    extend Tweetcart::Include
 
     def self.aliases
       [
@@ -435,18 +727,53 @@ module GTK
     end
   end
 
-  ModuleTweetcart = Module.new do
-    extend tweetcart_included
+  module FFIDrawTweetcart
+    def dso(x, y, w, h, r=nil, g=nil, b=nil, a=nil)
+      draw_solid(x, y, w, h, r, g, b, a)
+    end
+
+    def dsp(x, y, w, h, path, angle=nil, a=nil,
+            r=nil, g=nil, b=nil,
+            tile_x=nil, tile_y=nil, tile_w=nil, tile_h=nil,
+            flip_horizontally=nil, flip_vertically=nil,
+            angle_anchor_x=nil, angle_anchor_y=nil,
+            source_x=nil, source_y=nil, source_w=nil, source_h=nil)
+
+      draw_sprite_3(x, y, w, h, path,
+                    angle,
+                    a, r, g, b,
+                    tile_x, tile_y, tile_w, tile_h,
+                    flip_horizontally, flip_vertically,
+                    angle_anchor_x, angle_anchor_y,
+                    source_x, source_y, source_w, source_h)
+    end
+
+    def dla(x, y, text, size_enum=nil, alignment_enum=nil, r=nil, g=nil, b=nil, a=nil, font=nil)
+      draw_label(x, y, text, size_enum, alignment_enum, r, g, b, a, font)
+    end
+
+    def dli(x, y, x2, y2, r=nil, g=nil, b=nil, a=nil)
+      draw_line(x, y, x2, y2, r, g, b, a)
+    end
+
+    def dbo(x, y, w, h, r=nil, g=nil, b=nil, a=nil)
+      draw_border(x, y, w, h, r, g, b, a)
+    end
+  end
+
+  module EnumeratorTweetcart
+    extend Tweetcart::Include
 
     def self.aliases
       [
-        :dm, :define_method,
+        :e,  :each,
+        :ei, :each_with_index
       ]
     end
   end
 
-  EnumerableTweetcart = Module.new do
-    extend tweetcart_included
+  module EnumerableTweetcart
+    extend Tweetcart::Include
 
     def self.aliases
       [
@@ -484,8 +811,8 @@ module GTK
     end
   end
 
-  ArrayTweetcart = Module.new do
-    extend tweetcart_included
+  module ArrayTweetcart
+    extend Tweetcart::Include
 
     def self.aliases
       [
@@ -518,6 +845,7 @@ module GTK
         :m!,   :map!,
         :mwi,  :map_with_index,
         :pe,   :permutation,
+        :p,    :point,
         :pr,   :product,
         :re,   :rect,
         :rs,   :rect_shift,
@@ -549,8 +877,8 @@ module GTK
     end
   end
 
-  HashTweetcart = Module.new do
-    extend tweetcart_included
+  module HashTweetcart
+    extend Tweetcart::Include
 
     def self.aliases
       [
@@ -614,16 +942,32 @@ module GTK
         :st,   :shift,
         :str,  :shift_rect,
         :sl,   :slice,
-        :s,    :sort,
+        :s,    :sort
       ]
     end
   end
 
-  NumericTweetcart = Module.new do
-    extend tweetcart_included
+  module NumericTweetcart
+    extend Tweetcart::Include
 
     def r
       rand_ratio.to_i
+    end
+
+    def i
+      to_i
+    end
+
+    def fl
+      floor
+    end
+
+    def ce
+      ceil
+    end
+
+    def rn
+      round
     end
 
     def dm(x)
@@ -643,7 +987,9 @@ module GTK
         :a,   :abs,
 
         :s,   :seconds,
+        :h,   :half,
         :tb,  :to_byte,
+        :cl,  :clamp,
         :cw,  :clamp_wrap,
         :et,  :elapsed_time,
         :etp, :elapsed_time_percent,
@@ -685,8 +1031,26 @@ module GTK
     end
   end
 
-  FixnumTweetcart = Module.new do
-    extend tweetcart_included
+  module IntegralTweetcart
+    extend Tweetcart::Include
+
+    def self.aliases
+      [
+        :dt,  :downto,
+        :ne?, :negative?,
+        :nb?, :nobits?,
+        :nz?, :nonzero?,
+        :po?, :positive?,
+        :st,  :step,
+        :sc,  :succ,
+        :ut,  :upto,
+        :z?,  :zero?
+      ]
+    end
+  end
+
+  module FixnumTweetcart
+    extend Tweetcart::Include
 
     def self.aliases
       [
@@ -697,14 +1061,52 @@ module GTK
     end
   end
 
-  SymbolTweetcart = Module.new do
+  module SymbolTweetcart
+    def so
+      $args.outputs[self].solids
+    end
+
+    def sp
+      $args.outputs[self].sprites
+    end
+
+    def pr
+      $args.outputs[self].primitives
+    end
+
+    def la
+      $args.outputs[self].labels
+    end
+
+    def li
+      $args.outputs[self].lines
+    end
+
+    def bo
+      $args.outputs[self].borders
+    end
+
+    def de
+      $args.outputs[self].debug
+    end
+
     def [] *args, &block
       -> caller, *rest { caller.send self, *rest, *args, &block }
     end
   end
 
-  ObjectTweetcart = Module.new do
-    extend tweetcart_included
+  module ModuleTweetcart
+    extend Tweetcart::Include
+
+    def self.aliases
+      [
+        :dm, :define_method
+      ]
+    end
+  end
+
+  module ObjectTweetcart
+    extend Tweetcart::Include
 
     def SO! *opts
       $args.outputs.solids << opts
@@ -747,7 +1149,7 @@ module GTK
     end
 
     def _LI! *opts
-      $args.outputs.static_lines << opts
+      $args.outputs.static_labels << opts
     end
 
     def _BO! *opts
@@ -786,81 +1188,6 @@ module GTK
       [
         :dsm, :define_singleton_method
       ]
-    end
-  end
-
-  module Tweetcart
-    include Math
-
-    F = 255
-    W = $args.grid.w
-    H = $args.grid.h
-    Z = [0]
-
-    def CI(x, y, radius, r = 0, g = 0, b = 0, a = 255)
-      [radius.to_square(x, y), :c, 0, a, r, g, b].sprite
-    end
-
-    def csb(string, size_enum = nil, font = 'font.ttf')
-      $gtk.calcstringbox(string, size_enum, font)
-    end
-
-    def sum(*args)
-      $args.fn.+(*args)
-    end
-
-    def self.aliases
-      [
-        :csb, 'args.gtk.calcstringbox',
-        :sum, 'args.fn.+',
-      ]
-    end
-
-    def self.setup_monkey_patches args
-      args.class.include                             ::GTK::Args::Tweetcart
-      args.outputs.class.include                     ::GTK::Outputs::Tweetcart
-      args.inputs.class.include                      ::GTK::Inputs::Tweetcart
-      args.inputs.keyboard.class.include             ::GTK::Keyboard::Tweetcart
-      args.inputs.keyboard.key_down.class.include    ::GTK::KeyboardKeys::Tweetcart
-      args.inputs.mouse.class.include                ::GTK::Mouse::Tweetcart
-      args.grid.class.include                        ::GTK::Grid::Tweetcart
-      args.geometry.include                          ::GTK::Geometry::Tweetcart
-      args.geometry.extend                           ::GTK::Geometry::Tweetcart
-      GTK::Primitive::ConversionCapabilities.include ::GTK::Primitive::ConversionCapabilities::Tweetcart
-      Object.include                                 ::GTK::ObjectTweetcart
-      Module.include                                 ::GTK::ModuleTweetcart
-      Enumerable.include                             ::GTK::EnumerableTweetcart
-      Array.include                                  ::GTK::ArrayTweetcart
-      Hash.include                                   ::GTK::HashTweetcart
-      Numeric.include                                ::GTK::NumericTweetcart
-      Fixnum.include                                 ::GTK::FixnumTweetcart
-      Symbol.include                                 ::GTK::SymbolTweetcart
-      $top_level.include                             ::GTK::Tweetcart
-    end
-
-    def self.setup_textures args
-      # setup :p 1 pixel texture
-      args.outputs[:p].w = 1
-      args.outputs[:p].h = 1
-      args.outputs[:p].solids << {x: 0, y: 0, w: 1, h: 1, r: 255, g: 255, b: 255}
-
-      # setup :c 720 diameter circle
-      r = 360
-      d = r * 2
-
-      args.outputs[:c].w = d
-      args.outputs[:c].h = d
-
-      d.times do |i|
-        h = i - r
-        l = Math.sqrt(r * r - h * h)
-        args.outputs[:c].lines << {x: i, y: r - l, x2: i, y2: r + l, r: 255, g: 255, b: 255}
-      end
-    end
-
-    def self.setup args
-      setup_monkey_patches args
-      setup_textures args
     end
   end
 end
