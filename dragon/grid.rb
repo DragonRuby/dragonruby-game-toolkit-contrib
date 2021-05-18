@@ -2,15 +2,20 @@
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # grid.rb has been released under MIT (*only this file*).
+# Contributors outside of DragonRuby who also hold Copyright: _Tradam
 
 module GTK
   class Grid
     include Serialize
-    SCREEN_Y_DIRECTION = -1.0
+
+    # Returns which direction y is positive in. Negative means upward.
+    #
+    # @return [Float] `-1.0` or `1.0`
+    attr_accessor :screen_y_direction
 
     # The coordinate system currently in use.
     #
-    # @return [Symbol] `:bottom_left` or `:center`
+    # @return [Symbol] `:bottom_left`, `:center` or `:top_left`
     attr_accessor :name
 
     # Returns the "x" coordinate indicating the bottom of the screen.
@@ -84,14 +89,14 @@ module GTK
     #
     # @return [Float]
     def transform_y y
-      @origin_y + y * SCREEN_Y_DIRECTION
+      @origin_y + y * screen_y_direction
     end
 
     # Returns `y` minus the origin "y".
     #
     # @return [Float]
     def untransform_y y
-      @origin_y + y * SCREEN_Y_DIRECTION
+      @origin_y + y * screen_y_direction
     end
 
     def ffi_draw
@@ -121,7 +126,8 @@ module GTK
       @center_y = @runtime.logical_height.half
       @rect   = [@left, @bottom, @runtime.logical_width, @runtime.logical_height].rect
       @center = [@center_x, @center_y].point
-      @ffi_draw.set_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
+      @screen_y_direction = -1.0
+      @ffi_draw.set_grid @origin_x, @origin_y, @screen_y_direction
     end
 
     # Sets the rendering coordinate system to have its origin in the center.
@@ -141,7 +147,29 @@ module GTK
       @center_y = 0.0
       @rect   = [@left, @bottom, @runtime.logical_width, @runtime.logical_height].rect
       @center = [@center_x, @center_y].point
-      @ffi_draw.set_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
+      @screen_y_direction = -1.0
+      @ffi_draw.set_grid @origin_x, @origin_y, @screen_y_direction
+    end
+
+    # Sets the rendering coordinate system to have its origin in the top left.
+    #
+    # @return [void]
+    # @gtk
+    def origin_top_left!
+      return if @name == :top_left
+      @name = :top_left
+      @origin_x = 0.0
+      @origin_y = 0.0
+      @left   = 0.0
+      @right  = @runtime.logical_width
+      @top    = 0.0
+      @bottom = @runtime.logical_height
+      @center_x = @runtime.logical_width.half
+      @center_y = @runtime.logical_height.half
+      @rect   = [@left, @runtime.logical_height, @runtime.logical_width, @top].rect
+      @center = [@center_x, @center_y].point
+      @screen_y_direction = 1.0
+      @ffi_draw.set_grid @origin_x, @origin_y, @screen_y_direction
     end
 
     # The logical width used for rendering.
