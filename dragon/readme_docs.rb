@@ -1109,7 +1109,7 @@ file called ~repl.rb~ and put it in ~mygame/app/repl.rb~:
 
 - If you use the `repl` method, the code will be executed and the DragonRuby Console will automatically open so you can see the results (on Mac and Linux, the results will also be printed to the terminal).
 
-- All ~puts~ statements will also be saved to ~logs/log.txt~. So if you want to stay in your editor and not look at the terminal, or the DragonRuby Console, you can ~tail~ this file.
+- All ~puts~ statements will also be saved to ~logs/puts.txt~. So if you want to stay in your editor and not look at the terminal, or the DragonRuby Console, you can ~tail~ this file.
 
 4. To ignore code in ~repl.rb~, instead of commenting it out, prefix ~repl~ with the letter ~x~ and it'll be ignored.
 
