@@ -57,7 +57,7 @@ To make Tweetcart mode available, define your ~tick~ method as ~t~
 #+begin_src
   def t a
     m = a.i.m                   # args.inputs.mouse
-    a.o.s << [m.x, m.y, 10, 10] # args.outputs.solids
+    a.o.so << [m.x, m.y, 10, 10] # args.outputs.solids
   end
 #+end_src
 
@@ -146,6 +146,13 @@ Returns an equilateral triangle sprite (as hash) with a given ~side_length~ cent
 
 **** ~#PLY points, r = nil, g = nil, b = nil, a = nil~
 Returns an array of lines that form an unfilled polygon
+    
+#+begin_src
+  def t a
+    # draws a red polygon in the shape of a house
+    a.o.li << PLY([100,100, 100,200, 150,250, 200,200, 200,100], 255, 0 ,0)
+  end
+#+end_src
 
 **** ~#PLYP points, r = nil, g = nil, b = nil, a = nil~
 Returns an array of lines that form a path
