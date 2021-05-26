@@ -70,7 +70,7 @@ S
 ~GTK::Tweetcart~ provides built-in circle and 1x1 pixel render targets, which you can access with ~:c~ and ~:p~ respectively.
 #+begin_src
   def t a
-    a.bg = [0, 0, 0] # a.outputs.background_color = [0, 0, 0]
+    a.bc = [0, 0, 0] # a.outputs.background_color = [0, 0, 0]
 
     a.s.r ||= 0 # args.state.r ||= 0
     a.s.r += 1
@@ -93,7 +93,7 @@ S
 You can access it using ~outputs.p~ and clear it with ~outputs.pc~
 #+begin_src
   def t a
-    a.bg = [0, 0, 0]
+    a.bc = [0, 0, 0]
 
     m = a.i.m
     a.o.p.sp << [m.x - 25, m.y - 25, 50, 50, :p] # a.outputs.p.sprites
@@ -197,7 +197,7 @@ Note: ~#dsp(path=nil, *attrs, &block)~ Dsp has an initial path argument. The pat
       @x  = @ix + @dx
       @y  = @iy + @dy
     end
-    a.bg=[0,0,0]
+    a.bc=[0,0,0]
     _SP! S.new(w: 100, h: 100, ix: a.m.x, iy: a.m.y) if a.m.c
   end
 #+end_src
@@ -406,7 +406,7 @@ Persistent outputs variants
 Persistence Clear
 #+begin_src
   def t a
-    a.bg = [0, 0, 0]
+    a.bc = [0, 0, 0]
 
     PSP! [1280.r, 720.r, 100, 100, :p, 360.r, 255, 255.r, 255.r, 255.r] # It's a squarepocolypse!
     PC! if a.mc # Clears them all

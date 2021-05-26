@@ -490,7 +490,7 @@ module GTK
         :mm,  'inputs.mouse.button_middle',
         :mr,  'inputs.mouse.button_right',
         :o,   'outputs',
-        :bg=, 'outputs.background_color=',
+        :bc=, 'outputs.background_color=',
         :so,  'outputs.solids',
         :_so, 'outputs.static_solids',
         :sp,  'outputs.sprites',
@@ -575,7 +575,7 @@ module GTK
         :_li, :static_lines,
         :_bo, :static_borders,
         :_de, :static_debug,
-        :bg=, :background_color=
+        :bc=, :background_color=
       ]
     end
   end
