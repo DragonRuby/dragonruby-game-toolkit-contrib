@@ -1160,8 +1160,8 @@ isrubydead.com: [[https://isrubydead.com/]].
 On a more serious note, Ruby's _quantity_ levels aren't what they used
 to be. And that's totally fine. Everyone chases the new and shiny.
 
-What really matters is _quality/maturity_. Here is the latest (StackOverflow
-Survey sorted by highest paid developers)[https://insights.stackoverflow.com/survey/2019#top-paying-technologies].
+What really matters is _quality/maturity_. Here is the latest [StackOverflow
+Survey sorted by highest paid developers](https://insights.stackoverflow.com/survey/2020#top-paying-technologies).
 
 Let's stop making this comment shall we?
 
