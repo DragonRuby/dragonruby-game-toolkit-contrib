@@ -278,11 +278,11 @@ Returns a ~Hash~ with all keys on the keyboard in their respective state. The ~H
 - ~:down_or_held~
 - ~:up~
 ** ~args.outputs~
-~args.outputs.PROPERTY~ is how you render to the screen.
+~args.outputs.PROPERTY~ is how you render to the screen and play sounds. Rendering to the screen happens in the following order: ~solids < sprites < primitives < labels < lines < borders < debug~ and ~static_*~ are drawn above their non-static counterparts.
 *** ~.background_color~
 Set ~args.outputs.background_color~ to an ~Array~ with ~RGB~ values (eg. ~[255, 255, 255]~ for the color white).
 *** ~.sounds~
-Send a file path to this collection to play a sound. The sound file must be under the ~mygame~ directory. Example: ~args.outputs.sounds << "sounds/jump.wav"~.
+Send a file path to this collection to play a sound. The sound file must be under your game directory (for example, the ~mygame~ directory). Example: ~args.outputs.sounds << "sounds/jump.wav"~.
 *** ~.solids~
 Send a Primitive to this collection to render a filled in rectangle to the screen. This collection is cleared at the end of every frame.
 *** ~.static_solids~
