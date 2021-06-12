@@ -39,12 +39,55 @@ DragonRuby
          |  +- [other source files]
 ```
 
-6. Open `main.rb` and add a `require` statement for the source file you want to edit. For example, if you want to edit `docs.rb`, your `mygame/main.rb` would look like this:
+6. Open `main.rb` and copy the following into it:
 
 ```ruby
+require 'app/dragonruby-game-toolkit-contrib/dragon/args_docs.rb'
+require 'app/dragonruby-game-toolkit-contrib/dragon/array_docs.rb'
 require 'app/dragonruby-game-toolkit-contrib/dragon/docs.rb'
+require 'app/dragonruby-game-toolkit-contrib/dragon/geometry_docs.rb'
+require 'app/dragonruby-game-toolkit-contrib/dragon/kernel_docs.rb'
+require 'app/dragonruby-game-toolkit-contrib/dragon/mouse_docs.rb'
+require 'app/dragonruby-game-toolkit-contrib/dragon/numeric_docs.rb'
+require 'app/dragonruby-game-toolkit-contrib/dragon/outputs_docs.rb'
+require 'app/dragonruby-game-toolkit-contrib/dragon/readme_docs.rb'
+require 'app/dragonruby-game-toolkit-contrib/dragon/runtime_docs.rb'
+
+TEXT_COLOR = { r: 255, g: 255, b: 255, a: 255 }
+BG_COLOR = [16, 16, 16]
+CONTRIB_PATH = File.join('app', 'dragonruby-game-toolkit-contrib')
+HTML_DOCS_PATH = File.join('docs', 'docs.html')
+TXT_DOCS_PATH = File.join('docs', 'docs.txt')
 
 def tick args
+  args.outputs.background_color = BG_COLOR
+
+  if args.tick_count == 1
+    args.outputs.static_labels << { x: 4, y: 716, text: "X to export docs" }.merge(TEXT_COLOR)
+    args.outputs.static_labels << { x: 4, y: 696, text: "O to open base docs" }.merge(TEXT_COLOR)
+    args.outputs.static_labels << { x: 4, y: 676, text: "C to copy docs from base to contrib" }.merge(TEXT_COLOR)
+    args.outputs.static_labels << { x: 4, y: 656, text: "P to open contrib docs" }.merge(TEXT_COLOR)
+  end
+
+  case
+  when args.inputs.keyboard.key_down.x
+    Kernel.export_docs!
+    args.gtk.notify! "Docs exported to #{File.join(args.gtk.get_base_dir, HTML_DOCS_PATH)}"
+  when args.inputs.keyboard.key_down.o
+    path = "file://#{File.join(args.gtk.get_base_dir, HTML_DOCS_PATH)}"
+    args.gtk.openurl(path)
+    args.gtk.notify! "Opened #{path} in default browser"
+  when args.inputs.keyboard.key_down.c
+    html_path = File.join(CONTRIB_PATH, HTML_DOCS_PATH)
+    txt_path = File.join(CONTRIB_PATH, TXT_DOCS_PATH)
+    args.gtk.write_file html_path, File.read(File.join(args.gtk.get_base_dir, HTML_DOCS_PATH))
+    args.gtk.write_file txt_path, File.read(File.join(args.gtk.get_base_dir, TXT_DOCS_PATH))
+    args.gtk.notify! "Docs copied to #{html_path} and #{txt_path}"
+  when args.inputs.keyboard.key_down.p
+    path = "file://#{File.join(args.gtk.get_game_dir, CONTRIB_PATH, HTML_DOCS_PATH)}"
+    args.gtk.openurl(path)
+    args.gtk.notify! "Opened #{path} in default browser"
+  end
 end
 ```
 

@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>DragonRuby Game Toolkit Documentation</title>
-    <link href="docs.css?ver=1617643886" rel="stylesheet" type="text/css" media="all">
+    <link href="docs.css?ver=1623534623" rel="stylesheet" type="text/css" media="all">
   </head>
   <body>
     <div id='toc'>
@@ -35,7 +35,8 @@
 <ul><li><a class='header-2' href='#---audio-synthesis-(pro-only)'>Audio synthesis (Pro only)</a></li></ul><ul><ul><li><a class='header-3' href='#----sound-source'>Sound source</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----example-'>Example:</a></li></ul></ul><li><a class='header-1' href='#--docs---gtk--outputs-'>DOCS: <code>GTK::Outputs</code></a></li>
 <li><a class='header-1' href='#--docs---gtk--outputs#solids-'>DOCS: <code>GTK::Outputs#solids</code></a></li>
 <ul><li><a class='header-2' href='#---rendering-a-solid-using-an-array'>Rendering a solid using an Array</a></li></ul><ul><li><a class='header-2' href='#---rendering-a-solid-using-an-array-with-colors-and-alpha'>Rendering a solid using an Array with colors and alpha</a></li></ul><ul><li><a class='header-2' href='#---rendering-a-solid-using-a-hash'>Rendering a solid using a Hash</a></li></ul><ul><li><a class='header-2' href='#---rendering-a-solid-using-a-class'>Rendering a solid using a Class</a></li></ul><li><a class='header-1' href='#--docs---gtk--outputs#borders-'>DOCS: <code>GTK::Outputs#borders</code></a></li>
-<li><a class='header-1' href='#--docs---gtk--outputs#screenshots-'>DOCS: <code>GTK::Outputs#screenshots</code></a></li>
+<li><a class='header-1' href='#--docs---gtk--outputs#sprites-'>DOCS: <code>GTK::Outputs#sprites</code></a></li>
+<ul><li><a class='header-2' href='#---rendering-a-sprite-using-an-array'>Rendering a sprite using an Array</a></li></ul><ul><li><a class='header-2' href='#---rendering-a-sprite-using-an-array-with-colors-and-alpha'>Rendering a sprite using an Array with colors and alpha</a></li></ul><ul><li><a class='header-2' href='#---rendering-a-sprite-using-a-hash'>Rendering a sprite using a Hash</a></li></ul><ul><li><a class='header-2' href='#---rendering-a-solid-using-a-class'>Rendering a solid using a Class</a></li></ul><li><a class='header-1' href='#--docs---gtk--outputs#screenshots-'>DOCS: <code>GTK::Outputs#screenshots</code></a></li>
 <ul><li><a class='header-2' href='#---chroma-key-(making-a-color-transparent)'>Chroma key (Making a color transparent)</a></li></ul><li><a class='header-1' href='#--docs---gtk--mouse-'>DOCS: <code>GTK::Mouse</code></a></li>
 <li><a class='header-1' href='#--docs---gtk--mousepoint-'>DOCS: <code>GTK::MousePoint</code></a></li>
 <li><a class='header-1' href='#--docs---gtk--openentity-'>DOCS: <code>GTK::OpenEntity</code></a></li>
@@ -50,7 +51,7 @@
 <li><a class='header-1' href='#--docs---geometry-'>DOCS: <code>Geometry</code></a></li>
 <li><a class='header-1' href='#--docs---gtk--geometry#scale_rect-'>DOCS: <code>GTK::Geometry#scale_rect</code></a></li>
 <li><a class='header-1' href='#--source-code'>Source Code</a></li>
-<ul><li><a class='header-2' href='#---samples'>Samples</a></li></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---beginner-ruby-primer---automation.rb'>Learn Ruby Optional - Beginner Ruby Primer - automation.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---beginner-ruby-primer---main.rb'>Learn Ruby Optional - Beginner Ruby Primer - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---printing.txt'>Learn Ruby Optional - Intermediate Ruby Primer - printing.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---strings.txt'>Learn Ruby Optional - Intermediate Ruby Primer - strings.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---numbers.txt'>Learn Ruby Optional - Intermediate Ruby Primer - numbers.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---booleans.txt'>Learn Ruby Optional - Intermediate Ruby Primer - booleans.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---conditionals.txt'>Learn Ruby Optional - Intermediate Ruby Primer - conditionals.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---looping.txt'>Learn Ruby Optional - Intermediate Ruby Primer - looping.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---functions.txt'>Learn Ruby Optional - Intermediate Ruby Primer - functions.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---arrays.txt'>Learn Ruby Optional - Intermediate Ruby Primer - arrays.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---main.rb'>Learn Ruby Optional - Intermediate Ruby Primer - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-basics---labels---main.rb'>Rendering Basics - Labels - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-basics---lines---main.rb'>Rendering Basics - Lines - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-basics---solids-borders---main.rb'>Rendering Basics - Solids Borders - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-basics---sprites---main.rb'>Rendering Basics - Sprites - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-basics---sounds---main.rb'>Rendering Basics - Sounds - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-basics---audio-mixer---main.rb'>Rendering Basics - Audio Mixer - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-basics---sound-synthesis---main.rb'>Rendering Basics - Sound Synthesis - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----input-basics---keyboard---main.rb'>Input Basics - Keyboard - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----input-basics---mouse---main.rb'>Input Basics - Mouse - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----input-basics---mouse-point-to-rect---main.rb'>Input Basics - Mouse Point To Rect - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----input-basics---mouse-rect-to-rect---main.rb'>Input Basics - Mouse Rect To Rect - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----input-basics---controller---main.rb'>Input Basics - Controller - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----input-basics---touch---main.rb'>Input Basics - Touch - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-sprites---animation-using-separate-pngs---main.rb'>Rendering Sprites - Animation Using Separate Pngs - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-sprites---animation-using-sprite-sheet---main.rb'>Rendering Sprites - Animation Using Sprite Sheet - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-sprites---animation-states---main.rb'>Rendering Sprites - Animation States - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-sprites---color-and-rotation---main.rb'>Rendering Sprites - Color And Rotation - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---simple---main.rb'>Physics And Collisions - Simple - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---moving-objects---main.rb'>Physics And Collisions - Moving Objects - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---entities---main.rb'>Physics And Collisions - Entities - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---box-collision---main.rb'>Physics And Collisions - Box Collision - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---box-collision-2---main.rb'>Physics And Collisions - Box Collision 2 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---box-collision-3---main.rb'>Physics And Collisions - Box Collision 3 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---jump-physics---main.rb'>Physics And Collisions - Jump Physics - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---bouncing-on-collision---ball.rb'>Physics And Collisions - Bouncing On Collision - ball.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---bouncing-on-collision---block.rb'>Physics And Collisions - Bouncing On Collision - block.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---bouncing-on-collision---cannon.rb'>Physics And Collisions - Bouncing On Collision - cannon.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---bouncing-on-collision---main.rb'>Physics And Collisions - Bouncing On Collision - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---bouncing-on-collision---peg.rb'>Physics And Collisions - Bouncing On Collision - peg.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---bouncing-on-collision---vector2d.rb'>Physics And Collisions - Bouncing On Collision - vector2d.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---arbitrary-collision---ball.rb'>Physics And Collisions - Arbitrary Collision - ball.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---arbitrary-collision---blocks.rb'>Physics And Collisions - Arbitrary Collision - blocks.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---arbitrary-collision---linear_collider.rb'>Physics And Collisions - Arbitrary Collision - linear_collider.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---arbitrary-collision---main.rb'>Physics And Collisions - Arbitrary Collision - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---arbitrary-collision---paddle.rb'>Physics And Collisions - Arbitrary Collision - paddle.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---arbitrary-collision---rectangle.rb'>Physics And Collisions - Arbitrary Collision - rectangle.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---arbitrary-collision---square_collider.rb'>Physics And Collisions - Arbitrary Collision - square_collider.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---arbitrary-collision---vector2d.rb'>Physics And Collisions - Arbitrary Collision - vector2d.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---collision-with-object-removal---ball.rb'>Physics And Collisions - Collision With Object Removal - ball.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---collision-with-object-removal---linear_collider.rb'>Physics And Collisions - Collision With Object Removal - linear_collider.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---collision-with-object-removal---main.rb'>Physics And Collisions - Collision With Object Removal - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---collision-with-object-removal---paddle.rb'>Physics And Collisions - Collision With Object Removal - paddle.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---collision-with-object-removal---tests.rb'>Physics And Collisions - Collision With Object Removal - tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---collision-with-object-removal---vector2d.rb'>Physics And Collisions - Collision With Object Removal - vector2d.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse---mouse-click---main.rb'>Mouse - Mouse Click - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse---mouse-move---main.rb'>Mouse - Mouse Move - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse---mouse-move-paint-app---main.rb'>Mouse - Mouse Move Paint App - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse---coordinate-systems---main.rb'>Mouse - Coordinate Systems - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----save-load---save-load-game---main.rb'>Save Load - Save Load Game - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---simple-render-targets---main.rb'>Advanced Rendering - Simple Render Targets - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---render-targets-with-tile-manipulation---main.rb'>Advanced Rendering - Render Targets With Tile Manipulation - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---render-target-viewports---main.rb'>Advanced Rendering - Render Target Viewports - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---render-primitive-hierarchies---main.rb'>Advanced Rendering - Render Primitive Hierarchies - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---render-primitives-as-hash---main.rb'>Advanced Rendering - Render Primitives As Hash - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---pixel-arrays---main.rb'>Advanced Rendering - Pixel Arrays - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---splitscreen-camera---main.rb'>Advanced Rendering - Splitscreen Camera - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---z-targeting-camera---main.rb'>Advanced Rendering - Z Targeting Camera - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----tweening-lerping-easing-functions---easing-functions---main.rb'>Tweening Lerping Easing Functions - Easing Functions - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----tweening-lerping-easing-functions---cubic-bezier---main.rb'>Tweening Lerping Easing Functions - Cubic Bezier - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----tweening-lerping-easing-functions---easing-using-spline---main.rb'>Tweening Lerping Easing Functions - Easing Using Spline - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----tweening-lerping-easing-functions---parametric-enemy-movement---main.rb'>Tweening Lerping Easing Functions - Parametric Enemy Movement - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----performance---sprites-as-hash---main.rb'>Performance - Sprites As Hash - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----performance---sprites-as-entities---main.rb'>Performance - Sprites As Entities - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----performance---sprites-as-strict-entities---main.rb'>Performance - Sprites As Strict Entities - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----performance---sprites-as-classes---main.rb'>Performance - Sprites As Classes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----performance---static-sprites-as-classes---main.rb'>Performance - Static Sprites As Classes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----performance---static-sprites-as-classes-with-custom-drawing---main.rb'>Performance - Static Sprites As Classes With Custom Drawing - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----performance---collision-limits---main.rb'>Performance - Collision Limits - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---trace-debugging---main.rb'>Advanced Debugging - Trace Debugging - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---trace-debugging-classes---main.rb'>Advanced Debugging - Trace Debugging Classes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---exception_raising_tests.rb'>Advanced Debugging - Unit Tests - exception_raising_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---fn_tests.rb'>Advanced Debugging - Unit Tests - fn_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---gen_docs.rb'>Advanced Debugging - Unit Tests - gen_docs.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---geometry_tests.rb'>Advanced Debugging - Unit Tests - geometry_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---http_tests.rb'>Advanced Debugging - Unit Tests - http_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---nil_coercion_tests.rb'>Advanced Debugging - Unit Tests - nil_coercion_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---object_to_primitive_tests.rb'>Advanced Debugging - Unit Tests - object_to_primitive_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---parsing_tests.rb'>Advanced Debugging - Unit Tests - parsing_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---require_tests.rb'>Advanced Debugging - Unit Tests - require_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---serialize_deserialize_tests.rb'>Advanced Debugging - Unit Tests - serialize_deserialize_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---state_serialization_experimental_tests.rb'>Advanced Debugging - Unit Tests - state_serialization_experimental_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---suggest_autocompletion_tests.rb'>Advanced Debugging - Unit Tests - suggest_autocompletion_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----http---retrieve-images---main.rb'>Http - Retrieve Images - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----http---web-server---main.rb'>Http - Web Server - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----c-extensions---basics---main.rb'>C Extensions - Basics - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----c-extensions---intermediate---main.rb'>C Extensions - Intermediate - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----c-extensions---native-pixel-arrays---main.rb'>C Extensions - Native Pixel Arrays - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---breadth-first-search---main.rb'>Path Finding Algorithms - Breadth First Search - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---detailed-breadth-first-search---main.rb'>Path Finding Algorithms - Detailed Breadth First Search - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---breadcrumbs---main.rb'>Path Finding Algorithms - Breadcrumbs - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---early-exit---main.rb'>Path Finding Algorithms - Early Exit - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---dijkstra---main.rb'>Path Finding Algorithms - Dijkstra - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---heuristic---main.rb'>Path Finding Algorithms - Heuristic - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---heuristic-with-walls---main.rb'>Path Finding Algorithms - Heuristic With Walls - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---a-star---main.rb'>Path Finding Algorithms - A Star - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---tower-defense---main.rb'>Path Finding Algorithms - Tower Defense - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----3d---3d-cube---main.rb'>3d - 3d Cube - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----3d---wireframe---main.rb'>3d - Wireframe - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----3d---wireframe---data---what-is-this.txt'>3d - Wireframe - Data - what-is-this.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade---bullet-hell---main.rb'>Arcade - Bullet Hell - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade---dueling-starships---main.rb'>Arcade - Dueling Starships - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade/flappy-dragon/credits.txt'>arcade/flappy dragon/credits.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade/flappy-dragon/main.rb'>arcade/flappy dragon/main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade---pong---main.rb'>Arcade - Pong - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade---snakemoji---main.rb'>Arcade - Snakemoji - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade---solar-system---main.rb'>Arcade - Solar System - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade---sound-golf---main.rb'>Arcade - Sound Golf - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade---twinstick---main.rb'>Arcade - Twinstick - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----crafting---craft-game-starting-point---main.rb'>Crafting - Craft Game Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dev-tools---add-buttons-to-console---main.rb'>Dev Tools - Add Buttons To Console - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dev-tools---animation-creator-starting-point---main.rb'>Dev Tools - Animation Creator Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dev-tools---tile-editor-starting-point---main.rb'>Dev Tools - Tile Editor Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----lowrez---nokia-3310---main.rb'>Lowrez - Nokia 3310 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----lowrez---nokia-3310---nokia.rb'>Lowrez - Nokia 3310 - nokia.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----lowrez---resolution-64x64---lowrez.rb'>Lowrez - Resolution 64x64 - lowrez.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----lowrez---resolution-64x64---main.rb'>Lowrez - Resolution 64x64 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---clepto-frog---main.rb'>Platformer - Clepto Frog - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---clepto-frog---map.rb'>Platformer - Clepto Frog - map.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---gorillas-basic---credits.txt'>Platformer - Gorillas Basic - credits.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---gorillas-basic---main.rb'>Platformer - Gorillas Basic - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---gorillas-basic---tests.rb'>Platformer - Gorillas Basic - tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---gorillas-basic---tests---building_generation_tests.rb'>Platformer - Gorillas Basic - Tests - building_generation_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---the-little-probe---main.rb'>Platformer - The Little Probe - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---the-little-probe---data---level.txt'>Platformer - The Little Probe - Data - level.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---the-little-probe---data---level_lava.txt'>Platformer - The Little Probe - Data - level_lava.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---choose-your-own-adventure---decision.rb'>Rpg Narrative - Choose Your Own Adventure - decision.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---choose-your-own-adventure---main.rb'>Rpg Narrative - Choose Your Own Adventure - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---lowrez_simulator.rb'>Rpg Narrative - Return Of Serenity - lowrez_simulator.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---main.rb'>Rpg Narrative - Return Of Serenity - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---require.rb'>Rpg Narrative - Return Of Serenity - require.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline.rb'>Rpg Narrative - Return Of Serenity - storyline.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_anka.rb'>Rpg Narrative - Return Of Serenity - storyline_anka.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_blinking_light.rb'>Rpg Narrative - Return Of Serenity - storyline_blinking_light.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_day_one.rb'>Rpg Narrative - Return Of Serenity - storyline_day_one.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_final_decision.rb'>Rpg Narrative - Return Of Serenity - storyline_final_decision.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_final_message.rb'>Rpg Narrative - Return Of Serenity - storyline_final_message.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_serenity_alive.rb'>Rpg Narrative - Return Of Serenity - storyline_serenity_alive.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_serenity_bio.rb'>Rpg Narrative - Return Of Serenity - storyline_serenity_bio.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_serenity_introduction.rb'>Rpg Narrative - Return Of Serenity - storyline_serenity_introduction.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_speed_of_light.rb'>Rpg Narrative - Return Of Serenity - storyline_speed_of_light.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-roguelike---roguelike-starting-point---constants.rb'>Rpg Roguelike - Roguelike Starting Point - constants.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-roguelike---roguelike-starting-point---legend.rb'>Rpg Roguelike - Roguelike Starting Point - legend.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-roguelike---roguelike-starting-point---main.rb'>Rpg Roguelike - Roguelike Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-roguelike---roguelike-starting-point---sprite_lookup.rb'>Rpg Roguelike - Roguelike Starting Point - sprite_lookup.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-roguelike---roguelike-line-of-sight---main.rb'>Rpg Roguelike - Roguelike Line Of Sight - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-tactical---hexagonal-grid---main.rb'>Rpg Tactical - Hexagonal Grid - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-tactical---isometric-grid---main.rb'>Rpg Tactical - Isometric Grid - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-topdown---topdown-starting-point---main.rb'>Rpg Topdown - Topdown Starting Point - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---oss'>OSS</a></li></ul><ul><ul><li><a class='header-3' href='#----args.rb'>args.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----assert.rb'>assert.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----attr_gtk.rb'>attr_gtk.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----attr_sprite.rb'>attr_sprite.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----console.rb'>console.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----console_color.rb'>console_color.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----console_font_style.rb'>console_font_style.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----console_menu.rb'>console_menu.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----console_prompt.rb'>console_prompt.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----controller.rb'>controller.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----controller/config.rb'>controller/config.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----controller/keys.rb'>controller/keys.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----directional_input_helper_methods.rb'>directional_input_helper_methods.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----easing.rb'>easing.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----entity.rb'>entity.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----geometry.rb'>geometry.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----grid.rb'>grid.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----inputs.rb'>inputs.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----ios_wizard.rb'>ios_wizard.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----itch_wizard.rb'>itch_wizard.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----layout.rb'>layout.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----log.rb'>log.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----numeric.rb'>numeric.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----remote_hotload_client.rb'>remote_hotload_client.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----runtime/autocomplete.rb'>runtime/autocomplete.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----runtime/draw.rb'>runtime/draw.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----runtime/framerate.rb'>runtime/framerate.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----runtime/framerate_diagnostics.rb'>runtime/framerate_diagnostics.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----runtime/hotload.rb'>runtime/hotload.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----string.rb'>string.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----tests.rb'>tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----trace.rb'>trace.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----wizards.rb'>wizards.rb</a></li></ul></ul></ul>    </div>
+<ul><li><a class='header-2' href='#---samples'>Samples</a></li></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---beginner-ruby-primer---automation.rb'>Learn Ruby Optional - Beginner Ruby Primer - automation.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---beginner-ruby-primer---main.rb'>Learn Ruby Optional - Beginner Ruby Primer - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---printing.txt'>Learn Ruby Optional - Intermediate Ruby Primer - printing.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---strings.txt'>Learn Ruby Optional - Intermediate Ruby Primer - strings.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---numbers.txt'>Learn Ruby Optional - Intermediate Ruby Primer - numbers.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---booleans.txt'>Learn Ruby Optional - Intermediate Ruby Primer - booleans.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---conditionals.txt'>Learn Ruby Optional - Intermediate Ruby Primer - conditionals.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---looping.txt'>Learn Ruby Optional - Intermediate Ruby Primer - looping.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---functions.txt'>Learn Ruby Optional - Intermediate Ruby Primer - functions.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---arrays.txt'>Learn Ruby Optional - Intermediate Ruby Primer - arrays.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----learn-ruby-optional---intermediate-ruby-primer---main.rb'>Learn Ruby Optional - Intermediate Ruby Primer - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-basics---labels---main.rb'>Rendering Basics - Labels - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-basics---lines---main.rb'>Rendering Basics - Lines - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-basics---solids-borders---main.rb'>Rendering Basics - Solids Borders - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-basics---sprites---main.rb'>Rendering Basics - Sprites - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-basics---sounds---main.rb'>Rendering Basics - Sounds - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-basics---audio-mixer---main.rb'>Rendering Basics - Audio Mixer - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-basics---sound-synthesis---main.rb'>Rendering Basics - Sound Synthesis - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----input-basics---keyboard---main.rb'>Input Basics - Keyboard - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----input-basics---moving-a-sprite---main.rb'>Input Basics - Moving A Sprite - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----input-basics---mouse---main.rb'>Input Basics - Mouse - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----input-basics---mouse-point-to-rect---main.rb'>Input Basics - Mouse Point To Rect - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----input-basics---mouse-rect-to-rect---main.rb'>Input Basics - Mouse Rect To Rect - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----input-basics---controller---main.rb'>Input Basics - Controller - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----input-basics---touch---main.rb'>Input Basics - Touch - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-sprites---animation-using-separate-pngs---main.rb'>Rendering Sprites - Animation Using Separate Pngs - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-sprites---animation-using-sprite-sheet---main.rb'>Rendering Sprites - Animation Using Sprite Sheet - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-sprites---animation-states---main.rb'>Rendering Sprites - Animation States - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-sprites---color-and-rotation---main.rb'>Rendering Sprites - Color And Rotation - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---simple---main.rb'>Physics And Collisions - Simple - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---moving-objects---main.rb'>Physics And Collisions - Moving Objects - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---entities---main.rb'>Physics And Collisions - Entities - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---box-collision---main.rb'>Physics And Collisions - Box Collision - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---box-collision-2---main.rb'>Physics And Collisions - Box Collision 2 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---box-collision-3---main.rb'>Physics And Collisions - Box Collision 3 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---jump-physics---main.rb'>Physics And Collisions - Jump Physics - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---bouncing-on-collision---ball.rb'>Physics And Collisions - Bouncing On Collision - ball.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---bouncing-on-collision---block.rb'>Physics And Collisions - Bouncing On Collision - block.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---bouncing-on-collision---cannon.rb'>Physics And Collisions - Bouncing On Collision - cannon.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---bouncing-on-collision---main.rb'>Physics And Collisions - Bouncing On Collision - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---bouncing-on-collision---peg.rb'>Physics And Collisions - Bouncing On Collision - peg.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---bouncing-on-collision---vector2d.rb'>Physics And Collisions - Bouncing On Collision - vector2d.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---arbitrary-collision---ball.rb'>Physics And Collisions - Arbitrary Collision - ball.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---arbitrary-collision---blocks.rb'>Physics And Collisions - Arbitrary Collision - blocks.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---arbitrary-collision---linear_collider.rb'>Physics And Collisions - Arbitrary Collision - linear_collider.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---arbitrary-collision---main.rb'>Physics And Collisions - Arbitrary Collision - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---arbitrary-collision---paddle.rb'>Physics And Collisions - Arbitrary Collision - paddle.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---arbitrary-collision---rectangle.rb'>Physics And Collisions - Arbitrary Collision - rectangle.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---arbitrary-collision---square_collider.rb'>Physics And Collisions - Arbitrary Collision - square_collider.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---arbitrary-collision---vector2d.rb'>Physics And Collisions - Arbitrary Collision - vector2d.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---collision-with-object-removal---ball.rb'>Physics And Collisions - Collision With Object Removal - ball.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---collision-with-object-removal---linear_collider.rb'>Physics And Collisions - Collision With Object Removal - linear_collider.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---collision-with-object-removal---main.rb'>Physics And Collisions - Collision With Object Removal - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---collision-with-object-removal---paddle.rb'>Physics And Collisions - Collision With Object Removal - paddle.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---collision-with-object-removal---tests.rb'>Physics And Collisions - Collision With Object Removal - tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----physics-and-collisions---collision-with-object-removal---vector2d.rb'>Physics And Collisions - Collision With Object Removal - vector2d.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse---mouse-click---main.rb'>Mouse - Mouse Click - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse---mouse-move---main.rb'>Mouse - Mouse Move - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse---mouse-move-paint-app---main.rb'>Mouse - Mouse Move Paint App - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse---coordinate-systems---main.rb'>Mouse - Coordinate Systems - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----save-load---save-load-game---main.rb'>Save Load - Save Load Game - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---simple-render-targets---main.rb'>Advanced Rendering - Simple Render Targets - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---render-targets-with-tile-manipulation---main.rb'>Advanced Rendering - Render Targets With Tile Manipulation - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---render-target-viewports---main.rb'>Advanced Rendering - Render Target Viewports - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---render-primitive-hierarchies---main.rb'>Advanced Rendering - Render Primitive Hierarchies - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---render-primitives-as-hash---main.rb'>Advanced Rendering - Render Primitives As Hash - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---pixel-arrays---main.rb'>Advanced Rendering - Pixel Arrays - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---simple-camera---main.rb'>Advanced Rendering - Simple Camera - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---splitscreen-camera---main.rb'>Advanced Rendering - Splitscreen Camera - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-rendering---z-targeting-camera---main.rb'>Advanced Rendering - Z Targeting Camera - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----tweening-lerping-easing-functions---easing-functions---main.rb'>Tweening Lerping Easing Functions - Easing Functions - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----tweening-lerping-easing-functions---cubic-bezier---main.rb'>Tweening Lerping Easing Functions - Cubic Bezier - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----tweening-lerping-easing-functions---easing-using-spline---main.rb'>Tweening Lerping Easing Functions - Easing Using Spline - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----tweening-lerping-easing-functions---parametric-enemy-movement---main.rb'>Tweening Lerping Easing Functions - Parametric Enemy Movement - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----performance---sprites-as-hash---main.rb'>Performance - Sprites As Hash - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----performance---sprites-as-entities---main.rb'>Performance - Sprites As Entities - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----performance---sprites-as-strict-entities---main.rb'>Performance - Sprites As Strict Entities - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----performance---sprites-as-classes---main.rb'>Performance - Sprites As Classes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----performance---static-sprites-as-classes---main.rb'>Performance - Static Sprites As Classes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----performance---static-sprites-as-classes-with-custom-drawing---main.rb'>Performance - Static Sprites As Classes With Custom Drawing - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----performance---collision-limits---main.rb'>Performance - Collision Limits - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---trace-debugging---main.rb'>Advanced Debugging - Trace Debugging - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---trace-debugging-classes---main.rb'>Advanced Debugging - Trace Debugging Classes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---exception_raising_tests.rb'>Advanced Debugging - Unit Tests - exception_raising_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---fn_tests.rb'>Advanced Debugging - Unit Tests - fn_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---gen_docs.rb'>Advanced Debugging - Unit Tests - gen_docs.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---geometry_tests.rb'>Advanced Debugging - Unit Tests - geometry_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---http_tests.rb'>Advanced Debugging - Unit Tests - http_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---nil_coercion_tests.rb'>Advanced Debugging - Unit Tests - nil_coercion_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---object_to_primitive_tests.rb'>Advanced Debugging - Unit Tests - object_to_primitive_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---parsing_tests.rb'>Advanced Debugging - Unit Tests - parsing_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---pretty_format_tests.rb'>Advanced Debugging - Unit Tests - pretty_format_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---require_tests.rb'>Advanced Debugging - Unit Tests - require_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---serialize_deserialize_tests.rb'>Advanced Debugging - Unit Tests - serialize_deserialize_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---state_serialization_experimental_tests.rb'>Advanced Debugging - Unit Tests - state_serialization_experimental_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----advanced-debugging---unit-tests---suggest_autocompletion_tests.rb'>Advanced Debugging - Unit Tests - suggest_autocompletion_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----http---retrieve-images---main.rb'>Http - Retrieve Images - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----http---web-server---main.rb'>Http - Web Server - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----c-extensions---basics---main.rb'>C Extensions - Basics - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----c-extensions---intermediate---main.rb'>C Extensions - Intermediate - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----c-extensions---native-pixel-arrays---main.rb'>C Extensions - Native Pixel Arrays - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---breadth-first-search---main.rb'>Path Finding Algorithms - Breadth First Search - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---detailed-breadth-first-search---main.rb'>Path Finding Algorithms - Detailed Breadth First Search - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---breadcrumbs---main.rb'>Path Finding Algorithms - Breadcrumbs - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---early-exit---main.rb'>Path Finding Algorithms - Early Exit - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---dijkstra---main.rb'>Path Finding Algorithms - Dijkstra - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---heuristic---main.rb'>Path Finding Algorithms - Heuristic - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---heuristic-with-walls---main.rb'>Path Finding Algorithms - Heuristic With Walls - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---a-star---main.rb'>Path Finding Algorithms - A Star - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----path-finding-algorithms---tower-defense---main.rb'>Path Finding Algorithms - Tower Defense - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----3d---3d-cube---main.rb'>3d - 3d Cube - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----3d---wireframe---main.rb'>3d - Wireframe - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----3d---wireframe---data---what-is-this.txt'>3d - Wireframe - Data - what-is-this.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade---bullet-hell---main.rb'>Arcade - Bullet Hell - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade---dueling-starships---main.rb'>Arcade - Dueling Starships - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade/flappy-dragon/credits.txt'>arcade/flappy dragon/credits.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade/flappy-dragon/main.rb'>arcade/flappy dragon/main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade---pong---main.rb'>Arcade - Pong - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade---snakemoji---main.rb'>Arcade - Snakemoji - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade---solar-system---main.rb'>Arcade - Solar System - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade---sound-golf---main.rb'>Arcade - Sound Golf - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade---twinstick---main.rb'>Arcade - Twinstick - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----crafting---craft-game-starting-point---main.rb'>Crafting - Craft Game Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dev-tools---add-buttons-to-console---main.rb'>Dev Tools - Add Buttons To Console - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dev-tools---animation-creator-starting-point---main.rb'>Dev Tools - Animation Creator Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dev-tools---tile-editor-starting-point---main.rb'>Dev Tools - Tile Editor Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dungeon-crawl---classics-jam---main.rb'>Dungeon Crawl - Classics Jam - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----lowrez---nokia-3310---main.rb'>Lowrez - Nokia 3310 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----lowrez---nokia-3310---nokia.rb'>Lowrez - Nokia 3310 - nokia.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----lowrez---resolution-64x64---lowrez.rb'>Lowrez - Resolution 64x64 - lowrez.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----lowrez---resolution-64x64---main.rb'>Lowrez - Resolution 64x64 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---clepto-frog---main.rb'>Platformer - Clepto Frog - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---clepto-frog---map.rb'>Platformer - Clepto Frog - map.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---gorillas-basic---credits.txt'>Platformer - Gorillas Basic - credits.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---gorillas-basic---main.rb'>Platformer - Gorillas Basic - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---gorillas-basic---tests.rb'>Platformer - Gorillas Basic - tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---gorillas-basic---tests---building_generation_tests.rb'>Platformer - Gorillas Basic - Tests - building_generation_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---the-little-probe---main.rb'>Platformer - The Little Probe - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---the-little-probe---data---level.txt'>Platformer - The Little Probe - Data - level.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----platformer---the-little-probe---data---level_lava.txt'>Platformer - The Little Probe - Data - level_lava.txt</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---choose-your-own-adventure---decision.rb'>Rpg Narrative - Choose Your Own Adventure - decision.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---choose-your-own-adventure---main.rb'>Rpg Narrative - Choose Your Own Adventure - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---lowrez_simulator.rb'>Rpg Narrative - Return Of Serenity - lowrez_simulator.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---main.rb'>Rpg Narrative - Return Of Serenity - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---require.rb'>Rpg Narrative - Return Of Serenity - require.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline.rb'>Rpg Narrative - Return Of Serenity - storyline.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_anka.rb'>Rpg Narrative - Return Of Serenity - storyline_anka.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_blinking_light.rb'>Rpg Narrative - Return Of Serenity - storyline_blinking_light.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_day_one.rb'>Rpg Narrative - Return Of Serenity - storyline_day_one.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_final_decision.rb'>Rpg Narrative - Return Of Serenity - storyline_final_decision.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_final_message.rb'>Rpg Narrative - Return Of Serenity - storyline_final_message.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_serenity_alive.rb'>Rpg Narrative - Return Of Serenity - storyline_serenity_alive.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_serenity_bio.rb'>Rpg Narrative - Return Of Serenity - storyline_serenity_bio.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_serenity_introduction.rb'>Rpg Narrative - Return Of Serenity - storyline_serenity_introduction.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-narrative---return-of-serenity---storyline_speed_of_light.rb'>Rpg Narrative - Return Of Serenity - storyline_speed_of_light.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-roguelike---roguelike-starting-point---constants.rb'>Rpg Roguelike - Roguelike Starting Point - constants.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-roguelike---roguelike-starting-point---legend.rb'>Rpg Roguelike - Roguelike Starting Point - legend.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-roguelike---roguelike-starting-point---main.rb'>Rpg Roguelike - Roguelike Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-roguelike---roguelike-starting-point---sprite_lookup.rb'>Rpg Roguelike - Roguelike Starting Point - sprite_lookup.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-roguelike---roguelike-line-of-sight---main.rb'>Rpg Roguelike - Roguelike Line Of Sight - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-tactical---hexagonal-grid---main.rb'>Rpg Tactical - Hexagonal Grid - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-tactical---isometric-grid---main.rb'>Rpg Tactical - Isometric Grid - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rpg-topdown---topdown-starting-point---main.rb'>Rpg Topdown - Topdown Starting Point - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---oss'>OSS</a></li></ul><ul><ul><li><a class='header-3' href='#----args.rb'>args.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----assert.rb'>assert.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----attr_gtk.rb'>attr_gtk.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----attr_sprite.rb'>attr_sprite.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----console.rb'>console.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----console_color.rb'>console_color.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----console_font_style.rb'>console_font_style.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----console_menu.rb'>console_menu.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----console_prompt.rb'>console_prompt.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----controller.rb'>controller.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----controller/config.rb'>controller/config.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----controller/keys.rb'>controller/keys.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----directional_input_helper_methods.rb'>directional_input_helper_methods.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----easing.rb'>easing.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----entity.rb'>entity.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----geometry.rb'>geometry.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----grid.rb'>grid.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----inputs.rb'>inputs.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----ios_wizard.rb'>ios_wizard.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----itch_wizard.rb'>itch_wizard.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----layout.rb'>layout.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----log.rb'>log.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----numeric.rb'>numeric.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----remote_hotload_client.rb'>remote_hotload_client.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----runtime/autocomplete.rb'>runtime/autocomplete.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----runtime/draw.rb'>runtime/draw.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----runtime/framerate.rb'>runtime/framerate.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----runtime/framerate_diagnostics.rb'>runtime/framerate_diagnostics.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----runtime/hotload.rb'>runtime/hotload.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----string.rb'>string.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----tests.rb'>tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----trace.rb'>trace.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----wizards.rb'>wizards.rb</a></li></ul></ul></ul>    </div>
     <div id='content'>
 <h1 id='--dragonruby-game-toolkit-live-docs'>DragonRuby Game Toolkit Live Docs</h1>
 <p>
@@ -360,7 +361,7 @@ If you have a Pro subscription, you also have the capability to deploy to mobile
 To deploy to iOS, you need to have a Mac running MacOS Catalina, an iOS device, and an active/paid Developer Account with Apple. From the Console type: <code>$wizards.ios.start</code> and you will be guided through the deployment process.
 </p>
 <p>
-To deploy to Android, you need to have an Android emulator/device, and a environment that is able to run Android SDK. <code>dragonruby-publish</code> will create an APK for you. From there, you can sign the APK and install it to your device. The signing and installation procedure varies from OS to OS. Here's an example of what the command might look like:
+To deploy to Android, you need to have an Android emulator/device, and an environment that is able to run Android SDK. <code>dragonruby-publish</code> will create an APK for you. From there, you can sign the APK and install it to your device. The signing and installation procedure varies from OS to OS. Here's an example of what the command might look like:
 </p>
 <pre><code class="language-ruby">> adb logcat -e mygame # you'll want to run this in a separate terminal
 > keytool -genkey -v -keystore mygame.keystore -alias mygame -keyalg RSA -keysize 2048 -validity 10000
@@ -369,7 +370,7 @@ To deploy to Android, you need to have an Android emulator/device, and a environ
 </code></pre>
 <h1 id='--dragonruby's-philosophy'>DragonRuby's Philosophy</h1>
 <p>
-The following tenants of DragonRuby are what set us apart from other game engines. Given that Game Toolkit is a relatively new engine, there are definitely features that are missing. So having a big check list of "all the cool things" is not this engine's forte. This is compensated with a strong commitment to the following principals.
+The following tenants of DragonRuby are what set us apart from other game engines. Given that Game Toolkit is a relatively new engine, there are definitely features that are missing. So having a big check list of "all the cool things" is not this engine's forte. This is compensated with a strong commitment to the following principles.
 </p>
 <h2 id='---challenge-the-status-quo'>Challenge The Status Quo</h2>
 <p>
@@ -535,7 +536,7 @@ end
 </code></pre>
 <ul>
 <li>If you use the `repl` method, the code will be executed and the DragonRuby Console will automatically open so you can see the results (on Mac and Linux, the results will also be printed to the terminal).</li>
-<li>All <code>puts</code> statements will also be saved to <code>logs/log.txt</code>. So if you want to stay in your editor and not look at the terminal, or the DragonRuby Console, you can <code>tail</code> this file.</li>
+<li>All <code>puts</code> statements will also be saved to <code>logs/puts.txt</code>. So if you want to stay in your editor and not look at the terminal, or the DragonRuby Console, you can <code>tail</code> this file.</li>
 </ul>
 <p>
 4. To ignore code in <code>repl.rb</code>, instead of commenting it out, prefix <code>repl</code> with the letter <code>x</code> and it'll be ignored.
@@ -568,7 +569,7 @@ You can use DragonRuby's replay capabilities to troubleshoot:
 </p>
 <ol>
 <li> DragonRuby is hot loaded which gives you a very fast feedback loop (if the game throws an exception, it's because of the code you just added).</li>
-<li> Use <code>./dragonruby mygame --record</code> to create a game play recording that you can use to find the exception (you can replay a recoding by executing <code>./dragonruby mygame --replay last_replay.txt</code> or through the DragonRuby Console using <code>$gtk.recording.start_replay "last_replay.txt"</code>.</li>
+<li> Use <code>./dragonruby mygame --record</code> to create a game play recording that you can use to find the exception (you can replay a recording by executing <code>./dragonruby mygame --replay last_replay.txt</code> or through the DragonRuby Console using <code>$gtk.recording.start_replay "last_replay.txt"</code>.</li>
 <li> DragonRuby also ships with a unit testing facility. You can invoke the following command to run a test: <code>./dragonruby . --eval some_ruby_file.rb --no-tick</code>.</li>
 <li> Get into the habit of adding debugging facilities within the game itself. You can add drawing primitives to <code>args.outputs.debug</code> that will render on top of your game but will be ignored in a production release.</li>
 <li> Debugging something that runs at 60fps is (imo) not that helpful. The exception you are seeing could have been because of a change that occurred many frames ago.</li>
@@ -579,7 +580,7 @@ You can use DragonRuby's replay capabilities to troubleshoot:
 Let's check the official source for the answer to this question: isrubydead.com: <a href='https://isrubydead.com/'>https://isrubydead.com/</a>.
 </p>
 <p>
-On a more serious note, Ruby's _quantity_ levels aren't what they used to be. And that's totally fine. Every one chases the new and shiny.
+On a more serious note, Ruby's _quantity_ levels aren't what they used to be. And that's totally fine. Everyone chases the new and shiny.
 </p>
 <p>
 What really matters is _quality/maturity_. Here is the latest (StackOverflow Survey sorted by highest paid developers)[https://insights.stackoverflow.com/survey/2019#top-paying-technologies].
@@ -1057,7 +1058,7 @@ Returns <code>-1</code> (left), <code>0</code> (neutral), or <code>+1</code> (ri
 </p>
 <h3 id='-----.up_down-'><code>.up_down</code></h3>
 <p>
-Returns <code>-1</code> (down), <code>0</code> (neutral), or <code>+1</code> (right) depending on results of <code>args.inputs.up</code> and <code>args.inputs.down</code>.
+Returns <code>-1</code> (down), <code>0</code> (neutral), or <code>+1</code> (up) depending on results of <code>args.inputs.down</code> and <code>args.inputs.up</code>.
 </p>
 <h3 id='-----.text--or--.history-'><code>.text</code> OR <code>.history</code></h3>
 <p>
@@ -1137,7 +1138,7 @@ Returns <code>-1</code> (left), <code>0</code> (neutral), or <code>+1</code> (ri
 </p>
 <h4>~.up_down</h4>
 <p>
-Returns <code>-1</code> (down), <code>0</code> (neutral), or <code>+1</code> (up) depending on results of <code>args.inputs.controller_(one|two).up</code> and <code>args.inputs.controller_(one|two).down</code>.
+Returns <code>-1</code> (down), <code>0</code> (neutral), or <code>+1</code> (up) depending on results of <code>args.inputs.controller_(one|two).down</code> and <code>args.inputs.controller_(one|two).up</code>.
 </p>
 <h4><code>.(left_analog_x_raw|right_analog_x_raw)</code></h4>
 <p>
@@ -1217,7 +1218,7 @@ Returns <code>-1</code> (left), <code>0</code> (neutral), or <code>+1</code> (ri
 </p>
 <h4><code>.up_down</code></h4>
 <p>
-Returns <code>-1</code> (left), <code>0</code> (neutral), or <code>+1</code> (right) depending on results of <code>args.inputs.keyboard.up</code> and <code>args.inputs.keyboard.up</code>.
+Returns <code>-1</code> (down), <code>0</code> (neutral), or <code>+1</code> (up) depending on results of <code>args.inputs.keyboard.down</code> and <code>args.inputs.keyboard.up</code>.
 </p>
 <h4>keyboard properties</h4>
 <p>
@@ -1335,7 +1336,7 @@ Returns a <code>Hash</code> with all keys on the keyboard in their respective st
 </ul>
 <h2 id='----args.outputs-'><code>args.outputs</code></h2>
 <p>
-<code>args.outputs.PROPERTY</code> is how you render to the screen.
+<code>args.outputs.PROPERTY</code> is how you render to the screen and play sounds. Available rendered output types are <code>solids</code>, <code>sprites</code>, <code>primitives</code>, <code>labels</code>, <code>lines</code>, <code>borders</code>, and <code>debug</code>, described below. Each type has a corresponding static type, such as <code>static_solids</code>, <code>static_sprites</code> and so on. The static types do not need to be readded to the collection for every tick and are rendered above their non-static counterparts. Rendering to the screen happens in the following order: <code>solids < sprites < primitives < labels < lines < borders < debug</code>. If you want complete control over the z-order, you should use <code>primitives</code> for all outputs (except <code>sound</code> and <code>background_color</code>, of course).
 </p>
 <h3 id='-----.background_color-'><code>.background_color</code></h3>
 <p>
@@ -1343,7 +1344,7 @@ Set <code>args.outputs.background_color</code> to an <code>Array</code> with <co
 </p>
 <h3 id='-----.sounds-'><code>.sounds</code></h3>
 <p>
-Send a file path to this collection to play a sound. The sound file must be under the <code>mygame</code> directory. Example: <code>args.outputs.sounds << "sounds/jump.wav"</code>.
+Send a file path to this collection to play a sound. The sound file must be under your game directory (by default, the <code>mygame</code> directory). Example: <code>args.outputs.sounds << "sounds/jump.wav"</code>.
 </p>
 <h3 id='-----.solids-'><code>.solids</code></h3>
 <p>
@@ -2018,7 +2019,7 @@ end
 </code></pre>
 <h2 id='---rendering-a-solid-using-an-array-with-colors-and-alpha'>Rendering a solid using an Array with colors and alpha</h2>
 <p>
-The value for the color and alpha is an number between <code>0</code> and <code>255</code>. The alpha property is optional and will be set to <code>255</code> if not specified.
+The value for the color and alpha is a number between <code>0</code> and <code>255</code>. The alpha property is optional and will be set to <code>255</code> if not specified.
 </p>
 <p>
 Creates a green solid rectangle with an opacity of 50%.
@@ -2047,7 +2048,7 @@ end
 </code></pre>
 <h2 id='---rendering-a-solid-using-a-class'>Rendering a solid using a Class</h2>
 <p>
-You can also create a class with solid/border properties and render it as a primitive. ALL properties must on the class. *Additionally*, a method called <code>primitive_marker</code> must be defined on the class.
+You can also create a class with solid/border properties and render it as a primitive. ALL properties must be on the class. *Additionally*, a method called <code>primitive_marker</code> must be defined on the class.
 </p>
 <p>
 Here is an example:
@@ -2098,6 +2099,93 @@ You have to use <code>args.outputs.borders</code>:
 <pre><code class="language-ruby">def tick args
   #                           X    Y  WIDTH  HEIGHT
   args.outputs.borders << [100, 100,   160,     90]
+end
+</code></pre>
+<h1 id='--docs---gtk--outputs#sprites-'>DOCS: <code>GTK::Outputs#sprites</code></h1>
+<p>
+Add primitives to this collection to render a sprite to the screen.
+</p>
+<h2 id='---rendering-a-sprite-using-an-array'>Rendering a sprite using an Array</h2>
+<p>
+Creates a sprite of a white circle located at 100, 100. 160 pixels wide and 90 pixels tall.
+</p>
+<pre><code class="language-ruby">def tick args
+  #                         X    Y   WIDTH   HEIGHT                      PATH
+  args.outputs.sprites << [100, 100,   160,     90, "sprites/circle/white.png]
+end
+</code></pre>
+<h2 id='---rendering-a-sprite-using-an-array-with-colors-and-alpha'>Rendering a sprite using an Array with colors and alpha</h2>
+<p>
+The value for the color and alpha is a number between <code>0</code> and <code>255</code>. The alpha property is optional and will be set to <code>255</code> if not specified.
+</p>
+<p>
+Creates a green circle sprite with an opacity of 50%.
+</p>
+<pre><code class="language-ruby">def tick args
+  #                         X    Y  WIDTH  HEIGHT           PATH                ANGLE  ALPHA  RED  GREEN  BLUE
+  args.outputs.sprites << [100, 100,  160,     90, "sprites/circle/white.png",     0,    128,   0,   255,    0]
+end
+</code></pre>
+<h2 id='---rendering-a-sprite-using-a-hash'>Rendering a sprite using a Hash</h2>
+<p>
+If you want a more readable invocation. You can use the following hash to create a sprite. Any parameters that are not specified will be given a default value. The keys of the hash can be provided in any order.
+</p>
+<pre><code class="language-ruby">def tick args
+  args.outputs.sprites << {
+    x:                             0,
+    y:                             0,
+    w:                           100,
+    h:                           100,
+    path: "sprites/circle/white.png",
+    angle:                         0,
+    a:                           255,
+    r:                             0,
+    g:                           255,
+    b:                             0
+  }
+end
+</code></pre>
+<h2 id='---rendering-a-solid-using-a-class'>Rendering a solid using a Class</h2>
+<p>
+You can also create a class with solid/border properties and render it as a primitive. ALL properties must be on the class. *Additionally*, a method called <code>primitive_marker</code> must be defined on the class.
+</p>
+<p>
+Here is an example:
+</p>
+<pre><code class="language-ruby"># Create type with ALL sprite properties AND primitive_marker
+class Sprite
+  attr_accessor :x, :y, :w, :h, :path, :angle, :angle_anchor_x, :angle_anchor_y,  :tile_x, :tile_y, :tile_w, :tile_h, :source_x, :source_y, :source_w, :source_h, :flip_horizontally, :flip_vertically, :a, :r, :g, :b
+
+  def primitive_marker
+    :sprite
+  end
+end
+
+# Inherit from type
+class Circle < Sprite
+# constructor
+  def initialize x, y, size, path
+    self.x = x
+    self.y = y
+    self.w = size
+    self.h = size
+    self.path = path
+  end
+  def serlialize
+    {x:self.x, y:self.y, w:self.w, h:self.h, path:self.path}
+  end
+
+  def inspect
+    serlialize.to_s
+  end
+
+  def to_s
+    serlialize.to_s
+  end
+end
+def tick args
+  # render circle sprite
+  args.outputs.sprites  << Circle.new(10, 10, 32,"sprites/circle/white.png")
 end
 </code></pre>
 <h1 id='--docs---gtk--outputs#screenshots-'>DOCS: <code>GTK::Outputs#screenshots</code></h1>
@@ -2160,12 +2248,12 @@ The <code>GTK::MousePoint</code> has the following properties.
 <li><code>x</code>: Integer representing the mouse's x.</li>
 <li><code>y</code>: Integer representing the mouse's y.</li>
 <li><code>point</code>: Array with the <code>x</code> and <code>y</code> values.</li>
-<li><code>w</code>: Width of the point that always returns <code>0</code> (included so that it can seemlessly work with <code>GTK::Geometry</code> functions).</li>
-<li><code>h</code>: Height of the point that always returns <code>0</code> (included so that it can seemlessly work with <code>GTK::Geometry</code> functions).</li>
-<li><code>left</code>: This value is the same as <code>x</code> (included so that it can seemlessly work with <code>GTK::Geometry</code> functions).</li>
-<li><code>right</code>: This value is the same as <code>x</code> (included so that it can seemlessly work with <code>GTK::Geometry</code> functions).</li>
-<li><code>top</code>: This value is the same as <code>y</code> (included so that it can seemlessly work with <code>GTK::Geometry</code> functions).</li>
-<li><code>bottom</code>: This value is the same as <code>y</code> (included so that it can seemlessly work with <code>GTK::Geometry</code> functions).</li>
+<li><code>w</code>: Width of the point that always returns <code>0</code> (included so that it can seamlessly work with <code>GTK::Geometry</code> functions).</li>
+<li><code>h</code>: Height of the point that always returns <code>0</code> (included so that it can seamlessly work with <code>GTK::Geometry</code> functions).</li>
+<li><code>left</code>: This value is the same as <code>x</code> (included so that it can seamlessly work with <code>GTK::Geometry</code> functions).</li>
+<li><code>right</code>: This value is the same as <code>x</code> (included so that it can seamlessly work with <code>GTK::Geometry</code> functions).</li>
+<li><code>top</code>: This value is the same as <code>y</code> (included so that it can seamlessly work with <code>GTK::Geometry</code> functions).</li>
+<li><code>bottom</code>: This value is the same as <code>y</code> (included so that it can seamlessly work with <code>GTK::Geometry</code> functions).</li>
 <li><code>created_at</code>: The tick (<code>args.state.tick_count</code>) that this structure was created.</li>
 <li><code>global_created_at</code>: The global tick (<code>Kernel.global_tick_count</code>) that this structure was created.</li>
 </ul>
@@ -4589,9 +4677,9 @@ APIs listing that haven't been encountered in a previous sample apps:
 def tick args
   tick_instructions args, "Sample app shows how keyboard events are registered and accessed.", 360
   # Notice how small_font accounts for all the remaining parameters
-  args.outputs.labels << [460, row_to_px(args, 0), "Current game time: #{args.state.tick_count}", small_font]
-  args.outputs.labels << [460, row_to_px(args, 2), "Keyboard input: args.inputs.keyboard.key_up.h", small_font]
-  args.outputs.labels << [460, row_to_px(args, 3), "Press \"h\" on the keyboard.", small_font]
+  args.outputs.labels << { x: 460, y: row_to_px(args, 0), text: "Current game time: #{args.state.tick_count}", size_enum: -1 }
+  args.outputs.labels << { x: 460, y: row_to_px(args, 2), text: "Keyboard input: args.inputs.keyboard.key_up.h", size_enum: -1 }
+  args.outputs.labels << { x: 460, y: row_to_px(args, 3), text: "Press \"h\" on the keyboard.", size_enum: -1 }
 
   # Input on a specifc key can be found through args.inputs.keyboard.key_up followed by the key
   if args.inputs.keyboard.key_up.h
@@ -4602,27 +4690,19 @@ def tick args
   args.state.h_pressed_at ||= false
 
   if args.state.h_pressed_at
-    args.outputs.labels << [460, row_to_px(args, 4), "\"h\" was pressed at time: #{args.state.h_pressed_at}", small_font]
+    args.outputs.labels << { x: 460, y: row_to_px(args, 4), text: "\"h\" was pressed at time: #{args.state.h_pressed_at}", size_enum: -1 }
   else
-    args.outputs.labels << [460, row_to_px(args, 4), "\"h\" has never been pressed.", small_font]
+    args.outputs.labels << { x: 460, y: row_to_px(args, 4), text: "\"h\" has never been pressed.", size_enum: -1 }
   end
 
   tick_help_text args
 end
 
-def small_font
-  # This method provides some values for the construction of labels
-  # Specifically, Size, Alignment, & RGBA
-  # This makes it so that custom parameters don't have to be repeatedly typed.
-  # Additionally "small_font" provides programmers with more information than some numbers
-  [-2, 0, 0, 0, 0, 255]
-end
-
-def row_to_px args, row_number
+def row_to_px args, row_number, y_offset = 20
   # This takes a row_number and converts it to pixels DragonRuby understands.
   # Row 0 starts 5 units below the top of the grid
   # Each row afterward is 20 units lower
-  args.grid.top.shift_down(5).shift_down(20 * row_number)
+  args.grid.top - 5 - (y_offset * row_number)
 end
 
 # Don't worry about understanding the code within this method just yet.
@@ -4652,17 +4732,17 @@ def tick_help_text args
     end
   end
 
-  args.outputs.labels << [10, row_to_px(args, 6), "Advanced Help:", small_font]
+  args.outputs.labels << { x: 10, y: row_to_px(args, 6), text: "This is the api for the keys you've pressed:", size_enum: -1, r: 180 }
 
   if !args.state.help_available
     args.outputs.labels << [10, row_to_px(args, 7),  "Press a key and I'll show code to access the key and what value will be returned if you used the code.", small_font]
     return
   end
 
-  args.outputs.labels << [10 , row_to_px(args, 7), "args.inputs.keyboard", small_font]
-  args.outputs.labels << [330, row_to_px(args, 7), "args.inputs.keyboard.key_down", small_font]
-  args.outputs.labels << [650, row_to_px(args, 7), "args.inputs.keyboard.key_held", small_font]
-  args.outputs.labels << [990, row_to_px(args, 7), "args.inputs.keyboard.key_up", small_font]
+  args.outputs.labels << { x: 10 , y: row_to_px(args, 7), text: "args.inputs.keyboard",          size_enum: -2 }
+  args.outputs.labels << { x: 330, y: row_to_px(args, 7), text: "args.inputs.keyboard.key_down", size_enum: -2 }
+  args.outputs.labels << { x: 650, y: row_to_px(args, 7), text: "args.inputs.keyboard.key_held", size_enum: -2 }
+  args.outputs.labels << { x: 990, y: row_to_px(args, 7), text: "args.inputs.keyboard.key_up",   size_enum: -2 }
 
   fill_history args, :key_value_history,      :down_or_held, nil
   fill_history args, :key_down_value_history, :down,        :key_down
@@ -4708,12 +4788,8 @@ def render_help_labels args, history_key, state_key, keyboard_method, x
     end
     idx += 2
     [
-      [x, row_to_px(args, idx - 2),
-       "    .#{k} is #{current_value || "nil"}",
-       small_font],
-      [x, row_to_px(args, idx - 1),
-       "       was #{v}",
-       small_font]
+      { x: x, y: row_to_px(args, idx + 0, 16), text: "    .#{k} is #{current_value || "nil"}", size_enum: -2 },
+      { x: x, y: row_to_px(args, idx + 1, 16), text: "       was #{v}", size_enum: -2 }
     ]
   end
 end
@@ -4728,10 +4804,46 @@ def tick_instructions args, text, y = 715
     args.state.key_event_occurred = true
   end
 
-  args.outputs.debug << [0, y - 50, 1280, 60].solid
-  args.outputs.debug << [640, y, text, 1, 1, 255, 255, 255].label
-  args.outputs.debug << [640, y - 25, "(click to dismiss instructions)" , -2, 1, 255, 255, 255].label
+  args.outputs.debug << { x: 0,   y: y - 50, w: 1280, h: 60 }.solid
+  args.outputs.debug << { x: 640, y: y,      text: text,
+                          size_enum: 1, alignment_enum: 1, r: 255, g: 255, b: 255 }.label
+  args.outputs.debug << { x: 640, y: y - 25, text: "(click to dismiss instructions)",
+                          size_enum: -2, alignment_enum: 1, r: 255, g: 255, b: 255 }.label
 end
+
+</code></pre>
+<h3 id='----input-basics---moving-a-sprite---main.rb'>Input Basics - Moving A Sprite - main.rb</h3>
+<pre><code class="language-ruby"># ./samples/02_input_basics/01_moving_a_sprite/app/main.rb
+def tick args
+  # create a player and set default values
+  # for the player's x, y, w (width), and h (height)
+  args.state.player.x ||= 100
+  args.state.player.y ||= 100
+  args.state.player.w ||=  50
+  args.state.player.h ||=  50
+
+  # render the player to the screen
+  args.outputs.sprites << { x: args.state.player.x,
+                            y: args.state.player.y,
+                            w: args.state.player.w,
+                            h: args.state.player.h,
+                            path: 'sprites/square/green.png' }
+
+  # move the player around using the keyboard
+  if args.inputs.up
+    args.state.player.y += 10
+  elsif args.inputs.down
+    args.state.player.y -= 10
+  end
+
+  if args.inputs.left
+    args.state.player.x -= 10
+  elsif args.inputs.right
+    args.state.player.x += 10
+  end
+end
+
+$gtk.reset
 
 </code></pre>
 <h3 id='----input-basics---mouse---main.rb'>Input Basics - Mouse - main.rb</h3>
@@ -4799,11 +4911,7 @@ def small_label args, x, row, message
   # This method effectively combines the row_to_px and small_font methods
   # It changes the given row value to a DragonRuby pixel value
   # and adds the customization parameters
-  [x, row_to_px(args, row), message, small_font]
-end
-
-def small_font
-  [-2, 0, 0, 0, 0, 255]
+  { x: x, y: row_to_px(args, row), text: message, alignment_enum: -2 }
 end
 
 def row_to_px args, row_number
@@ -4819,9 +4927,9 @@ def tick_instructions args, text, y = 715
     args.state.key_event_occurred = true
   end
 
-  args.outputs.debug << [0, y - 50, 1280, 60].solid
-  args.outputs.debug << [640, y, text, 1, 1, 255, 255, 255].label
-  args.outputs.debug << [640, y - 25, "(click to dismiss instructions)" , -2, 1, 255, 255, 255].label
+  args.outputs.debug << { x: 0,   y: y - 50, w: 1280, h: 60 }.solid
+  args.outputs.debug << { x: 640, y: y, text: text, size_enum: 1, alignment_enum: 1, r: 255, g: 255, b: 255 }.label
+  args.outputs.debug << { x: 640, y: y - 25, text: "(click to dismiss instructions)", size_enum: -2, alignment_enum: 1, r: 255, g: 255, b: 255 }.label
 end
 
 </code></pre>
@@ -4871,7 +4979,7 @@ def tick args
 
   args.outputs.labels << small_label(args, x, 15, "Click inside the blue box maybe ---->")
 
-  box = [785, 370, 50, 50, 0, 0, 170]
+  box = { x: 785, y: 370, w: 50, h: 50, r: 0, g: 0, b: 170 }
   args.outputs.borders << box
 
   # Saves the most recent click into args.state
@@ -4893,11 +5001,7 @@ def tick args
 end
 
 def small_label args, x, row, message
-  [x, row_to_px(args, row), message, small_font]
-end
-
-def small_font
-  [-2, 0, 0, 0, 0, 255]
+  { x: x, y: row_to_px(args, row), text: message, size_enum: -2 }
 end
 
 def row_to_px args, row_number
@@ -4913,9 +5017,9 @@ def tick_instructions args, text, y = 715
     args.state.key_event_occurred = true
   end
 
-  args.outputs.debug << [0, y - 50, 1280, 60].solid
-  args.outputs.debug << [640, y, text, 1, 1, 255, 255, 255].label
-  args.outputs.debug << [640, y - 25, "(click to dismiss instructions)" , -2, 1, 255, 255, 255].label
+  args.outputs.debug << { x: 0,   y: y - 50, w: 1280, h: 60 }.solid
+  args.outputs.debug << { x: 640, y: y, text: text, size_enum: 1, alignment_enum: 1, r: 255, g: 255, b: 255 }.label
+  args.outputs.debug << { x: 640, y: y - 25, text: "(click to dismiss instructions)", size_enum: -2, alignment_enum: 1, r: 255, g: 255, b: 255 }.label
 end
 
 </code></pre>
@@ -4965,9 +5069,15 @@ def tick args
   # They are stored in game so that they do not get reset every tick
   if args.inputs.mouse.click
     if !args.state.box_collision_one
-      args.state.box_collision_one = [args.inputs.mouse.click.point.x - 25, args.inputs.mouse.click.point.y - 25, 125, 125, 180, 0,   0, 180]
+      args.state.box_collision_one = { x: args.inputs.mouse.click.point.x - 25,
+                                       y: args.inputs.mouse.click.point.y - 25,
+                                       w: 125, h: 125,
+                                       r: 180, g: 0, b: 0, a: 180 }
     elsif !args.state.box_collision_two
-      args.state.box_collision_two = [args.inputs.mouse.click.point.x - 25, args.inputs.mouse.click.point.y - 25, 125, 125,   0, 0, 180, 180]
+      args.state.box_collision_two = { x: args.inputs.mouse.click.point.x - 25,
+                                       y: args.inputs.mouse.click.point.y - 25,
+                                       w: 125, h: 125,
+                                       r: 0, g: 0, b: 180, a: 180 }
     else
       args.state.box_collision_one = nil
       args.state.box_collision_two = nil
@@ -4994,15 +5104,11 @@ def tick args
 end
 
 def small_label args, x, row, message
-  [x, row_to_px(args, row), message, small_font]
-end
-
-def small_font
-  [-2, 0, 0, 0, 0, 255]
+  { x: x, y: row_to_px(args, row), text: message, size_enum: -2 }
 end
 
 def row_to_px args, row_number
-  args.grid.top.shift_down(5).shift_down(20 * row_number)
+  args.grid.top - 5 - (20 * row_number)
 end
 
 def tick_instructions args, text, y = 715
@@ -5066,57 +5172,51 @@ class ControllerDemo
   def process_inputs
     state.buttons = []
 
-    state.buttons << [100, 500, inputs.controller_one.key_held.l1, "L1"]
-    state.buttons << [100, 600, inputs.controller_one.key_held.l2, "L2"]
-
-    state.buttons << [1100, 500, inputs.controller_one.key_held.r1, "R1"]
-    state.buttons << [1100, 600, inputs.controller_one.key_held.r2, "R2"]
-
-    state.buttons << [540, 450, inputs.controller_one.key_held.select, "Select"]
-    state.buttons << [660, 450, inputs.controller_one.key_held.start, "Start"]
-
-    state.buttons << [200, 300, inputs.controller_one.key_held.left, "Left"]
-    state.buttons << [300, 400, inputs.controller_one.key_held.up, "Up"]
-    state.buttons << [400, 300, inputs.controller_one.key_held.right, "Right"]
-    state.buttons << [300, 200, inputs.controller_one.key_held.down, "Down"]
-
-    state.buttons << [800, 300, inputs.controller_one.key_held.x, "X"]
-    state.buttons << [900, 400, inputs.controller_one.key_held.y, "Y"]
-    state.buttons << [1000, 300, inputs.controller_one.key_held.a, "A"]
-    state.buttons << [900, 200, inputs.controller_one.key_held.b, "B"]
-
-    state.buttons << [450 + inputs.controller_one.left_analog_x_perc * 100,
-                      100 + inputs.controller_one.left_analog_y_perc * 100,
-                      inputs.controller_one.key_held.l3,
-                      "L3"]
-
-    state.buttons << [750 + inputs.controller_one.right_analog_x_perc * 100,
-                      100 + inputs.controller_one.right_analog_y_perc * 100,
-                      inputs.controller_one.key_held.r3,
-                      "R3"]
+    state.buttons << { x: 100,  y: 500, active: inputs.controller_one.key_held.l1, text: "L1"}
+    state.buttons << { x: 100,  y: 600, active: inputs.controller_one.key_held.l2, text: "L2"}
+    state.buttons << { x: 1100, y: 500, active: inputs.controller_one.key_held.r1, text: "R1"}
+    state.buttons << { x: 1100, y: 600, active: inputs.controller_one.key_held.r2, text: "R2"}
+    state.buttons << { x: 540,  y: 450, active: inputs.controller_one.key_held.select, text: "Select"}
+    state.buttons << { x: 660,  y: 450, active: inputs.controller_one.key_held.start, text: "Start"}
+    state.buttons << { x: 200,  y: 300, active: inputs.controller_one.key_held.left, text: "Left"}
+    state.buttons << { x: 300,  y: 400, active: inputs.controller_one.key_held.up, text: "Up"}
+    state.buttons << { x: 400,  y: 300, active: inputs.controller_one.key_held.right, text: "Right"}
+    state.buttons << { x: 300,  y: 200, active: inputs.controller_one.key_held.down, text: "Down"}
+    state.buttons << { x: 800,  y: 300, active: inputs.controller_one.key_held.x, text: "X"}
+    state.buttons << { x: 900,  y: 400, active: inputs.controller_one.key_held.y, text: "Y"}
+    state.buttons << { x: 1000, y: 300, active: inputs.controller_one.key_held.a, text: "A"}
+    state.buttons << { x: 900,  y: 200, active: inputs.controller_one.key_held.b, text: "B"}
+    state.buttons << { x: 450 + inputs.controller_one.left_analog_x_perc * 100,
+                       y: 100 + inputs.controller_one.left_analog_y_perc * 100,
+                       active: inputs.controller_one.key_held.l3,
+                       text: "L3" }
+    state.buttons << { x: 750 + inputs.controller_one.right_analog_x_perc * 100,
+                       y: 100 + inputs.controller_one.right_analog_y_perc * 100,
+                       active: inputs.controller_one.key_held.r3,
+                       text: "R3" }
   end
 
   # Gives each button a square shape.
   # If the button is being pressed or held (which means it is considered active),
   # the square is filled in. Otherwise, the button simply has a border.
   def render
-    state.buttons.each do |x, y, active, text|
-      rect = [x, y, 75, 75]
+    state.buttons.each do |b|
+      rect = { x: b.x, y: b.y, w: 75, h: 75 }
 
-      if active # if button is pressed
+      if b.active # if button is pressed
         outputs.solids << rect # rect is output as solid (filled in)
       else
         outputs.borders << rect # otherwise, output as border
       end
 
       # Outputs the text of each button using labels.
-      outputs.labels << [x, y + 95, text] # add 95 to place label above button
+      outputs.labels << { x: b.x, y: b.y + 95, text: b.text } # add 95 to place label above button
     end
 
-    outputs.labels << [10, 60, "Left Analog x: #{inputs.controller_one.left_analog_x_raw} (#{inputs.controller_one.left_analog_x_perc * 100}%)"]
-    outputs.labels << [10, 30, "Left Analog y: #{inputs.controller_one.left_analog_y_raw} (#{inputs.controller_one.left_analog_y_perc * 100}%)"]
-    outputs.labels << [900, 60, "Right Analog x: #{inputs.controller_one.right_analog_x_raw} (#{inputs.controller_one.right_analog_x_perc * 100}%)"]
-    outputs.labels << [900, 30, "Right Analog y: #{inputs.controller_one.right_analog_y_raw} (#{inputs.controller_one.right_analog_y_perc * 100}%)"]
+    outputs.labels << { x:  10, y: 60, text: "Left Analog x: #{inputs.controller_one.left_analog_x_raw} (#{inputs.controller_one.left_analog_x_perc * 100}%)" }
+    outputs.labels << { x:  10, y: 30, text: "Left Analog y: #{inputs.controller_one.left_analog_y_raw} (#{inputs.controller_one.left_analog_y_perc * 100}%)" }
+    outputs.labels << { x: 900, y: 60, text: "Right Analog x: #{inputs.controller_one.right_analog_x_raw} (#{inputs.controller_one.right_analog_x_perc * 100}%)" }
+    outputs.labels << { x: 900, y: 30, text: "Right Analog y: #{inputs.controller_one.right_analog_y_raw} (#{inputs.controller_one.right_analog_y_perc * 100}%)" }
   end
 end
 
@@ -5165,10 +5265,12 @@ def tick args
   #  the next new touch will be finger_one again, but until then, new touches
   #  don't fill in earlier slots.
   if !args.inputs.finger_one.nil?
-    args.outputs.primitives << [640, 650, "Finger #1 is touching at (#{args.inputs.finger_one.x}, #{args.inputs.finger_one.y}).", 5, 1, 255, 255, 255].label
+    args.outputs.primitives << { x: 640, y: 650, text: "Finger #1 is touching at (#{args.inputs.finger_one.x}, #{args.inputs.finger_one.y}).",
+                                 size_enum: 5, alignment_enum: 1, r: 255, g: 255, b: 255 }.label
   end
   if !args.inputs.finger_two.nil?
-    args.outputs.primitives << [640, 600, "Finger #2 is touching at (#{args.inputs.finger_two.x}, #{args.inputs.finger_two.y}).", 5, 1, 255, 255, 255].label
+    args.outputs.primitives << { x: 640, y: 600, text: "Finger #2 is touching at (#{args.inputs.finger_two.x}, #{args.inputs.finger_two.y}).",
+                                 size_enum: 5, alignment_enum: 1, r: 255, g: 255, b: 255 }.label
   end
 
   # Here's the more flexible interface: this will report as many simultaneous
@@ -5189,11 +5291,10 @@ def tick args
     r = (color & 0xFF0000) >> 16
     g = (color & 0x00FF00) >> 8
     b = (color & 0x0000FF)
-    args.outputs.primitives << [v.x - (size / 2), v.y + (size / 2), size, size, r, g, b, 255].solid
-    args.outputs.primitives << [v.x, v.y + size, k.to_s, 0, 1, 0, 0, 0].label
+    args.outputs.primitives << { x: v.x - (size / 2), y: v.y + (size / 2), w: size, h: size, r: r, g: g, b: b, a: 255 }.solid
+    args.outputs.primitives << { x: v.x, y: v.y + size, text: k.to_s, alignment_enum: 1 }.label
   }
 end
-
 
 </code></pre>
 <h3 id='----rendering-sprites---animation-using-separate-pngs---main.rb'>Rendering Sprites - Animation Using Separate Pngs - main.rb</h3>
@@ -5231,6 +5332,8 @@ end
 # in this tick "entry point": `looping_animation`, and the
 # second method is `one_time_animation`.
 def tick args
+  # uncomment the line below to see animation play out in slow motion
+  # args.gtk.slowmo! 6
   looping_animation args
   one_time_animation args
 end
@@ -5263,22 +5366,22 @@ def looping_animation args
                                               does_sprite_loop
 
   # Now that we have `sprite_index, we can present the correct file.
-  args.outputs.sprites << [100, 100, 100, 100, "sprites/dragon_fly_#{sprite_index}.png"]
+  args.outputs.sprites << { x: 100, y: 100, w: 100, h: 100, path: "sprites/dragon_fly_#{sprite_index}.png" }
 
   # Try changing the numbers below to see how the animation changes:
-  args.outputs.sprites << [100, 200, 100, 100, "sprites/dragon_fly_#{0.frame_index 6, 4, true}.png"]
+  args.outputs.sprites << { x: 100, y: 200, w: 100, h: 100, path: "sprites/dragon_fly_#{0.frame_index 6, 4, true}.png" }
 end
 
 # This function shows how to animate a sprite that executes
 # only once when the "f" key is pressed.
 def one_time_animation args
   # This is just a label the shows instructions within the game.
-  args.outputs.labels << [220, 350, "(press f to animate)"]
+  args.outputs.labels <<  { x: 220, y: 350, text: "(press f to animate)" }
 
   # If "f" is pressed on the keyboard...
   if args.inputs.keyboard.key_down.f
     # Print the frame that "f" was pressed on.
-    puts "Hello from main.rb! The \"f\" key was in the down state on frame: #{args.inputs.keyboard.key_down.f}"
+    puts "Hello from main.rb! The \"f\" key was in the down state on frame: #{args.state.tick_count}"
 
     # And MOST IMPORTANTLY set the point it time to start the animation,
     # equal to "now" which is represented as args.state.tick_count.
@@ -5311,7 +5414,7 @@ def one_time_animation args
   sprite_index ||= 0
 
   # Present the sprite.
-  args.outputs.sprites << [100, 300, 100, 100, "sprites/dragon_fly_#{sprite_index}.png"]
+  args.outputs.sprites << { x: 100, y: 300, w: 100, h: 100, path: "sprites/dragon_fly_#{sprite_index}.png" }
 
   tick_instructions args, "Sample app shows how to use Numeric#frame_index and string interpolation to animate a sprite over time."
 end
@@ -12573,8 +12676,105 @@ end
 
 
 </code></pre>
+<h3 id='----advanced-rendering---simple-camera---main.rb'>Advanced Rendering - Simple Camera - main.rb</h3>
+<pre><code class="language-ruby"># ./samples/07_advanced_rendering/07_simple_camera/app/main.rb
+def tick args
+  # variables you can play around with
+  args.state.world.w      ||= 1280
+  args.state.world.h      ||= 720
+
+  args.state.player.x     ||= 0
+  args.state.player.y     ||= 0
+  args.state.player.size  ||= 32
+
+  args.state.enemy.x      ||= 700
+  args.state.enemy.y      ||= 700
+  args.state.enemy.size   ||= 16
+
+  args.state.camera.x                ||= 640
+  args.state.camera.y                ||= 300
+  args.state.camera.scale            ||= 1.0
+  args.state.camera.show_empty_space ||= :yes
+
+  # instructions
+  args.outputs.primitives << { x: 0, y:  80.from_top, w: 360, h: 80, r: 0, g: 0, b: 0, a: 128 }.solid
+  args.outputs.primitives << { x: 10, y: 10.from_top, text: "arrow keys to move around", r: 255, g: 255, b: 255}.label
+  args.outputs.primitives << { x: 10, y: 30.from_top, text: "+/- to change zoom of camera", r: 255, g: 255, b: 255}.label
+  args.outputs.primitives << { x: 10, y: 50.from_top, text: "tab to change camera edge behavior", r: 255, g: 255, b: 255}.label
+
+  # render scene
+  args.outputs[:scene].w = args.state.world.w
+  args.outputs[:scene].h = args.state.world.h
+
+  args.outputs[:scene].solids << { x: 0, y: 0, w: args.state.world.w, h: args.state.world.h, r: 20, g: 60, b: 80 }
+  args.outputs[:scene].solids << { x: args.state.player.x, y: args.state.player.y,
+                                   w: args.state.player.size, h: args.state.player.size, r: 80, g: 155, b: 80 }
+  args.outputs[:scene].solids << { x: args.state.enemy.x, y: args.state.enemy.y,
+                                   w: args.state.enemy.size, h: args.state.enemy.size, r: 155, g: 80, b: 80 }
+
+  # render camera
+  scene_position = calc_scene_position args
+  args.outputs.sprites << { x: scene_position.x,
+                            y: scene_position.y,
+                            w: scene_position.w,
+                            h: scene_position.h,
+                            path: :scene }
+
+  # move player
+  if args.inputs.directional_angle
+    args.state.player.x += args.inputs.directional_angle.vector_x * 5
+    args.state.player.y += args.inputs.directional_angle.vector_y * 5
+    args.state.player.x  = args.state.player.x.clamp(0, args.state.world.w - args.state.player.size)
+    args.state.player.y  = args.state.player.y.clamp(0, args.state.world.h - args.state.player.size)
+  end
+
+  # +/- to zoom in and out
+  if args.inputs.keyboard.plus && args.state.tick_count.zmod?(3)
+    args.state.camera.scale += 0.05
+  elsif args.inputs.keyboard.hyphen && args.state.tick_count.zmod?(3)
+    args.state.camera.scale -= 0.05
+  elsif args.inputs.keyboard.key_down.tab
+    if args.state.camera.show_empty_space == :yes
+      args.state.camera.show_empty_space = :no
+    else
+      args.state.camera.show_empty_space = :yes
+    end
+  end
+
+  args.state.camera.scale = args.state.camera.scale.greater(0.1)
+end
+
+def calc_scene_position args
+  result = { x: args.state.camera.x - (args.state.player.x * args.state.camera.scale),
+             y: args.state.camera.y - (args.state.player.y * args.state.camera.scale),
+             w: args.state.world.w * args.state.camera.scale,
+             h: args.state.world.h * args.state.camera.scale,
+             scale: args.state.camera.scale }
+
+  return result if args.state.camera.show_empty_space == :yes
+
+  if result.w < args.grid.w
+    result.merge!(x: (args.grid.w - result.w).half)
+  elsif (args.state.player.x * result.scale) < args.grid.w.half
+    result.merge!(x: 10)
+  elsif (result.x + result.w) < args.grid.w
+    result.merge!(x: - result.w + (args.grid.w - 10))
+  end
+
+  if result.h < args.grid.h
+    result.merge!(y: (args.grid.h - result.h).half)
+  elsif (result.y) > 10
+    result.merge!(y: 10)
+  elsif (result.y + result.h) < args.grid.h
+    result.merge!(y: - result.h + (args.grid.h - 10))
+  end
+
+  result
+end
+
+</code></pre>
 <h3 id='----advanced-rendering---splitscreen-camera---main.rb'>Advanced Rendering - Splitscreen Camera - main.rb</h3>
-<pre><code class="language-ruby"># ./samples/07_advanced_rendering/07_splitscreen_camera/app/main.rb
+<pre><code class="language-ruby"># ./samples/07_advanced_rendering/08_splitscreen_camera/app/main.rb
 class CameraMovement
   attr_accessor :state, :inputs, :outputs, :grid
 
@@ -12973,7 +13173,7 @@ end
 
 </code></pre>
 <h3 id='----advanced-rendering---z-targeting-camera---main.rb'>Advanced Rendering - Z Targeting Camera - main.rb</h3>
-<pre><code class="language-ruby"># ./samples/07_advanced_rendering/08_z_targeting_camera/app/main.rb
+<pre><code class="language-ruby"># ./samples/07_advanced_rendering/09_z_targeting_camera/app/main.rb
 class Game
   attr_gtk
 
@@ -14559,6 +14759,140 @@ end
 
 $gtk.reset 100
 $gtk.log_level = :off
+
+</code></pre>
+<h3 id='----advanced-debugging---unit-tests---pretty_format_tests.rb'>Advanced Debugging - Unit Tests - pretty_format_tests.rb</h3>
+<pre><code class="language-ruby"># ./samples/10_advanced_debugging/03_unit_tests/pretty_format_tests.rb
+def H opts
+  opts
+end
+
+def A *opts
+  opts
+end
+
+def assert_format args, assert, hash, expected
+  actual = args.fn.pretty_format hash
+  assert.are_equal! actual, expected
+end
+
+def test_pretty_print args, assert
+  # =============================
+  # hash with single value
+  # =============================
+  input = (H first_name: "John")
+  expected = <<-S
+{:first_name "John"}
+S
+  (assert_format args, assert, input, expected)
+
+  # =============================
+  # hash with two values
+  # =============================
+  input = (H first_name: "John", last_name: "Smith")
+  expected = <<-S
+{:first_name "John"
+ :last_name "Smith"}
+S
+
+  (assert_format args, assert, input, expected)
+
+  # =============================
+  # hash with inner hash
+  # =============================
+  input = (H first_name: "John",
+             last_name: "Smith",
+             middle_initial: "I",
+             so: (H first_name: "Pocahontas",
+                    last_name: "Tsenacommacah"),
+             friends: (A (H first_name: "Side", last_name: "Kick"),
+                         (H first_name: "Tim", last_name: "Wizard")))
+  expected = <<-S
+{:first_name "John"
+ :last_name "Smith"
+ :middle_initial "I"
+ :so {:first_name "Pocahontas"
+      :last_name "Tsenacommacah"}
+ :friends [{:first_name "Side"
+            :last_name "Kick"}
+           {:first_name "Tim"
+            :last_name "Wizard"}]}
+S
+
+  (assert_format args, assert, input, expected)
+
+  # =============================
+  # array with one value
+  # =============================
+  input = (A 1)
+  expected = <<-S
+[1]
+S
+  (assert_format args, assert, input, expected)
+
+  # =============================
+  # array with multiple values
+  # =============================
+  input = (A 1, 2, 3)
+  expected = <<-S
+[1
+ 2
+ 3]
+S
+  (assert_format args, assert, input, expected)
+
+  # =============================
+  # array with multiple values hashes
+  # =============================
+  input = (A (H first_name: "Side", last_name: "Kick"),
+             (H first_name: "Tim", last_name: "Wizard"))
+  expected = <<-S
+[{:first_name "Side"
+  :last_name "Kick"}
+ {:first_name "Tim"
+  :last_name "Wizard"}]
+S
+
+  (assert_format args, assert, input, expected)
+end
+
+def test_nested_nested args, assert
+  # =============================
+  # nested array in nested hash
+  # =============================
+  input = (H type: :root,
+             text: "Root",
+             children: (A (H level: 1,
+                             text: "Level 1",
+                             children: (A (H level: 2,
+                                             text: "Level 2",
+                                             children: [])))))
+
+  expected = <<-S
+{:type :root
+ :text "Root"
+ :children [{:level 1
+             :text "Level 1"
+             :children [{:level 2
+                         :text "Level 2"
+                         :children []}]}]}
+
+S
+
+  (assert_format args, assert, input, expected)
+end
+
+def test_scene args, assert
+  script = <<-S
+* Scene 1
+** Narrator
+They say happy endings don't exist.
+** Narrator
+They say true love is a lie.
+S
+  input = parse_org args, script
+  puts (args.fn.pretty_format input)
+end
 
 </code></pre>
 <h3 id='----advanced-debugging---unit-tests---require_tests.rb'>Advanced Debugging - Unit Tests - require_tests.rb</h3>
@@ -25011,6 +25345,223 @@ def tick_instructions args, text, y = 715
 end
 
 </code></pre>
+<h3 id='----dungeon-crawl---classics-jam---main.rb'>Dungeon Crawl - Classics Jam - main.rb</h3>
+<pre><code class="language-ruby"># ./samples/99_genre_dungeon_crawl/classics_jam/app/main.rb
+class Game
+  attr_gtk
+
+  def tick
+    defaults
+    render
+    input
+    calc
+  end
+
+  def defaults
+    player.x              ||= 640
+    player.y              ||= 360
+    player.w              ||= 16
+    player.h              ||= 16
+    player.attacked_at    ||= -1
+    player.angle          ||= 0
+    player.future_player  ||= future_player_position 0, 0
+    player.projectiles    ||= []
+    player.damage         ||= 0
+    state.level           ||= create_level level_one_template
+  end
+
+  def render
+    outputs.sprites << level.walls.map do |w|
+      w.merge(path: 'sprites/square/gray.png')
+    end
+
+    outputs.sprites << level.spawn_locations.map do |s|
+      s.merge(path: 'sprites/square/blue.png')
+    end
+
+    outputs.sprites << player.projectiles.map do |p|
+      p.merge(path: 'sprites/square/blue.png')
+    end
+
+    outputs.sprites << level.enemies.map do |e|
+      e.merge(path: 'sprites/square/red.png')
+    end
+
+    outputs.sprites << player.merge(path: 'sprites/circle/green.png', angle: player.angle)
+
+    outputs.labels << { x: 30, y: 30.from_top, text: "damage: #{player.damage || 0}" }
+  end
+
+  def input
+    player.angle = inputs.directional_angle || player.angle
+    if inputs.controller_one.key_down.a || inputs.keyboard.key_down.space
+      player.attacked_at = state.tick_count
+    end
+  end
+
+  def calc
+    calc_player
+    calc_projectiles
+    calc_enemies
+    calc_spawn_locations
+  end
+
+  def calc_player
+    if player.attacked_at == state.tick_count
+      player.projectiles << { at: state.tick_count,
+                              x: player.x,
+                              y: player.y,
+                              angle: player.angle,
+                              w: 4,
+                              h: 4 }.center_inside_rect(player)
+    end
+
+    if player.attacked_at.elapsed_time > 5
+      future_player = future_player_position inputs.left_right * 2, inputs.up_down * 2
+      future_player_collision = future_collision player, future_player, level.walls
+      player.x = future_player_collision.x if !future_player_collision.dx_collision
+      player.y = future_player_collision.y if !future_player_collision.dy_collision
+    end
+  end
+
+  def calc_projectile_collisions entities
+    entities.each do |e|
+      e.damage ||= 0
+      player.projectiles.each do |p|
+        if !p.collided && (p.intersect_rect? e)
+          p.collided = true
+          e.damage  += 1
+        end
+      end
+    end
+  end
+
+  def calc_projectiles
+    player.projectiles.map! do |p|
+      dx, dy = p.angle.vector 10
+      p.merge(x: p.x + dx, y: p.y + dy)
+    end
+
+    calc_projectile_collisions level.walls + level.enemies + level.spawn_locations
+    player.projectiles.reject! { |p| p.at.elapsed_time > 10000 }
+    player.projectiles.reject! { |p| p.collided }
+    level.enemies.reject! { |e| e.damage > e.hp }
+    level.spawn_locations.reject! { |s| s.damage > s.hp }
+  end
+
+  def calc_enemies
+    level.enemies.map! do |e|
+      dx =  0
+      dx =  1 if e.x < player.x
+      dx = -1 if e.x > player.x
+      dy =  0
+      dy =  1 if e.y < player.y
+      dy = -1 if e.y > player.y
+      future_e           = future_entity_position dx, dy, e
+      future_e_collision = future_collision e, future_e, level.enemies + level.walls
+      e.next_x = e.x
+      e.next_y = e.y
+      e.next_x = future_e_collision.x if !future_e_collision.dx_collision
+      e.next_y = future_e_collision.y if !future_e_collision.dy_collision
+      e
+    end
+
+    level.enemies.map! do |e|
+      e.x = e.next_x
+      e.y = e.next_y
+      e
+    end
+
+    level.enemies.each do |e|
+      player.damage += 1 if e.intersect_rect? player
+    end
+  end
+
+  def calc_spawn_locations
+    level.spawn_locations.map! do |s|
+      s.merge(countdown: s.countdown - 1)
+    end
+    level.spawn_locations
+         .find_all { |s| s.countdown.neg? }
+         .each do |s|
+      s.countdown = s.rate
+      s.merge(countdown: s.rate)
+      new_enemy = create_enemy s
+      if !(level.enemies.find { |e| e.intersect_rect? new_enemy })
+        level.enemies << new_enemy
+      end
+    end
+  end
+
+  def create_enemy spawn_location
+    to_cell(spawn_location.ordinal_x, spawn_location.ordinal_y).merge hp: 2
+  end
+
+  def create_level level_template
+    {
+      walls:           level_template.walls.map { |w| to_cell(w.ordinal_x, w.ordinal_y).merge(w) },
+      enemies:         [],
+      spawn_locations: level_template.spawn_locations.map { |s| to_cell(s.ordinal_x, s.ordinal_y).merge(s) }
+    }
+  end
+
+  def level_one_template
+    {
+      walls:           [{ ordinal_x: 25, ordinal_y: 20},
+                        { ordinal_x: 25, ordinal_y: 21},
+                        { ordinal_x: 25, ordinal_y: 22},
+                        { ordinal_x: 25, ordinal_y: 23}],
+      spawn_locations: [{ ordinal_x: 10, ordinal_y: 10, rate: 120, countdown: 0, hp: 5 }]
+    }
+  end
+
+  def player
+    state.player ||= {}
+  end
+
+  def level
+    state.level  ||= {}
+  end
+
+  def future_collision entity, future_entity, others
+    dx_collision = others.find { |o| o != entity && (o.intersect_rect? future_entity.dx) }
+    dy_collision = others.find { |o| o != entity && (o.intersect_rect? future_entity.dy) }
+
+    {
+      dx_collision: dx_collision,
+      x: future_entity.dx.x,
+      dy_collision: dy_collision,
+      y: future_entity.dy.y
+    }
+  end
+
+  def future_entity_position dx, dy, entity
+    {
+      dx:   entity.merge(x: entity.x + dx),
+      dy:   entity.merge(y: entity.y + dy),
+      both: entity.merge(x: entity.x + dx, y: entity.y + dy)
+    }
+  end
+
+  def future_player_position  dx, dy
+    future_entity_position dx, dy, player
+  end
+
+  def to_cell ordinal_x, ordinal_y
+    { x: ordinal_x * 16, y: ordinal_y * 16, w: 16, h: 16 }
+  end
+end
+
+def tick args
+  $game ||= Game.new
+  $game.args = args
+  $game.tick
+end
+
+$gtk.reset
+$game = nil
+
+</code></pre>
 <h3 id='----lowrez---nokia-3310---main.rb'>Lowrez - Nokia 3310 - main.rb</h3>
 <pre><code class="language-ruby"># ./samples/99_genre_lowrez/nokia_3310/app/main.rb
 require 'app/nokia.rb'
@@ -35115,58 +35666,21 @@ module GTK
   class Args
     include ArgsDeprecated
     include Serialize
-
-    # Contains information related to input devices and input events.
-    #
-    # @return [Inputs]
     attr_accessor :inputs
-
-    # Contains the means to interact with output devices such as the screen.
-    #
-    # @return [Outputs]
     attr_accessor :outputs
-
-    # Contains the means to interact with the audio mixer.
-    #
-    # @return [Hash]
     attr_accessor :audio
-
-    # Contains display size information to assist in positioning things on the screen.
-    #
-    # @return [Grid]
     attr_accessor :grid
-
-    # Provides access to game play recording facilities within Game Toolkit.
-    #
-    # @return [Recording]
     attr_accessor :recording
-
-    # Gives you access to geometry related functions.
-    #
-    # @return [Geometry]
     attr_accessor :geometry
-
     attr_accessor :fn
-
-    # This is where you'll put state associated with your video game.
-    #
-    # @return [OpenEntity]
     attr_accessor :state
-
-    # Gives you access to the top level DragonRuby runtime.
-    #
-    # @return [Runtime]
+    attr_accessor :temp_state
     attr_accessor :runtime
     alias_method :gtk, :runtime
-
     attr_accessor :passes
-
     attr_accessor :wizards
-
     attr_accessor :layout
-
     attr_accessor :easing
-
     attr_accessor :string
 
     def initialize runtime, recording
@@ -35175,6 +35689,7 @@ module GTK
       @audio = {}
       @passes = []
       @state = OpenEntity.new
+      @temp_state = OpenEntity.new
       @state.tick_count = -1
       @runtime = runtime
       @recording = recording
@@ -35204,11 +35719,12 @@ module GTK
 
     def serialize
       {
-        state: state.as_hash,
-        inputs: inputs.serialize,
-        passes: passes.serialize,
-        outputs: outputs.serialize,
-        grid: grid.serialize
+        state:      state.as_hash,
+        temp_state: temp_state.as_hash,
+        inputs:     inputs.serialize,
+        passes:     passes.serialize,
+        outputs:    outputs.serialize,
+        grid:       grid.serialize
       }
     end
 
@@ -35446,7 +35962,7 @@ end
       @assertion_performed = true
       if actual != expected
         actual_string = "#{actual}#{actual.nil? ? " (nil) " : " " }".strip
-        message = "actual:\n#{actual_string}\n\ndid not equal\n\nexpected:\n#{expected}.\n#{message}"
+        message = "actual:\n#{actual_string}\n\ndid not equal\n\nexpected:\n#{expected}\n#{message}"
         raise message
       end
       nil
@@ -35456,7 +35972,7 @@ end
       @assertion_performed = true
       if actual == expected
         actual_string = "#{actual}#{actual.nil? ? " (nil) " : " " }".strip
-        message = "actual:\n#{actual_string}\n\nequaled\n\nexpected:\n#{expected}.\n#{message}"
+        message = "actual:\n#{actual_string}\n\nequaled\n\nexpected:\n#{expected}\n#{message}"
         raise message
       end
       nil
@@ -35509,6 +36025,10 @@ module AttrGTK
     args.state
   end
 
+  def temp_state
+    args.temp_state
+  end
+
   def inputs
     args.inputs
   end
@@ -35535,6 +36055,14 @@ module AttrGTK
 
   def layout
     args.layout
+  end
+
+  def new_entity entity_type, init_hash = nil, &block
+    args.state.new_entity entity_type, init_hash, &block
+  end
+
+  def new_entity_strict entity_type, init_hash = nil, &block
+    args.state.new_entity_strict entity_type, init_hash, &block
   end
 end
 
@@ -35643,6 +36171,7 @@ module GTK
       @text_color = Color.new [255, 255, 255]
       @error_color = Color.new [200, 50, 50]
       @header_color = Color.new [100, 200, 220]
+      @code_color = Color.new [210, 168, 255]
       @animation_duration = 1.seconds
       @shown_at = -1
       load_history
@@ -36158,6 +36687,10 @@ S
       end
 
       render_log_offset args
+
+      args.outputs.reserved << { x: 10.from_right, y: @bottom + 10, text: "Press CTRL+g to clear the prompt.",
+                                 vertical_alignment_enum: 0,
+                                 alignment_enum: 2, r: 80, g: 80, b: 80 }.label
     end
 
     def render_log_offset args
@@ -36180,7 +36713,7 @@ S
     end
 
     def include_subdued_markers? text
-      include_any_words? text, subdued_markers
+      (text.start_with? "* INFO: ") && (include_any_words? text, subdued_markers)
     end
 
     def include_any_words? text, words
@@ -36326,8 +36859,25 @@ S
       (log_entry.start_with? "**** ")
     end
 
+    def code? log_entry
+      (just_symbol? log_entry) || (codeblock_marker? log_entry)
+    end
+
+    def just_symbol? log_entry
+      scrubbed = log_entry.gsub("*", "").strip
+      (scrubbed.start_with? ":") && (!scrubbed.include? " ") && (!scrubbed.include? "=>")
+    end
+
+    def codeblock_marker? log_entry
+      return true if log_entry.strip.start_with?("#+begin_src")
+      return true if log_entry.strip.start_with?("#+end_src")
+      return false
+    end
+
     def color_for_log_entry(log_entry)
-      if include_row_marker? log_entry
+      if code? log_entry
+        @code_color
+      elsif include_row_marker? log_entry
         @text_color
       elsif include_error_marker? log_entry
         @error_color
@@ -36507,7 +37057,7 @@ module GTK
 
       def itch_wizard_clicked
         @console.scroll_to_bottom
-        $wizards.itch.start
+        $wizards.itch.restart
       end
 
       def docs_clicked
@@ -37550,6 +38100,12 @@ S
       end
     end
 
+    def directional_angle
+      return nil unless directional_vector
+
+      Math.atan2(up_down, left_right).to_degrees
+    end
+
     def method_missing m, *args
       # combine the key with ctrl_
       if m.to_s.start_with?("ctrl_")
@@ -37776,6 +38332,22 @@ end
 
 module GTK
   module Geometry
+    def self.rotate_point point, angle, around = nil
+      s = Math.sin a.to_radians
+      c = Math.cos a.to_radians
+      px = point.x
+      py = point.y
+      cx = 0
+      cy = 0
+      if around
+        cx = around.x
+        cy = around.y
+      end
+
+      point.merge(x: ((px - cx) * c - (py - cy) * s) + cx,
+                  y: ((px - cx) * s + (py - cy) * c) + cy)
+    end
+
     # Returns f(t) for a cubic Bezier curve.
     def self.cubic_bezier t, a, b, c, d
       s  = 1 - t
@@ -38036,10 +38608,10 @@ S
 
     # @gtk
     def self.intersect_rect? rect_one, rect_two, tolerance = 0.1
-      return false if rect_one.right - tolerance < rect_two.left + tolerance
-      return false if rect_one.left + tolerance > rect_two.right - tolerance
-      return false if rect_one.top - tolerance < rect_two.bottom + tolerance
-      return false if rect_one.bottom + tolerance > rect_two.top - tolerance
+      return false if ((rect_one.x + rect_one.w) - tolerance) < (rect_two.x + tolerance)
+      return false if (rect_one.x + tolerance) > ((rect_two.x + rect_two.w) - tolerance)
+      return false if ((rect_one.y + rect_one.h) - tolerance) < (rect_two.y + tolerance)
+      return false if (rect_one.y + tolerance) > ((rect_two.y + rect_two.h) - tolerance)
       return true
     rescue Exception => e
       context_help_rect_one = (rect_one.__help_contract_implementation contract_intersect_rect?)[:not_implemented_methods]
@@ -38112,10 +38684,12 @@ S
 
     # @gtk
     def self.inside_rect? inner_rect, outer_rect, tolerance = 0.0
+      return nil if !inner_rect
+      return nil if !outer_rect
       inner_rect.x     + tolerance >= outer_rect.x     - tolerance &&
-      inner_rect.right - tolerance <= outer_rect.right + tolerance &&
+      (inner_rect.x + inner_rect.w) - tolerance <= (outer_rect.x + outer_rect.w) + tolerance &&
       inner_rect.y     + tolerance >= outer_rect.y     - tolerance &&
-      inner_rect.top   - tolerance <= outer_rect.top   + tolerance
+      (inner_rect.y + inner_rect.h) - tolerance <= (outer_rect.y + outer_rect.h) + tolerance
     rescue Exception => e
       raise e, ":inside_rect? failed for inner_rect: #{inner_rect} outer_rect: #{outer_rect}."
     end
@@ -38560,6 +39134,30 @@ module GTK
       }
     end
 
+    def self.method_to_key_hash
+      return @method_to_key_hash if @method_to_key_hash
+      @method_to_key_hash = {}
+      string_representation_overrides ||= {
+        backspace: '\b'
+      }
+      char_to_method_hash.each do |k, v|
+        v.each do |vi|
+          t = { char_or_raw_key: k }
+
+          if k.is_a? Numeric
+            t[:raw_key] = k
+            t[:string_representation] = "raw_key == #{k}"
+          else
+            t[:char] = k
+            t[:string_representation] = "\"#{k.strip}\""
+          end
+
+          @method_to_key_hash[vi] = t
+        end
+      end
+      @method_to_key_hash
+    end
+
     def self.char_to_method char, int = nil
       methods = char_to_method_hash[char] || char_to_method_hash[int]
       methods ? methods.dup : [char.to_sym || int]
@@ -38674,24 +39272,32 @@ S
     end
 
     def method_missing m, *args
-      begin
-        define_singleton_method(m) do
-          r = self.instance_variable_get("@#{m.without_ending_bang}".to_sym)
-          clear_key m
-          return r
-        end
+      if KeyboardKeys.method_to_key_hash[m.without_ending_bang]
+        begin
+          define_singleton_method(m) do
+            r = self.instance_variable_get("@#{m.without_ending_bang}".to_sym)
+            clear_key m
+            return r
+          end
 
-        return self.send m
-      rescue Exception => e
-        log_important "#{e}"
+          return self.send m
+        rescue Exception => e
+          log_important "#{e}"
+        end
       end
+
+      did_you_mean = KeyboardKeys.method_to_key_hash.find_all do |k, v|
+        k.to_s[0..1] == m.to_s[0..1]
+      end.map {|k, v| ":#{k} (#{v[:string_representation]})" }
+      did_you_mean_string = ""
+      did_you_mean_string = ". Did you mean #{did_you_mean.join ", "}?"
 
       raise <<-S
 * ERROR:
-There is no member on the keyboard called #{m}. Here is a to_s representation of what's available:
+#{KeyboardKeys.method_to_key_hash.map { |k, v| "** :#{k} #{v.string_representation}" }.join("\n")}
 
-#{KeyboardKeys.char_to_method_hash.map { |k, v| "[#{k} => #{v.join(",")}]" }.join("  ")}
-
+There is no key on the keyboard called :#{m}#{did_you_mean_string}.
+Full list of available keys =:points_up:=.
 S
     end
 
@@ -39075,6 +39681,10 @@ module GTK
         (controller_one && controller_one.directional_vector)
     end
 
+    def directional_angle
+      keyboard.directional_angle || (controller_one && controller_one.directional_angle)
+    end
+
     # Returns a signal indicating right (`1`), left (`-1`), or neither ('0').
     #
     # @return [Integer]
@@ -39148,15 +39758,7 @@ end
 # MIT License
 # ios_wizard.rb has been released under MIT (*only this file*).
 
-class WizardException < Exception
-  attr_accessor :console_primitives
-
-  def initialize *console_primitives
-    @console_primitives = console_primitives
-  end
-end
-
-class IOSWizard
+class IOSWizard < Wizard
   def initialize
     @doctor_executed_at = 0
   end
@@ -39169,16 +39771,28 @@ class IOSWizard
     @steps ||= []
   end
 
-  def steps_development_build
+  def prerequisite_steps
     [
       :check_for_xcode,
       :check_for_brew,
       :check_for_certs,
-      :check_for_device,
-      :check_for_dev_profile,
+    ]
+  end
+
+  def app_metadata_retrieval_steps
+    [
       :determine_team_identifier,
       :determine_app_name,
       :determine_app_id,
+    ]
+  end
+
+  def steps_development_build
+    [
+      *prerequisite_steps,
+      :check_for_device,
+      :check_for_dev_profile,
+      *app_metadata_retrieval_steps,
       :blow_away_temp,
       :stage_app,
       :development_write_info_plist,
@@ -39193,13 +39807,10 @@ class IOSWizard
 
   def steps_production_build
     [
-      :check_for_xcode,
-      :check_for_brew,
-      :check_for_certs,
+      *prerequisite_steps,
       :check_for_distribution_profile,
-      :determine_team_identifier,
-      :determine_app_name,
-      :determine_app_id,
+      :determine_app_version,
+      *app_metadata_retrieval_steps,
       :blow_away_temp,
       :stage_app,
       :production_write_info_plist,
@@ -39242,6 +39853,8 @@ class IOSWizard
     @steps = steps_development_build
     @steps = steps_production_build if @production_build
     @certificate_name = nil
+    @app_version = opts[:version]
+    @app_version = "1.0" if @opts[:env] == :dev && !@app_version
     init_wizard_status
     log_info "Starting iOS Wizard so we can deploy to your device."
     @start_at = Kernel.global_tick_count
@@ -39628,15 +40241,15 @@ XML
         <key>CFBundleExecutable</key>
         <string>:app_name</string>
         <key>CFBundleInfoDictionaryVersion</key>
-        <string>6.0</string>
+        <string>:app_version</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleShortVersionString</key>
-        <string>5.6</string>
+        <string>:app_version</string>
         <key>CFBundleSignature</key>
         <string>????</string>
         <key>CFBundleVersion</key>
-        <string>5.6</string>
+        <string>:app_version</string>
         <key>CFBundleIcons</key>
         <dict>
             <key>CFBundlePrimaryIcon</key>
@@ -39785,13 +40398,13 @@ XML
         <key>CFBundleIdentifier</key>
         <string>:app_id</string>
         <key>CFBundleInfoDictionaryVersion</key>
-        <string>6.0</string>
+        <string>:app_version</string>
         <key>CFBundleName</key>
         <string>:app_name</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleShortVersionString</key>
-        <string>5.2</string>
+        <string>:app_version</string>
         <key>CFBundleSignature</key>
         <string>????</string>
         <key>CFBundleSupportedPlatforms</key>
@@ -39799,7 +40412,7 @@ XML
                 <string>iPhoneOS</string>
         </array>
         <key>CFBundleVersion</key>
-        <string>5.2</string>
+        <string>:app_version</string>
         <key>DTCompiler</key>
         <string>com.apple.compilers.llvm.clang.1_0</string>
         <key>DTPlatformBuild</key>
@@ -39938,13 +40551,13 @@ XML
         <key>CFBundleIdentifier</key>
         <string>:app_id</string>
         <key>CFBundleInfoDictionaryVersion</key>
-        <string>6.0</string>
+        <string>:app_version</string>
         <key>CFBundleName</key>
         <string>:app_name</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleShortVersionString</key>
-        <string>5.2</string>
+        <string>:app_version</string>
         <key>CFBundleSignature</key>
         <string>????</string>
         <key>CFBundleSupportedPlatforms</key>
@@ -39952,7 +40565,7 @@ XML
                 <string>iPhoneOS</string>
         </array>
         <key>CFBundleVersion</key>
-        <string>5.2</string>
+        <string>:app_version</string>
         <key>DTCompiler</key>
         <string>com.apple.compilers.llvm.clang.1_0</string>
         <key>DTPlatformBuild</key>
@@ -40036,6 +40649,7 @@ XML
 
     info_plist_string.gsub!(":app_name", @app_name)
     info_plist_string.gsub!(":app_id", @app_id)
+    info_plist_string.gsub!(":app_version", @app_version)
 
     $gtk.write_file_root "tmp/ios/#{@app_name}.app/Info.plist", info_plist_string.strip
 
@@ -40113,10 +40727,22 @@ SCRIPT
   end
 
   def print_publish_help
-      log_info "Go to https://appstoreconnect.apple.com/apps and create an App if you haven't already done so."
-      log_info "Go to https://appleid.apple.com and create a 'Application Specific Password'."
-      log_info "To upload your app, Download Transporter from the App Store https://apps.apple.com/us/app/transporter/id1450874784?mt=12."
-      log_info "Your app is located at ./tmp/ios/#{@app_name}.ipa"
+    has_transporter = (sh "ls /Applications/Transporter.app").include? "Contents"
+    if !has_transporter
+      $gtk.openurl "https://apps.apple.com/us/app/transporter/id1450874784?mt=12"
+      $console.set_command "$wizards.ios.start env: :#{@opts[:env]}, version: \"#{@opts[:version]}\""
+      raise WizardException.new(
+        "* To upload your app, Download Transporter from the App Store https://apps.apple.com/us/app/transporter/id1450874784?mt=12."
+      )
+    else
+      sh "mkdir ./tmp/ios/intermediary_artifacts"
+      sh "mv \"#{tmp_directory}/#{@app_name}.app\" #{tmp_directory}/intermediary_artifacts/"
+      sh "mv \"#{tmp_directory}/do_zip.sh\" #{tmp_directory}/intermediary_artifacts"
+      sh "mv \"#{tmp_directory}/Entitlements.plist\" #{tmp_directory}/intermediary_artifacts"
+      sh "mv \"#{tmp_directory}/ipa_root\" #{tmp_directory}/intermediary_artifacts/"
+      sh "open /Applications/Transporter.app"
+      sh "open ./tmp/ios/"
+    end
   end
 
   def compile_icons
@@ -40137,6 +40763,37 @@ S
     sh "cp -r \"#{root_folder}/native/\" \"#{app_path}/native/\""
     sh "CODESIGN_ALLOCATE=\"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\" /usr/bin/codesign -f -s \"#{@certificate_name}\" --entitlements #{tmp_directory}/Entitlements.plist \"#{tmp_directory}/#{@app_name}.app/native/ios-device/ext.dylib\""
   end
+
+  def set_version version
+    @app_version = version
+    start env: @opts[:env], version: version
+  end
+
+  def determine_app_version
+    return if @app_version
+    metadata_text = $gtk.read_file metadata_file_path
+    if !metadata_text
+      write_blank_metadata
+    end
+
+    if metadata_text.each_line.to_a.length != 6
+      write_blank_metadata
+    end
+
+    log "* INFO: Contents of #{metadata_file_path}:"
+    log "#+begin_src txt"
+    metadata_text.each_line { |l| log "  #{l}" }
+    log "#+end_src"
+    metadata = get_metadata
+
+    if metadata[:version].start_with?("#") || !@app_version
+      log "* PROMPT: Please provide the version for your game."
+      $console.set_command "$wizards.ios.set_version \"1.0\""
+      raise WizardException.new(
+        "* INFO: I need a version number for your App.",
+      )
+    end
+  end
 end
 
 </code></pre>
@@ -40146,36 +40803,12 @@ end
 # MIT License
 # itch_wizard.rb has been released under MIT (*only this file*).
 
-class ItchWizard
+class ItchWizard < Wizard
   def steps
     [
       :check_metadata,
-      :deploy
+      :deploy,
     ]
-  end
-
-  def metadata_file_path
-    "metadata/game_metadata.txt"
-  end
-
-  def get_metadata
-    metadata = $gtk.read_file metadata_file_path
-
-    if !metadata
-      write_blank_metadata
-      metadata = $gtk.read_file metadata_file_path
-    end
-
-    dev_id, dev_title, game_id, game_title, version, icon = *metadata.each_line.to_a
-
-    {
-      dev_id: dev_id.strip,
-      dev_title: dev_title.strip,
-      game_id: game_id.strip,
-      game_title: game_title.strip,
-      version: version.strip,
-      icon: icon.strip
-    }
   end
 
   def write_blank_metadata
@@ -40195,7 +40828,7 @@ S
       write_blank_metadata
     end
 
-    if metadata_text.each_line.to_a.length != 6
+    if metadata_text.strip.each_line.to_a.length < 6
       write_blank_metadata
     end
 
@@ -40207,70 +40840,67 @@ S
 
     if metadata[:dev_id].start_with?("#") || !@dev_id
       log "* PROMPT: Please provide your username for Itch."
-      $console.set_command "$wizards.itch.set_dev_id \"your-itch-username\""
+      $console.set_command "$wizards.itch.set_dev_id \"#{metadata[:dev_id]}\""
       return :need_dev_id
     end
 
     if metadata[:dev_title].start_with?("#") || !@dev_title
       log "* PROMPT: Please provide developer's/company's name that you want displayed."
-      $console.set_command "$wizards.itch.set_dev_title \"Your Name\""
+      $console.set_command "$wizards.itch.set_dev_title \"#{metadata[:dev_title]}\""
       return :need_dev_title
     end
 
     if metadata[:game_id].start_with?("#") || !@game_id
       log "* PROMPT: Please provide the id for you game. This is the id you specified when you set up a new game page on Itch."
-      $console.set_command "$wizards.itch.set_game_id \"your-game-id\""
+      $console.set_command "$wizards.itch.set_game_id \"#{metadata[:game_id]}\""
       return :need_game_id
     end
 
     if metadata[:game_title].start_with?("#") || !@game_title
       log "* PROMPT: Please provide the display name for your game. (This can include spaces)"
-      $console.set_command "$wizards.itch.set_game_title \"Your Game\""
+      $console.set_command "$wizards.itch.set_game_title \"#{metadata[:game_title]}\""
       return :need_game_title
     end
 
     if metadata[:version].start_with?("#") || !@version
       log "* PROMPT: Please provide the version for your game."
-      $console.set_command "$wizards.itch.set_version \"1.0\""
+      $console.set_command "$wizards.itch.set_version \"#{metadata[:version]}\""
       return :need_version
     end
 
     if metadata[:icon].start_with?("#") || !@icon
       log "* PROMPT: Please provide icon path for your game."
-      $console.set_command "$wizards.itch.set_icon \"icon.png\""
+      $console.set_command "$wizards.itch.set_icon \"#{metadata[:icon]}\""
       return :need_icon
     end
+
+    puts "here!! success!!!"
 
     return :success
   end
 
   def set_dev_id value
     @dev_id = value
-    write_metadata
     start
   end
 
   def set_dev_title value
     @dev_title = value
-    write_metadata
     start
   end
 
   def set_game_id value
     @game_id = value
-    write_metadata
     start
   end
 
   def set_game_title value
     @game_title = value
-    write_metadata
     start
   end
 
   def set_version value
     @version = value
-    write_metadata
     start
   end
 
@@ -40313,7 +40943,7 @@ S
     end
 
     if @icon
-      text += "icon=metadata/#{@icon}\n"
+      text += "icon=#{@icon}\n"
     else
       text += "#icon=metadata/icon.png\n"
     end
@@ -40331,10 +40961,25 @@ S
 
   def deploy
     log_info "* Running dragonruby-publish: #{package_command}"
-    results = $gtk.exec package_command
+    $gtk.openurl "http://itch.io/dashboard" if $gtk.platform == "Mac OS X"
+    if $gtk.platform? :mac
+      $gtk.exec "rm -rf ./builds"
+    end
+    results = $gtk.exec "#{package_command} --only-package"
+    puts File.expand_path("./builds")
+
     log "#+begin_src"
     log results
     log "#+end_src"
+
+    if $gtk.platform? :mac
+      $gtk.exec "open ./builds/"
+    elsif $gtk.platform? :windows
+      $gtk.exec "powershell \"ii .\""
+    end
+
+    $gtk.openurl "https://itch.io/dashboard"
+
     :success
   end
 
@@ -40345,7 +40990,7 @@ S
     steps.each do |m|
       begin
         log_info "Running Itch Wizard Step: ~$wizards.itch.#{m}~"
-        result = (send m) || :success if @wizard_status[m][:result] != :success
+        result = (send m) || :success
         @wizard_status[m][:result] = result
         if result != :success
           log_info "Exiting wizard. :#{result}"
@@ -40718,17 +41363,30 @@ module GTK
 
     def rect_defaults
       {
-        row: nil,
-        col: nil,
-        h:   1,
-        w:   1,
-        dx:  0,
-        dy:  0,
-        rect: :control_rect
+        row:      nil,
+        col:      nil,
+        h:        1,
+        w:        1,
+        dx:       0,
+        dx_ratio: 1,
+        dy:       0,
+        dy_ratio: 1,
+        dh_ratio: 1,
+        dw_ratio: 1,
+        merge:    nil,
+        rect:     :control_rect
       }
     end
 
-    def rect opts
+    def rect *all_opts
+      if all_opts.length == 1
+        opts = all_opts.first
+      else
+        opts = {}
+        all_opts.each do |o|
+          opts.merge! o
+        end
+      end
       opts = rect_defaults.merge opts
       result = send opts[:rect]
       if opts[:row] && opts[:col] && opts[:w] && opts[:h]
@@ -40775,10 +41433,15 @@ module GTK
         result[:h] += device.grid_area.gutter * 2
       end
 
-      result[:x] += opts[:dx] if opts[:dx]
-      result[:y] += opts[:dy] if opts[:dy]
-      result[:w] += opts[:dw] if opts[:dw]
-      result[:h] += opts[:dh] if opts[:dh]
+      result[:x] += opts[:dx]       if opts[:dx]
+      result[:x] *= opts[:dx_ratio] if opts[:dx_ratio]
+      result[:y] += opts[:dy]       if opts[:dy]
+      result[:y] *= opts[:dy_ratio] if opts[:dy_ratio]
+      result[:w] += opts[:dw]       if opts[:dw]
+      result[:w] *= opts[:dw_ratio] if opts[:dw_ratio]
+      result[:h] += opts[:dh]       if opts[:dh]
+      result[:h] *= opts[:dh_ratio] if opts[:dh_ratio]
+      result.merge! opts[:merge]     if opts[:merge]
       result[:row] = opts[:row]
       result[:col] = opts[:col]
 
@@ -41207,8 +41870,24 @@ class Numeric
     self / 2.0
   end
 
+  def third
+    self / 3.0
+  end
+
+  def quarter
+    self / 4.0
+  end
+
   def to_byte
     clamp(0, 255).to_i
+  end
+
+  def clamp *opts
+    min = (opts.at 0)
+    max = (opts.at 1)
+    return min if min && self < min
+    return max if max && self > max
+    return self
   end
 
   def clamp_wrap min, max
@@ -41614,12 +42293,6 @@ S
     return gt other
   end
 
-  def == other
-    return true if __original_eq_eq__ other
-    return __original_eq_eq__ other.entity_id if other.is_a? OpenEntity
-    return false
-  end
-
   # @gtk
   def map
     unless block_given?
@@ -41811,12 +42484,6 @@ class Fixnum
     __raise_arithmetic_exception__ other, :-, e
   end
 
-  def == other
-    return true if __original_eq_eq__ other
-    return __original_eq_eq__ other.entity_id if other.is_a? GTK::OpenEntity
-    return false
-  end
-
   # Returns `-1` if the number is less than `0`. `+1` if the number
   # is greater than `0`. Returns `0` if the number is equal to `0`.
   #
@@ -41940,6 +42607,10 @@ class Integer
 
   def nan?
     false
+  end
+
+  def center other
+    (self - other).abs.fdiv(2)
   end
 end
 
@@ -42485,10 +43156,11 @@ module GTK
         if l.respond_to? :draw_override
           l.draw_override @ffi_draw
         else
-          @ffi_draw.draw_label l.x, l.y, l.text.s_or_default,
-                               l.size_enum, l.alignment_enum,
-                               l.r, l.g, l.b, l.a,
-                               l.font.s_or_default(nil)
+          @ffi_draw.draw_label_2 l.x, l.y, l.text.s_or_default,
+                                 l.size_enum, l.alignment_enum,
+                                 l.r, l.g, l.b, l.a,
+                                 l.font.s_or_default(nil),
+                                 (l.vertical_alignment_enum || 2)
         end
       rescue Exception => e
         raise_conversion_for_rendering_failed l, e, :label
@@ -42880,6 +43552,7 @@ module GTK
             'dragon/trace.rb',
             'dragon/readme_docs.rb',
             'dragon/hotload_client.rb',
+            'dragon/wizards.rb',
             'dragon/ios_wizard.rb',
             'dragon/itch_wizard.rb',
           ] + core_files_to_reload + @required_files
@@ -42933,13 +43606,14 @@ module GTK
       end
 
       def hotload_if_needed
+        return if Kernel.tick_count < 0
         hotload_source_files
         check_mailbox
       end
 
       def on_load_succeeded file
-        @rcb_sender.files_reloaded << file
-        @rcb_sender.reloaded_files << file
+        self.files_reloaded << file
+        self.reloaded_files << file
         Trace.untrace_classes!
       end
 
@@ -42989,6 +43663,30 @@ S
       next_word = (word + " " + rest[0])
       return wrapped_lines_recur next_word, rest[1..-1], length, aggregate
     end
+  end
+
+  def char_byte
+    return nil if self.length == 0
+    c = self.each_char.first.bytes
+    c = c.first if c.is_a? Enumerable
+    c
+  end
+
+  def insert_character_at index, char
+    t = each_char.to_a
+    t = (t.insert index, char)
+    t.join
+  end
+
+  def excluding_character_at index
+    t = each_char.to_a
+    t.delete_at index
+    t.join
+  end
+
+  def excluding_last_character
+    return "" if self.length <= 1
+    return excluding_character_at(self.length - 1)
   end
 
   def end_with_bang?
@@ -43206,7 +43904,7 @@ S
       log "#{self.failed.length} test(s) failed."
       self.failed.each do |h|
         log "**** Test name: :#{h[:m]}"
-        log "#{h[:e].to_s.gsub("* ERROR:", "").strip}"
+        log "#{h[:e].to_s.gsub("* ERROR:", "").strip}\n#{h[:e].__backtrace_to_org__}"
       end
     end
   end
@@ -43406,6 +44104,40 @@ end
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # wizards.rb has been released under MIT (*only this file*).
+
+class Wizard
+  def metadata_file_path
+    "metadata/game_metadata.txt"
+  end
+
+  def get_metadata
+    metadata = $gtk.read_file metadata_file_path
+
+    if !metadata
+      write_blank_metadata
+      metadata = $gtk.read_file metadata_file_path
+    end
+
+    dev_id, dev_title, game_id, game_title, version, icon = *metadata.each_line.to_a
+
+    {
+      dev_id:     dev_id.strip.gsub("#", "").gsub("devid=", ""),
+      dev_title:  dev_title.strip.gsub("#", "").gsub("devtitle=", ""),
+      game_id:    game_id.strip.gsub("#", "").gsub("gameid=", ""),
+      game_title: game_title.strip.gsub("#", "").gsub("gametitle=", ""),
+      version:    version.strip.gsub("#", "").gsub("version=", ""),
+      icon:       icon.strip.gsub("#", "").gsub("icon=", "")
+    }
+  end
+end
+
+class WizardException < Exception
+  attr_accessor :console_primitives
+
+  def initialize *console_primitives
+    @console_primitives = console_primitives
+  end
+end
 
 module GTK
   class Wizards

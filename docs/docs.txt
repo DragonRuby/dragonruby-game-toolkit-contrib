@@ -392,7 +392,7 @@ Console type: ~$wizards.ios.start~ and you will be guided through the
 deployment process.
 
 To deploy to Android, you need to have an Android emulator/device, and
-a environment that is able to run Android SDK. ~dragonruby-publish~
+an environment that is able to run Android SDK. ~dragonruby-publish~
 will create an APK for you. From there, you can sign the APK and
 install it to your device. The signing and installation procedure
 varies from OS to OS. Here's an example of what the command might look
@@ -411,7 +411,7 @@ The following tenants of DragonRuby are what set us apart from other
 game engines. Given that Game Toolkit is a relatively new engine,
 there are definitely features that are missing. So having a big check
 list of "all the cool things" is not this engine's forte. This is
-compensated with a strong commitment to the following principals.
+compensated with a strong commitment to the following principles.
 
 ** Challenge The Status Quo
 
@@ -648,7 +648,7 @@ file called ~repl.rb~ and put it in ~mygame/app/repl.rb~:
 
 - If you use the `repl` method, the code will be executed and the DragonRuby Console will automatically open so you can see the results (on Mac and Linux, the results will also be printed to the terminal).
 
-- All ~puts~ statements will also be saved to ~logs/log.txt~. So if you want to stay in your editor and not look at the terminal, or the DragonRuby Console, you can ~tail~ this file.
+- All ~puts~ statements will also be saved to ~logs/puts.txt~. So if you want to stay in your editor and not look at the terminal, or the DragonRuby Console, you can ~tail~ this file.
 
 4. To ignore code in ~repl.rb~, instead of commenting it out, prefix ~repl~ with the letter ~x~ and it'll be ignored.
 
@@ -684,7 +684,7 @@ challenges in creating something that is compatible.
 You can use DragonRuby's replay capabilities to troubleshoot:
 
 1. DragonRuby is hot loaded which gives you a very fast feedback loop (if the game throws an exception, it's because of the code you just added).
-2. Use ~./dragonruby mygame --record~ to create a game play recording that you can use to find the exception (you can replay a recoding by executing ~./dragonruby mygame --replay last_replay.txt~ or through the DragonRuby Console using ~$gtk.recording.start_replay "last_replay.txt"~.
+2. Use ~./dragonruby mygame --record~ to create a game play recording that you can use to find the exception (you can replay a recording by executing ~./dragonruby mygame --replay last_replay.txt~ or through the DragonRuby Console using ~$gtk.recording.start_replay "last_replay.txt"~.
 3. DragonRuby also ships with a unit testing facility. You can invoke the following command to run a test: ~./dragonruby . --eval some_ruby_file.rb --no-tick~.
 4. Get into the habit of adding debugging facilities within the game itself. You can add drawing primitives to ~args.outputs.debug~ that will render on top of your game but will be ignored in a production release.
 5. Debugging something that runs at 60fps is (imo) not that helpful. The exception you are seeing could have been because of a change that occurred many frames ago.
@@ -697,7 +697,7 @@ Let's check the official source for the answer to this question:
 isrubydead.com: [[https://isrubydead.com/]].
 
 On a more serious note, Ruby's _quantity_ levels aren't what they used
-to be. And that's totally fine. Every one chases the new and shiny.
+to be. And that's totally fine. Everyone chases the new and shiny.
 
 What really matters is _quality/maturity_. Here is the latest (StackOverflow
 Survey sorted by highest paid developers)[https://insights.stackoverflow.com/survey/2019#top-paying-technologies].
@@ -1195,7 +1195,7 @@ Returns ~true~ if: the ~right~ arrow or ~d~ key is pressed or held on the ~keybo
 *** ~.left_right~
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.left~ and ~args.inputs.right~.
 *** ~.up_down~
-Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.up~ and ~args.inputs.down~.
+Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.down~ and ~args.inputs.up~.
 *** ~.text~ OR ~.history~
 Returns a string that represents the last key that was pressed on the keyboard.
 *** ~.mouse~
@@ -1240,7 +1240,7 @@ Returns ~true~ if ~right~ is pressed or held on the directional or left analog.
 **** ~.left_right
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.controller_(one|two).left~ and ~args.inputs.controller_(one|two).right~.
 **** ~.up_down
-Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.controller_(one|two).up~ and ~args.inputs.controller_(one|two).down~.
+Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.controller_(one|two).down~ and ~args.inputs.controller_(one|two).up~.
 **** ~.(left_analog_x_raw|right_analog_x_raw)~
 Returns the raw integer value for the analog's horizontal movement (~-32,000 to +32,000~).
 **** ~.left_analog_y_raw|right_analog_y_raw)~
@@ -1280,7 +1280,7 @@ Returns ~true~ if ~right~ or ~d~ is pressed or held on the keyboard.
 **** ~.left_right~
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.keyboard.left~ and ~args.inputs.keyboard.right~.
 **** ~.up_down~
-Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.keyboard.up~ and ~args.inputs.keyboard.up~.
+Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.keyboard.down~ and ~args.inputs.keyboard.up~.
 **** keyboard properties
 The following properties represent keys on the keyboard and are available on ~args.inputs.keyboard.KEY~, ~args.inputs.keyboard.key_down.KEY~, ~args.inputs.keyboard.key_held.KEY~, and ~args.inputs.keyboard.key_up.KEY~:
 - ~alt~
@@ -1388,11 +1388,13 @@ Returns a ~Hash~ with all keys on the keyboard in their respective state. The ~H
 - ~:down_or_held~
 - ~:up~
 ** ~args.outputs~
-~args.outputs.PROPERTY~ is how you render to the screen.
+~args.outputs.PROPERTY~ is how you render to the screen and play sounds.
+Available rendered output types are ~solids~, ~sprites~, ~primitives~, ~labels~, ~lines~, ~borders~, and ~debug~, described below. Each type has a corresponding static type, such as ~static_solids~, ~static_sprites~ and so on. The static types do not need to be readded to the collection for every tick and are rendered above their non-static counterparts.
+Rendering to the screen happens in the following order: ~solids < sprites < primitives < labels < lines < borders < debug~. If you want complete control over the z-order, you should use ~primitives~ for all outputs (except ~sound~ and ~background_color~, of course).
 *** ~.background_color~
 Set ~args.outputs.background_color~ to an ~Array~ with ~RGB~ values (eg. ~[255, 255, 255]~ for the color white).
 *** ~.sounds~
-Send a file path to this collection to play a sound. The sound file must be under the ~mygame~ directory. Example: ~args.outputs.sounds << "sounds/jump.wav"~.
+Send a file path to this collection to play a sound. The sound file must be under your game directory (by default, the ~mygame~ directory). Example: ~args.outputs.sounds << "sounds/jump.wav"~.
 *** ~.solids~
 Send a Primitive to this collection to render a filled in rectangle to the screen. This collection is cleared at the end of every frame.
 *** ~.static_solids~
@@ -1975,7 +1977,7 @@ wide and 90 pixels tall.
 
 ** Rendering a solid using an Array with colors and alpha
 
-The value for the color and alpha is an number between ~0~ and ~255~. The
+The value for the color and alpha is a number between ~0~ and ~255~. The
 alpha property is optional and will be set to ~255~ if not specified.
 
 Creates a green solid rectangle with an opacity of 50%.
@@ -2011,7 +2013,7 @@ be provided in any order.
 ** Rendering a solid using a Class
 
 You can also create a class with solid/border properties and render it as a primitive.
-ALL properties must on the class. *Additionally*, a method called ~primitive_marker~
+ALL properties must be on the class. *Additionally*, a method called ~primitive_marker~
 must be defined on the class.
 
 Here is an example:
@@ -2066,6 +2068,106 @@ You have to use ~args.outputs.borders~:
   def tick args
     #                           X    Y  WIDTH  HEIGHT
     args.outputs.borders << [100, 100,   160,     90]
+  end
+#+end_src
+
+
+* DOCS: ~GTK::Outputs#sprites~
+
+Add primitives to this collection to render a sprite to the screen.
+
+** Rendering a sprite using an Array
+
+Creates a sprite of a white circle located at 100, 100. 160 pixels
+wide and 90 pixels tall.
+
+#+begin_src
+  def tick args
+    #                         X    Y   WIDTH   HEIGHT                      PATH
+    args.outputs.sprites << [100, 100,   160,     90, "sprites/circle/white.png]
+  end
+#+end_src
+
+** Rendering a sprite using an Array with colors and alpha
+
+The value for the color and alpha is a number between ~0~ and ~255~. The
+alpha property is optional and will be set to ~255~ if not specified.
+
+Creates a green circle sprite with an opacity of 50%.
+
+#+begin_src
+  def tick args
+    #                         X    Y  WIDTH  HEIGHT           PATH                ANGLE  ALPHA  RED  GREEN  BLUE
+    args.outputs.sprites << [100, 100,  160,     90, "sprites/circle/white.png",     0,    128,   0,   255,    0]
+  end
+#+end_src
+
+** Rendering a sprite using a Hash
+
+If you want a more readable invocation. You can use the following hash to create a sprite.
+Any parameters that are not specified will be given a default value. The keys of the hash can
+be provided in any order.
+
+#+begin_src
+  def tick args
+    args.outputs.sprites << {
+      x:                             0,
+      y:                             0,
+      w:                           100,
+      h:                           100,
+      path: "sprites/circle/white.png",
+      angle:                         0,
+      a:                           255,
+      r:                             0,
+      g:                           255,
+      b:                             0
+    }
+  end
+#+end_src
+
+** Rendering a solid using a Class
+
+You can also create a class with solid/border properties and render it as a primitive.
+ALL properties must be on the class. *Additionally*, a method called ~primitive_marker~
+must be defined on the class.
+
+Here is an example:
+
+#+begin_src
+  # Create type with ALL sprite properties AND primitive_marker
+  class Sprite
+    attr_accessor :x, :y, :w, :h, :path, :angle, :angle_anchor_x, :angle_anchor_y,  :tile_x, :tile_y, :tile_w, :tile_h, :source_x, :source_y, :source_w, :source_h, :flip_horizontally, :flip_vertically, :a, :r, :g, :b
+
+    def primitive_marker
+      :sprite
+    end
+  end
+
+  # Inherit from type
+  class Circle < Sprite
+  # constructor
+    def initialize x, y, size, path
+      self.x = x
+      self.y = y
+      self.w = size
+      self.h = size
+      self.path = path
+    end
+    def serlialize
+      {x:self.x, y:self.y, w:self.w, h:self.h, path:self.path}
+    end
+
+    def inspect
+      serlialize.to_s
+    end
+
+    def to_s
+      serlialize.to_s
+    end
+  end
+  def tick args
+    # render circle sprite
+    args.outputs.sprites  << Circle.new(10, 10, 32,"sprites/circle/white.png")
   end
 #+end_src
 
@@ -2133,12 +2235,12 @@ The ~GTK::MousePoint~ has the following properties.
 - ~x~: Integer representing the mouse's x.
 - ~y~: Integer representing the mouse's y.
 - ~point~: Array with the ~x~ and ~y~ values.
-- ~w~: Width of the point that always returns ~0~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
-- ~h~: Height of the point that always returns ~0~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
-- ~left~: This value is the same as ~x~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
-- ~right~: This value is the same as ~x~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
-- ~top~: This value is the same as ~y~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
-- ~bottom~: This value is the same as ~y~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
+- ~w~: Width of the point that always returns ~0~ (included so that it can seamlessly work with ~GTK::Geometry~ functions).
+- ~h~: Height of the point that always returns ~0~ (included so that it can seamlessly work with ~GTK::Geometry~ functions).
+- ~left~: This value is the same as ~x~ (included so that it can seamlessly work with ~GTK::Geometry~ functions).
+- ~right~: This value is the same as ~x~ (included so that it can seamlessly work with ~GTK::Geometry~ functions).
+- ~top~: This value is the same as ~y~ (included so that it can seamlessly work with ~GTK::Geometry~ functions).
+- ~bottom~: This value is the same as ~y~ (included so that it can seamlessly work with ~GTK::Geometry~ functions).
 - ~created_at~: The tick (~args.state.tick_count~) that this structure was created.
 - ~global_created_at~: The global tick (~Kernel.global_tick_count~) that this structure was created.
 
@@ -4626,9 +4728,9 @@ Follows is a source code listing for all files that have been open sourced. This
   def tick args
     tick_instructions args, "Sample app shows how keyboard events are registered and accessed.", 360
     # Notice how small_font accounts for all the remaining parameters
-    args.outputs.labels << [460, row_to_px(args, 0), "Current game time: #{args.state.tick_count}", small_font]
-    args.outputs.labels << [460, row_to_px(args, 2), "Keyboard input: args.inputs.keyboard.key_up.h", small_font]
-    args.outputs.labels << [460, row_to_px(args, 3), "Press \"h\" on the keyboard.", small_font]
+    args.outputs.labels << { x: 460, y: row_to_px(args, 0), text: "Current game time: #{args.state.tick_count}", size_enum: -1 }
+    args.outputs.labels << { x: 460, y: row_to_px(args, 2), text: "Keyboard input: args.inputs.keyboard.key_up.h", size_enum: -1 }
+    args.outputs.labels << { x: 460, y: row_to_px(args, 3), text: "Press \"h\" on the keyboard.", size_enum: -1 }
   
     # Input on a specifc key can be found through args.inputs.keyboard.key_up followed by the key
     if args.inputs.keyboard.key_up.h
@@ -4639,27 +4741,19 @@ Follows is a source code listing for all files that have been open sourced. This
     args.state.h_pressed_at ||= false
   
     if args.state.h_pressed_at
-      args.outputs.labels << [460, row_to_px(args, 4), "\"h\" was pressed at time: #{args.state.h_pressed_at}", small_font]
+      args.outputs.labels << { x: 460, y: row_to_px(args, 4), text: "\"h\" was pressed at time: #{args.state.h_pressed_at}", size_enum: -1 }
     else
-      args.outputs.labels << [460, row_to_px(args, 4), "\"h\" has never been pressed.", small_font]
+      args.outputs.labels << { x: 460, y: row_to_px(args, 4), text: "\"h\" has never been pressed.", size_enum: -1 }
     end
   
     tick_help_text args
   end
   
-  def small_font
-    # This method provides some values for the construction of labels
-    # Specifically, Size, Alignment, & RGBA
-    # This makes it so that custom parameters don't have to be repeatedly typed.
-    # Additionally "small_font" provides programmers with more information than some numbers
-    [-2, 0, 0, 0, 0, 255]
-  end
-  
-  def row_to_px args, row_number
+  def row_to_px args, row_number, y_offset = 20
     # This takes a row_number and converts it to pixels DragonRuby understands.
     # Row 0 starts 5 units below the top of the grid
     # Each row afterward is 20 units lower
-    args.grid.top.shift_down(5).shift_down(20 * row_number)
+    args.grid.top - 5 - (y_offset * row_number)
   end
   
   # Don't worry about understanding the code within this method just yet.
@@ -4689,17 +4783,17 @@ Follows is a source code listing for all files that have been open sourced. This
       end
     end
   
-    args.outputs.labels << [10, row_to_px(args, 6), "Advanced Help:", small_font]
+    args.outputs.labels << { x: 10, y: row_to_px(args, 6), text: "This is the api for the keys you've pressed:", size_enum: -1, r: 180 }
   
     if !args.state.help_available
       args.outputs.labels << [10, row_to_px(args, 7),  "Press a key and I'll show code to access the key and what value will be returned if you used the code.", small_font]
       return
     end
   
-    args.outputs.labels << [10 , row_to_px(args, 7), "args.inputs.keyboard", small_font]
-    args.outputs.labels << [330, row_to_px(args, 7), "args.inputs.keyboard.key_down", small_font]
-    args.outputs.labels << [650, row_to_px(args, 7), "args.inputs.keyboard.key_held", small_font]
-    args.outputs.labels << [990, row_to_px(args, 7), "args.inputs.keyboard.key_up", small_font]
+    args.outputs.labels << { x: 10 , y: row_to_px(args, 7), text: "args.inputs.keyboard",          size_enum: -2 }
+    args.outputs.labels << { x: 330, y: row_to_px(args, 7), text: "args.inputs.keyboard.key_down", size_enum: -2 }
+    args.outputs.labels << { x: 650, y: row_to_px(args, 7), text: "args.inputs.keyboard.key_held", size_enum: -2 }
+    args.outputs.labels << { x: 990, y: row_to_px(args, 7), text: "args.inputs.keyboard.key_up",   size_enum: -2 }
   
     fill_history args, :key_value_history,      :down_or_held, nil
     fill_history args, :key_down_value_history, :down,        :key_down
@@ -4745,12 +4839,8 @@ Follows is a source code listing for all files that have been open sourced. This
       end
       idx += 2
       [
-        [x, row_to_px(args, idx - 2),
-         "    .#{k} is #{current_value || "nil"}",
-         small_font],
-        [x, row_to_px(args, idx - 1),
-         "       was #{v}",
-         small_font]
+        { x: x, y: row_to_px(args, idx + 0, 16), text: "    .#{k} is #{current_value || "nil"}", size_enum: -2 },
+        { x: x, y: row_to_px(args, idx + 1, 16), text: "       was #{v}", size_enum: -2 }
       ]
     end
   end
@@ -4765,10 +4855,48 @@ Follows is a source code listing for all files that have been open sourced. This
       args.state.key_event_occurred = true
     end
   
-    args.outputs.debug << [0, y - 50, 1280, 60].solid
-    args.outputs.debug << [640, y, text, 1, 1, 255, 255, 255].label
-    args.outputs.debug << [640, y - 25, "(click to dismiss instructions)" , -2, 1, 255, 255, 255].label
+    args.outputs.debug << { x: 0,   y: y - 50, w: 1280, h: 60 }.solid
+    args.outputs.debug << { x: 640, y: y,      text: text,
+                            size_enum: 1, alignment_enum: 1, r: 255, g: 255, b: 255 }.label
+    args.outputs.debug << { x: 640, y: y - 25, text: "(click to dismiss instructions)",
+                            size_enum: -2, alignment_enum: 1, r: 255, g: 255, b: 255 }.label
   end
+
+#+end_src
+
+*** Input Basics - Moving A Sprite - main.rb
+#+begin_src ruby
+  # ./samples/02_input_basics/01_moving_a_sprite/app/main.rb
+  def tick args
+    # create a player and set default values
+    # for the player's x, y, w (width), and h (height)
+    args.state.player.x ||= 100
+    args.state.player.y ||= 100
+    args.state.player.w ||=  50
+    args.state.player.h ||=  50
+  
+    # render the player to the screen
+    args.outputs.sprites << { x: args.state.player.x,
+                              y: args.state.player.y,
+                              w: args.state.player.w,
+                              h: args.state.player.h,
+                              path: 'sprites/square/green.png' }
+  
+    # move the player around using the keyboard
+    if args.inputs.up
+      args.state.player.y += 10
+    elsif args.inputs.down
+      args.state.player.y -= 10
+    end
+  
+    if args.inputs.left
+      args.state.player.x -= 10
+    elsif args.inputs.right
+      args.state.player.x += 10
+    end
+  end
+  
+  $gtk.reset
 
 #+end_src
 
@@ -4838,11 +4966,7 @@ Follows is a source code listing for all files that have been open sourced. This
     # This method effectively combines the row_to_px and small_font methods
     # It changes the given row value to a DragonRuby pixel value
     # and adds the customization parameters
-    [x, row_to_px(args, row), message, small_font]
-  end
-  
-  def small_font
-    [-2, 0, 0, 0, 0, 255]
+    { x: x, y: row_to_px(args, row), text: message, alignment_enum: -2 }
   end
   
   def row_to_px args, row_number
@@ -4858,9 +4982,9 @@ Follows is a source code listing for all files that have been open sourced. This
       args.state.key_event_occurred = true
     end
   
-    args.outputs.debug << [0, y - 50, 1280, 60].solid
-    args.outputs.debug << [640, y, text, 1, 1, 255, 255, 255].label
-    args.outputs.debug << [640, y - 25, "(click to dismiss instructions)" , -2, 1, 255, 255, 255].label
+    args.outputs.debug << { x: 0,   y: y - 50, w: 1280, h: 60 }.solid
+    args.outputs.debug << { x: 640, y: y, text: text, size_enum: 1, alignment_enum: 1, r: 255, g: 255, b: 255 }.label
+    args.outputs.debug << { x: 640, y: y - 25, text: "(click to dismiss instructions)", size_enum: -2, alignment_enum: 1, r: 255, g: 255, b: 255 }.label
   end
 
 #+end_src
@@ -4912,7 +5036,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
     args.outputs.labels << small_label(args, x, 15, "Click inside the blue box maybe ---->")
   
-    box = [785, 370, 50, 50, 0, 0, 170]
+    box = { x: 785, y: 370, w: 50, h: 50, r: 0, g: 0, b: 170 }
     args.outputs.borders << box
   
     # Saves the most recent click into args.state
@@ -4934,11 +5058,7 @@ Follows is a source code listing for all files that have been open sourced. This
   end
   
   def small_label args, x, row, message
-    [x, row_to_px(args, row), message, small_font]
-  end
-  
-  def small_font
-    [-2, 0, 0, 0, 0, 255]
+    { x: x, y: row_to_px(args, row), text: message, size_enum: -2 }
   end
   
   def row_to_px args, row_number
@@ -4954,9 +5074,9 @@ Follows is a source code listing for all files that have been open sourced. This
       args.state.key_event_occurred = true
     end
   
-    args.outputs.debug << [0, y - 50, 1280, 60].solid
-    args.outputs.debug << [640, y, text, 1, 1, 255, 255, 255].label
-    args.outputs.debug << [640, y - 25, "(click to dismiss instructions)" , -2, 1, 255, 255, 255].label
+    args.outputs.debug << { x: 0,   y: y - 50, w: 1280, h: 60 }.solid
+    args.outputs.debug << { x: 640, y: y, text: text, size_enum: 1, alignment_enum: 1, r: 255, g: 255, b: 255 }.label
+    args.outputs.debug << { x: 640, y: y - 25, text: "(click to dismiss instructions)", size_enum: -2, alignment_enum: 1, r: 255, g: 255, b: 255 }.label
   end
 
 #+end_src
@@ -5008,9 +5128,15 @@ Follows is a source code listing for all files that have been open sourced. This
     # They are stored in game so that they do not get reset every tick
     if args.inputs.mouse.click
       if !args.state.box_collision_one
-        args.state.box_collision_one = [args.inputs.mouse.click.point.x - 25, args.inputs.mouse.click.point.y - 25, 125, 125, 180, 0,   0, 180]
+        args.state.box_collision_one = { x: args.inputs.mouse.click.point.x - 25,
+                                         y: args.inputs.mouse.click.point.y - 25,
+                                         w: 125, h: 125,
+                                         r: 180, g: 0, b: 0, a: 180 }
       elsif !args.state.box_collision_two
-        args.state.box_collision_two = [args.inputs.mouse.click.point.x - 25, args.inputs.mouse.click.point.y - 25, 125, 125,   0, 0, 180, 180]
+        args.state.box_collision_two = { x: args.inputs.mouse.click.point.x - 25,
+                                         y: args.inputs.mouse.click.point.y - 25,
+                                         w: 125, h: 125,
+                                         r: 0, g: 0, b: 180, a: 180 }
       else
         args.state.box_collision_one = nil
         args.state.box_collision_two = nil
@@ -5037,15 +5163,11 @@ Follows is a source code listing for all files that have been open sourced. This
   end
   
   def small_label args, x, row, message
-    [x, row_to_px(args, row), message, small_font]
-  end
-  
-  def small_font
-    [-2, 0, 0, 0, 0, 255]
+    { x: x, y: row_to_px(args, row), text: message, size_enum: -2 }
   end
   
   def row_to_px args, row_number
-    args.grid.top.shift_down(5).shift_down(20 * row_number)
+    args.grid.top - 5 - (20 * row_number)
   end
   
   def tick_instructions args, text, y = 715
@@ -5111,57 +5233,51 @@ Follows is a source code listing for all files that have been open sourced. This
     def process_inputs
       state.buttons = []
   
-      state.buttons << [100, 500, inputs.controller_one.key_held.l1, "L1"]
-      state.buttons << [100, 600, inputs.controller_one.key_held.l2, "L2"]
-  
-      state.buttons << [1100, 500, inputs.controller_one.key_held.r1, "R1"]
-      state.buttons << [1100, 600, inputs.controller_one.key_held.r2, "R2"]
-  
-      state.buttons << [540, 450, inputs.controller_one.key_held.select, "Select"]
-      state.buttons << [660, 450, inputs.controller_one.key_held.start, "Start"]
-  
-      state.buttons << [200, 300, inputs.controller_one.key_held.left, "Left"]
-      state.buttons << [300, 400, inputs.controller_one.key_held.up, "Up"]
-      state.buttons << [400, 300, inputs.controller_one.key_held.right, "Right"]
-      state.buttons << [300, 200, inputs.controller_one.key_held.down, "Down"]
-  
-      state.buttons << [800, 300, inputs.controller_one.key_held.x, "X"]
-      state.buttons << [900, 400, inputs.controller_one.key_held.y, "Y"]
-      state.buttons << [1000, 300, inputs.controller_one.key_held.a, "A"]
-      state.buttons << [900, 200, inputs.controller_one.key_held.b, "B"]
-  
-      state.buttons << [450 + inputs.controller_one.left_analog_x_perc * 100,
-                        100 + inputs.controller_one.left_analog_y_perc * 100,
-                        inputs.controller_one.key_held.l3,
-                        "L3"]
-  
-      state.buttons << [750 + inputs.controller_one.right_analog_x_perc * 100,
-                        100 + inputs.controller_one.right_analog_y_perc * 100,
-                        inputs.controller_one.key_held.r3,
-                        "R3"]
+      state.buttons << { x: 100,  y: 500, active: inputs.controller_one.key_held.l1, text: "L1"}
+      state.buttons << { x: 100,  y: 600, active: inputs.controller_one.key_held.l2, text: "L2"}
+      state.buttons << { x: 1100, y: 500, active: inputs.controller_one.key_held.r1, text: "R1"}
+      state.buttons << { x: 1100, y: 600, active: inputs.controller_one.key_held.r2, text: "R2"}
+      state.buttons << { x: 540,  y: 450, active: inputs.controller_one.key_held.select, text: "Select"}
+      state.buttons << { x: 660,  y: 450, active: inputs.controller_one.key_held.start, text: "Start"}
+      state.buttons << { x: 200,  y: 300, active: inputs.controller_one.key_held.left, text: "Left"}
+      state.buttons << { x: 300,  y: 400, active: inputs.controller_one.key_held.up, text: "Up"}
+      state.buttons << { x: 400,  y: 300, active: inputs.controller_one.key_held.right, text: "Right"}
+      state.buttons << { x: 300,  y: 200, active: inputs.controller_one.key_held.down, text: "Down"}
+      state.buttons << { x: 800,  y: 300, active: inputs.controller_one.key_held.x, text: "X"}
+      state.buttons << { x: 900,  y: 400, active: inputs.controller_one.key_held.y, text: "Y"}
+      state.buttons << { x: 1000, y: 300, active: inputs.controller_one.key_held.a, text: "A"}
+      state.buttons << { x: 900,  y: 200, active: inputs.controller_one.key_held.b, text: "B"}
+      state.buttons << { x: 450 + inputs.controller_one.left_analog_x_perc * 100,
+                         y: 100 + inputs.controller_one.left_analog_y_perc * 100,
+                         active: inputs.controller_one.key_held.l3,
+                         text: "L3" }
+      state.buttons << { x: 750 + inputs.controller_one.right_analog_x_perc * 100,
+                         y: 100 + inputs.controller_one.right_analog_y_perc * 100,
+                         active: inputs.controller_one.key_held.r3,
+                         text: "R3" }
     end
   
     # Gives each button a square shape.
     # If the button is being pressed or held (which means it is considered active),
     # the square is filled in. Otherwise, the button simply has a border.
     def render
-      state.buttons.each do |x, y, active, text|
-        rect = [x, y, 75, 75]
+      state.buttons.each do |b|
+        rect = { x: b.x, y: b.y, w: 75, h: 75 }
   
-        if active # if button is pressed
+        if b.active # if button is pressed
           outputs.solids << rect # rect is output as solid (filled in)
         else
           outputs.borders << rect # otherwise, output as border
         end
   
         # Outputs the text of each button using labels.
-        outputs.labels << [x, y + 95, text] # add 95 to place label above button
+        outputs.labels << { x: b.x, y: b.y + 95, text: b.text } # add 95 to place label above button
       end
   
-      outputs.labels << [10, 60, "Left Analog x: #{inputs.controller_one.left_analog_x_raw} (#{inputs.controller_one.left_analog_x_perc * 100}%)"]
-      outputs.labels << [10, 30, "Left Analog y: #{inputs.controller_one.left_analog_y_raw} (#{inputs.controller_one.left_analog_y_perc * 100}%)"]
-      outputs.labels << [900, 60, "Right Analog x: #{inputs.controller_one.right_analog_x_raw} (#{inputs.controller_one.right_analog_x_perc * 100}%)"]
-      outputs.labels << [900, 30, "Right Analog y: #{inputs.controller_one.right_analog_y_raw} (#{inputs.controller_one.right_analog_y_perc * 100}%)"]
+      outputs.labels << { x:  10, y: 60, text: "Left Analog x: #{inputs.controller_one.left_analog_x_raw} (#{inputs.controller_one.left_analog_x_perc * 100}%)" }
+      outputs.labels << { x:  10, y: 30, text: "Left Analog y: #{inputs.controller_one.left_analog_y_raw} (#{inputs.controller_one.left_analog_y_perc * 100}%)" }
+      outputs.labels << { x: 900, y: 60, text: "Right Analog x: #{inputs.controller_one.right_analog_x_raw} (#{inputs.controller_one.right_analog_x_perc * 100}%)" }
+      outputs.labels << { x: 900, y: 30, text: "Right Analog y: #{inputs.controller_one.right_analog_y_raw} (#{inputs.controller_one.right_analog_y_perc * 100}%)" }
     end
   end
   
@@ -5212,10 +5328,12 @@ Follows is a source code listing for all files that have been open sourced. This
     #  the next new touch will be finger_one again, but until then, new touches
     #  don't fill in earlier slots.
     if !args.inputs.finger_one.nil?
-      args.outputs.primitives << [640, 650, "Finger #1 is touching at (#{args.inputs.finger_one.x}, #{args.inputs.finger_one.y}).", 5, 1, 255, 255, 255].label
+      args.outputs.primitives << { x: 640, y: 650, text: "Finger #1 is touching at (#{args.inputs.finger_one.x}, #{args.inputs.finger_one.y}).",
+                                   size_enum: 5, alignment_enum: 1, r: 255, g: 255, b: 255 }.label
     end
     if !args.inputs.finger_two.nil?
-      args.outputs.primitives << [640, 600, "Finger #2 is touching at (#{args.inputs.finger_two.x}, #{args.inputs.finger_two.y}).", 5, 1, 255, 255, 255].label
+      args.outputs.primitives << { x: 640, y: 600, text: "Finger #2 is touching at (#{args.inputs.finger_two.x}, #{args.inputs.finger_two.y}).",
+                                   size_enum: 5, alignment_enum: 1, r: 255, g: 255, b: 255 }.label
     end
   
     # Here's the more flexible interface: this will report as many simultaneous
@@ -5236,11 +5354,10 @@ Follows is a source code listing for all files that have been open sourced. This
       r = (color & 0xFF0000) >> 16
       g = (color & 0x00FF00) >> 8
       b = (color & 0x0000FF)
-      args.outputs.primitives << [v.x - (size / 2), v.y + (size / 2), size, size, r, g, b, 255].solid
-      args.outputs.primitives << [v.x, v.y + size, k.to_s, 0, 1, 0, 0, 0].label
+      args.outputs.primitives << { x: v.x - (size / 2), y: v.y + (size / 2), w: size, h: size, r: r, g: g, b: b, a: 255 }.solid
+      args.outputs.primitives << { x: v.x, y: v.y + size, text: k.to_s, alignment_enum: 1 }.label
     }
   end
-  
 
 #+end_src
 
@@ -5280,6 +5397,8 @@ Follows is a source code listing for all files that have been open sourced. This
   # in this tick "entry point": `looping_animation`, and the
   # second method is `one_time_animation`.
   def tick args
+    # uncomment the line below to see animation play out in slow motion
+    # args.gtk.slowmo! 6
     looping_animation args
     one_time_animation args
   end
@@ -5312,22 +5431,22 @@ Follows is a source code listing for all files that have been open sourced. This
                                                 does_sprite_loop
   
     # Now that we have `sprite_index, we can present the correct file.
-    args.outputs.sprites << [100, 100, 100, 100, "sprites/dragon_fly_#{sprite_index}.png"]
+    args.outputs.sprites << { x: 100, y: 100, w: 100, h: 100, path: "sprites/dragon_fly_#{sprite_index}.png" }
   
     # Try changing the numbers below to see how the animation changes:
-    args.outputs.sprites << [100, 200, 100, 100, "sprites/dragon_fly_#{0.frame_index 6, 4, true}.png"]
+    args.outputs.sprites << { x: 100, y: 200, w: 100, h: 100, path: "sprites/dragon_fly_#{0.frame_index 6, 4, true}.png" }
   end
   
   # This function shows how to animate a sprite that executes
   # only once when the "f" key is pressed.
   def one_time_animation args
     # This is just a label the shows instructions within the game.
-    args.outputs.labels << [220, 350, "(press f to animate)"]
+    args.outputs.labels <<  { x: 220, y: 350, text: "(press f to animate)" }
   
     # If "f" is pressed on the keyboard...
     if args.inputs.keyboard.key_down.f
       # Print the frame that "f" was pressed on.
-      puts "Hello from main.rb! The \"f\" key was in the down state on frame: #{args.inputs.keyboard.key_down.f}"
+      puts "Hello from main.rb! The \"f\" key was in the down state on frame: #{args.state.tick_count}"
   
       # And MOST IMPORTANTLY set the point it time to start the animation,
       # equal to "now" which is represented as args.state.tick_count.
@@ -5360,7 +5479,7 @@ Follows is a source code listing for all files that have been open sourced. This
     sprite_index ||= 0
   
     # Present the sprite.
-    args.outputs.sprites << [100, 300, 100, 100, "sprites/dragon_fly_#{sprite_index}.png"]
+    args.outputs.sprites << { x: 100, y: 300, w: 100, h: 100, path: "sprites/dragon_fly_#{sprite_index}.png" }
   
     tick_instructions args, "Sample app shows how to use Numeric#frame_index and string interpolation to animate a sprite over time."
   end
@@ -12705,9 +12824,108 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
+*** Advanced Rendering - Simple Camera - main.rb
+#+begin_src ruby
+  # ./samples/07_advanced_rendering/07_simple_camera/app/main.rb
+  def tick args
+    # variables you can play around with
+    args.state.world.w      ||= 1280
+    args.state.world.h      ||= 720
+  
+    args.state.player.x     ||= 0
+    args.state.player.y     ||= 0
+    args.state.player.size  ||= 32
+  
+    args.state.enemy.x      ||= 700
+    args.state.enemy.y      ||= 700
+    args.state.enemy.size   ||= 16
+  
+    args.state.camera.x                ||= 640
+    args.state.camera.y                ||= 300
+    args.state.camera.scale            ||= 1.0
+    args.state.camera.show_empty_space ||= :yes
+  
+    # instructions
+    args.outputs.primitives << { x: 0, y:  80.from_top, w: 360, h: 80, r: 0, g: 0, b: 0, a: 128 }.solid
+    args.outputs.primitives << { x: 10, y: 10.from_top, text: "arrow keys to move around", r: 255, g: 255, b: 255}.label
+    args.outputs.primitives << { x: 10, y: 30.from_top, text: "+/- to change zoom of camera", r: 255, g: 255, b: 255}.label
+    args.outputs.primitives << { x: 10, y: 50.from_top, text: "tab to change camera edge behavior", r: 255, g: 255, b: 255}.label
+  
+    # render scene
+    args.outputs[:scene].w = args.state.world.w
+    args.outputs[:scene].h = args.state.world.h
+  
+    args.outputs[:scene].solids << { x: 0, y: 0, w: args.state.world.w, h: args.state.world.h, r: 20, g: 60, b: 80 }
+    args.outputs[:scene].solids << { x: args.state.player.x, y: args.state.player.y,
+                                     w: args.state.player.size, h: args.state.player.size, r: 80, g: 155, b: 80 }
+    args.outputs[:scene].solids << { x: args.state.enemy.x, y: args.state.enemy.y,
+                                     w: args.state.enemy.size, h: args.state.enemy.size, r: 155, g: 80, b: 80 }
+  
+    # render camera
+    scene_position = calc_scene_position args
+    args.outputs.sprites << { x: scene_position.x,
+                              y: scene_position.y,
+                              w: scene_position.w,
+                              h: scene_position.h,
+                              path: :scene }
+  
+    # move player
+    if args.inputs.directional_angle
+      args.state.player.x += args.inputs.directional_angle.vector_x * 5
+      args.state.player.y += args.inputs.directional_angle.vector_y * 5
+      args.state.player.x  = args.state.player.x.clamp(0, args.state.world.w - args.state.player.size)
+      args.state.player.y  = args.state.player.y.clamp(0, args.state.world.h - args.state.player.size)
+    end
+  
+    # +/- to zoom in and out
+    if args.inputs.keyboard.plus && args.state.tick_count.zmod?(3)
+      args.state.camera.scale += 0.05
+    elsif args.inputs.keyboard.hyphen && args.state.tick_count.zmod?(3)
+      args.state.camera.scale -= 0.05
+    elsif args.inputs.keyboard.key_down.tab
+      if args.state.camera.show_empty_space == :yes
+        args.state.camera.show_empty_space = :no
+      else
+        args.state.camera.show_empty_space = :yes
+      end
+    end
+  
+    args.state.camera.scale = args.state.camera.scale.greater(0.1)
+  end
+  
+  def calc_scene_position args
+    result = { x: args.state.camera.x - (args.state.player.x * args.state.camera.scale),
+               y: args.state.camera.y - (args.state.player.y * args.state.camera.scale),
+               w: args.state.world.w * args.state.camera.scale,
+               h: args.state.world.h * args.state.camera.scale,
+               scale: args.state.camera.scale }
+  
+    return result if args.state.camera.show_empty_space == :yes
+  
+    if result.w < args.grid.w
+      result.merge!(x: (args.grid.w - result.w).half)
+    elsif (args.state.player.x * result.scale) < args.grid.w.half
+      result.merge!(x: 10)
+    elsif (result.x + result.w) < args.grid.w
+      result.merge!(x: - result.w + (args.grid.w - 10))
+    end
+  
+    if result.h < args.grid.h
+      result.merge!(y: (args.grid.h - result.h).half)
+    elsif (result.y) > 10
+      result.merge!(y: 10)
+    elsif (result.y + result.h) < args.grid.h
+      result.merge!(y: - result.h + (args.grid.h - 10))
+    end
+  
+    result
+  end
+
+#+end_src
+
 *** Advanced Rendering - Splitscreen Camera - main.rb
 #+begin_src ruby
-  # ./samples/07_advanced_rendering/07_splitscreen_camera/app/main.rb
+  # ./samples/07_advanced_rendering/08_splitscreen_camera/app/main.rb
   class CameraMovement
     attr_accessor :state, :inputs, :outputs, :grid
   
@@ -13108,7 +13326,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 *** Advanced Rendering - Z Targeting Camera - main.rb
 #+begin_src ruby
-  # ./samples/07_advanced_rendering/08_z_targeting_camera/app/main.rb
+  # ./samples/07_advanced_rendering/09_z_targeting_camera/app/main.rb
   class Game
     attr_gtk
   
@@ -14736,6 +14954,142 @@ Follows is a source code listing for all files that have been open sourced. This
   
   $gtk.reset 100
   $gtk.log_level = :off
+
+#+end_src
+
+*** Advanced Debugging - Unit Tests - pretty_format_tests.rb
+#+begin_src ruby
+  # ./samples/10_advanced_debugging/03_unit_tests/pretty_format_tests.rb
+  def H opts
+    opts
+  end
+  
+  def A *opts
+    opts
+  end
+  
+  def assert_format args, assert, hash, expected
+    actual = args.fn.pretty_format hash
+    assert.are_equal! actual, expected
+  end
+  
+  def test_pretty_print args, assert
+    # =============================
+    # hash with single value
+    # =============================
+    input = (H first_name: "John")
+    expected = <<-S
+  {:first_name "John"}
+  S
+    (assert_format args, assert, input, expected)
+  
+    # =============================
+    # hash with two values
+    # =============================
+    input = (H first_name: "John", last_name: "Smith")
+    expected = <<-S
+  {:first_name "John"
+   :last_name "Smith"}
+  S
+  
+    (assert_format args, assert, input, expected)
+  
+    # =============================
+    # hash with inner hash
+    # =============================
+    input = (H first_name: "John",
+               last_name: "Smith",
+               middle_initial: "I",
+               so: (H first_name: "Pocahontas",
+                      last_name: "Tsenacommacah"),
+               friends: (A (H first_name: "Side", last_name: "Kick"),
+                           (H first_name: "Tim", last_name: "Wizard")))
+    expected = <<-S
+  {:first_name "John"
+   :last_name "Smith"
+   :middle_initial "I"
+   :so {:first_name "Pocahontas"
+        :last_name "Tsenacommacah"}
+   :friends [{:first_name "Side"
+              :last_name "Kick"}
+             {:first_name "Tim"
+              :last_name "Wizard"}]}
+  S
+  
+    (assert_format args, assert, input, expected)
+  
+    # =============================
+    # array with one value
+    # =============================
+    input = (A 1)
+    expected = <<-S
+  [1]
+  S
+    (assert_format args, assert, input, expected)
+  
+    # =============================
+    # array with multiple values
+    # =============================
+    input = (A 1, 2, 3)
+    expected = <<-S
+  [1
+   2
+   3]
+  S
+    (assert_format args, assert, input, expected)
+  
+    # =============================
+    # array with multiple values hashes
+    # =============================
+    input = (A (H first_name: "Side", last_name: "Kick"),
+               (H first_name: "Tim", last_name: "Wizard"))
+    expected = <<-S
+  [{:first_name "Side"
+    :last_name "Kick"}
+   {:first_name "Tim"
+    :last_name "Wizard"}]
+  S
+  
+    (assert_format args, assert, input, expected)
+  end
+  
+  def test_nested_nested args, assert
+    # =============================
+    # nested array in nested hash
+    # =============================
+    input = (H type: :root,
+               text: "Root",
+               children: (A (H level: 1,
+                               text: "Level 1",
+                               children: (A (H level: 2,
+                                               text: "Level 2",
+                                               children: [])))))
+  
+    expected = <<-S
+  {:type :root
+   :text "Root"
+   :children [{:level 1
+               :text "Level 1"
+               :children [{:level 2
+                           :text "Level 2"
+                           :children []}]}]}
+  
+  S
+  
+    (assert_format args, assert, input, expected)
+  end
+  
+  def test_scene args, assert
+    script = <<-S
+  * Scene 1
+  ** Narrator
+  They say happy endings don't exist.
+  ** Narrator
+  They say true love is a lie.
+  S
+    input = parse_org args, script
+    puts (args.fn.pretty_format input)
+  end
 
 #+end_src
 
@@ -25257,6 +25611,225 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
+*** Dungeon Crawl - Classics Jam - main.rb
+#+begin_src ruby
+  # ./samples/99_genre_dungeon_crawl/classics_jam/app/main.rb
+  class Game
+    attr_gtk
+  
+    def tick
+      defaults
+      render
+      input
+      calc
+    end
+  
+    def defaults
+      player.x              ||= 640
+      player.y              ||= 360
+      player.w              ||= 16
+      player.h              ||= 16
+      player.attacked_at    ||= -1
+      player.angle          ||= 0
+      player.future_player  ||= future_player_position 0, 0
+      player.projectiles    ||= []
+      player.damage         ||= 0
+      state.level           ||= create_level level_one_template
+    end
+  
+    def render
+      outputs.sprites << level.walls.map do |w|
+        w.merge(path: 'sprites/square/gray.png')
+      end
+  
+      outputs.sprites << level.spawn_locations.map do |s|
+        s.merge(path: 'sprites/square/blue.png')
+      end
+  
+      outputs.sprites << player.projectiles.map do |p|
+        p.merge(path: 'sprites/square/blue.png')
+      end
+  
+      outputs.sprites << level.enemies.map do |e|
+        e.merge(path: 'sprites/square/red.png')
+      end
+  
+      outputs.sprites << player.merge(path: 'sprites/circle/green.png', angle: player.angle)
+  
+      outputs.labels << { x: 30, y: 30.from_top, text: "damage: #{player.damage || 0}" }
+    end
+  
+    def input
+      player.angle = inputs.directional_angle || player.angle
+      if inputs.controller_one.key_down.a || inputs.keyboard.key_down.space
+        player.attacked_at = state.tick_count
+      end
+    end
+  
+    def calc
+      calc_player
+      calc_projectiles
+      calc_enemies
+      calc_spawn_locations
+    end
+  
+    def calc_player
+      if player.attacked_at == state.tick_count
+        player.projectiles << { at: state.tick_count,
+                                x: player.x,
+                                y: player.y,
+                                angle: player.angle,
+                                w: 4,
+                                h: 4 }.center_inside_rect(player)
+      end
+  
+      if player.attacked_at.elapsed_time > 5
+        future_player = future_player_position inputs.left_right * 2, inputs.up_down * 2
+        future_player_collision = future_collision player, future_player, level.walls
+        player.x = future_player_collision.x if !future_player_collision.dx_collision
+        player.y = future_player_collision.y if !future_player_collision.dy_collision
+      end
+    end
+  
+    def calc_projectile_collisions entities
+      entities.each do |e|
+        e.damage ||= 0
+        player.projectiles.each do |p|
+          if !p.collided && (p.intersect_rect? e)
+            p.collided = true
+            e.damage  += 1
+          end
+        end
+      end
+    end
+  
+    def calc_projectiles
+      player.projectiles.map! do |p|
+        dx, dy = p.angle.vector 10
+        p.merge(x: p.x + dx, y: p.y + dy)
+      end
+  
+      calc_projectile_collisions level.walls + level.enemies + level.spawn_locations
+      player.projectiles.reject! { |p| p.at.elapsed_time > 10000 }
+      player.projectiles.reject! { |p| p.collided }
+      level.enemies.reject! { |e| e.damage > e.hp }
+      level.spawn_locations.reject! { |s| s.damage > s.hp }
+    end
+  
+    def calc_enemies
+      level.enemies.map! do |e|
+        dx =  0
+        dx =  1 if e.x < player.x
+        dx = -1 if e.x > player.x
+        dy =  0
+        dy =  1 if e.y < player.y
+        dy = -1 if e.y > player.y
+        future_e           = future_entity_position dx, dy, e
+        future_e_collision = future_collision e, future_e, level.enemies + level.walls
+        e.next_x = e.x
+        e.next_y = e.y
+        e.next_x = future_e_collision.x if !future_e_collision.dx_collision
+        e.next_y = future_e_collision.y if !future_e_collision.dy_collision
+        e
+      end
+  
+      level.enemies.map! do |e|
+        e.x = e.next_x
+        e.y = e.next_y
+        e
+      end
+  
+      level.enemies.each do |e|
+        player.damage += 1 if e.intersect_rect? player
+      end
+    end
+  
+    def calc_spawn_locations
+      level.spawn_locations.map! do |s|
+        s.merge(countdown: s.countdown - 1)
+      end
+      level.spawn_locations
+           .find_all { |s| s.countdown.neg? }
+           .each do |s|
+        s.countdown = s.rate
+        s.merge(countdown: s.rate)
+        new_enemy = create_enemy s
+        if !(level.enemies.find { |e| e.intersect_rect? new_enemy })
+          level.enemies << new_enemy
+        end
+      end
+    end
+  
+    def create_enemy spawn_location
+      to_cell(spawn_location.ordinal_x, spawn_location.ordinal_y).merge hp: 2
+    end
+  
+    def create_level level_template
+      {
+        walls:           level_template.walls.map { |w| to_cell(w.ordinal_x, w.ordinal_y).merge(w) },
+        enemies:         [],
+        spawn_locations: level_template.spawn_locations.map { |s| to_cell(s.ordinal_x, s.ordinal_y).merge(s) }
+      }
+    end
+  
+    def level_one_template
+      {
+        walls:           [{ ordinal_x: 25, ordinal_y: 20},
+                          { ordinal_x: 25, ordinal_y: 21},
+                          { ordinal_x: 25, ordinal_y: 22},
+                          { ordinal_x: 25, ordinal_y: 23}],
+        spawn_locations: [{ ordinal_x: 10, ordinal_y: 10, rate: 120, countdown: 0, hp: 5 }]
+      }
+    end
+  
+    def player
+      state.player ||= {}
+    end
+  
+    def level
+      state.level  ||= {}
+    end
+  
+    def future_collision entity, future_entity, others
+      dx_collision = others.find { |o| o != entity && (o.intersect_rect? future_entity.dx) }
+      dy_collision = others.find { |o| o != entity && (o.intersect_rect? future_entity.dy) }
+  
+      {
+        dx_collision: dx_collision,
+        x: future_entity.dx.x,
+        dy_collision: dy_collision,
+        y: future_entity.dy.y
+      }
+    end
+  
+    def future_entity_position dx, dy, entity
+      {
+        dx:   entity.merge(x: entity.x + dx),
+        dy:   entity.merge(y: entity.y + dy),
+        both: entity.merge(x: entity.x + dx, y: entity.y + dy)
+      }
+    end
+  
+    def future_player_position  dx, dy
+      future_entity_position dx, dy, player
+    end
+  
+    def to_cell ordinal_x, ordinal_y
+      { x: ordinal_x * 16, y: ordinal_y * 16, w: 16, h: 16 }
+    end
+  end
+  
+  def tick args
+    $game ||= Game.new
+    $game.args = args
+    $game.tick
+  end
+  
+  $gtk.reset
+  $game = nil
+
+#+end_src
+
 *** Lowrez - Nokia 3310 - main.rb
 #+begin_src ruby
   # ./samples/99_genre_lowrez/nokia_3310/app/main.rb
@@ -35432,58 +36005,21 @@ Follows is a source code listing for all files that have been open sourced. This
     class Args
       include ArgsDeprecated
       include Serialize
-  
-      # Contains information related to input devices and input events.
-      #
-      # @return [Inputs]
       attr_accessor :inputs
-  
-      # Contains the means to interact with output devices such as the screen.
-      #
-      # @return [Outputs]
       attr_accessor :outputs
-  
-      # Contains the means to interact with the audio mixer.
-      #
-      # @return [Hash]
       attr_accessor :audio
-  
-      # Contains display size information to assist in positioning things on the screen.
-      #
-      # @return [Grid]
       attr_accessor :grid
-  
-      # Provides access to game play recording facilities within Game Toolkit.
-      #
-      # @return [Recording]
       attr_accessor :recording
-  
-      # Gives you access to geometry related functions.
-      #
-      # @return [Geometry]
       attr_accessor :geometry
-  
       attr_accessor :fn
-  
-      # This is where you'll put state associated with your video game.
-      #
-      # @return [OpenEntity]
       attr_accessor :state
-  
-      # Gives you access to the top level DragonRuby runtime.
-      #
-      # @return [Runtime]
+      attr_accessor :temp_state
       attr_accessor :runtime
       alias_method :gtk, :runtime
-  
       attr_accessor :passes
-  
       attr_accessor :wizards
-  
       attr_accessor :layout
-  
       attr_accessor :easing
-  
       attr_accessor :string
   
       def initialize runtime, recording
@@ -35492,6 +36028,7 @@ Follows is a source code listing for all files that have been open sourced. This
         @audio = {}
         @passes = []
         @state = OpenEntity.new
+        @temp_state = OpenEntity.new
         @state.tick_count = -1
         @runtime = runtime
         @recording = recording
@@ -35521,11 +36058,12 @@ Follows is a source code listing for all files that have been open sourced. This
   
       def serialize
         {
-          state: state.as_hash,
-          inputs: inputs.serialize,
-          passes: passes.serialize,
-          outputs: outputs.serialize,
-          grid: grid.serialize
+          state:      state.as_hash,
+          temp_state: temp_state.as_hash,
+          inputs:     inputs.serialize,
+          passes:     passes.serialize,
+          outputs:    outputs.serialize,
+          grid:       grid.serialize
         }
       end
   
@@ -35765,7 +36303,7 @@ Follows is a source code listing for all files that have been open sourced. This
         @assertion_performed = true
         if actual != expected
           actual_string = "#{actual}#{actual.nil? ? " (nil) " : " " }".strip
-          message = "actual:\n#{actual_string}\n\ndid not equal\n\nexpected:\n#{expected}.\n#{message}"
+          message = "actual:\n#{actual_string}\n\ndid not equal\n\nexpected:\n#{expected}\n#{message}"
           raise message
         end
         nil
@@ -35775,7 +36313,7 @@ Follows is a source code listing for all files that have been open sourced. This
         @assertion_performed = true
         if actual == expected
           actual_string = "#{actual}#{actual.nil? ? " (nil) " : " " }".strip
-          message = "actual:\n#{actual_string}\n\nequaled\n\nexpected:\n#{expected}.\n#{message}"
+          message = "actual:\n#{actual_string}\n\nequaled\n\nexpected:\n#{expected}\n#{message}"
           raise message
         end
         nil
@@ -35830,6 +36368,10 @@ Follows is a source code listing for all files that have been open sourced. This
       args.state
     end
   
+    def temp_state
+      args.temp_state
+    end
+  
     def inputs
       args.inputs
     end
@@ -35856,6 +36398,14 @@ Follows is a source code listing for all files that have been open sourced. This
   
     def layout
       args.layout
+    end
+  
+    def new_entity entity_type, init_hash = nil, &block
+      args.state.new_entity entity_type, init_hash, &block
+    end
+  
+    def new_entity_strict entity_type, init_hash = nil, &block
+      args.state.new_entity_strict entity_type, init_hash, &block
     end
   end
 
@@ -35968,6 +36518,7 @@ Follows is a source code listing for all files that have been open sourced. This
         @text_color = Color.new [255, 255, 255]
         @error_color = Color.new [200, 50, 50]
         @header_color = Color.new [100, 200, 220]
+        @code_color = Color.new [210, 168, 255]
         @animation_duration = 1.seconds
         @shown_at = -1
         load_history
@@ -36483,6 +37034,10 @@ Follows is a source code listing for all files that have been open sourced. This
         end
   
         render_log_offset args
+  
+        args.outputs.reserved << { x: 10.from_right, y: @bottom + 10, text: "Press CTRL+g to clear the prompt.",
+                                   vertical_alignment_enum: 0,
+                                   alignment_enum: 2, r: 80, g: 80, b: 80 }.label
       end
   
       def render_log_offset args
@@ -36505,7 +37060,7 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def include_subdued_markers? text
-        include_any_words? text, subdued_markers
+        (text.start_with? "* INFO: ") && (include_any_words? text, subdued_markers)
       end
   
       def include_any_words? text, words
@@ -36651,8 +37206,25 @@ Follows is a source code listing for all files that have been open sourced. This
         (log_entry.start_with? "**** ")
       end
   
+      def code? log_entry
+        (just_symbol? log_entry) || (codeblock_marker? log_entry)
+      end
+  
+      def just_symbol? log_entry
+        scrubbed = log_entry.gsub("*", "").strip
+        (scrubbed.start_with? ":") && (!scrubbed.include? " ") && (!scrubbed.include? "=>")
+      end
+  
+      def codeblock_marker? log_entry
+        return true if log_entry.strip.start_with?("#+begin_src")
+        return true if log_entry.strip.start_with?("#+end_src")
+        return false
+      end
+  
       def color_for_log_entry(log_entry)
-        if include_row_marker? log_entry
+        if code? log_entry
+          @code_color
+        elsif include_row_marker? log_entry
           @text_color
         elsif include_error_marker? log_entry
           @error_color
@@ -36838,7 +37410,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
         def itch_wizard_clicked
           @console.scroll_to_bottom
-          $wizards.itch.start
+          $wizards.itch.restart
         end
   
         def docs_clicked
@@ -37891,6 +38463,12 @@ Follows is a source code listing for all files that have been open sourced. This
         end
       end
   
+      def directional_angle
+        return nil unless directional_vector
+  
+        Math.atan2(up_down, left_right).to_degrees
+      end
+  
       def method_missing m, *args
         # combine the key with ctrl_
         if m.to_s.start_with?("ctrl_")
@@ -38123,6 +38701,22 @@ Follows is a source code listing for all files that have been open sourced. This
   
   module GTK
     module Geometry
+      def self.rotate_point point, angle, around = nil
+        s = Math.sin a.to_radians
+        c = Math.cos a.to_radians
+        px = point.x
+        py = point.y
+        cx = 0
+        cy = 0
+        if around
+          cx = around.x
+          cy = around.y
+        end
+  
+        point.merge(x: ((px - cx) * c - (py - cy) * s) + cx,
+                    y: ((px - cx) * s + (py - cy) * c) + cy)
+      end
+  
       # Returns f(t) for a cubic Bezier curve.
       def self.cubic_bezier t, a, b, c, d
         s  = 1 - t
@@ -38383,10 +38977,10 @@ Follows is a source code listing for all files that have been open sourced. This
   
       # @gtk
       def self.intersect_rect? rect_one, rect_two, tolerance = 0.1
-        return false if rect_one.right - tolerance < rect_two.left + tolerance
-        return false if rect_one.left + tolerance > rect_two.right - tolerance
-        return false if rect_one.top - tolerance < rect_two.bottom + tolerance
-        return false if rect_one.bottom + tolerance > rect_two.top - tolerance
+        return false if ((rect_one.x + rect_one.w) - tolerance) < (rect_two.x + tolerance)
+        return false if (rect_one.x + tolerance) > ((rect_two.x + rect_two.w) - tolerance)
+        return false if ((rect_one.y + rect_one.h) - tolerance) < (rect_two.y + tolerance)
+        return false if (rect_one.y + tolerance) > ((rect_two.y + rect_two.h) - tolerance)
         return true
       rescue Exception => e
         context_help_rect_one = (rect_one.__help_contract_implementation contract_intersect_rect?)[:not_implemented_methods]
@@ -38459,10 +39053,12 @@ Follows is a source code listing for all files that have been open sourced. This
   
       # @gtk
       def self.inside_rect? inner_rect, outer_rect, tolerance = 0.0
+        return nil if !inner_rect
+        return nil if !outer_rect
         inner_rect.x     + tolerance >= outer_rect.x     - tolerance &&
-        inner_rect.right - tolerance <= outer_rect.right + tolerance &&
+        (inner_rect.x + inner_rect.w) - tolerance <= (outer_rect.x + outer_rect.w) + tolerance &&
         inner_rect.y     + tolerance >= outer_rect.y     - tolerance &&
-        inner_rect.top   - tolerance <= outer_rect.top   + tolerance
+        (inner_rect.y + inner_rect.h) - tolerance <= (outer_rect.y + outer_rect.h) + tolerance
       rescue Exception => e
         raise e, ":inside_rect? failed for inner_rect: #{inner_rect} outer_rect: #{outer_rect}."
       end
@@ -38911,6 +39507,30 @@ Follows is a source code listing for all files that have been open sourced. This
         }
       end
   
+      def self.method_to_key_hash
+        return @method_to_key_hash if @method_to_key_hash
+        @method_to_key_hash = {}
+        string_representation_overrides ||= {
+          backspace: '\b'
+        }
+        char_to_method_hash.each do |k, v|
+          v.each do |vi|
+            t = { char_or_raw_key: k }
+  
+            if k.is_a? Numeric
+              t[:raw_key] = k
+              t[:string_representation] = "raw_key == #{k}"
+            else
+              t[:char] = k
+              t[:string_representation] = "\"#{k.strip}\""
+            end
+  
+            @method_to_key_hash[vi] = t
+          end
+        end
+        @method_to_key_hash
+      end
+  
       def self.char_to_method char, int = nil
         methods = char_to_method_hash[char] || char_to_method_hash[int]
         methods ? methods.dup : [char.to_sym || int]
@@ -39025,24 +39645,32 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def method_missing m, *args
-        begin
-          define_singleton_method(m) do
-            r = self.instance_variable_get("@#{m.without_ending_bang}".to_sym)
-            clear_key m
-            return r
-          end
+        if KeyboardKeys.method_to_key_hash[m.without_ending_bang]
+          begin
+            define_singleton_method(m) do
+              r = self.instance_variable_get("@#{m.without_ending_bang}".to_sym)
+              clear_key m
+              return r
+            end
   
-          return self.send m
-        rescue Exception => e
-          log_important "#{e}"
+            return self.send m
+          rescue Exception => e
+            log_important "#{e}"
+          end
         end
+  
+        did_you_mean = KeyboardKeys.method_to_key_hash.find_all do |k, v|
+          k.to_s[0..1] == m.to_s[0..1]
+        end.map {|k, v| ":#{k} (#{v[:string_representation]})" }
+        did_you_mean_string = ""
+        did_you_mean_string = ". Did you mean #{did_you_mean.join ", "}?"
   
         raise <<-S
   * ERROR:
-  There is no member on the keyboard called #{m}. Here is a to_s representation of what's available:
+  #{KeyboardKeys.method_to_key_hash.map { |k, v| "** :#{k} #{v.string_representation}" }.join("\n")}
   
-  #{KeyboardKeys.char_to_method_hash.map { |k, v| "[#{k} => #{v.join(",")}]" }.join("  ")}
-  
+  There is no key on the keyboard called :#{m}#{did_you_mean_string}.
+  Full list of available keys =:points_up:=.
   S
       end
   
@@ -39426,6 +40054,10 @@ Follows is a source code listing for all files that have been open sourced. This
           (controller_one && controller_one.directional_vector)
       end
   
+      def directional_angle
+        keyboard.directional_angle || (controller_one && controller_one.directional_angle)
+      end
+  
       # Returns a signal indicating right (`1`), left (`-1`), or neither ('0').
       #
       # @return [Integer]
@@ -39501,15 +40133,7 @@ Follows is a source code listing for all files that have been open sourced. This
   # MIT License
   # ios_wizard.rb has been released under MIT (*only this file*).
   
-  class WizardException < Exception
-    attr_accessor :console_primitives
-  
-    def initialize *console_primitives
-      @console_primitives = console_primitives
-    end
-  end
-  
-  class IOSWizard
+  class IOSWizard < Wizard
     def initialize
       @doctor_executed_at = 0
     end
@@ -39522,16 +40146,28 @@ Follows is a source code listing for all files that have been open sourced. This
       @steps ||= []
     end
   
-    def steps_development_build
+    def prerequisite_steps
       [
         :check_for_xcode,
         :check_for_brew,
         :check_for_certs,
-        :check_for_device,
-        :check_for_dev_profile,
+      ]
+    end
+  
+    def app_metadata_retrieval_steps
+      [
         :determine_team_identifier,
         :determine_app_name,
         :determine_app_id,
+      ]
+    end
+  
+    def steps_development_build
+      [
+        *prerequisite_steps,
+        :check_for_device,
+        :check_for_dev_profile,
+        *app_metadata_retrieval_steps,
         :blow_away_temp,
         :stage_app,
         :development_write_info_plist,
@@ -39546,13 +40182,10 @@ Follows is a source code listing for all files that have been open sourced. This
   
     def steps_production_build
       [
-        :check_for_xcode,
-        :check_for_brew,
-        :check_for_certs,
+        *prerequisite_steps,
         :check_for_distribution_profile,
-        :determine_team_identifier,
-        :determine_app_name,
-        :determine_app_id,
+        :determine_app_version,
+        *app_metadata_retrieval_steps,
         :blow_away_temp,
         :stage_app,
         :production_write_info_plist,
@@ -39595,6 +40228,8 @@ Follows is a source code listing for all files that have been open sourced. This
       @steps = steps_development_build
       @steps = steps_production_build if @production_build
       @certificate_name = nil
+      @app_version = opts[:version]
+      @app_version = "1.0" if @opts[:env] == :dev && !@app_version
       init_wizard_status
       log_info "Starting iOS Wizard so we can deploy to your device."
       @start_at = Kernel.global_tick_count
@@ -39981,15 +40616,15 @@ Follows is a source code listing for all files that have been open sourced. This
           <key>CFBundleExecutable</key>
           <string>:app_name</string>
           <key>CFBundleInfoDictionaryVersion</key>
-          <string>6.0</string>
+          <string>:app_version</string>
           <key>CFBundlePackageType</key>
           <string>APPL</string>
           <key>CFBundleShortVersionString</key>
-          <string>5.6</string>
+          <string>:app_version</string>
           <key>CFBundleSignature</key>
           <string>????</string>
           <key>CFBundleVersion</key>
-          <string>5.6</string>
+          <string>:app_version</string>
           <key>CFBundleIcons</key>
           <dict>
               <key>CFBundlePrimaryIcon</key>
@@ -40138,13 +40773,13 @@ Follows is a source code listing for all files that have been open sourced. This
           <key>CFBundleIdentifier</key>
           <string>:app_id</string>
           <key>CFBundleInfoDictionaryVersion</key>
-          <string>6.0</string>
+          <string>:app_version</string>
           <key>CFBundleName</key>
           <string>:app_name</string>
           <key>CFBundlePackageType</key>
           <string>APPL</string>
           <key>CFBundleShortVersionString</key>
-          <string>5.2</string>
+          <string>:app_version</string>
           <key>CFBundleSignature</key>
           <string>????</string>
           <key>CFBundleSupportedPlatforms</key>
@@ -40152,7 +40787,7 @@ Follows is a source code listing for all files that have been open sourced. This
                   <string>iPhoneOS</string>
           </array>
           <key>CFBundleVersion</key>
-          <string>5.2</string>
+          <string>:app_version</string>
           <key>DTCompiler</key>
           <string>com.apple.compilers.llvm.clang.1_0</string>
           <key>DTPlatformBuild</key>
@@ -40291,13 +40926,13 @@ Follows is a source code listing for all files that have been open sourced. This
           <key>CFBundleIdentifier</key>
           <string>:app_id</string>
           <key>CFBundleInfoDictionaryVersion</key>
-          <string>6.0</string>
+          <string>:app_version</string>
           <key>CFBundleName</key>
           <string>:app_name</string>
           <key>CFBundlePackageType</key>
           <string>APPL</string>
           <key>CFBundleShortVersionString</key>
-          <string>5.2</string>
+          <string>:app_version</string>
           <key>CFBundleSignature</key>
           <string>????</string>
           <key>CFBundleSupportedPlatforms</key>
@@ -40305,7 +40940,7 @@ Follows is a source code listing for all files that have been open sourced. This
                   <string>iPhoneOS</string>
           </array>
           <key>CFBundleVersion</key>
-          <string>5.2</string>
+          <string>:app_version</string>
           <key>DTCompiler</key>
           <string>com.apple.compilers.llvm.clang.1_0</string>
           <key>DTPlatformBuild</key>
@@ -40389,6 +41024,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
       info_plist_string.gsub!(":app_name", @app_name)
       info_plist_string.gsub!(":app_id", @app_id)
+      info_plist_string.gsub!(":app_version", @app_version)
   
       $gtk.write_file_root "tmp/ios/#{@app_name}.app/Info.plist", info_plist_string.strip
   
@@ -40466,10 +41102,22 @@ Follows is a source code listing for all files that have been open sourced. This
     end
   
     def print_publish_help
-        log_info "Go to https://appstoreconnect.apple.com/apps and create an App if you haven't already done so."
-        log_info "Go to https://appleid.apple.com and create a 'Application Specific Password'."
-        log_info "To upload your app, Download Transporter from the App Store https://apps.apple.com/us/app/transporter/id1450874784?mt=12."
-        log_info "Your app is located at ./tmp/ios/#{@app_name}.ipa"
+      has_transporter = (sh "ls /Applications/Transporter.app").include? "Contents"
+      if !has_transporter
+        $gtk.openurl "https://apps.apple.com/us/app/transporter/id1450874784?mt=12"
+        $console.set_command "$wizards.ios.start env: :#{@opts[:env]}, version: \"#{@opts[:version]}\""
+        raise WizardException.new(
+          "* To upload your app, Download Transporter from the App Store https://apps.apple.com/us/app/transporter/id1450874784?mt=12."
+        )
+      else
+        sh "mkdir ./tmp/ios/intermediary_artifacts"
+        sh "mv \"#{tmp_directory}/#{@app_name}.app\" #{tmp_directory}/intermediary_artifacts/"
+        sh "mv \"#{tmp_directory}/do_zip.sh\" #{tmp_directory}/intermediary_artifacts"
+        sh "mv \"#{tmp_directory}/Entitlements.plist\" #{tmp_directory}/intermediary_artifacts"
+        sh "mv \"#{tmp_directory}/ipa_root\" #{tmp_directory}/intermediary_artifacts/"
+        sh "open /Applications/Transporter.app"
+        sh "open ./tmp/ios/"
+      end
     end
   
     def compile_icons
@@ -40490,6 +41138,37 @@ Follows is a source code listing for all files that have been open sourced. This
       sh "cp -r \"#{root_folder}/native/\" \"#{app_path}/native/\""
       sh "CODESIGN_ALLOCATE=\"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\" /usr/bin/codesign -f -s \"#{@certificate_name}\" --entitlements #{tmp_directory}/Entitlements.plist \"#{tmp_directory}/#{@app_name}.app/native/ios-device/ext.dylib\""
     end
+  
+    def set_version version
+      @app_version = version
+      start env: @opts[:env], version: version
+    end
+  
+    def determine_app_version
+      return if @app_version
+      metadata_text = $gtk.read_file metadata_file_path
+      if !metadata_text
+        write_blank_metadata
+      end
+  
+      if metadata_text.each_line.to_a.length != 6
+        write_blank_metadata
+      end
+  
+      log "* INFO: Contents of #{metadata_file_path}:"
+      log "#+begin_src txt"
+      metadata_text.each_line { |l| log "  #{l}" }
+      log "#+end_src"
+      metadata = get_metadata
+  
+      if metadata[:version].start_with?("#") || !@app_version
+        log "* PROMPT: Please provide the version for your game."
+        $console.set_command "$wizards.ios.set_version \"1.0\""
+        raise WizardException.new(
+          "* INFO: I need a version number for your App.",
+        )
+      end
+    end
   end
 
 #+end_src
@@ -40501,36 +41180,12 @@ Follows is a source code listing for all files that have been open sourced. This
   # MIT License
   # itch_wizard.rb has been released under MIT (*only this file*).
   
-  class ItchWizard
+  class ItchWizard < Wizard
     def steps
       [
         :check_metadata,
-        :deploy
+        :deploy,
       ]
-    end
-  
-    def metadata_file_path
-      "metadata/game_metadata.txt"
-    end
-  
-    def get_metadata
-      metadata = $gtk.read_file metadata_file_path
-  
-      if !metadata
-        write_blank_metadata
-        metadata = $gtk.read_file metadata_file_path
-      end
-  
-      dev_id, dev_title, game_id, game_title, version, icon = *metadata.each_line.to_a
-  
-      {
-        dev_id: dev_id.strip,
-        dev_title: dev_title.strip,
-        game_id: game_id.strip,
-        game_title: game_title.strip,
-        version: version.strip,
-        icon: icon.strip
-      }
     end
   
     def write_blank_metadata
@@ -40550,7 +41205,7 @@ Follows is a source code listing for all files that have been open sourced. This
         write_blank_metadata
       end
   
-      if metadata_text.each_line.to_a.length != 6
+      if metadata_text.strip.each_line.to_a.length < 6
         write_blank_metadata
       end
   
@@ -40562,70 +41217,67 @@ Follows is a source code listing for all files that have been open sourced. This
   
       if metadata[:dev_id].start_with?("#") || !@dev_id
         log "* PROMPT: Please provide your username for Itch."
-        $console.set_command "$wizards.itch.set_dev_id \"your-itch-username\""
+        $console.set_command "$wizards.itch.set_dev_id \"#{metadata[:dev_id]}\""
         return :need_dev_id
       end
   
       if metadata[:dev_title].start_with?("#") || !@dev_title
         log "* PROMPT: Please provide developer's/company's name that you want displayed."
-        $console.set_command "$wizards.itch.set_dev_title \"Your Name\""
+        $console.set_command "$wizards.itch.set_dev_title \"#{metadata[:dev_title]}\""
         return :need_dev_title
       end
   
       if metadata[:game_id].start_with?("#") || !@game_id
         log "* PROMPT: Please provide the id for you game. This is the id you specified when you set up a new game page on Itch."
-        $console.set_command "$wizards.itch.set_game_id \"your-game-id\""
+        $console.set_command "$wizards.itch.set_game_id \"#{metadata[:game_id]}\""
         return :need_game_id
       end
   
       if metadata[:game_title].start_with?("#") || !@game_title
         log "* PROMPT: Please provide the display name for your game. (This can include spaces)"
-        $console.set_command "$wizards.itch.set_game_title \"Your Game\""
+        $console.set_command "$wizards.itch.set_game_title \"#{metadata[:game_title]}\""
         return :need_game_title
       end
   
       if metadata[:version].start_with?("#") || !@version
         log "* PROMPT: Please provide the version for your game."
-        $console.set_command "$wizards.itch.set_version \"1.0\""
+        $console.set_command "$wizards.itch.set_version \"#{metadata[:version]}\""
         return :need_version
       end
   
       if metadata[:icon].start_with?("#") || !@icon
         log "* PROMPT: Please provide icon path for your game."
-        $console.set_command "$wizards.itch.set_icon \"icon.png\""
+        $console.set_command "$wizards.itch.set_icon \"#{metadata[:icon]}\""
         return :need_icon
       end
+  
+      puts "here!! success!!!"
   
       return :success
     end
   
     def set_dev_id value
       @dev_id = value
-      write_metadata
       start
     end
   
     def set_dev_title value
       @dev_title = value
-      write_metadata
       start
     end
   
     def set_game_id value
       @game_id = value
-      write_metadata
       start
     end
   
     def set_game_title value
       @game_title = value
-      write_metadata
       start
     end
   
     def set_version value
       @version = value
-      write_metadata
       start
     end
   
@@ -40668,7 +41320,7 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       if @icon
-        text += "icon=metadata/#{@icon}\n"
+        text += "icon=#{@icon}\n"
       else
         text += "#icon=metadata/icon.png\n"
       end
@@ -40686,10 +41338,25 @@ Follows is a source code listing for all files that have been open sourced. This
   
     def deploy
       log_info "* Running dragonruby-publish: #{package_command}"
-      results = $gtk.exec package_command
+      $gtk.openurl "http://itch.io/dashboard" if $gtk.platform == "Mac OS X"
+      if $gtk.platform? :mac
+        $gtk.exec "rm -rf ./builds"
+      end
+      results = $gtk.exec "#{package_command} --only-package"
+      puts File.expand_path("./builds")
+  
       log "#+begin_src"
       log results
       log "#+end_src"
+  
+      if $gtk.platform? :mac
+        $gtk.exec "open ./builds/"
+      elsif $gtk.platform? :windows
+        $gtk.exec "powershell \"ii .\""
+      end
+  
+      $gtk.openurl "https://itch.io/dashboard"
+  
       :success
     end
   
@@ -40700,7 +41367,7 @@ Follows is a source code listing for all files that have been open sourced. This
       steps.each do |m|
         begin
           log_info "Running Itch Wizard Step: ~$wizards.itch.#{m}~"
-          result = (send m) || :success if @wizard_status[m][:result] != :success
+          result = (send m) || :success
           @wizard_status[m][:result] = result
           if result != :success
             log_info "Exiting wizard. :#{result}"
@@ -41075,17 +41742,30 @@ Follows is a source code listing for all files that have been open sourced. This
   
       def rect_defaults
         {
-          row: nil,
-          col: nil,
-          h:   1,
-          w:   1,
-          dx:  0,
-          dy:  0,
-          rect: :control_rect
+          row:      nil,
+          col:      nil,
+          h:        1,
+          w:        1,
+          dx:       0,
+          dx_ratio: 1,
+          dy:       0,
+          dy_ratio: 1,
+          dh_ratio: 1,
+          dw_ratio: 1,
+          merge:    nil,
+          rect:     :control_rect
         }
       end
   
-      def rect opts
+      def rect *all_opts
+        if all_opts.length == 1
+          opts = all_opts.first
+        else
+          opts = {}
+          all_opts.each do |o|
+            opts.merge! o
+          end
+        end
         opts = rect_defaults.merge opts
         result = send opts[:rect]
         if opts[:row] && opts[:col] && opts[:w] && opts[:h]
@@ -41132,10 +41812,15 @@ Follows is a source code listing for all files that have been open sourced. This
           result[:h] += device.grid_area.gutter * 2
         end
   
-        result[:x] += opts[:dx] if opts[:dx]
-        result[:y] += opts[:dy] if opts[:dy]
-        result[:w] += opts[:dw] if opts[:dw]
-        result[:h] += opts[:dh] if opts[:dh]
+        result[:x] += opts[:dx]       if opts[:dx]
+        result[:x] *= opts[:dx_ratio] if opts[:dx_ratio]
+        result[:y] += opts[:dy]       if opts[:dy]
+        result[:y] *= opts[:dy_ratio] if opts[:dy_ratio]
+        result[:w] += opts[:dw]       if opts[:dw]
+        result[:w] *= opts[:dw_ratio] if opts[:dw_ratio]
+        result[:h] += opts[:dh]       if opts[:dh]
+        result[:h] *= opts[:dh_ratio] if opts[:dh_ratio]
+        result.merge! opts[:merge]     if opts[:merge]
         result[:row] = opts[:row]
         result[:col] = opts[:col]
   
@@ -41568,8 +42253,24 @@ Follows is a source code listing for all files that have been open sourced. This
       self / 2.0
     end
   
+    def third
+      self / 3.0
+    end
+  
+    def quarter
+      self / 4.0
+    end
+  
     def to_byte
       clamp(0, 255).to_i
+    end
+  
+    def clamp *opts
+      min = (opts.at 0)
+      max = (opts.at 1)
+      return min if min && self < min
+      return max if max && self > max
+      return self
     end
   
     def clamp_wrap min, max
@@ -41975,12 +42676,6 @@ Follows is a source code listing for all files that have been open sourced. This
       return gt other
     end
   
-    def == other
-      return true if __original_eq_eq__ other
-      return __original_eq_eq__ other.entity_id if other.is_a? OpenEntity
-      return false
-    end
-  
     # @gtk
     def map
       unless block_given?
@@ -42172,12 +42867,6 @@ Follows is a source code listing for all files that have been open sourced. This
       __raise_arithmetic_exception__ other, :-, e
     end
   
-    def == other
-      return true if __original_eq_eq__ other
-      return __original_eq_eq__ other.entity_id if other.is_a? GTK::OpenEntity
-      return false
-    end
-  
     # Returns `-1` if the number is less than `0`. `+1` if the number
     # is greater than `0`. Returns `0` if the number is equal to `0`.
     #
@@ -42301,6 +42990,10 @@ Follows is a source code listing for all files that have been open sourced. This
   
     def nan?
       false
+    end
+  
+    def center other
+      (self - other).abs.fdiv(2)
     end
   end
 
@@ -42852,10 +43545,11 @@ Follows is a source code listing for all files that have been open sourced. This
           if l.respond_to? :draw_override
             l.draw_override @ffi_draw
           else
-            @ffi_draw.draw_label l.x, l.y, l.text.s_or_default,
-                                 l.size_enum, l.alignment_enum,
-                                 l.r, l.g, l.b, l.a,
-                                 l.font.s_or_default(nil)
+            @ffi_draw.draw_label_2 l.x, l.y, l.text.s_or_default,
+                                   l.size_enum, l.alignment_enum,
+                                   l.r, l.g, l.b, l.a,
+                                   l.font.s_or_default(nil),
+                                   (l.vertical_alignment_enum || 2)
           end
         rescue Exception => e
           raise_conversion_for_rendering_failed l, e, :label
@@ -43253,6 +43947,7 @@ Follows is a source code listing for all files that have been open sourced. This
               'dragon/trace.rb',
               'dragon/readme_docs.rb',
               'dragon/hotload_client.rb',
+              'dragon/wizards.rb',
               'dragon/ios_wizard.rb',
               'dragon/itch_wizard.rb',
             ] + core_files_to_reload + @required_files
@@ -43306,13 +44001,14 @@ Follows is a source code listing for all files that have been open sourced. This
         end
   
         def hotload_if_needed
+          return if Kernel.tick_count < 0
           hotload_source_files
           check_mailbox
         end
   
         def on_load_succeeded file
-          @rcb_sender.files_reloaded << file
-          @rcb_sender.reloaded_files << file
+          self.files_reloaded << file
+          self.reloaded_files << file
           Trace.untrace_classes!
         end
   
@@ -43364,6 +44060,30 @@ Follows is a source code listing for all files that have been open sourced. This
         next_word = (word + " " + rest[0])
         return wrapped_lines_recur next_word, rest[1..-1], length, aggregate
       end
+    end
+  
+    def char_byte
+      return nil if self.length == 0
+      c = self.each_char.first.bytes
+      c = c.first if c.is_a? Enumerable
+      c
+    end
+  
+    def insert_character_at index, char
+      t = each_char.to_a
+      t = (t.insert index, char)
+      t.join
+    end
+  
+    def excluding_character_at index
+      t = each_char.to_a
+      t.delete_at index
+      t.join
+    end
+  
+    def excluding_last_character
+      return "" if self.length <= 1
+      return excluding_character_at(self.length - 1)
     end
   
     def end_with_bang?
@@ -43583,7 +44303,7 @@ Follows is a source code listing for all files that have been open sourced. This
         log "#{self.failed.length} test(s) failed."
         self.failed.each do |h|
           log "**** Test name: :#{h[:m]}"
-          log "#{h[:e].to_s.gsub("* ERROR:", "").strip}"
+          log "#{h[:e].to_s.gsub("* ERROR:", "").strip}\n#{h[:e].__backtrace_to_org__}"
         end
       end
     end
@@ -43787,6 +44507,40 @@ Follows is a source code listing for all files that have been open sourced. This
   # Copyright 2019 DragonRuby LLC
   # MIT License
   # wizards.rb has been released under MIT (*only this file*).
+  
+  class Wizard
+    def metadata_file_path
+      "metadata/game_metadata.txt"
+    end
+  
+    def get_metadata
+      metadata = $gtk.read_file metadata_file_path
+  
+      if !metadata
+        write_blank_metadata
+        metadata = $gtk.read_file metadata_file_path
+      end
+  
+      dev_id, dev_title, game_id, game_title, version, icon = *metadata.each_line.to_a
+  
+      {
+        dev_id:     dev_id.strip.gsub("#", "").gsub("devid=", ""),
+        dev_title:  dev_title.strip.gsub("#", "").gsub("devtitle=", ""),
+        game_id:    game_id.strip.gsub("#", "").gsub("gameid=", ""),
+        game_title: game_title.strip.gsub("#", "").gsub("gametitle=", ""),
+        version:    version.strip.gsub("#", "").gsub("version=", ""),
+        icon:       icon.strip.gsub("#", "").gsub("icon=", "")
+      }
+    end
+  end
+  
+  class WizardException < Exception
+    attr_accessor :console_primitives
+  
+    def initialize *console_primitives
+      @console_primitives = console_primitives
+    end
+  end
   
   module GTK
     class Wizards
