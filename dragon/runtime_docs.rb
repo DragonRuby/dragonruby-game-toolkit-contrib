@@ -5,6 +5,7 @@
 
 # Contributors outside of DragonRuby who also hold Copyright:
 # Ketan Patel: https://github.com/cookieoverflow
+# Marc Heiligers: https://github.com/marcheiligers
 
 module RuntimeDocs
   def docs_method_sort_order
@@ -278,11 +279,21 @@ Returns a ~Hash~ with all keys on the keyboard in their respective state. The ~H
 - ~:down_or_held~
 - ~:up~
 ** ~args.outputs~
-~args.outputs.PROPERTY~ is how you render to the screen.
+~args.outputs.PROPERTY~ is how you render to the screen and play sounds.
+
+Available rendered output types are ~solids~, ~sprites~, ~primitives~, ~labels~, ~lines~, ~borders~, and ~debug~, described below. Each type has a corresponding static type, such as ~static_solids~, ~static_sprites~ and so on. The static types do not need to be readded to the collection for every tick and are rendered above their non-static counterparts.
+
+Rendering to the screen happens in the following order:
+
+#+begin_src ruby
+  solids < sprites < primitives < labels < lines < borders < debug
+#+end_src
+
+If you want complete control over the z-order, you should use ~primitives~ for all outputs (except ~sound~ and ~background_color~, of course).
 *** ~.background_color~
 Set ~args.outputs.background_color~ to an ~Array~ with ~RGB~ values (eg. ~[255, 255, 255]~ for the color white).
 *** ~.sounds~
-Send a file path to this collection to play a sound. The sound file must be under the ~mygame~ directory. Example: ~args.outputs.sounds << "sounds/jump.wav"~.
+Send a file path to this collection to play a sound. The sound file must be under your game directory (by default, the ~mygame~ directory). Example: ~args.outputs.sounds << "sounds/jump.wav"~.
 *** ~.solids~
 Send a Primitive to this collection to render a filled in rectangle to the screen. This collection is cleared at the end of every frame.
 *** ~.static_solids~
