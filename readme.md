@@ -112,3 +112,7 @@ Now that we are in the Pull requests tab, you can go ahead and click the nice gr
 You will now be in the pull request compare stage. It goes over all the changes you have made to the base code. This will take you too the comment page. You should always leave a few comments about what you changed and why. It helps people who follow you understand why you made these changes. Now hit that button (It is another green one)!
  
 Congratulations! Once an admin merges your changes, you will be a DragonRubyGTK contributor. Wear that title with pride!
+
+# Markup
+
+Documentation in the `dragon/*_docs.rb` files is marked up using [Org Mode](https://orgmode.org/).

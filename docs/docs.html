@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>DragonRuby Game Toolkit Documentation</title>
-    <link href="docs.css?ver=1623536644" rel="stylesheet" type="text/css" media="all">
+    <link href="docs.css?ver=1623540090" rel="stylesheet" type="text/css" media="all">
   </head>
   <body>
     <div id='toc'>
@@ -1336,7 +1336,18 @@ Returns a <code>Hash</code> with all keys on the keyboard in their respective st
 </ul>
 <h2 id='----args.outputs-'><code>args.outputs</code></h2>
 <p>
-<code>args.outputs.PROPERTY</code> is how you render to the screen and play sounds. Available rendered output types are <code>solids</code>, <code>sprites</code>, <code>primitives</code>, <code>labels</code>, <code>lines</code>, <code>borders</code>, and <code>debug</code>, described below. Each type has a corresponding static type, such as <code>static_solids</code>, <code>static_sprites</code> and so on. The static types do not need to be readded to the collection for every tick and are rendered above their non-static counterparts. Rendering to the screen happens in the following order: <code>solids < sprites < primitives < labels < lines < borders < debug</code>. If you want complete control over the z-order, you should use <code>primitives</code> for all outputs (except <code>sound</code> and <code>background_color</code>, of course).
+<code>args.outputs.PROPERTY</code> is how you render to the screen and play sounds.
+</p>
+<p>
+Available rendered output types are <code>solids</code>, <code>sprites</code>, <code>primitives</code>, <code>labels</code>, <code>lines</code>, <code>borders</code>, and <code>debug</code>, described below. Each type has a corresponding static type, such as <code>static_solids</code>, <code>static_sprites</code> and so on. The static types do not need to be readded to the collection for every tick and are rendered above their non-static counterparts.
+</p>
+<p>
+Rendering to the screen happens in the following order:
+</p>
+<pre><code class="language-ruby">solids < sprites < primitives < labels < lines < borders < debug
+</code></pre>
+<p>
+If you want complete control over the z-order, you should use <code>primitives</code> for all outputs (except <code>sound</code> and <code>background_color</code>, of course).
 </p>
 <h3 id='-----.background_color-'><code>.background_color</code></h3>
 <p>
