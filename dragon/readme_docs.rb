@@ -476,7 +476,11 @@ Success". The term normalizes upfront pain as a necessity/requirement in the
 hopes that the investment will yield dividends "when you become
 successful" or "when the code becomes more complicated". This approach to
 development is strongly discouraged by us. It leads to over-architected
+<<<<<<< HEAD
 and unnecessary code; creates barriers to rapid prototyping and shipping a game; and
+=======
+and unnessary code; creates barriers to rapid prototyping and shipping a game; and
+>>>>>>> 7b9fc2b8c7df352e379c6d14dfd205e6800a2a0e
 overwhelms beginners who are new to the engine or programming in general.
 
 DragonRuby's philosophy is to provide multiple options across the "make it
@@ -513,7 +517,11 @@ and encouraged within the community. Give what you create away for
 free to those that can't afford it.
 
 If you are gainfully employed, pay full price for the things you use. If you
+<<<<<<< HEAD
 do end up getting something at a discount, pay the difference "forward" to
+=======
+do end up getting something at a discount, pay the differnce "forward" to
+>>>>>>> 7b9fc2b8c7df352e379c6d14dfd205e6800a2a0e
 someone else.
 
 ** Sustainable And Ethical Open Source

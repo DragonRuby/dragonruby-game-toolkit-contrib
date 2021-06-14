@@ -67,6 +67,8 @@ module GTK
         update_cursor_position_px
       end
 
+<<<<<<< HEAD
+<<<<<<< HEAD
       def move_cursor_left_word
         return if @cursor_position.zero?
 
@@ -79,12 +81,40 @@ module GTK
         update_cursor_position_px
       end
         
+=======
+      # ? Works well enough, could be better
+      # TODO: Maybe possibly add skipping multiple word-breaking characters
+      # TODO: (requires re-writing a lot of the code most likely)
+      # ?? how can we put in regex? the code would be cleaner that way \ amir please fix :P \\ abolish consoles :>
+=======
+>>>>>>> 2bf47fd (Changed dragon/console_prompt.rb` according to @kfischer-okarin 's suggestions.)
+      def move_cursor_left_word
+        return if @cursor_position.zero?
+
+        new_pos = @cursor_position - 1
+        (is_word_boundary? @current_input_str[new_pos]) ? 
+            (new_pos -= 1 until !(is_word_boundary? @current_input_str[new_pos - 1]) || new_pos.zero?):
+            (new_pos -= 1 until (is_word_boundary? @current_input_str[new_pos - 1]) || new_pos.zero?)
+
+        @cursor_position = new_pos
+        update_cursor_position_px
+      end
+<<<<<<< HEAD
+
+>>>>>>> 32214ee (Added support for `HOME`, `END`, `Ctrl+left` and `Ctrl+right`)
+=======
+        
+>>>>>>> 2bf47fd (Changed dragon/console_prompt.rb` according to @kfischer-okarin 's suggestions.)
       def move_cursor_right
         @cursor_position += 1 if @cursor_position < current_input_str.length
         update_cursor_position_px
       end
 
       def move_cursor_right_word
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 2bf47fd (Changed dragon/console_prompt.rb` according to @kfischer-okarin 's suggestions.)
         return if @cursor_position.equal? str_len
 
         new_pos = @cursor_position + 1
@@ -93,6 +123,20 @@ module GTK
             (new_pos += 1 until (is_word_boundary? @current_input_str[new_pos]) || (new_pos.equal? str_len))
         
         @cursor_position = new_pos
+<<<<<<< HEAD
+=======
+        str = @current_input_str[@cursor_position..@current_input_str.length]
+        cand = (WORD_LIMITER_CHARS.map { |char|
+          (val = str.index char) ? val : 0
+        }.sort - [0])
+<<<<<<< HEAD
+        (cand == []) ? @cursor_position = @current_input_str.length : @cursor_position += (cand[0]+0)
+>>>>>>> 32214ee (Added support for `HOME`, `END`, `Ctrl+left` and `Ctrl+right`)
+=======
+        (cand == []) ? @cursor_position = @current_input_str.length : @cursor_position += (cand[0])
+>>>>>>> 8792225 (Fixes to the code according to @kfischer-okarin 's suggestions. Some minor deletions of code that isn't needed)
+=======
+>>>>>>> 2bf47fd (Changed dragon/console_prompt.rb` according to @kfischer-okarin 's suggestions.)
         update_cursor_position_px
       end
 
@@ -102,7 +146,15 @@ module GTK
       end
 
       def move_cursor_end
+<<<<<<< HEAD
+<<<<<<< HEAD
         @cursor_position = str_len
+=======
+        @cursor_position = @current_input_str.length
+>>>>>>> 32214ee (Added support for `HOME`, `END`, `Ctrl+left` and `Ctrl+right`)
+=======
+        @cursor_position = str_len
+>>>>>>> 2bf47fd (Changed dragon/console_prompt.rb` according to @kfischer-okarin 's suggestions.)
         update_cursor_position_px
       end
 

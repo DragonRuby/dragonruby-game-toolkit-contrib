@@ -189,6 +189,46 @@ module GTK
           draw_border (pass.static_borders.at idx)
           idx += 1
         end
+<<<<<<< HEAD
+=======
+
+        if !$gtk.production
+          # pass.debug.each        { |r| draw_primitive r }
+          idx = 0
+          length = pass.debug.length
+          while idx < length
+            draw_primitive (pass.debug.at idx)
+            idx += 1
+          end
+
+          # pass.static_debug.each { |r| draw_primitive r }
+          idx = 0
+          length = pass.static_debug.length
+          while idx < length
+            draw_primitive (pass.static_debug.at idx)
+            idx += 1
+          end
+        end
+
+        # pass.reserved.each          { |r| draw_primitive r }
+        idx = 0
+        length = pass.reserved.length
+        while idx < length
+          draw_primitive (pass.reserved.at idx)
+          idx += 1
+        end
+
+        # pass.static_reserved.each   { |r| draw_primitive r }
+        idx = 0
+        length = pass.static_reserved.length
+        while idx < length
+          draw_primitive (pass.static_reserved.at idx)
+          idx += 1
+        end
+      rescue Exception => e
+        pause!
+        pretty_print_exception_and_export! e
+>>>>>>> 7b9fc2b8c7df352e379c6d14dfd205e6800a2a0e
       end
 
       def draw_solid s
