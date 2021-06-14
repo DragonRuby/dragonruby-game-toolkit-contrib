@@ -2,6 +2,8 @@
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # docs.rb has been released under MIT (*only this file*).
+# Contributors outside of DragonRuby who also hold Copyright:
+# - Jeff Schoolcraft: https://github.com/jschoolcraft
 
 module DocsOrganizer
   def self.sort_docs_classes!
@@ -257,6 +259,7 @@ S
   <head>
     <title>DragonRuby Game Toolkit Documentation</title>
     <link href="docs.css?ver=#{Time.now.to_i}" rel="stylesheet" type="text/css" media="all">
+    <link href="prism.css" rel="stylesheet" />
   </head>
   <body>
     <div id='toc'>
@@ -267,6 +270,18 @@ S
 S
     html_content_end_to_html_end = <<-S
     </div>
+    <script src="prism.js" data-manual></script>
+    <script>
+      highlight = function() {
+        document.querySelectorAll('pre>code').forEach(function(elem, index) {
+          Prism.highlightElement(elem);
+        })
+      }
+
+      document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(highlight, 250);
+      });
+    </script>
   </body>
 </html>
 S
