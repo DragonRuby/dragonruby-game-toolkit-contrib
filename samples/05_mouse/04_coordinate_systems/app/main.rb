@@ -2,7 +2,7 @@
 
  APIs listing that haven't been encountered in previous sample apps:
 
- - args.inputs.mouse.click.position: Coordinates of the mouse's position on the screen.
+ - args.inputs.mouse.position: Coordinates of the mouse's position on the screen.
    Unlike args.inputs.mouse.click.point, the mouse does not need to be pressed down for
    position to know the mouse's coordinates.
 
@@ -39,7 +39,7 @@ def tick args
   # ensure that the outputs don't overlap each other. Try removing them and see what happens.
   pos = args.inputs.mouse.position # stores coordinates of mouse's position
   args.outputs.labels << [pos.x + 10, pos.y + 10, "#{pos}"] # outputs label of coordinates
-  args.outputs.solids << [pos.x -  2, pos.y - 2, 5, 5] # outputs small blackk box placed where mouse is hovering
+  args.outputs.solids << [pos.x -  2, pos.y - 2, 5, 5] # outputs small black box placed where mouse is hovering
 
   button = [0, 0, 370, 50] # sets definition of toggle button
   args.outputs.borders << button # outputs button as border (not filled in)
