@@ -33,7 +33,7 @@ args.outputs.borders << [100, 100,   160,     90]
 
 ## RGBA - Colors and Alpha
 
-The value for the color and alpha is an number between `0` and `255`. The
+The value for the color and alpha is a number between `0` and `255`. The
 alpha property is optional and will be set to `255` if not specified.
 
 Creates a green solid rectangle with an opacity of 50%.
@@ -93,7 +93,7 @@ args.outputs.borders << {
 ## Duck Typing (Advanced)
 
 You can also create a class with solid/border properties and render it as a primitive.
-ALL properties must on the class. ADDITIONALLY, a method called `primitive_marker`
+ALL properties must be on the class. ADDITIONALLY, a method called `primitive_marker`
 must be defined on the class.
 
 Here is an example:

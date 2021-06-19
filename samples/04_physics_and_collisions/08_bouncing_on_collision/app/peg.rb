@@ -1,11 +1,11 @@
 class Peg
   def initialize(x, y, block_size)
-    @x = x                    # x cordinate of the LEFT side of the peg
-    @y = y                    # y cordinate of the RIGHT side of the peg
+    @x = x                    # x coordinate of the LEFT side of the peg
+    @y = y                    # y coordinate of the RIGHT side of the peg
     @block_size = block_size  # diameter of the peg
 
     @radius = @block_size/2.0 # radius of the peg
-    @center = {               # cordinatees of the CENTER of the peg
+    @center = {               # coordinatees of the CENTER of the peg
       x: @x+@block_size/2.0,
       y: @y+@block_size/2.0
     }
@@ -116,8 +116,8 @@ class Peg
     }
 
     perpVect = {x: pointB.x - pointA.x, y:pointB.y - pointA.y}                  # perpVect is to be VECTOR of the perpendicular tangent
-    mag  = (perpVect.x**2 + perpVect.y**2)**0.5                                 # find the magniude of the perpVect
-    perpVect = {x: perpVect.x/(mag), y: perpVect.y/(mag)}                       # divide the perpVect by the magniude to make it a unit vector
+    mag  = (perpVect.x**2 + perpVect.y**2)**0.5                                 # find the magnitude of the perpVect
+    perpVect = {x: perpVect.x/(mag), y: perpVect.y/(mag)}                       # divide the perpVect by the magnitude to make it a unit vector
     perpVect = {x: -perpVect.y, y: perpVect.x}                                  # swap the x and y and multiply by -1 to make the vector perpendicular
     args.state.display_value = perpVect
     if perpVect.y > 0                                                           #ensure perpVect points upward
@@ -130,12 +130,12 @@ class Peg
     }
 
     yInterc = pointA.y + -slope*pointA.x
-    if slope == INFINITY                                                        # the perpVect presently either points in the correct dirrection or it is 180 degrees off we need to correct this
+    if slope == INFINITY                                                        # the perpVect presently either points in the correct direction or it is 180 degrees off we need to correct this
       if previousPosition.x < pointA.x
         perpVect = {x: perpVect.x*-1, y: perpVect.y*-1}
         yInterc = -INFINITY
       end
-    elsif previousPosition.y < slope*previousPosition.x + yInterc               # check if ball is bellow or above the collider to determine if perpVect is - or +
+    elsif previousPosition.y < slope*previousPosition.x + yInterc               # check if ball is below or above the collider to determine if perpVect is - or +
       perpVect = {x: perpVect.x*-1, y: perpVect.y*-1}
     end
 
@@ -148,7 +148,7 @@ class Peg
 
     fbx = velocityMag * Math.cos(theta_ball)                                    #the x component of the ball's velocity
     fby = velocityMag * Math.sin(theta_ball)                                    #the y component of the ball's velocity
-    repelMag = getRepelMagnitude(                                               # the magniude of the collision vector
+    repelMag = getRepelMagnitude(                                               # the magnitude of the collision vector
       args,
       fbx,
       fby,
@@ -173,7 +173,7 @@ class Peg
     if args.state.ball.center.y > @center.y                                     # if the ball is above the middle of the peg we need to temporarily ignore some of the gravity
       args.state.ball.velocity.y = ynew + GRAVITY * 0.01
     else
-      args.state.ball.velocity.y = ynew - GRAVITY * 0.01                        # if the ball is bellow the middle of the peg we need to temporarily increase the power of the gravity
+      args.state.ball.velocity.y = ynew - GRAVITY * 0.01                        # if the ball is below the middle of the peg we need to temporarily increase the power of the gravity
     end
 
     args.state.ball.center.x+= args.state.ball.velocity.x                       # update the position of the ball so it never looks like the ball is intersecting the circle

@@ -46,12 +46,12 @@ The ~GTK::MousePoint~ has the following properties.
 - ~x~: Integer representing the mouse's x.
 - ~y~: Integer representing the mouse's y.
 - ~point~: Array with the ~x~ and ~y~ values.
-- ~w~: Width of the point that always returns ~0~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
-- ~h~: Height of the point that always returns ~0~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
-- ~left~: This value is the same as ~x~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
-- ~right~: This value is the same as ~x~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
-- ~top~: This value is the same as ~y~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
-- ~bottom~: This value is the same as ~y~ (included so that it can seemlessly work with ~GTK::Geometry~ functions).
+- ~w~: Width of the point that always returns ~0~ (included so that it can seamlessly work with ~GTK::Geometry~ functions).
+- ~h~: Height of the point that always returns ~0~ (included so that it can seamlessly work with ~GTK::Geometry~ functions).
+- ~left~: This value is the same as ~x~ (included so that it can seamlessly work with ~GTK::Geometry~ functions).
+- ~right~: This value is the same as ~x~ (included so that it can seamlessly work with ~GTK::Geometry~ functions).
+- ~top~: This value is the same as ~y~ (included so that it can seamlessly work with ~GTK::Geometry~ functions).
+- ~bottom~: This value is the same as ~y~ (included so that it can seamlessly work with ~GTK::Geometry~ functions).
 - ~created_at~: The tick (~args.state.tick_count~) that this structure was created.
 - ~global_created_at~: The global tick (~Kernel.global_tick_count~) that this structure was created.
 

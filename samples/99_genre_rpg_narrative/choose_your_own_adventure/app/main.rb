@@ -53,7 +53,7 @@ def tick args
   end
 end
 
-# Runs methods needed for game to function properly
+# Runs methods needed for the game to function properly
 # Creates a rectangular border around the screen
 def tick_game args
   defaults args

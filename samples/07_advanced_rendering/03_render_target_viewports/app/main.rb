@@ -25,7 +25,7 @@
    would print "How are you, Ruby?" to the console.
    (Remember, string interpolation only works with double quotes!)
 
- - Ternary operator (?): Similar to if statement; first evalulates whether a statement is
+ - Ternary operator (?): Similar to if statement; first evaluates whether a statement is
    true or false, and then executes a command depending on that result.
    For example, if we had a variable
    grade = 75
@@ -39,7 +39,7 @@
    720 p screen (Dragon Ruby Game Toolkits's virtual resolution is always 1280x720).
 
  - Numeric#shift_(left|right|up|down): Shifts the Numeric in the correct direction
-   by adding or subracting.
+   by adding or subtracting.
 
  - ARRAY#inside_rect?: An array with at least two values is considered a point. An array
    with at least four values is considered a rect. The inside_rect? function returns true
@@ -111,7 +111,7 @@ class TechDemo
     button_tech_demo
     export_game_state_demo
     window_state_demo
-    render_seperators
+    render_separators
   end
 
   # Shows output of different kinds of labels on the screen
@@ -408,28 +408,28 @@ class TechDemo
   end
 
   #Sets values for the horizontal separator (divides demo sections)
-  def horizontal_seperator y, x, x2
+  def horizontal_separator y, x, x2
     [x, y, x2, y, 150, 150, 150]
   end
 
   #Sets the values for the vertical separator (divides demo sections)
-  def vertical_seperator x, y, y2
+  def vertical_separator x, y, y2
     [x, y, x, y2, 150, 150, 150]
   end
 
   # Outputs vertical and horizontal separators onto the screen to separate each demo section.
-  def render_seperators
-    outputs.lines << horizontal_seperator(505, grid.left, 445)
-    outputs.lines << horizontal_seperator(353, grid.left, 445)
-    outputs.lines << horizontal_seperator(264, grid.left, 445)
-    outputs.lines << horizontal_seperator(174, grid.left, 445)
+  def render_separators
+    outputs.lines << horizontal_separator(505, grid.left, 445)
+    outputs.lines << horizontal_separator(353, grid.left, 445)
+    outputs.lines << horizontal_separator(264, grid.left, 445)
+    outputs.lines << horizontal_separator(174, grid.left, 445)
 
-    outputs.lines << vertical_seperator(445, grid.top, grid.bottom)
+    outputs.lines << vertical_separator(445, grid.top, grid.bottom)
 
-    outputs.lines << horizontal_seperator(690, 445, 820)
-    outputs.lines << horizontal_seperator(426, 445, 820)
+    outputs.lines << horizontal_separator(690, 445, 820)
+    outputs.lines << horizontal_separator(426, 445, 820)
 
-    outputs.lines << vertical_seperator(820, grid.top, grid.bottom)
+    outputs.lines << vertical_separator(820, grid.top, grid.bottom)
   end
 end
 

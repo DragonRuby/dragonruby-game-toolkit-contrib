@@ -56,7 +56,7 @@
 
 =end
 
-# Calls methods needed for game to run properly
+# Calls methods needed for the game to run properly
 def tick args
   tick_instructions args, "Use LEFT and RIGHT arrow keys to move and SPACE to jump."
   defaults args

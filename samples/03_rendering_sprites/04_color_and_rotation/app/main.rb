@@ -117,7 +117,7 @@ def create_sprite path, options = {}
     source_w: -1,
     source_h: -1,
 
-    # flip horiztonally, flip vertically
+    # flip horizontally, flip vertically
     flip_h: false,
     flip_v: false,
 
@@ -153,7 +153,7 @@ end
 def calc_wrap state
 
   # car returns to left side of screen if it disappears on right side of screen
-  # sprite.width refers to tile's size, which is multipled by scale (4) to make it bigger
+  # sprite.width refers to tile's size, which is multiplied by scale (4) to make it bigger
   state.x = -state.sprite.width * state.sprite.scale if state.x - 20 > 1280
 
   # car wraps around to right side of screen if it disappears on the left side

@@ -1,3 +1,4 @@
+# Contributors outside of DragonRuby who also hold Copyright: Michał Dudziński
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # ios_wizard.rb has been released under MIT (*only this file*).
@@ -11,6 +12,8 @@ class WizardException < Exception
 end
 
 class IOSWizard
+  include Metadata
+
   def initialize
     @doctor_executed_at = 0
   end
@@ -81,23 +84,31 @@ class IOSWizard
     sprite_path
   end
 
-  def start opts = nil
-    @opts = opts || {}
+  def start opts = {}
+    @opts = opts
 
-    if !(@opts.is_a? Hash) || !($gtk.args.fn.eq_any? @opts[:env], :dev, :prod)
+    unless $gtk.args.fn.eq_any? @opts[:env], :dev, :prod
       raise WizardException.new(
-              "* $wizards.ios.start needs to be provided an environment option.",
-              "** For development builds type: $wizards.ios.start env: :dev",
-              "** For production builds type: $wizards.ios.start env: :prod"
-            )
+        "* $wizards.ios.start needs to be provided an environment option.",
+        "** For development builds type: $wizards.ios.start env: :dev",
+        "** For production builds type: $wizards.ios.start env: :prod"
+      )
     end
 
     @production_build = (@opts[:env] == :prod)
+
+    @version = determine_app_version @opts
+    log_info "I will be using version: '#{@version}'" if @production_build
+
     @steps = steps_development_build
     @steps = steps_production_build if @production_build
     @certificate_name = nil
     init_wizard_status
-    log_info "Starting iOS Wizard so we can deploy to your device."
+    if @production_build
+      log_info "Starting iOS Wizard so we can create a production build."
+    else
+      log_info "Starting iOS Wizard so we can deploy to your device."
+    end
     @start_at = Kernel.global_tick_count
     steps.each do |m|
       log_info "Running step ~:#{m}~."
@@ -227,12 +238,21 @@ class IOSWizard
 
   def determine_team_identifier
     @team_name = (team_identifier_from_provisioning_profile @opts[:env])
-    log_info "Team Identifer is: #{@team_name}"
+    log_info "Team Identifier is: #{@team_name}"
   end
 
   def determine_app_name
     @app_name = (provisioning_profile_xml @opts[:env])[:children].first[:children].first[:children][1][:children].first[:data]
     log_info "App name is: #{@app_name}."
+  end
+
+  def determine_app_version opts
+    version = @opts[:version]
+    unless version
+      version = get_metadata[:version]
+      version = version.start_with?('#') ? '1.0' : version.split('=').last
+    end
+    version.to_s
   end
 
   def provisioning_profile_xml environment
@@ -265,21 +285,21 @@ class IOSWizard
     end
 
     app_id_with_team_identifier = (provisioning_profile_xml environment)[:children].first[:children].first[:children][13][:children][application_identifier_index + 1][:children].first[:data]
-    team_identifer = team_identifier_from_provisioning_profile environment
-    app_id_with_team_identifier.gsub "#{team_identifer}.", ""
+    team_identifier = team_identifier_from_provisioning_profile environment
+    app_id_with_team_identifier.gsub "#{team_identifier}.", ""
   end
 
   def team_identifier_from_provisioning_profile environment
-    team_identifer_index = (provisioning_profile_xml environment)[:children][0][:children][0][:children][13][:children][0][:children][0][:data]
+    team_identifier_index = (provisioning_profile_xml environment)[:children][0][:children][0][:children][13][:children][0][:children][0][:data]
 
     (provisioning_profile_xml environment)[:children][0][:children][0][:children][13][:children].each.with_index do |node, i|
       if node[:children] && node[:children][0] && node[:children][0][:data] == "com.apple.developer.team-identifier"
-        team_identifer_index = i
+        team_identifier_index = i
         break
       end
     end
 
-    (provisioning_profile_xml environment)[:children].first[:children].first[:children][13][:children][team_identifer_index + 1][:children].first[:data]
+    (provisioning_profile_xml environment)[:children].first[:children].first[:children][13][:children][team_identifier_index + 1][:children].first[:data]
   end
 
   def determine_app_id
@@ -357,7 +377,7 @@ class IOSWizard
               "** 1. Open Xcode.",
               "** 2. Log into your developer account. Xcode -> Preferences -> Accounts.",
               { w: 700, h: 98, path: get_reserved_sprite("login-xcode.png") },
-              "** 3. After loggin in, select Manage Certificates...",
+              "** 3. After logging in, select Manage Certificates...",
               { w: 700, h: 115, path: get_reserved_sprite("manage-certificates.png") },
               "** 4. Add a certificate for Apple Development.",
               { w: 700, h: 217, path: get_reserved_sprite("add-cert.png") },
@@ -798,7 +818,7 @@ XML
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleShortVersionString</key>
-        <string>5.2</string>
+        <string>:version</string>
         <key>CFBundleSignature</key>
         <string>????</string>
         <key>CFBundleSupportedPlatforms</key>
@@ -806,7 +826,7 @@ XML
                 <string>iPhoneOS</string>
         </array>
         <key>CFBundleVersion</key>
-        <string>5.2</string>
+        <string>:version</string>
         <key>DTCompiler</key>
         <string>com.apple.compilers.llvm.clang.1_0</string>
         <key>DTPlatformBuild</key>
@@ -890,6 +910,7 @@ XML
 
     info_plist_string.gsub!(":app_name", @app_name)
     info_plist_string.gsub!(":app_id", @app_id)
+    info_plist_string.gsub!(":version", @version);
 
     $gtk.write_file_root "tmp/ios/#{@app_name}.app/Info.plist", info_plist_string.strip
 

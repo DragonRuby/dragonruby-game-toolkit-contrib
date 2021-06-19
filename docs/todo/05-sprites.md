@@ -29,7 +29,7 @@ args.outputs.sprites << [100, 100,    32,     64, "sprites/player.png"]
 
 ## Rotation / Angle
 
-Unlike `solids` and `borders`, sprites can be rotated. This is how you rotate a sprite 90 degress.
+Unlike `solids` and `borders`, sprites can be rotated. This is how you rotate a sprite 90 degrees.
 
 Note: All angles in DragonRuby Game Toolkit are represented in degrees (not radians).
 
@@ -180,7 +180,7 @@ args.outputs.sprites << {
 ## Duck Typing (Advanced)
 
 You can also create a class with sprite properties and render it as a primitive.
-ALL properties must on the class. ADDITIONALLY, a method called `primitive_marker`
+ALL properties must be on the class. ADDITIONALLY, a method called `primitive_marker`
 must be defined on the class.
 
 Here is an example:

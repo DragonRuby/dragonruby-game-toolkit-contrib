@@ -46,7 +46,7 @@ module DocsOrganizer
     unsorted.each do |k|
         puts <<-S
 * WARNING: #{klass.name} is not included in DocsOrganizer::class_sort_order. Please place this
-module in it's correct topilogical order.
+module in it's correct topological order.
 S
     end
 

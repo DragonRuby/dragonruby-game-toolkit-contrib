@@ -62,7 +62,7 @@ def tick args
   # =======================================================================
 
 
-  # ==== HOW TO ANIMATE A SPRITE (SEPERATE PNGS) ==========================
+  # ==== HOW TO ANIMATE A SPRITE (SEPARATE PNGS) ==========================
   # Remove the "#" at the beginning of the line below
   # how_to_animate_a_sprite args
   # =======================================================================
@@ -242,7 +242,7 @@ def how_to_render_sprites args
 end
 
 ## # =============================================================================
-## # ==== HOW TO ANIMATE A SPRITE (SEPERATE PNGS) ==========================
+## # ==== HOW TO ANIMATE A SPRITE (SEPARATE PNGS) ==========================
 ## # =============================================================================
 def how_to_animate_a_sprite args
   # STEP 1: Define when you want the animation to start. The animation in this case will start in 3 seconds
@@ -462,7 +462,7 @@ def how_to_determine_collision args
                                    text: "Collision!",
                                    alignment_enum: 1)
     else
-      # if collision occurred, render the words no collision.
+      # if no collision occurred, render the words no collision.
       args.lowrez.labels << args.lowrez
                             .default_label
                             .merge(x: 31,

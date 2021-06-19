@@ -251,7 +251,7 @@ class BreadthFirstSearch
     outputs.primitives << [slider.x, slider.y, slider.x + slider.w, slider.y].line
     # The circle needs to be offset so that the center of the circle
     # overlaps the line instead of the upper right corner of the circle
-    # The circle's x value is also moved based on the current seach step
+    # The circle's x value is also moved based on the current search step
     circle_x = (slider.x - slider.offset) + (state.anim_steps * slider.spacing)
     circle_y = (slider.y - slider.offset)
     circle_rect = [circle_x, circle_y, 37, 37]

@@ -47,7 +47,7 @@ class Star
   end
 end
 
-# calls methods needed for game to run properly
+# calls methods needed for the game to run properly
 def tick args
   # sets console command when sample app initially opens
   if Kernel.global_tick_count == 0
