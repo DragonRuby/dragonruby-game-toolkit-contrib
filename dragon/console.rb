@@ -318,12 +318,31 @@ S
           puts "-> #{cmd}"
           begin
             @last_command = cmd
-            Kernel.eval("$results = (#{cmd})")
-            if $results.nil?
+
+            locals = (@locals ||= {})
+            code = "
+              #{
+                locals.keys.map do |name|
+                  "#{name} = locals[:#{name}]"
+                end.join "\n"
+              }
+
+              _ = (#{cmd})
+
+              local_variables.each do |name|
+                locals[name] = eval(name.to_s)
+              end
+
+              _
+            "
+
+            result = $top_level.instance_eval code
+
+            if result.nil?
               puts "=> nil"
-            elsif $results == :console_silent_eval
+            elsif result == :console_silent_eval
             else
-              puts "=> #{$results}"
+              puts "=> #{result}"
             end
             @last_command_errored = false
           rescue Exception => e
