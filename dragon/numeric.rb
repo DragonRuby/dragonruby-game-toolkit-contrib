@@ -579,6 +579,52 @@ S
   def self.clamp n, min, max
     n.clamp min, max
   end
+
+  # Returns the cosine of a represented in degrees (NOT radians).
+  #
+  # @gtk
+  def cos
+    Math.cos(self.to_radians)
+  end
+
+  def rcos
+    Math.cos(self)
+  end
+
+  # Returns the sine of a represented in degrees (NOT radians).
+  #
+  # @gtk
+  def sin
+    Math.sin(self.to_radians)
+  end
+
+  def rsin
+    Math.sin(self)
+  end
+
+  def tan
+    Math.tan(self.to_radians)
+  end
+
+  def rtan
+    Math.tan(self)
+  end
+
+  def atan
+    Math.atan(self)
+  end
+
+  def log(base = Math::E)
+    Math.log(self, base)
+  end
+
+  def hypot(other)
+    Math.hypot(self, other)
+  end
+
+  def exp
+    Math.exp(self)
+  end
 end
 
 class Fixnum
@@ -660,20 +706,6 @@ class Fixnum
   # @gtk
   def neg?
     sign < 0
-  end
-
-  # Returns the cosine of a represented in degrees (NOT radians).
-  #
-  # @gtk
-  def cos
-    Math.cos(self.to_radians)
-  end
-
-  # Returns the cosine of a represented in degrees (NOT radians).
-  #
-  # @gtk
-  def sin
-    Math.sin(self.to_radians)
   end
 
   def to_sf
