@@ -60,7 +60,7 @@ begin :default_methods
     center = args.grid.w / 2
 
     for i in (0...5)
-      #Create a ramp of blocks. Not going to be perfect because of the float to integer conversion and anisotropic to isotropic conversion
+      #Create a ramp of blocks. Not going to be perfect because of the float to integer conversion and anisotropic to isotropic coversion
       args.state.blocks.append(Block.new((center + 100 + (i * horizontal_offset)).to_i, 100 + (vertical_offset * i) + (i * block_size), block_size, rotation))
       args.state.blocks.append(Block.new((center - 100 - (i * horizontal_offset)).to_i, 100 + (vertical_offset * i) + (i * block_size), block_size, -rotation))
     end

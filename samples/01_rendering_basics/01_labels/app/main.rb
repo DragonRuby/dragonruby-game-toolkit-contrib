@@ -2,12 +2,12 @@
 
 APIs listing that haven't been encountered in a previous sample apps:
 
-- args.outputs.labels: An array. Values in this array generate labels on
+- args.outputs.labels: An array. Values in this array generate labels
   the screen.
 - args.grid.(left|right|top|bottom): Pixel value for the boundaries of the virtual
   720 p screen (Dragon Ruby Game Toolkits's virtual resolution is always 1280x720).
 - Numeric#shift_(left|right|up|down): Shifts the Numeric in the correct direction
-  by adding or subtracting.
+  by adding or subracting.
 
 =end
 
@@ -27,7 +27,7 @@ APIs listing that haven't been encountered in a previous sample apps:
 # The tick method is called by DragonRuby every frame
 # args contains all the information regarding the game.
 def tick args
-  tick_instructions args, "Sample app shows different versions of label sizes and alignments. And how to use hashes instead of arrays."
+  tick_instructions args, "Sample app shows different version of label sizes and alignments. And how to use hashes instead of arrays."
   # Here are some examples of simple labels, with the minimum number of parameters
   # Note that the default values for the other parameters are 0, except for Alpha which is 255 and Font Style which is the default font
   args.outputs.labels << [400, 620, "Here is a label with just an x, y, and text"]
@@ -67,7 +67,7 @@ def tick args
                                g: 0,
                                b: 200,
                                a: 255,
-                               font: "manaspc.ttf" }.label
+                               font: "manaspc.ttf" }.label!
 
   # Primitives can hold anything, and can be given a label in the following forms
   args.outputs.primitives << [690 + 150, 330 - 80, "Custom font (.primitives Array)", 0, 1, 125, 0, 200, 255, "manaspc.ttf" ].label
@@ -81,7 +81,7 @@ def tick args
                                g: 0,
                                b: 200,
                                a: 255,
-                               font: "manaspc.ttf" }.label
+                               font: "manaspc.ttf" }.label!
 end
 
 def tick_instructions args, text, y = 715

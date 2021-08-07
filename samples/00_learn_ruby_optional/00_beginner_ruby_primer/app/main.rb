@@ -83,8 +83,8 @@ def tick_reset_button
   end
 end
 
-def separator
-  @separator = "=" * 80
+def seperator
+  @seperator = "=" * 80
 end
 
 def tick_intro
@@ -286,11 +286,11 @@ def queue_message message
   $gtk.args.state.messages << message
   last_three = [$gtk.console.log[-3], $gtk.console.log[-2], $gtk.console.log[-1]].reject_nil
   $gtk.console.log.clear
-  puts separator
+  puts seperator
   $gtk.console.log += last_three
-  puts separator
+  puts seperator
   puts message
-  puts separator
+  puts seperator
 end
 
 def console_has? message

@@ -21,10 +21,14 @@
 
  - args.outputs.sprites: An array. The values generate a sprite.
    The parameters are [X, Y, WIDTH, HEIGHT, PATH, ANGLE, ALPHA, RED, GREEN, BLUE]
+   Before continuing with this sample app, it is HIGHLY recommended that you look
+   at mygame/documentation/05-sprites.md.
 
  - args.inputs.keyboard.key_held.KEY: Determines if a key is being pressed.
+   For more information about the keyboard, go to mygame/documentation/06-keyboard.md.
 
  - args.inputs.controller_one: Takes input from the controller based on what key is pressed.
+   For more information about the controller, go to mygame/documentation/08-controllers.md.
 
  - num1.lesser(num2): Finds the lower value of the given options.
 
@@ -117,7 +121,7 @@ def create_sprite path, options = {}
     source_w: -1,
     source_h: -1,
 
-    # flip horizontally, flip vertically
+    # flip horiztonally, flip vertically
     flip_h: false,
     flip_v: false,
 
@@ -153,7 +157,7 @@ end
 def calc_wrap state
 
   # car returns to left side of screen if it disappears on right side of screen
-  # sprite.width refers to tile's size, which is multiplied by scale (4) to make it bigger
+  # sprite.width refers to tile's size, which is multipled by scale (4) to make it bigger
   state.x = -state.sprite.width * state.sprite.scale if state.x - 20 > 1280
 
   # car wraps around to right side of screen if it disappears on the left side

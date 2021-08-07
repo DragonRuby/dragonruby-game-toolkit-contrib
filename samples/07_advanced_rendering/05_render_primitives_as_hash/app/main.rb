@@ -16,18 +16,23 @@
 
  - args.outputs.sprites: An array. The values generate a sprite.
    The parameters are [X, Y, WIDTH, HEIGHT, PATH, ANGLE, ALPHA, RED, GREEN, BLUE]
+   For more information about sprites, go to mygame/documentation/05-sprites.md.
 
  - args.outputs.labels: An array. The values generate a label.
    The parameters are [X, Y, TEXT, SIZE, ALIGNMENT, RED, GREEN, BLUE, ALPHA, FONT STYLE]
+   For more information about labels, go to mygame/documentation/02-labels.md.
 
  - args.outputs.solids: An array. The values generate a solid.
    The parameters are [X, Y, WIDTH, HEIGHT, RED, GREEN, BLUE, ALPHA]
+   For more information about solids, go to mygame/documentation/03-solids-and-borders.md.
 
  - args.outputs.borders: An array. The values generate a border.
    The parameters are the same as a solid.
+   For more information about borders, go to mygame/documentation/03-solids-and-borders.md.
 
  - args.outputs.lines: An array. The values generate a line.
    The parameters are [X1, Y1, X2, Y2, RED, GREEN, BLUE]
+   For more information about labels, go to mygame/documentation/02-labels.md.
 
 =end
 
@@ -131,7 +136,7 @@ def tick args
     flip_horizontally: false,
     angle_anchor_x: 0.5,            # rotation center set to middle
     angle_anchor_y: 0.5
-  }.sprite
+  }.sprite!
 
   # Outputs label as primitive using a hash
   args.outputs.primitives << {
@@ -145,7 +150,7 @@ def tick args
     b:         50,
     a:         255,                 # transparency
     font:      "fonts/manaspc.ttf"  # font style
-  }.label
+  }.label!
 
   # Outputs solid as primitive using a hash
   args.outputs.primitives << {
@@ -157,7 +162,7 @@ def tick args
     g:  50,
     b:  50,
     a: 255                          # transparency
-  }.solid
+  }.solid!
 
   # Outputs border as primitive using a hash
   # Same parameters as solid
@@ -170,7 +175,7 @@ def tick args
     g:  50,
     b:  50,
     a: 255                          # transparency
-  }.border
+  }.border!
 
   # Outputs line as primitive using a hash
   args.outputs.primitives << {
@@ -182,5 +187,5 @@ def tick args
     g:   50,
     b:   50,
     a:  255                         # transparency
-  }.line
+  }.line!
 end

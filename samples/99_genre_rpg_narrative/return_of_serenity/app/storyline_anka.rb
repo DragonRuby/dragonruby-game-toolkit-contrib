@@ -43,7 +43,7 @@ end
 
 def reply_to_anka args
   decision_graph anka_current_reply(args),
-                 "Matthew's-- wife is doing-- well. What's-- even-- better-- is that he's-- a dad, and he didn't-- even-- know it. Should- I- leave- out the part about-- the crew- being-- in hibernation-- for 20-- years? They- should- enter-- stasis-- on a high- note... Right?",
+                 "Matthew's-- wife is doing-- well. What's-- even-- better-- is that he's-- a dad, and he didn't-- even-- know it. Should- I- leave- out the part about-- the crew- being-- in hibernation-- for 20-- years? They- should- enter-- statis-- on a high- note... Right?",
                  [:replied_with_whole_truth, "Whole-- Truth--", anka_reply_whole_truth],
                  [:replied_with_half_truth, "Half-- Truth--", anka_reply_half_truth]
 end
@@ -57,7 +57,7 @@ def anka_last_reply args
 end
 
 def anka_reply_whole_truth
-  "Matthew's wife is doing-- very-- well. In fact, she was pregnant. Matthew-- is a dad. He has a son. But, I need- all-- of-- you-- to brace-- yourselves. You've-- been in stasis-- for 20 years. A lot has changed. Most of Earth's-- population--- didn't-- survive. Tell- Matthew-- that I'm-- sorry he didn't-- get to see- his- son grow- up."
+  "Matthew's wife is doing-- very-- well. In fact, she was pregnant. Matthew-- is a dad. He has a son. But, I need- all-- of-- you-- to brace-- yourselves. You've-- been in statis-- for 20 years. A lot has changed. Most of Earth's-- population--- didn't-- survive. Tell- Matthew-- that I'm-- sorry he didn't-- get to see- his- son grow- up."
 end
 
 def anka_reply_half_truth
@@ -92,9 +92,9 @@ end
 
 def anka_current_reply args
   if args.state.scene_history.include? :replied_to_serenity_alive_firmly
-    return "Hello. This is, Aanka. Sasha-- is still- trying-- to gather-- her wits about-- her, given- the gravity--- of your- last- reply. Thank- you- for being-- honest, and thank- you- for the help- with the ship- diagnostics. I was able-- to retrieve-- all of the navigation--- information---- after-- the battery--- swap. We- are ready-- to head back to Earth. Before-- we go- back- into-- stasis, Matthew--- wanted-- to know- how his- wife- is doing. Please- reply-- as soon- as you can. He's-- not going-- to get- into-- the stasis-- chamber-- until-- he knows- his wife is okay."
+    return "Hello. This is, Aanka. Sasha-- is still- trying-- to gather-- her wits about-- her, given- the gravity--- of your- last- reply. Thank- you- for being-- honest, and thank- you- for the help- with the ship- diagnostics. I was able-- to retrieve-- all of the navigation--- information---- after-- the battery--- swap. We- are ready-- to head back to Earth. Before-- we go- back- into-- statis, Matthew--- wanted-- to know- how his- wife- is doing. Please- reply-- as soon- as you can. He's-- not going-- to get- into-- the statis-- chamber-- until-- he knows- his wife is okay."
   else
-    return "Hello. This is, Aanka. Thank- you for the help- with the ship's-- diagnostics. I was able-- to retrieve-- all of the navigation--- information--- after-- the battery-- swap. I- know-- that- you didn't-- tell- the whole truth- about-- how far we are from- Earth. Don't-- worry. I understand-- why you did it. We- are ready-- to head back to Earth. Before-- we go- back- into-- stasis, Matthew--- wanted-- to know- how his- wife- is doing. Please- reply-- as soon- as you can. He's-- not going-- to get- into-- the stasis-- chamber-- until-- he knows- his wife is okay."
+    return "Hello. This is, Aanka. Thank- you for the help- with the ship's-- diagnostics. I was able-- to retrieve-- all of the navigation--- information--- after-- the battery-- swap. I- know-- that- you didn't-- tell- the whole truth- about-- how far we are from- Earth. Don't-- worry. I understand-- why you did it. We- are ready-- to head back to Earth. Before-- we go- back- into-- statis, Matthew--- wanted-- to know- how his- wife- is doing. Please- reply-- as soon- as you can. He's-- not going-- to get- into-- the statis-- chamber-- until-- he knows- his wife is okay."
   end
 end
 

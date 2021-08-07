@@ -110,8 +110,8 @@ class Block
 
     #Find the vector that is perpendicular to the slope
     perpVect = { x: x, y: y }
-    mag  = (perpVect.x**2 + perpVect.y**2)**0.5                                 # find the magnitude of the perpVect
-    perpVect = {x: perpVect.x/(mag), y: perpVect.y/(mag)}                       # divide the perpVect by the magnitude to make it a unit vector
+    mag  = (perpVect.x**2 + perpVect.y**2)**0.5                                 # find the magniude of the perpVect
+    perpVect = {x: perpVect.x/(mag), y: perpVect.y/(mag)}                       # divide the perpVect by the magniude to make it a unit vector
 
     previousPosition = {                                                        # calculate an ESTIMATE of the previousPosition of the ball
       x:args.state.ball.center.x-args.state.ball.velocity.x,
@@ -140,7 +140,7 @@ class Block
     dampener = 0.3
     ynew *= dampener * 0.5
     
-    #If the bounce is very low, that means the ball is rolling and we don't want to dampen the X velocity
+    #If the bounce is very low, that means the ball is rolling and we don't want to dampenen the X velocity
     if ynew > -0.1
       xnew *= dampener
     end
@@ -152,7 +152,7 @@ class Block
     args.state.ball.velocity.x = -xnew
     args.state.ball.velocity.y = -ynew
 
-    #Set the position of the ball to the previous position so it doesn't warp through the block
+    #Set the position of the ball to the previous position so it doesn't warp throught the block
     args.state.ball.center.x = previousPosition.x
     args.state.ball.center.y = previousPosition.y
   end

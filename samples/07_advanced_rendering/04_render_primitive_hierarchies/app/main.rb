@@ -39,6 +39,7 @@
    Here is an example of a (red) border or solid definition:
    [100, 100, 400, 500, 255, 0, 0]
    It will be a solid or border depending on if it is added to args.outputs.solids or args.outputs.borders.
+   For more information about solids and borders, go to mygame/documentation/03-solids-and-borders.md.
 
  - args.outputs.sprites: An array. The values generate a sprite.
    The parameters for sprites are
@@ -49,6 +50,7 @@
 
    Here is an example of a sprite definition:
    [100, 100, 400, 500, 'sprites/dragonruby.png']
+   For more information about sprites, go to mygame/documentation/05-sprites.md.
 
 =end
 

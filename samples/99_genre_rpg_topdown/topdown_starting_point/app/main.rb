@@ -15,6 +15,7 @@
 
  - args.outputs.labels: An array. The values generate a label.
    The parameters are [X, Y, TEXT, SIZE, ALIGNMENT, RED, GREEN, BLUE, ALPHA, FONT STYLE]
+   For more information about labels, go to mygame/documentation/02-labels.md.
 
 =end
 

@@ -6,9 +6,11 @@
 
  - args.outputs.solids: An array. The values generate a solid.
    The parameters are [X, Y, WIDTH, HEIGHT, RED, GREEN, BLUE]
+   For more information about solids, go to mygame/documentation/03-solids-and-borders.md.
 
  - args.outputs.labels: An array. The values generate a label.
    The parameters are [X, Y, TEXT, SIZE, ALIGNMENT, RED, GREEN, BLUE, ALPHA, FONT STYLE]
+   For more information about labels, go to mygame/documentation/02-labels.md.
 
  - ARRAY#intersect_rect?: Returns true or false depending on if two rectangles intersect.
 

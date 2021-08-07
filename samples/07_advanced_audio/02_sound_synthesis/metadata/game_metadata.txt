@@ -1,0 +1,6 @@
+devid=amirrajan
+devtitle=Amir Rajan
+gameid=hello-world
+gametitle=Hello World
+version=1.0
+icon=metadata/icon.png

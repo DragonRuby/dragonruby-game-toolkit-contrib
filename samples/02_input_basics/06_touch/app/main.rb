@@ -11,10 +11,12 @@ def tick args
   #  the next new touch will be finger_one again, but until then, new touches
   #  don't fill in earlier slots.
   if !args.inputs.finger_one.nil?
-    args.outputs.primitives << [640, 650, "Finger #1 is touching at (#{args.inputs.finger_one.x}, #{args.inputs.finger_one.y}).", 5, 1, 255, 255, 255].label
+    args.outputs.primitives << { x: 640, y: 650, text: "Finger #1 is touching at (#{args.inputs.finger_one.x}, #{args.inputs.finger_one.y}).",
+                                 size_enum: 5, alignment_enum: 1, r: 255, g: 255, b: 255 }.label!
   end
   if !args.inputs.finger_two.nil?
-    args.outputs.primitives << [640, 600, "Finger #2 is touching at (#{args.inputs.finger_two.x}, #{args.inputs.finger_two.y}).", 5, 1, 255, 255, 255].label
+    args.outputs.primitives << { x: 640, y: 600, text: "Finger #2 is touching at (#{args.inputs.finger_two.x}, #{args.inputs.finger_two.y}).",
+                                 size_enum: 5, alignment_enum: 1, r: 255, g: 255, b: 255 }.label!
   end
 
   # Here's the more flexible interface: this will report as many simultaneous
@@ -35,8 +37,7 @@ def tick args
     r = (color & 0xFF0000) >> 16
     g = (color & 0x00FF00) >> 8
     b = (color & 0x0000FF)
-    args.outputs.primitives << [v.x - (size / 2), v.y + (size / 2), size, size, r, g, b, 255].solid
-    args.outputs.primitives << [v.x, v.y + size, k.to_s, 0, 1, 0, 0, 0].label
+    args.outputs.primitives << { x: v.x - (size / 2), y: v.y + (size / 2), w: size, h: size, r: r, g: g, b: b, a: 255 }.solid!
+    args.outputs.primitives << { x: v.x, y: v.y + size, text: k.to_s, alignment_enum: 1 }.label!
   }
 end
-

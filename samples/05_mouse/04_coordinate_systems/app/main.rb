@@ -5,6 +5,7 @@
  - args.inputs.mouse.click.position: Coordinates of the mouse's position on the screen.
    Unlike args.inputs.mouse.click.point, the mouse does not need to be pressed down for
    position to know the mouse's coordinates.
+   For more information about the mouse, go to mygame/documentation/07-mouse.md.
 
  Reminders:
 
@@ -20,12 +21,15 @@
 
  - args.outputs.labels: An array that generates a label.
    The parameters are [X, Y, TEXT, SIZE, ALIGN, RED, GREEN, BLUE, ALPHA, FONT STYLE]
+   For more information about labels, go to mygame/documentation/02-labels.md.
 
  - args.outputs.solids: An array that generates a solid.
    The parameters are [X, Y, WIDTH, HEIGHT, RED, GREEN, BLUE, ALPHA]
+   For more information about solids, go to mygame/documentation/03-solids-and-borders.md.
 
  - args.outputs.lines: An array that generates a line.
    The parameters are [X, Y, X2, Y2, RED, GREEN, BLUE, ALPHA]
+   For more information about lines, go to mygame/documentation/04-lines.md.
 
 =end
 

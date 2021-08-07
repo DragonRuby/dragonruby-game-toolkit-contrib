@@ -10,12 +10,15 @@
 
  - args.outputs.sprites: An array. Values in this array generate sprites on the screen.
    The parameters are [X, Y, WIDTH, HEIGHT, IMAGE PATH]
+   For more information about sprites, go to mygame/documentation/05-sprites.md.
 
  - args.outputs.labels: An array. Values in the array generate labels on the screen.
    The parameters are [X, Y, TEXT, SIZE, ALIGNMENT, RED, GREEN, BLUE, ALPHA, FONT STYLE]
+   For more information about labels, go to mygame/documentation/02-labels.md.
 
  - args.inputs.keyboard.key_down.KEY: Determines if a key is in the down state, or pressed.
    Stores the frame that key was pressed on.
+   For more information about the keyboard, go to mygame/documentation/06-keyboard.md.
 
 =end
 
@@ -28,6 +31,8 @@
 # in this tick "entry point": `looping_animation`, and the
 # second method is `one_time_animation`.
 def tick args
+  # uncomment the line below to see animation play out in slow motion
+  # args.gtk.slowmo! 6
   looping_animation args
   one_time_animation args
 end
@@ -60,22 +65,22 @@ def looping_animation args
                                               does_sprite_loop
 
   # Now that we have `sprite_index, we can present the correct file.
-  args.outputs.sprites << [100, 100, 100, 100, "sprites/dragon_fly_#{sprite_index}.png"]
+  args.outputs.sprites << { x: 100, y: 100, w: 100, h: 100, path: "sprites/dragon_fly_#{sprite_index}.png" }
 
   # Try changing the numbers below to see how the animation changes:
-  args.outputs.sprites << [100, 200, 100, 100, "sprites/dragon_fly_#{0.frame_index 6, 4, true}.png"]
+  args.outputs.sprites << { x: 100, y: 200, w: 100, h: 100, path: "sprites/dragon_fly_#{0.frame_index 6, 4, true}.png" }
 end
 
 # This function shows how to animate a sprite that executes
 # only once when the "f" key is pressed.
 def one_time_animation args
-  # This is just a label that shows instructions within the game.
-  args.outputs.labels << [220, 350, "(press f to animate)"]
+  # This is just a label the shows instructions within the game.
+  args.outputs.labels <<  { x: 220, y: 350, text: "(press f to animate)" }
 
   # If "f" is pressed on the keyboard...
   if args.inputs.keyboard.key_down.f
     # Print the frame that "f" was pressed on.
-    puts "Hello from main.rb! The \"f\" key was in the down state on frame: #{args.inputs.keyboard.key_down.f}"
+    puts "Hello from main.rb! The \"f\" key was in the down state on frame: #{args.state.tick_count}"
 
     # And MOST IMPORTANTLY set the point it time to start the animation,
     # equal to "now" which is represented as args.state.tick_count.
@@ -104,11 +109,11 @@ def one_time_animation args
   # This line sets the frame index to zero, if
   # the animation duration has passed (frame_index returned nil).
 
-  # Remember: we are not looping forever here.
+  # Remeber: we are not looping forever here.
   sprite_index ||= 0
 
   # Present the sprite.
-  args.outputs.sprites << [100, 300, 100, 100, "sprites/dragon_fly_#{sprite_index}.png"]
+  args.outputs.sprites << { x: 100, y: 300, w: 100, h: 100, path: "sprites/dragon_fly_#{sprite_index}.png" }
 
   tick_instructions args, "Sample app shows how to use Numeric#frame_index and string interpolation to animate a sprite over time."
 end

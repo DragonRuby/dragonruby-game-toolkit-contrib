@@ -21,7 +21,7 @@ def day_one_infront_of_home args
       [0, 4, 3, 20, :day_one_ceremony]
     ],
     storylines: [
-      [40, 20, 4, 4, "It looks like everyone- is already- at the remembrance-- ceremony."],
+      [40, 20, 4, 4, "It looks like everyone- is already- at the rememberance-- ceremony."],
     ]
   }
 end

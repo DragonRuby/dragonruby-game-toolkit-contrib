@@ -15,7 +15,7 @@ APIs listing that haven't been encountered in a previous sample apps:
 # Borders are added to args.outputs.borders
 
 # The parameters required for rects are:
-# 1. The bottom left corner (x, y)
+# 1. The upper right corner (x, y)
 # 2. The width (w)
 # 3. The height (h)
 # 4. The rgba values for the color and transparency (r, g, b, a)

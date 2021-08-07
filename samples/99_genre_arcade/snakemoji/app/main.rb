@@ -10,8 +10,8 @@
 #  https://gist.github.com/scorp200
 #############LICENSE############
 #  Feel free to use this anywhere and however you want
-#  You can sell this to EA for $1,000,000 if you want, it's completely free.
-#  Just remember you are helping this... thing... to spread...
+#  You can sell this to EA for $1,000,000 if you want, its completely free.
+#  Just rememeber you are helping this... thing... to spread...
 #  ALSO! I am not liable for any mental, physical or financial damage caused.
 #############LICENSE############
 
@@ -156,7 +156,7 @@ def defaults 🎮
   🎮.🐍 ||= []
   #Direction the head moves to
   🎮.🚗 ||= [0, 0]
-  #Next_Direction, during input check only change this variable and then when game updates assign this to Direction
+  #Next_Direction, during input check only change this variable and then when game updates asign this to Direction
   🎮.🚦 ||= [*🎮.🚗]
   #Your score
   🎮.💰 ||= 0

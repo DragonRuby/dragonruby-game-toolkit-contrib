@@ -46,9 +46,9 @@ class Game
     mouse_overlay = mouse_overlay.merge r: 255 if state.delete_mode
 
     if state.mouse_held
-      outputs.primitives << mouse_overlay.border
+      outputs.primitives << mouse_overlay.border!
     else
-      outputs.primitives << mouse_overlay.solid
+      outputs.primitives << mouse_overlay.solid!
     end
   end
 

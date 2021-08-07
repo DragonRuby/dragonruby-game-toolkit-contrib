@@ -33,9 +33,11 @@
 
  - args.outputs.borders: An array. The values generate a border.
    The parameters are [X, Y, WIDTH, HEIGHT, RED, GREEN, BLUE]
+   For more information about borders, go to mygame/documentation/03-solids-and-borders.md.
 
  - args.outputs.labels: An array. The values generate a label.
    The parameters are [X, Y, TEXT, SIZE, ALIGNMENT, RED, GREEN, BLUE, ALPHA, FONT STYLE]
+   For more information about labels, go to mygame/documentation/02-labels.
 
 =end
 
@@ -120,7 +122,7 @@ class TicTacToe
     space.piece = state.current_turn
 
     # This ternary operator statement allows us to change the current player's turn.
-    # If it is currently x's turn, it becomes o's turn. If it is not x's turn, it becomes x's turn.
+    # If it is currently x's turn, it becomes o's turn. If it is not x's turn, it become's x's turn.
     state.current_turn = state.current_turn == :x ? :o : :x
   end
 

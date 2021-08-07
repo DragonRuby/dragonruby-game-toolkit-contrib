@@ -33,7 +33,7 @@ class FallingCircle
       { text: "mission control, this is sasha. landing on europa successful.", distance_gate: 0 },
       { text: "operation \"find earth 2.0\", initiated at 8-29-2036 14:00.",   distance_gate: 0 },
       { text: "jupiter's sure is beautiful...",   distance_gate: 4000 },
-      { text: "hmm, it seems there's some kind of anomaly in the sky",   distance_gate: 7000 },
+      { text: "hmm, it seems there's some kind of anomoly in the sky",   distance_gate: 7000 },
       { text: "dancing lights, i'll call them whisps.",   distance_gate: 8000 },
       { text: "#todo... look i ran out of time -_-",   distance_gate: 9000 },
       { text: "there's never enough time",   distance_gate: 9000 },

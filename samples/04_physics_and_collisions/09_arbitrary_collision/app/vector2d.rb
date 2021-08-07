@@ -42,7 +42,7 @@ class Vector2d
       Vector2d.new(@x/mag, @y/mag)
     end
   
-    #TODO delete?
+    #TODO delet?
     def distABS vect
       (((vect.x-@x)**2+(vect.y-@y)**2)**0.5).abs()
     end

@@ -22,10 +22,15 @@ class Star
   end
 end
 
-# calls methods needed for the game to run properly
+# calls methods needed for game to run properly
 def tick args
   # sets console command when sample app initially opens
   if Kernel.global_tick_count == 0
+    puts ""
+    puts ""
+    puts "========================================================="
+    puts "* INFO: Sprites, Classes"
+    puts "* INFO: Please specify the number of sprites to render."
     args.gtk.console.set_command "reset_with count: 100"
   end
 

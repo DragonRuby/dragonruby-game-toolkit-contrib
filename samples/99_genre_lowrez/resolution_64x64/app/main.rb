@@ -62,7 +62,7 @@ def tick args
   # =======================================================================
 
 
-  # ==== HOW TO ANIMATE A SPRITE (SEPARATE PNGS) ==========================
+  # ==== HOW TO ANIMATE A SPRITE (SEPERATE PNGS) ==========================
   # Remove the "#" at the beginning of the line below
   # how_to_animate_a_sprite args
   # =======================================================================
@@ -242,7 +242,7 @@ def how_to_render_sprites args
 end
 
 ## # =============================================================================
-## # ==== HOW TO ANIMATE A SPRITE (SEPARATE PNGS) ==========================
+## # ==== HOW TO ANIMATE A SPRITE (SEPERATE PNGS) ==========================
 ## # =============================================================================
 def how_to_animate_a_sprite args
   # STEP 1: Define when you want the animation to start. The animation in this case will start in 3 seconds
@@ -462,7 +462,7 @@ def how_to_determine_collision args
                                    text: "Collision!",
                                    alignment_enum: 1)
     else
-      # if no collision occurred, render the words no collision.
+      # if collision occurred, render the words no collision.
       args.lowrez.labels << args.lowrez
                             .default_label
                             .merge(x: 31,
@@ -560,7 +560,7 @@ def render_debug args
         g: 128,
         b: 128,
         a: 80
-      }.line
+      }.line!
 
       args.outputs.static_debug << {
         x:  LOWREZ_X_OFFSET + (i * 10),
@@ -571,7 +571,7 @@ def render_debug args
         g: 128,
         b: 128,
         a: 80
-      }.line
+      }.line!
     end
   end
 
@@ -598,7 +598,7 @@ def render_debug args
       y: 720 - (i * 20),
       text: text,
       size_enum: -1.5
-    }.label
+    }.label!
   end
 
   args.outputs.debug << {
@@ -607,7 +607,7 @@ def render_debug args
     text: "INFO: dev mode is currently enabled. Comment out the invocation of ~render_debug~ within the ~tick~ method to hide the debug layer.",
     size_enum: -0.5,
     alignment_enum: 1
-  }.label
+  }.label!
 end
 
 $gtk.reset
