@@ -185,5 +185,13 @@ module GTK
     def bottom_right
       [@right, @bottom].point
     end
+
+    def x
+      0
+    end
+
+    def y
+      0
+    end
   end
 end

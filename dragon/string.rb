@@ -29,6 +29,30 @@ S
     end
   end
 
+  def char_byte
+    return nil if self.length == 0
+    c = self.each_char.first.bytes
+    c = c.first if c.is_a? Enumerable
+    c
+  end
+
+  def insert_character_at index, char
+    t = each_char.to_a
+    t = (t.insert index, char)
+    t.join
+  end
+
+  def excluding_character_at index
+    t = each_char.to_a
+    t.delete_at index
+    t.join
+  end
+
+  def excluding_last_character
+    return "" if self.length <= 1
+    return excluding_character_at(self.length - 1)
+  end
+
   def end_with_bang?
     self[-1] == "!"
   end

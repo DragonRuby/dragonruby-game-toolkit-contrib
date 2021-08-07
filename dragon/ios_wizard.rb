@@ -1,19 +1,11 @@
-# Contributors outside of DragonRuby who also hold Copyright: Michał Dudziński
+# coding: utf-8
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # ios_wizard.rb has been released under MIT (*only this file*).
 
-class WizardException < Exception
-  attr_accessor :console_primitives
+# Contributors outside of DragonRuby who also hold Copyright: Michał Dudziński
 
-  def initialize *console_primitives
-    @console_primitives = console_primitives
-  end
-end
-
-class IOSWizard
-  include Metadata
-
+class IOSWizard < Wizard
   def initialize
     @doctor_executed_at = 0
   end
@@ -26,23 +18,45 @@ class IOSWizard
     @steps ||= []
   end
 
-  def steps_development_build
+  def prerequisite_steps
     [
       :check_for_xcode,
       :check_for_brew,
       :check_for_certs,
-      :check_for_device,
-      :check_for_dev_profile,
+    ]
+  end
+
+  def app_metadata_retrieval_steps
+    [
       :determine_team_identifier,
       :determine_app_name,
       :determine_app_id,
-      :blow_away_temp,
+    ]
+  end
+
+  def steps_development_build
+    [
+      *prerequisite_steps,
+
+      :check_for_device,
+      :check_for_dev_profile,
+
+      *app_metadata_retrieval_steps,
+
+      :clear_tmp_directory,
       :stage_app,
+
       :development_write_info_plist,
+
       :write_entitlements_plist,
       :compile_icons,
-      :create_payload_directory,
+      :clear_payload_directory,
+
+      :create_payload_directory_dev,
+
+      :create_payload,
       :code_sign_payload,
+
       :create_ipa,
       :deploy
     ]
@@ -50,20 +64,27 @@ class IOSWizard
 
   def steps_production_build
     [
-      :check_for_xcode,
-      :check_for_brew,
-      :check_for_certs,
+      *prerequisite_steps,
+
       :check_for_distribution_profile,
-      :determine_team_identifier,
-      :determine_app_name,
-      :determine_app_id,
-      :blow_away_temp,
+      :determine_app_version,
+
+      *app_metadata_retrieval_steps,
+
+      :clear_tmp_directory,
       :stage_app,
+
       :production_write_info_plist,
+
       :write_entitlements_plist,
       :compile_icons,
-      :create_payload_directory,
+      :clear_payload_directory,
+
+      :create_payload_directory_prod,
+
+      :create_payload,
       :code_sign_payload,
+
       :create_ipa,
       :print_publish_help
     ]
@@ -84,31 +105,25 @@ class IOSWizard
     sprite_path
   end
 
-  def start opts = {}
-    @opts = opts
+  def start opts = nil
+    @opts = opts || {}
 
-    unless $gtk.args.fn.eq_any? @opts[:env], :dev, :prod
+    if !(@opts.is_a? Hash) || !($gtk.args.fn.eq_any? @opts[:env], :dev, :prod)
       raise WizardException.new(
-        "* $wizards.ios.start needs to be provided an environment option.",
-        "** For development builds type: $wizards.ios.start env: :dev",
-        "** For production builds type: $wizards.ios.start env: :prod"
-      )
+              "* $wizards.ios.start needs to be provided an environment option.",
+              "** For development builds type: $wizards.ios.start env: :dev",
+              "** For production builds type: $wizards.ios.start env: :prod"
+            )
     end
 
     @production_build = (@opts[:env] == :prod)
-
-    @version = determine_app_version @opts
-    log_info "I will be using version: '#{@version}'" if @production_build
-
     @steps = steps_development_build
     @steps = steps_production_build if @production_build
     @certificate_name = nil
+    @app_version = opts[:version]
+    @app_version = "1.0" if @opts[:env] == :dev && !@app_version
     init_wizard_status
-    if @production_build
-      log_info "Starting iOS Wizard so we can create a production build."
-    else
-      log_info "Starting iOS Wizard so we can deploy to your device."
-    end
+    log_info "Starting iOS Wizard so we can deploy to your device."
     @start_at = Kernel.global_tick_count
     steps.each do |m|
       log_info "Running step ~:#{m}~."
@@ -128,8 +143,10 @@ class IOSWizard
       log "=" * $console.console_text_width
     else
       log_error e.to_s
+      log e.__backtrace_to_org__
     end
 
+    init_wizard_status
     $console.set_command "$wizards.ios.start env: :#{@opts[:env]}"
   end
 
@@ -236,23 +253,67 @@ class IOSWizard
     return "profiles/development.mobileprovision"
   end
 
+  def ios_metadata_template
+    <<-S
+# ios_metadata.txt is used by the Pro version of DragonRuby Game Toolkit to create iOS apps.
+# Information about the Pro version can be found at: http://dragonruby.org/toolkit/game#purchase
+
+# teamid needs to be set to your assigned Team Id which can be found at https://developer.apple.com/account/#/membership/
+teamid=
+# appid needs to be set to your application identifier which can be found at https://developer.apple.com/account/resources/identifiers/list
+appid=
+# appname is the name you want to show up underneath the app icon on the device. Keep it under 10 characters.
+appname=
+S
+  end
+
+  def ios_metadata
+    contents = $gtk.read_file 'metadata/ios_metadata.txt'
+
+    if !contents
+      $gtk.write_file 'metadata/ios_metadata.txt', ios_metadata_template
+      contents = $gtk.read_file 'metadata/ios_metadata.txt'
+    end
+
+    kvps = contents.each_line
+                   .reject { |l| l.strip.length == 0 || (l.strip.start_with? "#") }
+                   .map do |l|
+                     key, value = l.split("=")
+                     [key.strip.to_sym, value.strip]
+                   end.flatten
+    Hash[*kvps]
+  end
+
+  def game_metadata
+    contents = $gtk.read_file 'metadata/game_metadata.txt'
+
+    kvps = contents.each_line
+                   .reject { |l| l.strip.length == 0 || (l.strip.start_with? "#") }
+                   .map do |l|
+                     key, value = l.split("=")
+                     [key.strip.to_sym, value.strip]
+                   end.flatten
+    Hash[*kvps]
+  end
+
+  def raise_ios_metadata_required
+    raise WizardException.new(
+            "* mygame/metadata/ios_metadata.txt needs to be filled out.",
+            "You need to update metadata/ios_metadata.txt with a valid teamid, appname, and appid.",
+            "Instructions for where the values should come from are within metadata/ios_metadata.txt."
+          )
+  end
+
   def determine_team_identifier
-    @team_name = (team_identifier_from_provisioning_profile @opts[:env])
-    log_info "Team Identifier is: #{@team_name}"
+    @team_id = (ios_metadata.teamid || "")
+    raise_ios_metadata_required if @team_id.strip.length == 0
+    log_info "Team Identifer is: #{@team_id}"
   end
 
   def determine_app_name
-    @app_name = (provisioning_profile_xml @opts[:env])[:children].first[:children].first[:children][1][:children].first[:data]
+    @app_name = (ios_metadata.appname || "")
+    raise_ios_metadata_required if @app_name.strip.length == 0
     log_info "App name is: #{@app_name}."
-  end
-
-  def determine_app_version opts
-    version = @opts[:version]
-    unless version
-      version = get_metadata[:version]
-      version = version.start_with?('#') ? '1.0' : version.split('=').last
-    end
-    version.to_s
   end
 
   def provisioning_profile_xml environment
@@ -275,36 +336,9 @@ class IOSWizard
     $gtk.parse_xml scrubbed
   end
 
-  def app_id_from_provisioning_profile environment
-    application_identifier_index = (provisioning_profile_xml environment)[:children][0][:children][0][:children][13][:children][0][:children][0][:data]
-    (provisioning_profile_xml environment)[:children][0][:children][0][:children][13][:children].each.with_index do |node, i|
-      if node[:children] && node[:children][0] && node[:children][0][:data] == "application-identifier"
-        application_identifier_index = i
-        break
-      end
-    end
-
-    app_id_with_team_identifier = (provisioning_profile_xml environment)[:children].first[:children].first[:children][13][:children][application_identifier_index + 1][:children].first[:data]
-    team_identifier = team_identifier_from_provisioning_profile environment
-    app_id_with_team_identifier.gsub "#{team_identifier}.", ""
-  end
-
-  def team_identifier_from_provisioning_profile environment
-    team_identifier_index = (provisioning_profile_xml environment)[:children][0][:children][0][:children][13][:children][0][:children][0][:data]
-
-    (provisioning_profile_xml environment)[:children][0][:children][0][:children][13][:children].each.with_index do |node, i|
-      if node[:children] && node[:children][0] && node[:children][0][:data] == "com.apple.developer.team-identifier"
-        team_identifier_index = i
-        break
-      end
-    end
-
-    (provisioning_profile_xml environment)[:children].first[:children].first[:children][13][:children][team_identifier_index + 1][:children].first[:data]
-  end
-
   def determine_app_id
-    @app_id = app_id_from_provisioning_profile @opts[:env]
-
+    @app_id = ios_metadata.appid
+    raise_ios_metadata_required if @app_id.strip.length == 0
     log_info "App Identifier is set to : #{@app_id}"
   end
 
@@ -323,7 +357,7 @@ class IOSWizard
     end
   end
 
-  def blow_away_temp
+  def clear_tmp_directory
     sh "rm -rf #{tmp_directory}"
   end
 
@@ -377,7 +411,7 @@ class IOSWizard
               "** 1. Open Xcode.",
               "** 2. Log into your developer account. Xcode -> Preferences -> Accounts.",
               { w: 700, h: 98, path: get_reserved_sprite("login-xcode.png") },
-              "** 3. After logging in, select Manage Certificates...",
+              "** 3. After loggin in, select Manage Certificates...",
               { w: 700, h: 115, path: get_reserved_sprite("manage-certificates.png") },
               "** 4. Add a certificate for Apple Development.",
               { w: 700, h: 217, path: get_reserved_sprite("add-cert.png") },
@@ -464,7 +498,8 @@ XML
 
     log_info "Creating Entitlements.plist"
 
-    $gtk.write_file_root "tmp/ios/Entitlements.plist", entitlement_plist_string.gsub(":app_id", "#{@team_name}.#{@app_id}").strip
+    $gtk.write_file_root "tmp/ios/Entitlements.plist", entitlement_plist_string.gsub(":app_id", "#{@team_id}.#{@app_id}").strip
+    $gtk.write_file_root "tmp/ios/Entitlements.txt", entitlement_plist_string.gsub(":app_id", "#{@team_id}.#{@app_id}").strip
 
     sh "/usr/bin/plutil -convert binary1 \"#{tmp_directory}/Entitlements.plist\""
     sh "/usr/bin/plutil -convert xml1 \"#{tmp_directory}/Entitlements.plist\""
@@ -502,15 +537,15 @@ XML
         <key>CFBundleExecutable</key>
         <string>:app_name</string>
         <key>CFBundleInfoDictionaryVersion</key>
-        <string>6.0</string>
+        <string>:app_version</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleShortVersionString</key>
-        <string>5.6</string>
+        <string>:app_version</string>
         <key>CFBundleSignature</key>
         <string>????</string>
         <key>CFBundleVersion</key>
-        <string>5.6</string>
+        <string>:app_version</string>
         <key>CFBundleIcons</key>
         <dict>
             <key>CFBundlePrimaryIcon</key>
@@ -659,13 +694,13 @@ XML
         <key>CFBundleIdentifier</key>
         <string>:app_id</string>
         <key>CFBundleInfoDictionaryVersion</key>
-        <string>6.0</string>
+        <string>:app_version</string>
         <key>CFBundleName</key>
         <string>:app_name</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleShortVersionString</key>
-        <string>5.2</string>
+        <string>:app_version</string>
         <key>CFBundleSignature</key>
         <string>????</string>
         <key>CFBundleSupportedPlatforms</key>
@@ -673,7 +708,7 @@ XML
                 <string>iPhoneOS</string>
         </array>
         <key>CFBundleVersion</key>
-        <string>5.2</string>
+        <string>:app_version</string>
         <key>DTCompiler</key>
         <string>com.apple.compilers.llvm.clang.1_0</string>
         <key>DTPlatformBuild</key>
@@ -759,6 +794,7 @@ XML
     info_plist_string.gsub!(":app_id", @app_id)
 
     $gtk.write_file_root "tmp/ios/#{@app_name}.app/Info.plist", info_plist_string.strip
+    $gtk.write_file_root "tmp/ios/Info.txt", info_plist_string.strip
 
     @info_plist_written = true
   end
@@ -812,13 +848,13 @@ XML
         <key>CFBundleIdentifier</key>
         <string>:app_id</string>
         <key>CFBundleInfoDictionaryVersion</key>
-        <string>6.0</string>
+        <string>:app_version</string>
         <key>CFBundleName</key>
         <string>:app_name</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleShortVersionString</key>
-        <string>:version</string>
+        <string>:app_version</string>
         <key>CFBundleSignature</key>
         <string>????</string>
         <key>CFBundleSupportedPlatforms</key>
@@ -826,7 +862,7 @@ XML
                 <string>iPhoneOS</string>
         </array>
         <key>CFBundleVersion</key>
-        <string>:version</string>
+        <string>:app_version</string>
         <key>DTCompiler</key>
         <string>com.apple.compilers.llvm.clang.1_0</string>
         <key>DTPlatformBuild</key>
@@ -910,9 +946,10 @@ XML
 
     info_plist_string.gsub!(":app_name", @app_name)
     info_plist_string.gsub!(":app_id", @app_id)
-    info_plist_string.gsub!(":version", @version);
+    info_plist_string.gsub!(":app_version", @app_version)
 
     $gtk.write_file_root "tmp/ios/#{@app_name}.app/Info.plist", info_plist_string.strip
+    $gtk.write_file_root "tmp/ios/Info.txt", info_plist_string.strip
 
     @info_plist_written = true
   end
@@ -934,28 +971,53 @@ XML
     "#{relative_path}/#{$gtk.cli_arguments[:dragonruby]}"
   end
 
-  def write_ip_address
-    $gtk.write_file "app/server_ip_address.txt", $gtk.ffi_misc.get_local_ip_address.strip
+  def embed_mobileprovision
+    sh %Q[cp #{@provisioning_profile_path} "#{app_path}/embedded.mobileprovision"]
+    sh %Q[/usr/bin/plutil -convert binary1 "#{app_path}/Info.plist"]
   end
 
-  def create_payload_directory
-    sh "cp #{@provisioning_profile_path} \"#{app_path}/embedded.mobileprovision\""
-    sh "/usr/bin/plutil -convert binary1 \"#{app_path}/Info.plist\""
-    write_ip_address
-    sh "rm \"#{@app_name}\".ipa"
-    sh "rm -rf \"#{app_path}/app\""
-    sh "rm -rf \"#{app_path}/sounds\""
-    sh "rm -rf \"#{app_path}/sprites\""
-    sh "rm -rf \"#{app_path}/data\""
-    sh "rm -rf \"#{app_path}/fonts\""
-    sh "cp -r \"#{root_folder}/app/\" \"#{app_path}/app/\""
-    sh "cp -r \"#{root_folder}/sounds/\" \"#{app_path}/sounds/\""
-    sh "cp -r \"#{root_folder}/sprites/\" \"#{app_path}/sprites/\""
-    sh "cp -r \"#{root_folder}/data/\" \"#{app_path}/data/\""
-    sh "cp -r \"#{root_folder}/fonts/\" \"#{app_path}/fonts/\""
-    sh "mkdir -p #{tmp_directory}/ipa_root/Payload"
-    sh "cp -r \"#{app_path}\" \"#{tmp_directory}/ipa_root/Payload\""
-    sh "chmod -R 755 \"#{tmp_directory}/ipa_root/Payload\""
+  def clear_payload_directory
+    sh %Q[rm "#{@app_name}".ipa]
+    sh %Q[rm -rf "#{app_path}/app"]
+    sh %Q[rm -rf "#{app_path}/sounds"]
+    sh %Q[rm -rf "#{app_path}/sprites"]
+    sh %Q[rm -rf "#{app_path}/data"]
+    sh %Q[rm -rf "#{app_path}/fonts"]
+  end
+
+  def stage_app
+    sh %Q[cp -r "#{root_folder}/app/" "#{app_path}/app/"]
+    sh %Q[cp -r "#{root_folder}/sounds/" "#{app_path}/sounds/"]
+    sh %Q[cp -r "#{root_folder}/sprites/" "#{app_path}/sprites/"]
+    sh %Q[cp -r "#{root_folder}/data/" "#{app_path}/data/"]
+    sh %Q[cp -r "#{root_folder}/fonts/" "#{app_path}/fonts/"]
+  end
+
+  def create_payload
+    sh %Q[mkdir -p #{tmp_directory}/ipa_root/Payload]
+    sh %Q[cp -r "#{app_path}" "#{tmp_directory}/ipa_root/Payload"]
+    sh %Q[chmod -R 755 "#{tmp_directory}/ipa_root/Payload"]
+  end
+
+  def create_payload_directory_dev
+    # write dev machine's ip address for hotloading
+    $gtk.write_file "app/server_ip_address.txt", $gtk.ffi_misc.get_local_ip_address.strip
+
+    embed_mobileprovision
+    clear_payload_directory
+    stage_app
+  end
+
+  def create_payload_directory_prod
+    # production builds does not hotload ip address
+    sh %Q[rm "#{root_folder}/app/server_ip_address.txt"]
+
+    embed_mobileprovision
+    stage_app
+
+    # production build marker
+    sh %Q[mkdir -p "#{app_path}/metadata/"]
+    sh %Q[touch metadata/DRAGONRUBY_PRODUCTION_BUILD]
   end
 
   def create_ipa
@@ -988,10 +1050,22 @@ SCRIPT
   end
 
   def print_publish_help
-      log_info "Go to https://appstoreconnect.apple.com/apps and create an App if you haven't already done so."
-      log_info "Go to https://appleid.apple.com and create a 'Application Specific Password'."
-      log_info "To upload your app, Download Transporter from the App Store https://apps.apple.com/us/app/transporter/id1450874784?mt=12."
-      log_info "Your app is located at ./tmp/ios/#{@app_name}.ipa"
+    has_transporter = (sh "ls /Applications/Transporter.app").include? "Contents"
+    if !has_transporter
+      $gtk.openurl "https://apps.apple.com/us/app/transporter/id1450874784?mt=12"
+      $console.set_command "$wizards.ios.start env: :#{@opts[:env]}, version: \"#{@opts[:version]}\""
+      raise WizardException.new(
+        "* To upload your app, Download Transporter from the App Store https://apps.apple.com/us/app/transporter/id1450874784?mt=12."
+      )
+    else
+      sh "mkdir ./tmp/ios/intermediary_artifacts"
+      sh "mv \"#{tmp_directory}/#{@app_name}.app\" #{tmp_directory}/intermediary_artifacts/"
+      sh "mv \"#{tmp_directory}/do_zip.sh\" #{tmp_directory}/intermediary_artifacts"
+      sh "mv \"#{tmp_directory}/Entitlements.plist\" #{tmp_directory}/intermediary_artifacts"
+      sh "mv \"#{tmp_directory}/ipa_root\" #{tmp_directory}/intermediary_artifacts/"
+      sh "open /Applications/Transporter.app"
+      sh "open ./tmp/ios/"
+    end
   end
 
   def compile_icons
@@ -1011,5 +1085,25 @@ S
   def stage_native_libs
     sh "cp -r \"#{root_folder}/native/\" \"#{app_path}/native/\""
     sh "CODESIGN_ALLOCATE=\"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\" /usr/bin/codesign -f -s \"#{@certificate_name}\" --entitlements #{tmp_directory}/Entitlements.plist \"#{tmp_directory}/#{@app_name}.app/native/ios-device/ext.dylib\""
+  end
+
+  def set_version version
+    @app_version = version
+    start env: @opts[:env], version: version
+  end
+
+  def app_version
+    log_info "Attempting to retrieve App Version from metadata/ios_metadata.txt."
+    ios_version_number = (ios_metadata.version || "").strip
+    if ios_version_number.length == 0
+      log_info "Not found. Attempting to retrieve App Version from metadata/game_metadata.txt."
+      ios_version_number = (game_metadata.version || "").strip
+    end
+    ios_version_number
+  end
+
+  def determine_app_version
+    @app_version = app_version
+    return if @app_version
   end
 end

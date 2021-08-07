@@ -119,18 +119,18 @@ The properties ~args.inputs.mouse.(click|down|previous_click|up)~ each return ~n
 that has an ~x~, ~y~ properties along with helper functions to determine collision: ~inside_rect?~, ~inside_circle~.
 *** ~.controller_one~, ~.controller_two~
 Represents controllers connected to the usb ports.
-**** ~.up
+**** ~.up~
 Returns ~true~ if ~up~ is pressed or held on the directional or left analog.
-**** ~.down
+**** ~.down~
 Returns ~true~ if ~down~ is pressed or held on the directional or left analog.
-**** ~.left
+**** ~.left~
 Returns ~true~ if ~left~ is pressed or held on the directional or left analog.
-**** ~.right
+**** ~.right~
 Returns ~true~ if ~right~ is pressed or held on the directional or left analog.
-**** ~.left_right
+**** ~.left_right~
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.controller_(one|two).left~ and ~args.inputs.controller_(one|two).right~.
-**** ~.up_down
-Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.controller_(one|two).down~ and ~args.inputs.controller_(one|two).up~.
+**** ~.up_down~
+Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.controller_(one|two).up~ and ~args.inputs.controller_(one|two).down~.
 **** ~.(left_analog_x_raw|right_analog_x_raw)~
 Returns the raw integer value for the analog's horizontal movement (~-32,000 to +32,000~).
 **** ~.left_analog_y_raw|right_analog_y_raw)~
@@ -139,13 +139,13 @@ Returns the raw integer value for the analog's vertical movement (~-32,000 to +3
 Returns a number between ~-1~ and ~1~ which represents the percentage the analog is moved horizontally as a ratio of the maximum horizontal movement.
 **** ~.left_analog_y_perc|right_analog_y_perc)~
 Returns a number between ~-1~ and ~1~ which represents the percentage the analog is moved vertically as a ratio of the maximum vertical movement.
-**** ~.directional_up)~
+**** ~.directional_up~
 Returns ~true~ if ~up~ is pressed or held on the directional.
-**** ~.directional_down)~
+**** ~.directional_down~
 Returns ~true~ if ~down~ is pressed or held on the directional.
-**** ~.directional_left)~
+**** ~.directional_left~
 Returns ~true~ if ~left~ is pressed or held on the directional.
-**** ~.directional_right)~
+**** ~.directional_right~
 Returns ~true~ if ~right~ is pressed or held on the directional.
 **** ~.(a|b|x|y|l1|r1|l2|r2|l3|r3|start|select)~
 Returns ~true~ if the specific button is pressed or held.
@@ -170,7 +170,7 @@ Returns ~true~ if ~right~ or ~d~ is pressed or held on the keyboard.
 **** ~.left_right~
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.keyboard.left~ and ~args.inputs.keyboard.right~.
 **** ~.up_down~
-Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.keyboard.down~ and ~args.inputs.keyboard.up~.
+Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.keyboard.up~ and ~args.inputs.keyboard.up~.
 **** keyboard properties
 The following properties represent keys on the keyboard and are available on ~args.inputs.keyboard.KEY~, ~args.inputs.keyboard.key_down.KEY~, ~args.inputs.keyboard.key_held.KEY~, and ~args.inputs.keyboard.key_up.KEY~:
 - ~alt~
@@ -301,6 +301,14 @@ Send a Primitive to this collection to render an unfilled rectangle to the scree
 Send any Primitive to this collection which represents things you render to the screen for debugging purposes. Primitives in this collection will not be rendered in a production release of your game.
 ** ~args.geometry~
 This property contains geometric functions. Functions can be invoked via ~args.geometry.FUNCTION~.
+
+Here are some general notes with regards to the arguments these geometric functions accept.
+
+1. ~Rectangles~ can be represented as an ~Array~ with four (or more) values ~[x, y, w, h]~, as a ~Hash~ ~{ x:, y:, w:, h: }~ or an object that responds to ~x~, ~y~, ~w~, and ~h~.
+2. ~Points~ can be represent as an ~Array~ with two (or more) values ~[x, y]~, as a ~Hash~ ~{ x:, y:}~ or an object that responds to ~x~, and ~y~.
+3. ~Lines~ can be represented as an ~Array~ with four (or more) values ~[x, y, x2, y2]~, as a ~Hash~ ~{ x:, y:, x2:, y2: }~ or an object that responds to ~x~, ~y~, ~x2~, and ~y2~.
+4. ~Angles~ are represented as degrees (not radians).
+
 *** ~.inside_rect? rect_1, rect_2~
 Returns ~true~ if ~rect_1~ is inside ~rect_2~.
 *** ~.intersect_rect? rect_2, rect_2~

@@ -1,10 +1,10 @@
+# coding: utf-8
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # console.rb has been released under MIT (*only this file*).
 
 # Contributors outside of DragonRuby who also hold Copyright:
 # - Kevin Fischer: https://github.com/kfischer-okarin
-# - Austin Meyer: https://github.com/Niyy
 
 module GTK
   class Console
@@ -20,7 +20,7 @@ module GTK
                   :font_style, :menu
 
     def initialize
-      @font_style = FontStyle.new(font: 'font.ttf', size_enum: -1, line_height: 1.1)
+      @font_style = FontStyle.new(font: 'font.ttf', size_enum: -1.5, line_height: 1.1)
       @menu = Menu.new self
       @disabled = false
       @log_offset = 0
@@ -40,6 +40,8 @@ module GTK
       @text_color = Color.new [255, 255, 255]
       @error_color = Color.new [200, 50, 50]
       @header_color = Color.new [100, 200, 220]
+      @code_color = Color.new [210, 168, 255]
+      @comment_color    = Color.new [0, 200, 100]
       @animation_duration = 1.seconds
       @shown_at = -1
       load_history
@@ -314,6 +316,8 @@ S
 
         if cmd == 'quit' || cmd == ':wq' || cmd == ':q!' || cmd == ':q' || cmd == ':wqa'
           $gtk.request_quit
+        elsif cmd.start_with? ':'
+          send ((cmd.gsub '-', '_').gsub ':', '')
         else
           puts "-> #{cmd}"
           begin
@@ -322,13 +326,19 @@ S
             if $results.nil?
               puts "=> nil"
             elsif $results == :console_silent_eval
+              # do nothing since the console is silent
             else
               puts "=> #{$results}"
             end
             @last_command_errored = false
           rescue Exception => e
             try_search_docs e
-            puts  "* EXCEPTION: #{e}"
+            # if an exception is thrown and the bactrace includes something helpful, then show it
+            if (e.backtrace || []).first && (e.backtrace.first.include? "(eval)")
+              puts  "* EXCEPTION: #{e}"
+            else
+              puts  "* EXCEPTION: #{e}\n#{e.__backtrace_to_org__}"
+            end
           end
         end
       end
@@ -555,6 +565,11 @@ S
       end
 
       render_log_offset args
+
+      args.outputs.reserved << { x: 10.from_right, y: @bottom + 10,
+                                 text: "Press CTRL+g or ESCAPE to clear the prompt.",
+                                 vertical_alignment_enum: 0,
+                                 alignment_enum: 2, r: 80, g: 80, b: 80 }.label!
     end
 
     def render_log_offset args
@@ -577,7 +592,7 @@ S
     end
 
     def include_subdued_markers? text
-      include_any_words? text, subdued_markers
+      (text.start_with? "* INFO: ") && (include_any_words? text, subdued_markers)
     end
 
     def include_any_words? text, words
@@ -723,8 +738,32 @@ S
       (log_entry.start_with? "**** ")
     end
 
+    def code? log_entry
+      (just_symbol? log_entry) || (codeblock_marker? log_entry)
+    end
+
+    def just_symbol? log_entry
+      scrubbed = log_entry.gsub("*", "").strip
+      (scrubbed.start_with? ":") && (!scrubbed.include? " ") && (!scrubbed.include? "=>")
+    end
+
+    def code_comment? log_entry
+      return true  if log_entry.strip.start_with?("# ")
+      return false
+    end
+
+    def codeblock_marker? log_entry
+      return true if log_entry.strip.start_with?("#+begin_src")
+      return true if log_entry.strip.start_with?("#+end_src")
+      return false
+    end
+
     def color_for_log_entry(log_entry)
-      if include_row_marker? log_entry
+      if code? log_entry
+        @code_color
+      elsif code_comment? log_entry
+        @comment_color
+      elsif include_row_marker? log_entry
         @text_color
       elsif include_error_marker? log_entry
         @error_color

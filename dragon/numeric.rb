@@ -13,6 +13,35 @@ class Numeric
   alias_method :lte, :<=
   alias_method :__original_eq_eq__, :== unless Numeric.instance_methods.include? :__original_eq_eq__
 
+  def to_layout_row opts = {}
+    $layout.rect(row: self,
+                 col: opts.col || 0,
+                 w:   opts.w || 0,
+                 h:   opts.h || 0).y
+  end
+
+  def to_layout_col opts = {}
+    $layout.rect(row: 0,
+                 col: self,
+                 w:   opts.w || 0,
+                 h:   opts.h || 0).x
+  end
+
+  def to_layout_w
+    $layout.rect(row: 0, col: 0, w: self, h: 1).w
+  end
+
+  def to_layout_h
+    $layout.rect(row: 0, col: 0, w: 1, h: self).h
+  end
+
+  def to_layout_row_from_bottom opts = {}
+    ($layout.row_max_index - self).to_layout_row opts
+  end
+
+  def to_layout_col_from_right opts = {}
+    ($layout.col_max_index - self).to_layout_col opts
+  end
 
   # Converts a numeric value representing seconds into frames.
   #
@@ -28,8 +57,24 @@ class Numeric
     self / 2.0
   end
 
+  def third
+    self / 3.0
+  end
+
+  def quarter
+    self / 4.0
+  end
+
   def to_byte
     clamp(0, 255).to_i
+  end
+
+  def clamp *opts
+    min = (opts.at 0)
+    max = (opts.at 1)
+    return min if min && self < min
+    return max if max && self > max
+    return self
   end
 
   def clamp_wrap min, max
@@ -314,6 +359,18 @@ S
     (self % n) == 0
   end
 
+  def multiply n
+    self * n
+  end
+
+  def fmult n
+    self * n.to_f
+  end
+
+  def imult n
+    (self * n).to_i
+  end
+
   def mult n
     self * n
   end
@@ -435,12 +492,6 @@ S
     return gt other
   end
 
-  def == other
-    return true if __original_eq_eq__ other
-    return __original_eq_eq__ other.entity_id if other.is_a? OpenEntity
-    return false
-  end
-
   # @gtk
   def map
     unless block_given?
@@ -527,29 +578,29 @@ S
   end
 
   def - other
-    return nil unless other
-    super
+    return self unless other
+    self - other
   rescue Exception => e
     __raise_arithmetic_exception__ other, :-, e
   end
 
   def + other
-    return nil unless other
-    super
+    return self unless other
+    self + other
   rescue Exception => e
     __raise_arithmetic_exception__ other, :+, e
   end
 
   def * other
-    return nil unless other
-    super
+    return self unless other
+    self * other
   rescue Exception => e
     __raise_arithmetic_exception__ other, :*, e
   end
 
   def / other
-    return nil unless other
-    super
+    return self unless other
+    self / other
   rescue Exception => e
     __raise_arithmetic_exception__ other, :/, e
   end
@@ -579,6 +630,10 @@ S
   def self.clamp n, min, max
     n.clamp min, max
   end
+
+  def mid? l, r
+    (between? l, r) || (between? r, l)
+  end
 end
 
 class Fixnum
@@ -605,37 +660,31 @@ class Fixnum
   end
 
   def + other
-    return nil unless other
-    super
+    return self unless other
+    self + other
   rescue Exception => e
     __raise_arithmetic_exception__ other, :+, e
   end
 
   def * other
-    return nil unless other
-    super
+    return self unless other
+    self * other
   rescue Exception => e
     __raise_arithmetic_exception__ other, :*, e
   end
 
   def / other
-    return nil unless other
-    super
+    return self unless other
+    self / other
   rescue Exception => e
     __raise_arithmetic_exception__ other, :/, e
   end
 
   def - other
-    return nil unless other
-    super
+    return self unless other
+    self - other
   rescue Exception => e
     __raise_arithmetic_exception__ other, :-, e
-  end
-
-  def == other
-    return true if __original_eq_eq__ other
-    return __original_eq_eq__ other.entity_id if other.is_a? GTK::OpenEntity
-    return false
   end
 
   # Returns `-1` if the number is less than `0`. `+1` if the number
@@ -694,28 +743,28 @@ class Float
   alias_method :__original_divide__,   :- unless Float.instance_methods.include? :__original_divide__
 
   def - other
-    return nil unless other
+    return self unless other
     super
   rescue Exception => e
     __raise_arithmetic_exception__ other, :-, e
   end
 
   def + other
-    return nil unless other
+    return self unless other
     super
   rescue Exception => e
     __raise_arithmetic_exception__ other, :+, e
   end
 
   def * other
-    return nil unless other
+    return self unless other
     super
   rescue Exception => e
     __raise_arithmetic_exception__ other, :*, e
   end
 
   def / other
-    return nil unless other
+    return self unless other
     super
   rescue Exception => e
     __raise_arithmetic_exception__ other, :/, e
@@ -761,5 +810,9 @@ class Integer
 
   def nan?
     false
+  end
+
+  def center other
+    (self - other).abs.fdiv(2)
   end
 end
