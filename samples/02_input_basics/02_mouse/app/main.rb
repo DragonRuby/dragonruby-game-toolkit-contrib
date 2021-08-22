@@ -32,7 +32,7 @@ Reminder:
 # Use args.inputs.mouse.click.created_at
 
 # To see how many frames its been since the click occurred
-# Use args.inputs.mouse.click.creat_at_elapsed
+# Use args.inputs.mouse.click.created_at_elapsed
 
 # Saving the click in args.state can be quite useful
 
