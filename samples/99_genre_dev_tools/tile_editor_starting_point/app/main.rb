@@ -17,15 +17,19 @@
 
  - args.outputs.labels: An array. The values generate a label.
    The parameters are [X, Y, TEXT, SIZE, ALIGNMENT, RED, GREEN, BLUE, ALPHA, FONT STYLE]
+   For more information about labels, go to mygame/documentation/02-labels.md.
 
  - args.outputs.sprites: An array. The values generate a sprite.
    The parameters are [X, Y, WIDTH, HEIGHT, IMAGE PATH]
+   For more information about sprites, go to mygame/documentation/05-sprites.md.
 
  - args.outputs.solids: An array. The values generate a solid.
    The parameters are [X, Y, WIDTH, HEIGHT, RED, GREEN, BLUE]
+   For more information about solids, go to mygame/documentation/03-solids-and-borders.md.
 
  - args.outputs.lines: An array. The values generate a line.
    The parameters are [X1, Y1, X2, Y2, RED, GREEN, BLUE]
+   For more information about lines, go to mygame/documentation/04-lines.md.
 
  - args.state.new_entity: Used when we want to create a new object, like a sprite or button.
    In this sample app, new_entity is used to create a new button that clears the grid.

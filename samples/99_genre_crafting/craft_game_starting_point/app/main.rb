@@ -1,13 +1,13 @@
 # ==================================================
 # A NOTE TO JAM CRAFT PARTICIPANTS:
-# The comments and code in here are just a small piece of DragonRuby's capabilities.
+# The comments and code in here are just as small piece of DragonRuby's capabilities.
 # Be sure to check out the rest of the sample apps. Start with README.txt and go from there!
 # ==================================================
 
 # def tick args is the entry point into your game. This function is called at
 # a fixed update time of 60hz (60 fps).
 def tick args
-  # The defaults function initializes the game.
+  # The defaults function intitializes the game.
   defaults args
 
   # After the game is initialized, render it.
@@ -38,7 +38,7 @@ def defaults args
   # Bottom left is 0, 0. Top right is 1280, 720.
   # The inventory area is at the top of the screen
   # the number 80 is the size of all the sprites, so that is what is being
-  # used to decide the width and height
+  # used to decide the with and height
   args.state.sprite_size = 80
 
   args.state.inventory_border.w  = args.state.sprite_size * 10
@@ -49,7 +49,7 @@ def defaults args
   # define the borders for where the crafting area is located
   # the crafting area is below the inventory area
   # the number 80 is the size of all the sprites, so that is what is being
-  # used to decide the width and height
+  # used to decide the with and height
   args.state.craft_border.x =  10
   args.state.craft_border.y = 220
   args.state.craft_border.w = args.state.sprite_size * 3
@@ -92,12 +92,12 @@ def defaults args
       },
     ]
 
-    # after initializing the ordinal positions, derive the pixel
+    # after initializing the oridinal positions, derive the pixel
     # locations assuming that the width and height are 80
     args.state.items.each { |item| set_inventory_position args, item }
   end
 
-  # define all the ordinal positions of the inventory slots
+  # define all the oridinal positions of the inventory slots
   if !args.state.inventory_area
     args.state.inventory_area = [
       { ordinal_x: 0,  ordinal_y: 0 },
@@ -132,7 +132,7 @@ def defaults args
       { ordinal_x: 9,  ordinal_y: 2 },
     ]
 
-    # after initializing the ordinal positions, derive the pixel
+    # after initializing the oridinal positions, derive the pixel
     # locations assuming that the width and height are 80
     args.state.inventory_area.each { |i| set_inventory_position args, i }
 
@@ -144,7 +144,7 @@ def defaults args
     # To bring up DragonRuby's Console, press the ~ key within the game.
   end
 
-  # define all the ordinal positions of the craft slots
+  # define all the oridinal positions of the craft slots
   if !args.state.craft_area
     args.state.craft_area = [
       { ordinal_x: 0, ordinal_y: 0 },
@@ -158,7 +158,7 @@ def defaults args
       { ordinal_x: 2, ordinal_y: 2 },
     ]
 
-    # after initializing the ordinal positions, derive the pixel
+    # after initializing the oridinal positions, derive the pixel
     # locations assuming that the width and height are 80
     args.state.craft_area.each { |c| set_craft_position args, c }
   end
@@ -244,7 +244,7 @@ def input args
       found[:location] = :held
     end
 
-  # if the mouse is clicked and an item is currently being held....
+  # if the mouse is clicked and an item is currently beign held....
   elsif args.state.held_item
     # determine if a slot within the craft area was clicked
     craft_area = args.state.craft_area.find { |a| args.inputs.mouse.click.point.inside_rect? a }
@@ -255,7 +255,7 @@ def input args
     # if the click was within a craft area
     if craft_area
       # check to see if an item is already there and ignore the click if an item is found
-      # item_at_craft_slot is a helper method that returns an item or nil for a given ordinal
+      # item_at_craft_slot is a helper method that returns an item or nil for a given oridinal
       # position
       item_already_there = item_at_craft_slot args, craft_area[:ordinal_x], craft_area[:ordinal_y]
 
@@ -263,8 +263,8 @@ def input args
       if !item_already_there
         # if the quantity they are currently holding is greater than 1
         if args.state.held_item[:quantity] > 1
-          # remove one item (creating a separate item of the same type), and place it
-          # at the ordinal position and location of the craft area
+          # remove one item (creating a seperate item of the same type), and place it
+          # at the oridinal position and location of the craft area
           # the .merge method on Hash creates a new Hash, but updates any values
           # passed as arguments to merge
           new_item = args.state.held_item.merge(quantity: 1,
@@ -272,7 +272,7 @@ def input args
                                                 ordinal_x: craft_area[:ordinal_x],
                                                 ordinal_y: craft_area[:ordinal_y])
 
-          # after the item is created, place it into the args.state.items collection
+          # after the item is crated, place it into the args.state.items collection
           args.state.items << new_item
 
           # then subtract one from the held item
@@ -281,7 +281,7 @@ def input args
         # if the craft area is available and there is only one item being held
         elsif args.state.held_item[:quantity] == 1
           # instead of creating any new items just set the location of the held item
-          # to the ordinal position of the craft area, and then nil out the
+          # to the oridinal position of the craft area, and then nil out the
           # held item state so that a new item can be picked up
           args.state.held_item[:location] = :craft
           args.state.held_item[:ordinal_x] = craft_area[:ordinal_x]
@@ -326,7 +326,7 @@ end
 def calc args
   # make sure that the real position of the inventory
   # items are updated every frame to ensure that they
-  # are placed correctly given their location and ordinal positions
+  # are placed correctly given their location and oridinal positions
   # instead of using .map, here we use .each (since we are not returning a new item and just updating the items in place)
   args.state.items.each do |item|
     # based on the location of the item, invoke the correct pixel conversion method

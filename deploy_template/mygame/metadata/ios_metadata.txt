@@ -1,0 +1,9 @@
+# ios_metadata.txt is used by the Pro version of DragonRuby Game Toolkit to create iOS apps.
+# Information about the Pro version can be found at: http://dragonruby.org/toolkit/game#purchase
+
+# teamname needs to be set to your assigned team id which can be found at https://developer.apple.com/account/#/membership/L7H57V9CRD
+teamid=
+# appid needs to be set to your application identifier which can be found at https://developer.apple.com/account/resources/identifiers/list
+appid=
+# appname is the name you want to show up underneath the app icon on the device
+appname=

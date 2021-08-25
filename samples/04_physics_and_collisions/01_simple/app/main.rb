@@ -10,7 +10,7 @@
 
 # This sample app shows collisions between two boxes.
 
-# Runs methods needed for the game to run properly.
+# Runs methods needed for game to run properly.
 def tick args
   tick_instructions args, "Sample app shows how to move a square over time and determine collision."
   defaults args
@@ -33,7 +33,7 @@ def defaults args
 end
 
 def render args
-  # If the game state denotes that a collision has occurred,
+  # If the game state denotes that a collision has occured,
   # render a solid square, otherwise render a border instead.
   if args.state.center_box_collision
     args.outputs.solids << args.state.center_box
@@ -47,7 +47,7 @@ end
 
 # Generally in a pipeline for a game engine, you have rendering,
 # game simulation (calculation), and input processing.
-# This function represents the game simulation.
+# This fuction represents the game simulation.
 def calc args
   position_moving_box args
   determine_collision_center_box args

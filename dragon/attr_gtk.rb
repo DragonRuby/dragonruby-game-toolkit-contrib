@@ -19,6 +19,10 @@ module AttrGTK
     args.state
   end
 
+  def temp_state
+    args.temp_state
+  end
+
   def inputs
     args.inputs
   end
@@ -45,5 +49,13 @@ module AttrGTK
 
   def layout
     args.layout
+  end
+
+  def new_entity entity_type, init_hash = nil, &block
+    args.state.new_entity entity_type, init_hash, &block
+  end
+
+  def new_entity_strict entity_type, init_hash = nil, &block
+    args.state.new_entity_strict entity_type, init_hash, &block
   end
 end

@@ -150,7 +150,7 @@ Here is an example:
 
 S
   end
-  
+
   def docs_sprites
     <<-S
 * DOCS: ~GTK::Outputs#sprites~

@@ -1,5 +1,5 @@
 # Hey there! Welcome to Four Decisions. Here is how you
-# create your decision tree. Remove =begin and =end from the text to
+# create your decision tree. Remove =being and =end from the text to
 # enable the game (just save the file). Change stuff and see what happens!
 
 def game

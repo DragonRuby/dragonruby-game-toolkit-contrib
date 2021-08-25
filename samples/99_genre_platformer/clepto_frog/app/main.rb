@@ -485,7 +485,7 @@ class CleptoFrog
     return if state.world_lookup.keys.length > 0
     return unless state.world.length > 0
 
-    # Searches through the world and finds the coordinates that exist
+    # Searches through the world and finds the cordinates that exist
     state.world_lookup = {}
     state.world.each do |x, y, w, h|
       state.world_lookup[[x, y, w || state.tile_size, h || state.tile_size]] = true

@@ -1,5 +1,5 @@
 # Sprites represented as Entities using the queue ~args.outputs.sprites~
-# yields nicer access apis over Hashes, but requires a bit more code upfront.
+# yields nicer access apis over Hashes, but require a bit more code upfront.
 # The hash sample has to use star[:s] to get the speed of the star, but
 # an entity can use .s instead.
 def random_x args
@@ -39,7 +39,11 @@ def tick args
 
   # sets console command when sample app initially opens
   if Kernel.global_tick_count == 0
-    puts "* INFO - Please specify the number of sprites to render."
+    puts ""
+    puts ""
+    puts "========================================================="
+    puts "* INFO: Sprites, Open Entities"
+    puts "* INFO: Please specify the number of sprites to render."
     args.gtk.console.set_command "reset_with count: 100"
   end
 

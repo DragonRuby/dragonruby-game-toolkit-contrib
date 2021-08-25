@@ -1,3 +1,4 @@
+# coding: utf-8
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # console_font_style.rb has been released under MIT (*only this file*).
@@ -33,7 +34,7 @@ module GTK
           size_enum: size_enum,
           alignment_enum: alignment_enum,
           **color.to_h,
-        }.label
+        }.label!
       end
     end
   end

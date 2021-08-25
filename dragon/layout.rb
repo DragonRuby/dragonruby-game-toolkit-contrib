@@ -1,3 +1,4 @@
+# coding: utf-8
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # layout.rb has been released under MIT (*only this file*).
@@ -276,8 +277,16 @@ module GTK
       device.grid_area.row_count
     end
 
+    def row_max_index
+      row_count - 1
+    end
+
     def col_count
       device.grid_area.col_count
+    end
+
+    def col_max_index
+      col_count - 1
     end
 
     def gutter_height
@@ -302,18 +311,124 @@ module GTK
 
     def rect_defaults
       {
-        row: nil,
-        col: nil,
-        h:   1,
-        w:   1,
-        dx:  0,
-        dy:  0,
-        rect: :control_rect
+        row:      nil,
+        col:      nil,
+        h:        1,
+        w:        1,
+        dx:       0,
+        dx_ratio: 1,
+        dy:       0,
+        dy_ratio: 1,
+        dh_ratio: 1,
+        dw_ratio: 1,
+        merge:    nil,
+        rect:     :control_rect
       }
     end
 
-    def rect opts
+    def row n
+      (rect row: n, col: 0, w: 0, h: 0).x
+    end
+
+    def row_from_bottom n
+      (rect row: row_count - n, col: 0, w: 0, h: 0).x
+    end
+
+    def col n
+      (rect row: 0, col: n, w: 0, h: 0).y
+    end
+
+    def col_from_right n
+      (rect row: 0, col: col_max_index - n, w: 0, h: 0).y
+    end
+
+    def w n
+      (rect row: 0, col: 0, w: n, h: 1).w
+    end
+
+    def h n
+      (rect row: 0, col: 0, w: 1, h: n).h
+    end
+
+    def rect_group opts
+      group = opts.group
+      r     = opts.row || 0
+      r     = row_max_index - opts.row_from_bottom if opts.row_from_bottom
+      c     = opts.col || 0
+      c     = col_max_index - opts.col_from_right  if opts.col_from_right
+      drow  = opts.drow || 0
+      dcol  = opts.dcol || 0
+      w     = opts.w    || 0
+      h     = opts.h    || 0
+      merge = opts[:merge]
+
+      running_row = r
+      running_col = c
+
+      running_col = calc_col_offset(opts.col_offset) if opts.col_offset
+      running_row = calc_row_offset(opts.row_offset) if opts.row_offset
+
+      group.map do |i|
+        group_layout_opts = i.layout || {}
+        group_layout_opts = group_layout_opts.merge row: running_row,
+                                                    col: running_col,
+                                                    merge: merge,
+                                                    w: w, h: h
+        result = (rect group_layout_opts).merge i
+
+        if (i.is_a? Hash) && (i.primitive_marker == :label)
+          if    i.alignment_enum == 1
+            result.x += result.w.half
+          elsif i.alignment_enum == 2
+            result.x += result.w
+          end
+        end
+
+        running_row += drow
+        running_col += dcol
+        result
+      end
+    end
+
+    def calc_row_offset opts = {}
+      count = opts[:count] || opts[:length] || 0
+      h     = opts.h || 1
+      (row_count - (count * h)) / 2.0
+    end
+
+    def calc_col_offset opts = {}
+      count = opts[:count] || opts[:length] || 0
+      w     = opts.w || 1
+      (col_count - (count * w)) / 2.0
+    end
+
+    def point opts = {}
+      opts.w = 1
+      opts.h = 1
+      opts.row ||= 0
+      opts.col ||= 0
+      r = rect opts
+      r.x  += r.w * opts.col_anchor if opts.col_anchor
+      r.y  += r.h * opts.row_anchor if opts.row_anchor
+      r
+    end
+
+    def rect *all_opts
+      if all_opts.length == 1
+        opts = all_opts.first
+      else
+        opts = {}
+        all_opts.each do |o|
+          opts.merge! o
+        end
+      end
+
+      opts.row = row_max_index - opts.row_from_bottom if opts.row_from_bottom
+      opts.col = col_max_index - opts.col_from_right if opts.col_from_right
       opts = rect_defaults.merge opts
+      opts.row ||= 0
+      opts.col ||= 0
+
       result = send opts[:rect]
       if opts[:row] && opts[:col] && opts[:w] && opts[:h]
         col = rect_col opts[:col], opts[:w]
@@ -321,7 +436,9 @@ module GTK
         result = control_rect.merge x: col.x,
                                     y: row.y,
                                     w: col.w,
-                                    h: row.h
+                                    h: row.h,
+                                    center_x: col.center_x,
+                                    center_y: row.center_y
       elsif opts[:row] && !opts[:col]
         result = rect_row opts[:row], opts[:h]
       elsif !opts[:row] && opts[:col]
@@ -359,12 +476,20 @@ module GTK
         result[:h] += device.grid_area.gutter * 2
       end
 
-      result[:x] += opts[:dx] if opts[:dx]
-      result[:y] += opts[:dy] if opts[:dy]
-      result[:w] += opts[:dw] if opts[:dw]
-      result[:h] += opts[:dh] if opts[:dh]
+      result[:x] += opts[:dx]       if opts[:dx]
+      result[:x] *= opts[:dx_ratio] if opts[:dx_ratio]
+      result[:y] += opts[:dy]       if opts[:dy]
+      result[:y] *= opts[:dy_ratio] if opts[:dy_ratio]
+      result[:w] += opts[:dw]       if opts[:dw]
+      result[:w] *= opts[:dw_ratio] if opts[:dw_ratio]
+      result[:h] += opts[:dh]       if opts[:dh]
+      result[:h] *= opts[:dh_ratio] if opts[:dh_ratio]
+      result.merge! opts[:merge]    if opts[:merge]
       result[:row] = opts[:row]
       result[:col] = opts[:col]
+
+      result[:h] = result[:h].clamp 0
+      result[:w] = result[:w].clamp 0
 
       if $gtk.args.grid.name == :center
         result[:x] -= 640
@@ -400,7 +525,7 @@ module GTK
 
       row_y = device.h - row_y - row_h
 
-      result = control_rect.merge y: row_y, h: row_h
+      result = control_rect.merge y: row_y, h: row_h, center_y: (row_y + row_h.half)
       @rect_cache[:row][index][h] = result
       @rect_cache[:row][index][h]
     end
@@ -423,7 +548,7 @@ module GTK
       col_w = col_w.to_i
       col_w -= 1 if col_w.odd?
 
-      result = control_rect.merge x: col_x, w: col_w
+      result = control_rect.merge x: col_x, w: col_w, center_x: (col_x + col_w.half)
       @rect_cache[:col][index][w] = result
       @rect_cache[:col][index][w]
     end
@@ -474,6 +599,26 @@ module GTK
       @device
     end
 
+    def debug_primitives opts = {}
+      @primitives ||= col_count.map_with_index do |col|
+                        row_count.map_with_index do |row|
+                          cell   = rect row: row, col: col
+                          center = Geometry.rect_center_point cell
+                          [
+                            cell.merge(opts).border,
+                            cell.merge(opts)
+                                .label!(x: center.x,
+                                        y: center.y,
+                                        text: "#{row},#{col}",
+                                        size_enum: -3,
+                                        vertical_alignment_enum: 1,
+                                        alignment_enum: 1)
+                          ]
+                        end
+                      end
+                      @primitives
+    end
+
     def serialize
       {
         device: @device.serialize,
@@ -487,5 +632,12 @@ module GTK
     def to_s
       serialize.to_s
     end
+
+    def reset
+      @primitives = nil
+      @rect_cache ||= {}
+      @rect_cache.clear
+    end
+
   end
 end

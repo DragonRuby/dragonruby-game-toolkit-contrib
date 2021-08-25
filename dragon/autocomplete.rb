@@ -1,3 +1,4 @@
+# coding: utf-8
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # autocomplete.rb has been released under MIT (*only this file*).
@@ -24,7 +25,7 @@ module GTK
           sub_index       = index - previous_line[:sum]
           word            = (cursor_line[:line][0..sub_index - 1]).strip
           token           = (word.split " ")[-1]
-          dots            = (token.split ".")
+          dots            = (token.split ".").flat_map { |s| s.split "[" }.flat_map { |s| s.split "]" }.flat_map { |s| s.split "(" }.flat_map { |s| s.split ")" }
           dot             = dots[-1]
         end
 
@@ -45,6 +46,10 @@ module GTK
         ignores ||= []
         ignores   = [ignores].flatten
         keys   = keys.map { |k| k.to_s }
+        keys   = keys.reject { |k| k.include? '"' }
+                     .reject { |k| k.start_with? "'" }
+                     .reject { |k| k.include? "," }
+                     .reject { |k| k.start_with? "#" }
         others = ["def", "end"] +
                  [ :entity_keys_by_ref,
                    :entity_name,
@@ -102,6 +107,10 @@ module GTK
 
           return autocomplete_filter_methods lookup_result.call if lookup_result
 
+          if dot[0].upcase == dot[0] && (Object.const_defined? dot.to_sym)
+            return (Object.const_get dot.to_sym).autocomplete_methods
+          end
+
           start_collecting = false
           dots_after_state = dots.find_all do |s|
             if s == "state"
@@ -117,10 +126,16 @@ module GTK
             target = target.as_hash[k.to_sym] if target.respond_to? :as_hash
           end
 
-          return autocomplete_filter_methods target.as_hash.keys
+          if target.respond_to? :as_hash
+            return autocomplete_filter_methods target.as_hash.keys
+          else
+            return autocomplete_filter_methods target.autocomplete_methods
+          end
         end
 
 
+        text = text.each_line.reject { |l| l.strip.start_with? "#" }.join "\n"
+        text = text.each_line.map { |l| l.split("#").first }.join "\n"
         text.gsub!("[", " ")
         text.gsub!("]", " ")
         text.gsub!("(", " ")

@@ -23,23 +23,28 @@ class Star
   end
 end
 
-# calls methods needed for the game to run properly
+# calls methods needed for game to run properly
 def tick args
   # sets console command when sample app initially opens
   if Kernel.global_tick_count == 0
+    puts ""
+    puts ""
+    puts "========================================================="
+    puts "* INFO: Static Sprites, Classes"
+    puts "* INFO: Please specify the number of sprites to render."
     args.gtk.console.set_command "reset_with count: 100"
   end
 
   # init
   if args.state.tick_count == 0
     args.state.stars = args.state.star_count.map { |i| Star.new args.grid }
+    args.outputs.static_sprites << args.state.stars
   end
 
   # update
   args.state.stars.each(&:move)
 
   # render
-  args.outputs.sprites << args.state.stars
   args.outputs.background_color = [0, 0, 0]
   args.outputs.primitives << args.gtk.current_framerate_primitives
 end

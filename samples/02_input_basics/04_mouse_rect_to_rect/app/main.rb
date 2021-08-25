@@ -42,9 +42,15 @@ def tick args
   # They are stored in game so that they do not get reset every tick
   if args.inputs.mouse.click
     if !args.state.box_collision_one
-      args.state.box_collision_one = [args.inputs.mouse.click.point.x - 25, args.inputs.mouse.click.point.y - 25, 125, 125, 180, 0,   0, 180]
+      args.state.box_collision_one = { x: args.inputs.mouse.click.point.x - 25,
+                                       y: args.inputs.mouse.click.point.y - 25,
+                                       w: 125, h: 125,
+                                       r: 180, g: 0, b: 0, a: 180 }
     elsif !args.state.box_collision_two
-      args.state.box_collision_two = [args.inputs.mouse.click.point.x - 25, args.inputs.mouse.click.point.y - 25, 125, 125,   0, 0, 180, 180]
+      args.state.box_collision_two = { x: args.inputs.mouse.click.point.x - 25,
+                                       y: args.inputs.mouse.click.point.y - 25,
+                                       w: 125, h: 125,
+                                       r: 0, g: 0, b: 180, a: 180 }
     else
       args.state.box_collision_one = nil
       args.state.box_collision_two = nil
@@ -71,15 +77,11 @@ def tick args
 end
 
 def small_label args, x, row, message
-  [x, row_to_px(args, row), message, small_font]
-end
-
-def small_font
-  [-2, 0, 0, 0, 0, 255]
+  { x: x, y: row_to_px(args, row), text: message, size_enum: -2 }
 end
 
 def row_to_px args, row_number
-  args.grid.top.shift_down(5).shift_down(20 * row_number)
+  args.grid.top - 5 - (20 * row_number)
 end
 
 def tick_instructions args, text, y = 715

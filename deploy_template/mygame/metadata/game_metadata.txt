@@ -4,3 +4,4 @@
 #gametitle=My Game
 #version=0.1
 #icon=metadata/icon.png
+#compile_ruby=false

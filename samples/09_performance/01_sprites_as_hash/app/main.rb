@@ -39,7 +39,11 @@ def tick args
 
   # sets console command when sample app initially opens
   if Kernel.global_tick_count == 0
-    puts "* INFO - Please specify the number of sprites to render."
+    puts ""
+    puts ""
+    puts "========================================================="
+    puts "* INFO: Sprites, Hashes"
+    puts "* INFO: Please specify the number of sprites to render."
     args.gtk.console.set_command "reset_with count: 100"
   end
 

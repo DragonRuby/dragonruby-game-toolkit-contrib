@@ -36,13 +36,13 @@ APIs that haven't been encountered in a previous sample apps:
 # This is useful to determine if a click occurred in a rect
 
 def tick args
-  tick_instructions args, "Sample app shows how to determine if a click happened inside a rectangle."
+  tick_instructions args, "Sample app shows how to determing if a click happened inside a rectangle."
 
   x = 460
 
   args.outputs.labels << small_label(args, x, 15, "Click inside the blue box maybe ---->")
 
-  box = [785, 370, 50, 50, 0, 0, 170]
+  box = { x: 785, y: 370, w: 50, h: 50, r: 0, g: 0, b: 170 }
   args.outputs.borders << box
 
   # Saves the most recent click into args.state
@@ -64,11 +64,7 @@ def tick args
 end
 
 def small_label args, x, row, message
-  [x, row_to_px(args, row), message, small_font]
-end
-
-def small_font
-  [-2, 0, 0, 0, 0, 255]
+  { x: x, y: row_to_px(args, row), text: message, size_enum: -2 }
 end
 
 def row_to_px args, row_number
@@ -84,7 +80,7 @@ def tick_instructions args, text, y = 715
     args.state.key_event_occurred = true
   end
 
-  args.outputs.debug << [0, y - 50, 1280, 60].solid
-  args.outputs.debug << [640, y, text, 1, 1, 255, 255, 255].label
-  args.outputs.debug << [640, y - 25, "(click to dismiss instructions)" , -2, 1, 255, 255, 255].label
+  args.outputs.debug << { x: 0,   y: y - 50, w: 1280, h: 60 }.solid!
+  args.outputs.debug << { x: 640, y: y, text: text, size_enum: 1, alignment_enum: 1, r: 255, g: 255, b: 255 }.label!
+  args.outputs.debug << { x: 640, y: y - 25, text: "(click to dismiss instructions)", size_enum: -2, alignment_enum: 1, r: 255, g: 255, b: 255 }.label!
 end

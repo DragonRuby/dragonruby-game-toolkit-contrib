@@ -39,18 +39,34 @@ class Star
     # x, y, w, h,
     # path,
     # angle,
-    # alpha, red_saturation, green_saturation, blue_saturation,
+    # alpha, red_saturation, green_saturation, blue_saturation
     # tile_x, tile_y, tile_w, tile_h,
     # flip_horizontally, flip_vertically,
     # angle_anchor_x, angle_anchor_y,
     # source_x, source_y, source_w, source_h
+
+    # The argument order for ffi_draw.draw_sprite_4 is:
+    # x, y, w, h,
+    # path,
+    # angle,
+    # alpha, red_saturation, green_saturation, blue_saturation
+    # tile_x, tile_y, tile_w, tile_h,
+    # flip_horizontally, flip_vertically,
+    # angle_anchor_x, angle_anchor_y,
+    # source_x, source_y, source_w, source_h,
+    # blendmode_enum
   end
 end
 
-# calls methods needed for the game to run properly
+# calls methods needed for game to run properly
 def tick args
   # sets console command when sample app initially opens
   if Kernel.global_tick_count == 0
+    puts ""
+    puts ""
+    puts "========================================================="
+    puts "* INFO: Static Sprites, Classes, Draw Override"
+    puts "* INFO: Please specify the number of sprites to render."
     args.gtk.console.set_command "reset_with count: 100"
   end
 

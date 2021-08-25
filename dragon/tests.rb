@@ -132,7 +132,7 @@ S
       log "#{self.failed.length} test(s) failed."
       self.failed.each do |h|
         log "**** Test name: :#{h[:m]}"
-        log "#{h[:e].to_s.gsub("* ERROR:", "").strip}"
+        log "#{h[:e].to_s.gsub("* ERROR:", "").strip}\n#{h[:e].__backtrace_to_org__}"
       end
     end
   end

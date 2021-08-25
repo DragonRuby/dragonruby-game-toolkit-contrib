@@ -35,7 +35,7 @@ args.outputs.lines << [  0, 360,  1280, 360]
 
 ## RGBA - Colors and Alpha
 
-The value for the color and alpha is a number between `0` and `255`. The
+The value for the color and alpha is an number between `0` and `255`. The
 alpha property is optional and will be set to `255` if not specified.
 
 Creates a green horizontal line through the center of the scene with an opacity of 50%.
@@ -75,7 +75,7 @@ args.outputs.lines << {
 ## Duck Typing (Advanced)
 
 You can also create a class with line properties and render it as a primitive.
-ALL properties must be on the class. ADDITIONALLY, a method called `primitive_marker`
+ALL properties must on the class. ADDITIONALLY, a method called `primitive_marker`
 must be defined on the class.
 
 Here is an example:

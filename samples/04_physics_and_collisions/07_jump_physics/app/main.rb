@@ -9,6 +9,7 @@
 
  - args.outputs.solids: An array. The values generate a solid.
    The parameters for a solid are [X, Y, WIDTH, HEIGHT, RED, GREEN, BLUE]
+   For more information about solids, go to mygame/documentation/03-solids-and-borders.md.
 
  - num1.greater(num2): Returns the greater value.
 
@@ -36,7 +37,7 @@ class VerticalPlatformer
     s.new_entity_strict(:platform, hash) # platform key
   end
 
-  # calls methods needed for the game to run properly
+  # calls methods needed for game to run properly
   def tick
     defaults
     render
