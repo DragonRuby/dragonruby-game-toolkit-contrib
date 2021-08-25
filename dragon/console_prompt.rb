@@ -158,11 +158,11 @@ S
 
           # partition the original list of items into a string to be printed
           items.each_slice(columns).each_with_index do |cells, i|
-            pretty_print_row_seperator string_width, cell_width, column_width, columns
+            pretty_print_row_separator string_width, cell_width, column_width, columns
             pretty_print_row cells, string_width, cell_width, column_width, columns
           end
 
-          pretty_print_row_seperator string_width, cell_width, column_width, columns
+          pretty_print_row_separator string_width, cell_width, column_width, columns
         end
       end
 
