@@ -1,4 +1,6 @@
+# Contains Syntax tokens of ZIL
 module Syntax
+  # (...)
   class List
     attr_reader :elements
 
@@ -23,9 +25,45 @@ module Syntax
     end
   end
 
+  # <...>
   class Form < List
     def to_s
       "<#{@elements.join(' ')}>"
+    end
+  end
+
+  # Base class for Macro and Quote
+  class ElementWrapper
+    attr_reader :element
+
+    def initialize(element)
+      @element = element
+    end
+
+    def ==(other)
+      other.class == self.class && @element = element
+    end
+
+    def inspect
+      to_s
+    end
+
+    def serialize
+      { type: self.class.name, element: @element }
+    end
+  end
+
+  # %...
+  class Macro < ElementWrapper
+    def to_s
+      "%#{@element}"
+    end
+  end
+
+  # '...
+  class Quote < ElementWrapper
+    def to_s
+      "'#{@element}"
     end
   end
 end
