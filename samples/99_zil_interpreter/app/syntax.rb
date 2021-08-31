@@ -32,6 +32,13 @@ module Syntax
     end
   end
 
+  # #DECL (...)
+  class Decl < List
+    def to_s
+      "#DECL#{@elements.join(' ')}>"
+    end
+  end
+
   # Base class for Macro and Quote
   class ElementWrapper
     attr_reader :element
@@ -41,7 +48,7 @@ module Syntax
     end
 
     def ==(other)
-      other.class == self.class && @element = element
+      other.class == self.class && @element == other.element
     end
 
     def inspect
@@ -64,6 +71,13 @@ module Syntax
   class Quote < ElementWrapper
     def to_s
       "'#{@element}"
+    end
+  end
+
+  # ;...
+  class Comment < ElementWrapper
+    def to_s
+      ";#{@element}"
     end
   end
 end

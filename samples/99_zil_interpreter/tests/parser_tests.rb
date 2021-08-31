@@ -1,6 +1,6 @@
 def test_parser(args, assert)
   source = <<-ZIL
-<ROUTINE OTHER-SIDE (DOBJ "AUX" (P 0) TX) ;"finds room beyond given door"
+<ROUTINE OTHER-SIDE (DOBJ "AUX" (P 0) TX)
  <REPEAT ()
    <COND (<L? <SET P <NEXTP ,HERE .P>> ,LOW-DIRECTION>
     <RETURN <>>)
@@ -11,7 +11,9 @@ def test_parser(args, assert)
            <RETURN .P>)>)>>>
 ZIL
 
-  parsed = nil  # Call parser here with source
+  parser = Parser.new
+  parser.parse_string(args, source)
+  parsed = parser.expressions[0]
 
   expected = Syntax::Form.new(
     :ROUTINE,
@@ -60,7 +62,9 @@ def test_parser_macro_and_quoted(args, assert)
   '<ROUTINE ABC () 4>)>
 ZIL
 
-  parsed = nil  # Call parser here with source
+  parser = Parser.new
+  parser.parse_string(args, source)
+  parsed = parser.expressions[0]
 
   expected = Syntax::Macro.new(
     Syntax::Form.new(
