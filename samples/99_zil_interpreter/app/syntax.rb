@@ -35,7 +35,7 @@ module Syntax
   # #DECL (...)
   class Decl < List
     def to_s
-      "#DECL#{@elements.join(' ')}>"
+      "#DECL(#{@elements.join(' ')})"
     end
   end
 

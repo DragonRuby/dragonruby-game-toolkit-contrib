@@ -17,7 +17,7 @@ def test_parser_01(args, assert)
   assert.equal! parsed, expected
 end
 
-# test escaped atom
+# test character
 # -----------------------------------------
 def test_parser_02(args, assert)
   # need to escape backslash in HEREDOC to get correct result
@@ -31,14 +31,14 @@ def test_parser_02(args, assert)
 
   expected = Syntax::Form.new(
     :STRING,
-    :"!\"",
+    '"',
     :"!,WBREAKS"
   )
 
   assert.equal! parsed, expected
 end
 
-# test nested forms and escaped atom
+# test nested forms and character
 # -----------------------------------------
 def test_parser_03(args, assert)
   # need to escape backslash to get correct result
@@ -61,7 +61,7 @@ def test_parser_03(args, assert)
       :"WBREAKS",
       Syntax::Form.new(
         :STRING,
-        :'!"',
+        '"',
         :"!,WBREAKS")))
 
   assert.equal! parsed, expected
@@ -292,10 +292,10 @@ end
 def test_parser_15(args, assert)
   source = <<-ZIL
 <ROUTINE ROUTINE1 (P1 P2 P3)
-	 #DECL ((P1 P2 P3) FIX)
->
+	 #DECL ((P1 P2 P3) FIX)>
   ZIL
   parser = Parser.new
+  #parser.log_flag = true
   parser.parse_string(args, source)
   parsed = parser.expressions[0]
 
@@ -304,9 +304,8 @@ def test_parser_15(args, assert)
     :ROUTINE1,
     Syntax::List.new(:P1, :P2, :P3),
     Syntax::Decl.new(
-      Syntax::List.new(
-        Syntax::List.new(:P1, :P2, :P3),
-        :FIX)))
+      Syntax::List.new(:P1, :P2, :P3),
+      :FIX))
 
   assert.equal! parsed, expected
 end
@@ -349,6 +348,54 @@ def test_parser_16(args, assert)
         )
       )
     )
+  )
+
+  assert.equal! parsed, expected
+end
+
+# test inline commented object (space immediately after semicolon)
+# -----------------------------------------
+def test_parser_17(args, assert)
+  source = <<-ZIL
+	<TABLE DEF2A
+	       DEF2B
+	       0; <REST ,DEF2B 2>
+	       0; <REST ,DEF2B 4>>
+  ZIL
+  parser = Parser.new
+  parser.parse_string(args, source)
+  parsed = parser.expressions[0]
+
+  expected = Syntax::Form.new(
+    :TABLE,
+    :"DEF2A",
+    :"DEF2B",
+    0, Syntax::Comment.new(Syntax::Form.new(:REST, :",DEF2B", 2)),
+    0, Syntax::Comment.new(Syntax::Form.new(:REST, :",DEF2B", 4))
+  )
+
+  assert.equal! parsed, expected
+end
+
+# test inline commented object (form immediately after semicolon)
+# -----------------------------------------
+def test_parser_18(args, assert)
+  source = <<-ZIL
+	<TABLE DEF2A
+	       DEF2B
+	       0 ;<REST ,DEF2B 2>
+	       0 ;<REST ,DEF2B 4>>
+  ZIL
+  parser = Parser.new
+  parser.parse_string(args, source)
+  parsed = parser.expressions[0]
+
+  expected = Syntax::Form.new(
+    :TABLE,
+    :"DEF2A",
+    :"DEF2B",
+    0, Syntax::Comment.new(Syntax::Form.new(:REST, :",DEF2B", 2)),
+    0, Syntax::Comment.new(Syntax::Form.new(:REST, :",DEF2B", 4))
   )
 
   assert.equal! parsed, expected

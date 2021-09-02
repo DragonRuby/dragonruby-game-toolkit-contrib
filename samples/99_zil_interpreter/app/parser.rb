@@ -12,53 +12,40 @@
 #
 class Parser
   attr_reader :expressions
+  attr_accessor :log_flag
 
   def initialize
     @expressions = []
+    @debug_name = "BUFFER"
+    @log_flag = true
   end
 
   def parse_file(args, work_dir, file_name)
     @work_dir = work_dir # not sure if we need work_dir, the idea was to follow INSERT-FILEs inside the parser/scanner
+    @debug_name = file_name
 
-    file = args.gtk.read_file(@work_dir + file_name)
-    log "Opening '" + file_name + "' ..."
-
-    buffer = ""
-    file.each_line.each { |line|
-      line.each_char { |c| buffer << c }
-    }
-
-    log "Scanning '" + file_name + "' ..."
-    scanner = Scanner.new(buffer)
-
-    i = 0
-    while scanner.scan_to('<;"%') # find next form, string, or comment
-      expr = scanner.read_expression
-      @expressions << expr
-      log "[#{file_name}:#{i}] " + expr.to_s
-      i += 1
-    end
-
-    log "Scan completed."
+    log "Opening '" + file_name + "' ..." if @log_flag
+    buffer = args.gtk.read_file(@work_dir + file_name)
+    parse_string(args, buffer)
   end
 
   def parse_string(args, buffer)
-    log "Scanning buffer ..."
+    log "Parsing ..." if @log_flag
     scanner = Scanner.new(buffer)
 
     i = 0
     while scanner.scan_to('<;"%') # find next form, string, or comment
       expr = scanner.read_expression
       @expressions << expr
-      log "[BUFFER:#{i}] " + expr.to_s
+      log "[#{@debug_name}:#{i}] " + expr.to_s if @log_flag
       i += 1
     end
 
-    log "Scan completed."
+    log "Parse completed." if @log_flag
   end
 end
 
-# This class can probably be reworked into Parser:
+# This class can probably be reworked into Parser
 #
 # Usage:
 #   scanner = Scanner.new(buffer)
@@ -73,21 +60,23 @@ class Scanner
 
   def initialize(buffer)
     @buffer = buffer
-    @expr_depth = 0
+    @expr_depth = -1
     @list_depth = 0
     reset
   end
 
   def reset
     @buf_index = -1
+    @line_num = 0
+    @line_pos = 0
   end
 
   def scan_to(scan_chars)
     found = false
 
     while @buf_index < @buffer.length - 1
-      @buf_index += 1
-      buf_char = @buffer[@buf_index]
+      buffer_advance
+      buf_char = peek
 
       if scan_chars.include?(buf_char)
         found = true
@@ -99,19 +88,32 @@ class Scanner
     found
   end
 
-  def skip_whitespace
-    done = false
-
-    until done
-      break if @buf_index >= @buffer.length
-
-      c = @buffer[@buf_index]
-      if WHITESPACE_CHARS.include?(c) == false
-        done = true
-        break
-      end
-      @buf_index += 1
+  def buffer_advance
+    char = peek
+    if char == "\n"
+      @line_num += 1
+      @line_pos = 0
     end
+
+    @buf_index += 1
+    @line_pos += 1
+  end
+
+  def buffer_previous
+    @buf_index -= 1
+    @line_pos -= 1
+
+    char = peek
+    if char == "\n"
+      @line_num -= 1
+      @line_pos = 0
+    end
+  end
+
+  def indent(width)
+    str = ""
+    width.times do str += "  " end
+    str
   end
 
   def peek
@@ -147,35 +149,41 @@ class Scanner
   def read_atom
     atom = ""
 
-    while @buf_index < @buffer.length - 1 # iterate characters in line
-      buf_char = @buffer[@buf_index]
-      @buf_index += 1
+    while @buf_index < @buffer.length - 1
+      buf_char = peek
+      buffer_advance
 
       if buf_char == '\\' # observed in this--> <STRING !\" !,WBREAKS>
-        next_char = peek
-        if next_char == '"'
-          atom += read_char
-        end
+        atom += read_char
       elsif ATOM_CHARS.include?(buf_char)
         atom += buf_char
       else
-        @buf_index -= 1
+        buffer_previous
         break
       end
     end
+
+    raise "Invalid syntax at #{@line_num}:#{@line_pos}!" if atom.length == 0
 
     atom.to_sym
   end
 
   def read_char
-    char = @buffer[@buf_index]
-    @buf_index += 1
+    char = peek
+    buffer_advance
     char
+  end
+
+  def read_character
+    skip_char('!')
+    skip_char('\\')
+    read_char
   end
 
   def read_comment
     # read comment char, then read the expresson that follows
-    semi = read_char # read in ;
+    skip_char(';') # read in ;
+    skip_whitespace
     comment = read_expression # read commented out stuff and ignore
 
     Syntax::Comment.new(comment)
@@ -183,19 +191,20 @@ class Scanner
 
   # %<...>
   def read_cond_macro
-    pct_char = read_char # read '%'
+    skip_char('%') # read '%'
     expr = read_expression # read '<...>'
 
     Syntax::Macro.new(expr)
   end
 
   def read_decl
-    hashtag = read_char # read #
-    decl = read_atom # read DECL
-    skip_whitespace
-    list = read_list
+    skip_char('#') # read #
+    skip_atom(:DECL) # read DECL
 
-    Syntax::Decl.new(*list)
+    list = read_list
+    raise "DECL inner list is empty!" if list.elements.length < 1
+
+    Syntax::Decl.new(*list.elements) # return inner list as convenience
   end
 
   def read_expression
@@ -205,32 +214,35 @@ class Scanner
 
     expr_char = peek
     if expr_char == '<' #  Starts with '<' then read_form
-      log "+ FORM " if debug_flag
+      log indent(@expr_depth) + "+ FORM " if debug_flag
       expr = read_form
     elsif expr_char == '(' #  Starts with '(' then read_list
-      log "+ LIST " if debug_flag
+      log indent(@expr_depth) + "+ LIST " if debug_flag
       expr = read_list
     elsif expr_char == '"' #  Starts with '"' then read_string
-      log "+ STRING " if debug_flag
+      log indent(@expr_depth) + "+ STRING " if debug_flag
       expr = read_string
+    elsif expr_char == '!' && peek_next == '\\' #  Starts with '!\' then read_character
+      log indent(@expr_depth) + "+ CHARACTER " if debug_flag
+      expr = read_character
     elsif expr_char == ';' #  Starts with ';' then read_comment
-      log "+ COMMENT " if debug_flag
+      log indent(@expr_depth) + "+ COMMENT " if debug_flag
       expr = read_comment
     elsif expr_char == '#' && peek_string(5) == '#DECL'
-      log "+ DECL " if debug_flag
+      log indent(@expr_depth) + "+ DECL " if debug_flag
       expr = read_decl
     elsif expr_char == '%' && peek_string(6) == '%<COND'
-      log "+ COND MACRO " if debug_flag
+      log indent(@expr_depth) + "+ COND MACRO " if debug_flag
       expr = read_cond_macro
     elsif expr_char == "'"
-      log "+ MACRO " if debug_flag
+      log indent(@expr_depth) + "+ MACRO " if debug_flag
       expr = read_macro
     elsif is_fix?(expr_char) # Starts with 0123456789 then read_fix
-      log "+ FIX " if debug_flag
+      log indent(@expr_depth) + "+ FIX " if debug_flag
       expr = read_fix
     else
       #  else read atom
-      log "+ ATOM " if debug_flag
+      log indent(@expr_depth) + "+ ATOM " if debug_flag
       expr = read_atom
     end
 
@@ -247,8 +259,8 @@ class Scanner
 
     # step 1: just load the string based on the three types
     while @buf_index < @buffer.length - 1 # iterate characters in line
-      buf_char = @buffer[@buf_index]
-      @buf_index += 1
+      buf_char = peek
+      buffer_advance
 
       if FIX_CHARS.include?(buf_char)
         #log "[TMP] " + buf_char
@@ -256,18 +268,16 @@ class Scanner
       elsif buf_char == " " && fix == '#2'
         fix += buf_char
       else
-        @buf_index -= 1
+        buffer_previous
         break
       end
     end
 
     # step 2: convert to number
     if fix.start_with?('*')
-      fix = fix.gsub('*', '')
-      fix = fix.to_i(base=8)
+      fix = fix.gsub('*', '').to_i(base=8)
     elsif fix.start_with?('#2')
-      fix = fix.gsub('#2 ', '')
-      fix = fix.to_i(base=2)
+      fix = fix.gsub('#2 ', '').to_i(base=2)
     else
       fix = fix.to_i
     end
@@ -277,8 +287,8 @@ class Scanner
 
   # <...>
   def read_form
-    lt = read_char # 1) Read '<'
-    atom = read_atom # 2) Read atom
+    skip_char('<') # 1) Read '<'
+    atom = read_atom if (peek != '>') # 2) Read atom
     skip_whitespace # 3) Skip whitespace
 
     # 4) Read params (form, list, string, fix)
@@ -287,8 +297,7 @@ class Scanner
     done = false
     until done
       if @buf_index == last_buf_index # endless loop detected
-        log "ENDLESS at '" + peek + "'"
-        raise "ENDLESS"
+        raise "Endless scan detected at #{@line_num}:#{@line_pos}!"
       end
 
       last_buf_index = @buf_index
@@ -304,14 +313,12 @@ class Scanner
       skip_whitespace
     end
 
-    gt = read_char # 5) Read '>'
+    skip_char('>') # 5) Read '>'
 
-    if atom.length == 0 && expr.length == 0
+    if (atom.nil? || atom.length == 0) && expr.length == 0
       Syntax::Form.new # empty Form
-    elsif atom.length != 0 && expr.length == 0
-      Syntax::Form.new(atom) # atom with no params
     else
-      Syntax::Form.new(*[atom, *expr]) # atom and params
+      Syntax::Form.new(atom, *expr) # atom and params
     end
   end
 
@@ -320,7 +327,8 @@ class Scanner
     @list_depth += 1
     raise "List overflow" if @list_depth > 50
 
-    lparen = read_char # read '('
+    skip_whitespace
+    skip_char('(')
 
     # read contents
     list = []
@@ -331,7 +339,7 @@ class Scanner
       next_char = peek
     end
 
-    rparen = read_char # read ')'
+    skip_char(')')
 
     @list_depth -= 1
     Syntax::List.new(*list)
@@ -339,20 +347,20 @@ class Scanner
 
   # '<...>
   def read_macro
-    squot = read_char # read '
+    skip_char("'")
     expr = read_expression # read '<...>'
 
     Syntax::Quote.new(expr)
   end
 
   def read_string
-    quot = read_char # read '"'
+    skip_char('"') # read '"'
 
     s = ""
     # read contents
     while @buf_index < @buffer.length - 1 # iterate characters in line
-      buf_char = @buffer[@buf_index]
-      @buf_index += 1
+      buf_char = peek
+      buffer_advance
 
       # levi use case \' (don't see in ZIL files currently)
       if buf_char == '\\'
@@ -363,13 +371,33 @@ class Scanner
       elsif buf_char != '"'
         s += buf_char
       else
-        @buf_index -= 1
+        buffer_previous
         break
       end
     end
 
-    quot = read_char # read '"'
+    skip_char('"') # read '"'
+
     s
+  end
+
+  def skip_atom(expected)
+    atom = read_atom
+    raise "Expected: '#{expected}' (#{expected.class.name}), Found: '#{atom}' (#{atom.class.name}) at #{@line_num}:#{@line_pos}" if atom != expected
+  end
+
+  def skip_char(expected)
+    char = read_char
+    raise "Expected: '#{expected}', Found: '#{char}' at #{@line_num}:#{@line_pos}" if char != expected
+  end
+
+  def skip_whitespace
+    raise "Unexpected end of file!" unless @buf_index < @buffer.length
+
+    loop do
+      break if @buf_index >= @buffer.length || WHITESPACE_CHARS.include?(peek) == false
+      buffer_advance
+    end
   end
 
 end
