@@ -333,17 +333,19 @@ def test_parser_16(args, assert)
         :COND,
         Syntax::List.new(
           Syntax::Form.new(
-            :"==?", :",ZORK-NUMBER", 2),
+            :"==?",
+            Syntax::Form.new(:GVAL, :"ZORK-NUMBER"),
+            2),
           Syntax::Quote.new(
             Syntax::Form.new(
-              :PERFORM, :",V?MAKE", :",WISH")
-          )
+              :PERFORM,
+              Syntax::Form.new(:GVAL, :"V?MAKE"),
+              Syntax::Form.new(:GVAL, :"WISH")))
         ),
         Syntax::List.new(
           :T,
           Syntax::Quote.new(
-            Syntax::Form.new(
-              :TELL, "With luck, your wish will come true.", :CR)
+            Syntax::Form::new(:TELL, "With luck, your wish will come true.", :CR)
           )
         )
       )
@@ -370,8 +372,8 @@ def test_parser_17(args, assert)
     :TABLE,
     :"DEF2A",
     :"DEF2B",
-    0, Syntax::Comment.new(Syntax::Form.new(:REST, :",DEF2B", 2)),
-    0, Syntax::Comment.new(Syntax::Form.new(:REST, :",DEF2B", 4))
+    0, Syntax::Comment.new(Syntax::Form.new(:REST, Syntax::Form.new(:GVAL, :"DEF2B"), 2)),
+    0, Syntax::Comment.new(Syntax::Form.new(:REST, Syntax::Form.new(:GVAL, :"DEF2B"), 4))
   )
 
   assert.equal! parsed, expected
@@ -394,8 +396,8 @@ def test_parser_18(args, assert)
     :TABLE,
     :"DEF2A",
     :"DEF2B",
-    0, Syntax::Comment.new(Syntax::Form.new(:REST, :",DEF2B", 2)),
-    0, Syntax::Comment.new(Syntax::Form.new(:REST, :",DEF2B", 4))
+    0, Syntax::Comment.new(Syntax::Form.new(:REST, Syntax::Form.new(:GVAL, :"DEF2B"), 2)),
+    0, Syntax::Comment.new(Syntax::Form.new(:REST, Syntax::Form.new(:GVAL, :"DEF2B"), 4))
   )
 
   assert.equal! parsed, expected

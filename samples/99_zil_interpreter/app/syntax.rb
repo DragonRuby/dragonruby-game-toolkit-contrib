@@ -60,6 +60,13 @@ module Syntax
     end
   end
 
+  # ;...
+  class Comment < ElementWrapper
+    def to_s
+      ";#{@element}"
+    end
+  end
+
   # %...
   class Macro < ElementWrapper
     def to_s
@@ -74,10 +81,10 @@ module Syntax
     end
   end
 
-  # ;...
-  class Comment < ElementWrapper
+  # !... (MDL splat equivalent)
+  class Segment < ElementWrapper
     def to_s
-      ";#{@element}"
+      "!#{@element}"
     end
   end
 end

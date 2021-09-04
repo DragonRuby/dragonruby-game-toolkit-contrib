@@ -61,7 +61,6 @@ class Scanner
   def initialize(buffer)
     @buffer = buffer
     @expr_depth = -1
-    @list_depth = 0
     reset
   end
 
@@ -146,6 +145,22 @@ class Scanner
     end
   end
 
+  # ,ATOM
+  def read_alias_gval
+    skip_char(',')
+    expr = read_expression
+
+    Syntax::Form.new(:GVAL, expr)
+  end
+
+  # .ATOM
+  def read_alias_lval
+    skip_char('.')
+    expr = read_expression
+
+    Syntax::Form.new(:LVAL, expr)
+  end
+
   def read_atom
     atom = ""
 
@@ -153,7 +168,7 @@ class Scanner
       buf_char = peek
       buffer_advance
 
-      if buf_char == '\\' # observed in this--> <STRING !\" !,WBREAKS>
+      if buf_char == '\\'
         atom += read_char
       elsif ATOM_CHARS.include?(buf_char)
         atom += buf_char
@@ -168,18 +183,39 @@ class Scanner
     atom.to_sym
   end
 
+  # [start]...[end]
+  def read_bracket_expression(start_bracket, end_bracket, output_class)
+    skip_whitespace
+    skip_char(start_bracket)
+
+    # read contents
+    expr = []
+    next_char = peek
+    while next_char != end_bracket
+      expr << read_expression
+      skip_whitespace
+      next_char = peek
+    end
+
+    skip_char(end_bracket)
+
+    output_class.new(*expr)
+  end
+
   def read_char
     char = peek
     buffer_advance
     char
   end
 
+  # !\.
   def read_character
     skip_char('!')
     skip_char('\\')
     read_char
   end
 
+  # ;...
   def read_comment
     # read comment char, then read the expresson that follows
     skip_char(';') # read in ;
@@ -189,14 +225,7 @@ class Scanner
     Syntax::Comment.new(comment)
   end
 
-  # %<...>
-  def read_cond_macro
-    skip_char('%') # read '%'
-    expr = read_expression # read '<...>'
-
-    Syntax::Macro.new(expr)
-  end
-
+  # #DECL(...)
   def read_decl
     skip_char('#') # read #
     skip_atom(:DECL) # read DECL
@@ -225,18 +254,27 @@ class Scanner
     elsif expr_char == '!' && peek_next == '\\' #  Starts with '!\' then read_character
       log indent(@expr_depth) + "+ CHARACTER " if debug_flag
       expr = read_character
+    elsif expr_char == '!' && peek_next == '\\' #  Starts with '!' then read_segment
+      log indent(@expr_depth) + "+ SEGMENT " if debug_flag
+      expr = read_segment
     elsif expr_char == ';' #  Starts with ';' then read_comment
       log indent(@expr_depth) + "+ COMMENT " if debug_flag
       expr = read_comment
-    elsif expr_char == '#' && peek_string(5) == '#DECL'
+    elsif expr_char == '#' && peek_string(5) == '#DECL' # MDL also has FUNCTION (not implemented in ZIL)
       log indent(@expr_depth) + "+ DECL " if debug_flag
       expr = read_decl
-    elsif expr_char == '%' && peek_string(6) == '%<COND'
-      log indent(@expr_depth) + "+ COND MACRO " if debug_flag
-      expr = read_cond_macro
-    elsif expr_char == "'"
+    elsif expr_char == '%' && peek_string(6) == '%<COND' # % is MACRO in MDL. ZIL only uses <COND after (being cautious)
       log indent(@expr_depth) + "+ MACRO " if debug_flag
       expr = read_macro
+    elsif expr_char == "'"
+      log indent(@expr_depth) + "+ QUOTE " if debug_flag
+      expr = read_quote
+    elsif expr_char == ","
+      log indent(@expr_depth) + "+ GVAL " if debug_flag
+      expr = read_alias_gval
+    elsif expr_char == "."
+      log indent(@expr_depth) + "+ LVAL " if debug_flag
+      expr = read_alias_lval
     elsif is_fix?(expr_char) # Starts with 0123456789 then read_fix
       log indent(@expr_depth) + "+ FIX " if debug_flag
       expr = read_fix
@@ -250,11 +288,10 @@ class Scanner
     expr
   end
 
+  # 123456
+  # *3777*
+  # #2 0111
   def read_fix
-    # UC1: 123456
-    # UC2: *3777*
-    # UC3: #2 0111
-
     fix = ""
 
     # step 1: just load the string based on the three types
@@ -287,72 +324,39 @@ class Scanner
 
   # <...>
   def read_form
-    skip_char('<') # 1) Read '<'
-    atom = read_atom if (peek != '>') # 2) Read atom
-    skip_whitespace # 3) Skip whitespace
-
-    # 4) Read params (form, list, string, fix)
-    expr = []
-    last_buf_index = -1 # make sure we don't get into an endless loop
-    done = false
-    until done
-      if @buf_index == last_buf_index # endless loop detected
-        raise "Endless scan detected at #{@line_num}:#{@line_pos}!"
-      end
-
-      last_buf_index = @buf_index
-
-      ft = peek
-      if ft == '>' # handle special case of empty form
-        done = true
-      else
-        expr << read_expression
-        #log expr[expr.length - 1]
-      end
-
-      skip_whitespace
-    end
-
-    skip_char('>') # 5) Read '>'
-
-    if (atom.nil? || atom.length == 0) && expr.length == 0
-      Syntax::Form.new # empty Form
-    else
-      Syntax::Form.new(atom, *expr) # atom and params
-    end
+    read_bracket_expression('<', '>', Syntax::Form)
   end
 
   # (...)
   def read_list
-    @list_depth += 1
-    raise "List overflow" if @list_depth > 50
-
-    skip_whitespace
-    skip_char('(')
-
-    # read contents
-    list = []
-    next_char = peek
-    while next_char != ")"
-      list << read_expression
-      skip_whitespace
-      next_char = peek
-    end
-
-    skip_char(')')
-
-    @list_depth -= 1
-    Syntax::List.new(*list)
+    read_bracket_expression('(', ')', Syntax::List)
   end
 
-  # '<...>
+  # %...
   def read_macro
+    skip_char('%') # read '%'
+    expr = read_expression # read '<...>'
+
+    Syntax::Macro.new(expr)
+  end
+
+  # '...
+  def read_quote
     skip_char("'")
     expr = read_expression # read '<...>'
 
     Syntax::Quote.new(expr)
   end
 
+  # !...
+  def read_segment
+    skip_char('!')
+    expr = read_expression
+
+    Syntax::Segment.new(expr)
+  end
+
+  # "..."
   def read_string
     skip_char('"') # read '"'
 
