@@ -26,6 +26,7 @@ class Parser
 
     log "Opening '" + file_name + "' ..." if @log_flag
     buffer = args.gtk.read_file(@work_dir + file_name)
+    raise "Empty/Missing file! (#{@work_dir}#{file_name})" if buffer.nil? || buffer.length == 0
     parse_string(args, buffer)
   end
 
@@ -54,7 +55,7 @@ end
 #   end
 #
 class Scanner
-  ATOM_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+*/?=.,!$"
+  ATOM_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+*/?=.,!$&"
   FIX_CHARS = '0123456789*#' # * = octal, #2 = binary
   WHITESPACE_CHARS = " \r\n\t"
 
@@ -187,6 +188,7 @@ class Scanner
   def read_bracket_expression(start_bracket, end_bracket, output_class)
     skip_whitespace
     skip_char(start_bracket)
+    skip_whitespace
 
     # read contents
     expr = []

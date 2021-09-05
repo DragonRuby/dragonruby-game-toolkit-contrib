@@ -402,3 +402,42 @@ def test_parser_18(args, assert)
 
   assert.equal! parsed, expected
 end
+
+# test '&' character in atom (discovered in zork2 files)
+# -----------------------------------------
+def test_parser_19(args, assert)
+  source = <<-ZIL
+<ROUTINE GO&LOOK>
+  ZIL
+  parser = Parser.new
+  parser.parse_string(args, source)
+  parsed = parser.expressions[0]
+
+  expected = Syntax::Form.new(
+    :ROUTINE, :"GO&LOOK"
+  )
+
+  assert.equal! parsed, expected
+end
+
+# test whitespace after '(' in list element
+# -----------------------------------------
+def test_parser_20(args, assert)
+  source = <<-ZIL
+<ROUTINE MATCH-FCN ( "AUX" CNT)>
+  ZIL
+  parser = Parser.new
+  parser.parse_string(args, source)
+  parsed = parser.expressions[0]
+
+  expected = Syntax::Form.new(
+    :ROUTINE,
+    :"MATCH-FCN",
+    Syntax::List.new(
+      "AUX",
+      :CNT
+    )
+  )
+
+  assert.equal! parsed, expected
+end
