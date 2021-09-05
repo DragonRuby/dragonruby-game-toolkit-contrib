@@ -441,3 +441,24 @@ def test_parser_20(args, assert)
 
   assert.equal! parsed, expected
 end
+
+# test vector observed in zork3:3actions.zil in #DECL of CPWALL-OBJECT
+# --------------------------------------------------------------------
+def test_parser_21(args, assert)
+  source = <<-ZIL
+<UVECTOR [REST FIX]>
+  ZIL
+  parser = Parser.new
+  parser.parse_string(args, source)
+  parsed = parser.expressions[0]
+
+  expected = Syntax::Form.new(
+    :UVECTOR,
+    Syntax::Vector.new(
+      :REST,
+      :FIX
+    )
+  )
+
+  assert.equal! parsed, expected
+end

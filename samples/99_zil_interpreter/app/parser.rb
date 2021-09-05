@@ -259,6 +259,9 @@ class Scanner
     elsif expr_char == '!' && peek_next == '\\' #  Starts with '!' then read_segment
       log indent(@expr_depth) + "+ SEGMENT " if debug_flag
       expr = read_segment
+    elsif expr_char == '[' #  Starts with '[' then read_vector
+      log indent(@expr_depth) + "+ VECTOR " if debug_flag
+      expr = read_vector
     elsif expr_char == ';' #  Starts with ';' then read_comment
       log indent(@expr_depth) + "+ COMMENT " if debug_flag
       expr = read_comment
@@ -385,6 +388,11 @@ class Scanner
     skip_char('"') # read '"'
 
     s
+  end
+
+  # [...]
+  def read_vector
+    read_bracket_expression('[', ']', Syntax::Vector)
   end
 
   def skip_atom(expected)

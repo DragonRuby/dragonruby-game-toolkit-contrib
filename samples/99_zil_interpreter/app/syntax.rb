@@ -32,6 +32,13 @@ module Syntax
     end
   end
 
+  # [...]
+  class Vector < List
+    def to_s
+      "[#{@elements.join(' ')}]"
+    end
+  end
+
   # #DECL (...)
   class Decl < List
     def to_s
