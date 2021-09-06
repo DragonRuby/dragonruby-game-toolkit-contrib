@@ -32,7 +32,7 @@ def test_parser_02(args, assert)
   expected = Syntax::Form.new(
     :STRING,
     '"',
-    :"!,WBREAKS"
+    Syntax::Segment.new(Syntax::Form.new(:GVAL, :WBREAKS))
   )
 
   assert.equal! parsed, expected
@@ -62,7 +62,7 @@ def test_parser_03(args, assert)
       Syntax::Form.new(
         :STRING,
         '"',
-        :"!,WBREAKS")))
+        Syntax::Segment.new(Syntax::Form.new(:GVAL, :WBREAKS)))))
 
   assert.equal! parsed, expected
 end
@@ -295,7 +295,6 @@ def test_parser_15(args, assert)
 	 #DECL ((P1 P2 P3) FIX)>
   ZIL
   parser = Parser.new
-  #parser.log_flag = true
   parser.parse_string(args, source)
   parsed = parser.expressions[0]
 

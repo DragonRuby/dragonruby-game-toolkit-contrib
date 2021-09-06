@@ -253,12 +253,14 @@ class Scanner
     elsif expr_char == '"' #  Starts with '"' then read_string
       log indent(@expr_depth) + "+ STRING " if debug_flag
       expr = read_string
-    elsif expr_char == '!' && peek_next == '\\' #  Starts with '!\' then read_character
-      log indent(@expr_depth) + "+ CHARACTER " if debug_flag
-      expr = read_character
-    elsif expr_char == '!' && peek_next == '\\' #  Starts with '!' then read_segment
-      log indent(@expr_depth) + "+ SEGMENT " if debug_flag
-      expr = read_segment
+    elsif expr_char == '!'
+      if peek_next == '\\' #  Starts with '!\' then read_character
+        log indent(@expr_depth) + "+ CHARACTER " if debug_flag
+        expr = read_character
+      else #  Starts with '!' then read_segment
+        log indent(@expr_depth) + "+ SEGMENT " if debug_flag
+        expr = read_segment
+      end
     elsif expr_char == '[' #  Starts with '[' then read_vector
       log indent(@expr_depth) + "+ VECTOR " if debug_flag
       expr = read_vector
