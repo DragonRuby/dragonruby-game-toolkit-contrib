@@ -32,6 +32,20 @@ module Syntax
     end
   end
 
+  # [...]
+  class Vector < List
+    def to_s
+      "[#{@elements.join(' ')}]"
+    end
+  end
+
+  # #DECL (...)
+  class Decl < List
+    def to_s
+      "#DECL(#{@elements.join(' ')})"
+    end
+  end
+
   # Base class for Macro and Quote
   class ElementWrapper
     attr_reader :element
@@ -41,7 +55,7 @@ module Syntax
     end
 
     def ==(other)
-      other.class == self.class && @element = element
+      other.class == self.class && @element == other.element
     end
 
     def inspect
@@ -50,6 +64,13 @@ module Syntax
 
     def serialize
       { type: self.class.name, element: @element }
+    end
+  end
+
+  # ;...
+  class Comment < ElementWrapper
+    def to_s
+      ";#{@element}"
     end
   end
 
@@ -64,6 +85,13 @@ module Syntax
   class Quote < ElementWrapper
     def to_s
       "'#{@element}"
+    end
+  end
+
+  # !... (MDL splat equivalent)
+  class Segment < ElementWrapper
+    def to_s
+      "!#{@element}"
     end
   end
 end
