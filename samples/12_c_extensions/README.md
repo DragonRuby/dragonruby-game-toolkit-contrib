@@ -350,6 +350,34 @@ dragonruby-bind --ffi-module=CoolStuff bridge.c
 
 Then one can use `include FFI::CoolStuff` instead.
 
+### Type checks
+
+C extensions expect the right types in the right place!
+
+Given the following C code:
+
+```c
+void take_int(int x) { ... }
+void take_struct(struct S) { ... }
+```
+
+the next calls from the Ruby side
+
+```ruby
+take_int(15.0)
+take_struct(42)
+```
+
+may not work as you would expect.
+In the case of `take_int`, you'll likely see some garbage instead of "expected" `15`.
+The call to `take_struct` will likely crash.
+
+To prevent this from happening, `dragonruby-bind` emits code that does type checking:
+if you use the wrong types DragonRuby will throw an exception.
+
+If the type checking takes CPU cycles out of your game (or if you feel brave) you can
+disable type checks via `--no-typecheck` CLI argument when emitting C bindings.
+
 ### Pitfalls
 
 There is no so-called marshalling when it comes to structs. When you read or

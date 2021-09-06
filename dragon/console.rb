@@ -434,6 +434,7 @@ S
       if console_toggle_key_down? args
         args.inputs.text.clear
         toggle
+        args.inputs.keyboard.clear if !@visible
       end
 
       return unless visible?
@@ -445,7 +446,16 @@ S
       @log_offset = 0 if @log_offset < 0
 
       if args.inputs.keyboard.key_down.enter
-        eval_the_set_command
+        if slide_progress > 0.5
+          # in the event of an exception, the console window pops up
+          # and is pre-filled with $gtk.reset.
+          # there is an annoying scenario where the exception could be thrown
+          # by pressing enter (while playing the game). if you press enter again
+          # quickly, then the game is reset which closes the console.
+          # so enter in the console is only evaluated if the slide_progress
+          # is atleast half way down the page.
+          eval_the_set_command
+        end
       elsif args.inputs.keyboard.key_down.v
         if args.inputs.keyboard.key_down.control || args.inputs.keyboard.key_down.meta
           prompt << $gtk.ffi_misc.getclipboard

@@ -112,7 +112,7 @@ class Game
 
   def calc_below
     return unless player.dy <= 0
-    tiles_below = find_tiles { |t| t.rect.top <= player.y }
+    tiles_below = find_tiles { |t| t.rect.top <= player.prev_rect.y }
     collision = find_colliding_tile tiles_below, (player.rect.merge y: player.next_rect.y)
     return unless collision
     if collision.neighbors.b == :none && player.jumped_down_at.elapsed_time < 10
@@ -143,7 +143,7 @@ class Game
 
   def calc_above
     return unless player.dy > 0
-    tiles_above = find_tiles { |t| t.rect.y >= player.y }
+    tiles_above = find_tiles { |t| t.rect.y >= player.prev_rect.y }
     collision = find_colliding_tile tiles_above, (player.rect.merge y: player.next_rect.y)
     return unless collision
     return if collision.neighbors.t == :none

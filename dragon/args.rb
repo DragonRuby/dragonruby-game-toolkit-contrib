@@ -200,5 +200,22 @@ module GTK
     def autocomplete_methods
       [:inputs, :outputs, :gtk, :state, :geometry, :audio, :grid, :layout, :fn]
     end
+
+    def method_missing name, *args, &block
+      if (args.length <= 1) && (@state.as_hash.key? name)
+        raise <<-S
+* ERROR - :#{name} method missing on ~#{self.class.name}~.
+The method
+  :#{name}
+with args
+  #{args}
+doesn't exist on #{inspect}.
+** POSSIBLE SOLUTION - ~args.state.#{name}~ exists.
+Did you forget ~.state~ before ~.#{name}~?
+S
+      end
+
+      super
+    end
   end
 end

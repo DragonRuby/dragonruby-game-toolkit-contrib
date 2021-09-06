@@ -35,12 +35,7 @@ module GTK
               if framerate_below_threshold?
                 @last_framerate = current_framerate
                 if !@console.visible?
-                  if !@framerate_important_notification_happened
-                    log_important framerate_warning_message
-                  else
-                    log framerate_warning_message
-                  end
-                  @framerate_important_notification_happened = true
+                  log framerate_warning_message
                 end
               end
 

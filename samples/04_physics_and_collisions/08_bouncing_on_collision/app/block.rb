@@ -1,22 +1,24 @@
-class Block 
+DEGREES_TO_RADIANS = Math::PI / 180
+
+class Block
   def initialize(x, y, block_size, rotation)
     @x = x
-    @y = y 
+    @y = y
     @block_size = block_size
     @rotation = rotation
 
     #The repel velocity?
-    @velocity = {x: 2, y: 0}        
+    @velocity = {x: 2, y: 0}
 
-    horizontal_offset = (3 * block_size) * Math.cos(rotation.to_radians)
-    vertical_offset = block_size * Math.sin(rotation.to_radians)
+    horizontal_offset = (3 * block_size) * Math.cos(rotation * DEGREES_TO_RADIANS)
+    vertical_offset = block_size * Math.sin(rotation * DEGREES_TO_RADIANS)
 
     if rotation >= 0
       theta = 90 - rotation
       #The line doesn't visually line up exactly with the edge of the sprite, so artificially move it a bit
       modifier = 5
-      x_offset = modifier * Math.cos(theta.to_radians)
-      y_offset = modifier * Math.sin(theta.to_radians)
+      x_offset = modifier * Math.cos(theta * DEGREES_TO_RADIANS)
+      y_offset = modifier * Math.sin(theta * DEGREES_TO_RADIANS)
       @x1 = @x - x_offset
       @y1 = @y + y_offset
       @x2 = @x1 + horizontal_offset
@@ -25,8 +27,8 @@ class Block
       @imaginary_line = [ @x1, @y1, @x2, @y2 ]
     else
       theta = 90 + rotation
-      x_offset = @block_size * Math.cos(theta.to_radians)
-      y_offset = @block_size * Math.sin(theta.to_radians)
+      x_offset = @block_size * Math.cos(theta * DEGREES_TO_RADIANS)
+      y_offset = @block_size * Math.sin(theta * DEGREES_TO_RADIANS)
       @x1 = @x + x_offset
       @y1 = @y + y_offset + 19
       @x2 = @x1 + horizontal_offset
@@ -34,7 +36,7 @@ class Block
 
       @imaginary_line = [ @x1, @y1, @x2, @y2 ]
     end
-    
+
   end
 
   def draw args
@@ -78,7 +80,7 @@ class Block
 
     collision = false
     if @rotation >= 0
-      if (current_area < min_area && 
+      if (current_area < min_area &&
         current_area > 0 &&
         args.state.ball.center.y > @y1 &&
         args.state.ball.center.x < @x2)
@@ -86,7 +88,7 @@ class Block
         collision = true
       end
     else
-      if (current_area < min_area && 
+      if (current_area < min_area &&
         current_area > 0 &&
         args.state.ball.center.y > @y2 &&
         args.state.ball.center.x > @x1)
@@ -94,7 +96,7 @@ class Block
       collision = true
       end
     end
-    
+
     return collision
   end
 
@@ -103,8 +105,8 @@ class Block
     slope = (@y2 - @y1) / (@x2 - @x1)
 
     #Create a unit vector and tilt it (@rotation) number of degrees
-    x = -Math.cos(@rotation.to_radians)
-    y = Math.sin(@rotation.to_radians)
+    x = -Math.cos(@rotation * DEGREES_TO_RADIANS)
+    y = Math.sin(@rotation * DEGREES_TO_RADIANS)
 
     #Find the vector that is perpendicular to the slope
     perpVect = { x: x, y: y }
@@ -115,10 +117,10 @@ class Block
       x:args.state.ball.center.x-args.state.ball.velocity.x,
       y:args.state.ball.center.y-args.state.ball.velocity.y
     }
-    
+
     velocityMag = (args.state.ball.velocity.x**2 + args.state.ball.velocity.y**2)**0.5 # the current velocity magnitude of the ball
     theta_ball = Math.atan2(args.state.ball.velocity.y, args.state.ball.velocity.x)         #the angle of the ball's velocity
-    theta_repel = (180.to_radians) - theta_ball + (@rotation.to_radians)
+    theta_repel = (180 * DEGREES_TO_RADIANS) - theta_ball + (@rotation * DEGREES_TO_RADIANS)
 
     fbx = velocityMag * Math.cos(theta_ball)                                    #the x component of the ball's velocity
     fby = velocityMag * Math.sin(theta_ball)                                    #the y component of the ball's velocity
@@ -137,16 +139,16 @@ class Block
 
     dampener = 0.3
     ynew *= dampener * 0.5
-    
+
     #If the bounce is very low, that means the ball is rolling and we don't want to dampenen the X velocity
     if ynew > -0.1
       xnew *= dampener
     end
 
     #Add the sine component of gravity back in (X component)
-    gravity_x = 4 * Math.sin(@rotation.to_radians)
+    gravity_x = 4 * Math.sin(@rotation * DEGREES_TO_RADIANS)
     xnew += gravity_x
-  
+
     args.state.ball.velocity.x = -xnew
     args.state.ball.velocity.y = -ynew
 
