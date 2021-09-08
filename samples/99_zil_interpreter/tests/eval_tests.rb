@@ -114,3 +114,42 @@ def test_eval_comment_returns_nil(args, assert)
 
   assert.equal! result, nil
 end
+
+# Segments should not be evaluated by normal eval but only inside builtin list and string
+# construction functions
+def test_eval_segment_will_raise_exception(args, assert)
+  zil_context = build_zil_context(args)
+
+  will_raise_eval_error!(assert) do
+    eval_zil(
+      Syntax::Segment.new("ABC"),
+      zil_context
+    )
+  end
+end
+
+# Macros should be evaluated not by default eval but inside functions that take unevaluated
+# forms
+def test_eval_macro_will_raise_exception(args, assert)
+  zil_context = build_zil_context(args)
+
+  will_raise_eval_error!(assert) do
+    eval_zil(
+      Syntax::Macro.new(
+        Syntax::Form.new(:IF, :T, 2, 3)
+      ),
+      zil_context
+    )
+  end
+end
+
+def will_raise_eval_error!(assert)
+  raised_exception_class = nil
+  begin
+    yield
+  rescue Exception => e
+    raised_exception_class = e.class
+  end
+
+  assert.equal! raised_exception_class, EvalError, 'it did not raise EvalError'
+end

@@ -20,6 +20,8 @@ def eval_zil(expression, zil_context)
   when Syntax::Comment
     nil
   else
-    raise "Cannot eval #{expression}"
+    raise EvalError, "Cannot eval #{expression}"
   end
 end
+
+class EvalError < StandardError; end
