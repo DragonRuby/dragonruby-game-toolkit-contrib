@@ -39,13 +39,6 @@ module Syntax
     end
   end
 
-  # #DECL (...)
-  class Decl < List
-    def to_s
-      "#DECL(#{@elements.join(' ')})"
-    end
-  end
-
   # Base class for Macro and Quote
   class ElementWrapper
     attr_reader :element
@@ -92,6 +85,13 @@ module Syntax
   class Segment < ElementWrapper
     def to_s
       "!#{@element}"
+    end
+  end
+
+  # #DECL (...)
+  class Decl < ElementWrapper
+    def to_s
+      "#DECL #{@elements}"
     end
   end
 end
