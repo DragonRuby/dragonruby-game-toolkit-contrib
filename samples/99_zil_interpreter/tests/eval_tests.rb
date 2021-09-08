@@ -46,3 +46,15 @@ def test_eval_form_calls_global_value_of_func_atom(args, assert)
   assert.equal! call_context, zil_context
   assert.equal! result, 'return value'
 end
+
+def test_eval_list_returns_array_of_evaled_elements(args, assert)
+  zil_context = build_zil_context(args)
+  zil_context.globals[:ADD] = -> (args, _context) { args[0] + args[1] }
+
+  result = eval_zil(
+    Syntax::List.new(3, 'String', Syntax::Form.new(:ADD, 2, 12)),
+    zil_context
+  )
+
+  assert.equal! result, [3, 'String', 14]
+end
