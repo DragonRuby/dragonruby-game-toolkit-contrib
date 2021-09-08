@@ -59,6 +59,18 @@ def test_eval_list_returns_array_of_evaled_elements(args, assert)
   assert.equal! result, [3, 'String', 14]
 end
 
+def test_eval_vector_returns_array_of_evaled_elements(args, assert)
+  zil_context = build_zil_context(args)
+  zil_context.globals[:ADD] = -> (args, _context) { args[0] + args[1] }
+
+  result = eval_zil(
+    Syntax::Vector.new(3, 'String', Syntax::Form.new(:ADD, 2, 12)),
+    zil_context
+  )
+
+  assert.equal! result, [3, 'String', 14]
+end
+
 def test_eval_quote_returns_wrapped_element(args, assert)
   zil_context = build_zil_context(args)
 
