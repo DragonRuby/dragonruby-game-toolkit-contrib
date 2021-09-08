@@ -58,3 +58,14 @@ def test_eval_list_returns_array_of_evaled_elements(args, assert)
 
   assert.equal! result, [3, 'String', 14]
 end
+
+def test_eval_quote_returns_wrapped_element(args, assert)
+  zil_context = build_zil_context(args)
+
+  result = eval_zil(
+    Syntax::Quote.new(Syntax::Form.new(:+, 1, 2, 3)),
+    zil_context
+  )
+
+  assert.equal! result, Syntax::Form.new(:+, 1, 2, 3)
+end

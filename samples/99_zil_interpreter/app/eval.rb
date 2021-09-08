@@ -9,6 +9,8 @@ def eval_zil(expression, zil_context)
     function.call(func_args, zil_context)
   when Syntax::List
     expression.elements.map { |element| eval_zil(element, zil_context) }
+  when Syntax::Quote
+    expression.element
   else
     raise "Cannot eval #{expression}"
   end
