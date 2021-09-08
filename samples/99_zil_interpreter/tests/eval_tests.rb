@@ -103,3 +103,14 @@ def test_eval_atom_T_returns_true(args, assert)
 
   assert.equal! result, true
 end
+
+def test_eval_comment_returns_nil(args, assert)
+  zil_context = build_zil_context(args)
+
+  result = eval_zil(
+    Syntax::Comment.new(Syntax::Form.new(:TEST, 1, 2)),
+    zil_context
+  )
+
+  assert.equal! result, nil
+end

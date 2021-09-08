@@ -17,6 +17,8 @@ def eval_zil(expression, zil_context)
     expression.elements.map { |element| eval_zil(element, zil_context) }
   when Syntax::Quote
     expression.element
+  when Syntax::Comment
+    nil
   else
     raise "Cannot eval #{expression}"
   end
