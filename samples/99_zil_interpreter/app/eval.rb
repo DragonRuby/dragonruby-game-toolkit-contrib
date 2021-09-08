@@ -1,6 +1,10 @@
 def eval_zil(expression, zil_context)
   case expression
-  when Numeric, String, Symbol
+  when Numeric, String
+    expression
+  when Symbol
+    return true if expression == :T
+
     expression
   when Syntax::Form
     return false if expression.elements.empty?

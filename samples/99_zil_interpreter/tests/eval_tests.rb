@@ -80,3 +80,14 @@ def test_eval_empty_form_returns_false(args, assert)
 
   assert.equal! result, false
 end
+
+def test_eval_atom_T_returns_true(args, assert)
+  zil_context = build_zil_context(args)
+
+  result = eval_zil(
+    :T,
+    zil_context
+  )
+
+  assert.equal! result, true
+end
