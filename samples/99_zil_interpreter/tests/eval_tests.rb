@@ -69,3 +69,14 @@ def test_eval_quote_returns_wrapped_element(args, assert)
 
   assert.equal! result, Syntax::Form.new(:+, 1, 2, 3)
 end
+
+def test_eval_empty_form_returns_false(args, assert)
+  zil_context = build_zil_context(args)
+
+  result = eval_zil(
+    Syntax::Form.new,
+    zil_context
+  )
+
+  assert.equal! result, false
+end

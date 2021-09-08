@@ -3,6 +3,8 @@ def eval_zil(expression, zil_context)
   when Numeric, String, Symbol
     expression
   when Syntax::Form
+    return false if expression.elements.empty?
+
     func_atom = expression.elements.first
     func_args = expression.elements.drop(1)
     function = zil_context.globals[func_atom]
