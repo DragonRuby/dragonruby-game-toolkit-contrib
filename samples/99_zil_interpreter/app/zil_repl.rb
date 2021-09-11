@@ -12,7 +12,16 @@ ZIL_BUILTINS[:REPL] = define_for_evaled_arguments { |_, context|
       context.outputs << "ParserError: #{e}"
       next
     end
-    result = eval_zil(parsed, context)
+
+    begin
+      result = eval_zil(parsed, context)
+    rescue EvalError => e
+      context.outputs << "EvalError: #{e}"
+      next
+    rescue FunctionError => e
+      context.outputs << "FunctionError: #{e}"
+      next
+    end
     context.outputs << "-> #{result}"
   end
 }
