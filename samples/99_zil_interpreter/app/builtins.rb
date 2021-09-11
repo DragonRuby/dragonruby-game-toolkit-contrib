@@ -1,21 +1,21 @@
 class FunctionError < StandardError; end
 
-def define_for_evaled_args(&implementation)
-  lambda { |args, context|
-    evaled_args = args.map { |arg| eval_zil arg, context }
-    implementation.call(evaled_args, context)
+def define_for_evaled_arguments(&implementation)
+  lambda { |arguments, context|
+    evaled_arguments = arguments.map { |argument| eval_zil argument, context }
+    implementation.call(evaled_arguments, context)
   }
 end
 
 ZIL_BUILTINS = {}
 
-ZIL_BUILTINS[:LVAL] = define_for_evaled_args { |args, context|
-  var_atom = args[0]
+ZIL_BUILTINS[:LVAL] = define_for_evaled_arguments { |arguments, context|
+  var_atom = arguments[0]
   raise FunctionError, "No local value for #{var_atom.inspect}" unless context.locals.key? var_atom
 
   context.locals[var_atom]
 }
 
-ZIL_BUILTINS[:+] = define_for_evaled_args { |args|
-  args.inject(0, :+)
+ZIL_BUILTINS[:+] = define_for_evaled_arguments { |arguments|
+  arguments.inject(0, :+)
 }
