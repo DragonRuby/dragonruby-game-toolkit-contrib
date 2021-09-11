@@ -1,0 +1,18 @@
+def test_repl(args, assert)
+  zil_context = build_zil_context(args)
+  repl_fiber = build_repl_fiber(zil_context)
+
+  repl_fiber.resume '<+ 2 3>'
+
+  assert.equal! zil_context.outputs, [
+    '-> 5'
+  ]
+end
+
+def build_repl_fiber(zil_context)
+  Fiber.new {
+    zil_context.globals[:REPL].call [], zil_context
+  }.tap { |result|
+    result.resume # Initial execution
+  }
+end

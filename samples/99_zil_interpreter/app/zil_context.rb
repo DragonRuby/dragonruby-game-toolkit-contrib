@@ -3,5 +3,6 @@ def build_zil_context(args)
     :zil_context,
     globals: {}.merge(ZIL_BUILTINS),
     locals: {},
+    outputs: []
   )
 end
