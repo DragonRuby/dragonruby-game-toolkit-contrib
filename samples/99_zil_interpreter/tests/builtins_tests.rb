@@ -24,3 +24,12 @@ def test_builtin_lval_raises_error_when_not_existing(args, assert)
 rescue FunctionError
   assert.ok!
 end
+
+def test_builtin_plus(args, assert)
+  zil_context = build_zil_context(args)
+
+  # <+ 1 2 <+ 9 10>>
+  result = zil_context.globals[:+].call [1, 2, Syntax::Form.new(:+, 3, 4)], zil_context
+
+  assert.equal! result, 10
+end

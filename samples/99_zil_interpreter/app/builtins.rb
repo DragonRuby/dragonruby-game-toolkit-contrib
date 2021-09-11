@@ -15,3 +15,7 @@ ZIL_BUILTINS[:LVAL] = define_for_evaled_args { |args, context|
 
   context.locals[var_atom]
 }
+
+ZIL_BUILTINS[:+] = define_for_evaled_args { |args|
+  args.inject(0, :+)
+}
