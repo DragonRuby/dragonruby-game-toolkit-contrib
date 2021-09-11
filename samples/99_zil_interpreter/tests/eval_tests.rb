@@ -157,6 +157,17 @@ def test_eval_decl_will_raise_exception(args, assert)
   end
 end
 
+def test_eval_nonexisting_function_will_raise_exception(args, assert)
+  zil_context = build_zil_context(args)
+
+  will_raise_eval_error!(assert) do
+    eval_zil(
+      Syntax::Form.new(:IF, :T, 2, 3),
+      zil_context
+    )
+  end
+end
+
 def will_raise_eval_error!(assert)
   raised_exception_class = nil
   begin

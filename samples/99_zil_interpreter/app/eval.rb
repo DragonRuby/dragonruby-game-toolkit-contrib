@@ -12,6 +12,8 @@ def eval_zil(expression, zil_context)
     func_atom = expression.elements.first
     func_args = expression.elements.drop(1)
     function = zil_context.globals[func_atom]
+    raise EvalError, "Function #{func_atom} does not exist" unless function
+
     function.call(func_args, zil_context)
   when Syntax::List
     expression.elements.map { |element| eval_zil(element, zil_context) }
