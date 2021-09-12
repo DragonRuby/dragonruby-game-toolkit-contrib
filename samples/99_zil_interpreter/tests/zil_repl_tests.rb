@@ -10,6 +10,16 @@ def test_repl(args, assert)
   assert.true! repl_fiber.alive?
 end
 
+def test_repl_exit(args, assert)
+  zil_context = build_zil_context(args)
+  repl_fiber = build_repl_fiber(zil_context)
+
+  repl_fiber.resume '<EXIT>'
+
+  assert.equal! zil_context.outputs, []
+  assert.false! repl_fiber.alive?
+end
+
 def test_repl_parsing_error(args, assert)
   zil_context = build_zil_context(args)
   repl_fiber = build_repl_fiber(zil_context)

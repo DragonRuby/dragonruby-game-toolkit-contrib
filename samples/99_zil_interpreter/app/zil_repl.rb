@@ -6,6 +6,8 @@ ZIL_BUILTINS[:GO] = define_for_evaled_arguments { |_, context|
 ZIL_BUILTINS[:REPL] = define_for_evaled_arguments { |_, context|
   loop do
     input = Fiber.yield
+    break if input == '<EXIT>'
+
     parsed = Parser.parse_string(input)[0]
     result = eval_zil(parsed, context)
     context.outputs << "-> #{result}"

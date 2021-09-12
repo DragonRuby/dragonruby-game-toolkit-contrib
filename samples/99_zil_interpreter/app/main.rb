@@ -11,6 +11,7 @@ def tick(args)
   # - Render history
   # - Collect input
   # - Call send_input with input when pressing Enter
+  $gtk.request_quit unless $interpreter.alive?
 end
 
 def setup(args)
