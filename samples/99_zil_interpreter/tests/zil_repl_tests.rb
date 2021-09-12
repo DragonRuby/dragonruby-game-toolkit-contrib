@@ -7,6 +7,7 @@ def test_repl(args, assert)
   assert.equal! zil_context.outputs, [
     '-> 5'
   ]
+  assert.true! repl_fiber.alive?
 end
 
 def test_repl_parsing_error(args, assert)
@@ -18,6 +19,7 @@ def test_repl_parsing_error(args, assert)
   assert.equal! zil_context.outputs, [
     'ParserError: Invalid syntax at 0:8!'
   ]
+  assert.true! repl_fiber.alive?
 end
 
 def test_repl_eval_error(args, assert)
@@ -29,6 +31,7 @@ def test_repl_eval_error(args, assert)
   assert.equal! zil_context.outputs, [
     'EvalError: Cannot eval %<COND>'
   ]
+  assert.true! repl_fiber.alive?
 end
 
 def test_repl_function_error(args, assert)
@@ -40,6 +43,7 @@ def test_repl_function_error(args, assert)
   assert.equal! zil_context.outputs, [
     'FunctionError: No local value for :NONEXISTING'
   ]
+  assert.true! repl_fiber.alive?
 end
 
 def build_repl_fiber(zil_context)
