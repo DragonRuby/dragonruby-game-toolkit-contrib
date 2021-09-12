@@ -7,6 +7,10 @@ require 'app/eval.rb'
 
 def tick(args)
   setup(args) if args.tick_count.zero?
+  # TODO:
+  # - Render history
+  # - Collect input
+  # - Call send_input with input when pressing Enter
 end
 
 def setup(args)
@@ -14,9 +18,10 @@ def setup(args)
   $interpreter = Fiber.new {
     args.state.zil_context.globals[:GO].call [], args.state.zil_context
   }
-  $interpreter.resume
+  $interpreter.resume # Initial processing until first Fiber.yield
 
-  # Add other processing if necessary
+  # TODO:
+  # Add other setup if necessary
 end
 
 # Call this method with the input after pressing enter
@@ -29,7 +34,9 @@ def send_input(args, input)
 end
 
 def process_outputs(args, outputs)
+  # TODO:
+  # Replace with actual processing, e.g. adding it to the history of output lines etc
   outputs.each do |line|
-    puts line # Replace with actual processing, e.g. adding it to the history of output lines etc
+    puts line
   end
 end
