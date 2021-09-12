@@ -235,7 +235,7 @@ class Scanner
     list = read_list
     raise "DECL inner list is empty!" if list.elements.length < 1
 
-    Syntax::Decl.new(*list.elements) # return inner list as convenience
+    Syntax::Decl.new(list)
   end
 
   def read_expression

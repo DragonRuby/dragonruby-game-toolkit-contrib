@@ -303,8 +303,9 @@ def test_parser_15(args, assert)
     :ROUTINE1,
     Syntax::List.new(:P1, :P2, :P3),
     Syntax::Decl.new(
-      Syntax::List.new(:P1, :P2, :P3),
-      :FIX))
+      Syntax::List.new(
+        Syntax::List.new(:P1, :P2, :P3),
+        :FIX)))
 
   assert.equal! parsed, expected
 end
