@@ -18,6 +18,8 @@ class Parser
     parser = new
     parser.parse_string(string)
     parser.expressions
+  rescue RuntimeError => e
+    raise ParserError, e.to_s
   end
 
   def initialize
@@ -51,6 +53,8 @@ class Parser
     log "Parse completed." if @log_flag
   end
 end
+
+class ParserError < StandardError; end
 
 # This class can probably be reworked into Parser
 #
