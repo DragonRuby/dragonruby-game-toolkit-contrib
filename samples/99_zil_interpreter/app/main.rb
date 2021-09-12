@@ -15,11 +15,13 @@ def tick(args)
 end
 
 def setup(args)
-  args.state.zil_context = build_zil_context(args)
+  context =  build_zil_context(args)
+  args.state.zil_context = context
   $interpreter = Fiber.new {
-    args.state.zil_context.globals[:GO].call [], args.state.zil_context
+    context.globals[:GO].call [], context
   }
   $interpreter.resume # Initial processing until first Fiber.yield
+  process_outputs args, context.outputs # Process welcome message if existing
 
   # TODO:
   # Add other setup if necessary

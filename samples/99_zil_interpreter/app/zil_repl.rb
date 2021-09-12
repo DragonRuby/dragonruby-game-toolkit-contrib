@@ -4,6 +4,9 @@ ZIL_BUILTINS[:GO] = define_for_evaled_arguments { |_, context|
 }
 
 ZIL_BUILTINS[:REPL] = define_for_evaled_arguments { |_, context|
+  context.outputs << 'ZIL REPL'
+  context.outputs << 'Enter <EXIT> to quit'
+
   loop do
     input = Fiber.yield
     break if input == '<EXIT>'

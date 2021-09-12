@@ -61,5 +61,6 @@ def build_repl_fiber(zil_context)
     zil_context.globals[:REPL].call [], zil_context
   }.tap { |result|
     result.resume # Initial execution
+    zil_context.outputs.clear # Clear welcome message
   }
 end
