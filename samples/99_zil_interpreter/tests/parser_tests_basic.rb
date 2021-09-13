@@ -5,9 +5,7 @@ def test_parser_01(args, assert)
 <SETG ZORK-NUMBER 1>
   ZIL
 
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :SETG,
@@ -25,9 +23,7 @@ def test_parser_02(args, assert)
 <STRING !\\" !,WBREAKS>
   ZIL
 
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :STRING,
@@ -47,9 +43,7 @@ def test_parser_03(args, assert)
     <SETG WBREAKS <STRING !\\" !,WBREAKS>>>
   ZIL
 
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :OR,
@@ -74,9 +68,7 @@ def test_parser_04(args, assert)
 <INSERT-FILE "GMACROS" T>
   ZIL
 
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :"INSERT-FILE",
@@ -94,9 +86,7 @@ def test_parser_05(args, assert)
 	(IN TO ROOMS)>
   ZIL
 
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :"OBJECT",
@@ -116,9 +106,7 @@ def test_parser_06(args, assert)
 ;"Yes, this synonym for LOCAL-GLOBALS needs to exist... sigh"
   ZIL
 
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Comment.new(
     "Yes, this synonym for LOCAL-GLOBALS needs to exist... sigh"
@@ -134,9 +122,7 @@ def test_parser_07(args, assert)
 ;<SETG ZORK-NUMBER 1>
   ZIL
 
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Comment.new(
     Syntax::Form.new(
@@ -156,9 +142,7 @@ def test_parser_08(args, assert)
     <CRLF>>
   ZIL
 
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :ROUTINE,
@@ -176,9 +160,7 @@ def test_parser_09(args, assert)
   source = <<-ZIL
 <ROUTINE WITH-LIST (P "TEST" 0)>
   ZIL
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :ROUTINE,
@@ -195,9 +177,7 @@ def test_parser_10(args, assert)
   source = <<-ZIL
 <ROUTINE WITH-LIST (#2 0011 *17* 123)>
   ZIL
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :ROUTINE,
@@ -217,9 +197,7 @@ def test_parser_11(args, assert)
   source = <<-ZIL
   <RETURN <>>
   ZIL
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :RETURN,
@@ -234,9 +212,7 @@ def test_parser_12(args, assert)
   source = <<-ZIL
   <RETURN (() ()) ()>
   ZIL
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :RETURN,
@@ -256,9 +232,7 @@ def test_parser_13(args, assert)
 "You are standing in an open field west of a white house, with a boarded
 front door.">
   ZIL
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :TELL,
@@ -276,9 +250,7 @@ def test_parser_14(args, assert)
 "You are standing in an \\"open\\" field west of a white house, with a boarded
 front door.">
   ZIL
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :TELL,
@@ -294,9 +266,7 @@ def test_parser_15(args, assert)
 <ROUTINE ROUTINE1 (P1 P2 P3)
 	 #DECL ((P1 P2 P3) FIX)>
   ZIL
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :ROUTINE,
@@ -320,9 +290,7 @@ def test_parser_16(args, assert)
 		(T
 		 '<TELL "With luck, your wish will come true." CR>)>>
   ZIL
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :ROUTINE,
@@ -364,9 +332,7 @@ def test_parser_17(args, assert)
 	       0; <REST ,DEF2B 2>
 	       0; <REST ,DEF2B 4>>
   ZIL
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :TABLE,
@@ -388,9 +354,7 @@ def test_parser_18(args, assert)
 	       0 ;<REST ,DEF2B 2>
 	       0 ;<REST ,DEF2B 4>>
   ZIL
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :TABLE,
@@ -409,9 +373,7 @@ def test_parser_19(args, assert)
   source = <<-ZIL
 <ROUTINE GO&LOOK>
   ZIL
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :ROUTINE, :"GO&LOOK"
@@ -426,9 +388,7 @@ def test_parser_20(args, assert)
   source = <<-ZIL
 <ROUTINE MATCH-FCN ( "AUX" CNT)>
   ZIL
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :ROUTINE,
@@ -448,9 +408,7 @@ def test_parser_21(args, assert)
   source = <<-ZIL
 <UVECTOR [REST FIX]>
   ZIL
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :UVECTOR,

@@ -11,9 +11,7 @@ def test_parser(args, assert)
            <RETURN .P>)>)>>>
 ZIL
 
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Form.new(
     :ROUTINE,
@@ -98,9 +96,7 @@ def test_parser_macro_and_quoted(args, assert)
   '<ROUTINE ABC () 4>)>
 ZIL
 
-  parser = Parser.new
-  parser.parse_string(args, source)
-  parsed = parser.expressions[0]
+  parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Macro.new(
     Syntax::Form.new(
