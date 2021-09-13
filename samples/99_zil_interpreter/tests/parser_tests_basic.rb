@@ -420,3 +420,39 @@ def test_parser_21(args, assert)
 
   assert.equal! parsed, expected
 end
+
+# test '_' in atom
+# --------------------------------------------------------------------
+def test_parser_22(args, assert)
+  source = <<-ZIL
+<OBJECT USER-HIRO
+	(SYNONYM HIRO HIRO_R_B)
+	(DESC "Hiro_r_b")>
+  ZIL
+  parsed = Parser.parse_string(source)[0]
+
+  expected = Syntax::Form.new(
+    :OBJECT,
+    :"USER-HIRO",
+    Syntax::List.new(:SYNONYM, :HIRO, :HIRO_R_B),
+    Syntax::List.new(:DESC, "Hiro_r_b")
+  )
+
+  assert.equal! parsed, expected
+end
+
+# test multiply atom
+# --------------------------------------------------------------------
+def test_parser_23(args, assert)
+  source = <<-ZIL
+<* 1 2 3>
+  ZIL
+  parsed = Parser.parse_string(source)[0]
+
+  expected = Syntax::Form.new(
+    :*, 1, 2, 3
+  )
+
+  assert.equal! parsed, expected
+end
+

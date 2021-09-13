@@ -65,7 +65,7 @@ class ParserError < StandardError; end
 #   end
 #
 class Scanner
-  ATOM_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+*/?=.,!$&"
+  ATOM_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+*/?=.,!$&_"
   FIX_CHARS = '0123456789*#' # * = octal, #2 = binary
   WHITESPACE_CHARS = " \r\n\t"
 
@@ -146,10 +146,12 @@ class Scanner
     str
   end
 
-  def is_fix?(char)
+  def is_fix?(char, next_char)
     return false if char.nil?
 
-    if FIX_CHARS.include?(char)
+    if char == '*' && FIX_CHARS.include?(next_char) == false # make sure this isn't the multiply operator ('*' followed by whitespace)
+      false
+    elsif FIX_CHARS.include?(char)
       true
     else
       false
@@ -292,7 +294,7 @@ class Scanner
     elsif expr_char == "."
       log indent(@expr_depth) + "+ LVAL " if debug_flag
       expr = read_alias_lval
-    elsif is_fix?(expr_char) # Starts with 0123456789 then read_fix
+    elsif is_fix?(expr_char, peek_next) # Starts with 0123456789 then read_fix
       log indent(@expr_depth) + "+ FIX " if debug_flag
       expr = read_fix
     else
