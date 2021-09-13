@@ -65,7 +65,7 @@ class ParserError < StandardError; end
 #   end
 #
 class Scanner
-  ATOM_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+*/?=.,!$&"
+  ATOM_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+*/?=.,!$&_"
   FIX_CHARS = '0123456789*#' # * = octal, #2 = binary
   WHITESPACE_CHARS = " \r\n\t"
 
