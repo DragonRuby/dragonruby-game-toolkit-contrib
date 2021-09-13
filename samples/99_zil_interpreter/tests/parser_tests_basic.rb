@@ -440,3 +440,19 @@ def test_parser_22(args, assert)
 
   assert.equal! parsed, expected
 end
+
+# test multiply atom
+# --------------------------------------------------------------------
+def test_parser_23(args, assert)
+  source = <<-ZIL
+<* 1 2 3>
+  ZIL
+  parsed = Parser.parse_string(source)[0]
+
+  expected = Syntax::Form.new(
+    :*, 1, 2, 3
+  )
+
+  assert.equal! parsed, expected
+end
+
