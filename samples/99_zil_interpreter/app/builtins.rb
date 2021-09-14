@@ -22,62 +22,43 @@ ZIL_BUILTINS[:+] = define_for_evaled_arguments { |arguments|
 }
 
 # <- ...>
-ZIL_BUILTINS[:-] = lambda { |arguments, context|
+ZIL_BUILTINS[:-] = define_for_evaled_arguments { |arguments|
   if arguments.length == 0
-    result = 0
+    0
   elsif arguments.length == 1
-    result = 0 - eval_zil(arguments[0], context)
+    0 - arguments[0]
   else
-    i = 1
-    result = eval_zil(arguments[0], context)
-    while i < arguments.length
-      result -= eval_zil(arguments[i], context)
-      i += 1
-    end
+    arguments.inject(:-)
   end
-
-  result
 }
 
 # <* ...>
-ZIL_BUILTINS[:*] = lambda { |arguments, context|
-  if arguments.length == 0
-    result = 1
-  elsif arguments.length == 1
-    result = eval_zil(arguments[0], context)
-  else
-    i = 1
-    result = eval_zil(arguments[0], context)
-    while i < arguments.length
-      result *= eval_zil(arguments[i], context)
-      i += 1
-    end
-  end
-  result
+ZIL_BUILTINS[:*] = define_for_evaled_arguments { |arguments|
+  arguments.inject(1, :*)
 }
 
 # </ ...>
-ZIL_BUILTINS[:/] = lambda { |arguments, context|
+ZIL_BUILTINS[:/] = define_for_evaled_arguments { |arguments|
   # https://mdl-language.readthedocs.io/en/latest/03-built-in-functions/
   # "the division of two FIXes gives a FIX with truncation, not rounding, of the remainder:
   # the intermediate result remains a FIX until a FLOAT argument is encountered."
 
   if arguments.length == 0 # </ >
-    result = 1
+    1
   elsif arguments.length == 1 # </ divisor>
     dividend = 1
-    divisor = eval_zil(arguments[0], context)
-
+    divisor = arguments[0]
     if divisor.class == Float
-      result = dividend.to_f / divisor
+      dividend.to_f / divisor
     else
-      result = (dividend / divisor).to_i
+      (dividend / divisor).to_i
     end
   else  # </ dividend divisor ...>
     i = 1
-    dividend = eval_zil(arguments[0], context)
+    dividend = arguments[0]
+
     while i < arguments.length
-      divisor = eval_zil(arguments[i], context)
+      divisor = arguments[i]
 
       if dividend.class == Float || divisor.class == Float
         dividend = dividend.to_f / divisor.to_f
@@ -88,34 +69,19 @@ ZIL_BUILTINS[:/] = lambda { |arguments, context|
       i += 1
     end
 
-    result = dividend
+    dividend
   end
-
-  result
 }
 
 # <MIN ...>
-ZIL_BUILTINS[:MIN] = lambda { |arguments, context|
-  if arguments.length == 0
-    raise FunctionError, "MIN with 0 arguments not supported"
-  elsif arguments.length == 1
-    result = eval_zil(arguments[0], context)
-  else
-    result = eval_zil(arguments[0], context)
-    i = 1
-    while i < arguments.length
-      new_value = eval_zil(arguments[i], context)
-      result = [result, new_value].min
-      i += 1
-    end
-  end
-
-  result
+ZIL_BUILTINS[:MIN] = define_for_evaled_arguments { |arguments|
+  raise FunctionError, "MIN with 0 arguments not supported" if arguments.length == 0
+  arguments.min
 }
 
 # <RANDOM ...>
-ZIL_BUILTINS[:RANDOM] = lambda { |arguments, context|
-  raise FunctionError, "RANGE only supported with 1 argument!" if arguments.length != 1
-  range = eval_zil(arguments[0], context)
+ZIL_BUILTINS[:RANDOM] = define_for_evaled_arguments { |arguments|
+  raise FunctionError, "RANDOM only supported with 1 argument!" if arguments.length != 1
+  range = arguments[0]
   rand(range)
 }

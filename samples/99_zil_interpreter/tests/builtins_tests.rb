@@ -147,14 +147,19 @@ def test_builtin_random(args, assert)
   assert.true! result >= 0 && result <= 2
 
   # <RANDOM>
-  zil_context.globals[:RANDOM].call [], zil_context
-  raise 'No exception occurred when invoking RANDOM with no arguments!'
-rescue FunctionError
-  assert.ok!
+  begin
+    zil_context.globals[:RANDOM].call [], zil_context
+    raise 'No exception occurred when invoking RANDOM with no arguments!'
+  rescue FunctionError
+    assert.ok!
+  end
 
-  # <RANDOM>
-  zil_context.globals[:RANDOM].call [1, 2], zil_context
-  raise 'No exception occurred when invoking RANDOM with more than one argument!'
-rescue FunctionError
-  assert.ok!
+
+  # <RANDOM 1 2>
+  begin
+    zil_context.globals[:RANDOM].call [1, 2], zil_context
+    raise 'No exception occurred when invoking RANDOM with more than one argument!'
+  rescue FunctionError
+    assert.ok!
+  end
 end
