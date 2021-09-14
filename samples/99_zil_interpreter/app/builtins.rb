@@ -83,5 +83,5 @@ ZIL_BUILTINS[:MIN] = define_for_evaled_arguments { |arguments|
 ZIL_BUILTINS[:RANDOM] = define_for_evaled_arguments { |arguments|
   raise FunctionError, "RANDOM only supported with 1 argument!" if arguments.length != 1
   range = arguments[0]
-  rand(range)
+  rand(range) + 1
 }

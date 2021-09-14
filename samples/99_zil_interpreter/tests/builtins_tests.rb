@@ -92,6 +92,10 @@ def test_builtin_divide(args, assert)
   result = zil_context.globals[:/].call [], zil_context
   assert.equal! result, 1
 
+  # </ 5.0>
+  result = zil_context.globals[:/].call [5.0], zil_context
+  assert.equal! result, 0.2
+
   # </ 1.5 0.5>
   result = zil_context.globals[:/].call [1.5, 0.5], zil_context
   assert.equal! result, 3.0
@@ -136,15 +140,15 @@ def test_builtin_random(args, assert)
 
   # <RANDOM 1>
   result = zil_context.globals[:RANDOM].call [1], zil_context
-  assert.true! result == 0
+  assert.equal! result, 1
 
   # <RANDOM 2>
   result = zil_context.globals[:RANDOM].call [2], zil_context
-  assert.true! result >= 0 && result <= 1
+  assert.true! result >= 1 && result <= 2
 
   # <RANDOM 3>
   result = zil_context.globals[:RANDOM].call [3], zil_context
-  assert.true! result >= 0 && result <= 2
+  assert.true! result >= 1 && result <= 3
 
   # <RANDOM>
   begin
@@ -153,7 +157,6 @@ def test_builtin_random(args, assert)
   rescue FunctionError
     assert.ok!
   end
-
 
   # <RANDOM 1 2>
   begin
