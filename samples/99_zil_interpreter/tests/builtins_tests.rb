@@ -139,16 +139,16 @@ def test_builtin_random(args, assert)
   zil_context = build_zil_context(args)
 
   # <RANDOM 1>
-  result = zil_context.globals[:RANDOM].call [1], zil_context
-  assert.equal! result, 1
+  results = 50.times.map { zil_context.globals[:RANDOM].call([1], zil_context) }
+  assert.true! results.all? { |result| result == 1 }, '<RANDOM 1> returned a number other than 1'
 
   # <RANDOM 2>
-  result = zil_context.globals[:RANDOM].call [2], zil_context
-  assert.true! result >= 1 && result <= 2
+  results = 50.times.map { zil_context.globals[:RANDOM].call([2], zil_context) }
+  assert.true! results.all? { |result|  result >= 1 && result <= 2 }, '<RANDOM 2> returned a number less than 1 or greater than 2.'
 
   # <RANDOM 3>
-  result = zil_context.globals[:RANDOM].call [3], zil_context
-  assert.true! result >= 1 && result <= 3
+  results = 50.times.map { zil_context.globals[:RANDOM].call([3], zil_context) }
+  assert.true! results.all? { |result| result >= 1 && result <= 3 }, '<RANDOM 3> returned a number less than 1 or greater than 3.'
 
   # <RANDOM>
   begin
