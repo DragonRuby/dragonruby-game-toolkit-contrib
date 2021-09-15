@@ -84,16 +84,18 @@ ZIL_BUILTINS[:RANDOM] = define_for_evaled_arguments { |arguments|
   raise FunctionError, "RANDOM only supported with 1 argument!" if arguments.length != 1
   range = arguments[0]
   rand(range) + 1
+}
 
 ZIL_BUILTINS[:SET] = define_for_evaled_arguments { |arguments, context|
+  raise FunctionError, "`SET` called with #{arguments.length} instead of the 2 required" if arguments.length != 2
+  
   var_atom = arguments[0]
-  # could also check for arity, @kfischer_okarin , should it?
-  raise FunctionError, "Variable #{var_atom.inspect} not found in the current context" unless context.locals.key? var_atom # this I am not sure if it's needed
-
   context.locals[var_atom] = arguments[1]
 }
 
 ZIL_BUILTINS[:SETG] = define_for_evaled_arguments { |arguments, context|
+  raise FunctionError, "`SETG` called with #{arguments.length} instead of the 2 required" if arguments.length != 2
+  
   var_atom = arguments[0]
   context.globals[var_atom] = arguments[1]
 }
@@ -111,14 +113,20 @@ ZIL_BUILTINS[:BOR] = define_for_evaled_arguments { |arguments|
 
 ZIL_BUILTINS[:BTST] = define_for_evaled_arguments { |arguments|
   # this will take only two, just because of what it does
+  raise FunctionError, "`BTST` called with #{arguments.length} instead of the 2 required" if arguments.length != 2
+  
   (arguments[0] ^ arguments[1]).zero?
 }
 
 ZIL_BUILTINS[:BCOM] = define_for_evaled_arguments { |arguments|
+  raise FunctionError, "`BCOM` called with #{arguments.length} arguments instead of 1 required" if arguments.length != 1
+  
   ~(arguments[0])
 }
 
 ZIL_BUILTINS[:SHIFT] = define_for_evaled_arguments { |arguments|
+  raise FunctionError, "`SHIFT` called with #{arguments.length} instead of the 2 required" if arguments.length != 2
+  
   arguments[0] << arguments[1]
 }
 

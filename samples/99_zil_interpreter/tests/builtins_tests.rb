@@ -167,6 +167,7 @@ def test_builtin_random(args, assert)
   rescue FunctionError
     assert.ok!
   end
+end
 
 def test_builtin_set(args, assert)
   zil_context = build_zil_context(args)
