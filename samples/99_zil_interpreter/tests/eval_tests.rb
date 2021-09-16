@@ -178,3 +178,28 @@ def will_raise_eval_error!(assert)
 
   assert.equal! raised_exception_class, EvalError, 'it did not raise EvalError'
 end
+
+def test_eval_internal_true_returns_true(args, assert)
+  zil_context = build_zil_context(args)
+
+  # the atom :T evals to true. That result might be later eval'ed: meaning true must eval to true
+  result = eval_zil(
+    true,
+
+    zil_context
+  )
+
+  assert.equal! result, true
+end
+
+def test_eval_internal_false_returns_false(args, assert)
+  zil_context = build_zil_context(args)
+
+  # builtins like AND can return false, false must eval to false
+  result = eval_zil(
+    false,
+    zil_context
+  )
+
+  assert.equal! result, false
+end
