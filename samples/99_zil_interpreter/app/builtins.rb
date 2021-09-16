@@ -163,7 +163,10 @@ ZIL_BUILTINS[:COND] = lambda { |arguments, context|
   #
   raise FunctionError, "COND requires at least one parameter!" unless arguments.length > 0
 
-  arguments.each { |clause|
+  i = 0
+  while i < arguments.length
+    clause = arguments[i]
+
     raise FunctionError, "Arguments to COND must be of List type!" unless clause.class == Syntax::List
     raise FunctionError, "COND clauses require at least 1 item!" unless clause.elements.length > 0
 
@@ -174,7 +177,8 @@ ZIL_BUILTINS[:COND] = lambda { |arguments, context|
       }
       return clause_eval
     end
-  }
+    i += 1
+  end
 
   false
 }
