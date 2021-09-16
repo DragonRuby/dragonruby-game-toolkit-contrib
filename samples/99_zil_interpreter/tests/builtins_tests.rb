@@ -437,7 +437,7 @@ def test_builtin_cond(args, assert)
 
   # <COND (<0? 0>)> --> Evals to true, even though no elements in the clause are evaled
   clause1 = Syntax::List.new(Syntax::Form.new(:"0?", 0))
-  result = zil_context.globals[:COND].call [clause1, clause2], zil_context
+  result = zil_context.globals[:COND].call [clause1], zil_context
   assert.equal! result, true, '<COND (<0? 0>)> == false'
 
   # Setup for next set of tests
@@ -452,7 +452,7 @@ def test_builtin_cond(args, assert)
   result = zil_context.globals[:COND].call [clause1], zil_context
   assert.equal! result, 20, 'Last element of clause should be returned! (20)'
 
-  # <COND (<0? 0> .VAR10 .VAR20 .VAR10)> --> Evals to 20
+  # <COND (<0? 0> .VAR10 .VAR20 .VAR10)> --> Evals to 10
   clause1 = Syntax::List.new(Syntax::Form.new(:"0?", 0), Syntax::Form.new(:LVAL, :VAR10), Syntax::Form.new(:LVAL, :VAR20), Syntax::Form.new(:LVAL, :VAR10))
   result = zil_context.globals[:COND].call [clause1], zil_context
   assert.equal! result, 10, 'Last element of clause should be returned! (10)'
@@ -462,7 +462,7 @@ def test_builtin_cond(args, assert)
   result = zil_context.globals[:COND].call [clause1], zil_context
   assert.equal! result, 30, 'Last element of clause should be returned! (30)'
 
-  # <COND (<0? 0> .VAR10 .VAR20 .VAR_F .VAR10)> --> Evals to false because :VAR_F is false
+  # <COND (<0? 0> .VAR10 .VAR20 .VAR_F)> --> Evals to false because :VAR_F is false
   clause1 = Syntax::List.new(Syntax::Form.new(:"0?", 0), Syntax::Form.new(:LVAL, :VAR10), Syntax::Form.new(:LVAL, :VAR20), Syntax::Form.new(:LVAL, :VAR10), Syntax::Form.new(:LVAL, :VAR_F))
   result = zil_context.globals[:COND].call [clause1], zil_context
   assert.equal! result, false, 'Last element of clause should be returned! (false)'
