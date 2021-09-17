@@ -117,6 +117,12 @@ ZIL_BUILTINS[:L?] = define_for_evaled_arguments { |arguments|
   arguments[0] < arguments[1]
 }
 
+# <NOT ...>
+ZIL_BUILTINS[:NOT] = define_for_evaled_arguments { |arguments|
+  raise FunctionError, "NOT only supported with 1 argument!" if arguments.length != 1
+  arguments[0] == false
+}
+
 # <AND ...> (FSUBR)
 ZIL_BUILTINS[:AND] = lambda { |arguments, context|
   result = false

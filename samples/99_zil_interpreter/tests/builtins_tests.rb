@@ -339,6 +339,30 @@ def test_builtin_less(args, assert)
   assert.equal! result, false
 end
 
+def test_builtin_not(args, assert)
+  zil_context = build_zil_context(args)
+
+  # <NOT>
+  begin
+    zil_context.globals[:NOT].call [], zil_context
+    raise 'No exception occurred when invoking "NOT" with no arguments!'
+  rescue FunctionError
+    assert.ok!
+  end
+
+  # <NOT T>
+  result = zil_context.globals[:NOT].call [:T], zil_context
+  assert.equal! result, false, '<NOT T>'
+
+  # <NOT <NOT T>>
+  result = zil_context.globals[:NOT].call [Syntax::Form.new(:NOT, :T)], zil_context
+  assert.equal! result, true, '<NOT <NOT T>>'
+
+  # <NOT <NOT NOT<T>>>
+  result = zil_context.globals[:NOT].call [Syntax::Form.new(:NOT, Syntax::Form.new(:NOT, :T))], zil_context
+  assert.equal! result, false, '<NOT <NOT NOT<T>>>'
+end
+
 def test_builtin_and(args, assert)
   zil_context = build_zil_context(args)
 
