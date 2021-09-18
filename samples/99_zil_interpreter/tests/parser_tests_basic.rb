@@ -464,3 +464,18 @@ def test_parser_24(args, assert)
   assert.equal! parsed, expected
 end
 
+# test #BYTE
+# --------------------------------------------------------------------
+def test_byte(args, assert)
+  source = <<-ZIL
+<ITABLE 59 (LEXV) 0 #BYTE 0 #BYTE 0>
+  ZIL
+  parsed = Parser.parse_string(source)[0]
+  expected = Syntax::Form.new(
+    :ITABLE, 59,
+    Syntax::List.new(:LEXV),
+    0, Syntax::Byte.new(0), Syntax::Byte.new(0)
+  )
+
+  assert.equal! parsed, expected
+end

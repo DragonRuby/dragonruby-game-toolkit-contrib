@@ -91,7 +91,14 @@ module Syntax
   # #DECL (...)
   class Decl < ElementWrapper
     def to_s
-      "#DECL #{@elements}"
+      "#DECL #{@element}"
+    end
+  end
+
+  # #BYTE N
+  class Byte < ElementWrapper
+    def to_s
+      "#BYTE #{@element}"
     end
   end
 end
