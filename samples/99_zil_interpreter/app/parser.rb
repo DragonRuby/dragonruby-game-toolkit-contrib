@@ -252,6 +252,17 @@ class Scanner
     Syntax::Decl.new(list)
   end
 
+  # #BYTE
+  def read_byte
+    skip_char('#') # read #
+    skip_atom(:BYTE) # read BYTE
+    skip_whitespace
+
+    expression = read_expression
+
+    Syntax::Byte.new(expression)
+  end
+
   def read_expression
     debug_flag = false
     @expr_depth += 1
@@ -284,6 +295,9 @@ class Scanner
     elsif expr_char == '#' && peek_string(5) == '#DECL' # MDL also has FUNCTION (not implemented in ZIL)
       log indent(@expr_depth) + "+ DECL " if debug_flag
       expr = read_decl
+    elsif expr_char == '#' && peek_string(5) == '#BYTE'
+      log indent(@expr_depth) + "+ BYTE " if debug_flag
+      expr = read_byte
     elsif expr_char == '%' && peek_string(6) == '%<COND' # % is MACRO in MDL. ZIL only uses <COND after (being cautious)
       log indent(@expr_depth) + "+ MACRO " if debug_flag
       expr = read_macro
