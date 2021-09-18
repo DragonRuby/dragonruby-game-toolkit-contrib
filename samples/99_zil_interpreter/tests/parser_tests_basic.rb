@@ -448,10 +448,18 @@ def test_parser_23(args, assert)
 <* 1 2 3>
   ZIL
   parsed = Parser.parse_string(source)[0]
+  expected = Syntax::Form.new(:*, 1, 2, 3)
+  assert.equal! parsed, expected
+end
 
-  expected = Syntax::Form.new(
-    :*, 1, 2, 3
-  )
+# test 0? atom
+# --------------------------------------------------------------------
+def test_parser_24(args, assert)
+  source = <<-ZIL
+<0? 1>
+  ZIL
+  parsed = Parser.parse_string(source)[0]
+  expected = Syntax::Form.new(:"0?", 1)
 
   assert.equal! parsed, expected
 end

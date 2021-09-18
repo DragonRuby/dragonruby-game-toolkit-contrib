@@ -151,6 +151,8 @@ class Scanner
 
     if char == '*' && FIX_CHARS.include?(next_char) == false # make sure this isn't the multiply operator ('*' followed by whitespace)
       false
+    elsif next_char == '?' # special case for 0? and 1? atoms
+      false
     elsif FIX_CHARS.include?(char)
       true
     else
