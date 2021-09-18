@@ -1,3 +1,5 @@
+require 'tests/test_helpers.rb'
+
 def test_parser(args, assert)
   source = <<-ZIL
 <ROUTINE OTHER-SIDE (DOBJ "AUX" (P 0) TX)
@@ -13,71 +15,71 @@ ZIL
 
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :ROUTINE,
     :"OTHER-SIDE",
-    Syntax::List.new(
+    list(
       :DOBJ,
       "AUX",
-      Syntax::List.new(:P, 0),
+      list(:P, 0),
       :TX),
-    Syntax::Form.new(
+    form(
       :REPEAT,
-      Syntax::List.new,
-      Syntax::Form.new(
+      list,
+      form(
         :COND,
-        Syntax::List.new(
-          Syntax::Form.new(
+        list(
+          form(
             :L?,
-            Syntax::Form.new(
+            form(
               :SET,
               :P,
-              Syntax::Form.new(
+              form(
                 :NEXTP,
-                Syntax::Form.new(:GVAL, :"HERE"),
-                Syntax::Form.new(:LVAL, :"P")
+                form(:GVAL, :"HERE"),
+                form(:LVAL, :"P")
               )
             ),
-            Syntax::Form.new(:GVAL, :"LOW-DIRECTION")
+            form(:GVAL, :"LOW-DIRECTION")
           ),
-          Syntax::Form.new(:RETURN, Syntax::Form.new)
+          form(:RETURN, form)
         ),
-        Syntax::List.new(
+        list(
           :ELSE,
-          Syntax::Form.new(
+          form(
             :SET,
             :TX,
-            Syntax::Form.new(
+            form(
               :GETPT,
-              Syntax::Form.new(:GVAL, :"HERE"),
-              Syntax::Form.new(:LVAL, :"P")
+              form(:GVAL, :"HERE"),
+              form(:LVAL, :"P")
             )
           ),
-          Syntax::Form.new(
+          form(
             :COND,
-            Syntax::List.new(
-              Syntax::Form.new(
+            list(
+              form(
                 :AND,
-                Syntax::Form.new(
+                form(
                   :EQUAL?,
-                  Syntax::Form.new(
+                  form(
                     :PTSIZE,
-                    Syntax::Form.new(:LVAL, :"TX")
+                    form(:LVAL, :"TX")
                   ),
-                  Syntax::Form.new(:GVAL, :"DEXIT")
+                  form(:GVAL, :"DEXIT")
                 ),
-                Syntax::Form.new(
+                form(
                   :EQUAL?,
-                  Syntax::Form.new(
+                  form(
                     :GETB,
-                    Syntax::Form.new(:LVAL, :"TX"),
-                    Syntax::Form.new(:GVAL, :"DEXITOBJ")
+                    form(:LVAL, :"TX"),
+                    form(:GVAL, :"DEXITOBJ")
                   ),
-                  Syntax::Form.new(:LVAL, :"DOBJ"))
+                  form(:LVAL, :"DOBJ"))
               ),
-              Syntax::Form.new(
+              form(
                 :RETURN,
-                Syntax::Form.new(:LVAL, :"P")),
+                form(:LVAL, :"P")),
             )
           )
         )
@@ -99,18 +101,18 @@ ZIL
   parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Macro.new(
-    Syntax::Form.new(
+    form(
       :COND,
-      Syntax::List.new(
-        Syntax::Form.new(:EQUAL?, Syntax::Form.new(:GVAL, :"GLOBAL-VAR"), 22),
+      list(
+        form(:EQUAL?, form(:GVAL, :"GLOBAL-VAR"), 22),
         Syntax::Quote.new(
-          Syntax::Form.new(:ROUTINE, :ABC, Syntax::List.new, 3)
+          form(:ROUTINE, :ABC, list, 3)
         ),
       ),
-      Syntax::List.new(
+      list(
         :ELSE,
         Syntax::Quote.new(
-          Syntax::Form.new(:ROUTINE, :ABC, Syntax::List.new, 4)
+          form(:ROUTINE, :ABC, list, 4)
         )
       )
     )
