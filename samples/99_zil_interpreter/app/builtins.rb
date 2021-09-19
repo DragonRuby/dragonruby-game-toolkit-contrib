@@ -265,7 +265,7 @@ ZIL_BUILTINS[:COND] = lambda { |arguments, context|
 ZIL_BUILTINS[:OBJECT] = define_for_evaled_arguments { |arguments, context|
   # Objects have a name, and a list of properties and values
   expect_minimum_argument_count!(arguments, 1)
-  
+
   object_name, *object_properties = arguments
 
   object = { properties: {} }
@@ -282,3 +282,22 @@ ZIL_BUILTINS[:OBJECT] = define_for_evaled_arguments { |arguments, context|
   context.globals[object_name] = object
 }
 
+ZIL_BUILTINS[:ITABLE] = lambda { |arguments, context|
+  size = eval_zil arguments[0], context
+  flags = eval_zil arguments[1], context
+  unevaled_default_values = arguments[2..-1]
+  if flags == [:LEXV]
+    default_values = [
+      eval_zil(unevaled_default_values[0], context),
+      0,
+      unevaled_default_values[1].element,
+      unevaled_default_values[2].element
+    ]
+    [size, 0] + default_values * size
+  elsif flags.include? :BYTE
+    default_values = [eval_zil(unevaled_default_values[0], context)]
+    result = default_values * size
+    result.insert(0, size) if flags.include? :LENGTH
+    result
+  end
+}

@@ -589,3 +589,25 @@ def test_builtin_object(args, assert)
   assert.equal! zil_context.globals[:ROOM][:properties][:HEIGHT], 10, "ROOM's HEIGHT should be 10"
 
 end
+
+def test_builtin_itable(args, assert)
+  zil_context = build_zil_context(args)
+
+  # <ITABLE 2 (LEXV) 0 #BYTE 1 #BYTE 2>
+  result = call_routine zil_context, :ITABLE, [2, list(:LEXV), 0, byte(1), byte(2)]
+
+  # LEXV table is prefixed with 2 bytes and has 4 byte records
+  assert.equal! result, [
+    2, 0, # Prefixed with record count and zero byte
+    0, 0, 1, 2,
+    0, 0, 1, 2
+  ]
+
+  # <ITABLE 3 (BYTE LENGTH) 8>
+  result = call_routine zil_context, :ITABLE, [3, list(:BYTE, :LENGTH), 8]
+
+  assert.equal! result, [
+    3, # Prefixed with record count
+    8, 8, 8
+  ]
+end
