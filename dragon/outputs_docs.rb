@@ -208,25 +208,19 @@ be provided in any order.
 
 ** Rendering a solid using a Class
 
-You can also create a class with solid/border properties and render it as a primitive.
-ALL properties must be on the class. *Additionally*, a method called ~primitive_marker~
-must be defined on the class.
+You can also create a class with sprite properties and render it as a primitive.
 
 Here is an example:
 
 #+begin_src
-  # Create type with ALL sprite properties AND primitive_marker
+  # Create type with ALL sprite properties
   class Sprite
-    attr_accessor :x, :y, :w, :h, :path, :angle, :angle_anchor_x, :angle_anchor_y,  :tile_x, :tile_y, :tile_w, :tile_h, :source_x, :source_y, :source_w, :source_h, :flip_horizontally, :flip_vertically, :a, :r, :g, :b
-
-    def primitive_marker
-      :sprite
-    end
+    attr_sprite
   end
 
   # Inherit from type
   class Circle < Sprite
-  # constructor
+    # constructor
     def initialize x, y, size, path
       self.x = x
       self.y = y
