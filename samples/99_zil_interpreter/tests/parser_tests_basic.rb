@@ -1,3 +1,5 @@
+require 'tests/test_helpers.rb'
+
 # test basic SETG command with STRING and FIX
 # -----------------------------------------
 def test_parser_01(args, assert)
@@ -7,7 +9,7 @@ def test_parser_01(args, assert)
 
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :SETG,
     :"ZORK-NUMBER",
     1)
@@ -25,10 +27,10 @@ def test_parser_02(args, assert)
 
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :STRING,
     '"',
-    Syntax::Segment.new(Syntax::Form.new(:GVAL, :WBREAKS))
+    Syntax::Segment.new(form(:GVAL, :WBREAKS))
   )
 
   assert.equal! parsed, expected
@@ -45,18 +47,18 @@ def test_parser_03(args, assert)
 
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :OR,
-    Syntax::Form.new(
+    form(
       :"GASSIGNED?",
       :"ZILCH"),
-    Syntax::Form.new(
+    form(
       :SETG,
       :"WBREAKS",
-      Syntax::Form.new(
+      form(
         :STRING,
         '"',
-        Syntax::Segment.new(Syntax::Form.new(:GVAL, :WBREAKS)))))
+        Syntax::Segment.new(form(:GVAL, :WBREAKS)))))
 
   assert.equal! parsed, expected
 end
@@ -70,7 +72,7 @@ def test_parser_04(args, assert)
 
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :"INSERT-FILE",
     "GMACROS",
     :T)
@@ -88,10 +90,10 @@ def test_parser_05(args, assert)
 
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :"OBJECT",
     :"ROOMS",
-    Syntax::List.new(
+    list(
       :IN, :TO, :ROOMS
     )
   )
@@ -125,7 +127,7 @@ def test_parser_07(args, assert)
   parsed = Parser.parse_string(source)[0]
 
   expected = Syntax::Comment.new(
-    Syntax::Form.new(
+    form(
       :SETG,
       :"ZORK-NUMBER",
       1))
@@ -144,12 +146,12 @@ def test_parser_08(args, assert)
 
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :ROUTINE,
     :GO,
-    Syntax::List.new,
-    Syntax::Form.new(:PRINTI, "Hello, world!"),
-    Syntax::Form.new(:CRLF))
+    list,
+    form(:PRINTI, "Hello, world!"),
+    form(:CRLF))
 
   assert.equal! parsed, expected
 end
@@ -162,10 +164,10 @@ def test_parser_09(args, assert)
   ZIL
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :ROUTINE,
     :"WITH-LIST",
-    Syntax::List.new(:P, "TEST", 0)
+    list(:P, "TEST", 0)
   )
 
   assert.equal! parsed, expected
@@ -179,10 +181,10 @@ def test_parser_10(args, assert)
   ZIL
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :ROUTINE,
     :"WITH-LIST",
-    Syntax::List.new(
+    list(
       3, # '#2 0011'
       15, # '*17*'
       123) # 123
@@ -199,9 +201,9 @@ def test_parser_11(args, assert)
   ZIL
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :RETURN,
-    Syntax::Form.new)
+    form)
 
   assert.equal! parsed, expected
 end
@@ -214,12 +216,12 @@ def test_parser_12(args, assert)
   ZIL
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :RETURN,
-    Syntax::List.new(
-      Syntax::List.new,
-      Syntax::List.new),
-    Syntax::List.new)
+    list(
+      list,
+      list),
+    list)
 
   assert.equal! parsed, expected
 end
@@ -234,7 +236,7 @@ front door.">
   ZIL
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :TELL,
     "You are standing in an open field west of a white house, with a boarded\nfront door.")
 
@@ -252,7 +254,7 @@ front door.">
   ZIL
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :TELL,
     "You are standing in an \"open\" field west of a white house, with a boarded\nfront door.")
 
@@ -268,13 +270,13 @@ def test_parser_15(args, assert)
   ZIL
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :ROUTINE,
     :ROUTINE1,
-    Syntax::List.new(:P1, :P2, :P3),
+    list(:P1, :P2, :P3),
     Syntax::Decl.new(
-      Syntax::List.new(
-        Syntax::List.new(:P1, :P2, :P3),
+      list(
+        list(:P1, :P2, :P3),
         :FIX)))
 
   assert.equal! parsed, expected
@@ -292,25 +294,25 @@ def test_parser_16(args, assert)
   ZIL
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :ROUTINE,
     :"V-WISH",
-    Syntax::List.new,
+    list,
     Syntax::Macro.new(
-      Syntax::Form.new(
+      form(
         :COND,
-        Syntax::List.new(
-          Syntax::Form.new(
+        list(
+          form(
             :"==?",
-            Syntax::Form.new(:GVAL, :"ZORK-NUMBER"),
+            form(:GVAL, :"ZORK-NUMBER"),
             2),
           Syntax::Quote.new(
-            Syntax::Form.new(
+            form(
               :PERFORM,
-              Syntax::Form.new(:GVAL, :"V?MAKE"),
-              Syntax::Form.new(:GVAL, :"WISH")))
+              form(:GVAL, :"V?MAKE"),
+              form(:GVAL, :"WISH")))
         ),
-        Syntax::List.new(
+        list(
           :T,
           Syntax::Quote.new(
             Syntax::Form::new(:TELL, "With luck, your wish will come true.", :CR)
@@ -334,12 +336,12 @@ def test_parser_17(args, assert)
   ZIL
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :TABLE,
     :"DEF2A",
     :"DEF2B",
-    0, Syntax::Comment.new(Syntax::Form.new(:REST, Syntax::Form.new(:GVAL, :"DEF2B"), 2)),
-    0, Syntax::Comment.new(Syntax::Form.new(:REST, Syntax::Form.new(:GVAL, :"DEF2B"), 4))
+    0, Syntax::Comment.new(form(:REST, form(:GVAL, :"DEF2B"), 2)),
+    0, Syntax::Comment.new(form(:REST, form(:GVAL, :"DEF2B"), 4))
   )
 
   assert.equal! parsed, expected
@@ -356,12 +358,12 @@ def test_parser_18(args, assert)
   ZIL
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :TABLE,
     :"DEF2A",
     :"DEF2B",
-    0, Syntax::Comment.new(Syntax::Form.new(:REST, Syntax::Form.new(:GVAL, :"DEF2B"), 2)),
-    0, Syntax::Comment.new(Syntax::Form.new(:REST, Syntax::Form.new(:GVAL, :"DEF2B"), 4))
+    0, Syntax::Comment.new(form(:REST, form(:GVAL, :"DEF2B"), 2)),
+    0, Syntax::Comment.new(form(:REST, form(:GVAL, :"DEF2B"), 4))
   )
 
   assert.equal! parsed, expected
@@ -375,7 +377,7 @@ def test_parser_19(args, assert)
   ZIL
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :ROUTINE, :"GO&LOOK"
   )
 
@@ -390,10 +392,10 @@ def test_parser_20(args, assert)
   ZIL
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :ROUTINE,
     :"MATCH-FCN",
-    Syntax::List.new(
+    list(
       "AUX",
       :CNT
     )
@@ -410,7 +412,7 @@ def test_parser_21(args, assert)
   ZIL
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :UVECTOR,
     Syntax::Vector.new(
       :REST,
@@ -431,11 +433,11 @@ def test_parser_22(args, assert)
   ZIL
   parsed = Parser.parse_string(source)[0]
 
-  expected = Syntax::Form.new(
+  expected = form(
     :OBJECT,
     :"USER-HIRO",
-    Syntax::List.new(:SYNONYM, :HIRO, :HIRO_R_B),
-    Syntax::List.new(:DESC, "Hiro_r_b")
+    list(:SYNONYM, :HIRO, :HIRO_R_B),
+    list(:DESC, "Hiro_r_b")
   )
 
   assert.equal! parsed, expected
@@ -448,7 +450,7 @@ def test_parser_23(args, assert)
 <* 1 2 3>
   ZIL
   parsed = Parser.parse_string(source)[0]
-  expected = Syntax::Form.new(:*, 1, 2, 3)
+  expected = form(:*, 1, 2, 3)
   assert.equal! parsed, expected
 end
 
@@ -459,7 +461,7 @@ def test_parser_24(args, assert)
 <0? 1>
   ZIL
   parsed = Parser.parse_string(source)[0]
-  expected = Syntax::Form.new(:"0?", 1)
+  expected = form(:"0?", 1)
 
   assert.equal! parsed, expected
 end
@@ -471,9 +473,9 @@ def test_byte(args, assert)
 <ITABLE 59 (LEXV) 0 #BYTE 0 #BYTE 0>
   ZIL
   parsed = Parser.parse_string(source)[0]
-  expected = Syntax::Form.new(
+  expected = form(
     :ITABLE, 59,
-    Syntax::List.new(:LEXV),
+    list(:LEXV),
     0, Syntax::Byte.new(0), Syntax::Byte.new(0)
   )
 
