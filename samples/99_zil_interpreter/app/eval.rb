@@ -1,6 +1,6 @@
 def eval_zil(expression, zil_context)
   case expression
-  when Numeric, String, TrueClass, FalseClass
+  when Numeric, String, TrueClass, FalseClass, Syntax::Byte
     # ZIL expressions can eval to true (:T), so true must eval to true
     # ZIL expressions can eval to false (FALSE, #FALSE), so false must continue to eval to false
     expression

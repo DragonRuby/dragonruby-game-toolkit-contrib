@@ -203,3 +203,15 @@ def test_eval_internal_false_returns_false(args, assert)
 
   assert.equal! result, false
 end
+
+def test_eval_byte_returns_byte(args, assert)
+  zil_context = build_zil_context(args)
+
+  # bytes will be interpreted by TABLE routines which are SUBRs - so BYTEs must be evaluable
+  result = eval_zil(
+    byte(22),
+    zil_context
+  )
+
+  assert.equal! result, byte(22)
+end
