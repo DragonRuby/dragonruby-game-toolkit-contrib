@@ -539,11 +539,7 @@ def test_byte(args, assert)
 <ITABLE 59 (LEXV) 0 #BYTE 0 #BYTE 0>
   ZIL
   parsed = Parser.parse_string(source)[0]
-  expected = form(
-    :ITABLE, 59,
-    list(:LEXV),
-    0, Syntax::Byte.new(0), Syntax::Byte.new(0)
-  )
+  expected = form(:ITABLE, 59, list(:LEXV), 0, byte(0), byte(0))
 
   assert.equal! parsed, expected
 end
