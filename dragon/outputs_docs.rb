@@ -206,7 +206,7 @@ be provided in any order.
   end
 #+end_src
 
-** Rendering a solid using a Class
+** Rendering a sprite using a Class
 
 You can also create a class with sprite properties and render it as a primitive.
 
