@@ -640,3 +640,14 @@ def test_builtin_get(args, assert)
 
   assert.equal! result, 3
 end
+
+def test_builtin_put(args, assert)
+  zil_context = build_zil_context(args)
+
+  zil_context.locals[:THETABLE] = [1, 0, 2, 0, 3, 0]
+  # <PUT ,THETABLE 1 99>
+  result = call_routine zil_context, :PUT, [form(:LVAL, :THETABLE), 1, 99]
+
+  assert.equal! result, [1, 0, 99, 0, 3, 0]
+  assert.equal! zil_context.locals[:THETABLE], [1, 0, 99, 0, 3, 0]
+end

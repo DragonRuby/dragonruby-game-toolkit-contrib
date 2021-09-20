@@ -328,3 +328,11 @@ ZIL_BUILTINS[:GET] = define_for_evaled_arguments { |arguments|
   index = arguments[1]
   table[index * 2] # Double the index since table stores bytes
 }
+
+ZIL_BUILTINS[:PUT] = define_for_evaled_arguments { |arguments|
+  table = arguments[0]
+  index = arguments[1]
+  value = arguments[2]
+  table[index * 2] = value # Double the index since table stores bytes
+  table
+}
