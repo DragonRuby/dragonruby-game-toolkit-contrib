@@ -291,10 +291,10 @@ ZIL_BUILTINS[:TABLE] = define_for_evaled_arguments { |arguments|
     values = arguments.dup
   end
 
-  values_are_bytes = flags.include?(:BYTES)
-
-  if values_are_bytes
-    values
+  if flags.include?(:BYTE)
+    values.tap { |result|
+      result.insert(0, result.size) if flags.include? :LENGTH
+    }
   else
     [].tap { |result|
       values.each do |value|
@@ -305,8 +305,11 @@ ZIL_BUILTINS[:TABLE] = define_for_evaled_arguments { |arguments|
           result << 0
         end
       end
-      if flags.include? :LENGTH
-        result.insert(0, values.size)
+      if flags.include?(:LENGTH)
+        result.insert(0, result.size.idiv(2))
+        result.insert(1, 0)
+      elsif flags.include?(:LEXV)
+        result.insert(0, result.size.idiv(4))
         result.insert(1, 0)
       end
     }
@@ -315,20 +318,7 @@ ZIL_BUILTINS[:TABLE] = define_for_evaled_arguments { |arguments|
 
 ZIL_BUILTINS[:ITABLE] = lambda { |arguments, context|
   size = eval_zil arguments[0], context
-  flags = eval_zil arguments[1], context
+  flags = arguments[1]
   unevaled_default_values = arguments[2..-1]
-  if flags == [:LEXV]
-    default_values = [
-      eval_zil(unevaled_default_values[0], context),
-      0,
-      unevaled_default_values[1].element,
-      unevaled_default_values[2].element
-    ]
-    [size, 0] + default_values * size
-  elsif flags.include? :BYTE
-    default_values = [eval_zil(unevaled_default_values[0], context)]
-    result = default_values * size
-    result.insert(0, size) if flags.include? :LENGTH
-    result
-  end
+  ZIL_BUILTINS[:TABLE].call [flags] + unevaled_default_values * size, context
 }
