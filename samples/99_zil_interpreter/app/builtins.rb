@@ -282,6 +282,37 @@ ZIL_BUILTINS[:OBJECT] = define_for_evaled_arguments { |arguments, context|
   context.globals[object_name] = object
 }
 
+ZIL_BUILTINS[:TABLE] = define_for_evaled_arguments { |arguments|
+  if arguments[0].is_a? Array
+    flags = arguments[0]
+    values = arguments[1..-1]
+  else
+    flags = []
+    values = arguments.dup
+  end
+
+  values_are_bytes = flags.include?(:BYTES)
+
+  if values_are_bytes
+    values
+  else
+    [].tap { |result|
+      values.each do |value|
+        if value.is_a? Syntax::Byte
+          result << value.element
+        else
+          result << value
+          result << 0
+        end
+      end
+      if flags.include? :LENGTH
+        result.insert(0, values.size)
+        result.insert(1, 0)
+      end
+    }
+  end
+}
+
 ZIL_BUILTINS[:ITABLE] = lambda { |arguments, context|
   size = eval_zil arguments[0], context
   flags = eval_zil arguments[1], context

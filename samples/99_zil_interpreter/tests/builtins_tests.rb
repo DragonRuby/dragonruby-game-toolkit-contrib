@@ -611,3 +611,22 @@ def test_builtin_itable(args, assert)
     8, 8, 8
   ]
 end
+
+def test_builtin_table(args, assert)
+  zil_context = build_zil_context(args)
+
+  # <TABLE <> <> <> <>>
+  result = call_routine zil_context, :TABLE, [form, form, form, form]
+
+  assert.equal! result, [false, 0, false, 0, false, 0, false, 0]
+
+  # <TABLE 8 #BYTE 2 #BYTE 5>
+  result = call_routine zil_context, :TABLE, [8, byte(2), byte(5)]
+
+  assert.equal! result, [8, 0, 2, 5]
+
+  # <TABLE (LENGTH) 1 2 3>
+  result = call_routine zil_context, :TABLE, [list(:LENGTH), 1, 2, 3]
+
+  assert.equal! result, [3, 0, 1, 0, 2, 0, 3, 0]
+end
