@@ -322,3 +322,9 @@ ZIL_BUILTINS[:ITABLE] = lambda { |arguments, context|
   unevaled_default_values = arguments[2..-1]
   ZIL_BUILTINS[:TABLE].call [flags] + unevaled_default_values * size, context
 }
+
+ZIL_BUILTINS[:GET] = define_for_evaled_arguments { |arguments|
+  table = arguments[0]
+  index = arguments[1]
+  table[index * 2] # Double the index since table stores bytes
+}
