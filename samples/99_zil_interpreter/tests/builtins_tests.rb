@@ -651,3 +651,24 @@ def test_builtin_put(args, assert)
   assert.equal! result, [1, 0, 99, 0, 3, 0]
   assert.equal! zil_context.locals[:THETABLE], [1, 0, 99, 0, 3, 0]
 end
+
+def test_builtin_getb(args, assert)
+  zil_context = build_zil_context(args)
+
+  zil_context.locals[:THETABLE] = [1, 2, 3]
+  # <GETB ,THETABLE 2>
+  result = call_routine zil_context, :GETB, [form(:LVAL, :THETABLE), 2]
+
+  assert.equal! result, 3
+end
+
+def test_builtin_putb(args, assert)
+  zil_context = build_zil_context(args)
+
+  zil_context.locals[:THETABLE] = [1, 2, 3]
+  # <PUTB ,THETABLE 1 99>
+  result = call_routine zil_context, :PUTB, [form(:LVAL, :THETABLE), 1, 99]
+
+  assert.equal! result, [1, 99, 3]
+  assert.equal! zil_context.locals[:THETABLE], [1, 99, 3]
+end
