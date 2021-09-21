@@ -326,27 +326,27 @@ ZIL_BUILTINS[:ITABLE] = lambda { |arguments, context|
 ZIL_BUILTINS[:GET] = define_for_evaled_arguments { |arguments|
   table = arguments[0]
   index = arguments[1]
-  table[index * 2] # Double the index since table stores bytes
+  table[(index - 1) * 2] # Double the index since table stores bytes
 }
 
 ZIL_BUILTINS[:PUT] = define_for_evaled_arguments { |arguments|
   table = arguments[0]
   index = arguments[1]
   value = arguments[2]
-  table[index * 2] = value # Double the index since table stores bytes
+  table[(index - 1) * 2] = value # Double the index since table stores bytes
   table
 }
 
 ZIL_BUILTINS[:GETB] = define_for_evaled_arguments { |arguments|
   table = arguments[0]
   index = arguments[1]
-  table[index]
+  table[index - 1]
 }
 
 ZIL_BUILTINS[:PUTB] = define_for_evaled_arguments { |arguments|
   table = arguments[0]
   index = arguments[1]
   value = arguments[2]
-  table[index] = value
+  table[index - 1] = value
   table
 }
