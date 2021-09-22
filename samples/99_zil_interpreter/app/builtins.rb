@@ -350,3 +350,41 @@ ZIL_BUILTINS[:PUTB] = define_for_evaled_arguments { |arguments|
   table[index - 1] = value
   table
 }
+
+ZIL_BUILTINS[:REST] = define_for_evaled_arguments { |arguments|
+  array_like_value = arguments[0]
+  offset = arguments[1]
+  ArrayWithOffset.from(array_like_value, offset: offset)
+}
+
+class ArrayWithOffset
+  attr_reader :original_array, :offset
+
+  def initialize(original_array, offset:)
+    @original_array = original_array
+    @offset = offset
+  end
+
+  def [](index)
+    @original_array[@offset + index]
+  end
+
+  def []=(index, value)
+    @original_array[@offset + index] = value
+  end
+
+  def to_a
+    @original_array[@offset..-1]
+  end
+
+  def self.from(value, offset:)
+    case value
+    when Array
+      new(value, offset: offset)
+    when ArrayWithOffset
+      new(value.original_array, offset: offset + value.offset)
+    else
+      raise "REST not supported for #{value}"
+    end
+  end
+end
