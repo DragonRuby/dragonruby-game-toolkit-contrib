@@ -709,3 +709,27 @@ def test_builtin_rest(args, assert)
 
   assert.equal! result, 4
 end
+
+def test_builtin_back(args, assert)
+  zil_context = build_zil_context(args)
+
+  zil_context.locals[:THETABLE] = [1, 2, 3, 4, 5]
+
+  # <PUTB <BACK <REST ,THETABLE 2> 1> 1 99>
+  result = call_routine zil_context, :PUTB, [
+    form(:BACK, form(:REST, form(:LVAL, :THETABLE), 2), 1),
+    1,
+    99
+  ]
+
+  assert.equal! result.to_a, [99, 3, 4, 5]
+  assert.equal! zil_context.locals[:THETABLE], [1, 99, 3, 4, 5]
+
+  # <GETB <BACK <REST ,THETABLE 2> 2> 2>
+  result = call_routine zil_context, :GETB, [
+    form(:BACK, form(:REST, form(:LVAL, :THETABLE), 2), 2),
+    1
+  ]
+
+  assert.equal! result, 1
+end

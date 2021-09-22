@@ -357,6 +357,12 @@ ZIL_BUILTINS[:REST] = define_for_evaled_arguments { |arguments|
   ArrayWithOffset.from(array_like_value, offset: offset)
 }
 
+ZIL_BUILTINS[:BACK] = define_for_evaled_arguments { |arguments|
+  array_like_value = arguments[0]
+  offset = arguments[1]
+  ArrayWithOffset.from(array_like_value, offset: -offset)
+}
+
 class ArrayWithOffset
   attr_reader :original_array, :offset
 
