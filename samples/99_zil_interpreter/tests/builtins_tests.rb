@@ -750,3 +750,30 @@ def test_builtin_empty(args, assert)
 
   assert.false! result
 end
+
+def test_builtin_length(args, assert)
+  zil_context = build_zil_context(args)
+
+  zil_context.locals[:SOMETABLE] = [3, 7, 12]
+
+  # <LENGTH ,SOMETABLE>
+  result = call_routine zil_context, :LENGTH, [form(:LVAL, :SOMETABLE)]
+
+  assert.equal! result, 3
+end
+
+def test_builtin_length_less_than_or_equal(args, assert)
+  zil_context = build_zil_context(args)
+
+  zil_context.locals[:SOMETABLE] = [3, 7, 12]
+
+  # <LENGTH? ,SOMETABLE 3>
+  result = call_routine zil_context, :LENGTH?, [form(:LVAL, :SOMETABLE), 3]
+
+  assert.true! result
+
+  # <LENGTH? ,SOMETABLE 2>
+  result = call_routine zil_context, :LENGTH?, [form(:LVAL, :SOMETABLE), 2]
+
+  assert.false! result
+end

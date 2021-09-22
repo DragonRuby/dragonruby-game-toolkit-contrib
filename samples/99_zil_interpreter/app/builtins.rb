@@ -363,9 +363,20 @@ ZIL_BUILTINS[:BACK] = define_for_evaled_arguments { |arguments|
   ArrayWithOffset.from(array_like_value, offset: -offset)
 }
 
-ZIL_BUILTINS[:EMPTY?] = define_for_evaled_arguments { |arguments|
+ZIL_BUILTINS[:EMPTY?] = lambda { |arguments, context|
   array_like_value = arguments[0]
-  array_like_value.empty?
+  ZIL_BUILTINS[:LENGTH].call([array_like_value], context).zero?
+}
+
+ZIL_BUILTINS[:LENGTH] = define_for_evaled_arguments { |arguments|
+  array_like_value = arguments[0]
+  array_like_value.size
+}
+
+ZIL_BUILTINS[:LENGTH?] = lambda { |arguments, context|
+  array_like_value = arguments[0]
+  length_max = arguments[1]
+  ZIL_BUILTINS[:LENGTH].call([array_like_value], context) <= length_max
 }
 
 class ArrayWithOffset
