@@ -357,10 +357,10 @@ ZIL_BUILTINS[:REST] = define_for_evaled_arguments { |arguments|
   ArrayWithOffset.from(array_like_value, offset: offset)
 }
 
-ZIL_BUILTINS[:BACK] = define_for_evaled_arguments { |arguments|
+ZIL_BUILTINS[:BACK] = lambda { |arguments, context|
   array_like_value = arguments[0]
   offset = arguments[1]
-  ArrayWithOffset.from(array_like_value, offset: -offset)
+  ZIL_BUILTINS[:REST].call [array_like_value, -offset], context
 }
 
 ZIL_BUILTINS[:EMPTY?] = lambda { |arguments, context|
