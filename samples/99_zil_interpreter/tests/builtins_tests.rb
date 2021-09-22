@@ -733,3 +733,20 @@ def test_builtin_back(args, assert)
 
   assert.equal! result, 1
 end
+
+def test_builtin_empty(args, assert)
+  zil_context = build_zil_context(args)
+
+  zil_context.locals[:EMPTYTABLE] = []
+  zil_context.locals[:NONEMPTYTABLE] = [1]
+
+  # <EMPTY? ,EMPTYTABLE>
+  result = call_routine zil_context, :EMPTY?, [form(:LVAL, :EMPTYTABLE)]
+
+  assert.true! result
+
+  # <EMPTY? ,NONEMPTYTABLE>
+  result = call_routine zil_context, :EMPTY?, [form(:LVAL, :NONEMPTYTABLE)]
+
+  assert.false! result
+end
