@@ -283,44 +283,16 @@ ZIL_BUILTINS[:OBJECT] = define_for_evaled_arguments { |arguments, context|
 }
 
 ZIL_BUILTINS[:TABLE] = define_for_evaled_arguments { |arguments|
-  if arguments[0].is_a? Array
-    flags = arguments[0]
-    values = arguments[1..-1]
-  else
-    flags = []
-    values = arguments.dup
-  end
+  flags, values = ZIL::Table.get_flags_and_values arguments
 
-  if flags.include?(:BYTE)
-    values.tap { |result|
-      result.insert(0, result.size) if flags.include? :LENGTH
-    }
-  else
-    [].tap { |result|
-      values.each do |value|
-        if value.is_a? Syntax::Byte
-          result << value.element
-        else
-          result << value
-          result << 0
-        end
-      end
-      if flags.include?(:LENGTH)
-        result.insert(0, result.size.idiv(2))
-        result.insert(1, 0)
-      elsif flags.include?(:LEXV)
-        result.insert(0, result.size.idiv(4))
-        result.insert(1, 0)
-      end
-    }
-  end
+  ZIL::Table.build flags: flags, values: values
 }
 
-ZIL_BUILTINS[:ITABLE] = lambda { |arguments, context|
-  size = eval_zil arguments[0], context
-  flags = arguments[1]
-  unevaled_default_values = arguments[2..-1]
-  ZIL_BUILTINS[:TABLE].call [flags] + unevaled_default_values * size, context
+ZIL_BUILTINS[:ITABLE] = define_for_evaled_arguments { |arguments|
+  size = arguments[0]
+  flags, default_values = ZIL::Table.get_flags_and_values arguments[1..-1]
+
+  ZIL::Table.build flags: flags, values: default_values * size
 }
 
 ZIL_BUILTINS[:GET] = define_for_evaled_arguments { |arguments|
