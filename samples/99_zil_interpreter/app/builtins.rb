@@ -7,13 +7,28 @@ def define_for_evaled_arguments(&implementation)
   }
 end
 
+# helper method to check for argument count
+def argc!(arguments, count, name, cmp_type = :==)
+  raise FunctionError, "#{name.inspect} has an arity (#{cmp_type}#{count}), got #{arguments.length}" unless arguments.length.send(cmp_type, count)
+end
+
 ZIL_BUILTINS = {}
 
 ZIL_BUILTINS[:LVAL] = define_for_evaled_arguments { |arguments, context|
+  argc!(arguments, 1, :LVAL)
+  
   var_atom = arguments[0]
   raise FunctionError, "No local value for #{var_atom.inspect}" unless context.locals.key? var_atom
 
   context.locals[var_atom]
+}
+
+ZIL_BUILTINS[:VALUE] = define_for_evaled_arguments { |arguments, context|
+  argc!(arguments, 1, :VALUE)
+  
+  var_atom = arguments[0]
+
+  context.locals[var_atom] || context.globals[var_atom]
 }
 
 # <+ ...>
