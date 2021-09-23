@@ -295,6 +295,13 @@ ZIL_BUILTINS[:ITABLE] = define_for_evaled_arguments { |arguments|
   ZIL::Table.build flags: flags, values: default_values * size
 }
 
+ZIL_BUILTINS[:LTABLE] = define_for_evaled_arguments { |arguments|
+  flags, values = ZIL::Table.get_flags_and_values arguments
+  flags << :LENGTH unless flags.include? :LENGTH
+
+  ZIL::Table.build flags: flags, values: values
+}
+
 ZIL_BUILTINS[:GET] = define_for_evaled_arguments { |arguments|
   table = arguments[0]
   index = arguments[1]

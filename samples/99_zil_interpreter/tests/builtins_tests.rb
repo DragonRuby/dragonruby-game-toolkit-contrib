@@ -631,6 +631,15 @@ def test_builtin_table(args, assert)
   assert.equal! result, [3, 0, 1, 0, 2, 0, 3, 0]
 end
 
+def test_builtin_ltable(args, assert)
+  zil_context = build_zil_context(args)
+
+  # <LTABLE 2 3 "abc">
+  result = call_routine zil_context, :LTABLE, [2, 3, 'abc']
+
+  assert.equal! result, [3, 0, 2, 0, 3, 0, 'abc', 0] # Adds length in front
+end
+
 def test_builtin_get(args, assert)
   zil_context = build_zil_context(args)
 
