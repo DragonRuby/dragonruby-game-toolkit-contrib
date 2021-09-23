@@ -682,6 +682,16 @@ def test_builtin_putb(args, assert)
   assert.equal! zil_context.locals[:THETABLE], [1, 99, 3]
 end
 
+def test_builtin_nth(args, assert)
+  zil_context = build_zil_context(args)
+
+  zil_context.locals[:THETABLE] = [1, 2, 3]
+  # <NTH ,THETABLE 2>
+  result = call_routine zil_context, :NTH, [form(:LVAL, :THETABLE), 2]
+
+  assert.equal! result, 2
+end
+
 def test_builtin_rest(args, assert)
   zil_context = build_zil_context(args)
 

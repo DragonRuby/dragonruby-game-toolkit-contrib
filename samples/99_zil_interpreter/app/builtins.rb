@@ -330,6 +330,12 @@ ZIL_BUILTINS[:PUTB] = define_for_evaled_arguments { |arguments|
   table
 }
 
+ZIL_BUILTINS[:NTH] = define_for_evaled_arguments { |arguments|
+  table = arguments[0]
+  one_based_index = arguments[1]
+  table[one_based_index - 1]
+}
+
 ZIL_BUILTINS[:REST] = define_for_evaled_arguments { |arguments|
   array_like_value = arguments[0]
   offset = arguments[1]
