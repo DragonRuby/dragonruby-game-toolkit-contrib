@@ -11,7 +11,7 @@ def tick(args)
   # - Render history
   # - Collect input
   # - Call send_input with input when pressing Enter
-  $gtk.request_quit unless $interpreter.alive?
+  $gtk.request_quit unless $interpreter.alive? || $debug_interpreter
 end
 
 def setup(args)
@@ -29,6 +29,7 @@ end
 
 # Call this method with the input after pressing enter
 def send_input(args, input)
+  setup(args) unless $interpreter.alive?
   $interpreter.resume input
 
   context = args.state.zil_context

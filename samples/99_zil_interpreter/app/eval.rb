@@ -15,8 +15,13 @@ def eval_zil(expression, zil_context)
     func_args = expression.elements.drop(1)
     function = zil_context.globals[func_atom]
     raise EvalError, "Function #{func_atom} does not exist" unless function
+    raise EvalError, "#{func_atom} is not a `ROUTINE`" unless function.respond_to? :call
 
-    function.call(func_args, zil_context)
+    begin
+      function.call(func_args, zil_context)
+    rescue FunctionError => e
+      raise FunctionError, "#{func_atom.inspect} #{e.message}"
+    end
   when Syntax::List
     expression.elements.map { |element| eval_zil(element, zil_context) }
   when Syntax::Quote

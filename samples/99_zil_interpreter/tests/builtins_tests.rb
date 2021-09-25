@@ -173,16 +173,18 @@ def test_builtin_set(args, assert)
   zil_context = build_zil_context(args)
   zil_context.locals[:"LOCAL"] = 0
 
-  zil_context.globals[:SET].call [:LOCAL, 5], zil_context
+  result = call_routine zil_context, :SET, [:LOCAL, 5]
 
   assert.equal! zil_context.locals[:LOCAL], 5
+  assert.equal! result, 5
 end
 
 def test_builtin_setg(args, assert)
   zil_context = build_zil_context(args)
-  zil_context.globals[:SETG].call [:GLOBAL, 12], zil_context
+  result = call_routine zil_context, :SETG, [:GLOBAL, 12]
 
   assert.equal! zil_context.globals[:GLOBAL], 12
+  assert.equal! result, 12
 end
 
 def test_builtin_band(args, assert)
