@@ -1,3 +1,4 @@
+# coding: utf-8
 class FunctionError < StandardError; end
 
 def define_for_evaled_arguments(&implementation)
@@ -7,13 +8,46 @@ def define_for_evaled_arguments(&implementation)
   }
 end
 
+# helper method to check for argument count
+# to be used with rethrowing the error with the `ROUTINE` name in front
+def argc!(arguments, count, cmp_type = :==)
+  case cmp_type
+  when :===
+    raise ArgumentError, "`count` (#{count}) not a `Range` object" unless count.is_a?(Range)
+    raise FunctionError, "has an arity (#{count.begin} ≤ n ≤ #{count.end}), got #{arguments.length}" unless count === arguments.length
+  else
+    raise FunctionError, "has an arity (n #{cmp_type} #{count}), got #{arguments.length}" unless arguments.length.send(cmp_type, count)
+  end
+end
+
+def expect_argument_count!(arguments, expected_count)
+  argc!(arguments, expected_count)
+end
+
+def expect_argument_count_in_range!(arguments, range)
+  argc!(arguments, range, :===)
+end
+
+def expect_minimum_argument_count!(arguments, min_count)
+  argc!(arguments, min_count, :>=)
+end
+
 ZIL_BUILTINS = {}
 
 ZIL_BUILTINS[:LVAL] = define_for_evaled_arguments { |arguments, context|
+  expect_argument_count!(arguments, 1)
   var_atom = arguments[0]
   raise FunctionError, "No local value for #{var_atom.inspect}" unless context.locals.key? var_atom
 
   context.locals[var_atom]
+}
+
+ZIL_BUILTINS[:VALUE] = define_for_evaled_arguments { |arguments, context|
+  expect_argument_count!(arguments, 1)
+  var_atom = arguments[0]
+
+  context.locals[var_atom] || context.globals[var_atom] ||
+    (raise FunctionError, "No local nor global value for #{var_atom.inspect}")
 }
 
 # <+ ...>
@@ -86,6 +120,43 @@ ZIL_BUILTINS[:RANDOM] = define_for_evaled_arguments { |arguments|
   rand(range) + 1
 }
 
+ZIL_BUILTINS[:SET] = define_for_evaled_arguments { |arguments, context|
+  expect_argument_count!(arguments, 2)
+  var_atom = arguments[0]
+  context.locals[var_atom] = arguments[1]
+}
+
+ZIL_BUILTINS[:SETG] = define_for_evaled_arguments { |arguments, context|
+  expect_argument_count!(arguments, 2)
+  var_atom = arguments[0]
+  context.globals[var_atom] = arguments[1]
+}
+
+ZIL_BUILTINS[:BAND] = define_for_evaled_arguments { |arguments|
+  expect_argument_count!(arguments, 2)
+  arguments[0] & arguments[1]
+}
+
+ZIL_BUILTINS[:BOR] = define_for_evaled_arguments { |arguments|
+  expect_argument_count!(arguments, 2)
+  arguments[0] | arguments[1]
+}
+
+ZIL_BUILTINS[:BTST] = define_for_evaled_arguments { |arguments|
+  expect_argument_count!(arguments, 2)
+  (arguments[0] ^ arguments[1]).zero?
+}
+
+ZIL_BUILTINS[:BCOM] = define_for_evaled_arguments { |arguments|
+  expect_argument_count!(arguments, 1)
+  ~(arguments[0])
+}
+
+ZIL_BUILTINS[:SHIFT] = define_for_evaled_arguments { |arguments|
+  expect_argument_count!(arguments, 2)
+  arguments[0] << arguments[1]
+}
+
 # <MOD ...>
 ZIL_BUILTINS[:MOD] = define_for_evaled_arguments { |arguments|
   raise FunctionError, "MOD only supported with 2 argument!" if arguments.length != 2
@@ -133,6 +204,7 @@ ZIL_BUILTINS[:AND] = lambda { |arguments, context|
   result
 }
 
+#! shouldn't those just be doable with `Enumerable#all?`
 # <AND? ...> (SUBR)
 ZIL_BUILTINS[:AND?] = define_for_evaled_arguments { |arguments|
   result = false
@@ -143,6 +215,7 @@ ZIL_BUILTINS[:AND?] = define_for_evaled_arguments { |arguments|
   result
 }
 
+# or with `Enumerable#any?` in this case
 # <OR ...>  (FSUBR)
 ZIL_BUILTINS[:OR] = lambda { |arguments, context|
   arguments.each { |a|

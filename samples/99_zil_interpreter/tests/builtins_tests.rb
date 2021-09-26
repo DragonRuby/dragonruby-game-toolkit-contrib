@@ -169,6 +169,66 @@ def test_builtin_random(args, assert)
   end
 end
 
+def test_builtin_set(args, assert)
+  zil_context = build_zil_context(args)
+  zil_context.locals[:"LOCAL"] = 0
+
+  result = call_routine zil_context, :SET, [:LOCAL, 5]
+
+  assert.equal! zil_context.locals[:LOCAL], 5
+  assert.equal! result, 5
+end
+
+def test_builtin_setg(args, assert)
+  zil_context = build_zil_context(args)
+  result = call_routine zil_context, :SETG, [:GLOBAL, 12]
+
+  assert.equal! zil_context.globals[:GLOBAL], 12
+  assert.equal! result, 12
+end
+
+def test_builtin_band(args, assert)
+  zil_context = build_zil_context(args)
+  result = zil_context.globals[:BAND].call [61, 31], nil
+  assert.equal!(result, 61 & 31)
+end
+
+def test_builtin_bor(args, assert)
+  zil_context = build_zil_context(args)
+  result = zil_context.globals[:BOR].call [1, 128], nil
+
+  assert.equal!(result, 1 | 128)
+end
+
+def test_builtin_btst(args, assert)
+  zil_context = build_zil_context(args)
+  result = zil_context.globals[:BTST].call [128, 128], nil
+
+  assert.true! result
+  
+  result = zil_context.globals[:BTST].call [127, 128], nil
+
+  assert.false! result
+end
+
+def test_builtin_bcom(args, assert)
+  zil_context = build_zil_context(args)
+  result = zil_context.globals[:BCOM].call [128], nil
+
+  assert.equal! result, ~128
+end
+
+def test_builtin_shift(args, assert)
+  zil_context = build_zil_context(args)
+  result = zil_context.globals[:SHIFT].call [1, 10], nil
+
+  assert.equal! result, 1024
+
+  result = zil_context.globals[:SHIFT].call [256, -3], nil
+
+  assert.equal! result, 32
+end
+
 def test_builtin_mod(args, assert)
   zil_context = build_zil_context(args)
 

@@ -51,7 +51,7 @@ def test_repl_function_error(args, assert)
   repl_fiber.resume '<LVAL NONEXISTING>'
 
   assert.equal! zil_context.outputs, [
-    'FunctionError: No local value for :NONEXISTING'
+    'FunctionError: <:LVAL> No local value for :NONEXISTING'
   ]
   assert.true! repl_fiber.alive?
 end

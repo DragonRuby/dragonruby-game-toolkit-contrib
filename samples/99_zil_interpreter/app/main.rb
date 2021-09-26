@@ -15,7 +15,7 @@ def tick(args)
 end
 
 def setup(args)
-  context =  build_zil_context(args)
+  context = build_zil_context(args)
   args.state.zil_context = context
   $interpreter = Fiber.new {
     context.globals[:GO].call [], context
