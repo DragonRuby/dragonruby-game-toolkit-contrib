@@ -10,7 +10,6 @@ end
 
 # helper method to check for argument count
 # to be used with rethrowing the error with the `ROUTINE` name in front
-# I could do it with metaprogramming, but I doubt anyone would want to see that XD
 def argc!(arguments, count, cmp_type = :==)
   case cmp_type
   when :===
@@ -25,9 +24,6 @@ def expect_argument_count!(arguments, expected_count)
   argc!(arguments, expected_count)
 end
 
-# this is painful... either I make it work, and make `argc!` unintuitive or rewrite `argc!` to do a check ;-;
-# guess I'll rewrite it
-# rewritten, it looks not-too-bad
 def expect_argument_count_in_range!(arguments, range)
   argc!(arguments, range, :===)
 end
