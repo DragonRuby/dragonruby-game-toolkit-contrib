@@ -189,16 +189,15 @@ end
 
 def test_builtin_band(args, assert)
   zil_context = build_zil_context(args)
-  result = zil_context.globals[:BAND].call [61, 31, 13], nil 
-
-  assert.equal!(result, 61 & 31 & 13)
+  result = zil_context.globals[:BAND].call [61, 31], nil
+  assert.equal!(result, 61 & 31)
 end
 
 def test_builtin_bor(args, assert)
   zil_context = build_zil_context(args)
-  result = zil_context.globals[:BOR].call [1, 2, 4, 16, 128], nil
+  result = zil_context.globals[:BOR].call [1, 128], nil
 
-  assert.equal!(result, 1 | 2 | 4 | 16 | 128)
+  assert.equal!(result, 1 | 128)
 end
 
 def test_builtin_btst(args, assert)

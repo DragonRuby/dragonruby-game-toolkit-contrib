@@ -20,7 +20,7 @@ def eval_zil(expression, zil_context)
     begin
       function.call(func_args, zil_context)
     rescue FunctionError => e
-      raise FunctionError, "#{func_atom.inspect} #{e.message}"
+      raise FunctionError, "<#{func_atom.inspect}> #{e.message}"
     end
   when Syntax::List
     expression.elements.map { |element| eval_zil(element, zil_context) }

@@ -15,9 +15,9 @@ def argc!(arguments, count, cmp_type = :==)
   case cmp_type
   when :===
     raise ArgumentError, "`count` (#{count}) not a `Range` object" unless count.is_a?(Range)
-    raise FunctionError, "has an arity (#{count.begin}≤n≤#{count.end}), got #{arguments.length}" unless count === arguments.length
+    raise FunctionError, "has an arity (#{count.begin} ≤ n ≤ #{count.end}), got #{arguments.length}" unless count === arguments.length
   else
-    raise FunctionError, "has an arity (n#{cmp_type}#{count}), got #{arguments.length}" unless arguments.length.send(cmp_type, count)
+    raise FunctionError, "has an arity (n #{cmp_type} #{count}), got #{arguments.length}" unless arguments.length.send(cmp_type, count)
   end
 end
 
@@ -33,7 +33,7 @@ def expect_argument_count_in_range!(arguments, range)
 end
 
 def expect_minimum_argument_count!(arguments, min_count)
-  argc!(arguments, min_count, :>)
+  argc!(arguments, min_count, :>=)
 end
 
 ZIL_BUILTINS = {}
@@ -50,7 +50,8 @@ ZIL_BUILTINS[:VALUE] = define_for_evaled_arguments { |arguments, context|
   expect_argument_count!(arguments, 1)
   var_atom = arguments[0]
 
-  context.locals[var_atom] || context.globals[var_atom]
+  context.locals[var_atom] || context.globals[var_atom] ||
+    (raise FunctionError, "No local nor global value for #{var_atom.inspect}")
 }
 
 # <+ ...>
@@ -135,19 +136,17 @@ ZIL_BUILTINS[:SETG] = define_for_evaled_arguments { |arguments, context|
   context.globals[var_atom] = arguments[1]
 }
 
-ZIL_BUILTINS[:BAND] = define_for_evaled_arguments { |arguments, _|
-  arguments.inject(&:&)
-  # while the book I'm reading tells me that these should take only two arguments
-  # I'll currently do it with `inject`, it's not a good idea but you were offline
-  # same with other `B...` methods
+ZIL_BUILTINS[:BAND] = define_for_evaled_arguments { |arguments|
+  expect_argument_count!(arguments, 2)
+  arguments[0] & arguments[1]
 }
 
 ZIL_BUILTINS[:BOR] = define_for_evaled_arguments { |arguments|
-  arguments.inject(&:|)
+  expect_argument_count!(arguments, 2)
+  arguments[0] | arguments[1]
 }
 
 ZIL_BUILTINS[:BTST] = define_for_evaled_arguments { |arguments|
-  # this will take only two, just because of what it does
   expect_argument_count!(arguments, 2)
   (arguments[0] ^ arguments[1]).zero?
 }
