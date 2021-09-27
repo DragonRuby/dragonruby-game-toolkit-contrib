@@ -56,9 +56,8 @@ def handle_input(args)
 
     if args.inputs.mouse.wheel.y > 0
       args.state.current_line = [args.state.current_line, (args.state.text_history.length - 33)].min
-    else
-      args.state.current_line = [args.state.current_line, 0].max
     end
+    args.state.current_line = [args.state.current_line, 0].max
 
   # Jump to the present
   elsif args.inputs.keyboard.key_down.escape
