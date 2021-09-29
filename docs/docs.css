@@ -179,4 +179,14 @@ blockquote {
     @media print { .hide, .show { display: none; } }
 }
 
+.dropdown-btn {
+    margin-left: 5px;
+    background: none;
+    border: none;
+    color: #0077CC;
+}
+
+.dropdown-container {
+    display: none;
+}
 

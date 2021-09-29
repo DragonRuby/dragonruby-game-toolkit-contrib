@@ -97,3 +97,13 @@ function add_search() {
 document.addEventListener('DOMContentLoaded', function() {
   add_search();
 }, false);
+
+// Toggle submenu drop downs
+let dropDownList = document.getElementsByClassName('dropdown-btn')
+for(let i = 0; i < dropDownList.length; i++){
+  dropDownList[i].addEventListener('click', function() {
+    this.classList.toggle("active");
+    let dropDownContent = this.nextElementSibling;
+    dropDownContent.style.display === "block" ? dropDownContent.style.display = "none" : dropDownContent.style.display = "block"
+    })
+  }
