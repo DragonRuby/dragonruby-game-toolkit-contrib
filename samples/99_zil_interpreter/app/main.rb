@@ -14,8 +14,9 @@ def tick(args)
   handle_input(args)
   
   # Call send_input when pressing Enter
-  send_input(args, args.state.input)
-
+  if args.inputs.keyboard.key_down.enter
+    send_input(args, args.state.input)
+  end
   
   $gtk.request_quit unless $interpreter.alive?
 end
@@ -64,17 +65,17 @@ end
 
 # Called with the input after pressing enter
 def send_input(args, input)
-  if args.inputs.keyboard.key_down.enter && args.state.input != ''
-    $interpreter.resume input
-    
-    args.state.text_history << " "
-    args.state.text_history << "> #{input}"
-    args.state.input = ''
-    args.state.current_line = 0
+  return if input.empty?
 
-    context = args.state.zil_context
-    process_outputs(args, context.outputs)
-  end
+  $interpreter.resume input
+
+  args.state.text_history << " "
+  args.state.text_history << "> #{input}"
+  args.state.input = ''
+  args.state.current_line = 0
+
+  context = args.state.zil_context
+  process_outputs(args, context.outputs)
 end
 
 def process_outputs(args, outputs)
@@ -87,7 +88,7 @@ def render_state(args)
   
   # Player input
   input_line = "> #{args.state.input}"
-  input_line << "_" if (args.tick_count / 32).round.mod_zero? 2 # Blinky underscore like in all the old computers!
+  input_line << "_" if (args.tick_count / 32).round.mod_zero? 2 # Blinky underscore like all the old computers!
   args.outputs.labels << {
     x: 2, y: 22,
     text: input_line,
