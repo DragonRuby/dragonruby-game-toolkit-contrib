@@ -466,6 +466,123 @@ def test_parser_24(args, assert)
   assert.equal! parsed, expected
 end
 
+# test unmatched <
+# --------------------------------------------------------------------
+def test_parser_unmatched_1(args, assert)
+  source = "<+ 2 3 4"
+
+  begin
+    Parser.parse_string(source)[0]
+    raise 'Parser exception expected!'
+  rescue
+    assert.ok!
+  end
+end
+
+# test unmatched <
+# --------------------------------------------------------------------
+def test_parser_unmatched_2(args, assert)
+  source = "<+ 2 3 4 "
+
+  begin
+    Parser.parse_string(source)[0]
+    raise 'Parser exception expected!'
+  rescue
+    assert.ok!
+  end
+end
+
+# test unmatched <
+# --------------------------------------------------------------------
+def test_parser_unmatched_3(args, assert)
+  source = "<+ <+"
+
+  begin
+    Parser.parse_string(source)[0]
+    raise 'Parser exception expected!'
+  rescue
+    assert.ok!
+  end
+end
+
+# test unmatched <
+# --------------------------------------------------------------------
+def test_parser_unmatched_4(args, assert)
+  source = "<VALUE"
+
+  begin
+    Parser.parse_string(source)[0]
+    raise 'Parser exception expected!'
+  rescue
+    assert.ok!
+  end
+end
+
+# test unmatched <
+# --------------------------------------------------------------------
+def test_parser_unmatched_5(args, assert)
+  source = ">"
+
+  begin
+    Parser.parse_string(source)[0]
+    raise 'Parser exception expected!'
+  rescue
+    assert.ok!
+  end
+end
+
+# test unmatched <
+# --------------------------------------------------------------------
+def test_parser_unmatched_6(args, assert)
+  source = "<<>"
+
+  begin
+    Parser.parse_string(source)[0]
+    raise 'Parser exception expected!'
+  rescue
+    assert.ok!
+  end
+end
+
+# test unmatched <
+# --------------------------------------------------------------------
+def test_parser_unmatched_7(args, assert)
+  source = "<>>"
+
+  begin
+    Parser.parse_string(source)[0]
+    raise 'Parser exception expected!'
+  rescue
+    assert.ok!
+  end
+end
+
+# test unmatched (
+# --------------------------------------------------------------------
+def test_parser_unmatched_8(args, assert)
+  source = "<(>"
+
+  begin
+    Parser.parse_string(source)[0]
+    raise 'Parser exception expected!'
+  rescue
+    assert.ok!
+  end
+end
+
+# test unmatched (
+# --------------------------------------------------------------------
+def test_parser_unmatched_9(args, assert)
+  source = "<())>"
+
+  begin
+    Parser.parse_string(source)[0]
+    raise 'Parser exception expected!'
+  rescue
+    assert.ok!
+  end
+end
+
 # test #BYTE
 # --------------------------------------------------------------------
 def test_byte(args, assert)
