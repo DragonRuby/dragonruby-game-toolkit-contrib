@@ -171,48 +171,13 @@ blockquote {
         top: 10px;
         overflow-y: scroll;
     }
-    .menu_content {
-        width: 720px;
-        max-width: 720px;
-        padding-left: 310px;
-    }
-
-    .collapsible-menu {
-      border: solid 1px #f0f0f0;
-      padding: 10px;
-      padding-bottom: 30px;
-      position: fixed;
-      width: 400px;
-      height: 90%;
-      left: 10px;
-      top: 10px;
-      overflow-y: scroll;
-    }
-
-    .collapsible-menu ul {
-      list-style-type: none;
-      padding: 0;
-    }
-    .collapsible-menu a {
-      display:block;
-      padding: 10px;
-      text-decoration: none;
-    }
-    input#menu {
-        display: none;
-    }
-
-    .menu-content {
-      max-height: 0;
-      overflow: hidden;
-    }
-    /* Toggle Effect */
-    input:checked ~ label {
-        background-image: url(close.png);
-    }
-    input:checked ~ .menu-content {
-        max-height: 100000%;
-    }
+    .row { vertical-align: top; height: auto !important; }
+    .list { display: none; }
+    .show { display: none; }
+    .hide:target + .show { display: inline; }
+    .hide:target { display: none; }
+    .hide:target ~ .list { display:inline; }
+    @media print { .hide, .show { display: none; } }
 }
 
 
