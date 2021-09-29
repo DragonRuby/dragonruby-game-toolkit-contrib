@@ -1,3 +1,5 @@
+/*Contributors outside of DragonRuby who also hold Copyright: Mathew McKinney (@MMathew93)*/
+
 function all_paragraphs() {
   return Array.from(document.querySelectorAll("p"));
 }
