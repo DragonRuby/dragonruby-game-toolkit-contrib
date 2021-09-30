@@ -151,9 +151,6 @@ blockquote {
     margin-top: 10px;
 }
 
-#toc .header-3 {
-}
-
 @media only screen and (min-width: 1280px) {
     #content {
         width: 720px;
@@ -172,13 +169,6 @@ blockquote {
         top: 10px;
         overflow-y: scroll;
     }
-    .row { vertical-align: top; height: auto !important; }
-    .list { display: none; }
-    .show { display: none; }
-    .hide:target + .show { display: inline; }
-    .hide:target { display: none; }
-    .hide:target ~ .list { display:inline; }
-    @media print { .hide, .show { display: none; } }
 }
 
 .dropdown-btn {
