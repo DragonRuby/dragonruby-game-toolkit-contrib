@@ -338,13 +338,13 @@ ZIL_BUILTINS[:NTH] = define_for_evaled_arguments { |arguments|
 
 ZIL_BUILTINS[:REST] = define_for_evaled_arguments { |arguments|
   array_like_value = arguments[0]
-  offset = arguments[1]
+  offset = arguments[1] || 1
   ArrayWithOffset.from(array_like_value, offset: offset)
 }
 
 ZIL_BUILTINS[:BACK] = lambda { |arguments, context|
   array_like_value = arguments[0]
-  offset = arguments[1]
+  offset = arguments[1] || 1
   ZIL_BUILTINS[:REST].call [array_like_value, -offset], context
 }
 

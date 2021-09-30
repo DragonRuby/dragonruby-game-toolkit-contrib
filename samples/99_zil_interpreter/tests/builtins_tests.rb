@@ -710,9 +710,9 @@ def test_builtin_rest(args, assert)
 
   zil_context.locals[:THETABLE] = [1, 2, 3, 4, 5]
 
-  # <PUTB <REST <REST ,THETABLE 2> 1> 1 100>
+  # <PUTB <REST <REST ,THETABLE 2>> 1 100>
   result = call_routine zil_context, :PUTB, [
-    form(:REST, form(:REST, form(:LVAL, :THETABLE), 2), 1),
+    form(:REST, form(:REST, form(:LVAL, :THETABLE), 2)),
     1,
     100
   ]
@@ -720,9 +720,9 @@ def test_builtin_rest(args, assert)
   assert.equal! result.to_a, [4, 100]
   assert.equal! zil_context.locals[:THETABLE], [1, 2, 3, 4, 100]
 
-  # <GETB <REST <REST ,THETABLE 1> 2> 0>
+  # <GETB <REST <REST ,THETABLE> 2> 0>
   result = call_routine zil_context, :GETB, [
-    form(:REST, form(:REST, form(:LVAL, :THETABLE), 1), 2),
+    form(:REST, form(:REST, form(:LVAL, :THETABLE)), 2),
     0
   ]
 
@@ -734,9 +734,9 @@ def test_builtin_back(args, assert)
 
   zil_context.locals[:THETABLE] = [1, 2, 3, 4, 5]
 
-  # <PUTB <BACK <REST ,THETABLE 2> 1> 1 99>
+  # <PUTB <BACK <REST ,THETABLE 2>> 1 99>
   result = call_routine zil_context, :PUTB, [
-    form(:BACK, form(:REST, form(:LVAL, :THETABLE), 2), 1),
+    form(:BACK, form(:REST, form(:LVAL, :THETABLE), 2)),
     1,
     99
   ]
