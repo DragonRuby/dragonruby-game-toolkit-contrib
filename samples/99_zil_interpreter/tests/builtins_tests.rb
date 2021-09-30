@@ -779,6 +779,11 @@ def test_builtin_length(args, assert)
   result = call_routine zil_context, :LENGTH, [form(:LVAL, :SOMETABLE)]
 
   assert.equal! result, 3
+
+  # <LENGTH <REST ,SOMETABLE>>
+  result = call_routine zil_context, :LENGTH, [form(:REST, form(:LVAL, :SOMETABLE))]
+
+  assert.equal! result, 2
 end
 
 def test_builtin_length_less_than_or_equal(args, assert)

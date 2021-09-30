@@ -15,6 +15,10 @@ module ZIL
       @original_array[with_offset(index)] = value
     end
 
+    def size
+      @original_array.size - offset
+    end
+
     def to_a
       @original_array[@offset..-1]
     end
