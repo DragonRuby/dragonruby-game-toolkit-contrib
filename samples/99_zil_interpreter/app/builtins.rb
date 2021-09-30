@@ -364,6 +364,13 @@ ZIL_BUILTINS[:LENGTH?] = lambda { |arguments, context|
   ZIL_BUILTINS[:LENGTH].call([array_like_value], context) <= length_max
 }
 
+ZIL_BUILTINS[:PUTREST] = define_for_evaled_arguments { |arguments|
+  array_like_value = arguments[0]
+  new_rest = arguments[1]
+  array_like_value[1..-1] = new_rest.dup
+  array_like_value
+}
+
 class ArrayWithOffset
   attr_reader :original_array, :offset
 
@@ -373,11 +380,11 @@ class ArrayWithOffset
   end
 
   def [](index)
-    @original_array[@offset + index]
+    @original_array[with_offset(index)]
   end
 
   def []=(index, value)
-    @original_array[@offset + index] = value
+    @original_array[with_offset(index)] = value
   end
 
   def to_a
@@ -392,6 +399,19 @@ class ArrayWithOffset
       new(value.original_array, offset: offset + value.offset)
     else
       raise "REST not supported for #{value}"
+    end
+  end
+
+  private
+
+  def with_offset(index)
+    case index
+    when Integer
+      return index if index.negative? # Don't offset index relative to the end
+
+      index + @offset
+    when Range
+      Range.new(with_offset(index.begin), with_offset(index.end), index.exclude_end?)
     end
   end
 end

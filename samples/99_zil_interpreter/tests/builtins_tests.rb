@@ -796,3 +796,27 @@ def test_builtin_length_less_than_or_equal(args, assert)
 
   assert.false! result
 end
+
+def test_builtin_putrest(args, assert)
+  zil_context = build_zil_context(args)
+
+  zil_context.locals[:THETABLE] = [1, 2, 3, 4, 5]
+
+  # <PUTREST ,THETABLE (1 1 1)>
+  result = call_routine zil_context, :PUTREST, [form(:LVAL, :THETABLE), list(1, 1, 1)]
+
+  assert.equal! result.to_a, [1, 1, 1, 1]
+  assert.equal! zil_context.locals[:THETABLE], [1, 1, 1, 1]
+
+  # <PUTREST <REST ,THETABLE> (99 98)>
+  result = call_routine zil_context, :PUTREST, [form(:REST, form(:LVAL, :THETABLE)), list(99, 98)]
+
+  assert.equal! result.to_a, [1, 99, 98]
+  assert.equal! zil_context.locals[:THETABLE], [1, 1, 99, 98]
+
+  # <PUTREST <REST ,THETABLE 3> (50)>
+  result = call_routine zil_context, :PUTREST, [form(:REST, form(:LVAL, :THETABLE), 3), list(50)]
+
+  assert.equal! result.to_a, [98, 50]
+  assert.equal! zil_context.locals[:THETABLE], [1, 1, 99, 98, 50]
+end
