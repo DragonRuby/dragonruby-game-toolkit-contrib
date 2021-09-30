@@ -727,6 +727,17 @@ def test_builtin_rest(args, assert)
   ]
 
   assert.equal! result, 4
+
+  # <REST ,THETABLE 5>
+  result = call_routine zil_context, :REST, [form(:LVAL, :THETABLE), 5]
+
+  assert.equal! result.to_a, []
+
+  # <REST ,THETABLE 6>
+  call_routine zil_context, :REST, [form(:LVAL, :THETABLE), 6]
+  raise 'No FunctionError was raised when RESTing past last element'
+rescue FunctionError
+  assert.ok!
 end
 
 def test_builtin_back(args, assert)
@@ -751,6 +762,11 @@ def test_builtin_back(args, assert)
   ]
 
   assert.equal! result, 2
+
+  call_routine zil_context, :BACK, [form(:LVAL, :THETABLE)]
+  raise 'No FunctionError was raised when BACKing past first element'
+rescue FunctionError
+  assert.ok!
 end
 
 def test_builtin_empty(args, assert)

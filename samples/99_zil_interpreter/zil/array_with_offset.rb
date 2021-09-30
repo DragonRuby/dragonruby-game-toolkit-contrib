@@ -5,6 +5,8 @@ module ZIL
     def initialize(original_array, offset:)
       @original_array = original_array
       @offset = offset
+      raise FunctionError, 'Cannot REST past last element' if @offset > @original_array.size
+      raise FunctionError, 'Cannot BACK past first element' if @offset.negative?
     end
 
     def [](index)
@@ -30,7 +32,7 @@ module ZIL
       when ArrayWithOffset
         new(value.original_array, offset: offset + value.offset)
       else
-        raise "REST not supported for #{value}"
+        raise FunctionError, "REST not supported for #{value}"
       end
     end
 
