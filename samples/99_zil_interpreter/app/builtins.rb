@@ -282,6 +282,11 @@ ZIL_BUILTINS[:OBJECT] = define_for_evaled_arguments { |arguments, context|
   context.globals[object_name] = object
 }
 
+# Tables are represented internally as arrays which contain "bytes" which can be set/get with PUTB/GETB
+# Every other data type is saved as a "word" so basically 2 bytes -
+# but for convenience's sake those words are just stored as two byte elements: [value, 0]
+# Since in Zork single bytes of words are never accessed - nor vice-versa - this kind of representation
+# should be fine.
 ZIL_BUILTINS[:TABLE] = define_for_evaled_arguments { |arguments|
   flags, values = ZIL::Table.get_flags_and_values arguments
 
@@ -336,6 +341,9 @@ ZIL_BUILTINS[:NTH] = define_for_evaled_arguments { |arguments|
   table[one_based_index - 1]
 }
 
+# REST and BACK are using a special ZIL::ArrayWithOffset object which implements
+# the element accessor ([] and []=) which respect the offset but modify the original
+# array
 ZIL_BUILTINS[:REST] = define_for_evaled_arguments { |arguments|
   array_like_value = arguments[0]
   offset = arguments[1] || 1
