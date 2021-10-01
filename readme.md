@@ -69,3 +69,14 @@ Now that we are in the Pull requests tab, you can go ahead and click the nice gr
 You will now be in the pull request compare stage. It goes over all the changes you have made to the base code. This will take you too the comment page. You should always leave a few comments about what you changed and why. It helps people who follow you understand why you made these changes. Now hit that button (It is another green one)!
  
 Congratulations! Once an admin merges your changes, you will be a DragonRubyGTK contributor. Wear that title with pride!
+
+---
+1. make a fork of DRs repo
+2. `git clone` your fork into the `mygame` folder of your install
+3. add a remote that is kfischer's repo
+4. `git branch` into `zil-interpreter` (can be any name really) 
+5. `git fetch` kfischer's repo
+6. run this thing with `dragonruby mygame/path/to/samples/99_zil_interpreter`
+7. do changes, see if they don't break
+8. write tests (or kfischer will find you)
+9. PR
