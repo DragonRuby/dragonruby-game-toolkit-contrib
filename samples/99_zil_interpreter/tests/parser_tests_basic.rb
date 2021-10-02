@@ -470,117 +470,66 @@ end
 # --------------------------------------------------------------------
 def test_parser_unmatched_1(args, assert)
   source = "<+ 2 3 4"
-
-  begin
-    Parser.parse_string(source)[0]
-    raise 'Parser exception expected!'
-  rescue
-    assert.ok!
-  end
+  assert_raises_parser_error! assert, source, 'Parser exception expected!'
 end
 
 # test unmatched <
 # --------------------------------------------------------------------
 def test_parser_unmatched_2(args, assert)
   source = "<+ 2 3 4 "
-
-  begin
-    Parser.parse_string(source)[0]
-    raise 'Parser exception expected!'
-  rescue
-    assert.ok!
-  end
+  assert_raises_parser_error! assert, source, 'Parser exception expected!'
 end
 
 # test unmatched <
 # --------------------------------------------------------------------
 def test_parser_unmatched_3(args, assert)
   source = "<+ <+"
-
-  begin
-    Parser.parse_string(source)[0]
-    raise 'Parser exception expected!'
-  rescue
-    assert.ok!
-  end
+  assert_raises_parser_error! assert, source, 'Parser exception expected!'
 end
 
 # test unmatched <
 # --------------------------------------------------------------------
 def test_parser_unmatched_4(args, assert)
   source = "<VALUE"
-
-  begin
-    Parser.parse_string(source)[0]
-    raise 'Parser exception expected!'
-  rescue
-    assert.ok!
-  end
+  assert_raises_parser_error! assert, source, 'Parser exception expected!'
 end
 
 # test unmatched <
 # --------------------------------------------------------------------
 def test_parser_unmatched_5(args, assert)
   source = ">"
-
-  begin
-    Parser.parse_string(source)[0]
-    raise 'Parser exception expected!'
-  rescue
-    assert.ok!
-  end
+  parsed = Parser.parse_string(source)[0]
+  assert.equal! parsed, nil # the parser skips this character because it is not a starting token
 end
 
 # test unmatched <
 # --------------------------------------------------------------------
 def test_parser_unmatched_6(args, assert)
   source = "<<>"
-
-  begin
-    Parser.parse_string(source)[0]
-    raise 'Parser exception expected!'
-  rescue
-    assert.ok!
-  end
+  assert_raises_parser_error! assert, source, 'Parser exception expected!'
 end
 
 # test unmatched <
 # --------------------------------------------------------------------
 def test_parser_unmatched_7(args, assert)
   source = "<>>"
-
-  begin
-    Parser.parse_string(source)[0]
-    raise 'Parser exception expected!'
-  rescue
-    assert.ok!
-  end
+  parsed = Parser.parse_string(source)
+  assert.equal! parsed[0], form
+  assert.equal! parsed[1], nil
 end
 
 # test unmatched (
 # --------------------------------------------------------------------
 def test_parser_unmatched_8(args, assert)
   source = "<(>"
-
-  begin
-    Parser.parse_string(source)[0]
-    raise 'Parser exception expected!'
-  rescue
-    assert.ok!
-  end
+  assert_raises_parser_error! assert, source, 'Parser exception expected!'
 end
 
 # test unmatched (
 # --------------------------------------------------------------------
 def test_parser_unmatched_9(args, assert)
   source = "<())>"
-
-  begin
-    Parser.parse_string(source)[0]
-    raise 'Parser exception expected!'
-  rescue
-    assert.ok!
-  end
+  assert_raises_parser_error! assert, source, 'Parser exception expected!'
 end
 
 # test #BYTE
