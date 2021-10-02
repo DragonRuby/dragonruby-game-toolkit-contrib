@@ -233,7 +233,7 @@ class Scanner
 
   # ;...
   def read_comment
-    # read comment char, then read the expresson that follows
+    # read comment char, then read the expression that follows
     skip_char(';') # read in ;
     skip_whitespace
     comment = read_expression # read commented out stuff and ignore
@@ -344,6 +344,8 @@ class Scanner
         break
       end
     end
+
+    raise "Invalid syntax at #{@line_num}:#{@line_pos}!" if fix.length == 0
 
     # step 2: convert to number
     if fix.start_with?('*')
