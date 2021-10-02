@@ -648,6 +648,8 @@ def test_builtin_get(args, assert)
   result = call_routine zil_context, :GET, [form(:LVAL, :THETABLE), 2]
 
   assert.equal! result, 3
+
+  assert_function_error_with_argument_counts! zil_context, :GET, [0, 1, 3]
 end
 
 def test_builtin_put(args, assert)
@@ -659,6 +661,8 @@ def test_builtin_put(args, assert)
 
   assert.equal! result, [1, 0, 99, 0, 3, 0]
   assert.equal! zil_context.locals[:THETABLE], [1, 0, 99, 0, 3, 0]
+
+  assert_function_error_with_argument_counts! zil_context, :PUT, [0, 1, 2, 4]
 end
 
 def test_builtin_getb(args, assert)
@@ -669,6 +673,8 @@ def test_builtin_getb(args, assert)
   result = call_routine zil_context, :GETB, [form(:LVAL, :THETABLE), 2]
 
   assert.equal! result, 3
+
+  assert_function_error_with_argument_counts! zil_context, :GETB, [0, 1, 3]
 end
 
 def test_builtin_putb(args, assert)
@@ -680,6 +686,8 @@ def test_builtin_putb(args, assert)
 
   assert.equal! result, [1, 99, 3]
   assert.equal! zil_context.locals[:THETABLE], [1, 99, 3]
+
+  assert_function_error_with_argument_counts! zil_context, :PUTB, [0, 1, 2, 4]
 end
 
 def test_builtin_nth(args, assert)
@@ -690,6 +698,8 @@ def test_builtin_nth(args, assert)
   result = call_routine zil_context, :NTH, [form(:LVAL, :THETABLE), 2]
 
   assert.equal! result, 2
+
+  assert_function_error_with_argument_counts! zil_context, :NTH, [0, 1, 3]
 end
 
 def test_builtin_rest(args, assert)
@@ -738,6 +748,8 @@ def test_builtin_rest(args, assert)
   raise 'No FunctionError was raised when RESTing past last element'
 rescue FunctionError
   assert.ok!
+
+  assert_function_error_with_argument_counts! zil_context, :REST, [0, 3]
 end
 
 def test_builtin_back(args, assert)
@@ -767,6 +779,8 @@ def test_builtin_back(args, assert)
   raise 'No FunctionError was raised when BACKing past first element'
 rescue FunctionError
   assert.ok!
+
+  assert_function_error_with_argument_counts! zil_context, :BACK, [0, 3]
 end
 
 def test_builtin_empty(args, assert)
@@ -784,6 +798,8 @@ def test_builtin_empty(args, assert)
   result = call_routine zil_context, :EMPTY?, [form(:LVAL, :NONEMPTYTABLE)]
 
   assert.false! result
+
+  assert_function_error_with_argument_counts! zil_context, :EMPTY?, [0, 2]
 end
 
 def test_builtin_length(args, assert)
@@ -800,6 +816,8 @@ def test_builtin_length(args, assert)
   result = call_routine zil_context, :LENGTH, [form(:REST, form(:LVAL, :SOMETABLE))]
 
   assert.equal! result, 2
+
+  assert_function_error_with_argument_counts! zil_context, :LENGTH, [0, 2]
 end
 
 def test_builtin_length_less_than_or_equal(args, assert)
@@ -816,6 +834,8 @@ def test_builtin_length_less_than_or_equal(args, assert)
   result = call_routine zil_context, :LENGTH?, [form(:LVAL, :SOMETABLE), 2]
 
   assert.false! result
+
+  assert_function_error_with_argument_counts! zil_context, :LENGTH?, [0, 1, 3]
 end
 
 def test_builtin_putrest(args, assert)
@@ -840,4 +860,6 @@ def test_builtin_putrest(args, assert)
 
   assert.equal! result.to_a, [98, 50]
   assert.equal! zil_context.locals[:THETABLE], [1, 1, 99, 98, 50]
+
+  assert_function_error_with_argument_counts! zil_context, :PUTREST, [0, 1, 3]
 end

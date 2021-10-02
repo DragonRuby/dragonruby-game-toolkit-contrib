@@ -26,3 +26,12 @@ def assert_raises_parser_error!(assert, source, assert_exception_text)
 
   raise assert_exception_text unless exception_occurred
 end
+
+def assert_function_error_with_argument_counts!(context, routine_name, counts)
+  counts.each do |argument_count|
+    call_routine context, routine_name, ['an argument'] * argument_count
+    raise "#{routine_name} did not raise FunctionError with #{argument_count} arguments"
+  rescue FunctionError
+    # Do nothing!
+  end
+end

@@ -308,12 +308,16 @@ ZIL_BUILTINS[:LTABLE] = define_for_evaled_arguments { |arguments|
 }
 
 ZIL_BUILTINS[:GET] = define_for_evaled_arguments { |arguments|
+  expect_argument_count! arguments, 2
+
   table = arguments[0]
   index = arguments[1]
   table[index * 2] # Double the index since table stores bytes
 }
 
 ZIL_BUILTINS[:PUT] = define_for_evaled_arguments { |arguments|
+  expect_argument_count! arguments, 3
+
   table = arguments[0]
   index = arguments[1]
   value = arguments[2]
@@ -322,12 +326,16 @@ ZIL_BUILTINS[:PUT] = define_for_evaled_arguments { |arguments|
 }
 
 ZIL_BUILTINS[:GETB] = define_for_evaled_arguments { |arguments|
+  expect_argument_count! arguments, 2
+
   table = arguments[0]
   index = arguments[1]
   table[index]
 }
 
 ZIL_BUILTINS[:PUTB] = define_for_evaled_arguments { |arguments|
+  expect_argument_count! arguments, 3
+
   table = arguments[0]
   index = arguments[1]
   value = arguments[2]
@@ -336,6 +344,8 @@ ZIL_BUILTINS[:PUTB] = define_for_evaled_arguments { |arguments|
 }
 
 ZIL_BUILTINS[:NTH] = define_for_evaled_arguments { |arguments|
+  expect_argument_count! arguments, 2
+
   table = arguments[0]
   one_based_index = arguments[1]
   table[one_based_index - 1]
@@ -345,34 +355,46 @@ ZIL_BUILTINS[:NTH] = define_for_evaled_arguments { |arguments|
 # the element accessor ([] and []=) which respect the offset but modify the original
 # array
 ZIL_BUILTINS[:REST] = define_for_evaled_arguments { |arguments|
+  expect_argument_count_in_range! arguments, (1..2)
+
   array_like_value = arguments[0]
   offset = arguments[1] || 1
   ZIL::ArrayWithOffset.from(array_like_value, offset: offset)
 }
 
 ZIL_BUILTINS[:BACK] = define_for_evaled_arguments { |arguments|
+  expect_argument_count_in_range! arguments, (1..2)
+
   array_like_value = arguments[0]
   offset = arguments[1] || 1
   ZIL::ArrayWithOffset.from(array_like_value, offset: -offset)
 }
 
 ZIL_BUILTINS[:EMPTY?] = lambda { |arguments, context|
+  expect_argument_count! arguments, 1
+
   array_like_value = arguments[0]
   ZIL_BUILTINS[:LENGTH].call([array_like_value], context).zero?
 }
 
 ZIL_BUILTINS[:LENGTH] = define_for_evaled_arguments { |arguments|
+  expect_argument_count! arguments, 1
+
   array_like_value = arguments[0]
   array_like_value.size
 }
 
 ZIL_BUILTINS[:LENGTH?] = lambda { |arguments, context|
+  expect_argument_count! arguments, 2
+
   array_like_value = arguments[0]
   length_max = arguments[1]
   ZIL_BUILTINS[:LENGTH].call([array_like_value], context) <= length_max
 }
 
 ZIL_BUILTINS[:PUTREST] = define_for_evaled_arguments { |arguments|
+  expect_argument_count! arguments, 2
+
   array_like_value = arguments[0]
   new_rest = arguments[1]
   array_like_value[1..-1] = new_rest.dup
