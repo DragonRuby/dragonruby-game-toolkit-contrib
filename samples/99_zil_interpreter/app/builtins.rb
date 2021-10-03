@@ -272,7 +272,7 @@ ZIL_BUILTINS[:OBJECT] = lambda { |arguments, context|
 
   object_name, *object_properties = arguments
 
-  object = { name: object_name, properties: {} }
+  object = { properties: {} }
 
   object_properties.each do |property|
     raise FunctionError, "Parameters to object must be in list form" unless property.class == Syntax::List
@@ -283,6 +283,6 @@ ZIL_BUILTINS[:OBJECT] = lambda { |arguments, context|
     object[:properties][property_name] = property_values.length == 1 ? property_values[0] : property_values
   end
 
-  object
+  zil_context.globals[object_name] = object
 }
 
