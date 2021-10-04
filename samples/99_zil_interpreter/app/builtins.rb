@@ -53,7 +53,7 @@ ZIL_BUILTINS[:LVAL] = define_for_evaled_arguments { |arguments, context|
 ZIL_BUILTINS[:GVAL] = define_for_evaled_arguments { |arguments, context|
   expect_argument_count!(arguments, 1)
   var_atom = arguments[0]
-  raise FunctionError, "No local value for #{var_atom.inspect}" unless context.globals.key? var_atom
+  raise FunctionError, "No global value for #{var_atom.inspect}" unless context.globals.key? var_atom
 
   context.globals[var_atom]
 }
@@ -438,8 +438,9 @@ ZIL_BUILTINS[:ROUTINE] = lambda { |arguments, context|
   context.globals[name] = routine.method(:call)
 }
 
+# <ASSIGNED? ...> (FSUBR)
 ZIL_BUILTINS[:ASSIGNED?] = lambda { |arguments, context|
-  raise FunctionError, "ASSIGNED? requires at least one parameter!" unless arguments.length > 0
+  expect_argument_count!(arguments, 1)
   var_atom = arguments[0]
 
   result = false
@@ -453,8 +454,9 @@ ZIL_BUILTINS[:ASSIGNED?] = lambda { |arguments, context|
   result
 }
 
+# <GASSIGNED? ...> (FSUBR)
 ZIL_BUILTINS[:GASSIGNED?] = lambda { |arguments, context|
-  raise FunctionError, "GASSIGNED? requires at least one parameter!" unless arguments.length > 0
+  expect_argument_count!(arguments, 1)
   var_atom = arguments[0]
   context.globals.key? var_atom
 }
