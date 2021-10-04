@@ -4,6 +4,7 @@ require 'app/parser.rb'
 require 'app/builtins.rb'
 require 'app/zil_repl.rb'
 require 'app/zil_context.rb'
+require 'app/zil_routine.rb'
 require 'app/eval.rb'
 
 BACK_COLOR = [0, 0, 0]
