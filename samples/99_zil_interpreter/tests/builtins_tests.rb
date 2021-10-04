@@ -14,7 +14,32 @@ def test_builtin_lval(args, assert)
 
   # <LVAL <LVAL VARNAME>>
   result = call_routine zil_context, :LVAL, [form(:LVAL, :VARNAME)]
+  assert.equal! result, 22
 
+  # push locals onto stack
+  zil_context.locals_stack.push zil_context.locals
+  zil_context.locals = {}
+
+  # repeat tests with locals stack
+  result = call_routine zil_context, :LVAL, [:"LOCAL-VAR"]
+  assert.equal! result, 22
+  result = call_routine zil_context, :LVAL, [form(:LVAL, :VARNAME)]
+  assert.equal! result, 22
+
+  # modify locals values
+  zil_context.locals[:"LOCAL-VAR"] = 23
+  result = call_routine zil_context, :LVAL, [:"LOCAL-VAR"]
+  assert.equal! result, 23
+  result = call_routine zil_context, :LVAL, [form(:LVAL, :VARNAME)]
+  assert.equal! result, 23
+
+  # restore stack
+  zil_context.locals = zil_context.locals_stack.pop
+
+  # repeat tests with old locals stack
+  result = call_routine zil_context, :LVAL, [:"LOCAL-VAR"]
+  assert.equal! result, 22
+  result = call_routine zil_context, :LVAL, [form(:LVAL, :VARNAME)]
   assert.equal! result, 22
 end
 
@@ -579,6 +604,59 @@ def test_builtin_cond(args, assert)
   assert.equal! result, 20, 'Else T returns 20 (2)'
 end
 
+def test_builtin_gassigned?(args, assert)
+  zil_context = build_zil_context(args)
+
+  result = call_routine zil_context, :GASSIGNED?, [:VAR1]
+  assert.equal! result, false, 'VAR1 not assigned'
+
+  zil_context.locals[:VAR1] = 0
+
+  result = call_routine zil_context, :GASSIGNED?, [:VAR1]
+  assert.equal! result, false, 'VAR1 still not assigned'
+
+  zil_context.globals[:VAR1] = 0
+
+  result = call_routine zil_context, :GASSIGNED?, [:VAR1]
+  assert.equal! result, true, 'VAR1 assigned'
+end
+
+def test_builtin_assigned?(args, assert)
+  zil_context = build_zil_context(args)
+
+  # :VAR1 not assigned
+  result = call_routine zil_context, :ASSIGNED?, [:VAR1]
+  assert.equal! result, false, 'VAR1 not assigned'
+
+  # :VAR1 has global
+  zil_context.globals[:VAR1] = 0
+
+  # :VAR1 still has no local
+  result = call_routine zil_context, :ASSIGNED?, [:VAR1]
+  assert.equal! result, false, 'VAR1 still not assigned'
+
+  # :VAR1 has a local now
+  zil_context.locals[:VAR1] = 0
+
+  # validate :VAR1 has a local
+  result = call_routine zil_context, :ASSIGNED?, [:VAR1]
+  assert.equal! result, true, 'VAR1 assigned'
+
+  # push :VAR1 up into the locals stack
+  zil_context.locals_stack.push zil_context.locals
+  zil_context.locals = {}
+
+  # validate :VAR1 still has a local
+  result = call_routine zil_context, :ASSIGNED?, [:VAR1]
+  assert.equal! result, true, 'VAR1 assigned (in stack)'
+
+  # push :VAR1 up into the locals stack (do it again)
+  zil_context.locals_stack.push zil_context.locals
+  zil_context.locals = {}
+
+  # validate :VAR1 still has a local (do it again)
+  result = call_routine zil_context, :ASSIGNED?, [:VAR1]
+  assert.equal! result, true, 'VAR1 assigned (in stack again)'
 def test_builtin_object(args, assert)
   zil_context = build_zil_context(args)
 

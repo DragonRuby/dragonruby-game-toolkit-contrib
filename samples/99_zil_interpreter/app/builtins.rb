@@ -37,9 +37,25 @@ ZIL_BUILTINS = {}
 ZIL_BUILTINS[:LVAL] = define_for_evaled_arguments { |arguments, context|
   expect_argument_count!(arguments, 1)
   var_atom = arguments[0]
-  raise FunctionError, "No local value for #{var_atom.inspect}" unless context.locals.key? var_atom
 
-  context.locals[var_atom]
+  result = :ZIL_LOCAL_VALUE_NOT_ASSIGNED
+  [context.locals, *context.locals_stack].each { |stack|
+    if stack.key? var_atom
+      result = stack[var_atom]
+      break
+    end
+  }
+
+  raise FunctionError, "No local value for #{var_atom.inspect}" if result == :ZIL_LOCAL_VALUE_NOT_ASSIGNED
+  result
+}
+
+ZIL_BUILTINS[:GVAL] = define_for_evaled_arguments { |arguments, context|
+  expect_argument_count!(arguments, 1)
+  var_atom = arguments[0]
+  raise FunctionError, "No local value for #{var_atom.inspect}" unless context.globals.key? var_atom
+
+  context.globals[var_atom]
 }
 
 ZIL_BUILTINS[:VALUE] = define_for_evaled_arguments { |arguments, context|
@@ -408,3 +424,38 @@ ZIL_BUILTINS[:PUTREST] = define_for_evaled_arguments { |arguments|
   array_like_value[1..-1] = new_rest.dup
   array_like_value
 }
+#<ROUTINE name (arguments) #DECL body>
+ZIL_BUILTINS[:ROUTINE] = lambda { |arguments, context|
+  raise FunctionError, "ROUTINE must have a body!" unless arguments.length > 2
+  raise FunctionError, "ROUTINE must provide an argument list!" unless arguments.length > 1
+  raise FunctionError, "ROUTINE must provide an argument list! (" + arguments[1].class + ")" unless arguments[1].class == Syntax::List
+
+  name = arguments[0]
+  signature = arguments[1]
+  body = arguments[2..-1]
+
+  routine = ZIL::Routine.new(name, signature, body)
+  context.globals[name] = routine.method(:call)
+}
+
+ZIL_BUILTINS[:ASSIGNED?] = lambda { |arguments, context|
+  raise FunctionError, "ASSIGNED? requires at least one parameter!" unless arguments.length > 0
+  var_atom = arguments[0]
+
+  result = false
+  [context.locals, *context.locals_stack].each { |stack|
+    if stack.key? var_atom
+      result = true
+      break
+    end
+  }
+
+  result
+}
+
+ZIL_BUILTINS[:GASSIGNED?] = lambda { |arguments, context|
+  raise FunctionError, "GASSIGNED? requires at least one parameter!" unless arguments.length > 0
+  var_atom = arguments[0]
+  context.globals.key? var_atom
+}
+

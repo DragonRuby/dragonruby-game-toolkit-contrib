@@ -2,6 +2,10 @@ def form(*elements)
   Syntax::Form.new(*elements)
 end
 
+def quote(element)
+  Syntax::Quote.new(element)
+end
+
 def list(*elements)
   Syntax::List.new(*elements)
 end
