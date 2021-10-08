@@ -585,7 +585,7 @@ def test_builtin_object(args, assert)
   # <OBJECT ROOM (HEIGHT 10)>
   specs = [:ROOM, list(:HEIGHT, 10)]
   result = call_routine zil_context, :OBJECT, specs
-  assert.equal! result[:name], :ROOM, "Object's name is ROOM"
-  assert.equal! result[:properties][:HEIGHT], 10, "ROOM's HEIGHT is 10"
+  assert.equal! zil_context.globals[:ROOM][:name], :ROOM, "Object's name is ROOM"
+  assert.equal! zil_context.globals[:ROOM][:properties][:HEIGHT], 10, "ROOM's HEIGHT is 10"
 
 end
