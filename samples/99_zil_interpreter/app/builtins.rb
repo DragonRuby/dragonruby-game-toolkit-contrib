@@ -262,26 +262,27 @@ ZIL_BUILTINS[:COND] = lambda { |arguments, context|
   false
 }
 
-ZIL_BUILTINS[:OBJECT] = lambda { |arguments, context|
+ZIL_BUILTINS[:OBJECT] = define_for_evaled_arguments { |arguments, context|
   # Objects have a name, and a list of properties and values
 
   raise FunctionError, "OBJECT requires at least a name!" unless arguments.length > 0
 
-  # not sure if this is needed
-  raise FunctionError, "OBJECT requires properties" unless arguments.length > 1
-
   object_name, *object_properties = arguments
 
   object = { properties: {} }
+  object[:name] = object_name
+  
 
   object_properties.each do |property|
-    raise FunctionError, "Parameters to object must be in list form" unless property.class == Syntax::List
-    raise FunctionError, "OBJECT properties require a name and values!" unless property.elements.length > 1
+    raise FunctionError, "OBJECT properties require a name and values!" unless property.length > 1
 
-    property_name, *property_values = property.elements
+    property_name, *property_values = property
+    puts property_values
 
     object[:properties][property_name] = property_values.length == 1 ? property_values[0] : property_values
   end
+
+  object
 
   zil_context.globals[object_name] = object
 }
