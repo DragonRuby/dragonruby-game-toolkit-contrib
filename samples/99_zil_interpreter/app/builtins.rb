@@ -282,8 +282,6 @@ ZIL_BUILTINS[:OBJECT] = define_for_evaled_arguments { |arguments, context|
     object[:properties][property_name] = property_values.length == 1 ? property_values[0] : property_values
   end
 
-  object
-
   zil_context.globals[object_name] = object
 }
 
