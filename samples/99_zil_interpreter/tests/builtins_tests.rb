@@ -205,7 +205,7 @@ def test_builtin_btst(args, assert)
   result = zil_context.globals[:BTST].call [128, 128], nil
 
   assert.true! result
-  
+
   result = zil_context.globals[:BTST].call [127, 128], nil
 
   assert.false! result
@@ -587,7 +587,6 @@ def test_builtin_object(args, assert)
   result = call_routine zil_context, :OBJECT, specs
   assert.equal! zil_context.globals[:ROOM][:name], :ROOM, "Object's name should be ROOM"
   assert.equal! zil_context.globals[:ROOM][:properties][:HEIGHT], 10, "ROOM's HEIGHT should be 10"
-
 end
 
 def test_builtin_itable(args, assert)
