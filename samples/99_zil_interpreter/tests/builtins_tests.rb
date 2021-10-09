@@ -578,3 +578,14 @@ def test_builtin_cond(args, assert)
   result = call_routine zil_context, :COND, [clause1, clause2]
   assert.equal! result, 20, 'Else T returns 20 (2)'
 end
+
+def test_builtin_object(args, assert)
+  zil_context = build_zil_context(args)
+
+  # <OBJECT ROOM (HEIGHT 10)>
+  specs = [:ROOM, list(:HEIGHT, 10)]
+  result = call_routine zil_context, :OBJECT, specs
+  assert.equal! zil_context.globals[:ROOM][:name], :ROOM, "Object's name should be ROOM"
+  assert.equal! zil_context.globals[:ROOM][:properties][:HEIGHT], 10, "ROOM's HEIGHT should be 10"
+
+end

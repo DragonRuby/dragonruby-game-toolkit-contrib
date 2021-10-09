@@ -262,3 +262,23 @@ ZIL_BUILTINS[:COND] = lambda { |arguments, context|
   false
 }
 
+ZIL_BUILTINS[:OBJECT] = define_for_evaled_arguments { |arguments, context|
+  # Objects have a name, and a list of properties and values
+  expect_minimum_argument_count!(arguments, 1)
+  
+  object_name, *object_properties = arguments
+
+  object = { properties: {} }
+  object[:name] = object_name
+
+  object_properties.each do |property|
+    raise FunctionError, "OBJECT properties require a name and values!" unless property.length > 1
+
+    property_name, *property_values = property
+
+    object[:properties][property_name] = property_values.length == 1 ? property_values[0] : property_values
+  end
+
+  context.globals[object_name] = object
+}
+
