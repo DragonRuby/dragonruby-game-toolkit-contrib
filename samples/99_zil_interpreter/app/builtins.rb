@@ -265,7 +265,7 @@ ZIL_BUILTINS[:COND] = lambda { |arguments, context|
 ZIL_BUILTINS[:OBJECT] = define_for_evaled_arguments { |arguments, context|
   # Objects have a name, and a list of properties and values
   expect_minimum_argument_count!(arguments, 1)
-  
+
   object_name, *object_properties = arguments
 
   object = { properties: {} }
@@ -282,3 +282,129 @@ ZIL_BUILTINS[:OBJECT] = define_for_evaled_arguments { |arguments, context|
   context.globals[object_name] = object
 }
 
+# Tables are represented internally as arrays which contain "bytes" which can be set/get with PUTB/GETB
+# Every other data type is saved as a "word" so basically 2 bytes -
+# but for convenience's sake those words are just stored as two byte elements: [value, 0]
+# Since in Zork single bytes of words are never accessed - nor vice-versa - this kind of representation
+# should be fine.
+ZIL_BUILTINS[:TABLE] = define_for_evaled_arguments { |arguments|
+  flags, values = ZIL::Table.get_flags_and_values arguments
+
+  ZIL::Table.build flags: flags, values: values
+}
+
+ZIL_BUILTINS[:ITABLE] = define_for_evaled_arguments { |arguments|
+  if arguments[0].is_a? Symbol
+    specifier = arguments[0]
+    raise "ITABLE Specifier #{specifier} not yet supported" unless specifier == :NONE
+
+    size = arguments[1]
+    flags, default_values = ZIL::Table.get_flags_and_values arguments[2..-1]
+  else
+    size = arguments[0]
+    flags, default_values = ZIL::Table.get_flags_and_values arguments[1..-1]
+  end
+
+  ZIL::Table.build flags: flags, values: default_values * size
+}
+
+ZIL_BUILTINS[:LTABLE] = define_for_evaled_arguments { |arguments|
+  flags, values = ZIL::Table.get_flags_and_values arguments
+  flags << :LENGTH unless flags.include? :LENGTH
+
+  ZIL::Table.build flags: flags, values: values
+}
+
+ZIL_BUILTINS[:GET] = define_for_evaled_arguments { |arguments|
+  expect_argument_count! arguments, 2
+
+  table = arguments[0]
+  index = arguments[1]
+  table[index * 2] # Double the index since table stores bytes
+}
+
+ZIL_BUILTINS[:PUT] = define_for_evaled_arguments { |arguments|
+  expect_argument_count! arguments, 3
+
+  table = arguments[0]
+  index = arguments[1]
+  value = arguments[2]
+  table[index * 2] = value # Double the index since table stores bytes
+  table
+}
+
+ZIL_BUILTINS[:GETB] = define_for_evaled_arguments { |arguments|
+  expect_argument_count! arguments, 2
+
+  table = arguments[0]
+  index = arguments[1]
+  table[index]
+}
+
+ZIL_BUILTINS[:PUTB] = define_for_evaled_arguments { |arguments|
+  expect_argument_count! arguments, 3
+
+  table = arguments[0]
+  index = arguments[1]
+  value = arguments[2]
+  table[index] = value
+  table
+}
+
+ZIL_BUILTINS[:NTH] = define_for_evaled_arguments { |arguments|
+  expect_argument_count! arguments, 2
+
+  table = arguments[0]
+  one_based_index = arguments[1]
+  table[one_based_index - 1]
+}
+
+# REST and BACK are using a special ZIL::ArrayWithOffset object which implements
+# the element accessor ([] and []=) which respect the offset but modify the original
+# array
+ZIL_BUILTINS[:REST] = define_for_evaled_arguments { |arguments|
+  expect_argument_count_in_range! arguments, (1..2)
+
+  array_like_value = arguments[0]
+  offset = arguments[1] || 1
+  ZIL::ArrayWithOffset.from(array_like_value, offset: offset)
+}
+
+ZIL_BUILTINS[:BACK] = define_for_evaled_arguments { |arguments|
+  expect_argument_count_in_range! arguments, (1..2)
+
+  array_like_value = arguments[0]
+  offset = arguments[1] || 1
+  ZIL::ArrayWithOffset.from(array_like_value, offset: -offset)
+}
+
+ZIL_BUILTINS[:EMPTY?] = lambda { |arguments, context|
+  expect_argument_count! arguments, 1
+
+  array_like_value = arguments[0]
+  ZIL_BUILTINS[:LENGTH].call([array_like_value], context).zero?
+}
+
+ZIL_BUILTINS[:LENGTH] = define_for_evaled_arguments { |arguments|
+  expect_argument_count! arguments, 1
+
+  array_like_value = arguments[0]
+  array_like_value.size
+}
+
+ZIL_BUILTINS[:LENGTH?] = lambda { |arguments, context|
+  expect_argument_count! arguments, 2
+
+  array_like_value = arguments[0]
+  length_max = arguments[1]
+  ZIL_BUILTINS[:LENGTH].call([array_like_value], context) <= length_max
+}
+
+ZIL_BUILTINS[:PUTREST] = define_for_evaled_arguments { |arguments|
+  expect_argument_count! arguments, 2
+
+  array_like_value = arguments[0]
+  new_rest = arguments[1]
+  array_like_value[1..-1] = new_rest.dup
+  array_like_value
+}

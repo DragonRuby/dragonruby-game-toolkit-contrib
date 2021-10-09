@@ -1,3 +1,4 @@
+require 'zil.rb'
 require 'app/syntax.rb'
 require 'app/parser.rb'
 require 'app/builtins.rb'
