@@ -294,8 +294,16 @@ ZIL_BUILTINS[:TABLE] = define_for_evaled_arguments { |arguments|
 }
 
 ZIL_BUILTINS[:ITABLE] = define_for_evaled_arguments { |arguments|
-  size = arguments[0]
-  flags, default_values = ZIL::Table.get_flags_and_values arguments[1..-1]
+  if arguments[0].is_a? Symbol
+    specifier = arguments[0]
+    raise "ITABLE Specifier #{specifier} not yet supported" unless specifier == :NONE
+
+    size = arguments[1]
+    flags, default_values = ZIL::Table.get_flags_and_values arguments[2..-1]
+  else
+    size = arguments[0]
+    flags, default_values = ZIL::Table.get_flags_and_values arguments[1..-1]
+  end
 
   ZIL::Table.build flags: flags, values: default_values * size
 }

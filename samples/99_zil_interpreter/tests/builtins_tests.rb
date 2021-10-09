@@ -610,6 +610,14 @@ def test_builtin_itable(args, assert)
     3, # Prefixed with record count
     8, 8, 8
   ]
+
+  # <ITABLE NONE 3>
+  # Word table by default - no length prefix
+  result = call_routine zil_context, :ITABLE, [:NONE, 3]
+
+  assert.equal! result, [
+    0, 0, 0, 0, 0, 0
+  ]
 end
 
 def test_builtin_table(args, assert)

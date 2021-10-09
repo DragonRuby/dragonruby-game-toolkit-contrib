@@ -10,6 +10,8 @@ module ZIL
           values = arguments.dup
         end
 
+        values << 0 if values.empty?
+
         [flags, values]
       end
 
