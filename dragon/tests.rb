@@ -3,6 +3,9 @@
 # MIT License
 # tests.rb has been released under MIT (*only this file*).
 
+# Contributors outside of DragonRuby who also hold Copyright:
+# - Eli Raybon: https://github.com/eliraybon
+
 module GTK
   class Tests
     attr_accessor :failed, :passed, :inconclusive
@@ -96,7 +99,8 @@ S
     end
 
     def test_signature_invalid_exception? e, m
-      e.to_s.include?(m.to_s) && e.to_s.include?("wrong number of arguments")
+      error_message = "'#{m.to_s}': wrong number of arguments"
+      e.to_s.start_with?(error_message)
     end
 
     def log_test_signature_incorrect m
