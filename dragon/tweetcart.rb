@@ -74,6 +74,14 @@ def $top_level.TICK &block
               r: r, g: g, b: b, a: a,
               path: :pixel }
   end
+  
+  def $top_level.sin deg
+    Math.sin(deg.to_radians)
+  end
+
+  def $top_level.cos deg
+    Math.cos(deg.to_radians)
+  end
 end
 
 =begin
