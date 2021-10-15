@@ -1,7 +1,7 @@
 # coding: utf-8
 # Copyright 2019 DragonRuby LLC
 # MIT License
-# hotlaod.rb has been released under MIT (*only this file*).
+# hotload.rb has been released under MIT (*only this file*).
 
 module GTK
   class Runtime
