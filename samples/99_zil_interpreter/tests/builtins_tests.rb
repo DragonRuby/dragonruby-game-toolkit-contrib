@@ -212,6 +212,41 @@ def test_builtin_setg(args, assert)
   assert.equal! result, 12
 end
 
+def test_builtin_value(args, assert)
+  zil_context = build_zil_context(args)
+  zil_context.locals[:"VAR1"] = 1
+  zil_context.globals[:"VAR1"] = 11
+  zil_context.locals[:"VAR2"] = 2
+  zil_context.globals[:"VAR3"] = 33
+
+  result = call_routine zil_context, :VALUE, [:VAR1]
+  assert.equal! result, 1
+
+  result = call_routine zil_context, :VALUE, [:VAR2]
+  assert.equal! result, 2
+
+  result = call_routine zil_context, :VALUE, [:VAR3]
+  assert.equal! result, 33
+
+  # repeat tests with stacked locals (push locals onto stack then clear collection)
+  zil_context.locals_stack.push zil_context.locals
+  zil_context.locals = {}
+
+  result = call_routine zil_context, :VALUE, [:VAR1]
+  assert.equal! result, 1
+
+  result = call_routine zil_context, :VALUE, [:VAR2]
+  assert.equal! result, 2
+
+  result = call_routine zil_context, :VALUE, [:VAR3]
+  assert.equal! result, 33
+
+  # insert local stack value
+  zil_context.locals[:"VAR1"] = 111
+  result = call_routine zil_context, :VALUE, [:VAR1]
+  assert.equal! result, 111
+end
+
 def test_builtin_band(args, assert)
   zil_context = build_zil_context(args)
   result = zil_context.globals[:BAND].call [61, 31], nil
@@ -657,6 +692,8 @@ def test_builtin_assigned?(args, assert)
   # validate :VAR1 still has a local (do it again)
   result = call_routine zil_context, :ASSIGNED?, [:VAR1]
   assert.equal! result, true, 'VAR1 assigned (in stack again)'
+end
+
 def test_builtin_object(args, assert)
   zil_context = build_zil_context(args)
 

@@ -1,6 +1,9 @@
 # coding: utf-8
 class FunctionError < StandardError; end
 
+class FlowControlException < StandardError; end
+class AgainException < FlowControlException; end # TBD: ReturnException will also use FlowControlException as base class
+
 def define_for_evaled_arguments(&implementation)
   lambda { |arguments, context|
     evaled_arguments = arguments.map { |argument| eval_zil argument, context }
@@ -38,16 +41,7 @@ ZIL_BUILTINS[:LVAL] = define_for_evaled_arguments { |arguments, context|
   expect_argument_count!(arguments, 1)
   var_atom = arguments[0]
 
-  result = :ZIL_LOCAL_VALUE_NOT_ASSIGNED
-  [context.locals, *context.locals_stack].each { |stack|
-    if stack.key? var_atom
-      result = stack[var_atom]
-      break
-    end
-  }
-
-  raise FunctionError, "No local value for #{var_atom.inspect}" if result == :ZIL_LOCAL_VALUE_NOT_ASSIGNED
-  result
+  get_local_from_context(context, var_atom)
 }
 
 ZIL_BUILTINS[:GVAL] = define_for_evaled_arguments { |arguments, context|
@@ -62,8 +56,12 @@ ZIL_BUILTINS[:VALUE] = define_for_evaled_arguments { |arguments, context|
   expect_argument_count!(arguments, 1)
   var_atom = arguments[0]
 
-  context.locals[var_atom] || context.globals[var_atom] ||
-    (raise FunctionError, "No local nor global value for #{var_atom.inspect}")
+  result = get_local_from_context(context, var_atom, throw_flag: false)
+  if result != :ZIL_LOCAL_VALUE_NOT_ASSIGNED
+    result
+  else
+    context.globals[var_atom] || (raise FunctionError, "No local nor global value for #{var_atom.inspect}")
+  end
 }
 
 # <+ ...>
@@ -436,6 +434,10 @@ ZIL_BUILTINS[:ROUTINE] = lambda { |arguments, context|
 
   routine = ZIL::Routine.new(name, signature, body)
   context.globals[name] = routine.method(:call)
+}
+
+ZIL_BUILTINS[:AGAIN] = lambda { |arguments, context|
+  raise AgainException
 }
 
 # <ASSIGNED? ...> (FSUBR)

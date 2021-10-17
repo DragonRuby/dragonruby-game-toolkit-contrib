@@ -263,3 +263,22 @@ def test_builtin_routine_aux(args, assert)
   result = call_routine zil_context, :AUX2, [11, 12]
   assert.equal! result, 23, 'AUX2 should return 23!'
 end
+
+def test_builtin_routine_again(args, assert)
+  zil_context = build_zil_context(args)
+
+  # define: <ROUTINE TEST1 ("AUX" LOCAL) ...>
+  source = <<-ZIL
+  <COND
+    (<L? .LOCAL 10> <SET LOCAL <+ .LOCAL 1>> <AGAIN>)
+    (T .LOCAL)
+  >
+  ZIL
+
+  signature = list("AUX", list(:LOCAL, 0))
+  statements = Parser.parse_string(source)
+  call_routine zil_context, :ROUTINE, [:TEST1, signature, *statements]
+
+  result = call_routine zil_context, :TEST1, []
+  assert.equal! result, 10
+end
