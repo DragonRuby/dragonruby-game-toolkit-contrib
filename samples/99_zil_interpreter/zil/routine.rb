@@ -128,7 +128,7 @@ module ZIL
           else
             if provided
               # if provided, eval and add to stack
-              value = argument[:arg_quoted] == true ? args[i] : eval_zil(args[i], zil_context)
+              value = argument[:arg_quoted] ? args[i] : eval_zil(args[i], zil_context)
               zil_context.locals[arg_data] = value
               num_processed += 1
             else
