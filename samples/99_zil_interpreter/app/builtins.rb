@@ -1,6 +1,9 @@
 # coding: utf-8
 class FunctionError < StandardError; end
 
+class FlowControlException < StandardError; end
+class AgainException < FlowControlException; end # TBD: ReturnException will also use FlowControlException as base class
+
 def define_for_evaled_arguments(&implementation)
   lambda { |arguments, context|
     evaled_arguments = arguments.map { |argument| eval_zil argument, context }
@@ -37,17 +40,28 @@ ZIL_BUILTINS = {}
 ZIL_BUILTINS[:LVAL] = define_for_evaled_arguments { |arguments, context|
   expect_argument_count!(arguments, 1)
   var_atom = arguments[0]
-  raise FunctionError, "No local value for #{var_atom.inspect}" unless context.locals.key? var_atom
 
-  context.locals[var_atom]
+  get_local_from_context(context, var_atom)
+}
+
+ZIL_BUILTINS[:GVAL] = define_for_evaled_arguments { |arguments, context|
+  expect_argument_count!(arguments, 1)
+  var_atom = arguments[0]
+  raise FunctionError, "No global value for #{var_atom.inspect}" unless context.globals.key? var_atom
+
+  context.globals[var_atom]
 }
 
 ZIL_BUILTINS[:VALUE] = define_for_evaled_arguments { |arguments, context|
   expect_argument_count!(arguments, 1)
   var_atom = arguments[0]
 
-  context.locals[var_atom] || context.globals[var_atom] ||
-    (raise FunctionError, "No local nor global value for #{var_atom.inspect}")
+  result = get_local_from_context(context, var_atom, throw_flag: false)
+  if result != :ZIL_LOCAL_VALUE_NOT_ASSIGNED
+    result
+  else
+    context.globals[var_atom] || (raise FunctionError, "No local nor global value for #{var_atom.inspect}")
+  end
 }
 
 # <+ ...>
@@ -408,3 +422,44 @@ ZIL_BUILTINS[:PUTREST] = define_for_evaled_arguments { |arguments|
   array_like_value[1..-1] = new_rest.dup
   array_like_value
 }
+#<ROUTINE name (arguments) #DECL body>
+ZIL_BUILTINS[:ROUTINE] = lambda { |arguments, context|
+  raise FunctionError, "ROUTINE must have a body!" unless arguments.length > 2
+  raise FunctionError, "ROUTINE must provide an argument list!" unless arguments.length > 1
+  raise FunctionError, "ROUTINE must provide an argument list! (" + arguments[1].class + ")" unless arguments[1].class == Syntax::List
+
+  name = arguments[0]
+  signature = arguments[1]
+  body = arguments[2..-1]
+
+  routine = ZIL::Routine.new(name, signature, body)
+  context.globals[name] = routine.method(:call)
+}
+
+ZIL_BUILTINS[:AGAIN] = lambda { |arguments, context|
+  raise AgainException
+}
+
+# <ASSIGNED? ...> (FSUBR)
+ZIL_BUILTINS[:ASSIGNED?] = lambda { |arguments, context|
+  expect_argument_count!(arguments, 1)
+  var_atom = arguments[0]
+
+  result = false
+  [context.locals, *context.locals_stack].each { |stack|
+    if stack.key? var_atom
+      result = true
+      break
+    end
+  }
+
+  result
+}
+
+# <GASSIGNED? ...> (FSUBR)
+ZIL_BUILTINS[:GASSIGNED?] = lambda { |arguments, context|
+  expect_argument_count!(arguments, 1)
+  var_atom = arguments[0]
+  context.globals.key? var_atom
+}
+
