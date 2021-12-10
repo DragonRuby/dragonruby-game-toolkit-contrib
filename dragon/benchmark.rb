@@ -10,14 +10,13 @@ module GTK
         log <<-S
 ** Invoking :#{name}...
 S
-        time_start = Time.now
         idx = 0
         r = nil
+        time_start = Time.now
         while idx < iterations
           r = proc.call
           idx += 1
         end
-
         result = (Time.now - time_start).round 3
 
         { name: name,

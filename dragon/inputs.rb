@@ -313,7 +313,8 @@ module GTK
       value = Kernel.tick_count if value
 
       collection.each do |m|
-        self.instance_variable_set("@#{m.to_s}".to_sym, value)
+        m_to_s = m.to_s
+        self.instance_variable_set("@#{m_to_s}".to_sym, value) if m_to_s.strip.length > 0
       rescue Exception => e
         raise e, <<-S
 * ERROR:

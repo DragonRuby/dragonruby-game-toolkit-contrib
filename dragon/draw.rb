@@ -24,7 +24,7 @@ module GTK
         fn.each_send pass.borders,           self, :draw_border
         fn.each_send pass.static_borders,    self, :draw_border
 
-        if !$gtk.production
+        if !self.production
           fn.each_send pass.debug,           self, :draw_primitive
           fn.each_send pass.static_debug,    self, :draw_primitive
         end
@@ -41,6 +41,7 @@ module GTK
         if s.respond_to? :draw_override
           s.draw_override @ffi_draw
         else
+          s = s.as_hash if s.is_a? OpenEntity
           @ffi_draw.draw_solid_2 s.x, s.y, s.w, s.h,
                                  s.r, s.g, s.b, s.a,
                                  (s.blendmode_enum || 1)
@@ -54,6 +55,7 @@ module GTK
         if s.respond_to? :draw_override
           s.draw_override @ffi_draw
         else
+          s = s.as_hash if s.is_a? OpenEntity
           @ffi_draw.draw_sprite_4 s.x, s.y, s.w, s.h,
                                   (s.path || '').to_s,
                                   s.angle,
@@ -73,6 +75,7 @@ module GTK
         if s.respond_to? :draw_override
           s.draw_override @ffi_draw
         else
+          s = s.as_hash if s.is_a? OpenEntity
           @ffi_draw.draw_screenshot (s.path || '').to_s,
                                     s.x, s.y, s.w, s.h,
                                     s.angle,
@@ -91,6 +94,7 @@ module GTK
         if l.respond_to? :draw_override
           l.draw_override @ffi_draw
         else
+          l = l.as_hash if l.is_a? OpenEntity
           @ffi_draw.draw_label_3 l.x, l.y,
                                  (l.text || '').to_s,
                                  l.size_enum, l.alignment_enum,
@@ -108,6 +112,7 @@ module GTK
         if l.respond_to? :draw_override
           l.draw_override @ffi_draw
         else
+          l = l.as_hash if l.is_a? OpenEntity
           if l.x2
             @ffi_draw.draw_line_2 l.x, l.y, l.x2, l.y2,
                                   l.r, l.g, l.b, l.a,
@@ -133,6 +138,7 @@ module GTK
         if s.respond_to? :draw_override
           s.draw_override @ffi_draw
         else
+          s = s.as_hash if s.is_a? OpenEntity
           @ffi_draw.draw_border_2 s.x, s.y, s.w, s.h,
                                   s.r, s.g, s.b, s.a,
                                   (s.blendmode_enum || 1)

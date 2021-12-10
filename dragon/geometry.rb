@@ -6,8 +6,8 @@
 module GTK
   module Geometry
     def self.rotate_point point, angle, around = nil
-      s = Math.sin a.to_radians
-      c = Math.cos a.to_radians
+      s = Math.sin angle.to_radians
+      c = Math.cos angle.to_radians
       px = point.x
       py = point.y
       cx = 0
@@ -188,8 +188,16 @@ S
     end
 
     # @gtk
-    def self.line_y_intercept line
-      line.y - line_slope(line) * line.x
+    def self.line_y_intercept line, replace_infinity: nil
+      line.y - line_slope(line, replace_infinity: replace_infinity) * line.x
+    rescue Exception => e
+raise <<-S
+* ERROR: ~Geometry::line_y_intercept~
+The following exception was thrown for line: #{line}
+#{e}
+
+Consider passing in ~replace_infinity: VALUE~ to handle for vertical lines.
+S
     end
 
     # @gtk
@@ -265,14 +273,22 @@ S
     end
 
     # @gtk
-    def self.line_intersect line_one, line_two
-      m1 = line_slope(line_one)
-      m2 = line_slope(line_two)
-      b1 = line_y_intercept(line_one)
-      b2 = line_y_intercept(line_two)
+    def self.line_intersect line_one, line_two, replace_infinity: nil
+      m1 = line_slope(line_one, replace_infinity: replace_infinity)
+      m2 = line_slope(line_two, replace_infinity: replace_infinity)
+      b1 = line_y_intercept(line_one, replace_infinity: replace_infinity)
+      b2 = line_y_intercept(line_two, replace_infinity: replace_infinity)
       x = (b1 - b2) / (m2 - m1)
       y = (-b2.fdiv(m2) + b1.fdiv(m1)).fdiv(1.fdiv(m1) - 1.fdiv(m2))
       [x, y]
+    rescue Exception => e
+raise <<-S
+* ERROR: ~Geometry::line_intersect~
+The following exception was thrown for line_one: #{line_one}, line_two: #{line_two}
+#{e}
+
+Consider passing in ~replace_infinity: VALUE~ to handle for vertical lines.
+S
     end
 
     def self.contract_intersect_rect?

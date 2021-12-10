@@ -394,6 +394,7 @@ class FallingCircle
   end
 
   def load_lines file
+    return unless state.snaps
     data = gtk.read_file(file) || ""
     data.each_line
         .reject { |l| l.strip.length == 0 }
@@ -452,10 +453,10 @@ class FallingCircle
     results[:point] = { x: x, y: y }
     results[:rect] = { x: x - radius, y: y - radius, w: radius * 2, h: radius * 2 }
     results[:trajectory] = trajectory(results)
-    results[:impacts] = terrain.find_all { |t| line_near_rect? results[:rect], t }.map do |t|
+    results[:impacts] = terrain.find_all { |t| t && (line_near_rect? results[:rect], t) }.map do |t|
       {
         terrain: t,
-        point: geometry.line_intersect(results[:trajectory], t),
+        point: geometry.line_intersect(results[:trajectory], t, replace_infinity: 1000),
         type: :terrain
       }
     end.reject { |t| !point_within_line? t[:point], t[:terrain] }
@@ -463,10 +464,10 @@ class FallingCircle
     results[:impacts] += lava.find_all { |t| line_near_rect? results[:rect], t }.map do |t|
       {
         terrain: t,
-        point: geometry.line_intersect(results[:trajectory], t),
+        point: geometry.line_intersect(results[:trajectory], t, replace_infinity: 1000),
         type: :lava
       }
-    end.reject { |t| !point_within_line? t[:point], t[:terrain] }
+    end.reject { |t| !t || (!point_within_line? t[:point], t[:terrain]) }
 
     results
   end
@@ -479,6 +480,7 @@ class FallingCircle
   end
 
   def calc_terrains_to_monitor
+    return unless circle.impacts
     circle.impact = nil
     circle.impacts.each do |i|
       circle.terrains_to_monitor[i[:terrain]] ||= {

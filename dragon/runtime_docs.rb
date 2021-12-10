@@ -12,7 +12,8 @@ module RuntimeDocs
       :docs_api_summary,
       :docs_reset,
       :docs_calcstringbox,
-      :docs_write_file
+      :docs_write_file,
+      :docs_benchmark
     ]
   end
 
@@ -485,6 +486,8 @@ Invalids the texture cache of a sprite.
 Shows the mouse cursor.
 *** ~.hide_cursor~
 Hides the mouse cursor.
+*** ~.set_cursor path, dx, dy~
+Sets the system cursor to a sprite ~path~ with an offset of ~dx~ and ~dy~.
 *** ~.cursor_shown?~
 Returns ~true~ if the mouse cursor is shown.
 *** ~.set_window_fullscreen enabled~
@@ -538,6 +541,39 @@ is currently in the file. Use ~GTK::Runtime#append_file~ to append to the file a
 #+end_src
 S
   end
+
+      def docs_benchmark
+<<-S
+* DOCS: ~GTK::Runtime#benchmark~
+You can use this function to compare the relative performance of methods.
+
+#+begin_src ruby
+  def tick args
+    # press r to run benchmark
+    if args.inputs.keyboard.key_down.r
+      args.gtk.console.show
+      args.gtk.benchmark iterations: 1000, # number of iterations
+                         # label for experiment
+                         using_numeric_map: -> () {
+                           # experiment body
+                           v = 100.map do |i|
+                             i * 100
+                           end
+                         },
+                         # label for experiment
+                         using_numeric_times: -> () {
+                           # experiment body
+                           v = []
+                           100.times do |i|
+                             v << i * 100
+                           end
+                         }
+    end
+  end
+#+end_src
+S
+      end
+
 end
 
 class GTK::Runtime

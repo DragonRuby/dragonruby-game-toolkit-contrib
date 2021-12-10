@@ -152,15 +152,15 @@ class Game
   end
 
   def calc_player_dx
-    player.y  += player.dy
-    player.dy += state.gravity
-    player.dy += player.dy * state.drag ** 2 * -1
-  end
-
-  def calc_player_dy
     player.dx  = player.dx.clamp(-5,  5)
     player.dx *= 0.9
     player.x  += player.dx
+  end
+
+  def calc_player_dy
+    player.y  += player.dy
+    player.dy += state.gravity
+    player.dy += player.dy * state.drag ** 2 * -1
   end
 
   def reset_player

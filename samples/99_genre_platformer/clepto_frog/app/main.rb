@@ -1,4 +1,4 @@
-MAP_FILE_PATH = 'app/map.txt'
+MAP_FILE_PATH = 'map.txt'
 
 require 'app/map.rb'
 
@@ -53,35 +53,7 @@ class CleptoFrog
 
   def render_intro
     outputs.labels << [640, 700, "Clepto Frog", 4, 1]
-    if state.tick_count >= 120
-      outputs.labels << [640, 620, "\"Uh... your office has a pet frog?\" - New Guy",
-                         4, 1, 0, 0, 0, 255 * 120.ease(60)]
-    end
-
-    if state.tick_count >= 240
-      outputs.labels << [640, 580, "\"Yep! His name is Clepto.\" - Jim",
-                         4, 1, 0, 0, 0, 255 * 240.ease(60)]
-    end
-
-    if state.tick_count >= 360
-      outputs.labels << [640, 540, "\"Uh...\" - New Guy",
-                         4, 1, 0, 0, 0, 255 * 360.ease(60)]
-    end
-
-    if state.tick_count >= 480
-      outputs.labels << [640, 500, "\"He steals mugs while we're away...\" - Jim",
-                         4, 1, 0, 0, 0, 255 * 480.ease(60)]
-    end
-
-    if state.tick_count >= 600
-      outputs.labels << [640, 460, "\"It's not a big deal, we take them back in the morning.\" - Jim",
-                         4, 1, 0, 0, 0, 255 * 600.ease(60)]
-    end
-
-    outputs.sprites << [640 - 50, 360 - 50, 100, 100,
-                        "sprites/square-green.png"]
-
-    if state.tick_count == 800
+    if state.tick_count == 120
       state.scene = :game
       state.game_start_at = state.tick_count
     end
@@ -89,7 +61,7 @@ class CleptoFrog
 
   def tick
     defaults
-    if state.scene == :intro && state.tick_count <= 800
+    if state.scene == :intro && state.tick_count <= 120
       render_intro
     elsif state.scene == :ending
       render_ending
@@ -192,15 +164,15 @@ class CleptoFrog
 
     if state.god_mode
       # SHOW HIDE COLLISIONS
-      outputs.sprites << state.world.map do |x, y, w, h|
-        x = vx(x)
-        y = vy(y)
+      outputs.sprites << state.world.map do |rect|
+        x = vx(rect.x)
+        y = vy(rect.y)
         if x > -80 && x < 1280 && y > -80 && y < 720
           {
             x: x,
             y: y,
-            w: vw(w || state.tile_size),
-            h: vh(h || state.tile_size),
+            w: vw(rect.w || state.tile_size),
+            h: vh(rect.h || state.tile_size),
             path: 'sprites/square-gray.png',
             a: 128
           }
@@ -223,8 +195,10 @@ class CleptoFrog
 
 
       # Creates sprite following mouse to help indicate which sprite you have selected
-      outputs.primitives << [inputs.mouse.position.x, inputs.mouse.position.y,
-                             state.tile_size, state.tile_size, 'sprites/square-indigo.png', 0, 100].sprite
+      outputs.primitives << [inputs.mouse.position.x - 32 * state.camera_scale,
+                             inputs.mouse.position.y - 32 * state.camera_scale,
+                             state.tile_size * state.camera_scale,
+                             state.tile_size * state.camera_scale, 'sprites/square-indigo.png', 0, 100].sprite
     end
 
     render_mini_map
@@ -305,6 +279,29 @@ class CleptoFrog
       set_camera_scale 1
     end
 
+    if inputs.mouse.click
+      state.id_seed += 1
+      id = state.id_seed
+      x = state.camera_x + (inputs.mouse.click.x.fdiv(state.camera_scale) - 32)
+      y = state.camera_y + (inputs.mouse.click.y.fdiv(state.camera_scale) - 32)
+      x = ((x + 2).idiv 4) * 4
+      y = ((y + 2).idiv 4) * 4
+      w = 64
+      h = 64
+      candidate_rect = { id: id, x: x, y: y, w: w, h: h }
+      scaled_candidate_rect = { x: x + 30, y: y + 30, w: w - 60, h: h - 60 }
+      to_remove = state.world.find { |r| r.intersect_rect? scaled_candidate_rect }
+      if to_remove && args.inputs.keyboard.x
+        state.world.reject! { |r| r.id == to_remove.id }
+      else
+        state.world << candidate_rect
+      end
+      export_map
+      state.world_lookup = {}
+      state.world_collision_rects = nil
+      calc_world_lookup
+    end
+
     if input_up?
       state.y += 10
       state.dy = 0
@@ -326,12 +323,6 @@ class CleptoFrog
     if state.scene == :game
       process_inputs_player_movement
       process_inputs_god_mode
-    elsif state.scene == :intro
-      if args.inputs.keyboard.key_down.enter || args.inputs.keyboard.key_down.space
-        if Kernel.tick_count < 600
-          Kernel.tick_count = 600
-        end
-      end
     end
   end
 
@@ -429,17 +420,6 @@ class CleptoFrog
     end
   end
 
-  def add_floors
-    # floors
-    state.world += [
-      [0,       0, 10000, 40],
-      [0,    1670, 3250, 60],
-      [6691, 1653, 3290, 60],
-      [1521, 3792, 7370, 60],
-      [0, 5137, 3290, 60]
-    ]
-  end
-
   def attempt_load_world_from_file
     return if state.world
     # exported_world = gtk.read_file(MAP_FILE_PATH)
@@ -447,26 +427,11 @@ class CleptoFrog
     state.objects = []
 
     if $collisions
-      $collisions.map do |x, y, w, h|
-        state.world << [x, y, w, h]
+      state.id_seed ||= 0
+      $collisions.each do |x, y, w, h|
+        state.id_seed += 1
+        state.world << { id: state.id_seed, x: x, y: y, w: w, h: h }
       end
-
-      add_floors
-    # elsif exported_world
-    #   exported_world.each_line.map do |l|
-    #     tokens = l.strip.split(',')
-    #     x    = tokens[0].to_i
-    #     y    = tokens[1].to_i
-    #     type = tokens[2].to_i
-    #     if type == 1
-    #       state.world << [x, y, state.tile_size, state.tile_size]
-    #     elsif type == 2
-    #       w, h, path = tokens[3..-1]
-    #       state.objects << [x, y, w.to_i, h.to_i, path]
-    #     end
-    #   end
-
-    #   add_floors
     end
 
     if $mugs
@@ -487,23 +452,24 @@ class CleptoFrog
 
     # Searches through the world and finds the cordinates that exist
     state.world_lookup = {}
-    state.world.each do |x, y, w, h|
-      state.world_lookup[[x, y, w || state.tile_size, h || state.tile_size]] = true
+    state.world.each do |rect|
+      state.world_lookup[rect.id] = rect
     end
 
     # Assigns collision rects for every sprite drawn
     state.world_collision_rects =
       state.world_lookup
            .keys
-           .map do |x, y, w, h|
+           .map do |key|
+             rect = state.world_lookup[key]
              s = state.tile_size
-             w ||= s
-             h ||= s
+             rect.w ||= s
+             rect.h ||= s
              {
-               args:       [x, y, w, h],
-               left_right: [x,     y + 4, w,     h - 6],
-               top:        [x + 4, y + 6, w - 8, h - 6],
-               bottom:     [x + 1, y - 1, w - 2, h - 8],
+               args:       rect,
+               left_right: { x: rect.x,     y: rect.y + 4, w: rect.w,     h: rect.h - 6 },
+               top:        { x: rect.x + 4, y: rect.y + 6, w: rect.w - 8, h: rect.h - 6 },
+               bottom:     { x: rect.x + 1, y: rect.y - 1, w: rect.w - 2, h: rect.h - 8 },
              }
            end
 
@@ -559,12 +525,21 @@ class CleptoFrog
 
   def end_of_tongue
     p = state.tongue_angle.vector(state.tongue_length)
-    [start_of_tongue.x + p.x, start_of_tongue.y + p.y]
+    { x: start_of_tongue.x + p.x, y: start_of_tongue.y + p.y }
   end
 
   def calc_shooting
+    calc_shooting_increment
+    calc_shooting_increment
+    calc_shooting_increment
+    calc_shooting_increment
+    calc_shooting_increment
+    calc_shooting_increment
+  end
+
+  def calc_shooting_increment
     return unless state.action == :shooting
-    state.tongue_length += 30
+    state.tongue_length += 5
     potential_anchor = end_of_tongue
     if potential_anchor.x <= 0
       state.anchor_point = potential_anchor
@@ -583,9 +558,9 @@ class CleptoFrog
       state.action = :anchored
       outputs.sounds << 'sounds/attached.wav'
     else
-      anchor_rect = [potential_anchor.x - 5, potential_anchor.y - 5, 10, 10]
+      anchor_rect = { x: potential_anchor.x - 5, y: potential_anchor.y - 5, w: 10, h: 10 }
       collision = state.world_collision_rects.find_all do |v|
-        [v[:args].x, v[:args].y, v[:args].w, v[:args].h].intersect_rect?(anchor_rect)
+        v[:args].intersect_rect?(anchor_rect)
       end.first
       if collision
         state.anchor_point = potential_anchor
@@ -681,7 +656,7 @@ class CleptoFrog
                              .first
 
     return unless left_side_collisions
-    state.x = left_side_collisions[:left_right].right
+    state.x = left_side_collisions[:left_right].right + 1
     state.dx = state.dy.abs * 0.8
     state.collision_on_x = true
   end
@@ -696,7 +671,7 @@ class CleptoFrog
                               .first
 
     return unless right_side_collisions
-    state.x = right_side_collisions[:left_right].left - state.tile_size
+    state.x = right_side_collisions[:left_right].left - state.tile_size - 1
     state.dx = state.dx.abs * 0.8 * -1
     state.collision_on_x = true
   end
@@ -712,7 +687,7 @@ class CleptoFrog
                         .first
 
     return unless ceil_collisions
-    state.y = ceil_collisions[:bottom].y - state.tile_size
+    state.y = ceil_collisions[:bottom].y - state.tile_size - 1
     state.dy = state.dy.abs * 0.8 * -1
     state.collision_on_y = true
   end
@@ -725,13 +700,17 @@ class CleptoFrog
   end
 
   def export_map
-    export_string = state.world.map do |x, y|
-      "#{x},#{y},1"
-    end
+    export_string = "$collisions = [\n"
+    export_string += state.world.map do |rect|
+      "[#{rect.x},#{rect.y},#{rect.w},#{rect.h}],"
+    end.join "\n"
+    export_string += "\n]\n\n"
+    export_string += "$mugs = [\n"
     export_string += state.objects.map do |x, y, w, h, path|
-      "#{x},#{y},2,#{w},#{h},#{path}"
-    end
-    gtk.write_file(MAP_FILE_PATH, export_string.join("\n"))
+      "[#{x},#{y},#{w},#{h},'#{path}'],"
+    end.join "\n"
+    export_string += "\n]\n\n"
+    gtk.write_file(MAP_FILE_PATH, export_string)
     state.map_saved_at = state.tick_count
   end
 

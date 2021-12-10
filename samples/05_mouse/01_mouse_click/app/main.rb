@@ -49,10 +49,21 @@ class TicTacToe
   # Starts the game with player x's turn and creates an array (to_a) for space combinations.
   # Calls methods necessary for the game to run properly.
   def tick
-    state.current_turn ||= :x
-    state.space_combinations = [-1, 0, 1].product([-1, 0, 1]).to_a
+    init_new_game
     render_board
     input_board
+  end
+
+  def init_new_game
+    state.current_turn       ||= :x
+    state.space_combinations ||= [-1, 0, 1].product([-1, 0, 1]).to_a
+
+    state.spaces             ||= {}
+
+    state.space_combinations.each do |x, y|
+      state.spaces[x]    ||= {}
+      state.spaces[x][y] ||= state.new_entity(:space)
+    end
   end
 
   # Uses borders to create grid squares for the game's board. Also outputs the game pieces using labels.
@@ -130,6 +141,7 @@ class TicTacToe
   def input_restart_game
     return unless state.game_over
     gtk.reset
+    init_new_game
   end
 
   # Checks if x or o won the game.

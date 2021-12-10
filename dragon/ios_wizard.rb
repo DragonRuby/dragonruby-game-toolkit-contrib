@@ -42,6 +42,7 @@ class IOSWizard < Wizard
       :check_for_dev_profile,
 
       *app_metadata_retrieval_steps,
+      :determine_devcert,
 
       :clear_tmp_directory,
       :stage_app,
@@ -70,6 +71,7 @@ class IOSWizard < Wizard
       :determine_app_version,
 
       *app_metadata_retrieval_steps,
+      :determine_prodcert,
 
       :clear_tmp_directory,
       :stage_app,
@@ -264,6 +266,10 @@ teamid=
 appid=
 # appname is the name you want to show up underneath the app icon on the device. Keep it under 10 characters.
 appname=
+# devcert is the certificate to use for development/deploying to your local device
+devcert=
+# prodcert is the certificate to use for distribution to the app store
+prodcert=
 S
   end
 
@@ -299,7 +305,7 @@ S
   def raise_ios_metadata_required
     raise WizardException.new(
             "* mygame/metadata/ios_metadata.txt needs to be filled out.",
-            "You need to update metadata/ios_metadata.txt with a valid teamid, appname, and appid.",
+            "You need to update metadata/ios_metadata.txt with a valid teamid, appname, appid, devcert, and prodcert.",
             "Instructions for where the values should come from are within metadata/ios_metadata.txt."
           )
   end
@@ -339,7 +345,19 @@ S
   def determine_app_id
     @app_id = ios_metadata.appid
     raise_ios_metadata_required if @app_id.strip.length == 0
-    log_info "App Identifier is set to : #{@app_id}"
+    log_info "App Identifier is set to: #{@app_id}"
+  end
+
+  def determine_devcert
+    @certificate_name = ios_metadata.devcert
+    raise_ios_metadata_required if @certificate_name.strip.length == 0
+    log_info "Dev Certificate is set to: #{@certificate_name}"
+  end
+
+  def determine_prodcert
+    @certificate_name = ios_metadata.prodcert
+    raise_ios_metadata_required if @certificate_name.strip.length == 0
+    log_info "Production (Distribution) Certificate is set to: #{@certificate_name}"
   end
 
   def set_app_name name
@@ -359,12 +377,6 @@ S
 
   def clear_tmp_directory
     sh "rm -rf #{tmp_directory}"
-  end
-
-  def stage_app
-    log_info "Staging."
-    sh "mkdir -p #{tmp_directory}"
-    sh "cp -R #{relative_path}/dragonruby-ios.app \"#{tmp_directory}/#{@app_name}.app\""
   end
 
   def set_app_id id
@@ -397,34 +409,13 @@ S
   def check_for_certs
     log_info "Attempting to find certificates on your computer."
 
-    if !cli_app_exist?(security_cli_app)
-      raise WizardException.new(
-              "* It doesn't look like you have #{security_cli_app}.",
-              "** 1. Open Disk Utility and run First Aid.",
-              { w: 700, h: 148, path: get_reserved_sprite("disk-utility.png") },
-            )
-    end
-
-    if valid_certs.length == 0
-      raise WizardException.new(
-              "* It doesn't look like you have any valid certs installed.",
-              "** 1. Open Xcode.",
-              "** 2. Log into your developer account. Xcode -> Preferences -> Accounts.",
-              { w: 700, h: 98, path: get_reserved_sprite("login-xcode.png") },
-              "** 3. After loggin in, select Manage Certificates...",
-              { w: 700, h: 115, path: get_reserved_sprite("manage-certificates.png") },
-              "** 4. Add a certificate for Apple Development.",
-              { w: 700, h: 217, path: get_reserved_sprite("add-cert.png") },
-      )
-      raise "You do not have any Apple development certs on this computer."
-    end
-
     if @production_build
-      @certificate_name = valid_certs.find_all { |f| f[:name].include? "Distribution" }.first[:name]
+      @certificate_name = ios_metadata[:prodcert]
     else
-      @certificate_name = valid_certs.find_all { |f| f[:name].include? "Development" }.first[:name]
+      @certificate_name = ios_metadata[:devcert]
     end
-    log_info "I will be using Certificate: '#{@certificate_name}'."
+
+    log_info "I will be using certificate: '#{@certificate_name}'."
   end
 
   def idevice_id_cli_app
@@ -437,24 +428,6 @@ S
 
   def xcodebuild_cli_app
     "xcodebuild"
-  end
-
-  def valid_certs
-    certs = sh("#{security_cli_app} -q find-identity -p codesigning -v").each_line.map do |l|
-      if l.include?(")") && !l.include?("Developer ID") && (l.include?("Development") || l.include?("Distribution"))
-        l.strip
-      else
-        nil
-      end
-    end.reject_nil.map do |l|
-      number, id, name = l.split(' ', 3)
-      name = name.gsub("\"", "") if name
-      {
-        number: 1,
-        id: id,
-        name: name
-      }
-    end
   end
 
   def connected_devices
@@ -986,6 +959,9 @@ XML
   end
 
   def stage_app
+    log_info "Staging."
+    sh "mkdir -p #{tmp_directory}"
+    sh "cp -R #{relative_path}/dragonruby-ios.app \"#{tmp_directory}/#{@app_name}.app\""
     sh %Q[cp -r "#{root_folder}/app/" "#{app_path}/app/"]
     sh %Q[cp -r "#{root_folder}/sounds/" "#{app_path}/sounds/"]
     sh %Q[cp -r "#{root_folder}/sprites/" "#{app_path}/sprites/"]

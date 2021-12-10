@@ -71,6 +71,7 @@ def render_sources args
 end
 
 def playtime_str t
+  return "" unless t
   minutes = (t / 60.0).floor
   seconds = t - (minutes * 60.0).to_f
   return minutes.to_s + ':' + seconds.floor.to_s + ((seconds - seconds.floor).to_s + "000")[1..3]
@@ -183,7 +184,7 @@ def panel_primitives args, audio_entry
   results.playtime_slider_rect = progress_bar(args: args,
                                               row:  2.5,
                                               col:  2,
-                                              percentage: audio_entry.playtime / audio_entry.length_,
+                                              percentage: (audio_entry.playtime || 1) / (audio_entry.length_ || 1),
                                               text: "#{playtime_str(audio_entry.playtime)} / #{playtime_str(audio_entry.length_)}")
 
   results.primitives << results.playtime_slider_rect.primitives
@@ -320,7 +321,7 @@ def defaults args
   args.state.sound_files      ||= [
     { name: :tada,   path: "sounds/tada.wav"   },
     { name: :splash, path: "sounds/splash.wav" },
-    { name: :drum,   path: "sounds/drum.wav"   },
+    { name: :drum,   path: "sounds/drum.mp3"   },
     { name: :spring, path: "sounds/spring.wav" },
     { name: :music,  path: "sounds/music.ogg"  }
   ]

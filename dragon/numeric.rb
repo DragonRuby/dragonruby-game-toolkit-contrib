@@ -472,26 +472,6 @@ S
     (0..self).to_a
   end
 
-  def >= other
-    return false if !other
-    return gte other
-  end
-
-  def > other
-    return false if !other
-    return gt other
-  end
-
-  def <= other
-    return false if !other
-    return lte other
-  end
-
-  def < other
-    return false if !other
-    return gt other
-  end
-
   # @gtk
   def map
     unless block_given?
@@ -577,34 +557,6 @@ The object above is not a Numeric.
 S
   end
 
-  def - other
-    return self unless other
-    self - other
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :-, e
-  end
-
-  def + other
-    return self unless other
-    self + other
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :+, e
-  end
-
-  def * other
-    return self unless other
-    self * other
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :*, e
-  end
-
-  def / other
-    return self unless other
-    self / other
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :/, e
-  end
-
   def serialize
     self
   end
@@ -657,34 +609,6 @@ class Fixnum
   # @gtk
   def odd?
     return !even?
-  end
-
-  def + other
-    return self unless other
-    self + other
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :+, e
-  end
-
-  def * other
-    return self unless other
-    self * other
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :*, e
-  end
-
-  def / other
-    return self unless other
-    self / other
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :/, e
-  end
-
-  def - other
-    return self unless other
-    self - other
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :-, e
   end
 
   # Returns `-1` if the number is less than `0`. `+1` if the number
@@ -741,34 +665,6 @@ class Float
   alias_method :__original_subtract__, :- unless Float.instance_methods.include? :__original_subtract__
   alias_method :__original_multiply__, :* unless Float.instance_methods.include? :__original_multiply__
   alias_method :__original_divide__,   :- unless Float.instance_methods.include? :__original_divide__
-
-  def - other
-    return self unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :-, e
-  end
-
-  def + other
-    return self unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :+, e
-  end
-
-  def * other
-    return self unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :*, e
-  end
-
-  def / other
-    return self unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :/, e
-  end
 
   def serialize
     self

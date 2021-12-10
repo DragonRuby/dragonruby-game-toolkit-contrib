@@ -19,8 +19,8 @@ class Movement_Costs
   # The next step in the search is calculated
   def tick
     defaults
-    render 
-    input  
+    render
+    input
     calc
   end
 
@@ -37,7 +37,7 @@ class Movement_Costs
     # Walls are stored in a hash for quick look up when doing the search
     state.star   ||= [1, 5]
     state.target ||= [8, 4]
-    state.walls  ||= {[1, 1] => true, [2, 1] => true, [3, 1] => true, [1, 2] => true, [2, 2] => true, [3, 2] => true}    
+    state.walls  ||= {[1, 1] => true, [2, 1] => true, [3, 1] => true, [1, 2] => true, [2, 2] => true, [3, 2] => true}
     state.hills  ||= {
       [4, 1] => true,
       [5, 1] => true,
@@ -72,7 +72,7 @@ class Movement_Costs
     # We store this value, because we want to remember the value even when
     # the user's cursor is no longer over what they're interacting with, but
     # they are still clicking down on the mouse.
-    state.user_input ||= :none 
+    state.user_input ||= :none
 
     # Values that are used for the breadth first search
     # Keeping track of what cells were visited prevents counting cells multiple times
@@ -96,7 +96,7 @@ class Movement_Costs
 
   # Draws everything onto the screen
   def render
-    render_background       
+    render_background
 
     render_heat_maps
 
@@ -111,8 +111,8 @@ class Movement_Costs
 
   # Draws what the grid looks like with nothing on it
   def render_background
-    render_unvisited  
-    render_grid_lines 
+    render_unvisited
+    render_grid_lines
     render_labels
   end
 
@@ -131,7 +131,7 @@ class Movement_Costs
     end
 
     for y in 0..grid.height
-      outputs.lines << horizontal_line(y) 
+      outputs.lines << horizontal_line(y)
       outputs.lines << shifted_horizontal_line(y)
     end
   end
@@ -244,16 +244,16 @@ class Movement_Costs
   def render_star
     outputs.sprites << [scale_up(state.star), 'star.png']
     outputs.sprites << [move_and_scale_up(state.star), 'star.png']
-  end 
+  end
 
   # Renders the target on both grids
   def render_target
     outputs.sprites << [scale_up(state.target), 'target.png']
     outputs.sprites << [move_and_scale_up(state.target), 'target.png']
-  end 
+  end
 
   def render_hills
-    state.hills.each_key do |hill| 
+    state.hills.each_key do |hill|
       outputs.solids << [scale_up(hill), hill_color]
       outputs.solids << [move_and_scale_up(hill), hill_color]
     end
@@ -261,7 +261,7 @@ class Movement_Costs
 
   # Draws the walls on both grids
   def render_walls
-    state.walls.each_key do |wall| 
+    state.walls.each_key do |wall|
       outputs.solids << [scale_up(wall), wall_color]
       outputs.solids << [move_and_scale_up(wall), wall_color]
     end
@@ -344,7 +344,7 @@ class Movement_Costs
     # If the mouse was clicked this tick
     if inputs.mouse.down
       # Determine what the user is editing and edit the state.user_input variable
-      determine_input          
+      determine_input
     end
 
     # Process user input based on user_input variable and current mouse position
@@ -357,43 +357,43 @@ class Movement_Costs
   # mouse left click is held
   def determine_input
     # If the mouse is over the star in the first grid
-    if mouse_over_star?                 
+    if mouse_over_star?
       # The user is editing the star from the first grid
-      state.user_input = :star          
+      state.user_input = :star
     # If the mouse is over the star in the second grid
-    elsif mouse_over_star2?                 
+    elsif mouse_over_star2?
       # The user is editing the star from the second grid
-      state.user_input = :star2          
+      state.user_input = :star2
     # If the mouse is over the target in the first grid
-    elsif mouse_over_target?                 
+    elsif mouse_over_target?
       # The user is editing the target from the first grid
-      state.user_input = :target          
+      state.user_input = :target
     # If the mouse is over the target in the second grid
-    elsif mouse_over_target2?                 
+    elsif mouse_over_target2?
       # The user is editing the target from the second grid
-      state.user_input = :target2 
+      state.user_input = :target2
     # If the mouse is over a wall in the first grid
-    elsif mouse_over_wall?                 
+    elsif mouse_over_wall?
       # The user is removing a wall from the first grid
-      state.user_input = :remove_wall   
+      state.user_input = :remove_wall
     # If the mouse is over a wall in the second grid
-    elsif mouse_over_wall2?                 
+    elsif mouse_over_wall2?
       # The user is removing a wall from the second grid
       state.user_input = :remove_wall2
     # If the mouse is over a hill in the first grid
-    elsif mouse_over_hill?                 
+    elsif mouse_over_hill?
       # The user is adding a wall from the first grid
-      state.user_input = :add_wall   
+      state.user_input = :add_wall
     # If the mouse is over a hill in the second grid
-    elsif mouse_over_hill2?                 
+    elsif mouse_over_hill2?
       # The user is adding a wall from the second grid
       state.user_input = :add_wall2
     # If the mouse is over the first grid
-    elsif mouse_over_grid?                 
+    elsif mouse_over_grid?
       # The user is adding a hill from the first grid
       state.user_input = :add_hill
     # If the mouse is over the second grid
-    elsif mouse_over_grid2?                 
+    elsif mouse_over_grid2?
       # The user is adding a hill from the second grid
       state.user_input = :add_hill2
     end
@@ -401,26 +401,26 @@ class Movement_Costs
 
   # Processes click and drag based on what the user is currently dragging
   def process_input
-    if state.user_input == :star         
-      input_star                            
+    if state.user_input == :star
+      input_star
     elsif state.user_input == :star2
-      input_star2                            
-    elsif state.user_input == :target         
-      input_target                            
-    elsif state.user_input == :target2         
-      input_target2                            
-    elsif state.user_input == :remove_wall  
-      input_remove_wall                     
+      input_star2
+    elsif state.user_input == :target
+      input_target
+    elsif state.user_input == :target2
+      input_target2
+    elsif state.user_input == :remove_wall
+      input_remove_wall
     elsif state.user_input == :remove_wall2
-      input_remove_wall2                     
-    elsif state.user_input == :add_hill     
-      input_add_hill                        
-    elsif state.user_input == :add_hill2     
-      input_add_hill2                        
-    elsif state.user_input == :add_wall     
-      input_add_wall                        
-    elsif state.user_input == :add_wall2     
-      input_add_wall2                        
+      input_remove_wall2
+    elsif state.user_input == :add_hill
+      input_add_hill
+    elsif state.user_input == :add_hill2
+      input_add_hill2
+    elsif state.user_input == :add_wall
+      input_add_wall
+    elsif state.user_input == :add_wall2
+      input_add_wall2
     end
   end
 
@@ -433,26 +433,26 @@ class Movement_Costs
       calc_dijkstra
     end
   end
-  
+
 
   def calc_breadth_first
     # Sets up the Breadth First Search
-    breadth_first_search.visited[state.star]   = true              
-    breadth_first_search.frontier              << state.star                   
+    breadth_first_search.visited[state.star]   = true
+    breadth_first_search.frontier              << state.star
     breadth_first_search.came_from[state.star] = nil
 
     until breadth_first_search.frontier.empty?
       return if breadth_first_search.visited.has_key?(state.target)
       # A step in the search
       # Takes the next frontier cell
-      new_frontier = breadth_first_search.frontier.shift 
+      new_frontier = breadth_first_search.frontier.shift
       # For each of its neighbors
-      adjacent_neighbors(new_frontier).each do | neighbor | 
+      adjacent_neighbors(new_frontier).each do | neighbor |
         # That have not been visited and are not walls
-        unless breadth_first_search.visited.has_key?(neighbor) || state.walls.has_key?(neighbor) 
+        unless breadth_first_search.visited.has_key?(neighbor) || state.walls.has_key?(neighbor)
           # Add them to the frontier and mark them as visited in the first grid
-          breadth_first_search.visited[neighbor] = true 
-          breadth_first_search.frontier << neighbor 
+          breadth_first_search.visited[neighbor] = true
+          breadth_first_search.frontier << neighbor
           # Remember which cell the neighbor came from
           breadth_first_search.came_from[neighbor] = new_frontier
         end
@@ -512,12 +512,12 @@ class Movement_Costs
   # Only resets the search if the star changes position
   # Called whenever the user is editing the star (puts mouse down on star)
   def input_star
-    old_star = state.star.clone 
+    old_star = state.star.clone
     unless cell_closest_to_mouse == state.target
-      state.star = cell_closest_to_mouse 
+      state.star = cell_closest_to_mouse
     end
-    unless old_star == state.star 
-      reset_search 
+    unless old_star == state.star
+      reset_search
     end
   end
 
@@ -525,12 +525,12 @@ class Movement_Costs
   # Only resets the search if the star changes position
   # Called whenever the user is editing the star (puts mouse down on star)
   def input_star2
-    old_star = state.star.clone 
+    old_star = state.star.clone
     unless cell_closest_to_mouse2 == state.target
       state.star = cell_closest_to_mouse2
     end
-    unless old_star == state.star 
-      reset_search 
+    unless old_star == state.star
+      reset_search
     end
   end
 
@@ -538,12 +538,12 @@ class Movement_Costs
   # Only reset_searchs the search if the target changes position
   # Called whenever the user is editing the target (puts mouse down on target)
   def input_target
-    old_target = state.target.clone 
+    old_target = state.target.clone
     unless cell_closest_to_mouse == state.star
       state.target = cell_closest_to_mouse
     end
-    unless old_target == state.target 
-      reset_search 
+    unless old_target == state.target
+      reset_search
     end
   end
 
@@ -551,12 +551,12 @@ class Movement_Costs
   # Only reset_searchs the search if the target changes position
   # Called whenever the user is editing the target (puts mouse down on target)
   def input_target2
-    old_target = state.target.clone 
+    old_target = state.target.clone
     unless cell_closest_to_mouse2 == state.star
       state.target = cell_closest_to_mouse2
     end
-    unless old_target == state.target 
-      reset_search 
+    unless old_target == state.target
+      reset_search
     end
   end
 
@@ -565,11 +565,11 @@ class Movement_Costs
     # The mouse needs to be inside the grid, because we only want to remove walls
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
-    if mouse_over_grid? 
+    if mouse_over_grid?
       if state.walls.has_key?(cell_closest_to_mouse) or state.hills.has_key?(cell_closest_to_mouse)
-        state.walls.delete(cell_closest_to_mouse) 
-        state.hills.delete(cell_closest_to_mouse) 
-        reset_search 
+        state.walls.delete(cell_closest_to_mouse)
+        state.hills.delete(cell_closest_to_mouse)
+        reset_search
       end
     end
   end
@@ -579,21 +579,21 @@ class Movement_Costs
     # The mouse needs to be inside the grid, because we only want to remove walls
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
-    if mouse_over_grid2? 
+    if mouse_over_grid2?
       if state.walls.has_key?(cell_closest_to_mouse2) or state.hills.has_key?(cell_closest_to_mouse2)
-        state.walls.delete(cell_closest_to_mouse2) 
-        state.hills.delete(cell_closest_to_mouse2) 
-        reset_search 
+        state.walls.delete(cell_closest_to_mouse2)
+        state.hills.delete(cell_closest_to_mouse2)
+        reset_search
       end
     end
   end
 
   # Adds a hill in the first grid in the cell the mouse is over
   def input_add_hill
-    if mouse_over_grid? 
+    if mouse_over_grid?
       unless state.hills.has_key?(cell_closest_to_mouse)
-        state.hills[cell_closest_to_mouse] = true 
-        reset_search 
+        state.hills[cell_closest_to_mouse] = true
+        reset_search
       end
     end
   end
@@ -601,32 +601,32 @@ class Movement_Costs
 
   # Adds a hill in the second grid in the cell the mouse is over
   def input_add_hill2
-    if mouse_over_grid2? 
+    if mouse_over_grid2?
       unless state.hills.has_key?(cell_closest_to_mouse2)
-        state.hills[cell_closest_to_mouse2] = true 
-        reset_search 
+        state.hills[cell_closest_to_mouse2] = true
+        reset_search
       end
     end
   end
 
   # Adds a wall in the first grid in the cell the mouse is over
   def input_add_wall
-    if mouse_over_grid? 
+    if mouse_over_grid?
       unless state.walls.has_key?(cell_closest_to_mouse)
-        state.hills.delete(cell_closest_to_mouse) 
-        state.walls[cell_closest_to_mouse] = true 
-        reset_search 
+        state.hills.delete(cell_closest_to_mouse)
+        state.walls[cell_closest_to_mouse] = true
+        reset_search
       end
     end
   end
 
   # Adds a wall in the second grid in the cell the mouse is over
   def input_add_wall2
-    if mouse_over_grid2? 
+    if mouse_over_grid2?
       unless state.walls.has_key?(cell_closest_to_mouse2)
-        state.hills.delete(cell_closest_to_mouse2) 
-        state.walls[cell_closest_to_mouse2] = true 
-        reset_search 
+        state.hills.delete(cell_closest_to_mouse2)
+        state.walls[cell_closest_to_mouse2] = true
+        reset_search
       end
     end
   end
@@ -649,21 +649,21 @@ class Movement_Costs
   # Returns a list of adjacent cells
   # Used to determine what the next cells to be added to the frontier are
   def adjacent_neighbors(cell)
-    neighbors = [] 
+    neighbors = []
 
     # Gets all the valid neighbors into the array
     # From southern neighbor, clockwise
-    neighbors << [cell.x    , cell.y - 1] unless cell.y == 0 
-    neighbors << [cell.x - 1, cell.y    ] unless cell.x == 0 
-    neighbors << [cell.x    , cell.y + 1] unless cell.y == grid.height - 1 
-    neighbors << [cell.x + 1, cell.y    ] unless cell.x == grid.width - 1 
+    neighbors << [cell.x    , cell.y - 1] unless cell.y == 0
+    neighbors << [cell.x - 1, cell.y    ] unless cell.x == 0
+    neighbors << [cell.x    , cell.y + 1] unless cell.y == grid.height - 1
+    neighbors << [cell.x + 1, cell.y    ] unless cell.x == grid.width - 1
 
     # Sorts the neighbors so the rendered path is a zigzag path
     # Cells in a diagonal direction are given priority
     # Comment this line to see the difference
     neighbors = neighbors.sort_by { |neighbor_x, neighbor_y|  proximity_to_star(neighbor_x, neighbor_y) }
 
-    neighbors 
+    neighbors
   end
 
   # Finds the vertical and horizontal distance of a cell from the star
@@ -688,13 +688,13 @@ class Movement_Costs
   # Finding the cell closest to the mouse helps with this
   def cell_closest_to_mouse
     # Closest cell to the mouse in the first grid
-    x = (inputs.mouse.point.x / grid.cell_size).to_i 
-    y = (inputs.mouse.point.y / grid.cell_size).to_i 
+    x = (inputs.mouse.point.x / grid.cell_size).to_i
+    y = (inputs.mouse.point.y / grid.cell_size).to_i
     # Bound x and y to the grid
-    x = grid.width - 1 if x > grid.width - 1 
-    y = grid.height - 1 if y > grid.height - 1 
+    x = grid.width - 1 if x > grid.width - 1
+    y = grid.height - 1 if y > grid.height - 1
     # Return closest cell
-    [x, y] 
+    [x, y]
   end
 
   # When the user grabs the star and puts their cursor to the far right
@@ -702,17 +702,17 @@ class Movement_Costs
   # Finding the cell closest to the mouse in the second grid helps with this
   def cell_closest_to_mouse2
     # Closest cell grid to the mouse in the second
-    x = (inputs.mouse.point.x / grid.cell_size).to_i 
-    y = (inputs.mouse.point.y / grid.cell_size).to_i 
+    x = (inputs.mouse.point.x / grid.cell_size).to_i
+    y = (inputs.mouse.point.y / grid.cell_size).to_i
     # Translate the cell to the first grid
     x -= grid.width + 1
     # Bound x and y to the first grid
     x = 0 if x < 0
     y = 0 if y < 0
-    x = grid.width - 1 if x > grid.width - 1 
-    y = grid.height - 1 if y > grid.height - 1 
+    x = grid.width - 1 if x > grid.width - 1
+    y = grid.height - 1 if y > grid.height - 1
     # Return closest cell
-    [x, y] 
+    [x, y]
   end
 
   # Signal that the user is going to be moving the star from the first grid
@@ -785,12 +785,12 @@ class Movement_Costs
 
   # Light brown
   def unvisited_color
-    [221, 212, 213] 
+    [221, 212, 213]
   end
 
   # Camo Green
   def wall_color
-    [134, 134, 120] 
+    [134, 134, 120]
   end
 
   # Pastel White
@@ -833,7 +833,7 @@ def tick args
   end
 
   # Every tick, new args are passed, and the Dijkstra tick method is called
-  $movement_costs ||= Movement_Costs.new(args)
+  $movement_costs ||= Movement_Costs.new
   $movement_costs.args = args
   $movement_costs.tick
 end

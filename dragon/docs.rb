@@ -260,7 +260,7 @@ S
     <link href="docs.css?ver=#{Time.now.to_i}" rel="stylesheet" type="text/css" media="all">
   </head>
   <body>
-    <div id='toc'>
+    <div id='table-of-contents'>
 S
     html_toc_end_to_content_start = <<-S
     </div>

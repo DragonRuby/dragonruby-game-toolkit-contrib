@@ -26,9 +26,9 @@ def $top_level.TICK &block
 
   def $top_level.slds! *os
     if (os.first.is_a? Numeric)
-      sld! *os
+      sld!(*os)
     else
-      os.each { |o| sld! *o }
+      os.each { |o| sld!(*o) }
     end
   end
 

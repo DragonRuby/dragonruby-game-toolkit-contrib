@@ -10,14 +10,17 @@ module GTK
   class Console
     include ConsoleDeprecated
 
-    attr_accessor :show_reason, :log, :logo, :background_color,
-                  :text_color, :animation_duration,
+    attr_accessor :show_reason, :log, :logo,
+                  :animation_duration,
                   :max_log_lines, :max_history, :log,
-                  :last_command_errored, :last_command, :error_color, :shown_at,
-                  :header_color, :archived_log, :last_log_lines, :last_log_lines_count,
+                  :last_command_errored, :last_command, :shown_at,
+                  :archived_log, :last_log_lines, :last_log_lines_count,
                   :suppress_left_arrow_behavior, :command_set_at,
                   :toast_ids, :bottom,
-                  :font_style, :menu
+                  :font_style, :menu,
+                  :background_color, :spam_color, :text_color, :warn_color,
+                  :error_color, :header_color, :code_color, :comment_color,
+                  :debug_color, :unfiltered_color
 
     def initialize
       @font_style = FontStyle.new(font: 'font.ttf', size_enum: -1.5, line_height: 1.1)
@@ -35,15 +38,22 @@ module GTK
       @command_history_index = -1
       @nonhistory_input = ''
       @logo = 'console-logo.png'
-      @history_fname = 'console_history.txt'
+      @history_fname = 'logs/console_history.txt'
       @background_color = Color.new [0, 0, 0, 224]
-      @text_color = Color.new [255, 255, 255]
-      @error_color = Color.new [200, 50, 50]
       @header_color = Color.new [100, 200, 220]
       @code_color = Color.new [210, 168, 255]
-      @comment_color    = Color.new [0, 200, 100]
+      @comment_color = Color.new [0, 200, 100]
       @animation_duration = 1.seconds
       @shown_at = -1
+
+      # these are the colors for text at various log levels.
+      @spam_color = Color.new [160, 160, 160]
+      @debug_color = Color.new [0, 255, 0]
+      @text_color = Color.new [255, 255, 255]
+      @warn_color = Color.new [255, 255, 0]
+      @error_color = Color.new [200, 50, 50]
+      @unfiltered_color = Color.new [0, 255, 255]
+
       load_history
     end
 
@@ -109,7 +119,13 @@ module GTK
       nil
     end
 
-    def add_text obj
+    def add_text obj, loglevel=-1
+      # loglevel is one of the values of LogLevel in logging.h, or -1 to say "we don't care, colorize it with your special string parsing magic"
+      loglevel = -1 if loglevel < 0
+      loglevel = 5 if loglevel > 5  # 5 == unfiltered (it's 0x7FFFFFFE in C, clamp it down)
+      loglevel = 2 if (loglevel == -1) && obj.start_with?('!c!')  # oh well
+      colorstr = (loglevel != -1) ? "!c!#{loglevel}" : nil
+
       @last_log_lines_count ||= 1
       @log_invocation_count += 1
 
@@ -118,12 +134,18 @@ module GTK
       log_lines = []
 
       str.each_line do |s|
-        s.wrapped_lines(self.console_text_width).each do |l|
-          log_lines << l
+        if colorstr.nil?
+          s.wrapped_lines(self.console_text_width).each do |l|
+            log_lines << l
+          end
+        else
+          s.wrapped_lines(self.console_text_width).each do |l|
+            log_lines << "#{colorstr}#{l}"
+          end
         end
       end
 
-      if log_lines == @last_log_lines
+      if log_lines == @last_log_lines && log_lines.length != 0
         @last_log_lines_count += 1
         new_log_line_with_count = @last_log_lines.last + " (#{@last_log_lines_count})"
         if log_lines.length > 1
@@ -398,10 +420,12 @@ S
     def mouse_wheel_scroll args
       @inertia ||= 0
 
-      if args.inputs.mouse.wheel && args.inputs.mouse.wheel.y > 0
-        @inertia = 1
-      elsif args.inputs.mouse.wheel && args.inputs.mouse.wheel.y < 0
-        @inertia = -1
+      if args.inputs.mouse.wheel
+        if args.inputs.mouse.wheel.y > 0
+          @inertia = 1
+        elsif args.inputs.mouse.wheel.y < 0
+          @inertia = -1
+        end
       end
 
       if args.inputs.mouse.click
@@ -410,13 +434,11 @@ S
 
       return if @inertia == 0
 
-      if @inertia != 0
-        @inertia = (@inertia * 0.7)
-        if @inertia > 0
-          @log_offset -= 1
-        elsif @inertia < 0
-          @log_offset += 1
-        end
+      @inertia = (@inertia * 0.7)
+      if @inertia > 0
+        @log_offset += 1
+      elsif @inertia < 0
+        @log_offset -= 1
       end
 
       if @inertia.abs < 0.01
@@ -532,7 +554,7 @@ S
     def write_line(args, left, y, str, archived: false)
       color = color_for_log_entry(str)
       color = color.mult_alpha(0.5) if archived
-
+      str = str[4..-1] if str.start_with?('!c!')  # chop off loglevel color
       args.outputs.reserved << font_style.label(x: left.shift_right(10), y: y, text: str, color: color)
     end
 
@@ -768,7 +790,9 @@ S
       return false
     end
 
-    def color_for_log_entry(log_entry)
+    def color_for_plain_text log_entry
+      log_entry = log_entry[4..-1] if log_entry.start_with? "!c!"
+
       if code? log_entry
         @code_color
       elsif code_comment? log_entry
@@ -786,6 +810,29 @@ S
       else
         @text_color
       end
+    end
+
+    def color_for_log_entry(log_entry)
+      if log_entry.start_with?('!c!')  # loglevel color specified.
+        return case log_entry[3..3].to_i
+               when 0  # spam
+                 @spam_color
+               when 1  # debug
+                 @debug_color
+               #when 2  # info (caught by the `else` block.)
+               #  @text_color
+               when 3  # warn
+                 @warn_color
+               when 4  # error
+                 @error_color
+               when 5  # unfiltered
+                 @unfiltered_color
+               else
+                 color_for_plain_text log_entry
+               end
+      end
+
+      return color_for_plain_text log_entry
     end
 
     def prompt

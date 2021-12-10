@@ -196,7 +196,7 @@ class ProtectThePuppiesFromTheZombies
   def calc_kill_zombie
 
     # Find all zombies that intersect with the player. They are considered killed.
-    killed_this_frame = state.zombies.find_all { |z| z.sprite.intersect_rect? state.player_sprite }
+    killed_this_frame = state.zombies.find_all { |z| z.sprite && (z.sprite.intersect_rect? state.player_sprite) }
     state.zombies = state.zombies - killed_this_frame # remove newly killed zombies from zombies collection
     state.killed_zombies += killed_this_frame # add newly killed zombies to killed zombies
 

@@ -34,7 +34,7 @@ module GTK
             if @tick_speed_count > 60 * 2
               if framerate_below_threshold?
                 @last_framerate = current_framerate
-                if !@console.visible?
+                if !@console.visible? && !@recording.is_replaying?
                   log framerate_warning_message
                 end
               end

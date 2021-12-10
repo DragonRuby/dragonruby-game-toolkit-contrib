@@ -6,7 +6,7 @@ class CameraMovement
   def serialize
     {state: state, inputs: inputs, outputs: outputs, grid: grid }
   end
-  
+
   def inspect
     serialize.to_s
   end
@@ -76,12 +76,12 @@ class CameraMovement
     default_player(0, 0, 64, 64,
                    "sprites/player/player_#{state.player_cyan.orientation}_standing.png")
   end
-  
+
   def new_player_magenta
     default_player(64, 0, 64, 64,
                    "sprites/player/player_#{state.player_magenta.orientation}_standing.png")
   end
-  
+
   def new_camera_magenta
     default_camera(0,0,720,720)
   end
@@ -93,7 +93,8 @@ class CameraMovement
   def new_camera_center
     default_camera(0,0,1280,720)
   end
-  
+
+
   def new_room
     default_floor_tile(0,0,1024,1024,'sprites/rooms/camera_room.png')
   end
@@ -118,7 +119,7 @@ class CameraMovement
     state.player_cyan.x += state.player_cyan.dx
     state.player_cyan.y += state.player_cyan.dy
   end
-  
+
   def calc_player_magenta
     state.player_magenta.x += state.player_magenta.dx
     state.player_magenta.y += state.player_magenta.dy
@@ -133,7 +134,7 @@ class CameraMovement
     state.camera_center.x += (targetX - state.camera_center.x) * 0.1 * timeScale
     state.camera_center.y += (targetY - state.camera_center.y) * 0.1 * timeScale
   end
-  
+
 
   def calc_camera_magenta
     timeScale = 1
@@ -170,7 +171,7 @@ class CameraMovement
   def calc_trauma_decay
     state.trauma = state.trauma * 0.9
   end
-  
+
   def calc_random_float_range(min, max)
     rand * (max-min) + min
   end
@@ -198,7 +199,7 @@ class CameraMovement
                                 g: 255,
                                 b: 255}
   end
-  
+
   def render_player_magenta
     outputs[:scene].sprites << {x: state.player_magenta.x,
                                 y: state.player_magenta.y,
@@ -244,16 +245,16 @@ class CameraMovement
      render_camera_magenta_scene
      render_camera_cyan_scene
 
-     angle = Math.atan((state.player_magenta.y - state.player_cyan.y)/(state.player_magenta.x- state.player_cyan.x)) * 180/Math::PI 
+     angle = Math.atan((state.player_magenta.y - state.player_cyan.y)/(state.player_magenta.x- state.player_cyan.x)) * 180/Math::PI
      output_split_camera angle
-     
+
   end
 
   def render_camera_magenta_scene
      zoomFactor = 1
      offsetX = 32
      offsetY = 32
-     
+
      outputs[:scene_magenta].sprites << {x: (-state.camera_magenta.x*2),
                                          y: (-state.camera_magenta.y),
                                          w: outputs[:scene].width*2,
@@ -279,7 +280,7 @@ class CameraMovement
     outputs.labels << [128,64,"#{quadrant}",8,2,255,0,255,255]
     if quadrant == 1
       set_camera_attributes(w: 640, h: 720, m_x: 640, m_y: 0, c_x: 0, c_y: 0)
-      
+
     elsif quadrant == 2
       set_camera_attributes(w: 1280, h: 360, m_x: 0, m_y: 360, c_x: 0, c_y: 0)
 
@@ -297,7 +298,7 @@ class CameraMovement
     state.camera_cyan.h = h + 64
     outputs[:scene_cyan].width = (w) * 2
     outputs[:scene_cyan].height = h
-    
+
     state.camera_magenta.w = w + 64
     state.camera_magenta.h = h + 64
     outputs[:scene_magenta].width = (w) * 2
@@ -309,7 +310,7 @@ class CameraMovement
                         path: :scene_magenta}
     outputs.sprites << {x: c_x,
                         y: c_y,
-                        w: w, 
+                        w: w,
                         h: h,
                         path: :scene_cyan}
   end
@@ -317,7 +318,7 @@ class CameraMovement
   def add_trauma amount
     state.trauma = [state.trauma + amount, 1.0].min
   end
-  
+
   def remove_trauma amount
     state.trauma = [state.trauma - amount, 0.0].max
   end
@@ -357,7 +358,7 @@ class CameraMovement
     outputs.labels << [128,512,"#{state.player_cyan.x.round()}",8,2,0,255,255,255]
     outputs.labels << [128,480,"#{state.player_cyan.y.round()}",8,2,0,255,255,255]
   end
-  
+
   def input_move_magenta
     if inputs.keyboard.key_held.w
       state.player_magenta.dy = 5
@@ -391,5 +392,5 @@ def tick args
   $camera_movement.outputs = args.outputs
   $camera_movement.state   = args.state
   $camera_movement.grid    = args.grid
-  $camera_movement.tick  
+  $camera_movement.tick
 end

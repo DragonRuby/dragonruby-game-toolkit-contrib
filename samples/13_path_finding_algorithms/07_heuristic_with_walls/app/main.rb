@@ -1002,7 +1002,7 @@ def tick args
   end
 
   # Every tick, new args are passed, and the Breadth First Search tick is called
-  $heuristic ||= Heuristic.new(args)
+  $heuristic ||= Heuristic.new
   $heuristic.args = args
   $heuristic.tick
 end

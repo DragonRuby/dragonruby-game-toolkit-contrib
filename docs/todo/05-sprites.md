@@ -179,14 +179,26 @@ args.outputs.sprites << {
 
 ## Duck Typing (Advanced)
 
-You can also create a class with sprite properties and render it as a primitive,
-using the `attr_sprite` helper.
+You can also create a class with sprite properties and render it as a primitive.
+ALL properties must on the class. ADDITIONALLY, a method called `primitive_marker`
+must be defined on the class.
 
 Here is an example:
 
 ```ruby
-class PlayerSprite
-  attr_sprite
+# Create type with ALL sprite properties AND primitive_marker
+class Sprite
+  attr_accessor :x, :y, :w, :h, :path, :angle, :a, :r, :g, :b, :source_x,
+                :source_y, :source_w, :source_h, :flip_horizontally,
+                :flip_vertically, :angle_anchor_x, :angle_anchor_y
+
+  def primitive_marker
+    :sprite
+  end
+end
+
+# Inherit from type
+class PlayerSprite < Sprite
 
   # constructor
   def initialize x, y, w, h

@@ -38,31 +38,36 @@ class FlappyDragon
   end
 
   def render_score
-    outputs.primitives << [10, 710, "HI SCORE: #{state.hi_score}", large_white_typeset].label
-    outputs.primitives << [10, 680, "SCORE: #{state.score}", large_white_typeset].label
-    outputs.primitives << [10, 650, "DIFFICULTY: #{state.difficulty.upcase}", large_white_typeset].label
+    outputs.primitives << { x: 10, y: 710, text: "HI SCORE: #{state.hi_score}", **large_white_typeset }
+    outputs.primitives << { x: 10, y: 680, text: "SCORE: #{state.score}", **large_white_typeset }
+    outputs.primitives << { x: 10, y: 650, text: "DIFFICULTY: #{state.difficulty.upcase}", **large_white_typeset }
   end
 
   def render_menu
     return unless state.scene == :menu
     render_overlay
 
-    outputs.labels << [640, 700, "Flappy Dragon", 50, 1, 255, 255, 255]
-    outputs.labels << [640, 500, "Instructions: Press Spacebar to flap. Don't die.", 4, 1, 255, 255, 255]
-    outputs.labels << [430, 430, "[Tab]    Change difficulty", 4, 0, 255, 255, 255]
-    outputs.labels << [430, 400, "[Enter]  Start at New Difficulty ", 4, 0, 255, 255, 255]
-    outputs.labels << [430, 370, "[Escape] Cancel/Resume ", 4, 0, 255, 255, 255]
-    outputs.labels << [640, 300, "(mouse, touch, and game controllers work, too!) ", 4, 1, 255, 255, 255]
-    outputs.labels << [640, 200, "Difficulty: #{state.new_difficulty.capitalize}", 4, 1, 255, 255, 255]
+    outputs.labels << { x: 640, y: 700, text: "Flappy Dragon", size_enum: 50, alignment_enum: 1, **white }
+    outputs.labels << { x: 640, y: 500, text: "Instructions: Press Spacebar to flap. Don't die.", size_enum: 4, alignment_enum: 1, **white }
+    outputs.labels << { x: 430, y: 430, text: "[Tab]    Change difficulty", size_enum: 4, alignment_enum: 0, **white }
+    outputs.labels << { x: 430, y: 400, text: "[Enter]  Start at New Difficulty ", size_enum: 4, alignment_enum: 0, **white }
+    outputs.labels << { x: 430, y: 370, text: "[Escape] Cancel/Resume ", size_enum: 4, alignment_enum: 0, **white }
+    outputs.labels << { x: 640, y: 300, text: "(mouse, touch, and game controllers work, too!) ", size_enum: 4, alignment_enum: 1, **white }
+    outputs.labels << { x: 640, y: 200, text: "Difficulty: #{state.new_difficulty.capitalize}", size_enum: 4, alignment_enum: 1, **white }
 
-    outputs.labels << [10, 100, "Code:   @amirrajan",     255, 255, 255]
-    outputs.labels << [10,  80, "Art:    @mobypixel",     255, 255, 255]
-    outputs.labels << [10,  60, "Music:  @mobypixel",     255, 255, 255]
-    outputs.labels << [10,  40, "Engine: DragonRuby GTK", 255, 255, 255]
+    outputs.labels << { x: 10, y: 100, text: "Code:   @amirrajan",     **white }
+    outputs.labels << { x: 10, y:  80, text: "Art:    @mobypixel",     **white }
+    outputs.labels << { x: 10, y:  60, text: "Music:  @mobypixel",     **white }
+    outputs.labels << { x: 10, y:  40, text: "Engine: DragonRuby GTK", **white }
   end
 
   def render_overlay
-    outputs.primitives << [grid.rect.scale_rect(1.1, 0, 0), 0, 0, 0, 230].solid
+    overlay_rect = grid.rect.scale_rect(1.1, 0, 0)
+    outputs.primitives << { x: overlay_rect.x,
+                            y: overlay_rect.y,
+                            w: overlay_rect.w,
+                            h: overlay_rect.h,
+                            r: 0, g: 0, b: 0, a: 230 }.solid!
   end
 
   def render_game
@@ -75,14 +80,14 @@ class FlappyDragon
 
   def render_game_over
     return unless state.scene == :game
-    outputs.labels << [638, 358, score_text, 20, 1]
-    outputs.labels << [635, 360, score_text, 20, 1, 255, 255, 255]
-    outputs.labels << [638, 428, countdown_text, 20, 1]
-    outputs.labels << [635, 430, countdown_text, 20, 1, 255, 255, 255]
+    outputs.labels << { x: 638, y: 358, text: score_text,     size_enum: 20, alignment_enum: 1 }
+    outputs.labels << { x: 635, y: 360, text: score_text,     size_enum: 20, alignment_enum: 1, r: 255, g: 255, b: 255 }
+    outputs.labels << { x: 638, y: 428, text: countdown_text, size_enum: 20, alignment_enum: 1 }
+    outputs.labels << { x: 635, y: 430, text: countdown_text, size_enum: 20, alignment_enum: 1, r: 255, g: 255, b: 255 }
   end
 
   def render_background
-    outputs.sprites << [0, 0, 1280, 720, 'sprites/background.png']
+    outputs.sprites << { x: 0, y: 0, w: 1280, h: 720, path: 'sprites/background.png' }
 
     scroll_point_at   = state.tick_count
     scroll_point_at   = state.scene_at if state.scene == :menu
@@ -94,11 +99,18 @@ class FlappyDragon
     outputs.sprites << scrolling_background(scroll_point_at, 'sprites/parallax_front.png',  1.00, -80)
   end
 
+  def scrolling_background at, path, rate, y = 0
+    [
+      { x:    0 - at.*(rate) % 1440, y: y, w: 1440, h: 720, path: path },
+      { x: 1440 - at.*(rate) % 1440, y: y, w: 1440, h: 720, path: path }
+    ]
+  end
+
   def render_walls
     state.walls.each do |w|
       w.sprites = [
-        [w.x, w.bottom_height - 720, 100, 720, 'sprites/wall.png', 180],
-        [w.x, w.top_y,               100, 720, 'sprites/wallbottom.png', 0]
+        { x: w.x, y: w.bottom_height - 720, w: 100, h: 720, path: 'sprites/wall.png',       angle: 180 },
+        { x: w.x, y: w.top_y,               w: 100, h: 720, path: 'sprites/wallbottom.png', angle: 0 }
       ]
     end
     outputs.sprites << state.walls.map(&:sprites)
@@ -107,15 +119,13 @@ class FlappyDragon
   def render_dragon
     state.show_death = true if state.countdown == 3.seconds
 
-    render_debug_hitbox false
-
     if state.show_death == false || !state.death_at
       animation_index = state.flapped_at.frame_index 6, 2, false if state.flapped_at
       sprite_name = "sprites/dragon_fly#{animation_index.or(0) + 1}.png"
-      state.dragon_sprite = [state.x, state.y, 100, 80, sprite_name, state.dy * 1.2]
+      state.dragon_sprite = { x: state.x, y: state.y, w: 100, h: 80, path: sprite_name, angle: state.dy * 1.2 }
     else
       sprite_name = "sprites/dragon_die.png"
-      state.dragon_sprite = [state.x, state.y, 100, 80, sprite_name, state.dy * 1.2]
+      state.dragon_sprite = { x: state.x, y: state.y, w: 100, h: 80, path: sprite_name, angle: state.dy * 1.2 }
       sprite_changed_elapsed    = state.death_at.elapsed_time - 1.seconds
       state.dragon_sprite.angle += (sprite_changed_elapsed ** 1.3) * state.death_fall_direction * -1
       state.dragon_sprite.x     += (sprite_changed_elapsed ** 1.2) * state.death_fall_direction
@@ -125,20 +135,12 @@ class FlappyDragon
     outputs.sprites << state.dragon_sprite
   end
 
-  def render_debug_hitbox show
-    return unless show
-    outputs.borders << [dragon_collision_box.rect, 255, 0, 0] if state.dragon_sprite
-    outputs.borders << state.walls.flat_map do |w|
-       w.sprites.map { |s| [s.rect, 255, 0, 0] }
-    end
-  end
-
   def render_flash
     return unless state.flash_at
 
-    outputs.primitives << [grid.rect,
-                           white,
-                           255 * state.flash_at.ease(20, :flip)].solid
+    outputs.primitives << { **grid.rect.to_hash,
+                            **white,
+                            a: 255 * state.flash_at.ease(20, :flip) }.solid!
 
     state.flash_at = 0 if state.flash_at.elapsed_time > 20
   end
@@ -258,19 +260,12 @@ class FlappyDragon
     end
   end
 
-  def scrolling_background at, path, rate, y = 0
-    [
-      [   0 - at.*(rate) % 1440, y, 1440, 720, path],
-      [1440 - at.*(rate) % 1440, y, 1440, 720, path]
-    ]
-  end
-
   def white
-    [255, 255, 255]
+    { r: 255, g: 255, b: 255 }
   end
 
   def large_white_typeset
-    [5, 0, 255, 255, 255]
+    { size_enum: 5, alignment_enum: 0, r: 255, g: 255, b: 255 }
   end
 
   def at_beginning?
@@ -279,9 +274,9 @@ class FlappyDragon
 
   def dragon_collision_box
     state.dragon_sprite
-        .scale_rect(1.0 - collision_forgiveness, 0.5, 0.5)
-        .rect_shift_right(10)
-        .rect_shift_up(state.dy * 2)
+         .scale_rect(1.0 - collision_forgiveness, 0.5, 0.5)
+         .rect_shift_right(10)
+         .rect_shift_up(state.dy * 2)
   end
 
   def game_over?
@@ -290,7 +285,7 @@ class FlappyDragon
     state.walls
         .flat_map { |w| w.sprites }
         .any? do |s|
-          s.intersect_rect?(dragon_collision_box)
+          s && s.intersect_rect?(dragon_collision_box)
         end
   end
 

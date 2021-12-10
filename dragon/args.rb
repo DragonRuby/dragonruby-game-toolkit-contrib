@@ -10,6 +10,7 @@ module GTK
   class Args
     include ArgsDeprecated
     include Serialize
+    attr_accessor :cvars
     attr_accessor :inputs
     attr_accessor :outputs
     attr_accessor :audio
@@ -30,6 +31,7 @@ module GTK
     def initialize runtime, recording
       @inputs = Inputs.new
       @outputs = Outputs.new args: self
+      @cvars = {}
       @audio = {}
       @passes = []
       @state = OpenEntity.new
