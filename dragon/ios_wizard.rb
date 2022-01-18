@@ -398,6 +398,16 @@ S
       )
     end
 
+    if !cli_app_exist?(ideviceinstaller_cli_app)
+      raise WizardException.new(
+         "* It doesn't look like you have the libimobiledevice iOS protocol library installed.",
+         "** 1. Open Terminal.",
+         { w: 700, h: 99, path: get_reserved_sprite("terminal.png") },
+         "** 2. Run: `brew install ideviceinstaller`.",
+         { w: 500, h: 91, path: get_reserved_sprite("brew-install-ideviceinstaller.png") },
+      )
+    end
+
     if connected_devices.length == 0
       raise WizardException.new("* I couldn't find any connected devices. Connect your iOS device to your Mac and try again.")
     end
@@ -420,6 +430,10 @@ S
 
   def idevice_id_cli_app
     "idevice_id"
+  end
+
+  def ideviceinstaller_cli_app
+    "ideviceinstaller"
   end
 
   def security_cli_app
@@ -484,123 +498,9 @@ XML
     log_info "Signing app with #{@certificate_name}."
 
     sh "CODESIGN_ALLOCATE=\"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\" /usr/bin/codesign -f -s \"#{@certificate_name}\" --entitlements #{tmp_directory}/Entitlements.plist \"#{tmp_directory}/ipa_root/Payload/#{@app_name}.app\""
-    sh "CODESIGN_ALLOCATE=\"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\" /usr/bin/codesign -f -s \"#{@certificate_name}\" --entitlements #{tmp_directory}/Entitlements.plist \"#{tmp_directory}/ipa_root/Payload/#{@app_name}.app/Runtime\""
+    sh "CODESIGN_ALLOCATE=\"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\" /usr/bin/codesign -f -s \"#{@certificate_name}\" --entitlements #{tmp_directory}/Entitlements.plist \"#{tmp_directory}/ipa_root/Payload/#{@app_name}.app/#{@app_name}\""
 
     @code_sign_completed = true
-  end
-
-  def write_info_plist_distribution
-    log_info "Adding Info.plist."
-
-    <<-XML
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-    <dict>
-        <key>BuildMachineOSBuild</key>
-        <string>20D91</string>
-        <key>CFBundleDevelopmentRegion</key>
-        <string>en</string>
-        <key>CFBundleName</key>
-        <string>:app_name</string>
-        <key>CFBundleDisplayName</key>
-        <string>A Dark Room</string>
-        <key>CFBundleIdentifier</key>
-        <string>:app_id</string>
-        <key>CFBundleExecutable</key>
-        <string>:app_name</string>
-        <key>CFBundleInfoDictionaryVersion</key>
-        <string>:app_version</string>
-        <key>CFBundlePackageType</key>
-        <string>APPL</string>
-        <key>CFBundleShortVersionString</key>
-        <string>:app_version</string>
-        <key>CFBundleSignature</key>
-        <string>????</string>
-        <key>CFBundleVersion</key>
-        <string>:app_version</string>
-        <key>CFBundleIcons</key>
-        <dict>
-            <key>CFBundlePrimaryIcon</key>
-            <dict>
-                <key>CFBundleIconName</key>
-                <string>AppIcon</string>
-                <key>CFBundleIconFiles</key>
-                <array>
-                    <string>AppIcon60x60</string>
-                </array>
-            </dict>
-        </dict>
-        <key>CFBundleIcons~ipad</key>
-        <dict>
-            <key>CFBundlePrimaryIcon</key>
-            <dict>
-                <key>CFBundleIconName</key>
-                <string>AppIcon</string>
-                <key>CFBundleIconFiles</key>
-                <array>
-                    <string>AppIcon60x60</string>
-                    <string>AppIcon76x76</string>
-                    <string>AppIcon83.5x83.5</string>
-                </array>
-            </dict>
-        </dict>
-        <key>UILaunchStoryboardName</key>
-        <string>SimpleSplash</string>
-        <key>UIRequiresFullScreen</key>
-        <true/>
-        <key>ITSAppUsesNonExemptEncryption</key>
-        <false/>
-        <key>UIRequiredDeviceCapabilities</key>
-        <array>
-            <string>arm64</string>
-        </array>
-        <key>MinimumOSVersion</key>
-        <string>10.3</string>
-        <key>CFBundleSupportedPlatforms</key>
-        <array>
-            <string>iPhoneOS</string>
-        </array>
-        <key>CFBundleIconFiles</key>
-        <array>
-            <string>AppIcon20x20</string>
-            <string>AppIcon29x29</string>
-            <string>AppIcon40x40</string>
-            <string>AppIcon60x60</string>
-        </array>
-        <key>UIDeviceFamily</key>
-        <array>
-            <integer>1</integer>
-            <integer>2</integer>
-        </array>
-        <key>UISupportedInterfaceOrientations</key>
-        <array>
-            <string>UIInterfaceOrientationPortrait</string>
-        </array>
-        <key>UIStatusBarStyle</key>
-        <string>UIStatusBarStyleDefault</string>
-        <key>UIBackgroundModes</key>
-        <array>
-        </array>
-        <key>DTXcode</key>
-        <string>0124</string>
-        <key>DTXcodeBuild</key>
-        <string>12D4e</string>
-        <key>DTSDKName</key>
-        <string>iphoneos14.4</string>
-        <key>DTSDKBuild</key>
-        <string>18D46</string>
-        <key>DTPlatformName</key>
-        <string>iphoneos</string>
-        <key>DTCompiler</key>
-        <string>com.apple.compilers.llvm.clang.1_0</string>
-        <key>DTPlatformVersion</key>
-        <string>14.4</string>
-        <key>DTPlatformBuild</key>
-        <string>18D46</string>
-    </dict>
-</plist>
-XML
   end
 
   def development_write_info_plist
@@ -633,7 +533,7 @@ XML
         <key>CFBundleDisplayName</key>
         <string>:app_name</string>
         <key>CFBundleExecutable</key>
-        <string>Runtime</string>
+        <string>:app_name</string>
         <key>CFBundleIconFiles</key>
         <array>
                 <string>AppIcon60x60</string>
@@ -787,7 +687,7 @@ XML
         <key>CFBundleDisplayName</key>
         <string>:app_name</string>
         <key>CFBundleExecutable</key>
-        <string>Runtime</string>
+        <string>:app_name</string>
         <key>CFBundleIconFiles</key>
         <array>
                 <string>AppIcon60x60</string>
@@ -956,17 +856,20 @@ XML
     sh %Q[rm -rf "#{app_path}/sprites"]
     sh %Q[rm -rf "#{app_path}/data"]
     sh %Q[rm -rf "#{app_path}/fonts"]
+    sh %Q[rm -rf "#{app_path}/metadata"]
   end
 
   def stage_app
     log_info "Staging."
     sh "mkdir -p #{tmp_directory}"
-    sh "cp -R #{relative_path}/dragonruby-ios.app \"#{tmp_directory}/#{@app_name}.app\""
+    sh "cp -R #{relative_path}/dragonruby-ios.app/ \"#{tmp_directory}/#{@app_name}.app/\""
+    sh "mv \"#{tmp_directory}/#{@app_name}.app/Runtime\" \"#{tmp_directory}/#{@app_name}.app/#{@app_name}\""
     sh %Q[cp -r "#{root_folder}/app/" "#{app_path}/app/"]
     sh %Q[cp -r "#{root_folder}/sounds/" "#{app_path}/sounds/"]
     sh %Q[cp -r "#{root_folder}/sprites/" "#{app_path}/sprites/"]
     sh %Q[cp -r "#{root_folder}/data/" "#{app_path}/data/"]
     sh %Q[cp -r "#{root_folder}/fonts/" "#{app_path}/fonts/"]
+    sh %Q[cp -r "#{root_folder}/metadata/" "#{app_path}/metadata/"]
   end
 
   def create_payload
@@ -1021,7 +924,7 @@ SCRIPT
   end
 
   def deploy
-    sh "XCODE_DIR=\"/Applications/Xcode.app/Contents/Developer\" \"#{relative_path}/dragonruby-deploy-ios\" -d \"#{@device_id}\" \"#{tmp_directory}/#{@app_name}.ipa\""
+    sh "ideviceinstaller -i \"#{tmp_directory}/#{@app_name}.ipa\""
     log_info "Check your device!!"
   end
 
