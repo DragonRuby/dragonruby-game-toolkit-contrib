@@ -3,6 +3,9 @@
 # MIT License
 # api.rb has been released under MIT (*only this file*).
 
+# Contributors outside of DragonRuby who also hold Copyright:
+# - Kevin Fischer: https://github.com/kfischer-okarin
+
 module GTK
   class Api
     def initialize
