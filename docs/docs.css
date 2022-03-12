@@ -5,7 +5,7 @@ body {
     max-width: 920px;
     margin-left: auto;
     margin-right: auto;
-    font-size: 16px;
+    font-size: 14px;
     font-family: 'Helvetica', 'Arial', sans-serif;
     line-height: 1.5;
     font-weight: 300;
@@ -35,23 +35,37 @@ a:visited {
 h1 {
     font-size: 26px;
     border-bottom: solid 1px silver;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
 }
 
 h2 {
     font-size: 22px;
     border-bottom: solid 1px silver;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
 }
 
 h3 {
     font-size: 18px;
     border-bottom: solid 1px silver;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
 }
 
 h4 {
-    font-size: 14px;
+    font-size: 16px;
     border-bottom: solid 1px silver;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
 }
 
+h5 {
+    font-size: 14px;
+    border-bottom: solid 1px silver;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+}
 
 img {
     width: 100%;

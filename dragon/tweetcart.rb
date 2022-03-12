@@ -12,6 +12,10 @@ def $top_level.TICK &block
     args.outputs.sprites << { x: 0, y: 0, w: 1280, h: 720, path: :scene }
   end
 
+  def $top_level.no_clear! render_target_name
+    $args.outputs[:render_target_name].clear_before_render = false
+  end
+
   def $top_level.bg! *rgb
     r,g,b = rgb
     r ||= 255
@@ -73,6 +77,30 @@ def $top_level.TICK &block
               w: w, h: h,
               r: r, g: g, b: b, a: a,
               path: :pixel }
+  end
+
+  def $top_level.sin_r radians
+    Math.sin radians
+  end
+
+  def $top_level.cos_r radians
+    Math.cos radians
+  end
+
+  def $top_level.sin degrees
+    Math.sin degrees.to_radians
+  end
+
+  def $top_level.cos degrees
+    Math.cos degrees.to_radians
+  end
+
+  def $top_level.sin_d degrees
+    Math.sin degrees.to_radians
+  end
+
+  def $top_level.cos_d degrees
+    Math.cos degrees.to_radians
   end
 end
 

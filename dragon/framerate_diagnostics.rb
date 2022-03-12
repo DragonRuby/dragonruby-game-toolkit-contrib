@@ -76,6 +76,7 @@ Do this:
 Here are the draw counts ordered by lowest to highest z order:
 
 PRIMITIVE   COUNT, STATIC COUNT
+triangles:  #{@args.outputs.triangles.length}, #{@args.outputs.static_triangles.length}
 solids:     #{@args.outputs.solids.length}, #{@args.outputs.static_solids.length}
 sprites:    #{@args.outputs.sprites.length}, #{@args.outputs.static_sprites.length}
 primitives: #{@args.outputs.primitives.length}, #{@args.outputs.static_primitives.length}

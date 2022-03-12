@@ -132,10 +132,10 @@ class Numeric
     animation_length = animation_frame_hold_time * animation_frame_count
     return nil if Kernel.tick_count < self
 
-    if !repeat && (self + animation_length) < (tick_count_override - 1)
+    if !repeat && (self + animation_length) <= (tick_count_override)
       return nil
     else
-      return self.elapsed_time.-(1).idiv(animation_frame_hold_time) % animation_frame_count
+      return self.elapsed_time(tick_count_override).idiv(animation_frame_hold_time) % animation_frame_count
     end
   rescue Exception => e
     raise <<-S
@@ -635,18 +635,28 @@ class Fixnum
     sign < 0
   end
 
-  # Returns the cosine of a represented in degrees (NOT radians).
-  #
-  # @gtk
   def cos
-    Math.cos(self.to_radians)
+    Math.cos self.to_radians
   end
 
-  # Returns the cosine of a represented in degrees (NOT radians).
-  #
-  # @gtk
+  def cos_r
+    Math.cos self
+  end
+
+  def cos_d
+    Math.cos self.to_radians
+  end
+
   def sin
-    Math.sin(self.to_radians)
+    Math.sin self.to_radians
+  end
+
+  def sin_r
+    Math.sin self
+  end
+
+  def sin_d
+    Math.sin self.to_radians
   end
 
   def to_sf
@@ -690,6 +700,30 @@ class Float
 
   def ifloor int
     (self.idiv int.to_i) * int.to_i
+  end
+
+  def sin
+    Math.sin self.to_radians
+  end
+
+  def cos
+    Math.cos self.to_radians
+  end
+
+  def sin_r
+    Math.sin self
+  end
+
+  def sin_d
+    Math.sin self.to_radians
+  end
+
+  def cos_r
+    Math.cos self
+  end
+
+  def cos_d
+    Math.cos self.to_radians
   end
 end
 

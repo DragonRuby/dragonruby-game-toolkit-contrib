@@ -12,8 +12,7 @@ fi
 DRB_ROOT=../../..
 mkdir -p native/$PLATFORM
 
-$DRB_ROOT/dragonruby-bind --output=native/ext-bindings.c app/ext.c
 clang \
-  -isystem $DRB_ROOT/include -I. \
-  -fPIC -shared native/ext-bindings.c -o native/$PLATFORM/ext.$DLLEXT
+  -isystem $DRB_ROOT/include -isystem $DRB_ROOT -I. \
+  -fPIC -shared app/ext.c -o native/$PLATFORM/ext.$DLLEXT
 

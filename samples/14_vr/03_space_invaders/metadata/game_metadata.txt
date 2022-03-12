@@ -1,0 +1,7 @@
+devid=dragonruby
+devtitle=DragonRuby
+gameid=spaceinvaders
+gametitle=Space Invaders Demo
+version=1.0
+icon=metadata/icon.png
+vrmode=3

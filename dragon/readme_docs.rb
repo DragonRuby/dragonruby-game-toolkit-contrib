@@ -9,6 +9,7 @@ module GTK
       [
         :docs_usage,
         :docs_hello_world,
+        :docs_new_project,
         :docs_deployment,
         :docs_deployment_mobile,
         :docs_dragonruby_philosophy,
@@ -342,6 +343,30 @@ even the most fancy games are just creating objects and moving them
 around. Experiment a little. Add a few more things and have them
 interact in small ways. Want something to go away? Just don't add it
 to ~args.output~ anymore.
+S
+    end
+
+    def docs_new_project
+<<-S
+
+* Starting a New DragonRuby Project
+
+The zip file is a complete, self contained project structure. To
+create a new project, unzip the zip file in its entirety and use
+that as a starting point for another game. This is the recommended
+approach to starting a new project.
+
+** Rationale
+
+The DRGTK binary/package in its entirety is designed to be committed
+with your source code (it’s why we keep it small). It’s to protect “shelf life”.
+3 years from now we might be on a vastly different version of the engine.
+But you know that the code you’ve written will definitely work with the
+version that was committed to source control. It's strongly recommended that you
+do **not** keep DragonRuby Game Tooklit in a shared location and instead unzip
+a clean copy for ever game. That being said, You can optionally pass a directory
+when starting up DragonRuby from the terminal: ~./dragonruby ./non-defualt-game-directory~.
+
 S
     end
 
@@ -1183,16 +1208,19 @@ isrubydead.com: [[https://isrubydead.com/]].
 On a more serious note, Ruby's _quantity_ levels aren't what they used
 to be. And that's totally fine. Everyone chases the new and shiny.
 
-What really matters is _quality/maturity_. Here is the latest (StackOverflow
-Survey sorted by highest paid developers)[https://insights.stackoverflow.com/survey/2019#top-paying-technologies].
+What really matters is _quality/maturity_. Here's a StackOverflow Survey sorted by highest paid developers: [[https://insights.stackoverflow.com/survey/2021#section-top-paying-technologies-top-paying-technologies]].
 
 Let's stop making this comment shall we?
 
 *** But Ruby is slow.
 
-That doesn't make any sense. A language specification can't be
-slow... it's a language spec. Sure, an _implementation/runtime_ can be slow though, but then we'd
-have to talk about which runtime.
+That doesn't make any sense. A language specification can't be slow... it's a language spec.
+Sure, an _implementation/runtime_ can be slow though, but then we'd have to talk about
+which runtime.
+
+Here's a some quick demonstrations of how well DragonRuby Game Toolkit Performs:
+- [[https://youtu.be/MFR-dvsllA4]]
+- [[https://youtu.be/UuY7CWdvyWM]]
 
 *** Dynamic languages are slow.
 

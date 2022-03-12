@@ -266,9 +266,9 @@ teamid=
 appid=
 # appname is the name you want to show up underneath the app icon on the device. Keep it under 10 characters.
 appname=
-# devcert is the certificate to use for development/deploying to your local device
+# devcert is the certificate to use for development/deploying to your local device. This is the NAME of the certificate as it's displayed in Keychain Access.
 devcert=
-# prodcert is the certificate to use for distribution to the app store
+# prodcert is the certificate to use for distribution to the app store. This is the NAME of the certificate as it's displayed in Keychain Access.
 prodcert=
 S
   end
@@ -896,7 +896,7 @@ XML
 
     # production build marker
     sh %Q[mkdir -p "#{app_path}/metadata/"]
-    sh %Q[touch metadata/DRAGONRUBY_PRODUCTION_BUILD]
+    sh %Q[touch "#{app_path}/metadata/DRAGONRUBY_PRODUCTION_BUILD"]
   end
 
   def create_ipa

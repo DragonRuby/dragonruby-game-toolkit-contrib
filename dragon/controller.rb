@@ -6,34 +6,20 @@
 module GTK
   # @gtk
   class Controller
-    # Access to keys that have been pressed down.
-    #
-    # @return [Controller::Keys]
-    # @gtk
-    attr_reader :key_down
+    attr :key_down
+    attr :key_up
+    attr :key_held
 
-    # Access to keys that have been released up.
-    #
-    # @return [Controller::Keys]
-    # @gtk
-    attr_reader :key_up
+    attr :left_analog_x_raw,
+         :left_analog_y_raw,
+         :left_analog_x_perc,
+         :left_analog_y_perc,
+         :right_analog_x_raw,
+         :right_analog_y_raw,
+         :right_analog_x_perc,
+         :right_analog_y_perc
 
-    # Access to keys that have been held down.
-    #
-    # @return [Controller::Keys]
-    # @gtk
-    attr_reader :key_held
-
-    # @gtk
-    attr_accessor :left_analog_x_raw,
-                  :left_analog_y_raw,
-                  :left_analog_x_perc,
-                  :left_analog_y_perc,
-                  :right_analog_x_raw,
-                  :right_analog_y_raw,
-                  :right_analog_x_perc,
-                  :right_analog_y_perc
-
+    attr :connected
 
     def initialize
       @key_down = Controller::Keys.new
@@ -47,6 +33,7 @@ module GTK
       @right_analog_y_raw = 0
       @right_analog_x_perc = 0
       @right_analog_y_perc = 0
+      @connected = false
     end
 
     def serialize
@@ -119,4 +106,3 @@ module GTK
     include DirectionalInputHelperMethods
   end
 end
-

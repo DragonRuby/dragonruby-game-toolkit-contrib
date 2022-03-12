@@ -1,26 +1,17 @@
 #ifndef NULL
 #define NULL 0
 #endif
-typedef unsigned int Uint32;
+#include <dragonruby.h>
 
-extern void *(*drb_symbol_lookup)(const char *sym);
-typedef void (*drb_upload_pixel_array_fn)(const char *name, const int w, const int h, const Uint32 *pixels);
+static drb_api_t *drb_api;
 
-void update_scanner_texture(void)
+DRB_FFI
+mrb_value update_scanner_texture(mrb_state *state, mrb_value value)
 {
     #define dimension 10
 
-    static drb_upload_pixel_array_fn drb_upload_pixel_array = NULL;
     static int pos = 0;
     static int posinc = 1;
-
-    if (!drb_upload_pixel_array) {
-        drb_upload_pixel_array = drb_symbol_lookup("drb_upload_pixel_array");
-        if (!drb_upload_pixel_array) {
-            return;  // oh well.
-        }
-    }
-
 
     // Set up our "scanner" pixel array and fill it with black pixels.
 
@@ -49,6 +40,14 @@ void update_scanner_texture(void)
     }
 
     // Send it to the renderer to create/update a sprite.
-    drb_upload_pixel_array("scanner", dimension, dimension, pixels);
+    drb_api->drb_upload_pixel_array("scanner", dimension, dimension, pixels);
+    return mrb_nil_value();
 }
 
+DRB_FFI_EXPORT
+void drb_register_c_extensions_with_api(mrb_state *state, struct drb_api_t *api) {
+  drb_api = api;
+  struct RClass *FFI = drb_api->mrb_module_get(state, "FFI");
+  struct RClass *module = drb_api->mrb_define_module_under(state, FFI, "CExt");
+  drb_api->mrb_define_module_function(state, module, "update_scanner_texture", update_scanner_texture, MRB_ARGS_REQ(0));
+}

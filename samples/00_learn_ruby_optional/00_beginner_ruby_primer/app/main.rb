@@ -96,7 +96,7 @@ code below and press ENTER:
 end
 
 def tick_hello_dragonruby
-  return unless console_has? "Hello DragonRuby!"
+  return unless console_has? "Hello DragonRuby!", "puts "
 
   $gtk.args.state.hello_dragonruby_confirmed = true
 
@@ -293,8 +293,11 @@ def queue_message message
   puts seperator
 end
 
-def console_has? message
-  console.log.map(&:upcase).include? "#{message.upcase}\n"
+def console_has? message, not_message = nil
+  console.log
+         .map(&:upcase)
+         .reject { |s| not_message && s.include?(not_message.upcase) }
+         .any?   { |s| s.include?("#{message.upcase}") }
 end
 
 def restart_tutorial

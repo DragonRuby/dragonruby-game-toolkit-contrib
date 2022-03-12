@@ -1,0 +1,7 @@
+devid=dragonruby
+devtitle=DragonRuby
+gameid=light
+gametitle=Let There Be Light
+version=1.0
+icon=metadata/icon.png
+vrmode=3

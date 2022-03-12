@@ -14,6 +14,6 @@ mkdir -p native/$PLATFORM
 
 $DRB_ROOT/dragonruby-bind --output=native/ext-bindings.c app/ext.c
 clang \
-  -isystem $DRB_ROOT/include -I. \
+  -isystem $DRB_ROOT/include -isystem $DRB_ROOT -I. \
   -fPIC -shared native/ext-bindings.c -o native/$PLATFORM/ext.$DLLEXT
 

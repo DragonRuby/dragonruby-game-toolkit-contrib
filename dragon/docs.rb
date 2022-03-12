@@ -443,7 +443,7 @@ S
         link_id = text_to_id.call l
         # toc_html += "<ul><ul><ul><li><a href='##{link_id}'>#{formatted_html}</a></li></ul></ul></ul>"
         content_html += "<h4>#{__docs_line_to_html__ l, parse_log}</h4>\n"
-      elsif l.start_with? "**** "
+      elsif l.start_with? "***** "
         parse_log << "- H5 detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
         inside_ol = false
@@ -565,7 +565,10 @@ S
 
   def __docs_line_to_html__ line, parse_log
     parse_log << "- Determining if line is a header."
-    if line.start_with? "**** "
+    if line.start_with? "***** "
+      line = line.gsub "***** ", ""
+      parse_log << "- Line contains ~***** ~... gsub-ing empty string"
+    elsif line.start_with? "**** "
       line = line.gsub "**** ", ""
       parse_log << "- Line contains ~**** ~... gsub-ing empty string"
     elsif line.start_with? "*** "

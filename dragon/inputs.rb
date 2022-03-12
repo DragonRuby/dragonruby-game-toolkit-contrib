@@ -674,33 +674,14 @@ module GTK
 end
 
 module GTK
-  # @gtk
   class Inputs
-
-    # A list of all controllers.
-    #
-    # @return [Controller[]]
-    # @gtk
     attr_reader :controllers
-
-    # @return [Keyboard]
-    # @gtk
     attr_reader :keyboard
-
-    # @return [Mouse]
-    # @gtk
     attr_reader :mouse
-
-    # @return [HTTPRequest[]]
-    # @gtk
     attr_accessor :http_requests
-
-    # @return {FingerTouch}
-    # @gtk
     attr_reader :touch
     attr_accessor :finger_one, :finger_two
-
-    # @gtk
+    attr_accessor :finger_left, :finger_right
     attr_accessor :text, :history
 
     def initialize

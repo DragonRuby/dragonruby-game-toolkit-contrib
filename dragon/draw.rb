@@ -42,9 +42,18 @@ module GTK
           s.draw_override @ffi_draw
         else
           s = s.as_hash if s.is_a? OpenEntity
-          @ffi_draw.draw_solid_2 s.x, s.y, s.w, s.h,
-                                 s.r, s.g, s.b, s.a,
-                                 (s.blendmode_enum || 1)
+          w = s.w
+          h = s.h
+          if !w && !h
+            @ffi_draw.draw_triangle s.x, s.y, s.x2, s.y2, s.x3, s.y3,
+                                    s.r, s.g, s.b, s.a,
+                                    nil, nil, nil, nil, nil, nil, nil,
+                                    (s.blendmode_enum || 1)
+          else
+            @ffi_draw.draw_solid_2 s.x, s.y, w, h,
+                                   s.r, s.g, s.b, s.a,
+                                   (s.blendmode_enum || 1)
+          end
         end
       rescue Exception => e
         raise_conversion_for_rendering_failed s, e, :solid
@@ -56,15 +65,33 @@ module GTK
           s.draw_override @ffi_draw
         else
           s = s.as_hash if s.is_a? OpenEntity
-          @ffi_draw.draw_sprite_4 s.x, s.y, s.w, s.h,
-                                  (s.path || '').to_s,
-                                  s.angle,
-                                  s.a, s.r, s.g, s.b,
-                                  s.tile_x, s.tile_y, s.tile_w, s.tile_h,
-                                  !!s.flip_horizontally, !!s.flip_vertically,
-                                  s.angle_anchor_x, s.angle_anchor_y,
-                                  s.source_x, s.source_y, s.source_w, s.source_h,
-                                  (s.blendmode_enum || 1)
+          w = s.w
+          h = s.h
+          if !w && !h
+            @ffi_draw.draw_triangle s.x, s.y, s.x2, s.y2, s.x3, s.y3,
+                                    s.r || 255,
+                                    s.g || 255,
+                                    s.b || 255,
+                                    s.a || 255,
+                                    s.path || 'pixel',
+                                    s.source_x,
+                                    s.source_y,
+                                    s.source_x2,
+                                    s.source_y2,
+                                    s.source_x3,
+                                    s.source_y3,
+                                    (s.blendmode_enum || 1)
+          else
+            @ffi_draw.draw_sprite_4 s.x, s.y, w, h,
+                                    (s.path || 'pixel').to_s,
+                                    s.angle,
+                                    s.a, s.r, s.g, s.b,
+                                    s.tile_x, s.tile_y, s.tile_w, s.tile_h,
+                                    !!s.flip_horizontally, !!s.flip_vertically,
+                                    s.angle_anchor_x, s.angle_anchor_y,
+                                    s.source_x, s.source_y, s.source_w, s.source_h,
+                                    (s.blendmode_enum || 1)
+          end
         end
       rescue Exception => e
         raise_conversion_for_rendering_failed s, e, :sprite
@@ -160,6 +187,33 @@ module GTK
       rescue Exception => e
         pause!
         pretty_print_exception_and_export! e
+      end
+
+      def draw_primitive p
+        return unless p
+
+        if p.primitive_marker == :solid
+          return draw_solid p
+        elsif p.primitive_marker == :sprite
+          return draw_sprite p
+        elsif p.primitive_marker == :label
+          return draw_label p
+        elsif p.primitive_marker == :line
+          return draw_line p
+        elsif p.primitive_marker == :border
+          return draw_border p
+        else
+          raise <<-S
+* ERROR:
+#{p}
+
+I don't know how to use the above #{p.class} with SDL's FFI. Please
+add a method on the object called ~primitive_marker~ that
+returns :solid, :sprite, :label, :line, or :border. If the object
+is a Hash, please add { primitive_marker: :PRIMITIVE_SYMBOL } to the Hash.
+
+S
+        end
       end
     end
   end
