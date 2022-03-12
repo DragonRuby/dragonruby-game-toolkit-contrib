@@ -523,18 +523,8 @@ S
        { match_criteria: { method: :get, uri: "/dragon/" },
          handler:        :get_index },
 
-       { match_criteria: { method: :get, uri: "/dragon/boot/" },
-         handler:        :get_api_boot },
-       { match_criteria: { method: :get, uri: "/dragon/trace/" },
-         handler:        :get_api_trace },
-       { match_criteria: { method: :get, uri: "/dragon/puts/" },
-         handler:        :get_api_puts },
-       { match_criteria: { method: :get, uri: "/dragon/log/" },
-         handler:        :get_api_log },
        { match_criteria: { method: :post, uri: "/dragon/log/" },
          handler:        :post_api_log },
-       { match_criteria: { method: :get, uri: "/dragon/changes/" },
-         handler:        :get_api_changes },
        { match_criteria: { method: :get, uri: "/dragon/eval/" },
          handler:        :get_api_eval },
        { match_criteria: { method: :post, uri: "/dragon/eval/" },
@@ -626,6 +616,26 @@ S
     end
 
     STATIC_FILES = {
+      '/dragon/boot/' => {
+        source: 'tmp/src_backup/boot.txt',
+        content_type: 'text/plain'
+      },
+      '/dragon/trace/' => {
+        source: 'logs/trace.txt',
+        content_type: 'text/plain'
+      },
+      '/dragon/puts/' => {
+        source: 'logs/puts.txt',
+        content_type: 'text/plain'
+      },
+      '/dragon/log/' => {
+        source: 'logs/log.txt',
+        content_type: 'text/plain'
+      },
+      '/dragon/changes/' => {
+        source: '/tmp/src_backup/src_backup_changes.txt',
+        content_type: 'text/plain'
+      },
       '/docs.html' => {
         source: 'docs/docs.html',
         content_type: 'text/html'
