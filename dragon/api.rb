@@ -560,7 +560,7 @@ S
         content_type: 'text/plain'
       },
       '/dragon/changes/' => {
-        source: '/tmp/src_backup/src_backup_changes.txt',
+        source: 'tmp/src_backup/src_backup_changes.txt',
         content_type: 'text/plain'
       },
       '/docs.html' => {
@@ -578,23 +578,23 @@ S
         cached: true
       },
       '/src_backup_index.html' => {
-        source: '/tmp/src_backup/src_backup_index.html',
+        source: 'tmp/src_backup/src_backup_index.html',
         content_type: 'text/html'
       },
       '/src_backup_index.txt' => {
-        source: '/tmp/src_backup/src_backup_index.txt',
+        source: 'tmp/src_backup/src_backup_index.txt',
         content_type: 'text/plain'
       },
       '/src_backup_changes.html' => {
-        source: '/tmp/src_backup/src_backup_changes.html',
+        source: 'tmp/src_backup/src_backup_changes.html',
         content_type: 'text/html'
       },
       '/src_backup_changes.txt' => {
-        source: '/tmp/src_backup/src_backup_changes.txt',
+        source: 'tmp/src_backup/src_backup_changes.txt',
         content_type: 'text/plain'
       },
       '/src_backup.css' => {
-        source: '/tmp/src_backup/src_backup.css',
+        source: 'tmp/src_backup/src_backup.css',
         content_type: 'text/css',
         cached: true
       },
