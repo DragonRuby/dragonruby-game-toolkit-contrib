@@ -275,13 +275,6 @@ S
       $eval_results = nil
     end
 
-    def get_api_console args, req
-      html = console_view "# write your code here and set $result.\n$result = $gtk.args.state"
-      req.respond 200,
-                  html,
-                  { 'Content-Type' => 'text/html' }
-    end
-
     def control_panel_view
       <<-S
 <html lang="en">
@@ -441,10 +434,6 @@ S
          handler:        :get_api_eval },
        { match_criteria: { method: :post, uri: "/dragon/eval/" },
          handler:        :post_api_eval },
-       { match_criteria: { method: :get, uri: "/dragon/console/" },
-         handler:        :get_api_console },
-       { match_criteria: { method: :post, uri: "/dragon/console/" },
-         handler:        :post_api_console },
        { match_criteria: { method: :get, uri: "/dragon/control_panel/" },
          handler:        :get_api_control_panel },
        { match_criteria: { method: :post, uri: "/dragon/reset/" },
