@@ -66,17 +66,9 @@ module GTK
     end
 
     def get_index args, req
-      req.respond 200, <<-S, { 'Content-Type' => 'text/html' }
-<html>
-  <head>
-    <meta charset="UTF-8"/>
-    <title>DragonRuby Game Toolkit Documentation</title>
-  </head>
-  <body>
-    #{links}
-  </body>
-</html>
-S
+      respond_with_html req, <<~HTML
+        #{links}
+      HTML
     end
 
     def source_code_links args
