@@ -75,7 +75,7 @@ S
       req.respond 200, list_as_string, { 'Content-Type' => 'text/plain' }
     end
 
-    define_method :links do
+    def links
       <<-S
     <ul>
       <li><a href="/">Home</a></li>
