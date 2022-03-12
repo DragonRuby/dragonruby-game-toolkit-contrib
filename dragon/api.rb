@@ -75,30 +75,19 @@ module GTK
       links = args.gtk.reload_list_history.keys.map do |f|
         "<li><a href=\"/dragon/code/edit/?file=#{f}\">#{f}</a></li>"
       end
-      <<-S
-<ul>
-  #{links.join("\n")}
-</ul>
-S
+      <<~HTML
+        <ul>
+          #{links.join("\n")}
+        </ul>
+      HTML
     end
 
     def get_api_code args, req
-      view = <<-S
-<html>
-  <head>
-    <meta charset="UTF-8"/>
-    <title>DragonRuby Game Toolkit Documentation</title>
-  </head>
-  <body>
-    #{source_code_links args}
+      respond_with_html req, <<~HTML
+        #{source_code_links args}
 
-    #{links}
-  </body>
-</html>
-S
-      req.respond 200,
-                  view,
-                  { 'Content-Type' => 'text/html' }
+        #{links}
+      HTML
     end
 
     def code_edit_view args, file
