@@ -567,37 +567,12 @@ S
          handler:        :post_api_code_update },
 
 
-       { match_criteria: { method: :get, uri: "/docs.html" },
-         handler:        :get_docs_html },
-       { match_criteria: { method: :get, uri: "/docs.css" },
-         handler:        :get_docs_css },
-       { match_criteria: { method: :get, uri: "/docs_search.gif" },
-         handler:        :get_docs_search_gif },
-
-       { match_criteria: { method: :get, uri: "/src_backup_index.html" },
-         handler:        :get_src_backup_index_html },
-
-       { match_criteria: { method: :get, uri: "/src_backup_index.txt" },
-         handler:        :get_src_backup_index_txt },
-
-       { match_criteria: { method: :get, uri: "/src_backup_changes.html" },
-         handler:        :get_src_backup_changes_html },
-
-       { match_criteria: { method: :get, uri: "/src_backup_changes.txt" },
-         handler:        :get_src_backup_changes_txt },
-
-       { match_criteria: { method: :get, uri: "/src_backup.css" },
-         handler:        :get_src_backup_css },
-
-       { match_criteria: { method: :get, uri: "/favicon.ico" },
-         handler:        :get_favicon_ico },
-
        { match_criteria: { method: :get, end_with_rb: true },
          handler:        :get_src_backup },
 
        { match_criteria: { method: :get, end_with_rb: true },
-         handler:        :get_src_backup }
-
+         handler:        :get_src_backup },
+       *static_file_routes
       ]
     end
 
@@ -630,6 +605,64 @@ S
       end
       return true
     end
+
+    def static_file_routes
+      STATIC_FILES.keys.map { |uri|
+        {
+          match_criteria: { method: :get, uri_without_query_string: uri },
+          handler: :get_static_file
+        }
+      }
+    end
+
+    def get_static_file args, req
+      uri = (req.uri.split '?').first
+      file_info = STATIC_FILES[uri]
+      @static_file_cache ||= {}
+      @static_file_cache[uri] ||= args.gtk.read_file(file_info[:source])
+      req.respond 200,
+                  @static_file_cache[uri],
+                  { 'Content-Type' => file_info[:content_type] }
+    end
+
+    STATIC_FILES = {
+      '/docs.html' => {
+        source: 'docs/docs.html',
+        content_type: 'text/html'
+      },
+      '/docs.css' => {
+        source: 'docs/docs.css',
+        content_type: 'text/css'
+      },
+      '/docs_search.gif' => {
+        source: 'docs/docs_search.gif',
+        content_type: 'image/gif'
+      },
+      '/src_backup_index.html' => {
+        source: '/tmp/src_backup/src_backup_index.html',
+        content_type: 'text/html'
+      },
+      '/src_backup_index.txt' => {
+        source: '/tmp/src_backup/src_backup_index.txt',
+        content_type: 'text/plain'
+      },
+      '/src_backup_changes.html' => {
+        source: '/tmp/src_backup/src_backup_changes.html',
+        content_type: 'text/html'
+      },
+      '/src_backup_changes.txt' => {
+        source: '/tmp/src_backup/src_backup_changes.txt',
+        content_type: 'text/plain'
+      },
+      '/src_backup.css' => {
+        source: '/tmp/src_backup/src_backup.css',
+        content_type: 'text/css'
+      },
+      '/favicon.ico' => {
+        source: 'docs/favicon.ico',
+        content_type: 'image/x-icon'
+      }
+    }.freeze
 
     def get_query_params req
       _, query_string = get_uri_and_query_string req
