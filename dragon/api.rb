@@ -52,17 +52,17 @@ module GTK
     end
 
     def links
-      <<-S
-    <ul>
-      <li><a href="/">Home</a></li>
-      <li><a href="/docs.html">Docs</a></li>
-      <li><a href="/dragon/control_panel/">Control Panel</a></li>
-      <li><a href="/dragon/eval/">Console</a></li>
-      <li><a href="/dragon/log/">Logs</a></li>
-      <li><a href="/dragon/puts/">Puts</a></li>
-      <li><a href="/dragon/code/">Code</a></li>
-    </ul>
-S
+      <<~HTML
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/docs.html">Docs</a></li>
+          <li><a href="/dragon/control_panel/">Control Panel</a></li>
+          <li><a href="/dragon/eval/">Console</a></li>
+          <li><a href="/dragon/log/">Logs</a></li>
+          <li><a href="/dragon/puts/">Puts</a></li>
+          <li><a href="/dragon/code/">Code</a></li>
+        </ul>
+      HTML
     end
 
     def get_index args, req
