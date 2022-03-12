@@ -441,7 +441,6 @@ S
          handler:        :get_index },
        { match_criteria: { method: :get, uri: "/dragon/" },
          handler:        :get_index },
-
        { match_criteria: { method: :post, uri: "/dragon/log/" },
          handler:        :post_api_log },
        { match_criteria: { method: :get, uri: "/dragon/eval/" },
@@ -474,11 +473,6 @@ S
          handler:        :get_api_code_edit },
        { match_criteria: { method: :post, uri: "/dragon/code/update/", has_query_string: true },
          handler:        :post_api_code_update },
-
-
-       { match_criteria: { method: :get, end_with_rb: true },
-         handler:        :get_src_backup },
-
        { match_criteria: { method: :get, end_with_rb: true },
          handler:        :get_src_backup },
        *static_file_routes
