@@ -609,6 +609,7 @@ S
         match_found = (process_single! route: route, context: context)
         return if match_found
       end
+      get_not_found context[:args], context[:req]
     end
 
     def process_single! opts
