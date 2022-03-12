@@ -12,58 +12,34 @@ module GTK
     end
 
     def get_api_autocomplete args, req
-      html = <<-S
-<html>
-  <head>
-    <meta charset="UTF-8"/>
-    <title>DragonRuby Game Toolkit Documentation</title>
-    <style>
-    pre {
-      border: solid 1px silver;
-      padding: 10px;
-      font-size: 14px;
-      white-space: pre-wrap;
-      white-space: -moz-pre-wrap;
-      white-space: -pre-wrap;
-      white-space: -o-pre-wrap;
-      word-wrap: break-word;
-    }
-    </style>
-  </head>
-  <body>
-      <script>
-        async function submitForm() {
-          const result = await fetch("/dragon/autocomplete/", {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ index: document.getElementById("index").value,
-                                   text: document.getElementById("text").value }),
-          });
-          document.getElementById("autocomplete-results").innerHTML = await result.text();
-        }
-      </script>
-      <form>
-        <div>index</div>
-        <input name="index" id="index" type="text" value="27" />
-        <div>code</div>
-        <textarea name="text" id="text" rows="30" cols="80">def tick args
-  args.state.
-end</textarea>
-        <br/>
-        <input type="button" value="Get Suggestions" onclick="submitForm();" />
-        <span id="success-notification"></span>
-      </form>
-      <pre id="autocomplete-results">
-      </pre>
+      respond_with_html req, <<~HTML
+        <script>
+          async function submitForm() {
+            const result = await fetch("/dragon/autocomplete/", {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ index: document.getElementById("index").value,
+                                    text: document.getElementById("text").value }),
+            });
+            document.getElementById("autocomplete-results").innerHTML = await result.text();
+          }
+        </script>
+        <form>
+          <div>index</div>
+          <input name="index" id="index" type="text" value="27" />
+          <div>code</div>
+          <textarea name="text" id="text" rows="30" cols="80">def tick args
+          args.state.
+        end</textarea>
+          <br/>
+          <input type="button" value="Get Suggestions" onclick="submitForm();" />
+          <span id="success-notification"></span>
+        </form>
+        <pre id="autocomplete-results">
+        </pre>
 
-    #{links}
-  </body>
-</html>
-S
-
-      req.respond 200,
-                  html,
-                  { 'Content-Type' => 'text/html' }
+        #{links}
+      HTML
     end
 
     def post_api_autocomplete args, req
