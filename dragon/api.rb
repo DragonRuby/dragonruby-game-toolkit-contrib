@@ -516,21 +516,29 @@ S
     end
 
     def static_file_routes
-      STATIC_FILES.keys.map { |uri|
+      STATIC_FILES.map { |uri, file_info|
         {
           match_criteria: { method: :get, uri_without_query_string: uri },
-          handler: :get_static_file
+          handler: file_info[:cached] ? :get_cached_static_file : :get_static_file
         }
       }
     end
 
-    def get_static_file args, req
+    def get_cached_static_file args, req
       uri = (req.uri.split '?').first
       file_info = STATIC_FILES[uri]
       @static_file_cache ||= {}
       @static_file_cache[uri] ||= args.gtk.read_file(file_info[:source])
       req.respond 200,
                   @static_file_cache[uri],
+                  { 'Content-Type' => file_info[:content_type] }
+    end
+
+    def get_static_file args, req
+      uri = (req.uri.split '?').first
+      file_info = STATIC_FILES[uri]
+      req.respond 200,
+                  args.gtk.read_file(file_info[:source]),
                   { 'Content-Type' => file_info[:content_type] }
     end
 
@@ -561,11 +569,13 @@ S
       },
       '/docs.css' => {
         source: 'docs/docs.css',
-        content_type: 'text/css'
+        content_type: 'text/css',
+        cached: true
       },
       '/docs_search.gif' => {
         source: 'docs/docs_search.gif',
-        content_type: 'image/gif'
+        content_type: 'image/gif',
+        cached: true
       },
       '/src_backup_index.html' => {
         source: '/tmp/src_backup/src_backup_index.html',
@@ -585,11 +595,13 @@ S
       },
       '/src_backup.css' => {
         source: '/tmp/src_backup/src_backup.css',
-        content_type: 'text/css'
+        content_type: 'text/css',
+        cached: true
       },
       '/favicon.ico' => {
         source: 'docs/favicon.ico',
-        content_type: 'image/x-icon'
+        content_type: 'image/x-icon',
+        cached: true
       }
     }.freeze
 
