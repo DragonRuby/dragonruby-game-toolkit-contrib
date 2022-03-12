@@ -156,47 +156,27 @@ module GTK
     end
 
     def get_api_eval args, req
-      eval_view = <<-S
-<html lang="en">
-  <head><title>Eval</title></head>
-  <style>
-  pre {
-    border: solid 1px silver;
-    padding: 10px;
-    font-size: 14px;
-    white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
-    white-space: -o-pre-wrap;
-    word-wrap: break-word;
-  }
-  </style>
-  <body>
-    <script>
-      async function submitForm() {
-          const result = await fetch("/dragon/eval/", {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code: document.getElementById("code").value }),
-          });
-          document.getElementById("eval-result").innerHTML = await result.text();
-      }
-    </script>
-    <form>
-      <textarea name="code" id="code" rows="10" cols="80"># write your code here and set $result.\n$result = $gtk.args.state</textarea>
-      <br/>
-      <input type="button" onclick="submitForm();" value="submit" />
-    </form>
-    <pre>curl -H "Content-Type: application/json" --data '{ "code": "$result = $args.state" }' -X POST http://localhost:9001/dragon/eval/</pre>
-    <div>Eval Result:</div>
-    <pre id="eval-result"></pre>
-    #{links}
-  </body>
-</html>
-S
-      req.respond 200,
-                  eval_view,
-                  { 'Content-Type' => 'text/html' }
+      respond_with_html req, <<~HTML, title: 'Eval'
+        <script>
+          async function submitForm() {
+              const result = await fetch("/dragon/eval/", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: document.getElementById("code").value }),
+              });
+              document.getElementById("eval-result").innerHTML = await result.text();
+          }
+        </script>
+        <form>
+          <textarea name="code" id="code" rows="10" cols="80"># write your code here and set $result.\n$result = $gtk.args.state</textarea>
+          <br/>
+          <input type="button" onclick="submitForm();" value="submit" />
+        </form>
+        <pre>curl -H "Content-Type: application/json" --data '{ "code": "$result = $args.state" }' -X POST http://localhost:9001/dragon/eval/</pre>
+        <div>Eval Result:</div>
+        <pre id="eval-result"></pre>
+        #{links}
+      HTML
     end
 
     def post_api_eval args, req
