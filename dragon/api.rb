@@ -187,18 +187,6 @@ S
                   { 'Content-Type' => 'text/html' }
     end
 
-    def get_api_boot args, req
-      req.respond 200,
-                  args.gtk.read_file("tmp/src_backup/boot.txt"),
-                  { 'Content-Type' => 'text/plain' }
-    end
-
-    def get_api_trace args, req
-      req.respond 200,
-                  args.gtk.read_file("logs/trace.txt"),
-                  { 'Content-Type' => 'text/plain' }
-    end
-
     def get_api_log args, req
       req.respond 200,
                   args.gtk.read_file("logs/log.txt"),
@@ -211,23 +199,6 @@ S
       req.respond 200,
                   "ok",
                   { 'Content-Type' => 'text/plain' }
-    end
-
-    def get_api_puts args, req
-      req.respond 200,
-                  args.gtk.read_file("logs/puts.txt"),
-                  { 'Content-Type' => 'text/plain' }
-    end
-
-    def get_api_changes args, req
-      req.respond 200,
-                  args.gtk.read_file("tmp/src_backup/src_backup_changes.txt"),
-                  { 'Content-Type' => 'text/plain' }
-    end
-
-    def get_favicon_ico args, req
-      @favicon ||= args.gtk.read_file('docs/favicon.ico')
-      req.respond 200, @favicon, { "Content-Type" => 'image/x-icon' }
     end
 
     def get_src_backup args, req
@@ -243,54 +214,6 @@ S
       puts("HEADERS:");
       req.headers.each { |k,v| puts("  #{k}: #{v}") }
       req.respond 404, "not found: #{req.uri}", { }
-    end
-
-    def get_docs_html args, req
-      req.respond 200,
-                  args.gtk.read_file("docs/docs.html"),
-                  { 'Content-Type' => 'text/html' }
-    end
-
-    def get_docs_css args, req
-      req.respond 200,
-                  args.gtk.read_file("docs/docs.css"),
-                  { 'Content-Type' => 'text/css' }
-    end
-
-    def get_docs_search_gif args, req
-      req.respond 200,
-                  args.gtk.read_file("docs/docs_search.gif"),
-                  { 'Content-Type' => 'image/gif' }
-    end
-
-    def get_src_backup_index_html args, req
-      req.respond 200,
-                  args.gtk.read_file("/tmp/src_backup/src_backup_index.html"),
-                  { 'Content-Type' => 'text/html' }
-    end
-
-    def get_src_backup_index_txt args, req
-      req.respond 200,
-                  args.gtk.read_file("/tmp/src_backup/src_backup_index.txt"),
-                  { 'Content-Type' => 'text/txt' }
-    end
-
-    def get_src_backup_css args, req
-      req.respond 200,
-                  args.gtk.read_file("/tmp/src_backup/src_backup.css"),
-                  { 'Content-Type' => 'text/css' }
-    end
-
-    def get_src_backup_changes_html args, req
-      req.respond 200,
-                  args.gtk.read_file("/tmp/src_backup/src_backup_changes.html"),
-                  { 'Content-Type' => 'text/html' }
-    end
-
-    def get_src_backup_changes_txt args, req
-      req.respond 200,
-                  args.gtk.read_file("/tmp/src_backup/src_backup_changes.txt"),
-                  { 'Content-Type' => 'text/txt' }
     end
 
     def get_api_eval args, req
@@ -356,10 +279,6 @@ S
 
       $eval_result  = nil
       $eval_results = nil
-    end
-
-    def api_css_string
-
     end
 
     def get_api_console args, req
