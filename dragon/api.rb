@@ -187,12 +187,6 @@ S
                   { 'Content-Type' => 'text/html' }
     end
 
-    def get_api_log args, req
-      req.respond 200,
-                  args.gtk.read_file("logs/log.txt"),
-                  { 'Content-Type' => 'text/plain' }
-    end
-
     def post_api_log args, req
       Log.log req.body
 
