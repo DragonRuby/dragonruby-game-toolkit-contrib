@@ -5,6 +5,7 @@
 
 # Contributors outside of DragonRuby who also hold Copyright:
 # - Kevin Fischer: https://github.com/kfischer-okarin
+# - Eli Raybon: https://github.com/eliraybon
 
 module GTK
   class Console
@@ -12,7 +13,7 @@ module GTK
 
     attr_accessor :show_reason, :log, :logo,
                   :animation_duration,
-                  :max_log_lines, :max_history, :log,
+                  :max_log_lines, :max_history,
                   :last_command_errored, :last_command, :shown_at,
                   :archived_log, :last_log_lines, :last_log_lines_count,
                   :suppress_left_arrow_behavior, :command_set_at,

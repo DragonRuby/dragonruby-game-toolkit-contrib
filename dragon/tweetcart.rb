@@ -8,8 +8,9 @@ def $top_level.TICK &block
     args.outputs[:scene].w = 160
     args.outputs[:scene].h = 90
     args.outputs[:scene].background_color = [0, 0, 0, 0]
+    args.state.tweet_scene ||= { x: 0, y: 0, w: 1280, h: 720, path: :scene }
     block.call args
-    args.outputs.sprites << { x: 0, y: 0, w: 1280, h: 720, path: :scene }
+    args.outputs.sprites << args.state.tweet_scene
   end
 
   def $top_level.no_clear! render_target_name
@@ -101,6 +102,19 @@ def $top_level.TICK &block
 
   def $top_level.cos_d degrees
     Math.cos degrees.to_radians
+  end
+
+  def $top_level.tc
+    $args.state.tick_count
+  end
+
+  def $top_level.scene! w = 1280, h = 720
+    $args.outputs[:scene].w = w
+    $args.outputs[:scene].h = h
+    $args.state.tweet_scene.w = w
+    $args.state.tweet_scene.h = h
+    $args.state.tweet_scene.x = ($args.grid.w - w) / 2
+    $args.state.tweet_scene.y = ($args.grid.h - h) / 2
   end
 end
 

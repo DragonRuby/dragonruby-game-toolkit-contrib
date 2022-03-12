@@ -6,36 +6,6 @@
 module GTK
   class Runtime
     module Draw
-      def primitives pass
-        if $top_level.respond_to? :primitives_override
-          return $top_level.tick_render @args, pass
-        end
-
-        fn.each_send pass.solids,            self, :draw_solid
-        fn.each_send pass.static_solids,     self, :draw_solid
-        fn.each_send pass.sprites,           self, :draw_sprite
-        fn.each_send pass.static_sprites,    self, :draw_sprite
-        fn.each_send pass.primitives,        self, :draw_primitive
-        fn.each_send pass.static_primitives, self, :draw_primitive
-        fn.each_send pass.labels,            self, :draw_label
-        fn.each_send pass.static_labels,     self, :draw_label
-        fn.each_send pass.lines,             self, :draw_line
-        fn.each_send pass.static_lines,      self, :draw_line
-        fn.each_send pass.borders,           self, :draw_border
-        fn.each_send pass.static_borders,    self, :draw_border
-
-        if !self.production
-          fn.each_send pass.debug,           self, :draw_primitive
-          fn.each_send pass.static_debug,    self, :draw_primitive
-        end
-
-        fn.each_send pass.reserved,          self, :draw_primitive
-        fn.each_send pass.static_reserved,   self, :draw_primitive
-      rescue Exception => e
-        pause!
-        pretty_print_exception_and_export! e
-      end
-
       def draw_solid s
         return unless s
         if s.respond_to? :draw_override
@@ -82,15 +52,19 @@ module GTK
                                     s.source_y3,
                                     (s.blendmode_enum || 1)
           else
-            @ffi_draw.draw_sprite_4 s.x, s.y, w, h,
-                                    (s.path || 'pixel').to_s,
-                                    s.angle,
-                                    s.a, s.r, s.g, s.b,
-                                    s.tile_x, s.tile_y, s.tile_w, s.tile_h,
-                                    !!s.flip_horizontally, !!s.flip_vertically,
-                                    s.angle_anchor_x, s.angle_anchor_y,
-                                    s.source_x, s.source_y, s.source_w, s.source_h,
-                                    (s.blendmode_enum || 1)
+            if s.is_a? Hash
+              @ffi_draw.draw_sprite_hash s
+            else
+              @ffi_draw.draw_sprite_4 s.x, s.y, w, h,
+                                      (s.path || 'pixel').to_s,
+                                      s.angle,
+                                      s.a, s.r, s.g, s.b,
+                                      s.tile_x, s.tile_y, s.tile_w, s.tile_h,
+                                      !!s.flip_horizontally, !!s.flip_vertically,
+                                      s.angle_anchor_x, s.angle_anchor_y,
+                                      s.source_x, s.source_y, s.source_w, s.source_h,
+                                      (s.blendmode_enum || 1)
+            end
           end
         end
       rescue Exception => e
@@ -214,6 +188,9 @@ is a Hash, please add { primitive_marker: :PRIMITIVE_SYMBOL } to the Hash.
 
 S
         end
+      rescue Exception => e
+        pause!
+        pretty_print_exception_and_export! e
       end
     end
   end

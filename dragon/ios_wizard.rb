@@ -916,7 +916,7 @@ SCRIPT
 
   def sh cmd
     log_info cmd.strip
-    result = `#{cmd}`
+    result = `#{cmd} 2>&1`
     if result.strip.length > 0
       log_info result.strip.each_line.map(&:strip).join("\n")
     end
