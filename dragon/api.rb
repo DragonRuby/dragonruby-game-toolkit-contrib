@@ -200,48 +200,37 @@ module GTK
       $eval_results = nil
     end
 
-    def control_panel_view
-      <<-S
-<html lang="en">
-  <head><title>console</title></head>
-  <body>
-    <script>
-      async function submitForm(url) {
-        const result = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({}),
-        });
-        document.getElementById("success-notification").innerHTML = "successful";
-        setTimeout(function() { document.getElementById("success-notification").innerHTML = ""; }, 3000);
-      }
-    </script>
-    <form>
-      <input type="button" value="Show Console" onclick="submitForm('/dragon/show_console/')" />
-    </form>
-    <form>
-      <input type="button" value="Reset Game" onclick="submitForm('/dragon/reset/');" />
-    </form>
-    <form>
-      <input type="button" value="Record Gameplay" onclick="submitForm('/dragon/record/');" />
-    </form>
-    <form>
-      <input type="button" value="Stop Recording" onclick="submitForm('/dragon/record_stop/');" />
-    </form>
-    <form>
-      <input type="button" value="Replay Recording" onclick="submitForm('/dragon/replay/');" />
-    </form>
-    <div id="success-notification"></div>
-    #{links}
-  </body>
-</html>
-S
-    end
-
     def get_api_control_panel args, req
-      req.respond 200,
-                  control_panel_view,
-                  { 'Content-Type' => 'text/html' }
+      respond_with_html req, <<~HTML
+        <script>
+          async function submitForm(url) {
+            const result = await fetch(url, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({}),
+            });
+            document.getElementById("success-notification").innerHTML = "successful";
+            setTimeout(function() { document.getElementById("success-notification").innerHTML = ""; }, 3000);
+          }
+        </script>
+        <form>
+          <input type="button" value="Show Console" onclick="submitForm('/dragon/show_console/')" />
+        </form>
+        <form>
+          <input type="button" value="Reset Game" onclick="submitForm('/dragon/reset/');" />
+        </form>
+        <form>
+          <input type="button" value="Record Gameplay" onclick="submitForm('/dragon/record/');" />
+        </form>
+        <form>
+          <input type="button" value="Stop Recording" onclick="submitForm('/dragon/record_stop/');" />
+        </form>
+        <form>
+          <input type="button" value="Replay Recording" onclick="submitForm('/dragon/replay/');" />
+        </form>
+        <div id="success-notification"></div>
+        #{links}
+      HTML
     end
 
     def json? req
@@ -250,37 +239,27 @@ S
 
     def post_api_reset args, req
       $gtk.reset if json? req
-      req.respond 200,
-                  control_panel_view,
-                  { 'Content-Type' => 'text/html' }
+      get_api_control_panel args, req
     end
 
     def post_api_record args, req
       $recording.start 100 if json? req
-      req.respond 200,
-                  control_panel_view,
-                  { 'Content-Type' => 'text/html' }
+      get_api_control_panel args, req
     end
 
     def post_api_record_stop args, req
       $recording.stop 'replay.txt' if json? req
-      req.respond 200,
-                  control_panel_view,
-                  { 'Content-Type' => 'text/html' }
+      get_api_control_panel args, req
     end
 
     def post_api_replay args, req
       $replay.start 'replay.txt' if json? req
-      req.respond 200,
-                  control_panel_view,
-                  { 'Content-Type' => 'text/html' }
+      get_api_control_panel args, req
     end
 
     def post_api_show_console args, req
       $gtk.console.show if json? req
-      req.respond 200,
-                  control_panel_view,
-                  { 'Content-Type' => 'text/html' }
+      get_api_control_panel args, req
     end
 
     def tick args
