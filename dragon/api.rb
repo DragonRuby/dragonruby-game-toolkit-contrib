@@ -72,12 +72,15 @@ module GTK
     end
 
     def source_code_links args
-      links = args.gtk.reload_list_history.keys.map do |f|
-        "<li><a href=\"/dragon/code/edit/?file=#{f}\">#{f}</a></li>"
+      links = ''
+      args.gtk.reload_list_history.each_key do |f|
+        links << <<~HTML
+          <li><a href="/dragon/code/edit/?file=#{f}">#{f}</a></li>
+        HTML
       end
       <<~HTML
         <ul>
-          #{links.join("\n")}
+          #{links}
         </ul>
       HTML
     end
