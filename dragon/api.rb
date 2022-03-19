@@ -594,5 +594,39 @@ S
     def get_uri_and_query_string req
       req.uri.split('?', 2)
     end
+
+    def respond_with_html req, body, title: nil, head_content: nil
+      html = <<~HTML
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8"/>
+            <title>#{title || 'DragonRuby Game Toolkit Dev Server'}</title>
+            <style>
+              #{dev_server_css}
+            </style>
+            #{head_content || ''}
+          </head>
+          <body>
+            #{body}
+          </body>
+        </html>
+      HTML
+      req.respond 200, html, { 'Content-Type' => 'text/html' }
+    end
+
+    def dev_server_css
+      <<~CSS
+        pre {
+          border: solid 1px silver;
+          padding: 10px;
+          font-size: 14px;
+          white-space: pre-wrap;
+          white-space: -moz-pre-wrap;
+          white-space: -pre-wrap;
+          white-space: -o-pre-wrap;
+          word-wrap: break-word;
+        }
+      CSS
+    end
   end
 end
