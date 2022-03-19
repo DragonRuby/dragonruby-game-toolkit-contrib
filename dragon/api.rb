@@ -168,7 +168,8 @@ S
     end
 
     def get_api_code_edit args, req
-      file = req.uri.split('?').last.gsub("file=", "")
+      _, query_string = get_uri_and_query_string req
+      file = query_string.gsub("file=", "")
       view = code_edit_view args, file
       req.respond 200,
                   view,
@@ -176,7 +177,8 @@ S
     end
 
     def post_api_code_update args, req
-      file = req.uri.split('?').last.gsub("file=", "")
+      _, query_string = get_uri_and_query_string req
+      file = query_string.gsub("file=", "")
       code = ($gtk.parse_json req.body)["code"]
       args.gtk.write_file file, code
       view = code_edit_view args, file
