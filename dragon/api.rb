@@ -449,22 +449,17 @@ S
 
     def tick args
       args.inputs.http_requests.each do |req|
-        uri = req.uri
-        has_query_string = uri.include? '?'
-        uri_without_query_string = has_query_string ? uri.split('?', 2).first : uri
+        uri, query_string = get_uri_and_query_string req
         match_candidate = { method:                   req.method.downcase.to_sym,
                             uri:                      uri,
-                            uri_without_query_string: uri_without_query_string,
-                            query_string:             has_query_string ? uri.split('?', 2).last : nil,
-                            has_query_string:         has_query_string,
+                            query_string:             query_string,
+                            has_query_string:         !!query_string,
                             end_with_rb:              uri.end_with?('.rb'),
                             has_file_extension:       file_extensions.find { |f| uri.include? f },
-                            has_trailing_slash:       uri_without_query_string.end_with?('/') }
+                            has_trailing_slash:       uri.end_with?('/') }
 
         if !match_candidate[:has_file_extension] && !match_candidate[:has_trailing_slash]
-          match_candidate[:uri_without_query_string] += '/'
-          match_candidate[:uri] = match_candidate[:uri_without_query_string]
-          match_candidate[:uri] += "?#{match_candidate[:query_string]}" if has_query_string
+          match_candidate[:uri] += '/'
         end
 
         context = { args: args, req: req, match_candidate: match_candidate }
@@ -561,15 +556,15 @@ S
          handler:        :get_api_autocomplete },
        { match_criteria: { method: :post, uri: "/dragon/autocomplete/" },
          handler:        :post_api_autocomplete },
-       { match_criteria: { method: :get, uri_without_query_string: "/dragon/code/edit/", has_query_string: true },
+       { match_criteria: { method: :get, uri: "/dragon/code/edit/", has_query_string: true },
          handler:        :get_api_code_edit },
-       { match_criteria: { method: :post, uri_without_query_string: "/dragon/code/update/", has_query_string: true },
+       { match_criteria: { method: :post, uri: "/dragon/code/update/", has_query_string: true },
          handler:        :post_api_code_update },
 
 
        { match_criteria: { method: :get, uri: "/docs.html" },
          handler:        :get_docs_html },
-       { match_criteria: { method: :get, uri_without_query_string: "/docs.css" },
+       { match_criteria: { method: :get, uri: "/docs.css" },
          handler:        :get_docs_css },
        { match_criteria: { method: :get, uri: "/docs_search.gif" },
          handler:        :get_docs_search_gif },
@@ -628,6 +623,10 @@ S
                     { 'Content-Type' => 'text/plain' }
       end
       return true
+    end
+
+    def get_uri_and_query_string req
+      req.uri.split('?', 2)
     end
   end
 end
