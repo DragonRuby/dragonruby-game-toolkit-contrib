@@ -451,11 +451,11 @@ S
       args.inputs.http_requests.each do |req|
         uri = req.uri
         has_query_string = uri.include? '?'
-        uri_without_query_string = has_query_string ? uri.split('?').first : uri
+        uri_without_query_string = has_query_string ? uri.split('?', 2).first : uri
         match_candidate = { method:                   req.method.downcase.to_sym,
                             uri:                      uri,
                             uri_without_query_string: uri_without_query_string,
-                            query_string:             has_query_string ? uri.split('?').last : nil,
+                            query_string:             has_query_string ? uri.split('?', 2).last : nil,
                             has_query_string:         has_query_string,
                             end_with_rb:              uri.end_with?('.rb'),
                             has_file_extension:       file_extensions.find { |f| uri.include? f },
