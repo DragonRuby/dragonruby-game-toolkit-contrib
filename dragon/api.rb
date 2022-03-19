@@ -91,46 +91,35 @@ module GTK
     end
 
     def code_edit_view args, file
-      view = <<-S
-<html>
-  <head>
-    <meta charset="UTF-8"/>
-    <title>DragonRuby Game Toolkit Documentation</title>
-  </head>
-  <body>
-      <script>
-        async function submitForm() {
-          const result = await fetch("/dragon/code/update/?file=#{file}", {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code: document.getElementById("code").value }),
-          });
-          document.getElementById("success-notification").innerHTML = "update successful";
-          setTimeout(function() { document.getElementById("success-notification").innerHTML = ""; }, 3000);
-        }
-      </script>
-      <form>
-        <div><code>#{file}:</code></div>
-        <textarea name="code" id="code" rows="30" cols="80">#{args.gtk.read_file file}</textarea>
-        <br/>
-        <input type="button" value="Update" onclick="submitForm();" />
-        <span id="success-notification"></span>
-      </form>
-    #{source_code_links args}
+      <<~HTML
+        <script>
+          async function submitForm() {
+            const result = await fetch("/dragon/code/update/?file=#{file}", {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ code: document.getElementById("code").value }),
+            });
+            document.getElementById("success-notification").innerHTML = "update successful";
+            setTimeout(function() { document.getElementById("success-notification").innerHTML = ""; }, 3000);
+          }
+        </script>
+        <form>
+          <div><code>#{file}:</code></div>
+          <textarea name="code" id="code" rows="30" cols="80">#{args.gtk.read_file file}</textarea>
+          <br/>
+          <input type="button" value="Update" onclick="submitForm();" />
+          <span id="success-notification"></span>
+        </form>
+        #{source_code_links args}
 
-    #{links}
-  </body>
-</html>
-S
+        #{links}
+      HTML
     end
 
     def get_api_code_edit args, req
       query_params = get_query_params req
       file = query_params['file']
-      view = code_edit_view args, file
-      req.respond 200,
-                  view,
-                  { 'Content-Type' => 'text/html' }
+      respond_with_html req, code_edit_view(args, file)
     end
 
     def post_api_code_update args, req
@@ -140,10 +129,7 @@ S
         code = ($gtk.parse_json req.body)["code"]
         args.gtk.write_file file, code
       end
-      view = code_edit_view args, file
-      req.respond 200,
-                  view,
-                  { 'Content-Type' => 'text/html' }
+      respond_with_html req, code_edit_view(args, file)
     end
 
     def post_api_log args, req
