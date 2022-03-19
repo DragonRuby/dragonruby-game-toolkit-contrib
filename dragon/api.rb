@@ -457,7 +457,6 @@ S
                             uri_without_query_string: uri_without_query_string,
                             query_string:             has_query_string ? uri.split('?').last : nil,
                             has_query_string:         has_query_string,
-                            has_api_prefix:           uri.start_with?('/dragon'),
                             end_with_rb:              uri.end_with?('.rb'),
                             has_file_extension:       file_extensions.find { |f| uri.include? f },
                             has_trailing_slash:       uri_without_query_string.end_with?('/') }
