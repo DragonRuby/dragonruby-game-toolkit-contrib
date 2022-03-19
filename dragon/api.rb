@@ -464,13 +464,10 @@ S
                             has_file_extension:       file_extensions.find { |f| uri.include? f },
                             has_trailing_slash:       uri_without_query_string.end_with?('/') }
 
-        if !match_candidate[:has_file_extension]
-          if !match_candidate[:has_trailing_slash]
-            match_candidate[:uri] = match_candidate[:uri_without_query_string] + "/"
-            if match_candidate[:query_string]
-              match_candidate[:uri] += "?#{match_candidate[:query_string]}"
-            end
-          end
+        if !match_candidate[:has_file_extension] && !match_candidate[:has_trailing_slash]
+          match_candidate[:uri_without_query_string] += '/'
+          match_candidate[:uri] = match_candidate[:uri_without_query_string]
+          match_candidate[:uri] += "?#{match_candidate[:query_string]}" if has_query_string
         end
 
         context = { args: args, req: req, match_candidate: match_candidate }
