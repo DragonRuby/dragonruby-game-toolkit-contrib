@@ -168,8 +168,8 @@ S
     end
 
     def get_api_code_edit args, req
-      _, query_string = get_uri_and_query_string req
-      file = query_string.gsub("file=", "")
+      query_params = get_query_params req
+      file = query_params['file']
       view = code_edit_view args, file
       req.respond 200,
                   view,
@@ -177,8 +177,8 @@ S
     end
 
     def post_api_code_update args, req
-      _, query_string = get_uri_and_query_string req
-      file = query_string.gsub("file=", "")
+      query_params = get_query_params req
+      file = query_params['file']
       code = ($gtk.parse_json req.body)["code"]
       args.gtk.write_file file, code
       view = code_edit_view args, file
@@ -629,6 +629,13 @@ S
                     { 'Content-Type' => 'text/plain' }
       end
       return true
+    end
+
+    def get_query_params req
+      _, query_string = get_uri_and_query_string req
+      query_string.split('&').map { |pair|
+        pair.split('=')
+      }.to_h
     end
 
     def get_uri_and_query_string req
