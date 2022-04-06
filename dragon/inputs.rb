@@ -406,11 +406,19 @@ module GTK
       @key_up.left || @key_held.left || a
     end
 
+    def left_arrow
+      @key_up.left || @key_held.left
+    end
+
     # The right arrow or "d" was pressed.
     #
     # @return [Boolean]
     def right
       @key_up.right || @key_held.right || d
+    end
+
+    def right_arrow
+      @key_up.right || @key_held.right
     end
 
     # The up arrow or "w" was pressed.
@@ -420,11 +428,19 @@ module GTK
       @key_up.up || @key_held.up || w
     end
 
+    def up_arrow
+      @key_up.up || @key_held.up
+    end
+
     # The down arrow or "s" was pressed.
     #
     # @return [Boolean]
     def down
       @key_up.down || @key_held.down || s
+    end
+
+    def down_arrow
+      @key_up.down || @key_held.down
     end
 
     # Clear all current key presses.

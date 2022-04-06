@@ -317,8 +317,6 @@ Send a file path to this collection to play a sound. The sound file must be unde
 Send a Primitive to this collection to render a filled in rectangle to the screen. This collection is cleared at the end of every frame.
 *** ~args.outputs.static_solids~
 Send a Primitive to this collection to render a filled in rectangle to the screen. This collection is not cleared at the end of every frame. And objects can be mutated by reference.
-*** ~args.outputs.triangles~, ~.static_triangles~
-Send a Primitive to this collection to render a textured triangle to the screen.
 *** ~args.outputs.sprites~, ~.static_sprites~
 Send a Primitive to this collection to render a sprite to the screen.
 *** ~args.outputs.primitives~, ~.static_primitives~

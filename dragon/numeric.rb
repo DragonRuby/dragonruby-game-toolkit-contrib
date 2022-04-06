@@ -586,6 +586,24 @@ S
   def mid? l, r
     (between? l, r) || (between? r, l)
   end
+
+  def self.from_left n
+    return n unless $gtk
+    $gtk.args.grid.left + n
+  end
+
+  def from_left
+    Numeric.from_left self
+  end
+
+  def self.from_bottom n
+    return n unless $gtk
+    $gtk.args.grid.bottom + n
+  end
+
+  def from_bottom
+    Numeric.from_bottom self
+  end
 end
 
 class Fixnum

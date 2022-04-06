@@ -7,191 +7,183 @@ class Game
     input
   end
 
-  def matrix_mul m, v
-    (hmap x: ((m.x.x * v.x) + (m.x.y * v.y) + (m.x.z * v.z) + (m.x.w * v.w)),
-          y: ((m.y.x * v.x) + (m.y.y * v.y) + (m.y.z * v.z) + (m.y.w * v.w)),
-          z: ((m.z.x * v.x) + (m.z.y * v.y) + (m.z.z * v.z) + (m.z.w * v.w)),
-          w: ((m.w.x * v.x) + (m.w.y * v.y) + (m.w.z * v.z) + (m.w.w * v.w)))
-  end
-
   def player_ship
     [
       # engine back
-      { x: -1, y: -1, z: 1, w: 0 },
-      { x: -1, y:  1, z: 1, w: 0 },
+      (vec4  -1,  -1,  1,  0),
+      (vec4  -1,   1,  1,  0),
 
-      { x: -1, y:  1, z: 1, w: 0 },
-      { x:  1, y:  1, z: 1, w: 0 },
+      (vec4  -1,   1,  1,  0),
+      (vec4   1,   1,  1,  0),
 
-      { x:  1, y:  1, z: 1, w: 0 },
-      { x:  1, y: -1, z: 1, w: 0 },
+      (vec4   1,   1,  1,  0),
+      (vec4   1,  -1,  1,  0),
 
-      { x:  1, y: -1, z: 1, w: 0 },
-      { x: -1, y: -1, z: 1, w: 0 },
+      (vec4   1,  -1,  1,  0),
+      (vec4  -1,  -1,  1,  0),
 
       # engine front
-      { x: -1, y: -1, z: -1, w: 0 },
-      { x: -1, y:  1, z: -1, w: 0 },
+      (vec4  -1,  -1,  -1,  0),
+      (vec4  -1,   1,  -1,  0),
 
-      { x: -1, y:  1, z: -1, w: 0 },
-      { x:  1, y:  1, z: -1, w: 0 },
+      (vec4  -1,   1,  -1,  0),
+      (vec4   1,   1,  -1,  0),
 
-      { x:  1, y:  1, z: -1, w: 0 },
-      { x:  1, y: -1, z: -1, w: 0 },
+      (vec4   1,   1,  -1,  0),
+      (vec4   1,  -1,  -1,  0),
 
-      { x:  1, y: -1, z: -1, w: 0 },
-      { x: -1, y: -1, z: -1, w: 0 },
+      (vec4   1,  -1,  -1,  0),
+      (vec4  -1,  -1,  -1,  0),
 
       # engine left
-      { x: -1, z:  -1, y: -1, w: 0 },
-      { x: -1, z:  -1, y:  1, w: 0 },
+      (vec4  -1,   -1,  -1,  0),
+      (vec4  -1,   -1,   1,  0),
 
-      { x: -1, z:  -1, y:  1, w: 0 },
-      { x: -1, z:   1, y:  1, w: 0 },
+      (vec4  -1,   -1,   1,  0),
+      (vec4  -1,    1,   1,  0),
 
-      { x: -1, z:   1, y:  1, w: 0 },
-      { x: -1, z:   1, y: -1, w: 0 },
+      (vec4  -1,    1,   1,  0),
+      (vec4  -1,    1,  -1,  0),
 
-      { x: -1, z:   1, y: -1, w: 0 },
-      { x: -1, z:  -1, y: -1, w: 0 },
+      (vec4  -1,    1,  -1,  0),
+      (vec4  -1,   -1,  -1,  0),
 
       # engine right
-      { x:  1, z:  -1, y: -1, w: 0 },
-      { x:  1, z:  -1, y:  1, w: 0 },
+      (vec4   1,   -1,  -1,  0),
+      (vec4   1,   -1,   1,  0),
 
-      { x:  1, z:  -1, y:  1, w: 0 },
-      { x:  1, z:   1, y:  1, w: 0 },
+      (vec4   1,   -1,   1,  0),
+      (vec4   1,    1,   1,  0),
 
-      { x:  1, z:   1, y:  1, w: 0 },
-      { x:  1, z:   1, y: -1, w: 0 },
+      (vec4   1,    1,   1,  0),
+      (vec4   1,    1,  -1,  0),
 
-      { x:  1, z:   1, y: -1, w: 0 },
-      { x:  1, z:  -1, y: -1, w: 0 },
+      (vec4   1,    1,  -1,  0),
+      (vec4   1,   -1,  -1,  0),
 
       # top front of engine to front of ship
-      { x:  1, y:   1, z: 1, w: 0 },
-      { x:  0, y:  -1, z: 9, w: 0 },
+      (vec4   1,    1,  1,  0),
+      (vec4   0,   -1,  9,  0),
 
-      { x:  0, y:  -1, z: 9, w: 0 },
-      { x: -1, y:   1, z: 1, w: 0 },
+      (vec4   0,   -1,  9,  0),
+      (vec4  -1,    1,  1,  0),
 
       # bottom front of engine
-      { x:  1, y:  -1, z: 1, w: 0 },
-      { x:  0, y:  -1, z: 9, w: 0 },
+      (vec4   1,   -1,  1,  0),
+      (vec4   0,   -1,  9,  0),
 
-      { x: -1, y:  -1, z: 1, w: 0 },
-      { x:  0, y:  -1, z: 9, w: 0 },
+      (vec4  -1,   -1,  1,  0),
+      (vec4   0,   -1,  9,  0),
 
       # right wing
       # front of wing
-      { x: 1, y: 0.10, z:  1, w: 0 },
-      { x: 9, y: 0.10, z: -1, w: 0 },
+      (vec4  1,  0.10,   1,  0),
+      (vec4  9,  0.10,  -1,  0),
 
-      { x:  9, y: 0.10, z: -1, w: 0 },
-      { x: 10, y: 0.10, z: -2, w: 0 },
+      (vec4   9,  0.10,  -1,  0),
+      (vec4  10,  0.10,  -2,  0),
 
       # back of wing
-      { x: 1, y: 0.10, z: -1, w: 0 },
-      { x: 9, y: 0.10, z: -1, w: 0 },
+      (vec4  1,  0.10,  -1,  0),
+      (vec4  9,  0.10,  -1,  0),
 
-      { x: 10, y: 0.10, z: -2, w: 0 },
-      { x:  8, y: 0.10, z: -1, w: 0 },
+      (vec4  10,  0.10,  -2,  0),
+      (vec4   8,  0.10,  -1,  0),
 
       # front of wing
-      { x: 1, y: -0.10, z:  1, w: 0 },
-      { x: 9, y: -0.10, z: -1, w: 0 },
+      (vec4  1,  -0.10,   1,  0),
+      (vec4  9,  -0.10,  -1,  0),
 
-      { x:  9, y: -0.10, z: -1, w: 0 },
-      { x: 10, y: -0.10, z: -2, w: 0 },
+      (vec4   9,  -0.10,  -1,  0),
+      (vec4  10,  -0.10,  -2,  0),
 
       # back of wing
-      { x: 1, y: -0.10, z: -1, w: 0 },
-      { x: 9, y: -0.10, z: -1, w: 0 },
+      (vec4  1,  -0.10,  -1,  0),
+      (vec4  9,  -0.10,  -1,  0),
 
-      { x: 10, y: -0.10, z: -2, w: 0 },
-      { x:  8, y: -0.10, z: -1, w: 0 },
+      (vec4  10,  -0.10,  -2,  0),
+      (vec4   8,  -0.10,  -1,  0),
 
       # left wing
       # front of wing
-      { x: -1, y: 0.10, z:  1, w: 0 },
-      { x: -9, y: 0.10, z: -1, w: 0 },
+      (vec4  -1,  0.10,   1,  0),
+      (vec4  -9,  0.10,  -1,  0),
 
-      { x: -9, y: 0.10, z: -1, w: 0 },
-      { x: -10, y: 0.10, z: -2, w: 0 },
+      (vec4  -9,  0.10,  -1,  0),
+      (vec4  -10,  0.10,  -2,  0),
 
       # back of wing
-      { x: -1, y: 0.10, z: -1, w: 0 },
-      { x: -9, y: 0.10, z: -1, w: 0 },
+      (vec4  -1,  0.10,  -1,  0),
+      (vec4  -9,  0.10,  -1,  0),
 
-      { x: -10, y: 0.10, z: -2, w: 0 },
-      { x: -8, y: 0.10, z: -1, w: 0 },
+      (vec4  -10,  0.10,  -2,  0),
+      (vec4  -8,  0.10,  -1,  0),
 
       # front of wing
-      { x: -1, y: -0.10, z:  1, w: 0 },
-      { x: -9, y: -0.10, z: -1, w: 0 },
+      (vec4  -1,  -0.10,   1,  0),
+      (vec4  -9,  -0.10,  -1,  0),
 
-      { x: -9, y: -0.10, z: -1, w: 0 },
-      { x: -10, y: -0.10, z: -2, w: 0 },
+      (vec4  -9,  -0.10,  -1,  0),
+      (vec4  -10,  -0.10,  -2,  0),
 
       # back of wing
-      { x: -1, y: -0.10, z: -1, w: 0 },
-      { x: -9, y: -0.10, z: -1, w: 0 },
-
-      { x: -10, y: -0.10, z: -2, w: 0 },
-      { x: -8, y: -0.10, z: -1, w: 0 },
+      (vec4  -1,  -0.10,  -1,  0),
+      (vec4  -9,  -0.10,  -1,  0),
+      (vec4  -10,  -0.10,  -2,  0),
+      (vec4   -8,  -0.10,  -1,  0),
 
       # left fin
       # top
-      { x: -1, y: 0.10, z: 1, w: 0 },
-      { x: -1, y: 3, z: -3, w: 0 },
+      (vec4  -1,  0.10,  1,  0),
+      (vec4  -1,  3,  -3,  0),
 
-      { x: -1, y: 0.10, z: -1, w: 0 },
-      { x: -1, y: 3, z: -3, w: 0 },
+      (vec4  -1,  0.10,  -1,  0),
+      (vec4  -1,  3,  -3,  0),
 
-      { x: -1.1, y: 0.10, z: 1, w: 0 },
-      { x: -1.1, y: 3, z: -3, w: 0 },
+      (vec4  -1.1,  0.10,  1,  0),
+      (vec4  -1.1,  3,  -3,  0),
 
-      { x: -1.1, y: 0.10, z: -1, w: 0 },
-      { x: -1.1, y: 3, z: -3, w: 0 },
+      (vec4  -1.1,  0.10,  -1,  0),
+      (vec4  -1.1,  3,  -3,  0),
 
       # bottom
-      { x: -1, y: -0.10, z: 1, w: 0 },
-      { x: -1, y: -2, z: -2, w: 0 },
+      (vec4  -1,  -0.10,  1,  0),
+      (vec4  -1,  -2,  -2,  0),
 
-      { x: -1, y: -0.10, z: -1, w: 0 },
-      { x: -1, y: -2, z: -2, w: 0 },
+      (vec4  -1,  -0.10,  -1,  0),
+      (vec4  -1,  -2,  -2,  0),
 
-      { x: -1.1, y: -0.10, z: 1, w: 0 },
-      { x: -1.1, y: -2, z: -2, w: 0 },
+      (vec4  -1.1,  -0.10,  1,  0),
+      (vec4  -1.1,  -2,  -2,  0),
 
-      { x: -1.1, y: -0.10, z: -1, w: 0 },
-      { x: -1.1, y: -2, z: -2, w: 0 },
+      (vec4  -1.1,  -0.10,  -1,  0),
+      (vec4  -1.1,  -2,  -2,  0),
 
       # right fin
-      { x:  1, y: 0.10, z: 1, w: 0 },
-      { x:  1, y: 3, z: -3, w: 0 },
+      (vec4   1,  0.10,  1,  0),
+      (vec4   1,  3,  -3,  0),
 
-      { x:  1, y: 0.10, z: -1, w: 0 },
-      { x:  1, y: 3, z: -3, w: 0 },
+      (vec4   1,  0.10,  -1,  0),
+      (vec4   1,  3,  -3,  0),
 
-      { x:  1.1, y: 0.10, z: 1, w: 0 },
-      { x:  1.1, y: 3, z: -3, w: 0 },
+      (vec4   1.1,  0.10,  1,  0),
+      (vec4   1.1,  3,  -3,  0),
 
-      { x:  1.1, y: 0.10, z: -1, w: 0 },
-      { x:  1.1, y: 3, z: -3, w: 0 },
+      (vec4   1.1,  0.10,  -1,  0),
+      (vec4   1.1,  3,  -3,  0),
 
       # bottom
-      { x:  1, y: -0.10, z: 1, w: 0 },
-      { x:  1, y: -2, z: -2, w: 0 },
+      (vec4   1,  -0.10,  1,  0),
+      (vec4   1,  -2,  -2,  0),
 
-      { x:  1, y: -0.10, z: -1, w: 0 },
-      { x:  1, y: -2, z: -2, w: 0 },
+      (vec4   1,  -0.10,  -1,  0),
+      (vec4   1,  -2,  -2,  0),
 
-      { x:  1.1, y: -0.10, z: 1, w: 0 },
-      { x:  1.1, y: -2, z: -2, w: 0 },
+      (vec4   1.1,  -0.10,  1,  0),
+      (vec4   1.1,  -2,  -2,  0),
 
-      { x:  1.1, y: -0.10, z: -1, w: 0 },
-      { x:  1.1, y: -2, z: -2, w: 0 },
+      (vec4   1.1,  -0.10,  -1,  0),
+      (vec4   1.1,  -2,  -2,  0),
     ]
   end
 
@@ -205,45 +197,38 @@ class Game
     state.angle_z ||= 0
   end
 
-  def matrix_new x0, y0, z0, w0, x1, y1, z1, w1, x2, y2, z2, w2, x3, y3, z3, w3
-    (hmap x: (hmap x: x0, y: y0, z: z0, w: w0),
-          y: (hmap x: x1, y: y1, z: z1, w: w1),
-          z: (hmap x: x2, y: y2, z: z2, w: w2),
-          w: (hmap x: x3, y: y3, z: z3, w: w3))
-  end
-
   def angle_z_matrix degrees
     cos_t = Math.cos degrees.to_radians
     sin_t = Math.sin degrees.to_radians
-    (matrix_new cos_t, -sin_t, 0, 0,
-                sin_t,  cos_t, 0, 0,
-                0,      0,     1, 0,
-                0,      0,     0, 1)
+    (mat4 cos_t, -sin_t, 0, 0,
+          sin_t,  cos_t, 0, 0,
+          0,      0,     1, 0,
+          0,      0,     0, 1)
   end
 
   def angle_y_matrix degrees
     cos_t = Math.cos degrees.to_radians
     sin_t = Math.sin degrees.to_radians
-    (matrix_new  cos_t,  0, sin_t, 0,
-                 0,      1, 0,     0,
-                 -sin_t, 0, cos_t, 0,
-                 0,      0, 0,     1)
+    (mat4  cos_t,  0, sin_t, 0,
+           0,      1, 0,     0,
+           -sin_t, 0, cos_t, 0,
+           0,      0, 0,     1)
   end
 
   def angle_x_matrix degrees
     cos_t = Math.cos degrees.to_radians
     sin_t = Math.sin degrees.to_radians
-    (matrix_new  1,     0,      0, 0,
-                 0, cos_t, -sin_t, 0,
-                 0, sin_t,  cos_t, 0,
-                 0,     0,      0, 1)
+    (mat4  1,     0,      0, 0,
+           0, cos_t, -sin_t, 0,
+           0, sin_t,  cos_t, 0,
+           0,     0,      0, 1)
   end
 
   def scale_matrix factor
-    (matrix_new factor,      0,      0, 0,
-                0,      factor,      0, 0,
-                0,           0, factor, 0,
-                0,           0,      0, 1)
+    (mat4 factor,      0,      0, 0,
+          0,      factor,      0, 0,
+          0,           0, factor, 0,
+          0,           0,      0, 1)
   end
 
   def input
@@ -294,10 +279,7 @@ class Game
     z_matrix = angle_x_matrix angle_x
 
     state.shifted_points = state.points.map do |point|
-      (matrix_mul s_matrix,
-                  (matrix_mul z_matrix,
-                              (matrix_mul x_matrix,
-                                          (matrix_mul y_matrix, point)))).merge(original: point)
+      (mul point, y_matrix, x_matrix, z_matrix, s_matrix).merge(original: point)
     end
   end
 

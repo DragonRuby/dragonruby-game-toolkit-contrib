@@ -44,6 +44,7 @@ module GTK
             'dragon/attr_gtk.rb',
             'dragon/attr_sprite.rb',
             'dragon/object.rb',
+            'dragon/object_matrix.rb',
             'dragon/class.rb',
             'dragon/string.rb',
             'dragon/entity.rb',
