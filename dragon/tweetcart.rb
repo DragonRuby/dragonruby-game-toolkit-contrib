@@ -9,6 +9,7 @@ def $top_level.TICK &block
     args.outputs[:scene].h = 90
     args.outputs[:scene].background_color = [0, 0, 0, 0]
     args.state.tweet_scene ||= { x: 0, y: 0, w: 1280, h: 720, path: :scene }
+    $tweetcart_palette ||= create_tweetcart_palette
     block.call args
     args.outputs.sprites << args.state.tweet_scene
   end
@@ -115,6 +116,47 @@ def $top_level.TICK &block
     $args.state.tweet_scene.h = h
     $args.state.tweet_scene.x = ($args.grid.w - w) / 2
     $args.state.tweet_scene.y = ($args.grid.h - h) / 2
+  end
+
+  def create_tweetcart_palette
+    [
+      [   0,   0,   0 ],
+      [  34,  32,  52 ],
+      [  69,  40,  60 ],
+      [ 102,  57,  49 ],
+      [ 143,  86,  59 ],
+      [ 223, 113,  38 ],
+      [ 217, 160, 102 ],
+      [ 238, 195, 154 ],
+      [ 251, 242,  54 ],
+      [ 153, 229,  80 ],
+      [ 106, 190,  48 ],
+      [  55, 148, 110 ],
+      [  75, 105,  47 ],
+      [  82,  75,  36 ],
+      [  50,  60,  57 ],
+      [  63,  63, 116 ],
+      [  48,  96, 130 ],
+      [  91, 110, 225 ],
+      [  99, 155, 255 ],
+      [  95, 205, 228 ],
+      [ 203, 219, 252 ],
+      [ 255, 255, 255 ],
+      [ 155, 173, 183 ],
+      [ 132, 126, 135 ],
+      [ 105, 106, 106 ],
+      [  89,  86,  82 ],
+      [ 118,  66, 138 ],
+      [ 172,  50,  50 ],
+      [ 217,  87,  99 ],
+      [ 215, 123, 186 ],
+      [ 143, 151,  74 ],
+      [ 138, 111,  48 ]
+    ]
+  end
+
+  def $top_level.pal
+    $tweetcart_palette
   end
 end
 
