@@ -580,7 +580,7 @@ You can use this function to compare the relative performance of methods.
                          # label for experiment
                          using_numeric_map: -> () {
                            # experiment body
-                           v = 100.map do |i|
+                           v = 100.map_with_index do |i|
                              i * 100
                            end
                          },

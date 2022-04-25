@@ -14,4 +14,4 @@
 # ./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/nil_coercion_tests.rb
 # ./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/fn_tests.rb
 # ./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/pretty_format_test.rb
-./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/benchmark_api_tests.rb
+# ./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/benchmark_api_tests.rb

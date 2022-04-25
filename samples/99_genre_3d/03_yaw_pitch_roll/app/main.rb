@@ -1,4 +1,6 @@
 class Game
+  include MatrixFunctions
+
   attr_gtk
 
   def tick

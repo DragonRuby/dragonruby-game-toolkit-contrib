@@ -17,6 +17,8 @@ module GTK
     end
 
     def run_test m
+      $serialize_state_serialization_too_large = false
+      GTK::Entity.__reset_id__!
       args = Args.new $gtk, nil
       assert = Assert.new
       begin

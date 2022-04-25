@@ -94,6 +94,7 @@ module GTK
             'dragon/wizards.rb',
             'dragon/ios_wizard.rb',
             'dragon/itch_wizard.rb',
+            'dragon/runtime/benchmark.rb',
           ] + core_files_to_reload + @required_files
         end
       end

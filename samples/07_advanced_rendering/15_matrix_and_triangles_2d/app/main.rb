@@ -1,3 +1,5 @@
+include MatrixFunctions
+
 def tick args
   args.state.square_one_sprite = { x:        0,
                                    y:        0,

@@ -1,13 +1,13 @@
 class Square
-  attr :x, :y, :w, :h
+  attr_sprite
 
-  def initialize grid
-    @grid = grid
-    @x = (rand @grid.w)
-    @y = (rand @grid.h)
-    @w    = 20
-    @h    = 20
+  def initialize
+    @x    = rand 1280
+    @y    = rand 720
+    @w    = 15
+    @h    = 15
     @path = 'sprites/square/blue.png'
+    @dir = 1
   end
 
   def mark_collisions all
@@ -18,17 +18,26 @@ class Square
             end
   end
 
-  def draw_override ffi_draw
-    ffi_draw.draw_sprite @x, @y, @w, @h, @path
+  def move
+    @dir  = -1 if (@x + @w >= 1280) && @dir ==  1
+    @dir  =  1 if (@x      <=    0) && @dir == -1
+    @x   += @dir
+  end
+end
+
+def reset_if_needed args
+  if args.state.tick_count == 0 || args.inputs.mouse.click
+    args.state.star_count = 1500
+    args.state.stars = args.state.star_count.map { |i| Square.new }.to_a
+    args.outputs.static_sprites.clear
+    args.outputs.static_sprites << args.state.stars
   end
 end
 
 def tick args
-  if args.state.tick_count == 0
-    args.state.star_count = 1000
-    args.state.stars = args.state.star_count.map { |i| Square.new args.grid }.to_a
-    args.outputs.static_sprites << args.state.stars
-  end
+  reset_if_needed args
+
+  Fn.each args.state.stars do |s| s.move end
 
   all = GTK::Geometry.find_collisions args.state.stars
   Fn.each args.state.stars do |s| s.mark_collisions all end

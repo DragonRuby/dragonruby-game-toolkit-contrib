@@ -11,6 +11,14 @@ class Game
       args.state.star_distance += (inputs.controller_one.right_analog_y_perc * 0.25) ** 2 * inputs.controller_one.right_analog_y_perc.sign
       state.star_distance = state.star_distance.clamp(state.min_star_distance, state.max_star_distance)
       state.star_sprites = calc_star_primitives
+    elsif inputs.controller_one.down
+      args.state.star_distance += (1.0 * 0.25) ** 2
+      state.star_distance = state.star_distance.clamp(state.min_star_distance, state.max_star_distance)
+      state.star_sprites = calc_star_primitives
+    elsif inputs.controller_one.up
+      args.state.star_distance -= (1.0 * 0.25) ** 2
+      state.star_distance = state.star_distance.clamp(state.min_star_distance, state.max_star_distance)
+      state.star_sprites = calc_star_primitives
     end
 
     render
@@ -45,12 +53,6 @@ class Game
 
   def render
     outputs.background_color = [0, 0, 0]
-    if gtk.platform? :macos
-      args.outputs.borders << hmap(x: -150,
-                                   y: -220,
-                                   w: 300, h: 130, r: 255, g: 255, b: 255)
-    end
-
     if state.star_distance <= 1.0
       text_alpha = (1 - state.star_distance) * 255
       args.outputs.labels << { x: 0, y: 50, text: "Let there be light.", r: 255, g: 255, b: 255, size_enum: 1, alignment_enum: 1, a: text_alpha }
@@ -84,7 +86,7 @@ class Game
     state.max.y          ||= 640
     state.max.z          ||= 50
 
-    state.stars ||= 500.map do
+    state.stars ||= 1500.map do
       random_point
     end
 

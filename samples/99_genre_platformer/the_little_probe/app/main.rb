@@ -454,20 +454,22 @@ class FallingCircle
     results[:rect] = { x: x - radius, y: y - radius, w: radius * 2, h: radius * 2 }
     results[:trajectory] = trajectory(results)
     results[:impacts] = terrain.find_all { |t| t && (line_near_rect? results[:rect], t) }.map do |t|
+      intersection = geometry.line_intersect(results[:trajectory], t)
       {
         terrain: t,
-        point: geometry.line_intersect(results[:trajectory], t, replace_infinity: 1000),
+        point: geometry.line_intersect(results[:trajectory], t),
         type: :terrain
       }
-    end.reject { |t| !point_within_line? t[:point], t[:terrain] }
+    end
 
     results[:impacts] += lava.find_all { |t| line_near_rect? results[:rect], t }.map do |t|
+      intersection = geometry.line_intersect(results[:trajectory], t)
       {
         terrain: t,
-        point: geometry.line_intersect(results[:trajectory], t, replace_infinity: 1000),
+        point: geometry.line_intersect(results[:trajectory], t),
         type: :lava
       }
-    end.reject { |t| !t || (!point_within_line? t[:point], t[:terrain]) }
+    end
 
     results
   end
@@ -483,16 +485,15 @@ class FallingCircle
     return unless circle.impacts
     circle.impact = nil
     circle.impacts.each do |i|
+      future_circle = { x: circle.x + circle.dx, y: circle.y + circle.dy }
       circle.terrains_to_monitor[i[:terrain]] ||= {
-        ray_start: geometry.ray_test(circle, i[:terrain]),
+        ray_start: geometry.ray_test(future_circle, i[:terrain]),
       }
 
-      circle.terrains_to_monitor[i[:terrain]][:ray_current] = geometry.ray_test(circle, i[:terrain])
+      circle.terrains_to_monitor[i[:terrain]][:ray_current] = geometry.ray_test(future_circle, i[:terrain])
       if circle.terrains_to_monitor[i[:terrain]][:ray_start] != circle.terrains_to_monitor[i[:terrain]][:ray_current]
-        if circle.x.between?(i[:terrain].x, i[:terrain].x2) || circle.y.between?(i[:terrain].y, i[:terrain].y2)
-          circle.impact = i
-          circle.ray_current = circle.terrains_to_monitor[i[:terrain]][:ray_current]
-        end
+        circle.impact = i
+        circle.ray_current = circle.terrains_to_monitor[i[:terrain]][:ray_current]
       end
     end
   end
@@ -517,7 +518,7 @@ class FallingCircle
     r[:terrain][:slope] = geometry.line_slope(impact[:terrain], replace_infinity: infinity_alias)
     r[:terrain][:slope_sign] = r[:terrain][:slope].sign
 
-    r[:impact][:angle] = geometry.angle_between_lines(body.trajectory, impact[:terrain], replace_infinity: infinity_alias)
+    r[:impact][:angle] = -geometry.angle_between_lines(body.trajectory, impact[:terrain], replace_infinity: infinity_alias)
     r[:impact][:point] = { x: impact[:point].x, y: impact[:point].y }
     r[:impact][:same_slope_sign] = r[:body][:slope_sign] == r[:terrain][:slope_sign]
     r[:impact][:ray] = body.ray_current
@@ -550,7 +551,7 @@ class FallingCircle
       r[:body][:new_dx] = 0
       r[:body][:new_dy] = 0
       r[:impact][:energy] = 0
-      r[:body][:new_on_floor] = true
+      r[:body][:new_on_floor] = true if r[:impact][:point].y < body.y
       r[:body][:new_floor] = r[:terrain][:line]
       r[:body][:new_reason] = "0"
     end

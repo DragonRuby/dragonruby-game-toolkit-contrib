@@ -1,0 +1,7 @@
+devid=dragonruby
+devtitle=DragonRuby
+gameid=cubeworld
+gametitle=Cube World
+version=1.0
+icon=metadata/icon.png
+vrmode=3

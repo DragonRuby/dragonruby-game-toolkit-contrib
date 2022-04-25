@@ -234,12 +234,17 @@ S
     def self.ray_test point, line
       slope = (line.y2 - line.y).fdiv(line.x2 - line.x)
 
-      if line.x > line.x2
-        point_two, point_one = [point_one, point_two]
+      x  = line.x
+      y  = line.y
+      x2 = line.x2
+      y2 = line.y2
+
+      if x2 < x
+        x, x2 = x2, x
+        y, y2 = y2, y
       end
 
-      r = ((line.x2 - line.x) * (point.y - line.y) -
-           (point.x -  line.x) * (line.y2 - line.y))
+      r = ((x2 - x) * (point.y - y) - (point.x -  x) * (y2 - y))
 
       if r == 0
         return :on
@@ -274,13 +279,34 @@ S
 
     # @gtk
     def self.line_intersect line_one, line_two, replace_infinity: nil
-      m1 = line_slope(line_one, replace_infinity: replace_infinity)
-      m2 = line_slope(line_two, replace_infinity: replace_infinity)
-      b1 = line_y_intercept(line_one, replace_infinity: replace_infinity)
-      b2 = line_y_intercept(line_two, replace_infinity: replace_infinity)
-      x = (b1 - b2) / (m2 - m1)
-      y = (-b2.fdiv(m2) + b1.fdiv(m1)).fdiv(1.fdiv(m1) - 1.fdiv(m2))
-      [x, y]
+      x1 = line_one.x
+      y1 = line_one.y
+      x2 = line_one.x2
+      y2 = line_one.y2
+
+      x3 = line_two.x
+      y3 = line_two.y
+      x4 = line_two.x2
+      y4 = line_two.y2
+
+      x1x2 = x1 - x2
+      y1y2 = y1 - y2
+      x1x3 = x1 - x3
+      y1y3 = y1 - y3
+      x3x4 = x3 - x4
+      y3y4 = y3 - y4
+
+      d =  x1x2 * y3y4 - y1y2 * x3x4;
+
+      return nil if d == 0
+
+      t = (x1x3 * y3y4 - y1y3 * x3x4) / d
+      u = -(x1x2 * y1y3 - y1y2 * x1x3) / d
+
+      {
+        x: x1 + t * (x2 - x1),
+        y: y1 + t * (y2 - y1)
+      }
     rescue Exception => e
 raise <<-S
 * ERROR: ~Geometry::line_intersect~

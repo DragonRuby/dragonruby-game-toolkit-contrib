@@ -1,3 +1,5 @@
+include MatrixFunctions
+
 def tick args
   args.outputs.labels << { x: 0,
                            y: 30.from_top,

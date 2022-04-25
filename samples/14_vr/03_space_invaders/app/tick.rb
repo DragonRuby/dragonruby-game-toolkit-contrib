@@ -5,13 +5,7 @@ class Game
     grid.origin_center!
     defaults
     outputs.background_color = [0, 0, 0]
-    args.outputs.sprites << state.enemies.map { |e| enemy_prefab e }
-
-    if gtk.platform? :macos
-      args.outputs.borders << hmap(x: -150,
-                                   y: -220,
-                                   w: 300, h: 130, r: 255, g: 255, b: 255)
-    end
+    args.outputs.sprites << state.enemies.map { |e| enemy_prefab e }.sort_by { |e| e.z }
   end
 
   def defaults
@@ -32,7 +26,7 @@ class Game
     relative_row = enemy.row + 1
     z = 50 - relative_row * 10
     x = (enemy.col * state.enemy_sprite_size) - (state.enemy_sprite_size * state.row_size).idiv(2)
-    enemy_sprite(x, enemy.row * 10, z, enemy)
+    enemy_sprite(x, enemy.row * 10, z * 10, enemy)
   end
 
   def enemy_sprite x, y, z, meta
@@ -41,33 +35,7 @@ class Game
   end
 
   def pmap opts
-    if gtk.platform? :macos
-      if opts.z >= 60
-        return nil
-      elsif (opts.z * 8) > 1000
-        return nil
-      elsif opts.z <= 60
-        scale = (1000 - opts.z * 8).fdiv(1000)
-        hscale = 0.5 * scale ** 6
-        vscale = scale
-        w = (state.enemy_sprite_size * 0.5) * hscale
-        h = (state.enemy_sprite_size * 0.5) * hscale
-
-        transform_x = opts.x * 0.5
-        x = transform_x * hscale
-
-        y_magnitude = 0.45
-        transform_y = opts.y * y_magnitude
-        y = (-transform_y * vscale ** 5.5) + 50 * y_magnitude
-
-        return opts.merge! x: x, y: y, w: w, h: h
-      else
-        raise "#{opts}"
-        return nil
-      end
-    else
-      return opts.merge! y: opts.y - 55
-    end
+    return opts.merge! y: opts.y - 55
   end
 end
 
