@@ -495,7 +495,7 @@ S
     def static_file_routes
       STATIC_FILES.map { |uri, file_info|
         {
-          match_criteria: { method: :get, uri_without_query_string: uri },
+          match_criteria: { method: :get, uri: uri },
           handler: file_info[:cached] ? :get_cached_static_file : :get_static_file
         }
       }
