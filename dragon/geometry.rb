@@ -209,7 +209,32 @@ S
 
     # @gtk
     def self.line_slope line, replace_infinity: nil
-      return replace_infinity if line.x2 == line.x
+      if line.is_a? Hash
+        # check to see if replace_inifinity exists on the hash
+        # handles for if the dev does:
+        #   line_slope(x: 10, y: 10, x2: 100, y2: 100, replace_infinity: 10)
+        # instead of
+        #   line_slope({ x: 10, y: 10, x2: 100, y2: 100 }, replace_infinity: 10)
+        replace_infinity ||= line[:replace_infinity]
+      end
+
+      if line.y == line.y2 && line.x == line.x2
+        raise <<-S
+* ERROR: ~Geometry::line_slope~
+  I was given a line with zero length and can't compute its slope:
+  #{line}
+S
+      elsif line.y == line.y2
+        return 0
+      elsif line.x == line.x2
+        return nil if !replace_infinity
+        if line.y2 < line.y
+          return replace_infinity * -1
+        else
+          return replace_infinity
+        end
+      end
+
       (line.y2 - line.y).fdiv(line.x2 - line.x)
                         .replace_infinity(replace_infinity)
     end
@@ -258,21 +283,45 @@ S
     end
 
     # @gtk
-    def self.line_rect line
+    def self.line_rect line, min_w: 0, min_h: 0
+      if min_w < 0 || min_h < 0
+      raise <<-S
+* ERROR: ~Geometry::line_rect~
+  ~min_w~ and ~min_h~ must be greater than min
+  line:  #{line}
+  min_w: #{min_w}
+  min_h: #{min_h}
+S
+      end
+
       if line.x > line.x2
         x  = line.x2
-        y  = line.y2
         x2 = line.x
-        y2 = line.y
       else
         x  = line.x
-        y  = line.y
         x2 = line.x2
+      end
+
+      if line.y > line.y2
+        y  = line.y2
+        y2 = line.y
+      else
+        y  = line.y
         y2 = line.y2
       end
 
       w = x2 - x
       h = y2 - y
+
+      if w < min_w
+        w  = min_w
+        x -= min_w / 2
+      end
+
+      if h < min_h
+        h  = min_h
+        y -= min_h / 2
+      end
 
       { x: x, y: y, w: w, h: h }
     end

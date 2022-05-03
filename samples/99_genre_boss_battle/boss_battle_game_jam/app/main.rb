@@ -339,7 +339,7 @@ class Game
         y:                 player.y - tile_offset,
         w:                 165,
         h:                 165,
-        path:              'sprites/boss-battle/player-slash.png',
+        path:              'sprites/boss-battle/player-slash-tile-sheet.png',
         tile_x:            0 + (tile_index * 128),
         tile_y:            0,
         tile_w:            128,
