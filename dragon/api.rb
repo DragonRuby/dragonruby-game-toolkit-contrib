@@ -189,47 +189,12 @@ S
                   { 'Content-Type' => 'text/html' }
     end
 
-    def get_api_boot args, req
-      req.respond 200,
-                  args.gtk.read_file("tmp/src_backup/boot.txt"),
-                  { 'Content-Type' => 'text/plain' }
-    end
-
-    def get_api_trace args, req
-      req.respond 200,
-                  args.gtk.read_file("logs/trace.txt"),
-                  { 'Content-Type' => 'text/plain' }
-    end
-
-    def get_api_log args, req
-      req.respond 200,
-                  args.gtk.read_file("logs/log.txt"),
-                  { 'Content-Type' => 'text/plain' }
-    end
-
     def post_api_log args, req
       Log.log req.body
 
       req.respond 200,
                   "ok",
                   { 'Content-Type' => 'text/plain' }
-    end
-
-    def get_api_puts args, req
-      req.respond 200,
-                  args.gtk.read_file("logs/puts.txt"),
-                  { 'Content-Type' => 'text/plain' }
-    end
-
-    def get_api_changes args, req
-      req.respond 200,
-                  args.gtk.read_file("tmp/src_backup/src_backup_changes.txt"),
-                  { 'Content-Type' => 'text/plain' }
-    end
-
-    def get_favicon_ico args, req
-      @favicon ||= args.gtk.read_file('docs/favicon.ico')
-      req.respond 200, @favicon, { "Content-Type" => 'image/x-icon' }
     end
 
     def get_src_backup args, req
@@ -245,54 +210,6 @@ S
       puts("HEADERS:");
       req.headers.each { |k,v| puts("  #{k}: #{v}") }
       req.respond 404, "not found: #{req.uri}", { }
-    end
-
-    def get_docs_html args, req
-      req.respond 200,
-                  args.gtk.read_file("docs/docs.html"),
-                  { 'Content-Type' => 'text/html' }
-    end
-
-    def get_docs_css args, req
-      req.respond 200,
-                  args.gtk.read_file("docs/docs.css"),
-                  { 'Content-Type' => 'text/css' }
-    end
-
-    def get_docs_search_gif args, req
-      req.respond 200,
-                  args.gtk.read_file("docs/docs_search.gif"),
-                  { 'Content-Type' => 'image/gif' }
-    end
-
-    def get_src_backup_index_html args, req
-      req.respond 200,
-                  args.gtk.read_file("/tmp/src_backup/src_backup_index.html"),
-                  { 'Content-Type' => 'text/html' }
-    end
-
-    def get_src_backup_index_txt args, req
-      req.respond 200,
-                  args.gtk.read_file("/tmp/src_backup/src_backup_index.txt"),
-                  { 'Content-Type' => 'text/txt' }
-    end
-
-    def get_src_backup_css args, req
-      req.respond 200,
-                  args.gtk.read_file("/tmp/src_backup/src_backup.css"),
-                  { 'Content-Type' => 'text/css' }
-    end
-
-    def get_src_backup_changes_html args, req
-      req.respond 200,
-                  args.gtk.read_file("/tmp/src_backup/src_backup_changes.html"),
-                  { 'Content-Type' => 'text/html' }
-    end
-
-    def get_src_backup_changes_txt args, req
-      req.respond 200,
-                  args.gtk.read_file("/tmp/src_backup/src_backup_changes.txt"),
-                  { 'Content-Type' => 'text/txt' }
     end
 
     def get_api_eval args, req
@@ -358,17 +275,6 @@ S
 
       $eval_result  = nil
       $eval_results = nil
-    end
-
-    def api_css_string
-
-    end
-
-    def get_api_console args, req
-      html = console_view "# write your code here and set $result.\n$result = $gtk.args.state"
-      req.respond 200,
-                  html,
-                  { 'Content-Type' => 'text/html' }
     end
 
     def control_panel_view
@@ -524,25 +430,12 @@ S
          handler:        :get_index },
        { match_criteria: { method: :get, uri: "/dragon/" },
          handler:        :get_index },
-
-       { match_criteria: { method: :get, uri: "/dragon/boot/" },
-         handler:        :get_api_boot },
-       { match_criteria: { method: :get, uri: "/dragon/trace/" },
-         handler:        :get_api_trace },
-       { match_criteria: { method: :get, uri: "/dragon/puts/" },
-         handler:        :get_api_puts },
-       { match_criteria: { method: :get, uri: "/dragon/log/" },
-         handler:        :get_api_log },
        { match_criteria: { method: :post, uri: "/dragon/log/" },
          handler:        :post_api_log },
-       { match_criteria: { method: :get, uri: "/dragon/changes/" },
-         handler:        :get_api_changes },
        { match_criteria: { method: :get, uri: "/dragon/eval/" },
          handler:        :get_api_eval },
        { match_criteria: { method: :post, uri: "/dragon/eval/" },
          handler:        :post_api_eval },
-       { match_criteria: { method: :get, uri: "/dragon/console/" },
-         handler:        :get_api_console },
        { match_criteria: { method: :get, uri: "/dragon/control_panel/" },
          handler:        :get_api_control_panel },
        { match_criteria: { method: :post, uri: "/dragon/reset/" },
@@ -565,39 +458,9 @@ S
          handler:        :get_api_code_edit },
        { match_criteria: { method: :post, uri: "/dragon/code/update/", has_query_string: true },
          handler:        :post_api_code_update },
-
-
-       { match_criteria: { method: :get, uri: "/docs.html" },
-         handler:        :get_docs_html },
-       { match_criteria: { method: :get, uri: "/docs.css" },
-         handler:        :get_docs_css },
-       { match_criteria: { method: :get, uri: "/docs_search.gif" },
-         handler:        :get_docs_search_gif },
-
-       { match_criteria: { method: :get, uri: "/src_backup_index.html" },
-         handler:        :get_src_backup_index_html },
-
-       { match_criteria: { method: :get, uri: "/src_backup_index.txt" },
-         handler:        :get_src_backup_index_txt },
-
-       { match_criteria: { method: :get, uri: "/src_backup_changes.html" },
-         handler:        :get_src_backup_changes_html },
-
-       { match_criteria: { method: :get, uri: "/src_backup_changes.txt" },
-         handler:        :get_src_backup_changes_txt },
-
-       { match_criteria: { method: :get, uri: "/src_backup.css" },
-         handler:        :get_src_backup_css },
-
-       { match_criteria: { method: :get, uri: "/favicon.ico" },
-         handler:        :get_favicon_ico },
-
        { match_criteria: { method: :get, end_with_rb: true },
          handler:        :get_src_backup },
-
-       { match_criteria: { method: :get, end_with_rb: true },
-         handler:        :get_src_backup }
-
+       *static_file_routes
       ]
     end
 
@@ -630,6 +493,96 @@ S
       end
       return true
     end
+
+    def static_file_routes
+      STATIC_FILES.map { |uri, file_info|
+        {
+          match_criteria: { method: :get, uri_without_query_string: uri },
+          handler: file_info[:cached] ? :get_cached_static_file : :get_static_file
+        }
+      }
+    end
+
+    def get_cached_static_file args, req
+      uri = (req.uri.split '?').first
+      file_info = STATIC_FILES[uri]
+      @static_file_cache ||= {}
+      @static_file_cache[uri] ||= args.gtk.read_file(file_info[:source])
+      req.respond 200,
+                  @static_file_cache[uri],
+                  { 'Content-Type' => file_info[:content_type] }
+    end
+
+    def get_static_file args, req
+      uri = (req.uri.split '?').first
+      file_info = STATIC_FILES[uri]
+      req.respond 200,
+                  args.gtk.read_file(file_info[:source]),
+                  { 'Content-Type' => file_info[:content_type] }
+    end
+
+    STATIC_FILES = {
+      '/dragon/boot/' => {
+        source: 'tmp/src_backup/boot.txt',
+        content_type: 'text/plain'
+      },
+      '/dragon/trace/' => {
+        source: 'logs/trace.txt',
+        content_type: 'text/plain'
+      },
+      '/dragon/puts/' => {
+        source: 'logs/puts.txt',
+        content_type: 'text/plain'
+      },
+      '/dragon/log/' => {
+        source: 'logs/log.txt',
+        content_type: 'text/plain'
+      },
+      '/dragon/changes/' => {
+        source: 'tmp/src_backup/src_backup_changes.txt',
+        content_type: 'text/plain'
+      },
+      '/docs.html' => {
+        source: 'docs/docs.html',
+        content_type: 'text/html'
+      },
+      '/docs.css' => {
+        source: 'docs/docs.css',
+        content_type: 'text/css',
+        cached: true
+      },
+      '/docs_search.gif' => {
+        source: 'docs/docs_search.gif',
+        content_type: 'image/gif',
+        cached: true
+      },
+      '/src_backup_index.html' => {
+        source: 'tmp/src_backup/src_backup_index.html',
+        content_type: 'text/html'
+      },
+      '/src_backup_index.txt' => {
+        source: 'tmp/src_backup/src_backup_index.txt',
+        content_type: 'text/plain'
+      },
+      '/src_backup_changes.html' => {
+        source: 'tmp/src_backup/src_backup_changes.html',
+        content_type: 'text/html'
+      },
+      '/src_backup_changes.txt' => {
+        source: 'tmp/src_backup/src_backup_changes.txt',
+        content_type: 'text/plain'
+      },
+      '/src_backup.css' => {
+        source: 'tmp/src_backup/src_backup.css',
+        content_type: 'text/css',
+        cached: true
+      },
+      '/favicon.ico' => {
+        source: 'docs/favicon.ico',
+        content_type: 'image/x-icon',
+        cached: true
+      }
+    }.freeze
 
     def get_query_params req
       _, query_string = get_uri_and_query_string req
