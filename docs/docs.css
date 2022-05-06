@@ -5,7 +5,7 @@ body {
     max-width: 920px;
     margin-left: auto;
     margin-right: auto;
-    font-size: 16px;
+    font-size: 14px;
     font-family: 'Helvetica', 'Arial', sans-serif;
     line-height: 1.5;
     font-weight: 300;
@@ -35,23 +35,37 @@ a:visited {
 h1 {
     font-size: 26px;
     border-bottom: solid 1px silver;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
 }
 
 h2 {
     font-size: 22px;
     border-bottom: solid 1px silver;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
 }
 
 h3 {
     font-size: 18px;
     border-bottom: solid 1px silver;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
 }
 
 h4 {
-    font-size: 14px;
+    font-size: 16px;
     border-bottom: solid 1px silver;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
 }
 
+h5 {
+    font-size: 14px;
+    border-bottom: solid 1px silver;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+}
 
 img {
     width: 100%;
@@ -127,30 +141,30 @@ blockquote {
     font-style: italic;
 }
 
-#toc {
+#table-of-contents {
     font-size: 14px;
 }
 
-#toc ul {
+#table-of-contents ul {
     margin-left: 3px;
     padding-left: 15px;
 }
 
 
-#toc .header-1 {
+#table-of-contents .header-1 {
     display: inline-block;
     margin-top: 10px;
     font-weight: 900;
 }
 
-#toc .header-2 {
+#table-of-contents .header-2 {
     display: inline-block;
     padding-left: 5px;
     padding-right: 5px;
     margin-top: 10px;
 }
 
-#toc .header-3 {
+#table-of-contents .header-3 {
 }
 
 @media only screen and (min-width: 1280px) {
@@ -160,7 +174,7 @@ blockquote {
         padding-left: 310px;
     }
 
-    #toc {
+    #table-of-contents {
         border: solid 1px #f0f0f0;
         padding: 10px;
         padding-bottom: 30px;

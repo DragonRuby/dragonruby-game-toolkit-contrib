@@ -1,8 +1,10 @@
+$gtk.register_cvar 'app.warn_seconds', "seconds to wait before starting", :uint, 11
+
 def tick args
   args.outputs.background_color = [0, 0, 0]
 
   # Show a warning at the start.
-  args.state.warning_debounce ||= 11 * 60
+  args.state.warning_debounce ||= args.cvars['app.warn_seconds'].value * 60
   if args.state.warning_debounce > 0
     args.state.warning_debounce -= 1
     args.outputs.labels << [640, 600, "This app shows random images from the Internet.", 10, 1, 255, 255, 255]

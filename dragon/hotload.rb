@@ -1,7 +1,7 @@
 # coding: utf-8
 # Copyright 2019 DragonRuby LLC
 # MIT License
-# hotlaod.rb has been released under MIT (*only this file*).
+# hotload.rb has been released under MIT (*only this file*).
 
 module GTK
   class Runtime
@@ -10,7 +10,14 @@ module GTK
       def hotload_init
         @hotload_if_needed = 0
         @mailbox_if_needed = 0
+
+        # schema for file_mtimes
+        # { FILE_PATH: { current: (Time as Fixnum),
+        #                last:    (Time as Fixnum) },
+        #   FILE_PATH: { current: (Time as Fixnum),
+        #                last:    (Time as Fixnum) } }
         @file_mtimes = { }
+
         @suppress_mailbox = true
         files_to_reload.each { |f| init_mtimes f }
         init_mtimes 'app/mailbox.rb'
@@ -37,6 +44,7 @@ module GTK
             'dragon/attr_gtk.rb',
             'dragon/attr_sprite.rb',
             'dragon/object.rb',
+            'dragon/object_matrix.rb',
             'dragon/class.rb',
             'dragon/string.rb',
             'dragon/entity.rb',
@@ -48,6 +56,7 @@ module GTK
             'dragon/symbol.rb',
             'dragon/numeric_deprecated.rb',
             'dragon/numeric.rb',
+            'dragon/hash_deprecated.rb',
             'dragon/hash.rb',
             'dragon/outputs_deprecated.rb',
             'dragon/array_docs.rb',
@@ -61,6 +70,7 @@ module GTK
             'dragon/args_deprecated.rb',
             'dragon/fn.rb',
             'dragon/args.rb',
+            'dragon/args_docs.rb',
             'dragon/console_prompt.rb',
             'dragon/console_menu.rb',
             'dragon/console.rb',
@@ -77,11 +87,14 @@ module GTK
             'dragon/runtime/autocomplete.rb',
             'dragon/api.rb',
             'dragon/runtime.rb',
+            'dragon/runtime_docs.rb',
             'dragon/trace.rb',
             'dragon/readme_docs.rb',
             'dragon/hotload_client.rb',
+            'dragon/wizards.rb',
             'dragon/ios_wizard.rb',
             'dragon/itch_wizard.rb',
+            'dragon/runtime/benchmark.rb',
           ] + core_files_to_reload + @required_files
         end
       end
@@ -98,10 +111,8 @@ module GTK
       end
 
       def init_mtimes file
-        current_key = "current_#{file}".to_sym
-        last_key = "last_#{file}".to_sym
-        @file_mtimes[current_key] ||= @ffi_file.mtime(file)
-        @file_mtimes[last_key] ||= @ffi_file.mtime(file)
+        @file_mtimes[file] ||= { current: @ffi_file.mtime(file),
+                                 last: @ffi_file.mtime(file) }
       end
 
       def hotload_source_files
@@ -133,25 +144,36 @@ module GTK
       end
 
       def hotload_if_needed
+        return if Kernel.tick_count < 0
         hotload_source_files
         check_mailbox
       end
 
       def on_load_succeeded file
-        @rcb_sender.files_reloaded << file
-        @rcb_sender.reloaded_files << file
+        self.files_reloaded << file
+        self.reloaded_files << file
         Trace.untrace_classes!
       end
 
+      def reset_all_mtimes
+        @file_mtimes.each do |file, _|
+          @file_mtimes[file].current = @ffi_file.mtime(file)
+          @file_mtimes[file].last    = @file_mtimes[file].current
+        end
+
+        files_to_reload.each do |file, _|
+          @file_mtimes[file] ||= {}
+          @file_mtimes[file].current = @ffi_file.mtime(file)
+          @file_mtimes[file].last    = @file_mtimes[file].current
+        end
+      end
+
       def reload_if_needed file, force = false
-        current_key = "current_#{file}".to_sym
-        last_key = "last_#{file}".to_sym
-        @file_mtimes[current_key] ||= nil
-        @file_mtimes[last_key] ||= nil
-        @file_mtimes[current_key] = @ffi_file.mtime(file)
-        return if !force && @file_mtimes[last_key] == @file_mtimes[current_key]
+        @file_mtimes[file] ||= { current: @ffi_file.mtime(file), last: @ffi_file.mtime(file) }
+        @file_mtimes[file].current = @ffi_file.mtime(file)
+        return if !force && @file_mtimes[file].current == @file_mtimes[file].last
         on_load_succeeded file if reload_ruby_file file
-        @file_mtimes[last_key] = @file_mtimes[current_key]
+        @file_mtimes[file].last = @file_mtimes[file].current
       end
     end
   end

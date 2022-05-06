@@ -14,8 +14,10 @@
 
  - args.outputs.labels: An array. The values generate a label.
    The parameters are [X, Y, TEXT, SIZE, ALIGNMENT, RED, GREEN, BLUE, ALPHA, FONT STYLE]
-   
+   For more information about labels, go to mygame/documentation/02-labels.md.
+
  - args.keyboard.key_down.KEY: Determines if a key is in the down state or pressed down.
+   For more information about the keyboard, go to mygame/documentation/06-keyboard.md.
 
  - String interpolation: uses #{} syntax; everything between the #{ and the } is evaluated
    as Ruby code, and the placeholder is replaced with its corresponding value or result.
@@ -53,7 +55,7 @@ def tick args
   end
 end
 
-# Runs methods needed for the game to function properly
+# Runs methods needed for game to function properly
 # Creates a rectangular border around the screen
 def tick_game args
   defaults args

@@ -9,8 +9,8 @@ module GTK
       ease_extended start_tick,
                     current_tick,
                     start_tick + duration,
-                    (initial_value *definitions),
-                    (final_value *definitions),
+                    initial_value(*definitions),
+                    final_value(*definitions),
                     *definitions
     end
 

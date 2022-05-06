@@ -1,3 +1,4 @@
+# coding: utf-8
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # framerate.rb has been released under MIT (*only this file*).
@@ -33,13 +34,8 @@ module GTK
             if @tick_speed_count > 60 * 2
               if framerate_below_threshold?
                 @last_framerate = current_framerate
-                if !@console.visible?
-                  if !@framerate_important_notification_happened
-                    log_important framerate_warning_message
-                  else
-                    log framerate_warning_message
-                  end
-                  @framerate_important_notification_happened = true
+                if !@console.visible? && !@recording.is_replaying?
+                  log framerate_warning_message
                 end
               end
 

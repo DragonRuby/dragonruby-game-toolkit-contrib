@@ -23,9 +23,22 @@ mygame/app/main.rb
 
 #+begin_src
   def tick args
-    # code goes here
+    args.outputs.solids     << [0, 0, 100, 100]
+    args.outputs.sprites    << [100, 100, 100, 100, "sprites/square/blue.png"]
+    args.outputs.labels     << [200, 200, "Hello World"]
+    args.outputs.lines      << [300, 300, 400, 400]
   end
 #+end_src
+
+Primitives are rendered first-in, first-out. The rendering order (sorted by bottom-most to top-most):
+
+- ~solids~
+- ~sprites~
+- ~primitives~: Accepts all render primitives. Useful when you want to bypass the default rendering orders for rendering (eg. rendering solids on top of sprites).
+- ~labels~
+- ~lines~
+- ~borders~
+- ~debug~: Accepts all render primitives. Use this to render primitives for debugging (production builds of your game will not render this layer).
 
 S
   end
@@ -150,7 +163,7 @@ Here is an example:
 
 S
   end
-  
+
   def docs_sprites
     <<-S
 * DOCS: ~GTK::Outputs#sprites~

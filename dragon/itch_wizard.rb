@@ -1,15 +1,25 @@
+# coding: utf-8
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # itch_wizard.rb has been released under MIT (*only this file*).
 
-class ItchWizard
-  include Metadata
-
+class ItchWizard < Wizard
   def steps
     [
       :check_metadata,
-      :deploy
+      :deploy,
     ]
+  end
+
+  def write_blank_metadata
+      $gtk.write_file metadata_file_path, <<-S.strip
+#devid=myname
+#devtitle=My Name
+#gameid=mygame
+#gametitle=My Game
+#version=0.1
+#icon=metadata/icon.png
+S
   end
 
   def check_metadata
@@ -18,7 +28,7 @@ class ItchWizard
       write_blank_metadata
     end
 
-    if metadata_text.each_line.to_a.length != 6
+    if metadata_text.strip.each_line.to_a.length < 6
       write_blank_metadata
     end
 
@@ -30,70 +40,67 @@ class ItchWizard
 
     if metadata[:dev_id].start_with?("#") || !@dev_id
       log "* PROMPT: Please provide your username for Itch."
-      $console.set_command "$wizards.itch.set_dev_id \"your-itch-username\""
+      $console.set_command "$wizards.itch.set_dev_id \"#{metadata[:dev_id]}\""
       return :need_dev_id
     end
 
     if metadata[:dev_title].start_with?("#") || !@dev_title
       log "* PROMPT: Please provide developer's/company's name that you want displayed."
-      $console.set_command "$wizards.itch.set_dev_title \"Your Name\""
+      $console.set_command "$wizards.itch.set_dev_title \"#{metadata[:dev_title]}\""
       return :need_dev_title
     end
 
     if metadata[:game_id].start_with?("#") || !@game_id
       log "* PROMPT: Please provide the id for you game. This is the id you specified when you set up a new game page on Itch."
-      $console.set_command "$wizards.itch.set_game_id \"your-game-id\""
+      $console.set_command "$wizards.itch.set_game_id \"#{metadata[:game_id]}\""
       return :need_game_id
     end
 
     if metadata[:game_title].start_with?("#") || !@game_title
       log "* PROMPT: Please provide the display name for your game. (This can include spaces)"
-      $console.set_command "$wizards.itch.set_game_title \"Your Game\""
+      $console.set_command "$wizards.itch.set_game_title \"#{metadata[:game_title]}\""
       return :need_game_title
     end
 
     if metadata[:version].start_with?("#") || !@version
       log "* PROMPT: Please provide the version for your game."
-      $console.set_command "$wizards.itch.set_version \"1.0\""
+      $console.set_command "$wizards.itch.set_version \"#{metadata[:version]}\""
       return :need_version
     end
 
     if metadata[:icon].start_with?("#") || !@icon
       log "* PROMPT: Please provide icon path for your game."
-      $console.set_command "$wizards.itch.set_icon \"icon.png\""
+      $console.set_command "$wizards.itch.set_icon \"#{metadata[:icon]}\""
       return :need_icon
     end
+
+    puts "here!! success!!!"
 
     return :success
   end
 
   def set_dev_id value
     @dev_id = value
-    write_metadata
     start
   end
 
   def set_dev_title value
     @dev_title = value
-    write_metadata
     start
   end
 
   def set_game_id value
     @game_id = value
-    write_metadata
     start
   end
 
   def set_game_title value
     @game_title = value
-    write_metadata
     start
   end
 
   def set_version value
     @version = value
-    write_metadata
     start
   end
 
@@ -136,7 +143,7 @@ class ItchWizard
     end
 
     if @icon
-      text += "icon=metadata/#{@icon}\n"
+      text += "icon=#{@icon}\n"
     else
       text += "#icon=metadata/icon.png\n"
     end
@@ -154,10 +161,25 @@ class ItchWizard
 
   def deploy
     log_info "* Running dragonruby-publish: #{package_command}"
-    results = $gtk.exec package_command
+    $gtk.openurl "http://itch.io/dashboard" if $gtk.platform == "Mac OS X"
+    if $gtk.platform? :mac
+      $gtk.exec "rm -rf ./builds"
+    end
+    results = $gtk.exec "#{package_command} --only-package"
+    puts File.expand_path("./builds")
+
     log "#+begin_src"
     log results
     log "#+end_src"
+
+    if $gtk.platform? :mac
+      $gtk.exec "open ./builds/"
+    elsif $gtk.platform? :windows
+      $gtk.exec "powershell \"ii .\""
+    end
+
+    $gtk.openurl "https://itch.io/dashboard"
+
     :success
   end
 
@@ -168,7 +190,7 @@ class ItchWizard
     steps.each do |m|
       begin
         log_info "Running Itch Wizard Step: ~$wizards.itch.#{m}~"
-        result = (send m) || :success if @wizard_status[m][:result] != :success
+        result = (send m) || :success
         @wizard_status[m][:result] = result
         if result != :success
           log_info "Exiting wizard. :#{result}"

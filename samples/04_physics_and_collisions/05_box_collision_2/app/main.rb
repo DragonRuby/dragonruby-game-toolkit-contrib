@@ -91,7 +91,7 @@ class MetroidvaniaStarter
     state.sprite_selected        ||= 1
     state.map_saved_at           ||= 0
 
-    # Sets all the coordinate values for the sprite selection screen into a grid
+    # Sets all the cordinate values for the sprite selection screen into a grid
     # Displayed when 's' is pressed by player to access sprites
     if state.sprite_coords == [] # if sprite_coords is an empty array
       count = 1
@@ -223,7 +223,7 @@ class MetroidvaniaStarter
 
   # Calls methods that determine whether the player collides with any world_collision_rects.
   def calc_box_collision
-    return unless state.world_lookup.keys.length > 0 # return unless hash has at least 1 key
+    return unless state.world_lookup.keys.length > 0 # return unless hash has atleast 1 key
     collision_floor
     collision_left
     collision_right

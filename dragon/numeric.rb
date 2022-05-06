@@ -13,6 +13,35 @@ class Numeric
   alias_method :lte, :<=
   alias_method :__original_eq_eq__, :== unless Numeric.instance_methods.include? :__original_eq_eq__
 
+  def to_layout_row opts = {}
+    $layout.rect(row: self,
+                 col: opts.col || 0,
+                 w:   opts.w || 0,
+                 h:   opts.h || 0).y
+  end
+
+  def to_layout_col opts = {}
+    $layout.rect(row: 0,
+                 col: self,
+                 w:   opts.w || 0,
+                 h:   opts.h || 0).x
+  end
+
+  def to_layout_w
+    $layout.rect(row: 0, col: 0, w: self, h: 1).w
+  end
+
+  def to_layout_h
+    $layout.rect(row: 0, col: 0, w: 1, h: self).h
+  end
+
+  def to_layout_row_from_bottom opts = {}
+    ($layout.row_max_index - self).to_layout_row opts
+  end
+
+  def to_layout_col_from_right opts = {}
+    ($layout.col_max_index - self).to_layout_col opts
+  end
 
   # Converts a numeric value representing seconds into frames.
   #
@@ -28,8 +57,24 @@ class Numeric
     self / 2.0
   end
 
+  def third
+    self / 3.0
+  end
+
+  def quarter
+    self / 4.0
+  end
+
   def to_byte
     clamp(0, 255).to_i
+  end
+
+  def clamp *opts
+    min = (opts.at 0)
+    max = (opts.at 1)
+    return min if min && self < min
+    return max if max && self > max
+    return self
   end
 
   def clamp_wrap min, max
@@ -87,10 +132,10 @@ class Numeric
     animation_length = animation_frame_hold_time * animation_frame_count
     return nil if Kernel.tick_count < self
 
-    if !repeat && (self + animation_length) < (tick_count_override - 1)
+    if !repeat && (self + animation_length) <= (tick_count_override)
       return nil
     else
-      return self.elapsed_time.-(1).idiv(animation_frame_hold_time) % animation_frame_count
+      return self.elapsed_time(tick_count_override).idiv(animation_frame_hold_time) % animation_frame_count
     end
   rescue Exception => e
     raise <<-S
@@ -314,6 +359,18 @@ S
     (self % n) == 0
   end
 
+  def multiply n
+    self * n
+  end
+
+  def fmult n
+    self * n.to_f
+  end
+
+  def imult n
+    (self * n).to_i
+  end
+
   def mult n
     self * n
   end
@@ -415,32 +472,6 @@ S
     (0..self).to_a
   end
 
-  def >= other
-    return false if !other
-    return gte other
-  end
-
-  def > other
-    return false if !other
-    return gt other
-  end
-
-  def <= other
-    return false if !other
-    return lte other
-  end
-
-  def < other
-    return false if !other
-    return gt other
-  end
-
-  def == other
-    return true if __original_eq_eq__ other
-    return __original_eq_eq__ other.entity_id if other.is_a? OpenEntity
-    return false
-  end
-
   # @gtk
   def map
     unless block_given?
@@ -526,34 +557,6 @@ The object above is not a Numeric.
 S
   end
 
-  def - other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :-, e
-  end
-
-  def + other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :+, e
-  end
-
-  def * other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :*, e
-  end
-
-  def / other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :/, e
-  end
-
   def serialize
     self
   end
@@ -578,6 +581,28 @@ S
 
   def self.clamp n, min, max
     n.clamp min, max
+  end
+
+  def mid? l, r
+    (between? l, r) || (between? r, l)
+  end
+
+  def self.from_left n
+    return n unless $gtk
+    $gtk.args.grid.left + n
+  end
+
+  def from_left
+    Numeric.from_left self
+  end
+
+  def self.from_bottom n
+    return n unless $gtk
+    $gtk.args.grid.bottom + n
+  end
+
+  def from_bottom
+    Numeric.from_bottom self
   end
 end
 
@@ -604,40 +629,6 @@ class Fixnum
     return !even?
   end
 
-  def + other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :+, e
-  end
-
-  def * other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :*, e
-  end
-
-  def / other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :/, e
-  end
-
-  def - other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :-, e
-  end
-
-  def == other
-    return true if __original_eq_eq__ other
-    return __original_eq_eq__ other.entity_id if other.is_a? GTK::OpenEntity
-    return false
-  end
-
   # Returns `-1` if the number is less than `0`. `+1` if the number
   # is greater than `0`. Returns `0` if the number is equal to `0`.
   #
@@ -662,18 +653,28 @@ class Fixnum
     sign < 0
   end
 
-  # Returns the cosine of a represented in degrees (NOT radians).
-  #
-  # @gtk
   def cos
-    Math.cos(self.to_radians)
+    Math.cos self.to_radians
   end
 
-  # Returns the cosine of a represented in degrees (NOT radians).
-  #
-  # @gtk
+  def cos_r
+    Math.cos self
+  end
+
+  def cos_d
+    Math.cos self.to_radians
+  end
+
   def sin
-    Math.sin(self.to_radians)
+    Math.sin self.to_radians
+  end
+
+  def sin_r
+    Math.sin self
+  end
+
+  def sin_d
+    Math.sin self.to_radians
   end
 
   def to_sf
@@ -692,34 +693,6 @@ class Float
   alias_method :__original_subtract__, :- unless Float.instance_methods.include? :__original_subtract__
   alias_method :__original_multiply__, :* unless Float.instance_methods.include? :__original_multiply__
   alias_method :__original_divide__,   :- unless Float.instance_methods.include? :__original_divide__
-
-  def - other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :-, e
-  end
-
-  def + other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :+, e
-  end
-
-  def * other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :*, e
-  end
-
-  def / other
-    return nil unless other
-    super
-  rescue Exception => e
-    __raise_arithmetic_exception__ other, :/, e
-  end
 
   def serialize
     self
@@ -746,6 +719,30 @@ class Float
   def ifloor int
     (self.idiv int.to_i) * int.to_i
   end
+
+  def sin
+    Math.sin self.to_radians
+  end
+
+  def cos
+    Math.cos self.to_radians
+  end
+
+  def sin_r
+    Math.sin self
+  end
+
+  def sin_d
+    Math.sin self.to_radians
+  end
+
+  def cos_r
+    Math.cos self
+  end
+
+  def cos_d
+    Math.cos self.to_radians
+  end
 end
 
 class Integer
@@ -761,5 +758,9 @@ class Integer
 
   def nan?
     false
+  end
+
+  def center other
+    (self - other).abs.fdiv(2)
   end
 end

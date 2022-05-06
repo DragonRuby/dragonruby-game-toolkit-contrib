@@ -25,7 +25,7 @@
    would print "How are you, Ruby?" to the console.
    (Remember, string interpolation only works with double quotes!)
 
- - Ternary operator (?): Similar to if statement; first evaluates whether a statement is
+ - Ternary operator (?): Similar to if statement; first evalulates whether a statement is
    true or false, and then executes a command depending on that result.
    For example, if we had a variable
    grade = 75
@@ -39,7 +39,7 @@
    720 p screen (Dragon Ruby Game Toolkits's virtual resolution is always 1280x720).
 
  - Numeric#shift_(left|right|up|down): Shifts the Numeric in the correct direction
-   by adding or subtracting.
+   by adding or subracting.
 
  - ARRAY#inside_rect?: An array with at least two values is considered a point. An array
    with at least four values is considered a rect. The inside_rect? function returns true
@@ -48,10 +48,12 @@
  - ARRAY#intersect_rect?: Returns true or false depending on if the two rectangles intersect.
 
  - args.inputs.mouse.click: This property will be set if the mouse was clicked.
+   For more information about the mouse, go to mygame/documentation/07-mouse.md.
 
  - args.inputs.keyboard.key_up.KEY: The value of the properties will be set
    to the frame  that the key_up event occurred (the frame correlates
    to args.state.tick_count).
+   For more information about the keyboard, go to mygame/documentation/06-keyboard.md.
 
  - args.state.labels:
    The parameters for a label are
@@ -61,6 +63,7 @@
    4. the alignment
    5. the color (red, green, and blue saturations)
    6. the alpha (or transparency)
+   For more information about labels, go to mygame/documentation/02-labels.md.
 
  - args.state.lines:
    The parameters for a line are
@@ -68,6 +71,7 @@
    2. the ending position (x2, y2)
    3. the color (red, green, and blue saturations)
    4. the alpha (or transparency)
+   For more information about lines, go to mygame/documentation/04-lines.md.
 
  - args.state.solids (and args.state.borders):
    The parameters for a solid (or border) are
@@ -76,6 +80,7 @@
    3. the height (h)
    4. the color (r, g, b)
    5. the alpha (or transparency)
+   For more information about solids and borders, go to mygame/documentation/03-solids-and-borders.md.
 
  - args.state.sprites:
    The parameters for a sprite are
@@ -85,7 +90,7 @@
    4. the image path
    5. the angle
    6. the alpha (or transparency)
-
+   For more information about sprites, go to mygame/documentation/05-sprites.md.
 =end
 
 # This sample app shows different objects that can be used when making games, such as labels,
@@ -111,7 +116,7 @@ class TechDemo
     button_tech_demo
     export_game_state_demo
     window_state_demo
-    render_separators
+    render_seperators
   end
 
   # Shows output of different kinds of labels on the screen
@@ -408,28 +413,28 @@ class TechDemo
   end
 
   #Sets values for the horizontal separator (divides demo sections)
-  def horizontal_separator y, x, x2
+  def horizontal_seperator y, x, x2
     [x, y, x2, y, 150, 150, 150]
   end
 
   #Sets the values for the vertical separator (divides demo sections)
-  def vertical_separator x, y, y2
+  def vertical_seperator x, y, y2
     [x, y, x, y2, 150, 150, 150]
   end
 
   # Outputs vertical and horizontal separators onto the screen to separate each demo section.
-  def render_separators
-    outputs.lines << horizontal_separator(505, grid.left, 445)
-    outputs.lines << horizontal_separator(353, grid.left, 445)
-    outputs.lines << horizontal_separator(264, grid.left, 445)
-    outputs.lines << horizontal_separator(174, grid.left, 445)
+  def render_seperators
+    outputs.lines << horizontal_seperator(505, grid.left, 445)
+    outputs.lines << horizontal_seperator(353, grid.left, 445)
+    outputs.lines << horizontal_seperator(264, grid.left, 445)
+    outputs.lines << horizontal_seperator(174, grid.left, 445)
 
-    outputs.lines << vertical_separator(445, grid.top, grid.bottom)
+    outputs.lines << vertical_seperator(445, grid.top, grid.bottom)
 
-    outputs.lines << horizontal_separator(690, 445, 820)
-    outputs.lines << horizontal_separator(426, 445, 820)
+    outputs.lines << horizontal_seperator(690, 445, 820)
+    outputs.lines << horizontal_seperator(426, 445, 820)
 
-    outputs.lines << vertical_separator(820, grid.top, grid.bottom)
+    outputs.lines << vertical_seperator(820, grid.top, grid.bottom)
   end
 end
 

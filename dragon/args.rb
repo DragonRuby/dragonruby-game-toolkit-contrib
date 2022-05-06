@@ -10,66 +10,32 @@ module GTK
   class Args
     include ArgsDeprecated
     include Serialize
-
-    # Contains information related to input devices and input events.
-    #
-    # @return [Inputs]
+    attr_accessor :cvars
     attr_accessor :inputs
-
-    # Contains the means to interact with output devices such as the screen.
-    #
-    # @return [Outputs]
     attr_accessor :outputs
-
-    # Contains the means to interact with the audio mixer.
-    #
-    # @return [Hash]
     attr_accessor :audio
-
-    # Contains display size information to assist in positioning things on the screen.
-    #
-    # @return [Grid]
     attr_accessor :grid
-
-    # Provides access to game play recording facilities within Game Toolkit.
-    #
-    # @return [Recording]
     attr_accessor :recording
-
-    # Gives you access to geometry related functions.
-    #
-    # @return [Geometry]
     attr_accessor :geometry
-
     attr_accessor :fn
-
-    # This is where you'll put state associated with your video game.
-    #
-    # @return [OpenEntity]
     attr_accessor :state
-
-    # Gives you access to the top level DragonRuby runtime.
-    #
-    # @return [Runtime]
+    attr_accessor :temp_state
     attr_accessor :runtime
     alias_method :gtk, :runtime
-
     attr_accessor :passes
-
     attr_accessor :wizards
-
     attr_accessor :layout
-
     attr_accessor :easing
-
     attr_accessor :string
 
     def initialize runtime, recording
       @inputs = Inputs.new
       @outputs = Outputs.new args: self
+      @cvars = {}
       @audio = {}
       @passes = []
       @state = OpenEntity.new
+      @temp_state = OpenEntity.new
       @state.tick_count = -1
       @runtime = runtime
       @recording = recording
@@ -99,11 +65,12 @@ module GTK
 
     def serialize
       {
-        state: state.as_hash,
-        inputs: inputs.serialize,
-        passes: passes.serialize,
-        outputs: outputs.serialize,
-        grid: grid.serialize
+        state:      state.as_hash,
+        temp_state: temp_state.as_hash,
+        inputs:     inputs.serialize,
+        passes:     passes.serialize,
+        outputs:    outputs.serialize,
+        grid:       grid.serialize
       }
     end
 
@@ -234,6 +201,23 @@ module GTK
 
     def autocomplete_methods
       [:inputs, :outputs, :gtk, :state, :geometry, :audio, :grid, :layout, :fn]
+    end
+
+    def method_missing name, *args, &block
+      if (args.length <= 1) && (@state.as_hash.key? name)
+        raise <<-S
+* ERROR - :#{name} method missing on ~#{self.class.name}~.
+The method
+  :#{name}
+with args
+  #{args}
+doesn't exist on #{inspect}.
+** POSSIBLE SOLUTION - ~args.state.#{name}~ exists.
+Did you forget ~.state~ before ~.#{name}~?
+S
+      end
+
+      super
     end
   end
 end

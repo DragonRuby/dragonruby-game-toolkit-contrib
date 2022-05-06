@@ -30,6 +30,7 @@ module GTK
         local_state.notified = true
       end
 
+      tick_write_file
       tick_process_file_retrieval
       tick_process_queue
       tick_changes
@@ -50,6 +51,7 @@ module GTK
                                                               notes: "This entity is used by DragonRuby Game Toolkit to provide you hotloading on remote machines.",
                                                               changes: { },
                                                               changes_queue: [],
+                                                              write_file_queue: [],
                                                               reloaded_files_times: [])
       @local_state.hotload_client
     end
@@ -86,7 +88,10 @@ module GTK
 
     def tick_http_boot
       return if local_state.booted_at
-
+      local_state.http_boot_debounce ||= 0
+      local_state.http_boot_debounce  -= 1
+      local_state.http_boot_debounce   = local_state.http_boot_debounce.clamp(0, 120)
+      return if local_state.http_boot_debounce > 0
 
       if !local_state.http_boot
         # first retrieve changes.txt which has the following format
@@ -103,6 +108,7 @@ module GTK
       elsif local_state.http_boot && local_state.http_boot[:http_response_code] == -1 && local_state.http_boot[:complete]
         remote_log '* REMOTE CLIENT INFO: HTTP GET for boot.txt failed. Retrying.'
         local_state.http_boot = nil
+        local_state.http_boot_debounce = 120
       end
     end
 
@@ -181,13 +187,21 @@ module GTK
         remote_log "#{local_state.http_file_changes[:response_data]}"
 
         # write the latest file with what came back from the response data
-        gtk.write_file "#{file_key}", local_state.http_file_changes[:response_data]
+        local_state.write_file_queue << { path: file_key, text: local_state.http_file_changes[:response_data] }
 
         # nil out the currently processing file so a new item can be processed from the queue
         # local_state.reloaded_files_times << local_state.processing_file_changes[:key]
         local_state.http_file_changes = nil
         local_state.processing_file_changes = nil
       end
+    end
+
+    def tick_write_file
+      local_state.write_file_queue.each do |h|
+        $gtk.write_file h[:path], h[:text]
+      end
+
+      local_state.write_file_queue.clear
     end
   end
 end

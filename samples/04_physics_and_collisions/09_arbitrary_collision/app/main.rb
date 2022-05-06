@@ -29,7 +29,7 @@ end
 begin :default_methods
   def init_blocks args
     block_size = args.state.board_width / 8
-    #Space in between each block
+    #Space inbetween each block
     block_offset = 4
 
     args.state.squares ||=[

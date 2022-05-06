@@ -72,24 +72,22 @@ class OneBitLowrezPaint
   end
 
   def render_instructions
-    instructions = <<-S
-* Instructions:
-- All data is stored in the ~canvas~ directory.
-- Hold ~d~ to set the edit mode to erase.
-- Release ~d~ to set the edit mode drawing.
-- Press ~a~ to added a frame to the end.
-- Press ~b~ to select the previous frame.
-- Press ~f~ to select the next frame.
-- Press ~c~ to copy a frame.
-- Press ~v~ to paste a copied frame into the selected frame.
-- Press ~x~ to delete the currently selected frame.
-- Press ~w~ to save the canvas and export all sprites.
-- Press ~l~ to load the canvas.
-S
+    instructions = [
+      "* Hotkeys:",
+      "- d: hold to erase, release to draw.",
+      "- a: add frame.",
+      "- c: copy frame.",
+      "- v: paste frame.",
+      "- x: delete frame.",
+      "- b: go to previous frame.",
+      "- f: go to next frame.",
+      "- w: save to ./canvas directory.",
+      "- l: load from ./canvas."
+    ]
 
-    instructions.strip.each_line.with_index do |l, i|
+    instructions.each.with_index do |l, i|
       outputs.labels << { x: 840, y: 500 - (i * 20), text: "#{l}",
-                          r: 180, g: 180, b: 180, size_enum: -3 }
+                          r: 180, g: 180, b: 180, size_enum: 0 }
     end
   end
 
@@ -103,12 +101,12 @@ S
       label = { x: b.x + state.buttons_frame_selection.size.half,
                 y: b.y,
                 text: "#{i + 1}", r: 180, g: 180, b: 180,
-                size_enum: -4, alignment_enum: 1 }.label
+                size_enum: -4, alignment_enum: 1 }.label!
 
-      selection_border = b.merge(r: 40, g: 40, b: 40).border
+      selection_border = b.merge(r: 40, g: 40, b: 40).border!
 
       if i == state.animation_frames_selected_index
-        selection_border = b.merge(r: 40, g: 230, b: 200).border
+        selection_border = b.merge(r: 40, g: 230, b: 200).border!
       end
 
       [selection_border, label]

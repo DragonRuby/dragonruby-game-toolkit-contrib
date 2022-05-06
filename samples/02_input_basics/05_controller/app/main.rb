@@ -7,6 +7,8 @@
    If there is more than one controller being used, they can be differentiated by
    using names like controller_one and controller_two.
 
+   For a full listing of buttons, take a look at mygame/documentation/08-controllers.md.
+
  Reminder:
 
  - args.state.PROPERTY: The state property on args is a dynamic
@@ -40,57 +42,51 @@ class ControllerDemo
   def process_inputs
     state.buttons = []
 
-    state.buttons << [100, 500, inputs.controller_one.key_held.l1, "L1"]
-    state.buttons << [100, 600, inputs.controller_one.key_held.l2, "L2"]
-
-    state.buttons << [1100, 500, inputs.controller_one.key_held.r1, "R1"]
-    state.buttons << [1100, 600, inputs.controller_one.key_held.r2, "R2"]
-
-    state.buttons << [540, 450, inputs.controller_one.key_held.select, "Select"]
-    state.buttons << [660, 450, inputs.controller_one.key_held.start, "Start"]
-
-    state.buttons << [200, 300, inputs.controller_one.key_held.left, "Left"]
-    state.buttons << [300, 400, inputs.controller_one.key_held.up, "Up"]
-    state.buttons << [400, 300, inputs.controller_one.key_held.right, "Right"]
-    state.buttons << [300, 200, inputs.controller_one.key_held.down, "Down"]
-
-    state.buttons << [800, 300, inputs.controller_one.key_held.x, "X"]
-    state.buttons << [900, 400, inputs.controller_one.key_held.y, "Y"]
-    state.buttons << [1000, 300, inputs.controller_one.key_held.a, "A"]
-    state.buttons << [900, 200, inputs.controller_one.key_held.b, "B"]
-
-    state.buttons << [450 + inputs.controller_one.left_analog_x_perc * 100,
-                      100 + inputs.controller_one.left_analog_y_perc * 100,
-                      inputs.controller_one.key_held.l3,
-                      "L3"]
-
-    state.buttons << [750 + inputs.controller_one.right_analog_x_perc * 100,
-                      100 + inputs.controller_one.right_analog_y_perc * 100,
-                      inputs.controller_one.key_held.r3,
-                      "R3"]
+    state.buttons << { x: 100,  y: 500, active: inputs.controller_one.key_held.l1, text: "L1"}
+    state.buttons << { x: 100,  y: 600, active: inputs.controller_one.key_held.l2, text: "L2"}
+    state.buttons << { x: 1100, y: 500, active: inputs.controller_one.key_held.r1, text: "R1"}
+    state.buttons << { x: 1100, y: 600, active: inputs.controller_one.key_held.r2, text: "R2"}
+    state.buttons << { x: 540,  y: 450, active: inputs.controller_one.key_held.select, text: "Select"}
+    state.buttons << { x: 660,  y: 450, active: inputs.controller_one.key_held.start, text: "Start"}
+    state.buttons << { x: 200,  y: 300, active: inputs.controller_one.key_held.left, text: "Left"}
+    state.buttons << { x: 300,  y: 400, active: inputs.controller_one.key_held.up, text: "Up"}
+    state.buttons << { x: 400,  y: 300, active: inputs.controller_one.key_held.right, text: "Right"}
+    state.buttons << { x: 300,  y: 200, active: inputs.controller_one.key_held.down, text: "Down"}
+    state.buttons << { x: 800,  y: 300, active: inputs.controller_one.key_held.x, text: "X"}
+    state.buttons << { x: 900,  y: 400, active: inputs.controller_one.key_held.y, text: "Y"}
+    state.buttons << { x: 1000, y: 300, active: inputs.controller_one.key_held.a, text: "A"}
+    state.buttons << { x: 900,  y: 200, active: inputs.controller_one.key_held.b, text: "B"}
+    state.buttons << { x: 450 + inputs.controller_one.left_analog_x_perc * 100,
+                       y: 100 + inputs.controller_one.left_analog_y_perc * 100,
+                       active: inputs.controller_one.key_held.l3,
+                       text: "L3" }
+    state.buttons << { x: 750 + inputs.controller_one.right_analog_x_perc * 100,
+                       y: 100 + inputs.controller_one.right_analog_y_perc * 100,
+                       active: inputs.controller_one.key_held.r3,
+                       text: "R3" }
   end
 
   # Gives each button a square shape.
   # If the button is being pressed or held (which means it is considered active),
   # the square is filled in. Otherwise, the button simply has a border.
   def render
-    state.buttons.each do |x, y, active, text|
-      rect = [x, y, 75, 75]
+    state.buttons.each do |b|
+      rect = { x: b.x, y: b.y, w: 75, h: 75 }
 
-      if active # if button is pressed
+      if b.active # if button is pressed
         outputs.solids << rect # rect is output as solid (filled in)
       else
         outputs.borders << rect # otherwise, output as border
       end
 
       # Outputs the text of each button using labels.
-      outputs.labels << [x, y + 95, text] # add 95 to place label above button
+      outputs.labels << { x: b.x, y: b.y + 95, text: b.text } # add 95 to place label above button
     end
 
-    outputs.labels << [10, 60, "Left Analog x: #{inputs.controller_one.left_analog_x_raw} (#{inputs.controller_one.left_analog_x_perc * 100}%)"]
-    outputs.labels << [10, 30, "Left Analog y: #{inputs.controller_one.left_analog_y_raw} (#{inputs.controller_one.left_analog_y_perc * 100}%)"]
-    outputs.labels << [900, 60, "Right Analog x: #{inputs.controller_one.right_analog_x_raw} (#{inputs.controller_one.right_analog_x_perc * 100}%)"]
-    outputs.labels << [900, 30, "Right Analog y: #{inputs.controller_one.right_analog_y_raw} (#{inputs.controller_one.right_analog_y_perc * 100}%)"]
+    outputs.labels << { x:  10, y: 60, text: "Left Analog x: #{inputs.controller_one.left_analog_x_raw} (#{inputs.controller_one.left_analog_x_perc * 100}%)" }
+    outputs.labels << { x:  10, y: 30, text: "Left Analog y: #{inputs.controller_one.left_analog_y_raw} (#{inputs.controller_one.left_analog_y_perc * 100}%)" }
+    outputs.labels << { x: 900, y: 60, text: "Right Analog x: #{inputs.controller_one.right_analog_x_raw} (#{inputs.controller_one.right_analog_x_perc * 100}%)" }
+    outputs.labels << { x: 900, y: 30, text: "Right Analog y: #{inputs.controller_one.right_analog_y_raw} (#{inputs.controller_one.right_analog_y_perc * 100}%)" }
   end
 end
 

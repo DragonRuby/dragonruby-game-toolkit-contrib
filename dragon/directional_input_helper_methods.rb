@@ -70,6 +70,12 @@ S
       end
     end
 
+    def directional_angle
+      return nil unless directional_vector
+
+      Math.atan2(up_down, left_right).to_degrees
+    end
+
     def method_missing m, *args
       # combine the key with ctrl_
       if m.to_s.start_with?("ctrl_")

@@ -1,0 +1,6 @@
+devid=dragonruby
+devtitle=DragonRuby LLP
+gameid=shadows
+gametitle=Shadows
+version=1.0
+icon=metadata/icon.png

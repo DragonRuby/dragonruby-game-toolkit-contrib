@@ -14,7 +14,7 @@ def tick_game args
 
   # set up your game
   # initialize the game/game defaults. ||= means that you only initialize it if
-  # the value isn't already initialized
+  # the value isn't alread initialized
   args.state.player.x ||= 0
   args.state.player.y ||= 0
 

@@ -1,3 +1,4 @@
+# coding: utf-8
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # framerate_diagnostics.rb has been released under MIT (*only this file*).
@@ -115,7 +116,7 @@ If this warning is getting annoying put the following in your tick method:
 
       def framerate_diagnostics_primitives
         [
-          { x: 0, y: 93.from_top, w: 500, h: 93, a: 128 }.solid,
+          { x: 0, y: 93.from_top, w: 500, h: 93, a: 128 }.solid!,
           {
             x: 5,
             y: 5.from_top,
@@ -124,7 +125,7 @@ If this warning is getting annoying put the following in your tick method:
             g: 255,
             b: 255,
             size_enum: -2
-          }.label,
+          }.label!,
           {
             x: 5,
             y: 20.from_top,
@@ -133,7 +134,7 @@ If this warning is getting annoying put the following in your tick method:
             g: 255,
             b: 255,
             size_enum: -2
-          }.label,
+          }.label!,
           {
             x: 5,
             y: 35.from_top,
@@ -142,7 +143,7 @@ If this warning is getting annoying put the following in your tick method:
             g: 255,
             b: 255,
             size_enum: -2
-          }.label,
+          }.label!,
           {
             x: 5,
             y: 50.from_top,
@@ -151,7 +152,7 @@ If this warning is getting annoying put the following in your tick method:
             g: 255,
             b: 255,
             size_enum: -2
-          }.label,
+          }.label!,
           {
             x: 5,
             y: 65.from_top,
@@ -160,7 +161,7 @@ If this warning is getting annoying put the following in your tick method:
             g: 255,
             b: 255,
             size_enum: -2
-          }.label,
+          }.label!,
         ]
       end
 

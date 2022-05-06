@@ -42,7 +42,7 @@ class PoorManPlatformerPhysics
 
   # Sets default values for variables.
   # The ||= sign means that the variable will only be set to the value following the = sign if the value has
-  # not already been set before. Initialization happens only in the first frame.
+  # not already been set before. Intialization happens only in the first frame.
   def defaults
     state.tile_size               = 64
     state.gravity                 = -0.2
@@ -161,7 +161,7 @@ class PoorManPlatformerPhysics
 
   # Calls methods needed to determine collisions between player and world_collision rects.
   def calc_box_collision
-    return unless state.world_lookup.keys.length > 0 # return unless hash has at least 1 key
+    return unless state.world_lookup.keys.length > 0 # return unless hash has atleast 1 key
     collision_floor!
     collision_left!
     collision_right!
@@ -189,7 +189,7 @@ class PoorManPlatformerPhysics
     return unless state.dx < 0 # return unless player is moving left
     player_rect = [state.x - 0.1, state.y, state.tile_size, state.tile_size]
 
-    # Goes through world_collision_rects to find all intersections between the player's left side and the
+    # Goes through world_collision_rects to find all intersections beween the player's left side and the
     # right side of a world_collision_rect.
     left_side_collisions = state.world_collision_rects
                                .find_all { |r| r[:left_right].intersect_rect?(player_rect, collision_tollerance) }

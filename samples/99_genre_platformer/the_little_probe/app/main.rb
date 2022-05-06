@@ -33,7 +33,7 @@ class FallingCircle
       { text: "mission control, this is sasha. landing on europa successful.", distance_gate: 0 },
       { text: "operation \"find earth 2.0\", initiated at 8-29-2036 14:00.",   distance_gate: 0 },
       { text: "jupiter's sure is beautiful...",   distance_gate: 4000 },
-      { text: "hmm, it seems there's some kind of anomaly in the sky",   distance_gate: 7000 },
+      { text: "hmm, it seems there's some kind of anomoly in the sky",   distance_gate: 7000 },
       { text: "dancing lights, i'll call them whisps.",   distance_gate: 8000 },
       { text: "#todo... look i ran out of time -_-",   distance_gate: 9000 },
       { text: "there's never enough time",   distance_gate: 9000 },
@@ -394,6 +394,7 @@ class FallingCircle
   end
 
   def load_lines file
+    return unless state.snaps
     data = gtk.read_file(file) || ""
     data.each_line
         .reject { |l| l.strip.length == 0 }
@@ -452,21 +453,23 @@ class FallingCircle
     results[:point] = { x: x, y: y }
     results[:rect] = { x: x - radius, y: y - radius, w: radius * 2, h: radius * 2 }
     results[:trajectory] = trajectory(results)
-    results[:impacts] = terrain.find_all { |t| line_near_rect? results[:rect], t }.map do |t|
+    results[:impacts] = terrain.find_all { |t| t && (line_near_rect? results[:rect], t) }.map do |t|
+      intersection = geometry.line_intersect(results[:trajectory], t)
       {
         terrain: t,
         point: geometry.line_intersect(results[:trajectory], t),
         type: :terrain
       }
-    end.reject { |t| !point_within_line? t[:point], t[:terrain] }
+    end
 
     results[:impacts] += lava.find_all { |t| line_near_rect? results[:rect], t }.map do |t|
+      intersection = geometry.line_intersect(results[:trajectory], t)
       {
         terrain: t,
         point: geometry.line_intersect(results[:trajectory], t),
         type: :lava
       }
-    end.reject { |t| !point_within_line? t[:point], t[:terrain] }
+    end
 
     results
   end
@@ -479,18 +482,18 @@ class FallingCircle
   end
 
   def calc_terrains_to_monitor
+    return unless circle.impacts
     circle.impact = nil
     circle.impacts.each do |i|
+      future_circle = { x: circle.x + circle.dx, y: circle.y + circle.dy }
       circle.terrains_to_monitor[i[:terrain]] ||= {
-        ray_start: geometry.ray_test(circle, i[:terrain]),
+        ray_start: geometry.ray_test(future_circle, i[:terrain]),
       }
 
-      circle.terrains_to_monitor[i[:terrain]][:ray_current] = geometry.ray_test(circle, i[:terrain])
+      circle.terrains_to_monitor[i[:terrain]][:ray_current] = geometry.ray_test(future_circle, i[:terrain])
       if circle.terrains_to_monitor[i[:terrain]][:ray_start] != circle.terrains_to_monitor[i[:terrain]][:ray_current]
-        if circle.x.between?(i[:terrain].x, i[:terrain].x2) || circle.y.between?(i[:terrain].y, i[:terrain].y2)
-          circle.impact = i
-          circle.ray_current = circle.terrains_to_monitor[i[:terrain]][:ray_current]
-        end
+        circle.impact = i
+        circle.ray_current = circle.terrains_to_monitor[i[:terrain]][:ray_current]
       end
     end
   end
@@ -515,7 +518,7 @@ class FallingCircle
     r[:terrain][:slope] = geometry.line_slope(impact[:terrain], replace_infinity: infinity_alias)
     r[:terrain][:slope_sign] = r[:terrain][:slope].sign
 
-    r[:impact][:angle] = geometry.angle_between_lines(body.trajectory, impact[:terrain], replace_infinity: infinity_alias)
+    r[:impact][:angle] = -geometry.angle_between_lines(body.trajectory, impact[:terrain], replace_infinity: infinity_alias)
     r[:impact][:point] = { x: impact[:point].x, y: impact[:point].y }
     r[:impact][:same_slope_sign] = r[:body][:slope_sign] == r[:terrain][:slope_sign]
     r[:impact][:ray] = body.ray_current
@@ -548,7 +551,7 @@ class FallingCircle
       r[:body][:new_dx] = 0
       r[:body][:new_dy] = 0
       r[:impact][:energy] = 0
-      r[:body][:new_on_floor] = true
+      r[:body][:new_on_floor] = true if r[:impact][:point].y < body.y
       r[:body][:new_floor] = r[:terrain][:line]
       r[:body][:new_reason] = "0"
     end

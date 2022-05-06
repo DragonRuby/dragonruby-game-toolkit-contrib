@@ -10,13 +10,13 @@ class Heuristic_With_Walls
 
   def tick
     defaults
-    render 
-    input  
+    render
+    input
     # If animation is playing, and max steps have not been reached
     # Move the search a step forward
     if state.play && state.current_step < state.max_steps
       # Variable that tells the program what step to recalculate up to
-      state.current_step += 1 
+      state.current_step += 1
       move_searches_one_step_forward
     end
   end
@@ -38,7 +38,7 @@ class Heuristic_With_Walls
     # We store this value, because we want to remember the value even when
     # the user's cursor is no longer over what they're interacting with, but
     # they are still clicking down on the mouse.
-    state.user_input ||= :none 
+    state.user_input ||= :none
 
     # These variables allow the breadth first search to take place
     # Came_from is a hash with a key of a cell and a value of the cell that was expanded from to find the key.
@@ -63,7 +63,7 @@ class Heuristic_With_Walls
     # Unless the current step has a value
     unless state.current_step
       # Set the current step to 10
-      state.current_step = 10 
+      state.current_step = 10
       # And calculate the searches up to step 10
       recalculate_searches
     end
@@ -73,7 +73,7 @@ class Heuristic_With_Walls
     # This step is roughly the grid's width * height
     # When anim_steps equals max_steps no more calculations will occur
     # and the slider will be at the end
-    state.max_steps = grid.width * grid.height 
+    state.max_steps = grid.width * grid.height
 
     # Whether the animation should play or not
     # If true, every tick moves anim_steps forward one
@@ -166,7 +166,7 @@ class Heuristic_With_Walls
     # If the mouse was clicked this tick
     if inputs.mouse.down
       # Determine what the user is editing and appropriately edit the state.user_input variable
-      determine_input          
+      determine_input
     end
 
     # Process user input based on user_input variable and current mouse position
@@ -179,35 +179,35 @@ class Heuristic_With_Walls
     if mouse_over_slider?
       state.user_input = :slider
     # If the mouse is over the star in the first grid
-    elsif bfs_mouse_over_star?                 
+    elsif bfs_mouse_over_star?
       # The user is editing the star from the first grid
-      state.user_input = :bfs_star          
+      state.user_input = :bfs_star
     # If the mouse is over the star in the second grid
-    elsif heuristic_mouse_over_star?                 
+    elsif heuristic_mouse_over_star?
       # The user is editing the star from the second grid
-      state.user_input = :heuristic_star          
+      state.user_input = :heuristic_star
     # If the mouse is over the target in the first grid
-    elsif bfs_mouse_over_target?                 
+    elsif bfs_mouse_over_target?
       # The user is editing the target from the first grid
-      state.user_input = :bfs_target          
+      state.user_input = :bfs_target
     # If the mouse is over the target in the second grid
-    elsif heuristic_mouse_over_target?                 
+    elsif heuristic_mouse_over_target?
       # The user is editing the target from the second grid
-      state.user_input = :heuristic_target 
+      state.user_input = :heuristic_target
     # If the mouse is over a wall in the first grid
-    elsif bfs_mouse_over_wall?                 
+    elsif bfs_mouse_over_wall?
       # The user is removing a wall from the first grid
-      state.user_input = :bfs_remove_wall   
+      state.user_input = :bfs_remove_wall
     # If the mouse is over a wall in the second grid
-    elsif heuristic_mouse_over_wall?                 
+    elsif heuristic_mouse_over_wall?
       # The user is removing a wall from the second grid
       state.user_input = :heuristic_remove_wall
     # If the mouse is over the first grid
-    elsif bfs_mouse_over_grid?                 
+    elsif bfs_mouse_over_grid?
       # The user is adding a wall from the first grid
       state.user_input = :bfs_add_wall
     # If the mouse is over the second grid
-    elsif heuristic_mouse_over_grid?                 
+    elsif heuristic_mouse_over_grid?
       # The user is adding a wall from the second grid
       state.user_input = :heuristic_add_wall
     end
@@ -217,22 +217,22 @@ class Heuristic_With_Walls
   def process_input
     if state.user_input == :slider
       process_input_slider
-    elsif state.user_input == :bfs_star         
-      process_input_bfs_star                            
+    elsif state.user_input == :bfs_star
+      process_input_bfs_star
     elsif state.user_input == :heuristic_star
-      process_input_heuristic_star                            
-    elsif state.user_input == :bfs_target         
-      process_input_bfs_target                            
-    elsif state.user_input == :heuristic_target         
-      process_input_heuristic_target                            
-    elsif state.user_input == :bfs_remove_wall  
-      process_input_bfs_remove_wall                     
+      process_input_heuristic_star
+    elsif state.user_input == :bfs_target
+      process_input_bfs_target
+    elsif state.user_input == :heuristic_target
+      process_input_heuristic_target
+    elsif state.user_input == :bfs_remove_wall
+      process_input_bfs_remove_wall
     elsif state.user_input == :heuristic_remove_wall
-      process_input_heuristic_remove_wall                     
-    elsif state.user_input == :bfs_add_wall     
-      process_input_bfs_add_wall                        
-    elsif state.user_input == :heuristic_add_wall     
-      process_input_heuristic_add_wall                        
+      process_input_heuristic_remove_wall
+    elsif state.user_input == :bfs_add_wall
+      process_input_bfs_add_wall
+    elsif state.user_input == :heuristic_add_wall
+      process_input_heuristic_add_wall
     end
   end
 
@@ -242,7 +242,7 @@ class Heuristic_With_Walls
     outputs.primitives << [slider.x, slider.y, slider.x + slider.w, slider.y].line
     # The circle needs to be offset so that the center of the circle
     # overlaps the line instead of the upper right corner of the circle
-    # The circle's x value is also moved based on the current search step
+    # The circle's x value is also moved based on the current seach step
     circle_x = (slider.x - slider.offset) + (state.current_step * slider.spacing)
     circle_y = (slider.y - slider.offset)
     circle_rect = [circle_x, circle_y, 37, 37]
@@ -309,7 +309,7 @@ class Heuristic_With_Walls
 
     # The horizontal grid lines
     for y in 0..grid.height
-      outputs.lines << bfs_horizontal_line(y) 
+      outputs.lines << bfs_horizontal_line(y)
     end
   end
 
@@ -324,10 +324,10 @@ class Heuristic_With_Walls
 
     # The horizontal grid lines
     for y in 0..grid.height
-      outputs.lines << heuristic_horizontal_line(y) 
+      outputs.lines << heuristic_horizontal_line(y)
     end
   end
-    
+
   # Returns a vertical line for a column of the first grid
   def bfs_vertical_line column
     bfs_scale_up([column, 0, column, grid.height])
@@ -362,7 +362,7 @@ class Heuristic_With_Walls
   def render_bfs_target
     outputs.sprites << [bfs_scale_up(grid.target), 'target.png']
   end
-  
+
   # Renders the target on the second grid
   def render_heuristic_target
     outputs.sprites << [heuristic_scale_up(grid.target), 'target.png']
@@ -370,14 +370,14 @@ class Heuristic_With_Walls
 
   # Renders the walls on the first grid
   def render_bfs_walls
-    grid.walls.each_key do | wall | 
+    grid.walls.each_key do | wall |
       outputs.solids << [bfs_scale_up(wall), wall_color]
     end
   end
 
   # Renders the walls on the second grid
   def render_heuristic_walls
-    grid.walls.each_key do | wall | 
+    grid.walls.each_key do | wall |
       outputs.solids << [heuristic_scale_up(wall), wall_color]
     end
   end
@@ -398,14 +398,14 @@ class Heuristic_With_Walls
 
   # Renders the frontier cells on the first grid
   def render_bfs_frontier
-    bfs.frontier.each do | frontier_cell | 
+    bfs.frontier.each do | frontier_cell |
       outputs.solids << [bfs_scale_up(frontier_cell), frontier_color, 200]
     end
   end
 
   # Renders the frontier cells on the second grid
   def render_heuristic_frontier
-    heuristic.frontier.each do | frontier_cell | 
+    heuristic.frontier.each do | frontier_cell |
       outputs.solids << [heuristic_scale_up(frontier_cell), frontier_color, 200]
     end
   end
@@ -489,14 +489,14 @@ class Heuristic_With_Walls
   # Checks and handles input for the buttons
   # Called when the mouse is lifted
   def input_buttons
-    input_left_button 
-    input_center_button          
-    input_right_button     
+    input_left_button
+    input_center_button
+    input_right_button
   end
 
   # Checks if the previous step button is clicked
   # If it is, it pauses the animation and moves the search one step backward
-  def input_left_button 
+  def input_left_button
     if left_button_clicked?
       state.play = false
       state.current_step -= 1
@@ -508,7 +508,7 @@ class Heuristic_With_Walls
   # Inverses whether the animation is playing or not when clicked
   def input_center_button
     if center_button_clicked? || inputs.keyboard.key_down.space
-      state.play = !state.play         
+      state.play = !state.play
     end
   end
 
@@ -516,8 +516,8 @@ class Heuristic_With_Walls
   # If it is, it pauses the animation and moves the search one step forward
   def input_right_button
     if right_button_clicked?
-      state.play = false              
-      state.current_step += 1           
+      state.play = false
+      state.current_step += 1
       move_searches_one_step_forward
     end
   end
@@ -598,12 +598,12 @@ class Heuristic_With_Walls
   # on the slider
   # Changes the step of the search to be animated
   def process_input_slider
-    state.play = false 
+    state.play = false
     mouse_x = inputs.mouse.point.x
 
     # Bounds the mouse_x to the closest x value on the slider line
-    mouse_x = slider.x if mouse_x < slider.x 
-    mouse_x = slider.x + slider.w if mouse_x > slider.x + slider.w 
+    mouse_x = slider.x if mouse_x < slider.x
+    mouse_x = slider.x + slider.w if mouse_x > slider.x + slider.w
 
     # Sets the current search step to the one represented by the mouse x value
     # The slider's circle moves due to the render_slider method using anim_steps
@@ -616,12 +616,12 @@ class Heuristic_With_Walls
   # Only resets the search if the star changes position
   # Called whenever the user is editing the star (puts mouse down on star)
   def process_input_bfs_star
-    old_star = grid.star.clone 
+    old_star = grid.star.clone
     unless bfs_cell_closest_to_mouse == grid.target
-      grid.star = bfs_cell_closest_to_mouse 
+      grid.star = bfs_cell_closest_to_mouse
     end
-    unless old_star == grid.star 
-      recalculate_searches 
+    unless old_star == grid.star
+      recalculate_searches
     end
   end
 
@@ -629,12 +629,12 @@ class Heuristic_With_Walls
   # Only resets the search if the star changes position
   # Called whenever the user is editing the star (puts mouse down on star)
   def process_input_heuristic_star
-    old_star = grid.star.clone 
+    old_star = grid.star.clone
     unless heuristic_cell_closest_to_mouse == grid.target
       grid.star = heuristic_cell_closest_to_mouse
     end
-    unless old_star == grid.star 
-      recalculate_searches 
+    unless old_star == grid.star
+      recalculate_searches
     end
   end
 
@@ -642,12 +642,12 @@ class Heuristic_With_Walls
   # Only recalculate_searchess the search if the target changes position
   # Called whenever the user is editing the target (puts mouse down on target)
   def process_input_bfs_target
-    old_target = grid.target.clone 
+    old_target = grid.target.clone
     unless bfs_cell_closest_to_mouse == grid.star
       grid.target = bfs_cell_closest_to_mouse
     end
-    unless old_target == grid.target 
-      recalculate_searches 
+    unless old_target == grid.target
+      recalculate_searches
     end
   end
 
@@ -655,12 +655,12 @@ class Heuristic_With_Walls
   # Only recalculate_searchess the search if the target changes position
   # Called whenever the user is editing the target (puts mouse down on target)
   def process_input_heuristic_target
-    old_target = grid.target.clone 
+    old_target = grid.target.clone
     unless heuristic_cell_closest_to_mouse == grid.star
       grid.target = heuristic_cell_closest_to_mouse
     end
-    unless old_target == grid.target 
-      recalculate_searches 
+    unless old_target == grid.target
+      recalculate_searches
     end
   end
 
@@ -669,10 +669,10 @@ class Heuristic_With_Walls
     # The mouse needs to be inside the grid, because we only want to remove walls
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
-    if bfs_mouse_over_grid? 
+    if bfs_mouse_over_grid?
       if grid.walls.has_key?(bfs_cell_closest_to_mouse)
-        grid.walls.delete(bfs_cell_closest_to_mouse) 
-        recalculate_searches 
+        grid.walls.delete(bfs_cell_closest_to_mouse)
+        recalculate_searches
       end
     end
   end
@@ -682,29 +682,29 @@ class Heuristic_With_Walls
     # The mouse needs to be inside the grid, because we only want to remove walls
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
-    if heuristic_mouse_over_grid? 
+    if heuristic_mouse_over_grid?
       if grid.walls.has_key?(heuristic_cell_closest_to_mouse)
-        grid.walls.delete(heuristic_cell_closest_to_mouse) 
-        recalculate_searches 
+        grid.walls.delete(heuristic_cell_closest_to_mouse)
+        recalculate_searches
       end
     end
   end
   # Adds a wall in the first grid in the cell the mouse is over
   def process_input_bfs_add_wall
-    if bfs_mouse_over_grid? 
+    if bfs_mouse_over_grid?
       unless grid.walls.has_key?(bfs_cell_closest_to_mouse)
-        grid.walls[bfs_cell_closest_to_mouse] = true 
-        recalculate_searches 
+        grid.walls[bfs_cell_closest_to_mouse] = true
+        recalculate_searches
       end
     end
   end
 
   # Adds a wall in the second grid in the cell the mouse is over
   def process_input_heuristic_add_wall
-    if heuristic_mouse_over_grid? 
+    if heuristic_mouse_over_grid?
       unless grid.walls.has_key?(heuristic_cell_closest_to_mouse)
-        grid.walls[heuristic_cell_closest_to_mouse] = true 
-        recalculate_searches 
+        grid.walls[heuristic_cell_closest_to_mouse] = true
+        recalculate_searches
       end
     end
   end
@@ -714,13 +714,13 @@ class Heuristic_With_Walls
   # Finding the cell closest to the mouse helps with this
   def bfs_cell_closest_to_mouse
     # Closest cell to the mouse in the first grid
-    x = (inputs.mouse.point.x / grid.cell_size).to_i 
-    y = (inputs.mouse.point.y / grid.cell_size).to_i 
+    x = (inputs.mouse.point.x / grid.cell_size).to_i
+    y = (inputs.mouse.point.y / grid.cell_size).to_i
     # Bound x and y to the grid
-    x = grid.width - 1 if x > grid.width - 1 
-    y = grid.height - 1 if y > grid.height - 1 
+    x = grid.width - 1 if x > grid.width - 1
+    y = grid.height - 1 if y > grid.height - 1
     # Return closest cell
-    [x, y] 
+    [x, y]
   end
 
   # When the user grabs the star and puts their cursor to the far right
@@ -728,17 +728,17 @@ class Heuristic_With_Walls
   # Finding the cell closest to the mouse in the second grid helps with this
   def heuristic_cell_closest_to_mouse
     # Closest cell grid to the mouse in the second
-    x = (inputs.mouse.point.x / grid.cell_size).to_i 
-    y = (inputs.mouse.point.y / grid.cell_size).to_i 
+    x = (inputs.mouse.point.x / grid.cell_size).to_i
+    y = (inputs.mouse.point.y / grid.cell_size).to_i
     # Translate the cell to the first grid
     x -= grid.width + 1
     # Bound x and y to the first grid
     x = 0 if x < 0
     y = 0 if y < 0
-    x = grid.width - 1 if x > grid.width - 1 
-    y = grid.height - 1 if y > grid.height - 1 
+    x = grid.width - 1 if x > grid.width - 1
+    y = grid.height - 1 if y > grid.height - 1
     # Return closest cell
-    [x, y] 
+    [x, y]
   end
 
   def recalculate_searches
@@ -763,22 +763,22 @@ class Heuristic_With_Walls
     return if bfs.came_from.has_key?(grid.target)
 
     # Only runs at the beginning of the search as setup.
-    if bfs.came_from.empty?  
-      bfs.frontier << grid.star                   
-      bfs.came_from[grid.star] = nil              
+    if bfs.came_from.empty?
+      bfs.frontier << grid.star
+      bfs.came_from[grid.star] = nil
     end
 
     # A step in the search
-    unless bfs.frontier.empty? 
+    unless bfs.frontier.empty?
       # Takes the next frontier cell
-      new_frontier = bfs.frontier.shift 
+      new_frontier = bfs.frontier.shift
       # For each of its neighbors
-      adjacent_neighbors(new_frontier).each do |neighbor| 
+      adjacent_neighbors(new_frontier).each do |neighbor|
         # That have not been visited and are not walls
-        unless bfs.came_from.has_key?(neighbor) || grid.walls.has_key?(neighbor) 
+        unless bfs.came_from.has_key?(neighbor) || grid.walls.has_key?(neighbor)
           # Add them to the frontier and mark them as visited
-          bfs.frontier << neighbor 
-          bfs.came_from[neighbor] = new_frontier 
+          bfs.frontier << neighbor
+          bfs.came_from[neighbor] = new_frontier
         end
       end
     end
@@ -833,12 +833,12 @@ class Heuristic_With_Walls
       # Get the next cell to explore from
       new_frontier = heuristic.frontier.shift
       # For each of its neighbors
-      adjacent_neighbors(new_frontier).each do |neighbor| 
+      adjacent_neighbors(new_frontier).each do |neighbor|
         # That have not been visited and are not walls
-        unless heuristic.came_from.has_key?(neighbor) || grid.walls.has_key?(neighbor) 
+        unless heuristic.came_from.has_key?(neighbor) || grid.walls.has_key?(neighbor)
           # Add them to the frontier and mark them as visited
-          heuristic.frontier << neighbor 
-          heuristic.came_from[neighbor] = new_frontier 
+          heuristic.frontier << neighbor
+          heuristic.came_from[neighbor] = new_frontier
         end
       end
     end
@@ -882,16 +882,16 @@ class Heuristic_With_Walls
   # Returns a list of adjacent cells
   # Used to determine what the next cells to be added to the frontier are
   def adjacent_neighbors(cell)
-    neighbors = [] 
+    neighbors = []
 
     # Gets all the valid neighbors into the array
     # From southern neighbor, clockwise
-    neighbors << [cell.x    , cell.y - 1] unless cell.y == 0 
-    neighbors << [cell.x - 1, cell.y    ] unless cell.x == 0 
-    neighbors << [cell.x    , cell.y + 1] unless cell.y == grid.height - 1 
-    neighbors << [cell.x + 1, cell.y    ] unless cell.x == grid.width - 1 
+    neighbors << [cell.x    , cell.y - 1] unless cell.y == 0
+    neighbors << [cell.x - 1, cell.y    ] unless cell.x == 0
+    neighbors << [cell.x    , cell.y + 1] unless cell.y == grid.height - 1
+    neighbors << [cell.x + 1, cell.y    ] unless cell.x == grid.width - 1
 
-    neighbors 
+    neighbors
   end
 
   # Finds the vertical and horizontal distance of a cell from the star
@@ -940,7 +940,7 @@ class Heuristic_With_Walls
   def wall_color
     [134, 134, 120] # Camo Green
   end
-  
+
   def visited_color
     [204, 191, 179] # Dark Brown
   end
@@ -948,7 +948,7 @@ class Heuristic_With_Walls
   def frontier_color
     [103, 136, 204] # Blue
   end
-  
+
   def path_color
     [231, 230, 228] # Pastel White
   end
@@ -969,7 +969,7 @@ def tick args
   end
 
   # Every tick, new args are passed, and the Breadth First Search tick is called
-  $heuristic_with_walls ||= Heuristic_With_Walls.new(args)
+  $heuristic_with_walls ||= Heuristic_With_Walls.new
   $heuristic_with_walls.args = args
   $heuristic_with_walls.tick
 end

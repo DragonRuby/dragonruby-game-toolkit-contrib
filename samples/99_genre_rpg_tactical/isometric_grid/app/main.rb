@@ -10,10 +10,10 @@ class Isometric
 
     def defaults
         state.quantity              ||= 6                                                        #Size of grid
-        state.tileSize              ||= [262 / 2, 194 / 2]                                       #width and height of orange tiles
+        state.tileSize              ||= [262 / 2, 194 / 2]                                       #width and heigth of orange tiles
         state.tileGrid              ||= []                                                       #Holds ordering of tiles
         state.currentSpriteLocation ||= -1                                                       #Current Sprite hovering location 
-        state.tileCords             ||= []                                                       #Physical, rendering coordinates
+        state.tileCords             ||= []                                                       #Physical, rendering cordinates
         state.initCords             ||= [640 - (state.quantity / 2 * state.tileSize[0]), 330]    #Location of tile (0, 0)
         state.sideSize              ||= [state.tileSize[0] / 2, 242 / 2]                         #Purple & green cube face size
         state.mode                  ||= :delete                                                  #Switches between :delete and :insert
@@ -50,7 +50,7 @@ class Isometric
             end
         end
 
-        #Calculates physical coordinates for tiles
+        #Calculates physical cordinates for tiles
         if state.tileCords == []
             state.tileCords = state.tileGrid.map do
                 |val|
@@ -101,7 +101,7 @@ class Isometric
         #Shows the tile itself. Important that it's rendered after the two above!
         outputs.sprites << state.tileCords.map do
             |val|
-            if val[2] == true     #Checks if tile needs to be rendered
+            if val[2] == true     #Chcekcs if tile needs to be rendered
               if val[5] == state.currentSpriteLocation
                 [val[0], val[1], state.tileSize[0], state.tileSize[1], 'sprites/selectedTile.png']
               else

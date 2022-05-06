@@ -32,7 +32,7 @@ Reminder:
 # Use args.inputs.mouse.click.created_at
 
 # To see how many frames its been since the click occurred
-# Use args.inputs.mouse.click.creat_at_elapsed
+# Use args.inputs.mouse.click.created_at_elapsed
 
 # Saving the click in args.state can be quite useful
 
@@ -61,11 +61,7 @@ def small_label args, x, row, message
   # This method effectively combines the row_to_px and small_font methods
   # It changes the given row value to a DragonRuby pixel value
   # and adds the customization parameters
-  [x, row_to_px(args, row), message, small_font]
-end
-
-def small_font
-  [-2, 0, 0, 0, 0, 255]
+  { x: x, y: row_to_px(args, row), text: message, alignment_enum: -2 }
 end
 
 def row_to_px args, row_number
@@ -81,7 +77,7 @@ def tick_instructions args, text, y = 715
     args.state.key_event_occurred = true
   end
 
-  args.outputs.debug << [0, y - 50, 1280, 60].solid
-  args.outputs.debug << [640, y, text, 1, 1, 255, 255, 255].label
-  args.outputs.debug << [640, y - 25, "(click to dismiss instructions)" , -2, 1, 255, 255, 255].label
+  args.outputs.debug << { x: 0,   y: y - 50, w: 1280, h: 60 }.solid!
+  args.outputs.debug << { x: 640, y: y, text: text, size_enum: 1, alignment_enum: 1, r: 255, g: 255, b: 255 }.label!
+  args.outputs.debug << { x: 640, y: y - 25, text: "(click to dismiss instructions)", size_enum: -2, alignment_enum: 1, r: 255, g: 255, b: 255 }.label!
 end

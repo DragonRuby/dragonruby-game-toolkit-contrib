@@ -1,3 +1,4 @@
+# coding: utf-8
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # console_menu.rb has been released under MIT (*only this file*).
@@ -51,7 +52,7 @@ module GTK
 
       def itch_wizard_clicked
         @console.scroll_to_bottom
-        $wizards.itch.start
+        $wizards.itch.restart
       end
 
       def docs_clicked
@@ -76,6 +77,7 @@ module GTK
           @buttons = [
             (button id: :record,      row: 0, col:   9, text: "record gameplay",       method: :record_clicked),
             (button id: :replay,      row: 0, col:  10, text: "start replay",          method: :replay_clicked),
+            *custom_buttons
           ]
         elsif @menu_shown == :hidden
           @buttons = [
@@ -134,8 +136,8 @@ module GTK
           method: method
         }.let do |entity|
           primitives = []
-          primitives << entity[:rect].merge(a: 164).solid
-          primitives << entity[:rect].merge(r: 255, g: 255, b: 255).border
+          primitives << entity[:rect].solid!(a: 164)
+          primitives << entity[:rect].border!(r: 255, g: 255, b: 255)
           primitives << text.wrapped_lines(5)
                             .map_with_index do |l, i|
                               [

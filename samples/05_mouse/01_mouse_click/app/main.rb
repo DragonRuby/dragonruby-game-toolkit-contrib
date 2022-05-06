@@ -33,9 +33,11 @@
 
  - args.outputs.borders: An array. The values generate a border.
    The parameters are [X, Y, WIDTH, HEIGHT, RED, GREEN, BLUE]
+   For more information about borders, go to mygame/documentation/03-solids-and-borders.md.
 
  - args.outputs.labels: An array. The values generate a label.
    The parameters are [X, Y, TEXT, SIZE, ALIGNMENT, RED, GREEN, BLUE, ALPHA, FONT STYLE]
+   For more information about labels, go to mygame/documentation/02-labels.
 
 =end
 
@@ -47,10 +49,21 @@ class TicTacToe
   # Starts the game with player x's turn and creates an array (to_a) for space combinations.
   # Calls methods necessary for the game to run properly.
   def tick
-    state.current_turn ||= :x
-    state.space_combinations = [-1, 0, 1].product([-1, 0, 1]).to_a
+    init_new_game
     render_board
     input_board
+  end
+
+  def init_new_game
+    state.current_turn       ||= :x
+    state.space_combinations ||= [-1, 0, 1].product([-1, 0, 1]).to_a
+
+    state.spaces             ||= {}
+
+    state.space_combinations.each do |x, y|
+      state.spaces[x]    ||= {}
+      state.spaces[x][y] ||= state.new_entity(:space)
+    end
   end
 
   # Uses borders to create grid squares for the game's board. Also outputs the game pieces using labels.
@@ -120,7 +133,7 @@ class TicTacToe
     space.piece = state.current_turn
 
     # This ternary operator statement allows us to change the current player's turn.
-    # If it is currently x's turn, it becomes o's turn. If it is not x's turn, it becomes x's turn.
+    # If it is currently x's turn, it becomes o's turn. If it is not x's turn, it become's x's turn.
     state.current_turn = state.current_turn == :x ? :o : :x
   end
 
@@ -128,6 +141,7 @@ class TicTacToe
   def input_restart_game
     return unless state.game_over
     gtk.reset
+    init_new_game
   end
 
   # Checks if x or o won the game.

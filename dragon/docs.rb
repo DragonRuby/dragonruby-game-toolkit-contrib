@@ -46,7 +46,7 @@ module DocsOrganizer
     unsorted.each do |k|
         puts <<-S
 * WARNING: #{klass.name} is not included in DocsOrganizer::class_sort_order. Please place this
-module in it's correct topological order.
+module in its correct topological order.
 S
     end
 
@@ -253,13 +253,14 @@ S
     parse_log = []
 
     html_start_to_toc_start = <<-S
-<html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
     <title>DragonRuby Game Toolkit Documentation</title>
     <link href="docs.css?ver=#{Time.now.to_i}" rel="stylesheet" type="text/css" media="all">
   </head>
   <body>
-    <div id='toc'>
+    <div id='table-of-contents'>
 S
     html_toc_end_to_content_start = <<-S
     </div>
@@ -342,6 +343,11 @@ S
         __docs_append_true_line__ true_lines, current_true_line, parse_log
         __docs_append_true_line__ true_lines, l, parse_log
         current_true_line = ""
+      elsif l.start_with? "***** "
+        parse_log << "- Header detected."
+        __docs_append_true_line__ true_lines, current_true_line, parse_log
+        __docs_append_true_line__ true_lines, l, parse_log
+        current_true_line = ""
       else
         current_true_line += l.rstrip + " "
       end
@@ -373,6 +379,9 @@ S
       text = text.gsub("]", "-")
       text = text.gsub(":", "-")
       text = text.gsub(" ", "-")
+      text = text.gsub(".", "-")
+      text = text.gsub(",", "-")
+      text = text.gsub("?", "-")
       text
     end
 
@@ -434,6 +443,15 @@ S
         link_id = text_to_id.call l
         # toc_html += "<ul><ul><ul><li><a href='##{link_id}'>#{formatted_html}</a></li></ul></ul></ul>"
         content_html += "<h4>#{__docs_line_to_html__ l, parse_log}</h4>\n"
+      elsif l.start_with? "***** "
+        parse_log << "- H5 detected."
+        content_html += close_list_if_needed.call inside_ul, inside_ol
+        inside_ol = false
+        inside_ul = false
+        formatted_html = __docs_line_to_html__ l, parse_log
+        link_id = text_to_id.call l
+        # toc_html += "<ul><ul><ul><li><a href='##{link_id}'>#{formatted_html}</a></li></ul></ul></ul>"
+        content_html += "<h5>#{__docs_line_to_html__ l, parse_log}</h5>\n"
       elsif l.strip.length == 0 && !inside_pre
         # do nothing
       elsif l.start_with? "#+begin_src"
@@ -547,7 +565,10 @@ S
 
   def __docs_line_to_html__ line, parse_log
     parse_log << "- Determining if line is a header."
-    if line.start_with? "**** "
+    if line.start_with? "***** "
+      line = line.gsub "***** ", ""
+      parse_log << "- Line contains ~***** ~... gsub-ing empty string"
+    elsif line.start_with? "**** "
       line = line.gsub "**** ", ""
       parse_log << "- Line contains ~**** ~... gsub-ing empty string"
     elsif line.start_with? "*** "

@@ -12,8 +12,8 @@ class Breadcrumbs
       calc
       # Calc Path
     end
-    render 
-    input  
+    render
+    input
   end
 
   def defaults
@@ -90,7 +90,7 @@ class Breadcrumbs
       [24, 9] => true,
       [25, 8] => true,
       [25, 9] => true,
-    }    
+    }
 
     # Variables that are used by the breadth first search
     # Storing cells that the search has visited, prevents unnecessary steps
@@ -109,36 +109,36 @@ class Breadcrumbs
     # We store this value, because we want to remember the value even when
     # the user's cursor is no longer over what they're interacting with, but
     # they are still clicking down on the mouse.
-    state.current_input ||= :none 
+    state.current_input ||= :none
   end
 
   def calc
     # Setup the search to start from the star
-    search.frontier << grid.star                   
+    search.frontier << grid.star
     search.came_from[grid.star] = nil
 
     # Until there are no more cells to expand from
-    until search.frontier.empty? 
+    until search.frontier.empty?
       # Takes the next frontier cell
-      new_frontier = search.frontier.shift 
+      new_frontier = search.frontier.shift
       # For each of its neighbors
-      adjacent_neighbors(new_frontier).each do |neighbor| 
+      adjacent_neighbors(new_frontier).each do |neighbor|
         # That have not been visited and are not walls
-        unless search.came_from.has_key?(neighbor) || grid.walls.has_key?(neighbor) 
+        unless search.came_from.has_key?(neighbor) || grid.walls.has_key?(neighbor)
           # Add them to the frontier and mark them as visited in the first grid
           # Unless the target has been visited
           # Add the neighbor to the frontier and remember which cell it came from
-          search.frontier << neighbor 
+          search.frontier << neighbor
           search.came_from[neighbor] = new_frontier
         end
       end
     end
   end
-  
+
 
   # Draws everything onto the screen
   def render
-    render_background       
+    render_background
     # render_heat_map
     render_walls
     # render_path
@@ -157,7 +157,7 @@ class Breadcrumbs
     if current_cell && parent_cell
       outputs.lines << [(current_cell.x + 0.5) * grid.cell_size, (current_cell.y + 0.5) * grid.cell_size,
       (parent_cell.x + 0.5) * grid.cell_size, (parent_cell.y + 0.5) * grid.cell_size, purple]
-        
+
     end
     render_trail(parent_cell)
   end
@@ -183,8 +183,8 @@ class Breadcrumbs
 
   # Draws what the grid looks like with nothing on it
   def render_background
-    render_unvisited  
-    render_grid_lines 
+    render_unvisited
+    render_grid_lines
   end
 
   # Draws both grids
@@ -199,7 +199,7 @@ class Breadcrumbs
     end
 
     for y in 0..grid.height
-      outputs.lines << horizontal_line(y) 
+      outputs.lines << horizontal_line(y)
     end
   end
 
@@ -215,7 +215,7 @@ class Breadcrumbs
 
   # Draws the walls on both grids
   def render_walls
-    grid.walls.each_key do |wall| 
+    grid.walls.each_key do |wall|
       outputs.solids << [scale_up(wall), wall_color]
     end
   end
@@ -223,12 +223,12 @@ class Breadcrumbs
   # Renders the star on both grids
   def render_star
     outputs.sprites << [scale_up(grid.star), 'star.png']
-  end 
+  end
 
   # Renders the target on both grids
   def render_target
     outputs.sprites << [scale_up(grid.target), 'target.png']
-  end 
+  end
 
   # Labels the grids
   def render_labels
@@ -288,14 +288,14 @@ class Breadcrumbs
     # The program has to remember that the user is dragging an object
     # even when the mouse is no longer over that object
     # So detecting input and processing input is separate
-    # detect_input          
-    # process_input         
+    # detect_input
+    # process_input
     if inputs.mouse.up
       state.current_input = :none
     elsif star_clicked?
       state.current_input = :star
     end
-      
+
     if mouse_inside_grid?
       unless grid.target == cell_closest_to_mouse
         grid.target = cell_closest_to_mouse
@@ -313,33 +313,33 @@ class Breadcrumbs
   # mouse left click is held
   def detect_input
     # When the mouse is up, nothing is being edited
-    if inputs.mouse.up                  
-      state.current_input = :none          
+    if inputs.mouse.up
+      state.current_input = :none
     # When the star in the no second grid is clicked
-    elsif star_clicked?                 
-      state.current_input = :star          
+    elsif star_clicked?
+      state.current_input = :star
     # When the target in the no second grid is clicked
-    elsif target_clicked?                 
-      state.current_input = :target          
+    elsif target_clicked?
+      state.current_input = :target
     # When a wall in the first grid is clicked
-    elsif wall_clicked?                 
-      state.current_input = :remove_wall   
+    elsif wall_clicked?
+      state.current_input = :remove_wall
     # When the first grid is clicked
-    elsif grid_clicked?                 
+    elsif grid_clicked?
       state.current_input = :add_wall
     end
   end
 
   # Processes click and drag based on what the user is currently dragging
   def process_input
-    if state.current_input == :star         
-      input_star                            
-    elsif state.current_input == :target         
-      input_target                            
-    elsif state.current_input == :remove_wall  
-      input_remove_wall                     
-    elsif state.current_input == :add_wall     
-      input_add_wall                        
+    if state.current_input == :star
+      input_star
+    elsif state.current_input == :target
+      input_target
+    elsif state.current_input == :remove_wall
+      input_remove_wall
+    elsif state.current_input == :add_wall
+      input_add_wall
     end
   end
 
@@ -347,10 +347,10 @@ class Breadcrumbs
   # Only resets the search if the star changes position
   # Called whenever the user is editing the star (puts mouse down on star)
   def input_star
-    old_star = grid.star.clone 
+    old_star = grid.star.clone
     grid.star = cell_closest_to_mouse
-    unless old_star == grid.star 
-      reset_search 
+    unless old_star == grid.star
+      reset_search
     end
   end
 
@@ -358,10 +358,10 @@ class Breadcrumbs
   # Only reset_searchs the search if the target changes position
   # Called whenever the user is editing the target (puts mouse down on target)
   def input_target
-    old_target = grid.target.clone 
+    old_target = grid.target.clone
     grid.target = cell_closest_to_mouse
-    unless old_target == grid.target 
-      reset_search 
+    unless old_target == grid.target
+      reset_search
     end
   end
 
@@ -370,32 +370,32 @@ class Breadcrumbs
     # The mouse needs to be inside the grid, because we only want to remove walls
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
-    if mouse_inside_grid? 
+    if mouse_inside_grid?
       if grid.walls.has_key?(cell_closest_to_mouse)
-        grid.walls.delete(cell_closest_to_mouse) 
-        reset_search 
+        grid.walls.delete(cell_closest_to_mouse)
+        reset_search
       end
     end
   end
 
   # Adds a wall in the first grid in the cell the mouse is over
   def input_add_wall
-    if mouse_inside_grid? 
+    if mouse_inside_grid?
       unless grid.walls.has_key?(cell_closest_to_mouse)
-        grid.walls[cell_closest_to_mouse] = true 
-        reset_search 
+        grid.walls[cell_closest_to_mouse] = true
+        reset_search
       end
     end
   end
 
-  
+
   # Whenever the user edits the grid,
   # The search has to be reset_searchd upto the current step
   # with the current grid as the initial state of the grid
   def reset_search
     # Reset_Searchs the search
-    search.frontier  = [] 
-    search.came_from = {} 
+    search.frontier  = []
+    search.came_from = {}
     search.path      = {}
   end
 
@@ -403,21 +403,21 @@ class Breadcrumbs
   # Returns a list of adjacent cells
   # Used to determine what the next cells to be added to the frontier are
   def adjacent_neighbors(cell)
-    neighbors = [] 
+    neighbors = []
 
     # Gets all the valid neighbors into the array
     # From southern neighbor, clockwise
-    neighbors << [cell.x, cell.y - 1] unless cell.y == 0 
-    neighbors << [cell.x - 1, cell.y] unless cell.x == 0 
-    neighbors << [cell.x, cell.y + 1] unless cell.y == grid.height - 1 
-    neighbors << [cell.x + 1, cell.y] unless cell.x == grid.width - 1 
+    neighbors << [cell.x, cell.y - 1] unless cell.y == 0
+    neighbors << [cell.x - 1, cell.y] unless cell.x == 0
+    neighbors << [cell.x, cell.y + 1] unless cell.y == grid.height - 1
+    neighbors << [cell.x + 1, cell.y] unless cell.x == grid.width - 1
 
     # Sorts the neighbors so the rendered path is a zigzag path
     # Cells in a diagonal direction are given priority
     # Comment this line to see the difference
     neighbors = neighbors.sort_by { |neighbor_x, neighbor_y|  proximity_to_star(neighbor_x, neighbor_y) }
 
-    neighbors 
+    neighbors
   end
 
   # Finds the vertical and horizontal distance of a cell from the star
@@ -442,13 +442,13 @@ class Breadcrumbs
   # Finding the cell closest to the mouse helps with this
   def cell_closest_to_mouse
     # Closest cell to the mouse in the first grid
-    x = (inputs.mouse.point.x / grid.cell_size).to_i 
-    y = (inputs.mouse.point.y / grid.cell_size).to_i 
+    x = (inputs.mouse.point.x / grid.cell_size).to_i
+    y = (inputs.mouse.point.y / grid.cell_size).to_i
     # Bound x and y to the grid
-    x = grid.width - 1 if x > grid.width - 1 
-    y = grid.height - 1 if y > grid.height - 1 
+    x = grid.width - 1 if x > grid.width - 1
+    y = grid.height - 1 if y > grid.height - 1
     # Return closest cell
-    [x, y] 
+    [x, y]
   end
 
   # Signal that the user is going to be moving the star from the first grid
@@ -476,13 +476,13 @@ class Breadcrumbs
 
   # Light brown
   def unvisited_color
-    [221, 212, 213] 
+    [221, 212, 213]
     # [255, 255, 255]
   end
 
   # Camo Green
   def wall_color
-    [134, 134, 120] 
+    [134, 134, 120]
   end
 
   # Pastel White
@@ -520,7 +520,7 @@ def tick args
   end
 
   # Every tick, new args are passed, and the Breadth First Search tick is called
-  $breadcrumbs ||= Breadcrumbs.new(args)
+  $breadcrumbs ||= Breadcrumbs.new
   $breadcrumbs.args = args
   $breadcrumbs.tick
 end

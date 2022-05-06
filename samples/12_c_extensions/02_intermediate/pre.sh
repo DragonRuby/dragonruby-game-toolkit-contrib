@@ -14,6 +14,6 @@ mkdir -p native/$PLATFORM
 
 $DRB_ROOT/dragonruby-bind -ffi-module=RE --output=native/re-bindings.c app/re.h
 clang \
-  -isystem $DRB_ROOT/include -I. \
+  -isystem $DRB_ROOT/include -isystem $DRB_ROOT -I. \
   -fPIC -shared app/re.c native/re-bindings.c -o native/$PLATFORM/ext.$DLLEXT
 

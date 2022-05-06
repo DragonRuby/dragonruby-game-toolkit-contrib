@@ -1,0 +1,7 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=flappydragonvr
+gametitle=Flappy Dragon VR
+version=1.3
+icon=sprites/dragon_fly1.png
+vrmode=3

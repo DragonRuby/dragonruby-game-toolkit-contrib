@@ -191,6 +191,30 @@ module GTK
       }
     end
 
+    def self.method_to_key_hash
+      return @method_to_key_hash if @method_to_key_hash
+      @method_to_key_hash = {}
+      string_representation_overrides ||= {
+        backspace: '\b'
+      }
+      char_to_method_hash.each do |k, v|
+        v.each do |vi|
+          t = { char_or_raw_key: k }
+
+          if k.is_a? Numeric
+            t[:raw_key] = k
+            t[:string_representation] = "raw_key == #{k}"
+          else
+            t[:char] = k
+            t[:string_representation] = "\"#{k.strip}\""
+          end
+
+          @method_to_key_hash[vi] = t
+        end
+      end
+      @method_to_key_hash
+    end
+
     def self.char_to_method char, int = nil
       methods = char_to_method_hash[char] || char_to_method_hash[int]
       methods ? methods.dup : [char.to_sym || int]
@@ -289,7 +313,8 @@ module GTK
       value = Kernel.tick_count if value
 
       collection.each do |m|
-        self.instance_variable_set("@#{m.to_s}".to_sym, value)
+        m_to_s = m.to_s
+        self.instance_variable_set("@#{m_to_s}".to_sym, value) if m_to_s.strip.length > 0
       rescue Exception => e
         raise e, <<-S
 * ERROR:
@@ -305,24 +330,32 @@ S
     end
 
     def method_missing m, *args
-      begin
-        define_singleton_method(m) do
-          r = self.instance_variable_get("@#{m.without_ending_bang}".to_sym)
-          clear_key m
-          return r
-        end
+      if KeyboardKeys.method_to_key_hash[m.without_ending_bang]
+        begin
+          define_singleton_method(m) do
+            r = self.instance_variable_get("@#{m.without_ending_bang}".to_sym)
+            clear_key m
+            return r
+          end
 
-        return self.send m
-      rescue Exception => e
-        log_important "#{e}"
+          return self.send m
+        rescue Exception => e
+          log_important "#{e}"
+        end
       end
+
+      did_you_mean = KeyboardKeys.method_to_key_hash.find_all do |k, v|
+        k.to_s[0..1] == m.to_s[0..1]
+      end.map {|k, v| ":#{k} (#{v[:string_representation]})" }
+      did_you_mean_string = ""
+      did_you_mean_string = ". Did you mean #{did_you_mean.join ", "}?"
 
       raise <<-S
 * ERROR:
-There is no member on the keyboard called #{m}. Here is a to_s representation of what's available:
+#{KeyboardKeys.method_to_key_hash.map { |k, v| "** :#{k} #{v.string_representation}" }.join("\n")}
 
-#{KeyboardKeys.char_to_method_hash.map { |k, v| "[#{k} => #{v.join(",")}]" }.join("  ")}
-
+There is no key on the keyboard called :#{m}#{did_you_mean_string}.
+Full list of available keys =:points_up:=.
 S
     end
 
@@ -373,11 +406,19 @@ module GTK
       @key_up.left || @key_held.left || a
     end
 
+    def left_arrow
+      @key_up.left || @key_held.left
+    end
+
     # The right arrow or "d" was pressed.
     #
     # @return [Boolean]
     def right
       @key_up.right || @key_held.right || d
+    end
+
+    def right_arrow
+      @key_up.right || @key_held.right
     end
 
     # The up arrow or "w" was pressed.
@@ -387,11 +428,19 @@ module GTK
       @key_up.up || @key_held.up || w
     end
 
+    def up_arrow
+      @key_up.up || @key_held.up
+    end
+
     # The down arrow or "s" was pressed.
     #
     # @return [Boolean]
     def down
       @key_up.down || @key_held.down || s
+    end
+
+    def down_arrow
+      @key_up.down || @key_held.down
     end
 
     # Clear all current key presses.
@@ -641,33 +690,14 @@ module GTK
 end
 
 module GTK
-  # @gtk
   class Inputs
-
-    # A list of all controllers.
-    #
-    # @return [Controller[]]
-    # @gtk
     attr_reader :controllers
-
-    # @return [Keyboard]
-    # @gtk
     attr_reader :keyboard
-
-    # @return [Mouse]
-    # @gtk
     attr_reader :mouse
-
-    # @return [HTTPRequest[]]
-    # @gtk
     attr_accessor :http_requests
-
-    # @return {FingerTouch}
-    # @gtk
     attr_reader :touch
     attr_accessor :finger_one, :finger_two
-
-    # @gtk
+    attr_accessor :finger_left, :finger_right
     attr_accessor :text, :history
 
     def initialize
@@ -704,6 +734,10 @@ module GTK
     def directional_vector
       keyboard.directional_vector ||
         (controller_one && controller_one.directional_vector)
+    end
+
+    def directional_angle
+      keyboard.directional_angle || (controller_one && controller_one.directional_angle)
     end
 
     # Returns a signal indicating right (`1`), left (`-1`), or neither ('0').

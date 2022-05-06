@@ -36,6 +36,7 @@
 
  - args.outputs.labels: An array. Values generate a label.
    Parameters are [X, Y, TEXT, SIZE, ALIGN, RED, GREEN, BLUE, ALPHA, FONT STYLE]
+   For more information, go to mygame/documentation/02-labels.md.
 
  - ARRAY#inside_rect?: An array with at least two values is considered a point. An array
    with at least four values is considered a rect. The inside_rect? function returns true
@@ -48,7 +49,7 @@
 
 class TextedBasedGame
 
-  # Contains methods needed for the game to run properly.
+  # Contains methods needed for game to run properly.
   # Increments tick count by 1 each time it runs (60 times in a single second)
   def tick
     default
@@ -59,7 +60,7 @@ class TextedBasedGame
 
   # Sets default values.
   # The ||= ensures that a variable's value is only set to the value following the = sign
-  # if the value has not already been set before. Initialization happens only in the first frame.
+  # if the value has not already been set before. Intialization happens only in the first frame.
   def default
     state.engine_tick_count ||= 0
     state.active_module     ||= :room
@@ -286,7 +287,7 @@ class TextedBasedGamePresenter
           end
 
           # instructions for users on how to add the missing method_to_call to the code
-          puts "It looks like #{method_to_call} doesn't exist on TextedBasedGamePresenter. Please add this method:"
+          puts "It looks like #{method_to_call} doesn't exists on TextedBasedGamePresenter. Please add this method:"
           puts "Just copy the code below and put it in the #{TextedBasedGamePresenter} class definition."
           puts ""
           puts "```"
@@ -345,7 +346,7 @@ class TextedBasedGamePresenter
     @game
   end
 
-  # Initializes the game and creates an empty list of buttons.
+  # Initalizes the game and creates an empty list of buttons.
   def initialize
     @game = TextedBasedGame.new self
     @button_list ||= {}

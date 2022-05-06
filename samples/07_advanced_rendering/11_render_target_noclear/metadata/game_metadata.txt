@@ -1,0 +1,5 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=render_target_noclear
+gametitle=Render targets that don't clear every frame.
+version=1.0

@@ -77,10 +77,8 @@
   </head>
   <body id='toplevel'>
     <div class="emscripten_border" id='borderdiv'>
-      <input id="game-input" autocomplete="off" />
-      <canvas class="game emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
     </div>
-    <br/>
     <textarea style="display: none;" id="output" rows="8"></textarea>
 
     <div class="emscripten" id="status"></div>

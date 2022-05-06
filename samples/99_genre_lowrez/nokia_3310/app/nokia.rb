@@ -236,7 +236,7 @@ module GTK
             g: 240,
             b: 216,
             a: 100
-          }.line
+          }.line!
         end
 
         (NOKIA_WIDTH + 1).map_with_index do |i|
@@ -249,7 +249,7 @@ module GTK
             g: 240,
             b: 216,
             a: 100
-          }.line
+          }.line!
         end
 
         @args.state.overlay_rendered = true

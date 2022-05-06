@@ -14,12 +14,28 @@ module GTK
         :l1, :r1,
         :l2, :r2,
         :l3, :r3,
-        :start, :select,
+        :start, :select, :home,
         :directional_up, :directional_down, :directional_left, :directional_right
       ].freeze
 
       LABELS.each do |label|
         attr label
+      end
+
+      def back
+        @select
+      end
+
+      def back= value
+        @select = value
+      end
+
+      def guide
+        @home
+      end
+
+      def guide= value
+        @home = value
       end
 
       # Activate a key.

@@ -1,3 +1,4 @@
+# coding: utf-8
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # console_color.rb has been released under MIT (*only this file*).
@@ -20,6 +21,10 @@ module GTK
       # Support splat operator
       def to_a
         @color
+      end
+
+      def to_s
+        "GTK::Console::Color #{to_h}"
       end
 
       def to_h

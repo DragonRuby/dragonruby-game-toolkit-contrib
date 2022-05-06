@@ -127,7 +127,7 @@ module GTK
 
       def previous_part
         if @current_part > 0
-          # remove the binding that we previously had here so it can be reused.
+          # remove the binding that we previous had here so it can be reused.
           bindstr = @bindings[@current_part - 1]
           @bindings[@current_part - 1] = nil
           @used_bindings[bindstr] = nil

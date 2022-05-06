@@ -11,8 +11,8 @@ class A_Star_Algorithm
 
   def tick
     defaults
-    render 
-    input  
+    render
+    input
 
     if dijkstra.came_from.empty?
       calc_searches
@@ -65,7 +65,7 @@ class A_Star_Algorithm
     # We store this value, because we want to remember the value even when
     # the user's cursor is no longer over what they're interacting with, but
     # they are still clicking down on the mouse.
-    state.user_input ||= :none 
+    state.user_input ||= :none
 
     # These variables allow the breadth first search to take place
     # Came_from is a hash with a key of a cell and a value of the cell that was expanded from to find the key.
@@ -143,7 +143,7 @@ class A_Star_Algorithm
     # If the mouse was clicked this tick
     if inputs.mouse.down
       # Determine what the user is editing and appropriately edit the state.user_input variable
-      determine_input          
+      determine_input
     end
 
     # Process user input based on user_input variable and current mouse position
@@ -154,51 +154,51 @@ class A_Star_Algorithm
   # This method is called when the mouse is clicked down
   def determine_input
     # If the mouse is over the star in the first grid
-    if dijkstra_mouse_over_star?                 
+    if dijkstra_mouse_over_star?
       # The user is editing the star from the first grid
-      state.user_input = :dijkstra_star          
+      state.user_input = :dijkstra_star
     # If the mouse is over the star in the second grid
-    elsif greedy_mouse_over_star?                 
+    elsif greedy_mouse_over_star?
       # The user is editing the star from the second grid
-      state.user_input = :greedy_star          
+      state.user_input = :greedy_star
     # If the mouse is over the star in the third grid
-    elsif a_star_mouse_over_star?                 
+    elsif a_star_mouse_over_star?
       # The user is editing the star from the third grid
-      state.user_input = :a_star_star          
+      state.user_input = :a_star_star
     # If the mouse is over the target in the first grid
-    elsif dijkstra_mouse_over_target?                 
+    elsif dijkstra_mouse_over_target?
       # The user is editing the target from the first grid
-      state.user_input = :dijkstra_target          
+      state.user_input = :dijkstra_target
     # If the mouse is over the target in the second grid
-    elsif greedy_mouse_over_target?                 
+    elsif greedy_mouse_over_target?
       # The user is editing the target from the second grid
-      state.user_input = :greedy_target 
+      state.user_input = :greedy_target
     # If the mouse is over the target in the third grid
-    elsif a_star_mouse_over_target?                 
+    elsif a_star_mouse_over_target?
       # The user is editing the target from the third grid
-      state.user_input = :a_star_target 
+      state.user_input = :a_star_target
     # If the mouse is over a wall in the first grid
-    elsif dijkstra_mouse_over_wall?                 
+    elsif dijkstra_mouse_over_wall?
       # The user is removing a wall from the first grid
-      state.user_input = :dijkstra_remove_wall   
+      state.user_input = :dijkstra_remove_wall
     # If the mouse is over a wall in the second grid
-    elsif greedy_mouse_over_wall?                 
+    elsif greedy_mouse_over_wall?
       # The user is removing a wall from the second grid
       state.user_input = :greedy_remove_wall
     # If the mouse is over a wall in the third grid
-    elsif a_star_mouse_over_wall?                 
+    elsif a_star_mouse_over_wall?
       # The user is removing a wall from the third grid
       state.user_input = :a_star_remove_wall
     # If the mouse is over the first grid
-    elsif dijkstra_mouse_over_grid?                 
+    elsif dijkstra_mouse_over_grid?
       # The user is adding a wall from the first grid
       state.user_input = :dijkstra_add_wall
     # If the mouse is over the second grid
-    elsif greedy_mouse_over_grid?                 
+    elsif greedy_mouse_over_grid?
       # The user is adding a wall from the second grid
       state.user_input = :greedy_add_wall
     # If the mouse is over the third grid
-    elsif a_star_mouse_over_grid?                 
+    elsif a_star_mouse_over_grid?
       # The user is adding a wall from the third grid
       state.user_input = :a_star_add_wall
     end
@@ -206,30 +206,30 @@ class A_Star_Algorithm
 
   # Processes click and drag based on what the user is currently dragging
   def process_input
-    if state.user_input == :dijkstra_star         
-      process_input_dijkstra_star                            
+    if state.user_input == :dijkstra_star
+      process_input_dijkstra_star
     elsif state.user_input == :greedy_star
-      process_input_greedy_star                            
+      process_input_greedy_star
     elsif state.user_input == :a_star_star
-      process_input_a_star_star                            
-    elsif state.user_input == :dijkstra_target         
-      process_input_dijkstra_target                            
-    elsif state.user_input == :greedy_target         
-      process_input_greedy_target                            
-    elsif state.user_input == :a_star_target         
-      process_input_a_star_target                            
-    elsif state.user_input == :dijkstra_remove_wall  
-      process_input_dijkstra_remove_wall                     
+      process_input_a_star_star
+    elsif state.user_input == :dijkstra_target
+      process_input_dijkstra_target
+    elsif state.user_input == :greedy_target
+      process_input_greedy_target
+    elsif state.user_input == :a_star_target
+      process_input_a_star_target
+    elsif state.user_input == :dijkstra_remove_wall
+      process_input_dijkstra_remove_wall
     elsif state.user_input == :greedy_remove_wall
-      process_input_greedy_remove_wall                     
+      process_input_greedy_remove_wall
     elsif state.user_input == :a_star_remove_wall
-      process_input_a_star_remove_wall                     
-    elsif state.user_input == :dijkstra_add_wall     
-      process_input_dijkstra_add_wall                        
-    elsif state.user_input == :greedy_add_wall     
-      process_input_greedy_add_wall                        
-    elsif state.user_input == :a_star_add_wall     
-      process_input_a_star_add_wall                        
+      process_input_a_star_remove_wall
+    elsif state.user_input == :dijkstra_add_wall
+      process_input_dijkstra_add_wall
+    elsif state.user_input == :greedy_add_wall
+      process_input_greedy_add_wall
+    elsif state.user_input == :a_star_add_wall
+      process_input_a_star_add_wall
     end
   end
 
@@ -244,7 +244,7 @@ class A_Star_Algorithm
 
     # The horizontal grid lines
     for y in 0..grid.height
-      outputs.lines << dijkstra_horizontal_line(y) 
+      outputs.lines << dijkstra_horizontal_line(y)
     end
   end
 
@@ -259,7 +259,7 @@ class A_Star_Algorithm
 
     # The horizontal grid lines
     for y in 0..grid.height
-      outputs.lines << greedy_horizontal_line(y) 
+      outputs.lines << greedy_horizontal_line(y)
     end
   end
 
@@ -274,10 +274,10 @@ class A_Star_Algorithm
 
     # The horizontal grid lines
     for y in 0..grid.height
-      outputs.lines << a_star_horizontal_line(y) 
+      outputs.lines << a_star_horizontal_line(y)
     end
   end
-    
+
   # Returns a vertical line for a column of the first grid
   def dijkstra_vertical_line column
     dijkstra_scale_up([column, 0, column, grid.height])
@@ -327,7 +327,7 @@ class A_Star_Algorithm
   def render_dijkstra_target
     outputs.sprites << [dijkstra_scale_up(grid.target), 'target.png']
   end
-  
+
   # Renders the target on the second grid
   def render_greedy_target
     outputs.sprites << [greedy_scale_up(grid.target), 'target.png']
@@ -340,21 +340,21 @@ class A_Star_Algorithm
 
   # Renders the walls on the first grid
   def render_dijkstra_walls
-    grid.walls.each_key do | wall | 
+    grid.walls.each_key do | wall |
       outputs.solids << [dijkstra_scale_up(wall), wall_color]
     end
   end
 
   # Renders the walls on the second grid
   def render_greedy_walls
-    grid.walls.each_key do | wall | 
+    grid.walls.each_key do | wall |
       outputs.solids << [greedy_scale_up(wall), wall_color]
     end
   end
 
   # Renders the walls on the third grid
   def render_a_star_walls
-    grid.walls.each_key do | wall | 
+    grid.walls.each_key do | wall |
       outputs.solids << [a_star_scale_up(wall), wall_color]
     end
   end
@@ -554,12 +554,12 @@ class A_Star_Algorithm
   # Only resets the search if the star changes position
   # Called whenever the user is editing the star (puts mouse down on star)
   def process_input_dijkstra_star
-    old_star = grid.star.clone 
+    old_star = grid.star.clone
     unless dijkstra_cell_closest_to_mouse == grid.target
-      grid.star = dijkstra_cell_closest_to_mouse 
+      grid.star = dijkstra_cell_closest_to_mouse
     end
-    unless old_star == grid.star 
-      reset_searches 
+    unless old_star == grid.star
+      reset_searches
     end
   end
 
@@ -567,12 +567,12 @@ class A_Star_Algorithm
   # Only resets the search if the star changes position
   # Called whenever the user is editing the star (puts mouse down on star)
   def process_input_greedy_star
-    old_star = grid.star.clone 
+    old_star = grid.star.clone
     unless greedy_cell_closest_to_mouse == grid.target
       grid.star = greedy_cell_closest_to_mouse
     end
-    unless old_star == grid.star 
-      reset_searches 
+    unless old_star == grid.star
+      reset_searches
     end
   end
 
@@ -580,12 +580,12 @@ class A_Star_Algorithm
   # Only resets the search if the star changes position
   # Called whenever the user is editing the star (puts mouse down on star)
   def process_input_a_star_star
-    old_star = grid.star.clone 
+    old_star = grid.star.clone
     unless a_star_cell_closest_to_mouse == grid.target
       grid.star = a_star_cell_closest_to_mouse
     end
-    unless old_star == grid.star 
-      reset_searches 
+    unless old_star == grid.star
+      reset_searches
     end
   end
 
@@ -593,12 +593,12 @@ class A_Star_Algorithm
   # Only reset_searchess the search if the target changes position
   # Called whenever the user is editing the target (puts mouse down on target)
   def process_input_dijkstra_target
-    old_target = grid.target.clone 
+    old_target = grid.target.clone
     unless dijkstra_cell_closest_to_mouse == grid.star
       grid.target = dijkstra_cell_closest_to_mouse
     end
-    unless old_target == grid.target 
-      reset_searches 
+    unless old_target == grid.target
+      reset_searches
     end
   end
 
@@ -606,12 +606,12 @@ class A_Star_Algorithm
   # Only reset_searchess the search if the target changes position
   # Called whenever the user is editing the target (puts mouse down on target)
   def process_input_greedy_target
-    old_target = grid.target.clone 
+    old_target = grid.target.clone
     unless greedy_cell_closest_to_mouse == grid.star
       grid.target = greedy_cell_closest_to_mouse
     end
-    unless old_target == grid.target 
-      reset_searches 
+    unless old_target == grid.target
+      reset_searches
     end
   end
 
@@ -619,12 +619,12 @@ class A_Star_Algorithm
   # Only reset_searchess the search if the target changes position
   # Called whenever the user is editing the target (puts mouse down on target)
   def process_input_a_star_target
-    old_target = grid.target.clone 
+    old_target = grid.target.clone
     unless a_star_cell_closest_to_mouse == grid.star
       grid.target = a_star_cell_closest_to_mouse
     end
-    unless old_target == grid.target 
-      reset_searches 
+    unless old_target == grid.target
+      reset_searches
     end
   end
 
@@ -633,10 +633,10 @@ class A_Star_Algorithm
     # The mouse needs to be inside the grid, because we only want to remove walls
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
-    if dijkstra_mouse_over_grid? 
+    if dijkstra_mouse_over_grid?
       if grid.walls.has_key?(dijkstra_cell_closest_to_mouse)
-        grid.walls.delete(dijkstra_cell_closest_to_mouse) 
-        reset_searches 
+        grid.walls.delete(dijkstra_cell_closest_to_mouse)
+        reset_searches
       end
     end
   end
@@ -646,10 +646,10 @@ class A_Star_Algorithm
     # The mouse needs to be inside the grid, because we only want to remove walls
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
-    if greedy_mouse_over_grid? 
+    if greedy_mouse_over_grid?
       if grid.walls.has_key?(greedy_cell_closest_to_mouse)
-        grid.walls.delete(greedy_cell_closest_to_mouse) 
-        reset_searches 
+        grid.walls.delete(greedy_cell_closest_to_mouse)
+        reset_searches
       end
     end
   end
@@ -659,40 +659,40 @@ class A_Star_Algorithm
     # The mouse needs to be inside the grid, because we only want to remove walls
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
-    if a_star_mouse_over_grid? 
+    if a_star_mouse_over_grid?
       if grid.walls.has_key?(a_star_cell_closest_to_mouse)
-        grid.walls.delete(a_star_cell_closest_to_mouse) 
-        reset_searches 
+        grid.walls.delete(a_star_cell_closest_to_mouse)
+        reset_searches
       end
     end
   end
 
   # Adds a wall in the first grid in the cell the mouse is over
   def process_input_dijkstra_add_wall
-    if dijkstra_mouse_over_grid? 
+    if dijkstra_mouse_over_grid?
       unless grid.walls.has_key?(dijkstra_cell_closest_to_mouse)
-        grid.walls[dijkstra_cell_closest_to_mouse] = true 
-        reset_searches 
+        grid.walls[dijkstra_cell_closest_to_mouse] = true
+        reset_searches
       end
     end
   end
 
   # Adds a wall in the second grid in the cell the mouse is over
   def process_input_greedy_add_wall
-    if greedy_mouse_over_grid? 
+    if greedy_mouse_over_grid?
       unless grid.walls.has_key?(greedy_cell_closest_to_mouse)
-        grid.walls[greedy_cell_closest_to_mouse] = true 
-        reset_searches 
+        grid.walls[greedy_cell_closest_to_mouse] = true
+        reset_searches
       end
     end
   end
 
   # Adds a wall in the third grid in the cell the mouse is over
   def process_input_a_star_add_wall
-    if a_star_mouse_over_grid? 
+    if a_star_mouse_over_grid?
       unless grid.walls.has_key?(a_star_cell_closest_to_mouse)
-        grid.walls[a_star_cell_closest_to_mouse] = true 
-        reset_searches 
+        grid.walls[a_star_cell_closest_to_mouse] = true
+        reset_searches
       end
     end
   end
@@ -702,13 +702,13 @@ class A_Star_Algorithm
   # Finding the cell closest to the mouse helps with this
   def dijkstra_cell_closest_to_mouse
     # Closest cell to the mouse in the first grid
-    x = (inputs.mouse.point.x / grid.cell_size).to_i 
-    y = (inputs.mouse.point.y / grid.cell_size).to_i 
+    x = (inputs.mouse.point.x / grid.cell_size).to_i
+    y = (inputs.mouse.point.y / grid.cell_size).to_i
     # Bound x and y to the grid
-    x = grid.width - 1 if x > grid.width - 1 
-    y = grid.height - 1 if y > grid.height - 1 
+    x = grid.width - 1 if x > grid.width - 1
+    y = grid.height - 1 if y > grid.height - 1
     # Return closest cell
-    [x, y] 
+    [x, y]
   end
 
   # When the user grabs the star and puts their cursor to the far right
@@ -716,17 +716,17 @@ class A_Star_Algorithm
   # Finding the cell closest to the mouse in the second grid helps with this
   def greedy_cell_closest_to_mouse
     # Closest cell grid to the mouse in the second
-    x = (inputs.mouse.point.x / grid.cell_size).to_i 
-    y = (inputs.mouse.point.y / grid.cell_size).to_i 
+    x = (inputs.mouse.point.x / grid.cell_size).to_i
+    y = (inputs.mouse.point.y / grid.cell_size).to_i
     # Translate the cell to the first grid
     x -= grid.width + 1
     # Bound x and y to the first grid
     x = 0 if x < 0
     y = 0 if y < 0
-    x = grid.width - 1 if x > grid.width - 1 
-    y = grid.height - 1 if y > grid.height - 1 
+    x = grid.width - 1 if x > grid.width - 1
+    y = grid.height - 1 if y > grid.height - 1
     # Return closest cell
-    [x, y] 
+    [x, y]
   end
 
   # When the user grabs the star and puts their cursor to the far right
@@ -734,17 +734,17 @@ class A_Star_Algorithm
   # Finding the cell closest to the mouse in the third grid helps with this
   def a_star_cell_closest_to_mouse
     # Closest cell grid to the mouse in the second
-    x = (inputs.mouse.point.x / grid.cell_size).to_i 
-    y = (inputs.mouse.point.y / grid.cell_size).to_i 
+    x = (inputs.mouse.point.x / grid.cell_size).to_i
+    y = (inputs.mouse.point.y / grid.cell_size).to_i
     # Translate the cell to the first grid
     x -= (grid.width + 1) * 2
     # Bound x and y to the first grid
     x = 0 if x < 0
     y = 0 if y < 0
-    x = grid.width - 1 if x > grid.width - 1 
-    y = grid.height - 1 if y > grid.height - 1 
+    x = grid.width - 1 if x > grid.width - 1
+    y = grid.height - 1 if y > grid.height - 1
     # Return closest cell
-    [x, y] 
+    [x, y]
   end
 
   def reset_searches
@@ -772,21 +772,21 @@ class A_Star_Algorithm
 
   def calc_dijkstra
     # Sets up the search to begin from the star
-    dijkstra.frontier << grid.star                   
-    dijkstra.came_from[grid.star] = nil              
-    dijkstra.cost_so_far[grid.star] = 0              
+    dijkstra.frontier << grid.star
+    dijkstra.came_from[grid.star] = nil
+    dijkstra.cost_so_far[grid.star] = 0
 
     # Until the target is found or there are no more cells to explore from
     until dijkstra.came_from.has_key?(grid.target) or dijkstra.frontier.empty?
       # Take the next frontier cell. The first element is the cell, the second is the priority.
       new_frontier = dijkstra.frontier.shift#[0]
       # For each of its neighbors
-      adjacent_neighbors(new_frontier).each do | neighbor | 
+      adjacent_neighbors(new_frontier).each do | neighbor |
         # That have not been visited and are not walls
-        unless dijkstra.came_from.has_key?(neighbor) or grid.walls.has_key?(neighbor) 
+        unless dijkstra.came_from.has_key?(neighbor) or grid.walls.has_key?(neighbor)
           # Add them to the frontier and mark them as visited
           dijkstra.frontier << neighbor
-          dijkstra.came_from[neighbor] = new_frontier 
+          dijkstra.came_from[neighbor] = new_frontier
           dijkstra.cost_so_far[neighbor] = dijkstra.cost_so_far[new_frontier] + 1
         end
       end
@@ -807,20 +807,20 @@ class A_Star_Algorithm
 
   def calc_greedy
     # Sets up the search to begin from the star
-    greedy.frontier << grid.star                   
-    greedy.came_from[grid.star] = nil              
+    greedy.frontier << grid.star
+    greedy.came_from[grid.star] = nil
 
     # Until the target is found or there are no more cells to explore from
     until greedy.came_from.has_key?(grid.target) or greedy.frontier.empty?
       # Take the next frontier cell
-      new_frontier = greedy.frontier.shift 
+      new_frontier = greedy.frontier.shift
       # For each of its neighbors
-      adjacent_neighbors(new_frontier).each do | neighbor | 
+      adjacent_neighbors(new_frontier).each do | neighbor |
         # That have not been visited and are not walls
-        unless greedy.came_from.has_key?(neighbor) or grid.walls.has_key?(neighbor) 
+        unless greedy.came_from.has_key?(neighbor) or grid.walls.has_key?(neighbor)
           # Add them to the frontier and mark them as visited
-          greedy.frontier << neighbor 
-          greedy.came_from[neighbor] = new_frontier 
+          greedy.frontier << neighbor
+          greedy.came_from[neighbor] = new_frontier
         end
       end
       # Sort the frontier so that cells that are in a zigzag pattern are prioritized over those in an line
@@ -850,12 +850,12 @@ class A_Star_Algorithm
       current_frontier = a_star.frontier.shift
 
       # For each of that cells neighbors
-      adjacent_neighbors(current_frontier).each do | neighbor | 
+      adjacent_neighbors(current_frontier).each do | neighbor |
         # That have not been visited and are not walls
-        unless a_star.came_from.has_key?(neighbor) or grid.walls.has_key?(neighbor) 
+        unless a_star.came_from.has_key?(neighbor) or grid.walls.has_key?(neighbor)
           # Add them to the frontier and mark them as visited
-          a_star.frontier << neighbor 
-          a_star.came_from[neighbor] = current_frontier 
+          a_star.frontier << neighbor
+          a_star.came_from[neighbor] = current_frontier
           a_star.cost_so_far[neighbor] = a_star.cost_so_far[current_frontier] + 1
         end
       end
@@ -937,16 +937,16 @@ class A_Star_Algorithm
   # Returns a list of adjacent cells
   # Used to determine what the next cells to be added to the frontier are
   def adjacent_neighbors(cell)
-    neighbors = [] 
+    neighbors = []
 
     # Gets all the valid neighbors into the array
     # From southern neighbor, clockwise
-    neighbors << [cell.x    , cell.y - 1] unless cell.y == 0 
-    neighbors << [cell.x - 1, cell.y    ] unless cell.x == 0 
-    neighbors << [cell.x    , cell.y + 1] unless cell.y == grid.height - 1 
-    neighbors << [cell.x + 1, cell.y    ] unless cell.x == grid.width - 1 
+    neighbors << [cell.x    , cell.y - 1] unless cell.y == 0
+    neighbors << [cell.x - 1, cell.y    ] unless cell.x == 0
+    neighbors << [cell.x    , cell.y + 1] unless cell.y == grid.height - 1
+    neighbors << [cell.x + 1, cell.y    ] unless cell.x == grid.width - 1
 
-    neighbors 
+    neighbors
   end
 
   # Finds the vertical and horizontal distance of a cell from the star
@@ -991,11 +991,11 @@ class A_Star_Algorithm
   def wall_color
     [134, 134, 120] # Camo Green
   end
-  
+
   def visited_color
     [204, 191, 179] # Dark Brown
   end
-  
+
   def path_color
     [231, 230, 228] # Pastel White
   end
@@ -1018,7 +1018,7 @@ def tick args
   end
 
   # Every tick, new args are passed, and the Breadth First Search tick is called
-  $a_star_algorithm ||= A_Star_Algorithm.new(args)
+  $a_star_algorithm ||= A_Star_Algorithm.new
   $a_star_algorithm.args = args
   $a_star_algorithm.tick
 end

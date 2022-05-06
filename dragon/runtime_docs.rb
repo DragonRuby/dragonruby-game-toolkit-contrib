@@ -10,9 +10,9 @@ module RuntimeDocs
   def docs_method_sort_order
     [
       :docs_api_summary,
-      :docs_reset,
       :docs_calcstringbox,
-      :docs_write_file
+      :docs_write_file,
+      :docs_benchmark
     ]
   end
 
@@ -42,21 +42,21 @@ Store your game state inside of this ~state~. Properties with arbitrary nesting 
     args.state.player.y ||= 0
   end
 #+end_src
-*** ~.*.entity_id~
+*** ~args.state.*.entity_id~
 Entities automatically receive an ~entity_id~ of type ~Fixnum~.
-*** ~.*.entity_type~
+*** ~args.state.*.entity_type~
 Entities can have an ~entity_type~ which is represented as a ~Symbol~.
-*** ~.*.created_at~
+*** ~args.state.*.created_at~
 Entities have ~created_at~ set to ~args.state.tick_count~ when they are created.
-*** ~.*.created_at_elapsed~
+*** ~args.state.*.created_at_elapsed~
 Returns the elapsed number of ticks since creation.
-*** ~.*.global_created_at~
+*** ~args.state.*.global_created_at~
 Entities have ~global_created_at~ set to ~Kernel.global_tick_count~ when they are created.
-*** ~.*.global_created_at_elapsed~
+*** ~args.state.*.global_created_at_elapsed~
 Returns the elapsed number of global ticks since creation.
-*** ~.*.as_hash~
+*** ~args.state.*.as_hash~
 Entity cast to a ~Hash~ so you can update values as if you were updating a ~Hash~.
-*** ~.new_entity~
+*** ~args.state.new_entity~
 Creates a new Entity with a ~type~, and initial properties. An option block can be passed to change the newly created entity:
 #+begin_src ruby
   def tick args
@@ -66,111 +66,111 @@ Creates a new Entity with a ~type~, and initial properties. An option block can 
     end
   end
 #+end_src
-*** ~.new_entity_strict~
+*** ~args.state.new_entity_strict~
 Creates a new Strict Entity. While Entities created via ~args.state.new_entity~ can have new properties added later on, Entities created
 using ~args.state.new_entity~ must define all properties that are allowed during its initialization. Attempting to add new properties after
 initialization will result in an exception.
-*** ~.tick_count~
+*** ~args.state.tick_count~
 Returns the current tick of the game. ~args.state.tick_count~ is ~0~ when the game is first started or if the game is reset via ~$gtk.reset~.
 ** ~args.inputs~
 Access using input using ~args.inputs~.
-*** ~.up~
+*** ~args.inputs.up~
 Returns ~true~ if: the ~up~ arrow or ~w~ key is pressed or held on the ~keyboard~; or if ~up~ is pressed or held on ~controller_one~; or if the ~left_analog~ on ~controller_one~ is tilted upwards.
-*** ~.down~
+*** ~args.inputs.down~
 Returns ~true~ if: the ~down~ arrow or ~s~ key is pressed or held on the ~keyboard~; or if ~down~ is pressed or held on ~controller_one~; or if the ~left_analog~ on ~controller_one~ is tilted downwards.
-*** ~.left~
+*** ~args.inputs.left~
 Returns ~true~ if: the ~left~ arrow or ~a~ key is pressed or held on the ~keyboard~; or if ~left~ is pressed or held on ~controller_one~; or if the ~left_analog~ on ~controller_one~ is tilted to the left.
-*** ~.right~
+*** ~args.inputs.right~
 Returns ~true~ if: the ~right~ arrow or ~d~ key is pressed or held on the ~keyboard~; or if ~right~ is pressed or held on ~controller_one~; or if the ~left_analog~ on ~controller_one~ is tilted to the right.
-*** ~.left_right~
+*** ~args.inputs.left_right~
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.left~ and ~args.inputs.right~.
-*** ~.up_down~
+*** ~args.inputs.up_down~
 Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.down~ and ~args.inputs.up~.
-*** ~.text~ OR ~.history~
+*** ~args.inputs.text~ OR ~args.inputs.history~
 Returns a string that represents the last key that was pressed on the keyboard.
-*** ~.mouse~
+*** ~args.inputs.mouse~
 Represents the user's
-**** ~.x~
+**** ~args.inputs.mouse.x~
 Returns the current ~x~ location of the mouse.
-**** ~mouse.y~
-Return.
-**** ~.inside_rect? rect~
+**** ~args.inputs.mouse.y~
+Returns the current ~y~ location of the mouse.
+**** ~args.inputs.mouse.inside_rect? rect~
 Return. ~args.inputs.mouse.inside_rect?~ takes in any primitive that responds to ~x, y, w, h~:
-**** ~.inside_circle? center_point, radius~
+**** ~args.inputs.mouse.inside_circle? center_point, radius~
 Returns ~true~ if the mouse is inside of a specified circle. ~args.inputs.mouse.inside_circle?~ takes in any primitive that responds to ~x, y~ (which represents the circle's center), and takes in a ~radius~:
-**** ~.moved~
+**** ~args.inputs.mouse.moved~
 Returns ~true~ if the mouse has moved on the current frame.
-**** ~.button_left~
+**** ~args.inputs.mouse.button_left~
 Returns ~true~ if the left mouse button is down.
-**** ~.button_middle~
+**** ~args.inputs.mouse.button_middle~
 Returns ~true~ if the middle mouse button is down.
-**** ~.button_right~
+**** ~args.inputs.mouse.button_right~
 Returns ~true~ if the right mouse button is down.
-**** ~.button_bits~
+**** ~args.inputs.mouse.button_bits~
 Returns a bitmask for all buttons on the mouse: ~1~ for a button in the ~down~ state, ~0~ for a button in the ~up~ state.
-**** ~mouse.wheel~
+**** ~args.inputs.mouse.wheel~
 Represents the mouse wheel. Returns ~nil~ if no mouse wheel actions occurred.
-***** ~.x~
+***** ~args.inputs.mouse.wheel.x~
 Returns the negative or positive number if the mouse wheel has changed in the ~x~ axis.
-***** ~.y~
+***** ~args.inputs.mouse.wheel.y~
 Returns the negative or positive number if the mouse wheel has changed in the ~y~ axis.
-**** ~.click~ OR ~.down~, ~.previous_click~, ~.up~
+**** ~args.inputs.mouse.click~ OR ~.down~, ~.previous_click~, ~.up~
 The properties ~args.inputs.mouse.(click|down|previous_click|up)~ each return ~nil~ if the mouse button event didn't occur. And return an Entity
 that has an ~x~, ~y~ properties along with helper functions to determine collision: ~inside_rect?~, ~inside_circle~.
-*** ~.controller_one~, ~.controller_two~
+*** ~args.inputs.controller_one~, ~.controller_two~
 Represents controllers connected to the usb ports.
-**** ~.up
+**** ~args.inputs.controller_(one|two).up~
 Returns ~true~ if ~up~ is pressed or held on the directional or left analog.
-**** ~.down
+**** ~args.inputs.controller_(one|two).down~
 Returns ~true~ if ~down~ is pressed or held on the directional or left analog.
-**** ~.left
+**** ~args.inputs.controller_(one|two).left~
 Returns ~true~ if ~left~ is pressed or held on the directional or left analog.
-**** ~.right
+**** ~args.inputs.controller_(one|two).right~
 Returns ~true~ if ~right~ is pressed or held on the directional or left analog.
-**** ~.left_right
+**** ~args.inputs.controller_(one|two).left_right~
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.controller_(one|two).left~ and ~args.inputs.controller_(one|two).right~.
-**** ~.up_down
-Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.controller_(one|two).down~ and ~args.inputs.controller_(one|two).up~.
-**** ~.(left_analog_x_raw|right_analog_x_raw)~
+**** ~args.inputs.controller_(one|two).up_down~
+Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.controller_(one|two).up~ and ~args.inputs.controller_(one|two).down~.
+**** ~args.inputs.controller_(one|two).(left_analog_x_raw|right_analog_x_raw)~
 Returns the raw integer value for the analog's horizontal movement (~-32,000 to +32,000~).
-**** ~.left_analog_y_raw|right_analog_y_raw)~
+**** ~args.inputs.controller_(one|two).left_analog_y_raw|right_analog_y_raw)~
 Returns the raw integer value for the analog's vertical movement (~-32,000 to +32,000~).
-**** ~.left_analog_x_perc|right_analog_x_perc)~
+**** ~args.inputs.controller_(one|two).left_analog_x_perc|right_analog_x_perc)~
 Returns a number between ~-1~ and ~1~ which represents the percentage the analog is moved horizontally as a ratio of the maximum horizontal movement.
-**** ~.left_analog_y_perc|right_analog_y_perc)~
+**** ~args.inputs.controller_(one|two).left_analog_y_perc|right_analog_y_perc)~
 Returns a number between ~-1~ and ~1~ which represents the percentage the analog is moved vertically as a ratio of the maximum vertical movement.
-**** ~.directional_up)~
+**** ~args.inputs.controller_(one|two).directional_up~
 Returns ~true~ if ~up~ is pressed or held on the directional.
-**** ~.directional_down)~
+**** ~args.inputs.controller_(one|two).directional_down~
 Returns ~true~ if ~down~ is pressed or held on the directional.
-**** ~.directional_left)~
+**** ~args.inputs.controller_(one|two).directional_left~
 Returns ~true~ if ~left~ is pressed or held on the directional.
-**** ~.directional_right)~
+**** ~args.inputs.controller_(one|two).directional_right~
 Returns ~true~ if ~right~ is pressed or held on the directional.
-**** ~.(a|b|x|y|l1|r1|l2|r2|l3|r3|start|select)~
+**** ~args.inputs.controller_(one|two).(a|b|x|y|l1|r1|l2|r2|l3|r3|start|select)~
 Returns ~true~ if the specific button is pressed or held.
-**** ~.truthy_keys~
+**** ~args.inputs.controller_(one|two).truthy_keys~
 Returns a collection of ~Symbol~s that represent all keys that are in the pressed or held state.
-**** ~.key_down~
+**** ~args.inputs.controller_(one|two).key_down~
 Returns ~true~ if the specific button was pressed on this frame. ~args.inputs.controller_(one|two).key_down.BUTTON~ will only be true on the frame it was pressed.
-**** ~.key_held~
+**** ~args.inputs.controller_(one|two).key_held~
 Returns ~true~ if the specific button is being held. ~args.inputs.controller_(one|two).key_held.BUTTON~ will be true for all frames after ~key_down~ (until released).
-**** ~.key_up~
+**** ~args.inputs.controller_(one|two).key_up~
 Returns ~true~ if the specific button was released. ~args.inputs.controller_(one|two).key_up.BUTTON~ will be true only on the frame the button was released.
-*** ~.keyboard~
+*** ~args.inputs.keyboard~
 Represents the user's keyboard
-**** ~.up~
+**** ~args.inputs.keyboard.up~
 Returns ~true~ if ~up~ or ~w~ is pressed or held on the keyboard.
-**** ~.down~
+**** ~args.inputs.keyboard.down~
 Returns ~true~ if ~down~ or ~s~ is pressed or held on the keyboard.
-**** ~.left~
+**** ~args.inputs.keyboard.left~
 Returns ~true~ if ~left~ or ~a~ is pressed or held on the keyboard.
-**** ~.right~
+**** ~args.inputs.keyboard.right~
 Returns ~true~ if ~right~ or ~d~ is pressed or held on the keyboard.
-**** ~.left_right~
+**** ~args.inputs.keyboard.left_right~
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.keyboard.left~ and ~args.inputs.keyboard.right~.
-**** ~.up_down~
-Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.keyboard.down~ and ~args.inputs.keyboard.up~.
+**** ~args.inputs.keyboard.up_down~
+Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.keyboard.up~ and ~args.inputs.keyboard.up~.
 **** keyboard properties
 The following properties represent keys on the keyboard and are available on ~args.inputs.keyboard.KEY~, ~args.inputs.keyboard.key_down.KEY~, ~args.inputs.keyboard.key_held.KEY~, and ~args.inputs.keyboard.key_up.KEY~:
 - ~alt~
@@ -277,73 +277,111 @@ Returns a ~Hash~ with all keys on the keyboard in their respective state. The ~H
 - ~:held~
 - ~:down_or_held~
 - ~:up~
+*** ~args.inputs.touch~
+Returns a ~Hash~ representing all touch points on a touch device. This api is only available in Indie, and Pro versions.
+*** ~args.inputs.finger_left~
+Returns a ~Hash~ with ~x~ and ~y~ denoting a touch point that is on the left side of the screen. This api is only available in Indie, and Pro versions.
+*** ~args.inputs.finger_right~
+Returns a ~Hash~ with ~x~ and ~y~ denoting a touch point that is on the right side of the screen. This api is only available in Indie, and Pro versions.
 ** ~args.outputs~
-~args.outputs.PROPERTY~ is how you render to the screen.
-*** ~.background_color~
+
+Outputs is how you render primitives to the screen. The minimal setup for
+rendering something to the screen is via a ~tick~ method defined in
+mygame/app/main.rb
+
+#+begin_src
+  def tick args
+    args.outputs.solids     << [0, 0, 100, 100]
+    args.outputs.sprites    << [100, 100, 100, 100, "sprites/square/blue.png"]
+    args.outputs.labels     << [200, 200, "Hello World"]
+    args.outputs.lines      << [300, 300, 400, 400]
+  end
+#+end_src
+
+Primitives are rendered first-in, first-out. The rendering order (sorted by bottom-most to top-most):
+
+- ~triangles~
+- ~solids~
+- ~sprites~
+- ~primitives~: Accepts all render primitives. Useful when you want to bypass the default rendering orders for rendering (eg. rendering solids on top of sprites).
+- ~labels~
+- ~lines~
+- ~borders~
+- ~debug~: Accepts all render primitives. Use this to render primitives for debugging (production builds of your game will not render this layer).
+
+*** ~args.outputs.background_color~
 Set ~args.outputs.background_color~ to an ~Array~ with ~RGB~ values (eg. ~[255, 255, 255]~ for the color white).
-*** ~.sounds~
+*** ~args.outputs.sounds~
 Send a file path to this collection to play a sound. The sound file must be under the ~mygame~ directory. Example: ~args.outputs.sounds << "sounds/jump.wav"~.
-*** ~.solids~
+*** ~args.outputs.solids~
 Send a Primitive to this collection to render a filled in rectangle to the screen. This collection is cleared at the end of every frame.
-*** ~.static_solids~
+*** ~args.outputs.static_solids~
 Send a Primitive to this collection to render a filled in rectangle to the screen. This collection is not cleared at the end of every frame. And objects can be mutated by reference.
-*** ~.sprites~, ~.static_sprites~
+*** ~args.outputs.sprites~, ~.static_sprites~
 Send a Primitive to this collection to render a sprite to the screen.
-*** ~.primitives~, ~.static_primitives~
+*** ~args.outputs.primitives~, ~.static_primitives~
 Send a Primitive of any type and it'll be rendered. The Primitive must have a ~primitive_marker~ that returns ~:solid~, ~:sprite~, ~:label~, ~:line~, ~:border~.
-*** ~.labels~, ~.static_labels~
+*** ~args.outputs.labels~, ~.static_labels~
 Send a Primitive to this collection to render text to the screen.
-*** ~.lines~, ~.static_lines~
+*** ~args.outputs.lines~, ~.static_lines~
 Send a Primitive to this collection to render a line to the screen.
-*** ~.borders~, ~.static_borders~
+*** ~args.outputs.borders~, ~.static_borders~
 Send a Primitive to this collection to render an unfilled rectangle to the screen.
-*** ~.debug~, ~.static_debug~
+*** ~args.outputs.debug~, ~.static_debug~
 Send any Primitive to this collection which represents things you render to the screen for debugging purposes. Primitives in this collection will not be rendered in a production release of your game.
 ** ~args.geometry~
 This property contains geometric functions. Functions can be invoked via ~args.geometry.FUNCTION~.
-*** ~.inside_rect? rect_1, rect_2~
+
+Here are some general notes with regards to the arguments these geometric functions accept.
+
+1. ~Rectangles~ can be represented as an ~Array~ with four (or more) values ~[x, y, w, h]~, as a ~Hash~ ~{ x:, y:, w:, h: }~ or an object that responds to ~x~, ~y~, ~w~, and ~h~.
+2. ~Points~ can be represent as an ~Array~ with two (or more) values ~[x, y]~, as a ~Hash~ ~{ x:, y:}~ or an object that responds to ~x~, and ~y~.
+3. ~Lines~ can be represented as an ~Array~ with four (or more) values ~[x, y, x2, y2]~, as a ~Hash~ ~{ x:, y:, x2:, y2: }~ or an object that responds to ~x~, ~y~, ~x2~, and ~y2~.
+4. ~Angles~ are represented as degrees (not radians).
+
+*** ~args.geometry.inside_rect? rect_1, rect_2~
 Returns ~true~ if ~rect_1~ is inside ~rect_2~.
-*** ~.intersect_rect? rect_2, rect_2~
+*** ~args.geometry.intersect_rect? rect_2, rect_2~
 Returns ~true~ if ~rect_1~ intersects ~rect_2~.
-*** ~.scale_rect rect, x_percentage, y_percentage~
+*** ~args.geometry.scale_rect rect, x_percentage, y_percentage~
 Returns a new rectangle that is scaled by the percentages provided.
-*** ~.angle_to start_point, end_point~
+*** ~args.geometry.angle_to start_point, end_point~
 Returns the angle in degrees between two points ~start_point~ to ~end_point~.
-*** ~.angle_from start_point, end_point~
+*** ~args.geometry.angle_from start_point, end_point~
 Returns the angle in degrees between two points ~start_point~ from ~end_point~.
-*** ~.point_inside_circle? point, circle_center_point, radius~
+*** ~args.geometry.point_inside_circle? point, circle_center_point, radius~
 Returns ~true~ if a point is inside a circle defined by its center and radius.
-*** ~.center_inside_rect rect, other_rect~
+*** ~args.geometry.center_inside_rect rect, other_rect~
 Returns a new rectangle based of off ~rect~ that is centered inside of ~other_rect~.
-*** ~.center_inside_rect_x rect, other_rect~
+*** ~args.geometry.center_inside_rect_x rect, other_rect~
 Returns a new rectangle based of off ~rect~ that is centered horizontally inside of ~other_rect~.
-*** ~.center_inside_rect_y rect, other_rect~
+*** ~args.geometry.center_inside_rect_y rect, other_rect~
 Returns a new rectangle based of off ~rect~ that is centered vertically inside of ~other_rect~.
-*** ~.anchor_rect rect, anchor_x, anchor_y~
+*** ~args.geometry.anchor_rect rect, anchor_x, anchor_y~
 Returns a new rectangle based of off ~rect~ that has been repositioned based on the percentages passed into anchor_x, and anchor_y.
-*** ~.shift_line line, x, y~
+*** ~args.geometry.shift_line line, x, y~
 Returns a line that is offset by ~x~, and ~y~.
-*** ~.line_y_intercept line~
+*** ~args.geometry.line_y_intercept line~
 Given a line, the ~b~ value is determined for the point slope form equation: ~y = mx + b~.
-*** ~.angle_between_lines line_one, line_two, replace_infinity:~
+*** ~args.geometry.angle_between_lines line_one, line_two, replace_infinity:~
 Returns the angle between two lines as if they were infinitely long. A numeric value can be passed in for the last parameter which would represent lines that do not intersect.
-*** ~.line_slope line, replace_infinity:~
+*** ~args.geometry.line_slope line, replace_infinity:~
 Given a line, the ~m~ value is determined for the point slope form equation: ~y = mx + b~.
-*** ~.line_rise_run~
+*** ~args.geometry.line_rise_run~
 Given a line, a ~Hash~ is returned that returns the slope as ~x~ and ~y~ properties with normalized values (the number is between -1 and 1).
-*** ~.ray_test point, line~
+*** ~args.geometry.ray_test point, line~
 Given a point and a line, ~:on~, ~:left~, or ~:right~ which represents the location of the point relative to the line.
-*** ~.line_rect line~
+*** ~args.geometry.line_rect line~
 Returns the bounding rectangle for a line.
-*** ~.line_intersect line_one, line_two~
+*** ~args.geometry.line_intersect line_one, line_two~
 Returns a point that represents the intersection of the lines.
-*** ~.distance point_one, point_two~
+*** ~args.geometry.distance point_one, point_two~
 Returns the distance between two points.
-*** ~.cubic_bezier t, a, b, c, d~
+*** ~args.geometry.cubic_bezier t, a, b, c, d~
 Returns the cubic bezier function for tick_count ~t~ with anchors ~a~, ~b~, ~c~, and ~d~.
 ** ~args.easing~
 A set of functions that allow you to determine the current progression of an easing function.
-*** ~.ease start_tick, current_tick, duration, easing_functions~
+*** ~args.easing.ease start_tick, current_tick, duration, easing_functions~
 Given a start, current, duration, and easing function names, ~ease~ returns a number between 0 and 1 that represents the progress of an easing function.
 
 The built in easing definitions you have access to are ~:identity~, ~:flip~, ~:quad~, ~:cube~, ~:quart~, and ~:quint~.
@@ -361,7 +399,7 @@ This example will move a box at a linear speed from 0 to 1280.
     args.outputs.solids << { x: 1280 * current_progress, y: 360, w: 10, h: 10 }
   end
 #+end_src
-*** ~.ease_spline start_tick, current_tick, duration, spline~
+*** ~args.easing.ease_spline start_tick, current_tick, duration, spline~
 Given a start, current, duration, and a multiple bezier values, this function returns a number between 0 and 1 that represents the progress of an easing function.
 
 This example will move a box at a linear speed from 0 to 1280 and then back to 0 using two bezier definitions (represented as an array with four values).
@@ -383,7 +421,7 @@ This example will move a box at a linear speed from 0 to 1280 and then back to 0
 #+end_src
 ** ~args.string~
 Useful string functions not included in Ruby core libraries.
-*** ~.wrapped_lines string, max_character_length~
+*** ~args.string.wrapped_lines string, max_character_length~
 This function will return a collection of strings given an input
 ~string~ and ~max_character_length~. The collection of strings returned will split the
 input string into strings of ~length <= max_character_length~.
@@ -403,101 +441,98 @@ Labels (~args.outputs.labels~) ignore newline characters ~\\n~.
 #+end_src
 ** ~args.grid~
 Returns the virtual grid for the game.
-*** ~.name~
+*** ~args.grid.name~
 Returns either ~:origin_bottom_left~ or ~:origin_center~.
-*** ~.bottom~
+*** ~args.grid.bottom~
 Returns the ~y~ value that represents the bottom of the grid.
-*** ~.top~
+*** ~args.grid.top~
 Returns the ~y~ value that represents the top of the grid.
-*** ~.left~
+*** ~args.grid.left~
 Returns the ~x~ value that represents the left of the grid.
-*** ~.right~
+*** ~args.grid.right~
 Returns the ~x~ value that represents the right of the grid.
-*** ~.rect~
+*** ~args.grid.rect~
 Returns a rectangle Primitive that represents the grid.
-*** ~.origin_bottom_left!~
+*** ~args.grid.origin_bottom_left!~
 Change the grids coordinate system to 0, 0 at the bottom left corner.
-*** ~.origin_center!~
+*** ~args.grid.origin_center!~
 Change the grids coordinate system to 0, 0 at the center of the screen.
-*** ~.w~
+*** ~args.grid.w~
 Returns the grid's width (always 1280).
-*** ~.h~
+*** ~args.grid.h~
 Returns the grid's height (always 720).
 ** ~args.gtk~
 This represents the DragonRuby Game Toolkit's Runtime Environment and can be accessed via ~args.gtk.METHOD~.
-*** ~.argv~
+*** ~args.gtk.argv~
 Returns a ~String~ that represents the parameters passed into the ~./dragonruby~ binary.
-*** ~.platform~
+*** ~args.gtk.platform~
 Returns a ~String~ representing the operating system the game is running on.
-*** ~.request_quit~
+*** ~args.gtk.request_quit~
 Request that the runtime quit the game.
-*** ~.write_file path, contents~
+*** ~args.gtk.write_file path, contents~
 Writes/overwrites a file within the game directory + path.
-*** ~.write_file_root~
+*** ~args.gtk.write_file_root~
 Writes/overwrites a file within the root dragonruby binary directory + path.
-*** ~.append_file path, contents~
+*** ~args.gtk.append_file path, contents~
 Append content to a file located at the game directory + path.
-*** ~.append_file_root path, contents~
+*** ~args.gtk.append_file_root path, contents~
 Append content to a file located at the root dragonruby binary directory + path.
-*** ~.read_file path~
+*** ~args.gtk.read_file path~
 Reads a file from the sandboxed file system.
-*** ~.parse_xml string, parse_xml_file path~
+*** ~args.gtk.parse_xml string, parse_xml_file path~
 Returns a ~Hash~ for a ~String~ that represents XML.
-*** ~.parse_json string, parse_json_file path~
+*** ~args.gtk.parse_json string, parse_json_file path~
 Returns a ~Hash~ for a ~String~ that represents JSON.
-*** ~.http_get url, extra_headers = {}~
+*** ~args.gtk.http_get url, extra_headers = {}~
 Creates an async task to perform an HTTP GET.
-*** ~.http_post url, form_fields = {}, extra_headers = {}~
+*** ~args.gtk.http_post url, form_fields = {}, extra_headers = {}~
 Creates an async task to perform an HTTP POST.
-*** ~.reset~
+*** ~args.gtk.reset~
 Resets the game by deleting all data in ~args.state~ and setting ~args.state.tick_count~ back to ~0~.
-*** ~.stop_music~
+*** ~args.gtk.stop_music~
 Stops all background music.
-*** ~.calcstringbox str, size_enum, font~
+*** ~args.gtk.calcstringbox str, size_enum, font~
 Returns a tuple with width and height of a string being rendered.
-*** ~.slowmo! factor~
-Slows the game down by the factor provided.
-*** ~.notify! string~
+*** ~args.gtk.calcspritebox path~
+Returns a tuple with width and height of a sprite.
+*** ~args.gtk.reset_sprite path~
+Invalidates the cache of a sprite that as already been rendered.
+*** ~args.gtk.slowmo! factor~
+Slows the game down by the factor provided. ~args.gtk.slowmo! 60~ would mean that ~tick~ will be called once per second ~(fps = factor / 60)~.
+*** ~args.gtk.notify! string~
 Renders a toast message at the bottom of the screen.
-*** ~.system~
+*** ~args.gtk.system~
 Invokes a shell command and prints the result to the console.
-*** ~.exec~
+*** ~args.gtk.exec~
 Invokes a shell command and returns a ~String~ that represents the result.
-*** ~.save_state~
+*** ~args.gtk.save_state~
 Saves the game state to ~game_state.txt~.
-*** ~.load_state~
+*** ~args.gtk.load_state~
 Load ~args.state~ from ~game_state.txt~.
-*** ~.serialize_state file, state~
+*** ~args.gtk.serialize_state file, state~
 Saves entity state to a file. If only one parameter is provided a string is returned for state instead of writing to a file.
-*** ~.deserialize_state file~
+*** ~args.gtk.deserialize_state file~
 Returns entity state from a file or serialization data represented as a ~String~.
-*** ~.reset_sprite path~
+*** ~args.gtk.reset_sprite path~
 Invalids the texture cache of a sprite.
-*** ~.show_cursor~
+*** ~args.gtk.show_cursor~
 Shows the mouse cursor.
-*** ~.hide_cursor~
+*** ~args.gtk.hide_cursor~
 Hides the mouse cursor.
-*** ~.cursor_shown?~
+*** ~args.gtk.set_cursor path, dx, dy~
+Sets the system cursor to a sprite ~path~ with an offset of ~dx~ and ~dy~.
+*** ~args.gtk.cursor_shown?~
 Returns ~true~ if the mouse cursor is shown.
-*** ~.set_window_fullscreen enabled~
+*** ~args.gtk.set_window_fullscreen enabled~
 Sets the game to either fullscreen (~enabled=true~) or windowed (~enabled=false)~.
-*** ~.openurl url~
+*** ~args.gtk.openurl url~
 Opens a url using the Operating System's default browser.
-*** ~.get_base_dir~
+*** ~args.gtk.get_base_dir~
 Returns the full path of the DragonRuby binary directory.
-*** ~.get_game_dir~
+*** ~args.gtk.get_game_dir~
 Returns the full path of the game directory in its sandboxed environment.
 S
 
-  end
-
-
-
-  def docs_reset
-    <<-S
-* DOCS: ~GTK::Runtime#reset~
-This function will reset Kernel.tick_count to 0 and will remove all data from args.state.
-S
   end
 
   def docs_calcstringbox
@@ -530,6 +565,39 @@ is currently in the file. Use ~GTK::Runtime#append_file~ to append to the file a
 #+end_src
 S
   end
+
+      def docs_benchmark
+<<-S
+* DOCS: ~GTK::Runtime#benchmark~
+You can use this function to compare the relative performance of methods.
+
+#+begin_src ruby
+  def tick args
+    # press r to run benchmark
+    if args.inputs.keyboard.key_down.r
+      args.gtk.console.show
+      args.gtk.benchmark iterations: 1000, # number of iterations
+                         # label for experiment
+                         using_numeric_map: -> () {
+                           # experiment body
+                           v = 100.map_with_index do |i|
+                             i * 100
+                           end
+                         },
+                         # label for experiment
+                         using_numeric_times: -> () {
+                           # experiment body
+                           v = []
+                           100.times do |i|
+                             v << i * 100
+                           end
+                         }
+    end
+  end
+#+end_src
+S
+      end
+
 end
 
 class GTK::Runtime

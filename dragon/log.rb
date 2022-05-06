@@ -129,6 +129,11 @@ module GTK
       self.puts message
     end
 
+    def self.reset
+      @once = {}
+      nil
+    end
+
     def self.puts_once *ids, message
       id = "#{ids}"
       @once ||= {}

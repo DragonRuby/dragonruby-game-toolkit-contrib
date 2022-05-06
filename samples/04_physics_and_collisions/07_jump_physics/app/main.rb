@@ -9,6 +9,7 @@
 
  - args.outputs.solids: An array. The values generate a solid.
    The parameters for a solid are [X, Y, WIDTH, HEIGHT, RED, GREEN, BLUE]
+   For more information about solids, go to mygame/documentation/03-solids-and-borders.md.
 
  - num1.greater(num2): Returns the greater value.
 
@@ -36,7 +37,7 @@ class VerticalPlatformer
     s.new_entity_strict(:platform, hash) # platform key
   end
 
-  # calls methods needed for the game to run properly
+  # calls methods needed for game to run properly
   def tick
     defaults
     render
@@ -44,8 +45,7 @@ class VerticalPlatformer
     input
   end
 
-  # Sets default values
-  def defaults
+  def init_game
     s.platforms ||= [ # initializes platforms collection with two platforms using hashes
       new_platform(x: 0, y: 0, w: 700, h: 32, dx: 1, speed: 0, rect: nil),
       new_platform(x: 0, y: 300, w: 700, h: 32, dx: 1, speed: 0, rect: nil), # 300 pixels higher
@@ -66,6 +66,11 @@ class VerticalPlatformer
     s.player_speed_slowdown_rate  = 0.9
     s.player_acceleration         = 1
     s.camera ||= { y: -100 } # shows view on screen (as the player moves upward, the camera does too)
+  end
+
+  # Sets default values
+  def defaults
+    init_game
   end
 
   # Outputs objects onto the screen
@@ -155,7 +160,9 @@ class VerticalPlatformer
                                     rect: nil)
       end
     else
+      # game over
       s.as_hash.clear # otherwise clear the hash (no new platform is necessary)
+      init_game
     end
   end
 

@@ -1,3 +1,4 @@
+# coding: utf-8
 # Copyright 2019 DragonRuby LLC
 # MIT License
 # console_prompt.rb has been released under MIT (*only this file*).
@@ -71,14 +72,14 @@ module GTK
         return if @cursor_position.zero?
 
         new_pos = @cursor_position - 1
-        (is_word_boundary? @current_input_str[new_pos]) ? 
+        (is_word_boundary? @current_input_str[new_pos]) ?
             (new_pos -= 1 until !(is_word_boundary? @current_input_str[new_pos - 1]) || new_pos.zero?):
             (new_pos -= 1 until (is_word_boundary? @current_input_str[new_pos - 1]) || new_pos.zero?)
 
         @cursor_position = new_pos
         update_cursor_position_px
       end
-        
+
       def move_cursor_right
         @cursor_position += 1 if @cursor_position < current_input_str.length
         update_cursor_position_px
@@ -91,7 +92,7 @@ module GTK
         (is_word_boundary? @current_input_str[new_pos]) ?
             (new_pos += 1 until !(is_word_boundary? @current_input_str[new_pos]) || (new_pos.equal? str_len)):
             (new_pos += 1 until (is_word_boundary? @current_input_str[new_pos]) || (new_pos.equal? str_len))
-        
+
         @cursor_position = new_pos
         update_cursor_position_px
       end
@@ -193,12 +194,12 @@ S
         args.outputs.reserved << (@cursor_color.to_h.merge x: x + @cursor_position_px + 0.5,
                                                            y: y + 5,
                                                            x2: x + @cursor_position_px + 0.5,
-                                                           y2: y + @font_style.letter_size.y + 5)
+                                                           y2: y + @font_style.letter_size.y + 4)
 
         args.outputs.reserved << (@cursor_color.to_h.merge x: x + @cursor_position_px + 1,
                                                            y: y + 5,
                                                            x2: x + @cursor_position_px + 1,
-                                                           y2: y + @font_style.letter_size.y + 5)
+                                                           y2: y + @font_style.letter_size.y + 4)
 
         # debugging rectangle for string
         # args.outputs.reserved << (@cursor_color.to_h.merge x: x,
