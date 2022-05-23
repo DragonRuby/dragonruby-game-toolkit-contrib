@@ -1,3 +1,6 @@
+# Contributors outside of DragonRuby who also hold Copyright:
+# - Sujay Vadlakonda: https://github.com/sujayvadlakonda
+
 # A visual demonstration of a breadth first search
 # Inspired by https://www.redblobgames.com/pathfinding/a-star/introduction.html
 
@@ -189,55 +192,55 @@ class DetailedBreadthFirstSearch
   # Unvisited cells are the default cell
   def render_unvisited
     background = [0, 0, grid.width, grid.height]
-    outputs.solids << [scale_up(background), unvisited_color]
+    outputs.solids << scale_up(background).merge(unvisited_color)
   end
 
   # Draws grid lines to show the division of the grid into cells
   def render_grid_lines
     for x in 0..grid.width
-      outputs.lines << [scale_up(vertical_line(x)), grid_line_color]
+      outputs.lines << scale_up(vertical_line(x)).merge(grid_line_color)
     end
 
     for y in 0..grid.height
-      outputs.lines << [scale_up(horizontal_line(y)), grid_line_color]
+      outputs.lines << scale_up(horizontal_line(y)).merge(grid_line_color)
     end
   end
 
   # Easy way to get a vertical line given an index
   def vertical_line column
-    [column, 0, column, grid.height] 
+    [column, 0, 0, grid.height]
   end
 
   # Easy way to get a horizontal line given an index
   def horizontal_line row
-    [0, row, grid.width, row]
+    [0, row, grid.width, 0]
   end
 
   # Draws the area that is going to be searched from
   # The frontier is the most outward parts of the search
   def render_frontier
     state.frontier.each do |cell| 
-      outputs.solids << [scale_up(cell), frontier_color]
+      outputs.solids << scale_up(cell).merge(frontier_color)
     end
   end
 
   # Draws the walls
   def render_walls
     state.walls.each_key do |wall|
-      outputs.solids << [scale_up(wall), wall_color]
+      outputs.solids << scale_up(wall).merge(wall_color)
     end
   end
 
   # Renders cells that have been searched in the appropriate color
   def render_visited
     state.visited.each_key do |cell| 
-      outputs.solids << [scale_up(cell), visited_color]
+      outputs.solids << scale_up(cell).merge(visited_color)
     end
   end
 
   # Renders the star
   def render_star
-    outputs.sprites << [scale_up(state.star), 'star.png']
+    outputs.sprites << scale_up(state.star).merge({path: 'star.png'})
   end 
 
   # Cells have a number rendered in them based on when they were explored
@@ -261,13 +264,13 @@ class DetailedBreadthFirstSearch
 
     # Highlight the next frontier to be expanded yellow
     next_frontier = state.frontier[0]
-    outputs.solids << [scale_up(next_frontier), highlighter_yellow]
+    outputs.solids << scale_up(next_frontier).merge(highlighter_yellow)
 
     # Neighbors have a semi-transparent green layer over them
     # Unless the neighbor is a wall
     adjacent_neighbors(next_frontier).each do |neighbor|
       unless state.walls.has_key?(neighbor)
-        outputs.solids << [scale_up(neighbor), highlighter_green, 70]
+        outputs.solids << scale_up(neighbor).merge(highlighter_green).merge({a: 70})
       end
     end
   end
@@ -277,21 +280,23 @@ class DetailedBreadthFirstSearch
   # Cells in the frontier array and visited hash and walls hash are stored as x & y
   # Scaling up cells and lines when rendering allows omitting of width and height
   def scale_up(cell)
-    # Prevents the original value of cell from being edited
-    cell = cell.clone
-
-    # If cell is just an x and y coordinate
+    x = cell.x * grid.cell_size
+    y = cell.y * grid.cell_size
     if cell.size == 2
-      # Add a width and height of 1
-      cell << 1
-      cell << 1
+      return {
+        x: cell.x * grid.cell_size,
+        y: cell.y * grid.cell_size,
+        w: grid.cell_size,
+        h: grid.cell_size
+      }
+    else
+      return {
+        x: cell.x * grid.cell_size,
+        y: cell.y * grid.cell_size,
+        w: cell.w * grid.cell_size,
+        h: cell.h * grid.cell_size
+      }
     end
-
-    # Scale all the values up
-    cell.map! { |value| value * grid.cell_size }
-
-    # Returns the scaled up cell
-    cell
   end
 
 
@@ -569,37 +574,38 @@ class DetailedBreadthFirstSearch
 
   # Light brown
   def unvisited_color
-    [221, 212, 213] 
+    {r: 221, g: 212, b: 213}
   end
 
   # Black
   def grid_line_color
-    [255, 255, 255] 
+    {r: 255, g: 255, b: 255}
   end
 
   # Dark Brown
   def visited_color
-    [204, 191, 179] 
+    {r: 204, g: 191, b: 179}
   end
 
   # Blue
   def frontier_color
-    [103, 136, 204] 
+    {r: 103, g: 136, b: 204}
   end
 
   # Camo Green
   def wall_color
-    [134, 134, 120] 
+    {r: 134, g: 134, b: 120}
   end
 
   # Next frontier to be expanded
   def highlighter_yellow
-    [214, 231, 125]
+    {r: 214, g: 231, b: 125}
   end
 
   # The neighbors of the next frontier to be expanded
   def highlighter_green
     [65, 191, 127]
+    {r: 65, g: 191, b: 127}
   end
 
   # Button background
