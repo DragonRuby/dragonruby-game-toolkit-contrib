@@ -1,3 +1,6 @@
+#Contributors outside of DragonRuby who also hold Copyright:
+# Sujay Vadlakonda
+
 # A visual demonstration of a breadth first search
 # Inspired by https://www.redblobgames.com/pathfinding/a-star/introduction.html
 
@@ -294,27 +297,45 @@ class BreadthFirstSearch
   # The frontier is the most outward parts of the search
   def render_frontier
     outputs.solids << state.frontier.map do |cell|
-      [scale_up([cell.x, cell.y]), frontier_color]
+      render_cell cell, frontier_color
     end
   end
 
   # Draws the walls
   def render_walls
     outputs.solids << state.walls.map do |wall|
-      [scale_up([wall.x, wall.y]), wall_color]
+      render_cell wall, wall_color
     end
   end
 
   # Renders cells that have been searched in the appropriate color
   def render_visited
     outputs.solids << state.visited.map do |cell|
-      [scale_up([cell.x, cell.y]), visited_color]
+      render_cell cell, visited_color
     end
   end
 
   # Renders the star
   def render_star
     outputs.sprites << [scale_up(state.star), 'star.png']
+  end
+
+  def render_cell cell, color
+    if cell.is_a? Array
+        return {
+          x: cell.x * grid.cell_size,
+          y: cell.y * grid.cell_size,
+          w: grid.cell_size,
+          h: grid.cell_size
+        }.merge color
+    else
+      return {
+        x: cell[:x] * grid.cell_size,
+        y: cell[:y] * grid.cell_size,
+        w: grid.cell_size,
+        h: grid.cell_size,
+      }.merge color
+    end
   end
 
   # In code, the cells are represented as 1x1 rectangles
@@ -632,17 +653,17 @@ class BreadthFirstSearch
 
   # Dark Brown
   def visited_color
-    [204, 191, 179]
+    {r: 204, g: 191, b: 179}
   end
 
   # Blue
   def frontier_color
-    [103, 136, 204]
+    {r: 103, g: 136, b: 204}
   end
 
   # Camo Green
   def wall_color
-    [134, 134, 120]
+    {r: 134, g: 134, b: 120}
   end
 
   # Button Background
