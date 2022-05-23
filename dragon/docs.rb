@@ -241,25 +241,6 @@ S
     "\n" + final_string
   end
 
-  def __export_docs__! opts = {}
-    DocsOrganizer.sort_docs_classes!
-    opts = defaults_export_docs!.merge opts
-    opts[:methods] = methods_with_docs.reject { |m| m == :docs_classes } if opts[:methods].include? :all
-    content = opts[:methods].map do |m|
-      puts "* INFO: Getting docs for #{m}."
-      (send m).ltrim + "\n"
-    end.join "\n"
-    file_path = "docs/#{self.name}.txt"
-    $gtk.write_file_root "#{file_path}", content
-    puts "* INFO: Documentation for #{self.name} has been exported to #{file_path}."
-    $gtk.console.set_system_command file_path
-    nil
-  end
-
-  def export_docs! opts = {}
-    __export_docs__! opts
-  end
-
   def __docs_append_true_line__ true_lines, true_line, parse_log
     true_line.rstrip!
     parse_log << "*** True Line Result\n#{true_line}"
