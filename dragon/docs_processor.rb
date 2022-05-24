@@ -55,19 +55,23 @@ module Docs
 
     def process_code_block_line(line)
       if line.start_with?("#+end_src")
-        @line_type = :normal
-        @active_indents.pop
-
-        call_processors :process_code_block_content, @code_block_content
-
-        if @code_block_language
-          call_processors :process_code_block_end, @code_block_language
-        else
-          call_processors :process_code_block_end
-        end
+        finish_code_block
       else
         @code_block_content << line[@active_indents.last..-1]
         @code_block_content << "\n"
+      end
+    end
+
+    def finish_code_block
+      @line_type = :normal
+      @active_indents.pop
+
+      call_processors :process_code_block_content, @code_block_content
+
+      if @code_block_language
+        call_processors :process_code_block_end, @code_block_language
+      else
+        call_processors :process_code_block_end
       end
     end
 
