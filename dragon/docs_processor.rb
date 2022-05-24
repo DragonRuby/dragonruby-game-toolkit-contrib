@@ -53,6 +53,56 @@ module Docs
       reset_collected_text
     end
 
+    def process_normal_line(line)
+      if line.start_with?('* ')
+        process_header(line, 1)
+      elsif line.start_with?('** ')
+        process_header(line, 2)
+      elsif line.start_with?('*** ')
+        process_header(line, 3)
+      elsif line.start_with?('**** ')
+        process_header(line, 4)
+      elsif line.start_with?('***** ')
+        process_header(line, 5)
+      elsif line.start_with?('#+begin_src')
+        start_code_block(line)
+      elsif line.start_with?('#+begin_quote')
+        process_collected_text
+        call_processors :process_quote_start
+      elsif line.start_with?('#+end_quote')
+        process_collected_text
+        call_processors :process_quote_end
+      elsif line.start_with?('1.')
+        start_ordered_list line
+      elsif line.start_with?('- ')
+        start_unordered_list line
+      else
+        process_text_line line
+      end
+    end
+
+    def process_header(line, level)
+      call_processors :process_header_start, level
+      header_text = line.sub('*' * level, '').strip
+      call_processors :process_text, header_text
+      call_processors :process_header_end, level
+    end
+
+    def start_code_block(line)
+      line_rest = line.sub('#+begin_src', '').strip
+
+      @line_type = :code_block
+      @code_block_language = line_rest.empty? ? nil : line_rest.to_sym
+      @active_indents << calc_indent(@lines[@index + 1])
+      @code_block_content = ''
+
+      if @code_block_language
+        call_processors :process_code_block_start, @code_block_language
+      else
+        call_processors :process_code_block_start
+      end
+    end
+
     def process_code_block_line(line)
       if line.start_with?("#+end_src")
         finish_code_block
@@ -73,6 +123,14 @@ module Docs
       else
         call_processors :process_code_block_end
       end
+    end
+
+    def start_ordered_list(line)
+      process_collected_text
+      @line_type = :ordered_list
+      @active_indents << 3
+      call_processors :process_ordered_list_start
+      process_ordered_list_line line
     end
 
     def process_ordered_list_line(line)
@@ -100,6 +158,14 @@ module Docs
       @active_indents.pop
     end
 
+    def start_unordered_list(line)
+      process_collected_text
+      @line_type = :unordered_list
+      @active_indents << 2
+      call_processors :process_unordered_list_start
+      process_unordered_list_line line
+    end
+
     def process_unordered_list_line(line)
       if line.start_with? '- '
         unless @collected_text.empty?
@@ -123,60 +189,6 @@ module Docs
       call_processors :process_unordered_list_end
       @line_type = :normal
       @active_indents.pop
-    end
-
-    def process_normal_line(line)
-      if line.start_with?('* ')
-        process_header(line, 1)
-      elsif line.start_with?('** ')
-        process_header(line, 2)
-      elsif line.start_with?('*** ')
-        process_header(line, 3)
-      elsif line.start_with?('**** ')
-        process_header(line, 4)
-      elsif line.start_with?('***** ')
-        process_header(line, 5)
-      elsif line.start_with?('#+begin_src')
-        line_rest = line.sub('#+begin_src', '').strip
-
-        @line_type = :code_block
-        @code_block_language = line_rest.empty? ? nil : line_rest.to_sym
-        @active_indents << calc_indent(@lines[@index + 1])
-        @code_block_content = ''
-
-        if @code_block_language
-          call_processors :process_code_block_start, @code_block_language
-        else
-          call_processors :process_code_block_start
-        end
-      elsif line.start_with?('#+begin_quote')
-        process_collected_text
-        call_processors :process_quote_start
-      elsif line.start_with?('#+end_quote')
-        process_collected_text
-        call_processors :process_quote_end
-      elsif line.start_with?('1.')
-        process_collected_text
-        @line_type = :ordered_list
-        @active_indents << 3
-        call_processors :process_ordered_list_start
-        process_ordered_list_line line
-      elsif line.start_with?('- ')
-        process_collected_text
-        @line_type = :unordered_list
-        @active_indents << 2
-        call_processors :process_unordered_list_start
-        process_unordered_list_line line
-      else
-        process_text_line line
-      end
-    end
-
-    def process_header(line, level)
-      call_processors :process_header_start, level
-      header_text = line.sub('*' * level, '').strip
-      call_processors :process_text, header_text
-      call_processors :process_header_end, level
     end
 
     def calc_indent(line)
