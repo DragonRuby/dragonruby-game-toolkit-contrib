@@ -73,8 +73,10 @@ module Docs
 
     def process_ordered_list_line(line)
       if line[1] == '.'
-        process_collected_text
-        call_processors :process_ordered_list_item_end
+        unless @collected_text.empty?
+          process_collected_text
+          call_processors :process_ordered_list_item_end
+        end
         call_processors :process_ordered_list_item_start
         list_item_content = line[3..-1].strip
         process_text_line list_item_content
@@ -96,8 +98,10 @@ module Docs
 
     def process_unordered_list_line(line)
       if line.start_with? '- '
-        process_collected_text
-        call_processors :process_unordered_list_item_end
+        unless @collected_text.empty?
+          process_collected_text
+          call_processors :process_unordered_list_item_end
+        end
         call_processors :process_unordered_list_item_start
         list_item_content = line[2..-1].strip
         process_text_line list_item_content
@@ -152,17 +156,13 @@ module Docs
         @line_type = :ordered_list
         @active_indents << 3
         call_processors :process_ordered_list_start
-        call_processors :process_ordered_list_item_start
-        list_item_content = line.sub('1.', '').strip
-        process_text_line list_item_content
+        process_ordered_list_line line
       elsif line.start_with?('- ')
         process_collected_text
         @line_type = :unordered_list
         @active_indents << 2
         call_processors :process_unordered_list_start
-        call_processors :process_unordered_list_item_start
-        list_item_content = line.sub('- ', '').strip
-        process_text_line list_item_content
+        process_unordered_list_line line
       else
         process_text_line line
       end
