@@ -100,6 +100,31 @@ def test_docs_process_quote(args, assert)
   ]
 end
 
+def test_docs_process_paragraphs(args, assert)
+  called_methods = process_doc_string <<~DOC
+    Here's the most important thing you should know: Ruby lets you do some
+    complicated things really easily, and you can learn that stuff
+    later. I'm going to show you one or two cool tricks, but that's all.
+
+    Do you know what an if statement is? A for-loop? An array? That's all
+    you'll need to start.
+  DOC
+
+  assert.equal! called_methods, [
+    [
+      :process_text,
+      "Here's the most important thing you should know: Ruby lets you do some " +
+      'complicated things really easily, and you can learn that stuff ' +
+      "later. I'm going to show you one or two cool tricks, but that's all."
+    ],
+    [
+      :process_text,
+      "Do you know what an if statement is? A for-loop? An array? That's all " +
+      "you'll need to start."
+    ]
+  ]
+end
+
 class TestProcessor
   attr_reader :called_methods
 

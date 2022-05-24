@@ -66,6 +66,7 @@ module Docs
 
     def process_collected_text
       markup_type = @active_markups.pop
+      return if @collected_text.empty?
 
       case markup_type
       when :link
@@ -112,7 +113,12 @@ module Docs
     end
 
     def process_text_line(line)
-      return if line.empty?
+      if line.empty?
+        process_collected_text
+        return
+      end
+
+      @collected_text << ' ' unless @collected_text.empty?
 
       text_start = 0
       chars = line.strip.chars
