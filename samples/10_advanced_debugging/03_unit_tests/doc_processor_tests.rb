@@ -125,6 +125,43 @@ def test_docs_process_paragraphs(args, assert)
   ]
 end
 
+def test_docs_process_ordered_list(args, assert)
+  called_methods = process_doc_string <<~DOC
+    1. Intermediate Introduction to Ruby Syntax
+    2. Intermediate Introduction to Arrays in Ruby
+    3. You may also want to try this
+       free course provided at
+
+    Text
+
+    1. Another
+    2. List
+  DOC
+
+  assert.equal! called_methods, [
+    [:process_ordered_list_start],
+    [:process_ordered_list_item_start],
+    [:process_text, 'Intermediate Introduction to Ruby Syntax'],
+    [:process_ordered_list_item_end],
+    [:process_ordered_list_item_start],
+    [:process_text, 'Intermediate Introduction to Arrays in Ruby'],
+    [:process_ordered_list_item_end],
+    [:process_ordered_list_item_start],
+    [:process_text, 'You may also want to try this free course provided at'],
+    [:process_ordered_list_item_end],
+    [:process_ordered_list_end],
+    [:process_text, 'Text'],
+    [:process_ordered_list_start],
+    [:process_ordered_list_item_start],
+    [:process_text, 'Another'],
+    [:process_ordered_list_item_end],
+    [:process_ordered_list_item_start],
+    [:process_text, 'List'],
+    [:process_ordered_list_item_end],
+    [:process_ordered_list_end]
+  ]
+end
+
 class TestProcessor
   attr_reader :called_methods
 

@@ -11,6 +11,7 @@ module Docs
     def initialize(processors:)
       @processors = processors
       @inside_code_block = false
+      @inside_ordered_list = false
       @active_markups = []
       @active_indents = []
       reset_collected_text
@@ -27,6 +28,28 @@ module Docs
           process_code_block_line line
           index += 1
           next
+        end
+
+        if @inside_ordered_list
+          if line[1] == '.'
+            process_collected_text
+            call_processors :process_ordered_list_item_end
+            call_processors :process_ordered_list_item_start
+            list_item_content = line[3..-1].strip
+            process_text_line list_item_content
+            index += 1
+            next
+          elsif line[0..2] == '   '
+            list_item_content = line[3..-1].strip
+            process_text_line list_item_content
+            index += 1
+            next
+          elsif line.strip.empty?
+            process_collected_text
+            finish_ordered_list
+            index += 1
+            next
+          end
         end
 
         if line.start_with?('* ')
@@ -58,6 +81,14 @@ module Docs
         elsif line.start_with?('#+end_quote')
           process_collected_text
           call_processors :process_quote_end
+        elsif !@inside_ordered_list && line.start_with?('1.')
+          process_collected_text
+          @inside_ordered_list = true
+          @active_indents << 3
+          call_processors :process_ordered_list_start
+          call_processors :process_ordered_list_item_start
+          list_item_content = line.sub('1.', '').strip
+          process_text_line list_item_content
         else
           process_text_line line
         end
@@ -66,6 +97,7 @@ module Docs
       end
 
       process_collected_text unless @collected_text.empty?
+      finish_ordered_list if @inside_ordered_list
     end
 
     private
@@ -112,6 +144,13 @@ module Docs
       header_text = line.sub('*' * level, '').strip
       call_processors :process_text, header_text
       call_processors :process_header_end, level
+    end
+
+    def finish_ordered_list
+      call_processors :process_ordered_list_item_end
+      call_processors :process_ordered_list_end
+      @inside_ordered_list = false
+      @active_indents.pop
     end
 
     def calc_indent(line)
