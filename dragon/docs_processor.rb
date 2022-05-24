@@ -19,112 +19,23 @@ module Docs
     end
 
     def process(doc_string)
-      lines = doc_string.strip.split("\n")
-      index = 0
+      @lines = doc_string.strip.split("\n")
+      @index = 0
 
-      while index < lines.length
-        line = lines[index]
+      while @index < @lines.length
+        line = @lines[@index]
 
         if @inside_code_block
           process_code_block_line line
-          index += 1
-          next
-        end
-
-        if @inside_ordered_list
-          if line[1] == '.'
-            process_collected_text
-            call_processors :process_ordered_list_item_end
-            call_processors :process_ordered_list_item_start
-            list_item_content = line[3..-1].strip
-            process_text_line list_item_content
-            index += 1
-            next
-          elsif line[0..2] == '   '
-            list_item_content = line[3..-1].strip
-            process_text_line list_item_content
-            index += 1
-            next
-          elsif line.strip.empty?
-            process_collected_text
-            finish_ordered_list
-            index += 1
-            next
-          end
-        end
-
-        if @inside_unordered_list
-          if line.start_with? '- '
-            process_collected_text
-            call_processors :process_unordered_list_item_end
-            call_processors :process_unordered_list_item_start
-            list_item_content = line[2..-1].strip
-            process_text_line list_item_content
-            index += 1
-            next
-          elsif line[0..1] == '  '
-            list_item_content = line[2..-1].strip
-            process_text_line list_item_content
-            index += 1
-            next
-          elsif line.strip.empty?
-            process_collected_text
-            finish_unordered_list
-            index += 1
-            next
-          end
-        end
-
-        if line.start_with?('* ')
-          process_header(line, 1)
-        elsif line.start_with?('** ')
-          process_header(line, 2)
-        elsif line.start_with?('*** ')
-          process_header(line, 3)
-        elsif line.start_with?('**** ')
-          process_header(line, 4)
-        elsif line.start_with?('***** ')
-          process_header(line, 5)
-        elsif line.start_with?('#+begin_src')
-          line_rest = line.sub('#+begin_src', '').strip
-
-          @inside_code_block = true
-          @code_block_language = line_rest.empty? ? nil : line_rest.to_sym
-          @active_indents << calc_indent(lines[index + 1])
-          @code_block_content = ''
-
-          if @code_block_language
-            call_processors :process_code_block_start, @code_block_language
-          else
-            call_processors :process_code_block_start
-          end
-        elsif line.start_with?('#+begin_quote')
-          process_collected_text
-          call_processors :process_quote_start
-        elsif line.start_with?('#+end_quote')
-          process_collected_text
-          call_processors :process_quote_end
-        elsif line.start_with?('1.')
-          process_collected_text
-          @inside_ordered_list = true
-          @active_indents << 3
-          call_processors :process_ordered_list_start
-          call_processors :process_ordered_list_item_start
-          list_item_content = line.sub('1.', '').strip
-          process_text_line list_item_content
-        elsif line.start_with?('- ')
-          process_collected_text
-          @inside_unordered_list = true
-          @active_indents << 2
-          call_processors :process_unordered_list_start
-          call_processors :process_unordered_list_item_start
-          list_item_content = line.sub('- ', '').strip
-          process_text_line list_item_content
+        elsif @inside_ordered_list
+          process_ordered_list_line line
+        elsif @inside_unordered_list
+          process_unordered_list_line line
         else
-          process_text_line line
+          process_normal_line line
         end
 
-        index += 1
+        @index += 1
       end
 
       process_collected_text unless @collected_text.empty?
@@ -171,11 +82,20 @@ module Docs
       end
     end
 
-    def process_header(line, level)
-      call_processors :process_header_start, level
-      header_text = line.sub('*' * level, '').strip
-      call_processors :process_text, header_text
-      call_processors :process_header_end, level
+    def process_ordered_list_line(line)
+      if line[1] == '.'
+        process_collected_text
+        call_processors :process_ordered_list_item_end
+        call_processors :process_ordered_list_item_start
+        list_item_content = line[3..-1].strip
+        process_text_line list_item_content
+      elsif line[0..2] == '   '
+        list_item_content = line[3..-1].strip
+        process_text_line list_item_content
+      elsif line.strip.empty?
+        process_collected_text
+        finish_ordered_list
+      end
     end
 
     def finish_ordered_list
@@ -185,11 +105,85 @@ module Docs
       @active_indents.pop
     end
 
+    def process_unordered_list_line(line)
+      if line.start_with? '- '
+        process_collected_text
+        call_processors :process_unordered_list_item_end
+        call_processors :process_unordered_list_item_start
+        list_item_content = line[2..-1].strip
+        process_text_line list_item_content
+      elsif line[0..1] == '  '
+        list_item_content = line[2..-1].strip
+        process_text_line list_item_content
+      elsif line.strip.empty?
+        process_collected_text
+        finish_unordered_list
+      end
+    end
+
     def finish_unordered_list
       call_processors :process_unordered_list_item_end
       call_processors :process_unordered_list_end
       @inside_unordered_list = false
       @active_indents.pop
+    end
+
+    def process_normal_line(line)
+      if line.start_with?('* ')
+        process_header(line, 1)
+      elsif line.start_with?('** ')
+        process_header(line, 2)
+      elsif line.start_with?('*** ')
+        process_header(line, 3)
+      elsif line.start_with?('**** ')
+        process_header(line, 4)
+      elsif line.start_with?('***** ')
+        process_header(line, 5)
+      elsif line.start_with?('#+begin_src')
+        line_rest = line.sub('#+begin_src', '').strip
+
+        @inside_code_block = true
+        @code_block_language = line_rest.empty? ? nil : line_rest.to_sym
+        @active_indents << calc_indent(@lines[@index + 1])
+        @code_block_content = ''
+
+        if @code_block_language
+          call_processors :process_code_block_start, @code_block_language
+        else
+          call_processors :process_code_block_start
+        end
+      elsif line.start_with?('#+begin_quote')
+        process_collected_text
+        call_processors :process_quote_start
+      elsif line.start_with?('#+end_quote')
+        process_collected_text
+        call_processors :process_quote_end
+      elsif line.start_with?('1.')
+        process_collected_text
+        @inside_ordered_list = true
+        @active_indents << 3
+        call_processors :process_ordered_list_start
+        call_processors :process_ordered_list_item_start
+        list_item_content = line.sub('1.', '').strip
+        process_text_line list_item_content
+      elsif line.start_with?('- ')
+        process_collected_text
+        @inside_unordered_list = true
+        @active_indents << 2
+        call_processors :process_unordered_list_start
+        call_processors :process_unordered_list_item_start
+        list_item_content = line.sub('- ', '').strip
+        process_text_line list_item_content
+      else
+        process_text_line line
+      end
+    end
+
+    def process_header(line, level)
+      call_processors :process_header_start, level
+      header_text = line.sub('*' * level, '').strip
+      call_processors :process_text, header_text
+      call_processors :process_header_end, level
     end
 
     def calc_indent(line)
