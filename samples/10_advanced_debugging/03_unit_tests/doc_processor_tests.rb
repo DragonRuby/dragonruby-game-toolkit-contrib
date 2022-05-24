@@ -26,6 +26,29 @@ def test_docs_process_header(args, assert)
   ]
 end
 
+def test_docs_process_code_block(args, assert)
+  called_methods = process_doc_string <<~DOC
+    #+begin_src ruby
+      def tick args
+        args.outputs.labels << [580, 400, 'Hello World!']
+      end
+    #+end_src
+
+    #+begin_src
+    shell_command
+    #+end_src
+  DOC
+
+  assert.equal! called_methods, [
+    [:process_code_block_start, :ruby],
+    [:process_code_block_content, "def tick args\n  args.outputs.labels << [580, 400, 'Hello World!']\nend\n"],
+    [:process_code_block_end, :ruby],
+    [:process_code_block_start],
+    [:process_code_block_content, "shell_command\n"],
+    [:process_code_block_end]
+  ]
+end
+
 class TestProcessor
   attr_reader :called_methods
 
