@@ -162,6 +162,42 @@ def test_docs_process_ordered_list(args, assert)
   ]
 end
 
+def test_docs_process_unordered_list(args, assert)
+  called_methods = process_doc_string <<~DOC
+    Ok, here are few rules with regards to game development with GTK:
+
+    - Your game is all going to happen under one function ...
+    - that runs 60 times a second ...
+    - and has to tell the computer
+      what to draw each time.
+
+    That's an entire video game in one run-on sentence.
+
+    - another item
+  DOC
+
+  assert.equal! called_methods, [
+    [:process_text, 'Ok, here are few rules with regards to game development with GTK:'],
+    [:process_unordered_list_start],
+    [:process_unordered_list_item_start],
+    [:process_text, 'Your game is all going to happen under one function ...'],
+    [:process_unordered_list_item_end],
+    [:process_unordered_list_item_start],
+    [:process_text, 'that runs 60 times a second ...'],
+    [:process_unordered_list_item_end],
+    [:process_unordered_list_item_start],
+    [:process_text, 'and has to tell the computer what to draw each time.'],
+    [:process_unordered_list_item_end],
+    [:process_unordered_list_end],
+    [:process_text, 'That\'s an entire video game in one run-on sentence.'],
+    [:process_unordered_list_start],
+    [:process_unordered_list_item_start],
+    [:process_text, 'another item'],
+    [:process_unordered_list_item_end],
+    [:process_unordered_list_end]
+  ]
+end
+
 class TestProcessor
   attr_reader :called_methods
 

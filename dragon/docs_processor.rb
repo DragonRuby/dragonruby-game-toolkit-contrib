@@ -12,6 +12,7 @@ module Docs
       @processors = processors
       @inside_code_block = false
       @inside_ordered_list = false
+      @inside_unordered_list = false
       @active_markups = []
       @active_indents = []
       reset_collected_text
@@ -52,6 +53,28 @@ module Docs
           end
         end
 
+        if @inside_unordered_list
+          if line.start_with? '- '
+            process_collected_text
+            call_processors :process_unordered_list_item_end
+            call_processors :process_unordered_list_item_start
+            list_item_content = line[2..-1].strip
+            process_text_line list_item_content
+            index += 1
+            next
+          elsif line[0..1] == '  '
+            list_item_content = line[2..-1].strip
+            process_text_line list_item_content
+            index += 1
+            next
+          elsif line.strip.empty?
+            process_collected_text
+            finish_unordered_list
+            index += 1
+            next
+          end
+        end
+
         if line.start_with?('* ')
           process_header(line, 1)
         elsif line.start_with?('** ')
@@ -81,13 +104,21 @@ module Docs
         elsif line.start_with?('#+end_quote')
           process_collected_text
           call_processors :process_quote_end
-        elsif !@inside_ordered_list && line.start_with?('1.')
+        elsif line.start_with?('1.')
           process_collected_text
           @inside_ordered_list = true
           @active_indents << 3
           call_processors :process_ordered_list_start
           call_processors :process_ordered_list_item_start
           list_item_content = line.sub('1.', '').strip
+          process_text_line list_item_content
+        elsif line.start_with?('- ')
+          process_collected_text
+          @inside_unordered_list = true
+          @active_indents << 2
+          call_processors :process_unordered_list_start
+          call_processors :process_unordered_list_item_start
+          list_item_content = line.sub('- ', '').strip
           process_text_line list_item_content
         else
           process_text_line line
@@ -98,6 +129,7 @@ module Docs
 
       process_collected_text unless @collected_text.empty?
       finish_ordered_list if @inside_ordered_list
+      finish_unordered_list if @inside_unordered_list
     end
 
     private
@@ -150,6 +182,13 @@ module Docs
       call_processors :process_ordered_list_item_end
       call_processors :process_ordered_list_end
       @inside_ordered_list = false
+      @active_indents.pop
+    end
+
+    def finish_unordered_list
+      call_processors :process_unordered_list_item_end
+      call_processors :process_unordered_list_end
+      @inside_unordered_list = false
       @active_indents.pop
     end
 
