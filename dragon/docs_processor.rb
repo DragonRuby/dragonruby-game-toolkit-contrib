@@ -10,14 +10,22 @@ module Docs
   class Processor
     def initialize(processors:)
       @processors = processors
+      @inside_code_block = false
       @active_markups = []
+      @active_indents = []
       reset_collected_text
     end
 
     def process(doc_string)
-      doc_string.strip.split("\n").each do |line|
+      lines = doc_string.strip.split("\n")
+      index = 0
+
+      while index < lines.length
+        line = lines[index]
+
         if @inside_code_block
           process_code_block_line line
+          index += 1
           next
         end
 
@@ -36,7 +44,7 @@ module Docs
 
           @inside_code_block = true
           @code_block_language = line_rest.empty? ? nil : line_rest.to_sym
-          @code_block_indent = nil
+          @active_indents << calc_indent(lines[index + 1])
           @code_block_content = ''
 
           if @code_block_language
@@ -53,6 +61,8 @@ module Docs
         else
           process_text_line line
         end
+
+        index += 1
       end
 
       process_collected_text unless @collected_text.empty?
@@ -82,6 +92,7 @@ module Docs
     def process_code_block_line(line)
       if line.start_with?("#+end_src")
         @inside_code_block = false
+        @active_indents.pop
 
         call_processors :process_code_block_content, @code_block_content
 
@@ -91,8 +102,7 @@ module Docs
           call_processors :process_code_block_end
         end
       else
-        @code_block_indent ||= calc_indent(line)
-        @code_block_content << line[@code_block_indent..-1]
+        @code_block_content << line[@active_indents.last..-1]
         @code_block_content << "\n"
       end
     end
