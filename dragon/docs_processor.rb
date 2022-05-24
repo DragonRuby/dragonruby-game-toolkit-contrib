@@ -12,7 +12,7 @@ module Docs
       @processors = processors
       @line_type = :normal
       @active_markups = []
-      @active_indents = []
+      @code_block_indent = nil
       reset_collected_text
     end
 
@@ -93,7 +93,7 @@ module Docs
 
       @line_type = :code_block
       @code_block_language = line_rest.empty? ? nil : line_rest.to_sym
-      @active_indents << calc_indent(@lines[@index + 1])
+      @code_block_indent = calc_indent(@lines[@index + 1])
       @code_block_content = ''
 
       if @code_block_language
@@ -107,14 +107,14 @@ module Docs
       if line.start_with?("#+end_src")
         finish_code_block
       else
-        @code_block_content << line[@active_indents.last..-1]
+        @code_block_content << line[@code_block_indent..-1]
         @code_block_content << "\n"
       end
     end
 
     def finish_code_block
       @line_type = :normal
-      @active_indents.pop
+      @code_block_indent = nil
 
       call_processors :process_code_block_content, @code_block_content
 
@@ -128,7 +128,6 @@ module Docs
     def start_ordered_list(line)
       process_collected_text
       @line_type = :ordered_list
-      @active_indents << 3
       call_processors :process_ordered_list_start
       process_ordered_list_line line
     end
@@ -155,13 +154,11 @@ module Docs
       call_processors :process_ordered_list_item_end
       call_processors :process_ordered_list_end
       @line_type = :normal
-      @active_indents.pop
     end
 
     def start_unordered_list(line)
       process_collected_text
       @line_type = :unordered_list
-      @active_indents << 2
       call_processors :process_unordered_list_start
       process_unordered_list_line line
     end
@@ -188,7 +185,6 @@ module Docs
       call_processors :process_unordered_list_item_end
       call_processors :process_unordered_list_end
       @line_type = :normal
-      @active_indents.pop
     end
 
     def calc_indent(line)
