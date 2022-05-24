@@ -10,27 +10,14 @@ module Docs
   class Processor
     def initialize(processors:)
       @processors = processors
+      @active_markups = []
+      reset_collected_text
     end
 
     def process(doc_string)
       doc_string.strip.split("\n").each do |line|
         if @inside_code_block
-          if line.start_with?("#+end_src")
-            @inside_code_block = false
-
-            call_processors :process_code_block_content, @code_block_content
-
-            if @code_block_language
-              call_processors :process_code_block_end, @code_block_language
-            else
-              call_processors :process_code_block_end
-            end
-          else
-            @code_block_indent ||= calc_indent(line)
-            @code_block_content << line[@code_block_indent..-1]
-            @code_block_content << "\n"
-          end
-
+          process_code_block_line line
           next
         end
 
@@ -57,11 +44,49 @@ module Docs
           else
             call_processors :process_code_block_start
           end
+        else
+          process_text_line line
         end
       end
+
+      process_collected_text unless @collected_text.empty?
     end
 
     private
+
+    def reset_collected_text
+      @collected_text = ''
+    end
+
+    def process_collected_text
+      markup_type = @active_markups.pop
+
+      case markup_type
+      when :link
+        call_processors :process_link, href: @collected_text
+      else
+        call_processors :process_text, @collected_text
+      end
+      reset_collected_text
+    end
+
+    def process_code_block_line(line)
+      if line.start_with?("#+end_src")
+        @inside_code_block = false
+
+        call_processors :process_code_block_content, @code_block_content
+
+        if @code_block_language
+          call_processors :process_code_block_end, @code_block_language
+        else
+          call_processors :process_code_block_end
+        end
+      else
+        @code_block_indent ||= calc_indent(line)
+        @code_block_content << line[@code_block_indent..-1]
+        @code_block_content << "\n"
+      end
+    end
 
     def process_header(line, level)
       call_processors :process_header_start, level
@@ -76,6 +101,38 @@ module Docs
 
         return index
       end
+    end
+
+    def process_text_line(line)
+      return if line.empty?
+
+      text_start = 0
+      chars = line.strip.chars
+      index = 0
+
+      while index < chars.length
+        char = chars[index]
+        if char == '[' && chars[index + 1] == '['
+          @collected_text << line[text_start..index - 1]
+          process_collected_text
+
+          index += 2
+          text_start = index
+          @active_markups << :link
+          next
+        elsif char == ']' && chars[index + 1] == ']'
+          @collected_text << line[text_start..index - 1]
+          process_collected_text
+
+          index += 2
+          text_start = index
+          next
+        end
+
+        index += 1
+      end
+
+      @collected_text << line[text_start..-1]
     end
 
     def call_processors(method_name, *args)

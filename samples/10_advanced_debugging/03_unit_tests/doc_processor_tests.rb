@@ -49,6 +49,18 @@ def test_docs_process_code_block(args, assert)
   ]
 end
 
+def test_docs_process_link(args, assert)
+  called_methods = process_doc_string <<~DOC
+    Our Discord channel is [[http://discord.dragonruby.org]].
+  DOC
+
+  assert.equal! called_methods, [
+    [:process_text, 'Our Discord channel is '],
+    [:process_link, { href: 'http://discord.dragonruby.org' }],
+    [:process_text, '.']
+  ]
+end
+
 class TestProcessor
   attr_reader :called_methods
 
