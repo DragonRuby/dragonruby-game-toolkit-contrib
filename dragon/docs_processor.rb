@@ -10,9 +10,7 @@ module Docs
   class Processor
     def initialize(processors:)
       @processors = processors
-      @inside_code_block = false
-      @inside_ordered_list = false
-      @inside_unordered_list = false
+      @line_type = :normal
       @active_markups = []
       @active_indents = []
       reset_collected_text
@@ -25,22 +23,13 @@ module Docs
       while @index < @lines.length
         line = @lines[@index]
 
-        if @inside_code_block
-          process_code_block_line line
-        elsif @inside_ordered_list
-          process_ordered_list_line line
-        elsif @inside_unordered_list
-          process_unordered_list_line line
-        else
-          process_normal_line line
-        end
+        send :"process_#{@line_type}_line", line
 
         @index += 1
       end
 
       process_collected_text unless @collected_text.empty?
-      finish_ordered_list if @inside_ordered_list
-      finish_unordered_list if @inside_unordered_list
+      send :"finish_#{@line_type}" unless @line_type == :normal
     end
 
     private
@@ -66,7 +55,7 @@ module Docs
 
     def process_code_block_line(line)
       if line.start_with?("#+end_src")
-        @inside_code_block = false
+        @line_type = :normal
         @active_indents.pop
 
         call_processors :process_code_block_content, @code_block_content
@@ -101,7 +90,7 @@ module Docs
     def finish_ordered_list
       call_processors :process_ordered_list_item_end
       call_processors :process_ordered_list_end
-      @inside_ordered_list = false
+      @line_type = :normal
       @active_indents.pop
     end
 
@@ -124,7 +113,7 @@ module Docs
     def finish_unordered_list
       call_processors :process_unordered_list_item_end
       call_processors :process_unordered_list_end
-      @inside_unordered_list = false
+      @line_type = :normal
       @active_indents.pop
     end
 
@@ -142,7 +131,7 @@ module Docs
       elsif line.start_with?('#+begin_src')
         line_rest = line.sub('#+begin_src', '').strip
 
-        @inside_code_block = true
+        @line_type = :code_block
         @code_block_language = line_rest.empty? ? nil : line_rest.to_sym
         @active_indents << calc_indent(@lines[@index + 1])
         @code_block_content = ''
@@ -160,7 +149,7 @@ module Docs
         call_processors :process_quote_end
       elsif line.start_with?('1.')
         process_collected_text
-        @inside_ordered_list = true
+        @line_type = :ordered_list
         @active_indents << 3
         call_processors :process_ordered_list_start
         call_processors :process_ordered_list_item_start
@@ -168,7 +157,7 @@ module Docs
         process_text_line list_item_content
       elsif line.start_with?('- ')
         process_collected_text
-        @inside_unordered_list = true
+        @line_type = :unordered_list
         @active_indents << 2
         call_processors :process_unordered_list_start
         call_processors :process_unordered_list_item_start
