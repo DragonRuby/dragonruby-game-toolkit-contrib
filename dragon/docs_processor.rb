@@ -44,6 +44,12 @@ module Docs
           else
             call_processors :process_code_block_start
           end
+        elsif line.start_with?('#+begin_quote')
+          process_collected_text
+          call_processors :process_quote_start
+        elsif line.start_with?('#+end_quote')
+          process_collected_text
+          call_processors :process_quote_end
         else
           process_text_line line
         end

@@ -73,6 +73,33 @@ def test_docs_process_code(args, assert)
   ]
 end
 
+def test_docs_process_quote(args, assert)
+  called_methods = process_doc_string <<~DOC
+    When someone asks you:
+
+    #+begin_quote
+    What game engine do you use?
+    #+end_quote
+
+    Reply with:
+
+    #+begin_quote
+    I am a Dragon Rider.
+    #+end_quote
+  DOC
+
+  assert.equal! called_methods, [
+    [:process_text, 'When someone asks you:'],
+    [:process_quote_start],
+    [:process_text, 'What game engine do you use?'],
+    [:process_quote_end],
+    [:process_text, 'Reply with:'],
+    [:process_quote_start],
+    [:process_text, 'I am a Dragon Rider.'],
+    [:process_quote_end]
+  ]
+end
+
 class TestProcessor
   attr_reader :called_methods
 
