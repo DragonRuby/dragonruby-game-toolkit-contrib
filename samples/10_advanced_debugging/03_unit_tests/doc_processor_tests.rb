@@ -61,14 +61,14 @@ def test_docs_process_link(args, assert)
   ]
 end
 
-def test_docs_process_code(args, assert)
+def test_docs_process_inline_code(args, assert)
   called_methods = process_doc_string <<~DOC
     Now run ~dragonruby~ ...did you get a window with "Hello World!" written in it? Good, you're officially a game developer!
   DOC
 
   assert.equal! called_methods, [
     [:process_text, 'Now run '],
-    [:process_code, 'dragonruby'],
+    [:process_inline_code, 'dragonruby'],
     [:process_text, " ...did you get a window with \"Hello World!\" written in it? Good, you're officially a game developer!"]
   ]
 end

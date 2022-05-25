@@ -45,8 +45,8 @@ module Docs
       case markup_type
       when :link
         call_processors :process_link, href: @collected_text
-      when :code
-        call_processors :process_code, @collected_text
+      when :inline_code
+        call_processors :process_inline_code, @collected_text
       else
         call_processors :process_text, @collected_text
       end
@@ -223,13 +223,13 @@ module Docs
           index += 2
           text_start = index
         elsif char == '~'
-          was_inside_code = @active_markups.last == :code
+          was_inside_code = @active_markups.last == :inline_code
           @collected_text << line[text_start..index - 1]
           process_collected_text
 
           index += 1
           text_start = index
-          @active_markups << :code unless was_inside_code
+          @active_markups << :inline_code unless was_inside_code
         else
           index += 1
         end
