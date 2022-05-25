@@ -26,6 +26,19 @@ def test_docs_process_header(args, assert)
   ]
 end
 
+def test_header_with_markup(args, assert)
+  called_methods = process_doc_string <<~DOC
+    * DOCS: ~GTK::Runtime~
+  DOC
+
+  assert.equal! called_methods, [
+    [:process_header_start, 1],
+    [:process_text, 'DOCS: '],
+    [:process_inline_code, 'GTK::Runtime'],
+    [:process_header_end, 1]
+  ]
+end
+
 def test_docs_process_code_block(args, assert)
   called_methods = process_doc_string <<~DOC
     #+begin_src ruby
