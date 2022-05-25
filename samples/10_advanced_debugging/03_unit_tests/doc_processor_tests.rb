@@ -1,6 +1,9 @@
 def test_docs_process_header(args, assert)
   called_methods = process_doc_string <<~DOC
     * This is a header.
+
+    This is text.
+
     ** This is a sub-header.
     *** This is a sub-sub-header.
     **** This is a sub-sub-sub-header.
@@ -11,6 +14,7 @@ def test_docs_process_header(args, assert)
     [:process_header_start, 1],
     [:process_text, 'This is a header.'],
     [:process_header_end, 1],
+    [:process_text, 'This is text.'],
     [:process_header_start, 2],
     [:process_text, 'This is a sub-header.'],
     [:process_header_end, 2],
