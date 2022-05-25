@@ -53,7 +53,6 @@ def defaults args
   args.state.bullet_size ||= 25
   args.state.bullets ||= []
   args.state.bullet_path ||= 'sprites/circle/orange.png'
-  #
 end
 
 def render args
@@ -214,7 +213,10 @@ def calc_bullets args
 end
 
 def center_of object
-  object.merge { x: object[:x] + 0.5, y: object[:y] + 0.5 }
+  object = object.clone
+  object[:x] += 0.5
+  object[:y] += 0.5
+  object
 end
 
 def render_a_star args
