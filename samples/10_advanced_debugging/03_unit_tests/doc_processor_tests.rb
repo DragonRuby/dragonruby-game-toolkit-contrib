@@ -73,6 +73,21 @@ def test_docs_process_inline_code(args, assert)
   ]
 end
 
+def test_docs_process_markup_at_end_of_paragraph(args, assert)
+  called_methods = process_doc_string <<~DOC
+    Now run ~dragonruby~
+
+    This is a link to [[http://discord.dragonruby.org]]
+  DOC
+
+  assert.equal! called_methods, [
+    [:process_text, 'Now run '],
+    [:process_inline_code, 'dragonruby'],
+    [:process_text, 'This is a link to '],
+    [:process_link, { href: 'http://discord.dragonruby.org' }]
+  ]
+end
+
 def test_docs_process_quote(args, assert)
   called_methods = process_doc_string <<~DOC
     When someone asks you:
