@@ -1,4 +1,4 @@
-#Contributors outside of DragonRuby who also hold Copyright:
+# Contributors outside of DragonRuby who also hold Copyright:
 # Sujay Vadlakonda
 
 # A visual demonstration of a breadth first search
@@ -317,25 +317,16 @@ class BreadthFirstSearch
 
   # Renders the star
   def render_star
-    outputs.sprites << [scale_up(state.star), 'star.png']
+    outputs.sprites << render_cell state.star, { path: 'star.png' }
   end
 
-  def render_cell cell, color
-    if cell.is_a? Array
-        return {
-          x: cell.x * grid.cell_size,
-          y: cell.y * grid.cell_size,
-          w: grid.cell_size,
-          h: grid.cell_size
-        }.merge color
-    else
-      return {
-        x: cell[:x] * grid.cell_size,
-        y: cell[:y] * grid.cell_size,
-        w: grid.cell_size,
-        h: grid.cell_size,
-      }.merge color
-    end
+  def render_cell cell, attrs
+    {
+      x: cell.x * grid.cell_size,
+      y: cell.y * grid.cell_size,
+      w: grid.cell_size,
+      h: grid.cell_size
+    }.merge attrs
   end
 
   # In code, the cells are represented as 1x1 rectangles

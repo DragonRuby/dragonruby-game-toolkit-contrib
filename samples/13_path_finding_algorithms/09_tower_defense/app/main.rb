@@ -214,10 +214,7 @@ def calc_bullets args
 end
 
 def center_of object
-  object = object.clone
-  object[:x] += 0.5
-  object[:y] += 0.5
-  object
+  object.merge { x: object[:x] + 0.5, y: object[:y] + 0.5 }
 end
 
 def render_a_star args
@@ -241,8 +238,8 @@ def move object, target, speed = 1
     object[:y] += copy_sign(speed, target.y - object[:y])
   end
 end
-#
-#
+
+
 def distance_between a_x, a_y, b_x, b_y
   (((b_x - a_x) ** 2) + ((b_y - a_y) ** 2)) ** 0.5
 end
@@ -252,7 +249,7 @@ def copy_sign value, sign
   return value if sign > 0
   -value
 end
-#
+
 def spawn_tank args
   return unless args.state.tick_count.mod_zero? args.state.tank_spawn_period
   args.state.tanks << {
