@@ -119,8 +119,8 @@ class Movement_Costs
   # Draws two rectangles the size of the grid in the default cell color
   # Used as part of the background
   def render_unvisited
-    outputs.solids << [scale_up(grid.rect), unvisited_color]
-    outputs.solids << [move_and_scale_up(grid.rect), unvisited_color]
+    outputs.solids << scale_up(grid.rect).merge(unvisited_color)
+    outputs.solids << move_and_scale_up(grid.rect).merge(unvisited_color)
   end
 
   # Draws grid lines to show the division of the grid into cells
@@ -136,24 +136,26 @@ class Movement_Costs
     end
   end
 
-  # Easy way to draw vertical lines given an index for the first grid
-  def vertical_line column
-    scale_up([column, 0, column, grid.height])
+  # A line the size of the grid, multiplied by the cell size for rendering
+  def vertical_line x
+    [x, 0, x, grid.height].map { | v | v * grid.cell_size }
   end
 
-  # Easy way to draw horizontal lines given an index for the second grid
-  def horizontal_line row
-    scale_up([0, row, grid.width, row])
+  # A line the size of the grid, multiplied by the cell size for rendering
+  def horizontal_line y
+    [0, y, grid.width, y].map { | v | v * grid.cell_size }
   end
 
-  # Easy way to draw vertical lines given an index for the first grid
-  def shifted_vertical_line column
-    scale_up([column + grid.width + 1, 0, column + grid.width + 1, grid.height])
+  # Translate vertical line by the size of the grid and 1
+  def shifted_vertical_line x
+    translated_x = x + grid.width + 1
+    vertical_line translated_x
   end
 
-  # Easy way to draw horizontal lines given an index for the second grid
-  def shifted_horizontal_line row
-    scale_up([grid.width + 1, row, grid.width + grid.width + 1, row])
+  # Get horizontal line and shift to the right
+  def shifted_horizontal_line y
+    x = grid.width + 1
+    [x, y, x + grid.width, y].map { | v | v * grid.cell_size }
   end
 
   # Labels the grids
@@ -172,10 +174,6 @@ class Movement_Costs
     render_dijkstra_heat_map
   end
 
-  # Renders the breadth first search on the first grid
-  def render_breadth_first_search
-  end
-
   # This heat map shows the cells explored by the breadth first search and how far they are from the star.
   def render_breadth_first_search_heat_map
     # For each cell explored
@@ -185,7 +183,8 @@ class Movement_Costs
       max_distance = grid.width + grid.height
       # Get it as a percent of the maximum distance and scale to 255 for use as an alpha value
       alpha = 255.to_i * distance.to_i / max_distance.to_i
-      outputs.solids << [scale_up(visited_cell), red, alpha]
+      heat_color = red.merge({a: alpha })
+      outputs.solids << scale_up(visited_cell).merge(heat_color)
     end
   end
 
@@ -199,7 +198,7 @@ class Movement_Costs
       while endpoint and next_endpoint
         # Draw a path between these two cells
         path = get_path_between(endpoint, next_endpoint)
-        outputs.solids << [scale_up(path), path_color]
+        outputs.solids << scale_up(path).merge(path_color)
         # And get the next pair of cells
         endpoint = next_endpoint
         next_endpoint = breadth_first_search.came_from[endpoint]
@@ -208,15 +207,12 @@ class Movement_Costs
     end
   end
 
-  # Renders the Dijkstra search on the second grid
-  def render_dijkstra
-  end
-
   def render_dijkstra_heat_map
     dijkstra_search.cost_so_far.each do |visited_cell, cost|
       max_cost = (grid.width + grid.height) #* 5
       alpha = 255.to_i * cost.to_i / max_cost.to_i
-      outputs.solids << [move_and_scale_up(visited_cell), red, alpha]
+      heat_color = red.merge({a: alpha})
+      outputs.solids << move_and_scale_up(visited_cell).merge(heat_color)
     end
   end
 
@@ -229,7 +225,7 @@ class Movement_Costs
       while endpoint and next_endpoint
         # Draw a path between them
         path = get_path_between(endpoint, next_endpoint)
-        outputs.solids << [move_and_scale_up(path), path_color]
+        outputs.solids << move_and_scale_up(path).merge(path_color)
 
         # Shift one cell down the path
         endpoint = next_endpoint
@@ -242,28 +238,28 @@ class Movement_Costs
 
   # Renders the star on both grids
   def render_star
-    outputs.sprites << [scale_up(state.star), 'star.png']
-    outputs.sprites << [move_and_scale_up(state.star), 'star.png']
+    outputs.sprites << scale_up(state.star).merge({path: 'star.png'})
+    outputs.sprites << move_and_scale_up(state.star).merge({path: 'star.png'})
   end
 
   # Renders the target on both grids
   def render_target
-    outputs.sprites << [scale_up(state.target), 'target.png']
-    outputs.sprites << [move_and_scale_up(state.target), 'target.png']
+    outputs.sprites << scale_up(state.target).merge({path: 'target.png'})
+    outputs.sprites << move_and_scale_up(state.target).merge({path: 'target.png'})
   end
 
   def render_hills
     state.hills.each_key do |hill|
-      outputs.solids << [scale_up(hill), hill_color]
-      outputs.solids << [move_and_scale_up(hill), hill_color]
+      outputs.solids << scale_up(hill).merge(hill_color)
+      outputs.solids << move_and_scale_up(hill).merge(hill_color)
     end
   end
 
   # Draws the walls on both grids
   def render_walls
     state.walls.each_key do |wall|
-      outputs.solids << [scale_up(wall), wall_color]
-      outputs.solids << [move_and_scale_up(wall), wall_color]
+      outputs.solids << scale_up(wall).merge(wall_color)
+      outputs.solids << move_and_scale_up(wall).merge(wall_color)
     end
   end
 
@@ -285,18 +281,6 @@ class Movement_Costs
     path
   end
 
-  # Representation of how far away visited cells are from the star
-  # Replaces the render_visited method
-  # Visually demonstrates the effectiveness of early exit for pathfinding
-  def render_breadth_first_search_heat_map
-    breadth_first_search.visited.each_key do | visited_cell |
-      distance = (state.star.x - visited_cell.x).abs + (state.star.y - visited_cell.y).abs
-      max_distance = grid.width + grid.height
-      alpha = 255.to_i * distance.to_i / max_distance.to_i
-      outputs.solids << [scale_up(visited_cell), red, alpha]
-    end
-  end
-
   # Translates the given cell grid.width + 1 to the right and then scales up
   # Used to draw cells for the second grid
   # This method does not work for lines,
@@ -313,21 +297,21 @@ class Movement_Costs
   # Objects are scaled up according to the grid.cell_size variable
   # This allows for easy customization of the visual scale of the grid
   def scale_up(cell)
-    # Prevents the original value of cell from being edited
-    cell = cell.clone
-
-    # If cell is just an x and y coordinate
     if cell.size == 2
-      # Add a width and height of 1
-      cell << 1
-      cell << 1
+      return {
+        x: cell.x * grid.cell_size,
+        y: cell.y * grid.cell_size,
+        w: grid.cell_size,
+        h: grid.cell_size
+      }
+    else
+      return {
+        x: cell.x * grid.cell_size,
+        y: cell.y * grid.cell_size,
+        w: cell.w * grid.cell_size,
+        h: cell.h * grid.cell_size
+      }
     end
-
-    # Scale all the values up
-    cell.map! { |value| value * grid.cell_size }
-
-    # Returns the scaled up cell
-    cell
   end
 
   # Handles user input every tick so the grid can be edited
@@ -498,11 +482,8 @@ class Movement_Costs
   end
 
   def cost(cell)
-    if state.hills.has_key?(cell)
-      return 5
-    else
-      return 1
-    end
+    return 5 if state.hills.has_key? cell 
+    1
   end
 
 
@@ -785,26 +766,27 @@ class Movement_Costs
 
   # Light brown
   def unvisited_color
-    [221, 212, 213]
+    { r: 221, g: 212, b: 213 }
   end
 
   # Camo Green
   def wall_color
     [134, 134, 120]
+    { r: 134, g: 134, b: 120 }
   end
 
   # Pastel White
   def path_color
-    [231, 230, 228]
+    { r: 231, g: 230, b: 228 }
   end
 
   def red
-    [255, 0, 0]
+    { r: 255, g: 0, b: 0 }
   end
 
   # A Green
   def hill_color
-    [139, 173, 132]
+    { r: 139, g: 173, b: 132 }
   end
 
   # Makes code more concise
