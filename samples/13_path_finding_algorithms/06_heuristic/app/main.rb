@@ -1,11 +1,11 @@
 # This program is inspired by https://www.redblobgames.com/pathfinding/a-star/introduction.html
+# The effectiveness of the Heuristic search algorithm is shown through this demonstration.
+# Notice that both searches find the shortest path
+# The heuristic search, however, explores less of the grid, and is therefore faster.
+# The heuristic search prioritizes searching cells that are closer to the target.
+# Make sure to look at the Heuristic with walls program to see some of the downsides of the heuristic algorithm.
 
-# This time the heuristic search still explored less of the grid, hence finishing faster.
-# However, it did not find the shortest path between the star and the target.
-
-# The only difference between this app and Heuristic is the change of the starting position.
-
-class Heuristic_With_Walls
+class Heuristic
   attr_gtk
 
   def tick
@@ -969,12 +969,12 @@ def tick args
   end
 
   # Every tick, new args are passed, and the Breadth First Search tick is called
-  $heuristic_with_walls ||= Heuristic_With_Walls.new
-  $heuristic_with_walls.args = args
-  $heuristic_with_walls.tick
+  $heuristic ||= Heuristic.new
+  $heuristic.args = args
+  $heuristic.tick
 end
 
 
 def reset
-  $heuristic_with_walls = nil
+  $heuristic = nil
 end
