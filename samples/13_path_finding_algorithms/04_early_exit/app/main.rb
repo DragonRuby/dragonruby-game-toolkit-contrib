@@ -97,8 +97,8 @@ class EarlyExitBreadthFirstSearch
 
   # Draws both grids
   def render_unvisited
-    outputs.solids << [scale_up(grid.rect), unvisited_color]
-    outputs.solids << [early_exit_scale_up(grid.rect), unvisited_color]
+    outputs.solids << scale_up(grid.rect).merge(unvisited_color)
+    outputs.solids << early_exit_scale_up(grid.rect).merge(unvisited_color)
   end
 
   # Draws grid lines to show the division of the grid into cells
@@ -116,42 +116,42 @@ class EarlyExitBreadthFirstSearch
 
   # Easy way to draw vertical lines given an index
   def vertical_line column
-    scale_up([column, 0, column, grid.height])
+    scale_up([column, 0, 0, grid.height])
   end
 
   # Easy way to draw horizontal lines given an index
   def horizontal_line row
-    scale_up([0, row, grid.width, row])
+    scale_up([0, row, grid.width, 0])
   end
 
   # Easy way to draw vertical lines given an index
   def early_exit_vertical_line column
-    scale_up([column + grid.width + 1, 0, column + grid.width + 1, grid.height])
+    scale_up([column + grid.width + 1, 0, 0, grid.height])
   end
 
   # Easy way to draw horizontal lines given an index
   def early_exit_horizontal_line row
-    scale_up([grid.width + 1, row, grid.width + grid.width + 1, row])
+    scale_up([grid.width + 1, row, grid.width + grid.width + 1, 0])
   end
 
   # Draws the walls on both grids
   def render_walls
     state.walls.each_key do |wall|
-      outputs.solids << [scale_up(wall), wall_color]
-      outputs.solids << [early_exit_scale_up(wall), wall_color]
+      outputs.solids << scale_up(wall).merge(wall_color)
+      outputs.solids << early_exit_scale_up(wall).merge(wall_color)
     end
   end
 
   # Renders the star on both grids
   def render_star
-    outputs.sprites << [scale_up(state.star), 'star.png']
-    outputs.sprites << [early_exit_scale_up(state.star), 'star.png']
+    outputs.sprites << scale_up(state.star).merge({path: 'star.png'})
+    outputs.sprites << early_exit_scale_up(state.star).merge({path: 'star.png'})
   end
 
   # Renders the target on both grids
   def render_target
-    outputs.sprites << [scale_up(state.target), 'target.png']
-    outputs.sprites << [early_exit_scale_up(state.target), 'target.png']
+    outputs.sprites << scale_up(state.target).merge({path: 'target.png'})
+    outputs.sprites << early_exit_scale_up(state.target).merge({path: 'target.png'})
   end
 
   # Labels the grids
@@ -167,8 +167,8 @@ class EarlyExitBreadthFirstSearch
     unless state.path.size == 1
       state.path.each_key do | cell |
         # Renders path on both grids
-        outputs.solids << [scale_up(cell), path_color]
-        outputs.solids << [early_exit_scale_up(cell), path_color]
+        outputs.solids << scale_up(cell).merge(path_color)
+        outputs.solids << early_exit_scale_up(cell).merge(path_color)
       end
     end
   end
@@ -192,15 +192,16 @@ class EarlyExitBreadthFirstSearch
       distance = (state.star.x - visited_cell.x).abs + (state.star.y - visited_cell.y).abs
       max_distance = grid.width + grid.height
       alpha = 255.to_i * distance.to_i / max_distance.to_i
-      outputs.solids << [scale_up(visited_cell), red, alpha]
-      # outputs.solids << [early_exit_scale_up(visited_cell), red, alpha]
+      heat_color = red.merge({a: alpha })
+      outputs.solids << scale_up(visited_cell).merge(heat_color)
     end
 
     state.early_exit_visited.each_key do | visited_cell |
       distance = (state.star.x - visited_cell.x).abs + (state.star.y - visited_cell.y).abs
       max_distance = grid.width + grid.height
       alpha = 255.to_i * distance.to_i / max_distance.to_i
-      outputs.solids << [early_exit_scale_up(visited_cell), red, alpha]
+      heat_color = red.merge({a: alpha })
+      outputs.solids << early_exit_scale_up(visited_cell).merge(heat_color)
     end
   end
 
@@ -220,21 +221,21 @@ class EarlyExitBreadthFirstSearch
   # Objects are scaled up according to the grid.cell_size variable
   # This allows for easy customization of the visual scale of the grid
   def scale_up(cell)
-    # Prevents the original value of cell from being edited
-    cell = cell.clone
-
-    # If cell is just an x and y coordinate
     if cell.size == 2
-      # Add a width and height of 1
-      cell << 1
-      cell << 1
+      return {
+        x: cell.x * grid.cell_size,
+        y: cell.y * grid.cell_size,
+        w: grid.cell_size,
+        h: grid.cell_size
+      }
+    else
+      return {
+        x: cell.x * grid.cell_size,
+        y: cell.y * grid.cell_size,
+        w: cell.w * grid.cell_size,
+        h: cell.h * grid.cell_size
+      }
     end
-
-    # Scale all the values up
-    cell.map! { |value| value * grid.cell_size }
-
-    # Returns the scaled up cell
-    cell
   end
 
   # This method processes user input every tick
@@ -586,20 +587,22 @@ class EarlyExitBreadthFirstSearch
   # Light brown
   def unvisited_color
     [221, 212, 213]
+    { r: 221, g: 212, b: 213 }
   end
 
   # Camo Green
   def wall_color
-    [134, 134, 120]
+    { r: 134, g: 134, b: 120 }
   end
 
   # Pastel White
   def path_color
-    [231, 230, 228]
+    { r: 231, g: 230, b: 228 }
   end
 
   def red
     [255, 0, 0]
+    { r: 255, g: 0, b: 0 }
   end
 
   # Makes code more concise
