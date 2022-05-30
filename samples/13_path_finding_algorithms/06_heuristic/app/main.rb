@@ -59,13 +59,8 @@ class Heuristic
     # Stores which step of the animation is being rendered
     # When the user moves the star or messes with the walls,
     # the searches are recalculated up to this step
-
-    # Unless the current step has a value
     unless state.current_step
-      # Set the current step to 10
-      state.current_step = 10
-      # And calculate the searches up to step 10
-      recalculate_searches
+      state.current_step = 0
     end
 
     # At some step the animation will end,
@@ -300,7 +295,7 @@ class Heuristic
 
   def render_bfs_grid
     # A large rect the size of the grid
-    outputs.solids << [bfs_scale_up(grid.rect), default_color]
+    outputs.solids << bfs_scale_up(grid.rect).merge(default_color)
 
     # The vertical grid lines
     for x in 0..grid.width
@@ -315,7 +310,7 @@ class Heuristic
 
   def render_heuristic_grid
     # A large rect the size of the grid
-    outputs.solids << [heuristic_scale_up(grid.rect), default_color]
+    outputs.solids << heuristic_scale_up(grid.rect).merge(default_color)
 
     # The vertical grid lines
     for x in 0..grid.width
@@ -329,98 +324,100 @@ class Heuristic
   end
 
   # Returns a vertical line for a column of the first grid
-  def bfs_vertical_line column
-    bfs_scale_up([column, 0, column, grid.height])
+  def bfs_vertical_line x
+    [x, 0, x, grid.height].map { |v| v * grid.cell_size }
   end
 
   # Returns a horizontal line for a column of the first grid
-  def bfs_horizontal_line row
-    bfs_scale_up([0, row, grid.width, row])
+  def bfs_horizontal_line y
+    [0, y, grid.width, y].map { |v| v * grid.cell_size }
   end
 
   # Returns a vertical line for a column of the second grid
-  def heuristic_vertical_line column
-    bfs_scale_up([column + grid.width + 1, 0, column + grid.width + 1, grid.height])
+  def heuristic_vertical_line x
+    translated_x = x + grid.width + 1
+    bfs_vertical_line translated_x
   end
 
   # Returns a horizontal line for a column of the second grid
-  def heuristic_horizontal_line row
-    bfs_scale_up([grid.width + 1, row, grid.width + grid.width + 1, row])
+  def heuristic_horizontal_line y
+    x = grid.width + 1
+    [x, y, x + grid.width, y].map { |v| v * grid.cell_size }
   end
 
   # Renders the star on the first grid
   def render_bfs_star
-    outputs.sprites << [bfs_scale_up(grid.star), 'star.png']
+    outputs.sprites << bfs_scale_up(grid.star).merge({ path: 'star.png' })
   end
 
   # Renders the star on the second grid
   def render_heuristic_star
-    outputs.sprites << [heuristic_scale_up(grid.star), 'star.png']
+    outputs.sprites << heuristic_scale_up(grid.star).merge({ path: 'star.png' })
   end
 
   # Renders the target on the first grid
   def render_bfs_target
-    outputs.sprites << [bfs_scale_up(grid.target), 'target.png']
+    outputs.sprites << bfs_scale_up(grid.target).merge({ path: 'target.png' })
   end
 
   # Renders the target on the second grid
   def render_heuristic_target
-    outputs.sprites << [heuristic_scale_up(grid.target), 'target.png']
+    outputs.sprites << heuristic_scale_up(grid.target).merge({ path: 'target.png' })
   end
 
   # Renders the walls on the first grid
   def render_bfs_walls
-    grid.walls.each_key do | wall |
-      outputs.solids << [bfs_scale_up(wall), wall_color]
+    outputs.solids << grid.walls.map do |key, value|
+      bfs_scale_up(key).merge(wall_color)
     end
   end
 
   # Renders the walls on the second grid
   def render_heuristic_walls
-    grid.walls.each_key do | wall |
-      outputs.solids << [heuristic_scale_up(wall), wall_color]
+    outputs.solids << grid.walls.map do |key, value|
+      heuristic_scale_up(key).merge(wall_color)
     end
   end
 
   # Renders the visited cells on the first grid
   def render_bfs_visited
-    bfs.came_from.each_key do | visited_cell |
-      outputs.solids << [bfs_scale_up(visited_cell), visited_color]
+    outputs.solids << bfs.came_from.map do |key, value|
+      bfs_scale_up(key).merge(visited_color)
     end
   end
 
   # Renders the visited cells on the second grid
   def render_heuristic_visited
-    heuristic.came_from.each_key do | visited_cell |
-      outputs.solids << [heuristic_scale_up(visited_cell), visited_color]
+    outputs.solids << heuristic.came_from.map do |key, value|
+      heuristic_scale_up(key).merge(visited_color)
     end
   end
 
   # Renders the frontier cells on the first grid
   def render_bfs_frontier
-    bfs.frontier.each do | frontier_cell |
-      outputs.solids << [bfs_scale_up(frontier_cell), frontier_color, 200]
+    outputs.solids << bfs.frontier.map do |cell|
+      bfs_scale_up(cell).merge(frontier_color)
     end
   end
 
   # Renders the frontier cells on the second grid
   def render_heuristic_frontier
-    heuristic.frontier.each do | frontier_cell |
-      outputs.solids << [heuristic_scale_up(frontier_cell), frontier_color, 200]
+    outputs.solids << heuristic.frontier.map do |cell|
+      heuristic_scale_up(cell).merge(frontier_color)
     end
   end
 
   # Renders the path found by the breadth first search on the first grid
   def render_bfs_path
-    bfs.path.each do | path |
-      outputs.solids << [bfs_scale_up(path), path_color]
+    outputs.solids << bfs.path.map do |path|
+      bfs_scale_up(path).merge(path_color)
     end
   end
 
   # Renders the path found by the heuristic search on the second grid
   def render_heuristic_path
-    heuristic.path.each do | path |
-      outputs.solids << [heuristic_scale_up(path), path_color]
+    outputs.solids << heuristic.path.map do |path|
+      heuristic_scale_up(path).merge(path_color)
     end
   end
 
@@ -429,19 +426,19 @@ class Heuristic
     path = nil
 
     # If cell one is above cell two
-    if cell_one.x == cell_two.x and cell_one.y > cell_two.y
+    if cell_one.x == cell_two.x && cell_one.y > cell_two.y
       # Path starts from the center of cell two and moves upward to the center of cell one
       path = [cell_two.x + 0.3, cell_two.y + 0.3, 0.4, 1.4]
     # If cell one is below cell two
-    elsif cell_one.x == cell_two.x and cell_one.y < cell_two.y
+    elsif cell_one.x == cell_two.x && cell_one.y < cell_two.y
       # Path starts from the center of cell one and moves upward to the center of cell two
       path = [cell_one.x + 0.3, cell_one.y + 0.3, 0.4, 1.4]
     # If cell one is to the left of cell two
-    elsif cell_one.x > cell_two.x and cell_one.y == cell_two.y
+    elsif cell_one.x > cell_two.x && cell_one.y == cell_two.y
       # Path starts from the center of cell two and moves rightward to the center of cell one
       path = [cell_two.x + 0.3, cell_two.y + 0.3, 1.4, 0.4]
     # If cell one is to the right of cell two
-    elsif cell_one.x < cell_two.x and cell_one.y == cell_two.y
+    elsif cell_one.x < cell_two.x && cell_one.y == cell_two.y
       # Path starts from the center of cell one and moves rightward to the center of cell two
       path = [cell_one.x + 0.3, cell_one.y + 0.3, 1.4, 0.4]
     end
@@ -456,21 +453,12 @@ class Heuristic
   # This allows for easy customization of the visual scale of the grid
   # This method scales up cells for the first grid
   def bfs_scale_up(cell)
-    # Prevents the original value of cell from being edited
-    cell = cell.clone
-
-    # If cell is just an x and y coordinate
-    if cell.size == 2
-      # Add a width and height of 1
-      cell << 1
-      cell << 1
-    end
-
-    # Scale all the values up
-    cell.map! { |value| value * grid.cell_size }
-
-    # Returns the scaled up cell
-    cell
+    x = cell.x * grid.cell_size
+    y = cell.y * grid.cell_size
+    w = cell.w.zero? ? grid.cell_size : cell.w * grid.cell_size
+    h = cell.h.zero? ? grid.cell_size : cell.h * grid.cell_size
+    {x: x, y: y, w: w, h: h}
+    # {x:, y:, w:, h:}
   end
 
   # Translates the given cell grid.width + 1 to the right and then scales up
@@ -567,7 +555,7 @@ class Heuristic
 
   # Signal that the user is going to be removing walls from the first grid
   def bfs_mouse_over_wall?
-    grid.walls.each_key do | wall |
+    grid.walls.each_key do |wall|
       return true if inputs.mouse.point.inside_rect?(bfs_scale_up(wall))
     end
 
@@ -576,7 +564,7 @@ class Heuristic
 
   # Signal that the user is going to be removing walls from the second grid
   def heuristic_mouse_over_wall?
-    grid.walls.each_key do | wall |
+    grid.walls.each_key do |wall|
       return true if inputs.mouse.point.inside_rect?(heuristic_scale_up(wall))
     end
 
@@ -670,7 +658,7 @@ class Heuristic
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
     if bfs_mouse_over_grid?
-      if grid.walls.has_key?(bfs_cell_closest_to_mouse)
+      if grid.walls.key?(bfs_cell_closest_to_mouse)
         grid.walls.delete(bfs_cell_closest_to_mouse)
         recalculate_searches
       end
@@ -683,7 +671,7 @@ class Heuristic
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
     if heuristic_mouse_over_grid?
-      if grid.walls.has_key?(heuristic_cell_closest_to_mouse)
+      if grid.walls.key?(heuristic_cell_closest_to_mouse)
         grid.walls.delete(heuristic_cell_closest_to_mouse)
         recalculate_searches
       end
@@ -692,7 +680,7 @@ class Heuristic
   # Adds a wall in the first grid in the cell the mouse is over
   def process_input_bfs_add_wall
     if bfs_mouse_over_grid?
-      unless grid.walls.has_key?(bfs_cell_closest_to_mouse)
+      unless grid.walls.key?(bfs_cell_closest_to_mouse)
         grid.walls[bfs_cell_closest_to_mouse] = true
         recalculate_searches
       end
@@ -702,7 +690,7 @@ class Heuristic
   # Adds a wall in the second grid in the cell the mouse is over
   def process_input_heuristic_add_wall
     if heuristic_mouse_over_grid?
-      unless grid.walls.has_key?(heuristic_cell_closest_to_mouse)
+      unless grid.walls.key?(heuristic_cell_closest_to_mouse)
         grid.walls[heuristic_cell_closest_to_mouse] = true
         recalculate_searches
       end
@@ -760,7 +748,7 @@ class Heuristic
   end
 
   def bfs_one_step_forward
-    return if bfs.came_from.has_key?(grid.target)
+    return if bfs.came_from.key?(grid.target)
 
     # Only runs at the beginning of the search as setup.
     if bfs.came_from.empty?
@@ -775,7 +763,7 @@ class Heuristic
       # For each of its neighbors
       adjacent_neighbors(new_frontier).each do |neighbor|
         # That have not been visited and are not walls
-        unless bfs.came_from.has_key?(neighbor) || grid.walls.has_key?(neighbor)
+        unless bfs.came_from.key?(neighbor) || grid.walls.key?(neighbor)
           # Add them to the frontier and mark them as visited
           bfs.frontier << neighbor
           bfs.came_from[neighbor] = new_frontier
@@ -785,10 +773,10 @@ class Heuristic
 
     # Sort the frontier so that cells that are in a zigzag pattern are prioritized over those in an line
     # Comment this line and let a path generate to see the difference
-    bfs.frontier = bfs.frontier.sort_by {| cell | proximity_to_star(cell) }
+    bfs.frontier = bfs.frontier.sort_by { |cell| proximity_to_star(cell) }
 
     # If the search found the target
-    if bfs.came_from.has_key?(grid.target)
+    if bfs.came_from.key?(grid.target)
       # Calculate the path between the target and star
       bfs_calc_path
     end
@@ -801,7 +789,7 @@ class Heuristic
     endpoint = grid.target
     # And the cell it came from
     next_endpoint = bfs.came_from[endpoint]
-    while endpoint and next_endpoint
+    while endpoint && next_endpoint
       # Draw a path between these two cells and store it
       path = get_path_between(endpoint, next_endpoint)
       bfs.path << path
@@ -817,7 +805,7 @@ class Heuristic
   # Can also be called when recalculating the searches after the user edited the grid
   def heuristic_one_step_forward
     # Stop the search if the target has been found
-    return if heuristic.came_from.has_key?(grid.target)
+    return if heuristic.came_from.key?(grid.target)
 
     # If the search has not begun
     if heuristic.came_from.empty?
@@ -835,7 +823,7 @@ class Heuristic
       # For each of its neighbors
       adjacent_neighbors(new_frontier).each do |neighbor|
         # That have not been visited and are not walls
-        unless heuristic.came_from.has_key?(neighbor) || grid.walls.has_key?(neighbor)
+        unless heuristic.came_from.key?(neighbor) || grid.walls.key?(neighbor)
           # Add them to the frontier and mark them as visited
           heuristic.frontier << neighbor
           heuristic.came_from[neighbor] = new_frontier
@@ -844,12 +832,12 @@ class Heuristic
     end
 
     # Sort the frontier so that cells that are in a zigzag pattern are prioritized over those in an line
-    heuristic.frontier = heuristic.frontier.sort_by {| cell | proximity_to_star(cell) }
+    heuristic.frontier = heuristic.frontier.sort_by { |cell| proximity_to_star(cell) }
     # Sort the frontier so cells that are close to the target are then prioritized
-    heuristic.frontier = heuristic.frontier.sort_by {| cell | heuristic_heuristic(cell)  }
+    heuristic.frontier = heuristic.frontier.sort_by { |cell| heuristic_heuristic(cell) }
 
     # If the search found the target
-    if heuristic.came_from.has_key?(grid.target)
+    if heuristic.came_from.key?(grid.target)
       # Calculate the path between the target and star
       heuristic_calc_path
     end
@@ -868,7 +856,7 @@ class Heuristic
     endpoint = grid.target
     # And the cell it came from
     next_endpoint = heuristic.came_from[endpoint]
-    while endpoint and next_endpoint
+    while endpoint && next_endpoint
       # Draw a path between these two cells and store it
       path = get_path_between(endpoint, next_endpoint)
       heuristic.path << path
@@ -904,11 +892,7 @@ class Heuristic
     distance_x = (grid.star.x - cell.x).abs
     distance_y = (grid.star.y - cell.y).abs
 
-    if distance_x > distance_y
-      return distance_x
-    else
-      return distance_y
-    end
+    [distance_x, distance_y].max
   end
 
   # Methods that allow code to be more concise. Subdivides args.state, which is where all variables are stored.
@@ -934,23 +918,23 @@ class Heuristic
 
   # Descriptive aliases for colors
   def default_color
-    [221, 212, 213] # Light Brown
+    { r: 221, g: 212, b: 213 }
   end
 
   def wall_color
-    [134, 134, 120] # Camo Green
+    { r: 134, g: 134, b: 120 }
   end
 
   def visited_color
-    [204, 191, 179] # Dark Brown
+    { r: 204, g: 191, b: 179 }
   end
 
   def frontier_color
-    [103, 136, 204] # Blue
+    { r: 103, g: 136, b: 204, a: 200 }
   end
 
   def path_color
-    [231, 230, 228] # Pastel White
+    { r: 231, g: 230, b: 228 }
   end
 
   def button_color
