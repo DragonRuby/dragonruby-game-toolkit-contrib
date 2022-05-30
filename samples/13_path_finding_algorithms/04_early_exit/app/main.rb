@@ -601,7 +601,6 @@ class EarlyExitBreadthFirstSearch
   end
 
   def red
-    [255, 0, 0]
     { r: 255, g: 0, b: 0 }
   end
 
