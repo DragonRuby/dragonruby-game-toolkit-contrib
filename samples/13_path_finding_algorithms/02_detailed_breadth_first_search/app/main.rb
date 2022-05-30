@@ -280,8 +280,6 @@ class DetailedBreadthFirstSearch
   # Cells in the frontier array and visited hash and walls hash are stored as x & y
   # Scaling up cells and lines when rendering allows omitting of width and height
   def scale_up(cell)
-    x = cell.x * grid.cell_size
-    y = cell.y * grid.cell_size
     if cell.size == 2
       return {
         x: cell.x * grid.cell_size,

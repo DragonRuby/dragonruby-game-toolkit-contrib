@@ -771,7 +771,6 @@ class Movement_Costs
 
   # Camo Green
   def wall_color
-    [134, 134, 120]
     { r: 134, g: 134, b: 120 }
   end
 
