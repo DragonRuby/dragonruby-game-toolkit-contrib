@@ -30,6 +30,7 @@ module Docs
       end
 
       process_collected_text unless @collected_text.empty?
+      finish_paragraph_if_needed
       send :"finish_#{@line_type}" unless @line_type == :normal
       call_processors :process_document_end
     end
@@ -73,12 +74,17 @@ module Docs
         call_processors :process_quote_start
       elsif line.start_with?('#+end_quote')
         process_collected_text
+        finish_paragraph_if_needed
         call_processors :process_quote_end
       elsif line.start_with?('1.')
         start_ordered_list line
       elsif line.start_with?('- ')
         start_unordered_list line
       else
+        if @collected_text.empty? && !@inside_paragraph && !line.empty?
+          call_processors :process_paragraph_start
+          @inside_paragraph = true
+        end
         process_text_line line
       end
     end
@@ -202,6 +208,7 @@ module Docs
     def process_text_line(line)
       if line.empty?
         process_collected_text
+        finish_paragraph_if_needed
         return
       end
 
@@ -240,6 +247,13 @@ module Docs
       end
 
       @collected_text << line[text_start..-1]
+    end
+
+    def finish_paragraph_if_needed
+      return unless @inside_paragraph
+
+      call_processors :process_paragraph_end
+      @inside_paragraph = false
     end
 
     def call_processors(method_name, *args)

@@ -15,7 +15,9 @@ def test_docs_process_header(args, assert)
     [:process_header_start, 1],
     [:process_text, 'This is a header.'],
     [:process_header_end, 1],
+    [:process_paragraph_start],
     [:process_text, 'This is text.'],
+    [:process_paragraph_end],
     [:process_header_start, 2],
     [:process_text, 'This is a sub-header.'],
     [:process_header_end, 2],
@@ -81,9 +83,11 @@ def test_docs_process_link(args, assert)
 
   assert.equal! called_methods, [
     [:process_document_start],
+    [:process_paragraph_start],
     [:process_text, 'Our Discord channel is '],
     [:process_link, { href: 'http://discord.dragonruby.org' }],
     [:process_text, '.'],
+    [:process_paragraph_end],
     [:process_document_end]
   ]
 end
@@ -95,9 +99,11 @@ def test_docs_process_inline_code(args, assert)
 
   assert.equal! called_methods, [
     [:process_document_start],
+    [:process_paragraph_start],
     [:process_text, 'Now run '],
     [:process_inline_code, 'dragonruby'],
     [:process_text, " ...did you get a window with \"Hello World!\" written in it? Good, you're officially a game developer!"],
+    [:process_paragraph_end],
     [:process_document_end]
   ]
 end
@@ -111,10 +117,14 @@ def test_docs_process_markup_at_end_of_paragraph(args, assert)
 
   assert.equal! called_methods, [
     [:process_document_start],
+    [:process_paragraph_start],
     [:process_text, 'Now run '],
     [:process_inline_code, 'dragonruby'],
+    [:process_paragraph_end],
+    [:process_paragraph_start],
     [:process_text, 'This is a link to '],
     [:process_link, { href: 'http://discord.dragonruby.org' }],
+    [:process_paragraph_end],
     [:process_document_end]
   ]
 end
@@ -136,13 +146,21 @@ def test_docs_process_quote(args, assert)
 
   assert.equal! called_methods, [
     [:process_document_start],
+    [:process_paragraph_start],
     [:process_text, 'When someone asks you:'],
+    [:process_paragraph_end],
     [:process_quote_start],
+    [:process_paragraph_start],
     [:process_text, 'What game engine do you use?'],
+    [:process_paragraph_end],
     [:process_quote_end],
+    [:process_paragraph_start],
     [:process_text, 'Reply with:'],
+    [:process_paragraph_end],
     [:process_quote_start],
+    [:process_paragraph_start],
     [:process_text, 'I am a Dragon Rider.'],
+    [:process_paragraph_end],
     [:process_quote_end],
     [:process_document_end]
   ]
@@ -160,17 +178,21 @@ def test_docs_process_paragraphs(args, assert)
 
   assert.equal! called_methods, [
     [:process_document_start],
+    [:process_paragraph_start],
     [
       :process_text,
       "Here's the most important thing you should know: Ruby lets you do some " +
       'complicated things really easily, and you can learn that stuff ' +
       "later. I'm going to show you one or two cool tricks, but that's all."
     ],
+    [:process_paragraph_end],
+    [:process_paragraph_start],
     [
       :process_text,
       "Do you know what an if statement is? A for-loop? An array? That's all " +
       "you'll need to start."
     ],
+    [:process_paragraph_end],
     [:process_document_end]
   ]
 end
@@ -201,7 +223,9 @@ def test_docs_process_ordered_list(args, assert)
     [:process_text, 'You may also want to try this free course provided at'],
     [:process_ordered_list_item_end],
     [:process_ordered_list_end],
+    [:process_paragraph_start],
     [:process_text, 'Text'],
+    [:process_paragraph_end],
     [:process_ordered_list_start],
     [:process_ordered_list_item_start],
     [:process_text, 'Another'],
@@ -230,7 +254,9 @@ def test_docs_process_unordered_list(args, assert)
 
   assert.equal! called_methods, [
     [:process_document_start],
+    [:process_paragraph_start],
     [:process_text, 'Ok, here are few rules with regards to game development with GTK:'],
+    [:process_paragraph_end],
     [:process_unordered_list_start],
     [:process_unordered_list_item_start],
     [:process_text, 'Your game is all going to happen under one function ...'],
@@ -242,7 +268,9 @@ def test_docs_process_unordered_list(args, assert)
     [:process_text, 'and has to tell the computer what to draw each time.'],
     [:process_unordered_list_item_end],
     [:process_unordered_list_end],
+    [:process_paragraph_start],
     [:process_text, 'That\'s an entire video game in one run-on sentence.'],
+    [:process_paragraph_end],
     [:process_unordered_list_start],
     [:process_unordered_list_item_start],
     [:process_text, 'another item'],
