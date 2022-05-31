@@ -235,7 +235,7 @@ class A_Star_Algorithm
 
   def render_dijkstra_grid
     # A large rect the size of the grid
-    outputs.solids << [dijkstra_scale_up(grid.rect), default_color]
+    outputs.solids << dijkstra_scale_up(grid.rect).merge(default_color)
 
     # The vertical grid lines
     for x in 0..grid.width
@@ -250,7 +250,7 @@ class A_Star_Algorithm
 
   def render_greedy_grid
     # A large rect the size of the grid
-    outputs.solids << [greedy_scale_up(grid.rect), default_color]
+    outputs.solids << greedy_scale_up(grid.rect).merge(default_color)
 
     # The vertical grid lines
     for x in 0..grid.width
@@ -265,7 +265,7 @@ class A_Star_Algorithm
 
   def render_a_star_grid
     # A large rect the size of the grid
-    outputs.solids << [a_star_scale_up(grid.rect), default_color]
+    outputs.solids << a_star_scale_up(grid.rect).merge(default_color)
 
     # The vertical grid lines
     for x in 0..grid.width
@@ -279,125 +279,129 @@ class A_Star_Algorithm
   end
 
   # Returns a vertical line for a column of the first grid
-  def dijkstra_vertical_line column
-    dijkstra_scale_up([column, 0, column, grid.height])
+  def dijkstra_vertical_line x
+    [x, 0, x, grid.height].map { |v| v * grid.cell_size }
   end
 
   # Returns a horizontal line for a column of the first grid
-  def dijkstra_horizontal_line row
-    dijkstra_scale_up([0, row, grid.width, row])
+  def dijkstra_horizontal_line y
+    [0, y, grid.width, y].map { |v| v * grid.cell_size }
   end
 
   # Returns a vertical line for a column of the second grid
-  def greedy_vertical_line column
-    dijkstra_scale_up([column + grid.width + 1, 0, column + grid.width + 1, grid.height])
+  def greedy_vertical_line x
+    translated_x = x + grid.width + 1
+    dijkstra_vertical_line(translated_x)
   end
 
   # Returns a horizontal line for a column of the second grid
-  def greedy_horizontal_line row
-    dijkstra_scale_up([grid.width + 1, row, grid.width + grid.width + 1, row])
+  def greedy_horizontal_line y
+    x = grid.width + 1
+    [x, y, x + grid.width, y].map { |v| v * grid.cell_size }
   end
 
   # Returns a vertical line for a column of the third grid
-  def a_star_vertical_line column
-    dijkstra_scale_up([column + (grid.width * 2) + 2, 0, column + (grid.width * 2) + 2, grid.height])
+  def a_star_vertical_line x
+    translated_x = x + grid.width + 1 + grid.width + 1
+    dijkstra_vertical_line(translated_x)
   end
 
   # Returns a horizontal line for a column of the third grid
-  def a_star_horizontal_line row
-    dijkstra_scale_up([(grid.width * 2) + 2, row, (grid.width * 2) + grid.width + 2, row])
+  def a_star_horizontal_line y
+    x = grid.width + 1 + grid.width + 1
+    [x, y, x + grid.width, y].map { |v| v * grid.cell_size }
   end
 
   # Renders the star on the first grid
   def render_dijkstra_star
-    outputs.sprites << [dijkstra_scale_up(grid.star), 'star.png']
+    outputs.sprites << dijkstra_scale_up(grid.star).merge({ path: 'star.png' })
   end
 
   # Renders the star on the second grid
   def render_greedy_star
-    outputs.sprites << [greedy_scale_up(grid.star), 'star.png']
+    outputs.sprites << greedy_scale_up(grid.star).merge({ path: 'star.png' })
   end
 
   # Renders the star on the third grid
   def render_a_star_star
-    outputs.sprites << [a_star_scale_up(grid.star), 'star.png']
+    outputs.sprites << a_star_scale_up(grid.star).merge({ path: 'star.png' })
   end
 
   # Renders the target on the first grid
   def render_dijkstra_target
-    outputs.sprites << [dijkstra_scale_up(grid.target), 'target.png']
+    outputs.sprites << dijkstra_scale_up(grid.target).merge({ path: 'target.png' })
   end
 
   # Renders the target on the second grid
   def render_greedy_target
-    outputs.sprites << [greedy_scale_up(grid.target), 'target.png']
+    outputs.sprites << greedy_scale_up(grid.target).merge({ path: 'target.png' })
   end
 
   # Renders the target on the third grid
   def render_a_star_target
-    outputs.sprites << [a_star_scale_up(grid.target), 'target.png']
+    outputs.sprites << a_star_scale_up(grid.target).merge({ path: 'target.png' })
   end
 
   # Renders the walls on the first grid
   def render_dijkstra_walls
-    grid.walls.each_key do | wall |
-      outputs.solids << [dijkstra_scale_up(wall), wall_color]
+    outputs.solids << grid.walls.map do |key, value|
+      dijkstra_scale_up(key).merge(wall_color)
     end
   end
 
   # Renders the walls on the second grid
   def render_greedy_walls
-    grid.walls.each_key do | wall |
-      outputs.solids << [greedy_scale_up(wall), wall_color]
+    outputs.solids << grid.walls.map do |key, value|
+      greedy_scale_up(key).merge(wall_color)
     end
   end
 
   # Renders the walls on the third grid
   def render_a_star_walls
-    grid.walls.each_key do | wall |
-      outputs.solids << [a_star_scale_up(wall), wall_color]
+    outputs.solids << grid.walls.map do |key, value|
+      a_star_scale_up(key).merge(wall_color)
     end
   end
 
   # Renders the visited cells on the first grid
   def render_dijkstra_visited
-    dijkstra.came_from.each_key do | visited_cell |
-      outputs.solids << [dijkstra_scale_up(visited_cell), visited_color]
+    outputs.solids << dijkstra.came_from.map do |key, value|
+      dijkstra_scale_up(key).merge(visited_color)
     end
   end
 
   # Renders the visited cells on the second grid
   def render_greedy_visited
-    greedy.came_from.each_key do | visited_cell |
-      outputs.solids << [greedy_scale_up(visited_cell), visited_color]
+    outputs.solids << greedy.came_from.map do |key, value|
+      greedy_scale_up(key).merge(visited_color)
     end
   end
 
   # Renders the visited cells on the third grid
   def render_a_star_visited
-    a_star.came_from.each_key do | visited_cell |
-      outputs.solids << [a_star_scale_up(visited_cell), visited_color]
+    outputs.solids << a_star.came_from.map do |key, value|
+      a_star_scale_up(key).merge(visited_color)
     end
   end
 
   # Renders the path found by the breadth first search on the first grid
   def render_dijkstra_path
-    dijkstra.path.each do | path |
-      outputs.solids << [dijkstra_scale_up(path), path_color]
+    outputs.solids << dijkstra.path.map do |path|
+      dijkstra_scale_up(path).merge(path_color)
     end
   end
 
   # Renders the path found by the greedy search on the second grid
   def render_greedy_path
-    greedy.path.each do | path |
-      outputs.solids << [greedy_scale_up(path), path_color]
+    outputs.solids << greedy.path.map do |path|
+      greedy_scale_up(path).merge(path_color)
     end
   end
 
   # Renders the path found by the a_star search on the third grid
   def render_a_star_path
-    a_star.path.each do | path |
-      outputs.solids << [a_star_scale_up(path), path_color]
+    outputs.solids << a_star.path.map do |path|
+      a_star_scale_up(path).merge(path_color)
     end
   end
 
@@ -433,21 +437,11 @@ class A_Star_Algorithm
   # This allows for easy customization of the visual scale of the grid
   # This method scales up cells for the first grid
   def dijkstra_scale_up(cell)
-    # Prevents the original value of cell from being edited
-    cell = cell.clone
-
-    # If cell is just an x and y coordinate
-    if cell.size == 2
-      # Add a width and height of 1
-      cell << 1
-      cell << 1
-    end
-
-    # Scale all the values up
-    cell.map! { |value| value * grid.cell_size }
-
-    # Returns the scaled up cell
-    cell
+    x = cell.x * grid.cell_size
+    y = cell.y * grid.cell_size
+    w = cell.w.zero? ? grid.cell_size : cell.w * grid.cell_size
+    h = cell.h.zero? ? grid.cell_size : cell.h * grid.cell_size
+    {x: x, y: y, w: w, h: h}
   end
 
   # Translates the given cell grid.width + 1 to the right and then scales up
@@ -985,19 +979,19 @@ class A_Star_Algorithm
 
   # Descriptive aliases for colors
   def default_color
-    [221, 212, 213] # Light Brown
+    { r: 221, g: 212, b: 213 }
   end
 
   def wall_color
-    [134, 134, 120] # Camo Green
+    { r: 134, g: 134, b: 120 }
   end
 
   def visited_color
-    [204, 191, 179] # Dark Brown
+    { r: 204, g: 191, b: 179 }
   end
 
   def path_color
-    [231, 230, 228] # Pastel White
+    { r: 231, g: 230, b: 228 }
   end
 
   def button_color
