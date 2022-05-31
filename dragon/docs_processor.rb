@@ -221,7 +221,7 @@ module Docs
       while index < chars.length
         char = chars[index]
         if char == '[' && chars[index + 1] == '['
-          @collected_text << line[text_start..index - 1]
+          @collected_text << line[text_start..index - 1] unless text_start == index
           process_collected_text
 
           index += 2
@@ -235,7 +235,7 @@ module Docs
           text_start = index
         elsif char == '~'
           was_inside_code = @active_markups.last == :inline_code
-          @collected_text << line[text_start..index - 1]
+          @collected_text << line[text_start..index - 1] unless text_start == index
           process_collected_text
 
           index += 1

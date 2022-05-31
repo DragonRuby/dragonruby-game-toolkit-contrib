@@ -129,6 +129,27 @@ def test_docs_process_markup_at_end_of_paragraph(args, assert)
   ]
 end
 
+def test_docs_process_markup_at_beginning_of_paragraph(args, assert)
+  called_methods = process_doc_string <<~DOC
+    ~dragonruby~ is the executable.
+
+    [[http://discord.dragonruby.org]] is where you find the Discord.
+  DOC
+
+  assert.equal! called_methods, [
+    [:process_document_start],
+    [:process_paragraph_start],
+    [:process_inline_code, 'dragonruby'],
+    [:process_text, ' is the executable.'],
+    [:process_paragraph_end],
+    [:process_paragraph_start],
+    [:process_link, { href: 'http://discord.dragonruby.org' }],
+    [:process_text, ' is where you find the Discord.'],
+    [:process_paragraph_end],
+    [:process_document_end]
+  ]
+end
+
 def test_docs_process_quote(args, assert)
   called_methods = process_doc_string <<~DOC
     When someone asks you:
