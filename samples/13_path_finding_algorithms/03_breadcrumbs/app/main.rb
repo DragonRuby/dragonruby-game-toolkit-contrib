@@ -364,7 +364,7 @@ class Breadcrumbs
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
     if mouse_inside_grid?
-      if grid.walls.has_key?(cell_closest_to_mouse)
+      if grid.walls.key?(cell_closest_to_mouse)
         grid.walls.delete(cell_closest_to_mouse)
         reset_search
       end
@@ -374,7 +374,7 @@ class Breadcrumbs
   # Adds a wall in the first grid in the cell the mouse is over
   def input_add_wall
     if mouse_inside_grid?
-      unless grid.walls.has_key?(cell_closest_to_mouse)
+      unless grid.walls.key?(cell_closest_to_mouse)
         grid.walls[cell_closest_to_mouse] = true
         reset_search
       end

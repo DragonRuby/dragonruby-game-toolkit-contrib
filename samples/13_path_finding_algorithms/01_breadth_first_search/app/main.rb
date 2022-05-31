@@ -467,7 +467,7 @@ class BreadthFirstSearch
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
     if mouse_inside_grid?
-      if state.walls.has_key?(cell_closest_to_mouse)
+      if state.walls.key?(cell_closest_to_mouse)
         state.walls.delete(cell_closest_to_mouse)
         recalculate
       end
@@ -477,7 +477,7 @@ class BreadthFirstSearch
   # Adds walls at cells under the cursor
   def input_add_wall
     if mouse_inside_grid?
-      unless state.walls.has_key?(cell_closest_to_mouse)
+      unless state.walls.key?(cell_closest_to_mouse)
         state.walls[cell_closest_to_mouse] = true
         recalculate
       end
@@ -539,7 +539,7 @@ class BreadthFirstSearch
       # For each of its neighbors
       adjacent_neighbors(new_frontier).each do |neighbor|
         # That have not been visited and are not walls
-        unless state.visited.has_key?(neighbor) || state.walls.has_key?(neighbor)
+        unless state.visited.key?(neighbor) || state.walls.key?(neighbor)
           # Add them to the frontier and mark them as visited
           state.frontier << neighbor
           state.visited[neighbor] = true

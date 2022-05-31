@@ -410,19 +410,19 @@ class A_Star_Algorithm
     path = []
 
     # If cell one is above cell two
-    if cell_one.x == cell_two.x and cell_one.y > cell_two.y
+    if cell_one.x == cell_two.x && cell_one.y > cell_two.y
       # Path starts from the center of cell two and moves upward to the center of cell one
       path = [cell_two.x + 0.3, cell_two.y + 0.3, 0.4, 1.4]
     # If cell one is below cell two
-    elsif cell_one.x == cell_two.x and cell_one.y < cell_two.y
+    elsif cell_one.x == cell_two.x && cell_one.y < cell_two.y
       # Path starts from the center of cell one and moves upward to the center of cell two
       path = [cell_one.x + 0.3, cell_one.y + 0.3, 0.4, 1.4]
     # If cell one is to the left of cell two
-    elsif cell_one.x > cell_two.x and cell_one.y == cell_two.y
+    elsif cell_one.x > cell_two.x && cell_one.y == cell_two.y
       # Path starts from the center of cell two and moves rightward to the center of cell one
       path = [cell_two.x + 0.3, cell_two.y + 0.3, 1.4, 0.4]
     # If cell one is to the right of cell two
-    elsif cell_one.x < cell_two.x and cell_one.y == cell_two.y
+    elsif cell_one.x < cell_two.x && cell_one.y == cell_two.y
       # Path starts from the center of cell one and moves rightward to the center of cell two
       path = [cell_one.x + 0.3, cell_one.y + 0.3, 1.4, 0.4]
     end
@@ -641,7 +641,7 @@ class A_Star_Algorithm
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
     if greedy_mouse_over_grid?
-      if grid.walls.has_key?(greedy_cell_closest_to_mouse)
+      if grid.walls.key?(greedy_cell_closest_to_mouse)
         grid.walls.delete(greedy_cell_closest_to_mouse)
         reset_searches
       end
@@ -654,7 +654,7 @@ class A_Star_Algorithm
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
     if a_star_mouse_over_grid?
-      if grid.walls.has_key?(a_star_cell_closest_to_mouse)
+      if grid.walls.key?(a_star_cell_closest_to_mouse)
         grid.walls.delete(a_star_cell_closest_to_mouse)
         reset_searches
       end
@@ -664,7 +664,7 @@ class A_Star_Algorithm
   # Adds a wall in the first grid in the cell the mouse is over
   def process_input_dijkstra_add_wall
     if dijkstra_mouse_over_grid?
-      unless grid.walls.has_key?(dijkstra_cell_closest_to_mouse)
+      unless grid.walls.key?(dijkstra_cell_closest_to_mouse)
         grid.walls[dijkstra_cell_closest_to_mouse] = true
         reset_searches
       end
@@ -674,7 +674,7 @@ class A_Star_Algorithm
   # Adds a wall in the second grid in the cell the mouse is over
   def process_input_greedy_add_wall
     if greedy_mouse_over_grid?
-      unless grid.walls.has_key?(greedy_cell_closest_to_mouse)
+      unless grid.walls.key?(greedy_cell_closest_to_mouse)
         grid.walls[greedy_cell_closest_to_mouse] = true
         reset_searches
       end
@@ -684,7 +684,7 @@ class A_Star_Algorithm
   # Adds a wall in the third grid in the cell the mouse is over
   def process_input_a_star_add_wall
     if a_star_mouse_over_grid?
-      unless grid.walls.has_key?(a_star_cell_closest_to_mouse)
+      unless grid.walls.key?(a_star_cell_closest_to_mouse)
         grid.walls[a_star_cell_closest_to_mouse] = true
         reset_searches
       end
@@ -771,13 +771,13 @@ class A_Star_Algorithm
     dijkstra.cost_so_far[grid.star] = 0
 
     # Until the target is found or there are no more cells to explore from
-    until dijkstra.came_from.has_key?(grid.target) or dijkstra.frontier.empty?
+    until dijkstra.came_from.key?(grid.target) or dijkstra.frontier.empty?
       # Take the next frontier cell. The first element is the cell, the second is the priority.
       new_frontier = dijkstra.frontier.shift#[0]
       # For each of its neighbors
       adjacent_neighbors(new_frontier).each do | neighbor |
         # That have not been visited and are not walls
-        unless dijkstra.came_from.has_key?(neighbor) or grid.walls.has_key?(neighbor)
+        unless dijkstra.came_from.key?(neighbor) or grid.walls.key?(neighbor)
           # Add them to the frontier and mark them as visited
           dijkstra.frontier << neighbor
           dijkstra.came_from[neighbor] = new_frontier
@@ -793,7 +793,7 @@ class A_Star_Algorithm
 
 
     # If the search found the target
-    if dijkstra.came_from.has_key?(grid.target)
+    if dijkstra.came_from.key?(grid.target)
       # Calculate the path between the target and star
       dijkstra_calc_path
     end
@@ -805,13 +805,13 @@ class A_Star_Algorithm
     greedy.came_from[grid.star] = nil
 
     # Until the target is found or there are no more cells to explore from
-    until greedy.came_from.has_key?(grid.target) or greedy.frontier.empty?
+    until greedy.came_from.key?(grid.target) or greedy.frontier.empty?
       # Take the next frontier cell
       new_frontier = greedy.frontier.shift
       # For each of its neighbors
       adjacent_neighbors(new_frontier).each do | neighbor |
         # That have not been visited and are not walls
-        unless greedy.came_from.has_key?(neighbor) or grid.walls.has_key?(neighbor)
+        unless greedy.came_from.key?(neighbor) or grid.walls.key?(neighbor)
           # Add them to the frontier and mark them as visited
           greedy.frontier << neighbor
           greedy.came_from[neighbor] = new_frontier
@@ -826,7 +826,7 @@ class A_Star_Algorithm
 
 
     # If the search found the target
-    if greedy.came_from.has_key?(grid.target)
+    if greedy.came_from.key?(grid.target)
       # Calculate the path between the target and star
       greedy_calc_path
     end
@@ -839,14 +839,14 @@ class A_Star_Algorithm
     a_star.frontier << grid.star
 
     # Until there are no more cells to explore from or the search has found the target
-    until a_star.frontier.empty? or a_star.came_from.has_key?(grid.target)
+    until a_star.frontier.empty? or a_star.came_from.key?(grid.target)
       # Get the next cell to expand from
       current_frontier = a_star.frontier.shift
 
       # For each of that cells neighbors
       adjacent_neighbors(current_frontier).each do | neighbor |
         # That have not been visited and are not walls
-        unless a_star.came_from.has_key?(neighbor) or grid.walls.has_key?(neighbor)
+        unless a_star.came_from.key?(neighbor) or grid.walls.key?(neighbor)
           # Add them to the frontier and mark them as visited
           a_star.frontier << neighbor
           a_star.came_from[neighbor] = current_frontier
@@ -861,7 +861,7 @@ class A_Star_Algorithm
     end
 
     # If the search found the target
-    if a_star.came_from.has_key?(grid.target)
+    if a_star.came_from.key?(grid.target)
       # Calculate the path between the target and star
       a_star_calc_path
     end
@@ -874,7 +874,7 @@ class A_Star_Algorithm
     endpoint = grid.target
     # And the cell it came from
     next_endpoint = dijkstra.came_from[endpoint]
-    while endpoint and next_endpoint
+    while endpoint && next_endpoint
       # Draw a path between these two cells and store it
       path = get_path_between(endpoint, next_endpoint)
       dijkstra.path << path
@@ -898,7 +898,7 @@ class A_Star_Algorithm
     endpoint = grid.target
     # And the cell it came from
     next_endpoint = greedy.came_from[endpoint]
-    while endpoint and next_endpoint
+    while endpoint && next_endpoint
       # Draw a path between these two cells and store it
       path = get_path_between(endpoint, next_endpoint)
       greedy.path << path
@@ -917,7 +917,7 @@ class A_Star_Algorithm
     # And the cell it came from
     next_endpoint = a_star.came_from[endpoint]
 
-    while endpoint and next_endpoint
+    while endpoint && next_endpoint
       # Draw a path between these two cells and store it
       path = get_path_between(endpoint, next_endpoint)
       a_star.path << path
