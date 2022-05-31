@@ -1,3 +1,5 @@
+# This program is inspired by https://www.redblobgames.com/pathfinding/a-star/introduction.html
+
 class Breadcrumbs
   attr_gtk
 
@@ -167,13 +169,14 @@ class Breadcrumbs
       if parent && child
         arrow_cell = [(child.x + parent.x) / 2, (child.y + parent.y) / 2]
         if parent.x > child.x # If the parent cell is to the right of the child cell
-          outputs.sprites << [scale_up(arrow_cell), 'arrow.png', 0] # Point the arrow to the right
+          # Point arrow right
+          outputs.sprites << scale_up(arrow_cell).merge({ path: 'arrow.png', angle: 0})
         elsif parent.x < child.x # If the parent cell is to the right of the child cell
-          outputs.sprites << [scale_up(arrow_cell), 'arrow.png', 180] # Point the arrow to the right
+          outputs.sprites << scale_up(arrow_cell).merge({ path: 'arrow.png', angle: 180})
         elsif parent.y > child.y # If the parent cell is to the right of the child cell
-          outputs.sprites << [scale_up(arrow_cell), 'arrow.png', 90] # Point the arrow to the right
+          outputs.sprites << scale_up(arrow_cell).merge({ path: 'arrow.png', angle: 90})
         elsif parent.y < child.y # If the parent cell is to the right of the child cell
-          outputs.sprites << [scale_up(arrow_cell), 'arrow.png', 270] # Point the arrow to the right
+          outputs.sprites << scale_up(arrow_cell).merge({ path: 'arrow.png', angle: 270})
         end
       end
     end
@@ -189,7 +192,7 @@ class Breadcrumbs
 
   # Draws both grids
   def render_unvisited
-    outputs.solids << [scale_up(grid.rect), unvisited_color]
+    outputs.solids << scale_up(grid.rect).merge(unvisited_color)
   end
 
   # Draws grid lines to show the division of the grid into cells
@@ -204,30 +207,30 @@ class Breadcrumbs
   end
 
   # Easy way to draw vertical lines given an index
-  def vertical_line column
-    scale_up([column, 0, column, grid.height])
+  def vertical_line x
+    [x, 0, x, grid.height].map { |v| v * grid.cell_size }
   end
 
   # Easy way to draw horizontal lines given an index
-  def horizontal_line row
-    scale_up([0, row, grid.width, row])
+  def horizontal_line y
+    [0, y, grid.width, y].map { |v| v * grid.cell_size }
   end
 
   # Draws the walls on both grids
   def render_walls
-    grid.walls.each_key do |wall|
-      outputs.solids << [scale_up(wall), wall_color]
+    outputs.solids << grid.walls.map do |key, value|
+      scale_up(key).merge(wall_color)
     end
   end
 
   # Renders the star on both grids
   def render_star
-    outputs.sprites << [scale_up(grid.star), 'star.png']
+    outputs.sprites << scale_up(grid.star).merge({ path: 'star.png' })
   end
 
   # Renders the target on both grids
   def render_target
-    outputs.sprites << [scale_up(grid.target), 'target.png']
+    outputs.sprites << scale_up(grid.target).merge({ path: 'target.png'})
   end
 
   # Labels the grids
@@ -264,21 +267,11 @@ class Breadcrumbs
   # Objects are scaled up according to the grid.cell_size variable
   # This allows for easy customization of the visual scale of the grid
   def scale_up(cell)
-    # Prevents the original value of cell from being edited
-    cell = cell.clone
-
-    # If cell is just an x and y coordinate
-    if cell.size == 2
-      # Add a width and height of 1
-      cell << 1
-      cell << 1
-    end
-
-    # Scale all the values up
-    cell.map! { |value| value * grid.cell_size }
-
-    # Returns the scaled up cell
-    cell
+    x = cell.x * grid.cell_size
+    y = cell.y * grid.cell_size
+    w = cell.w.zero? ? grid.cell_size : cell.w * grid.cell_size
+    h = cell.h.zero? ? grid.cell_size : cell.h * grid.cell_size
+    { x: x, y: y, w: w, h: h }
   end
 
   # This method processes user input every tick
@@ -476,13 +469,12 @@ class Breadcrumbs
 
   # Light brown
   def unvisited_color
-    [221, 212, 213]
-    # [255, 255, 255]
+    { r: 221, g: 212, b: 213 }
   end
 
   # Camo Green
   def wall_color
-    [134, 134, 120]
+    { r: 134, g: 134, b: 120 }
   end
 
   # Pastel White
