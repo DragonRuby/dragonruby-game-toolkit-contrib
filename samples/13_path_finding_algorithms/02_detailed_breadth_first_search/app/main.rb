@@ -140,7 +140,7 @@ class DetailedBreadthFirstSearch
     # Draws the gray button, and a black border
     # The border separates the buttons visually
     outputs.solids  << [buttons.left, gray]
-    outputs.borders << [buttons.left, black]
+    outputs.borders << [buttons.left]
 
     # Renders an explanatory label in the center of the button
     # Explains to the user what the button does
@@ -155,7 +155,7 @@ class DetailedBreadthFirstSearch
     # Draws the gray button, and a black border
     # The border separates the buttons visually
     outputs.solids  << [buttons.right, gray]
-    outputs.borders << [buttons.right, black]
+    outputs.borders << [buttons.right]
 
     # Renders an explanatory label in the center of the button
     # Explains to the user what the button does
@@ -601,18 +601,12 @@ class DetailedBreadthFirstSearch
 
   # The neighbors of the next frontier to be expanded
   def highlighter_green
-    [65, 191, 127]
     {r: 65, g: 191, b: 127}
   end
 
   # Button background
   def gray
     [190, 190, 190]
-  end
-
-  # Button outline
-  def black
-    [0, 0, 0]
   end
 
   # These methods make the code more concise

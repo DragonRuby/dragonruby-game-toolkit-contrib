@@ -207,7 +207,7 @@ class BreadthFirstSearch
     # Draws the gray button, and a black border
     # The border separates the buttons visually
     outputs.solids  << [buttons.left, gray]
-    outputs.borders << [buttons.left, black]
+    outputs.borders << [buttons.left]
 
     # Renders an explanatory label in the center of the button
     # Explains to the user what the button does
@@ -222,7 +222,7 @@ class BreadthFirstSearch
     # Draws the gray button, and a black border
     # The border separates the buttons visually
     outputs.solids  << [buttons.center, gray]
-    outputs.borders << [buttons.center, black]
+    outputs.borders << [buttons.center]
 
     # Renders an explanatory label in the center of the button
     # Explains to the user what the button does
@@ -238,7 +238,7 @@ class BreadthFirstSearch
     # Draws the gray button, and a black border
     # The border separates the buttons visually
     outputs.solids  << [buttons.right, gray]
-    outputs.borders << [buttons.right, black]
+    outputs.borders << [buttons.right]
 
     # Renders an explanatory label in the center of the button
     # Explains to the user what the button does
@@ -624,9 +624,6 @@ class BreadthFirstSearch
     inputs.mouse.point.inside_rect?(scale_up([0, 0, grid.width, grid.height]))
   end
 
-
-  # These methods provide handy aliases to colors
-
   # Light brown
   def unvisited_color
     [221, 212, 213]
@@ -639,27 +636,22 @@ class BreadthFirstSearch
 
   # Dark Brown
   def visited_color
-    {r: 204, g: 191, b: 179}
+    { r: 204, g: 191, b: 179 }
   end
 
   # Blue
   def frontier_color
-    {r: 103, g: 136, b: 204}
+    { r: 103, g: 136, b: 204 }
   end
 
   # Camo Green
   def wall_color
-    {r: 134, g: 134, b: 120}
+    { r: 134, g: 134, b: 120 }
   end
 
   # Button Background
   def gray
     [190, 190, 190]
-  end
-
-  # Button Outline
-  def black
-    [0, 0, 0]
   end
 
   # These methods make the code more concise
