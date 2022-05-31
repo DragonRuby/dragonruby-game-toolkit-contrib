@@ -11,6 +11,7 @@ def test_docs_process_header(args, assert)
   DOC
 
   assert.equal! called_methods, [
+    [:process_document_start],
     [:process_header_start, 1],
     [:process_text, 'This is a header.'],
     [:process_header_end, 1],
@@ -26,7 +27,8 @@ def test_docs_process_header(args, assert)
     [:process_header_end, 4],
     [:process_header_start, 5],
     [:process_text, 'This is the deepest header.'],
-    [:process_header_end, 5]
+    [:process_header_end, 5],
+    [:process_document_end]
   ]
 end
 
@@ -36,10 +38,12 @@ def test_header_with_markup(args, assert)
   DOC
 
   assert.equal! called_methods, [
+    [:process_document_start],
     [:process_header_start, 1],
     [:process_text, 'DOCS: '],
     [:process_inline_code, 'GTK::Runtime'],
-    [:process_header_end, 1]
+    [:process_header_end, 1],
+    [:process_document_end]
   ]
 end
 
@@ -57,12 +61,14 @@ def test_docs_process_code_block(args, assert)
   DOC
 
   assert.equal! called_methods, [
+    [:process_document_start],
     [:process_code_block_start, :ruby],
     [:process_code_block_content, "def tick args\n  args.outputs.labels << [580, 400, 'Hello World!']\nend\n"],
     [:process_code_block_end, :ruby],
     [:process_code_block_start],
     [:process_code_block_content, "shell_command\n"],
-    [:process_code_block_end]
+    [:process_code_block_end],
+    [:process_document_end]
   ]
 end
 
@@ -72,9 +78,11 @@ def test_docs_process_link(args, assert)
   DOC
 
   assert.equal! called_methods, [
+    [:process_document_start],
     [:process_text, 'Our Discord channel is '],
     [:process_link, { href: 'http://discord.dragonruby.org' }],
-    [:process_text, '.']
+    [:process_text, '.'],
+    [:process_document_end]
   ]
 end
 
@@ -84,9 +92,11 @@ def test_docs_process_inline_code(args, assert)
   DOC
 
   assert.equal! called_methods, [
+    [:process_document_start],
     [:process_text, 'Now run '],
     [:process_inline_code, 'dragonruby'],
-    [:process_text, " ...did you get a window with \"Hello World!\" written in it? Good, you're officially a game developer!"]
+    [:process_text, " ...did you get a window with \"Hello World!\" written in it? Good, you're officially a game developer!"],
+    [:process_document_end]
   ]
 end
 
@@ -98,10 +108,12 @@ def test_docs_process_markup_at_end_of_paragraph(args, assert)
   DOC
 
   assert.equal! called_methods, [
+    [:process_document_start],
     [:process_text, 'Now run '],
     [:process_inline_code, 'dragonruby'],
     [:process_text, 'This is a link to '],
-    [:process_link, { href: 'http://discord.dragonruby.org' }]
+    [:process_link, { href: 'http://discord.dragonruby.org' }],
+    [:process_document_end]
   ]
 end
 
@@ -121,6 +133,7 @@ def test_docs_process_quote(args, assert)
   DOC
 
   assert.equal! called_methods, [
+    [:process_document_start],
     [:process_text, 'When someone asks you:'],
     [:process_quote_start],
     [:process_text, 'What game engine do you use?'],
@@ -128,7 +141,8 @@ def test_docs_process_quote(args, assert)
     [:process_text, 'Reply with:'],
     [:process_quote_start],
     [:process_text, 'I am a Dragon Rider.'],
-    [:process_quote_end]
+    [:process_quote_end],
+    [:process_document_end]
   ]
 end
 
@@ -143,6 +157,7 @@ def test_docs_process_paragraphs(args, assert)
   DOC
 
   assert.equal! called_methods, [
+    [:process_document_start],
     [
       :process_text,
       "Here's the most important thing you should know: Ruby lets you do some " +
@@ -153,7 +168,8 @@ def test_docs_process_paragraphs(args, assert)
       :process_text,
       "Do you know what an if statement is? A for-loop? An array? That's all " +
       "you'll need to start."
-    ]
+    ],
+    [:process_document_end]
   ]
 end
 
@@ -171,6 +187,7 @@ def test_docs_process_ordered_list(args, assert)
   DOC
 
   assert.equal! called_methods, [
+    [:process_document_start],
     [:process_ordered_list_start],
     [:process_ordered_list_item_start],
     [:process_text, 'Intermediate Introduction to Ruby Syntax'],
@@ -190,7 +207,8 @@ def test_docs_process_ordered_list(args, assert)
     [:process_ordered_list_item_start],
     [:process_text, 'List'],
     [:process_ordered_list_item_end],
-    [:process_ordered_list_end]
+    [:process_ordered_list_end],
+    [:process_document_end]
   ]
 end
 
@@ -209,6 +227,7 @@ def test_docs_process_unordered_list(args, assert)
   DOC
 
   assert.equal! called_methods, [
+    [:process_document_start],
     [:process_text, 'Ok, here are few rules with regards to game development with GTK:'],
     [:process_unordered_list_start],
     [:process_unordered_list_item_start],
@@ -226,7 +245,8 @@ def test_docs_process_unordered_list(args, assert)
     [:process_unordered_list_item_start],
     [:process_text, 'another item'],
     [:process_unordered_list_item_end],
-    [:process_unordered_list_end]
+    [:process_unordered_list_end],
+    [:process_document_end]
   ]
 end
 

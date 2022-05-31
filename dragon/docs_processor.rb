@@ -17,6 +17,7 @@ module Docs
     end
 
     def process(doc_string)
+      call_processors :process_document_start
       @lines = doc_string.strip.split("\n")
       @index = 0
 
@@ -30,6 +31,7 @@ module Docs
 
       process_collected_text unless @collected_text.empty?
       send :"finish_#{@line_type}" unless @line_type == :normal
+      call_processors :process_document_end
     end
 
     private
