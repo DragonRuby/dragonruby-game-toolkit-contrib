@@ -111,7 +111,7 @@ module Docs
       if line.start_with?("#+end_src")
         finish_code_block
       else
-        @code_block_content << line[@code_block_indent..-1]
+        @code_block_content << (line[@code_block_indent..-1] || '')
         @code_block_content << "\n"
       end
     end
