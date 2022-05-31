@@ -141,9 +141,10 @@ class BreadthFirstSearch
     # They are here for user customization
     # Editing these might require recentering the text inside them
     # Those values can be found in the render_button methods
-    args.state.buttons.left   = [450, 600, 50, 50]
-    args.state.buttons.center = [500, 600, 200, 50]
-    args.state.buttons.right  = [700, 600, 50, 50]
+
+    args.state.buttons.left   = { x: 450, y: 600, w: 50,  h: 50 }
+    args.state.buttons.center = { x: 500, y: 600, w: 200, h: 50 }
+    args.state.buttons.right  = { x: 700, y: 600, w: 50,  h: 50 }
 
     # The variables below are related to the slider
     # They allow the user to customize them
@@ -206,45 +207,45 @@ class BreadthFirstSearch
   def render_left_button
     # Draws the gray button, and a black border
     # The border separates the buttons visually
-    outputs.solids  << [buttons.left, gray]
-    outputs.borders << [buttons.left]
+    outputs.solids  << buttons.left.merge(gray)
+    outputs.borders << buttons.left
 
     # Renders an explanatory label in the center of the button
     # Explains to the user what the button does
     # If the button size is changed, the label might need to be edited as well
     # to keep the label in the center of the button
-    label_x = buttons.left.x + 20
-    label_y = buttons.left.y + 35
-    outputs.labels  << [label_x, label_y, "<"]
+    label_x = buttons.left[:x] + 20
+    label_y = buttons.left[:y] + 35
+    outputs.labels << { x: label_x, y: label_y, text: '<' }
   end
 
   def render_center_button
     # Draws the gray button, and a black border
     # The border separates the buttons visually
-    outputs.solids  << [buttons.center, gray]
-    outputs.borders << [buttons.center]
+    outputs.solids  << buttons.center.merge(gray)
+    outputs.borders << buttons.center
 
     # Renders an explanatory label in the center of the button
     # Explains to the user what the button does
     # If the button size is changed, the label might need to be edited as well
     # to keep the label in the center of the button
-    label_x    = buttons.center.x + 37
-    label_y    = buttons.center.y + 35
+    label_x = buttons.center[:x] + 37
+    label_y = buttons.center[:y] + 35
     label_text = state.play ? "Pause Animation" : "Play Animation"
-    outputs.labels << [label_x, label_y, label_text]
+    outputs.labels << { x: label_x, y: label_y, text: label_text }
   end
 
   def render_right_button
     # Draws the gray button, and a black border
     # The border separates the buttons visually
-    outputs.solids  << [buttons.right, gray]
-    outputs.borders << [buttons.right]
+    outputs.solids  << buttons.right.merge(gray)
+    outputs.borders << buttons.right
 
     # Renders an explanatory label in the center of the button
     # Explains to the user what the button does
-    label_x = buttons.right.x + 20
-    label_y = buttons.right.y + 35
-    outputs.labels  << [label_x, label_y, ">"]
+    label_x = buttons.right[:x] + 20
+    label_y = buttons.right[:y] + 35
+    outputs.labels << { x: label_x, y: label_y, text: ">" }
   end
 
   # Draws the slider so the user can move it and see the progress of the search
@@ -279,7 +280,7 @@ class BreadthFirstSearch
   end
 
   # Easy way to draw vertical lines given an index
-  def vertical_line column
+  def vertical_line x
     scale_up([column, 0, column, grid.height])
   end
 
@@ -651,7 +652,7 @@ class BreadthFirstSearch
 
   # Button Background
   def gray
-    [190, 190, 190]
+    { r: 190, g: 190, b: 190 }
   end
 
   # These methods make the code more concise
