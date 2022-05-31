@@ -1,4 +1,4 @@
-def test_docs_process_header(args, assert)
+def test_docs_process_header(_args, assert)
   called_methods = process_doc_string <<~DOC
     * This is a header.
 
@@ -34,7 +34,7 @@ def test_docs_process_header(args, assert)
   ]
 end
 
-def test_header_with_markup(args, assert)
+def test_header_with_markup(_args, assert)
   called_methods = process_doc_string <<~DOC
     * DOCS: ~GTK::Runtime~
   DOC
@@ -49,7 +49,7 @@ def test_header_with_markup(args, assert)
   ]
 end
 
-def test_docs_process_code_block(args, assert)
+def test_docs_process_code_block(_args, assert)
   called_methods = process_doc_string <<~DOC
     #+begin_src ruby
       def tick args
@@ -76,7 +76,7 @@ def test_docs_process_code_block(args, assert)
   ]
 end
 
-def test_docs_process_link(args, assert)
+def test_docs_process_link(_args, assert)
   called_methods = process_doc_string <<~DOC
     Our Discord channel is [[http://discord.dragonruby.org]].
   DOC
@@ -92,7 +92,7 @@ def test_docs_process_link(args, assert)
   ]
 end
 
-def test_docs_process_inline_code(args, assert)
+def test_docs_process_inline_code(_args, assert)
   called_methods = process_doc_string <<~DOC
     Now run ~dragonruby~ ...did you get a window with "Hello World!" written in it? Good, you're officially a game developer!
   DOC
@@ -108,7 +108,7 @@ def test_docs_process_inline_code(args, assert)
   ]
 end
 
-def test_docs_process_markup_at_end_of_paragraph(args, assert)
+def test_docs_process_markup_at_end_of_paragraph(_args, assert)
   called_methods = process_doc_string <<~DOC
     Now run ~dragonruby~
 
@@ -129,7 +129,7 @@ def test_docs_process_markup_at_end_of_paragraph(args, assert)
   ]
 end
 
-def test_docs_process_markup_at_beginning_of_paragraph(args, assert)
+def test_docs_process_markup_at_beginning_of_paragraph(_args, assert)
   called_methods = process_doc_string <<~DOC
     ~dragonruby~ is the executable.
 
@@ -150,7 +150,7 @@ def test_docs_process_markup_at_beginning_of_paragraph(args, assert)
   ]
 end
 
-def test_docs_process_quote(args, assert)
+def test_docs_process_quote(_args, assert)
   called_methods = process_doc_string <<~DOC
     When someone asks you:
 
@@ -187,7 +187,7 @@ def test_docs_process_quote(args, assert)
   ]
 end
 
-def test_docs_process_paragraphs(args, assert)
+def test_docs_process_paragraphs(_args, assert)
   called_methods = process_doc_string <<~DOC
     Here's the most important thing you should know: Ruby lets you do some
     complicated things really easily, and you can learn that stuff
@@ -218,7 +218,7 @@ def test_docs_process_paragraphs(args, assert)
   ]
 end
 
-def test_docs_process_ordered_list(args, assert)
+def test_docs_process_ordered_list(_args, assert)
   called_methods = process_doc_string <<~DOC
     1. Intermediate Introduction to Ruby Syntax
     2. Intermediate Introduction to Arrays in Ruby
@@ -259,7 +259,7 @@ def test_docs_process_ordered_list(args, assert)
   ]
 end
 
-def test_docs_process_unordered_list(args, assert)
+def test_docs_process_unordered_list(_args, assert)
   called_methods = process_doc_string <<~DOC
     Ok, here are few rules with regards to game development with GTK:
 
