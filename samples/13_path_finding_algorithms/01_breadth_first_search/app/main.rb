@@ -317,7 +317,7 @@ class BreadthFirstSearch
 
   # Renders the star
   def render_star
-    outputs.sprites << render_cell state.star, { path: 'star.png' }
+    outputs.sprites << render_cell(state.star, { path: 'star.png' })
   end
 
   def render_cell cell, attrs
