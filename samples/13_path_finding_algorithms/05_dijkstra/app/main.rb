@@ -195,7 +195,7 @@ class Movement_Costs
       endpoint = state.target
       # And the cell it came from
       next_endpoint = breadth_first_search.came_from[endpoint]
-      while endpoint and next_endpoint
+      while endpoint && next_endpoint
         # Draw a path between these two cells
         path = get_path_between(endpoint, next_endpoint)
         outputs.solids << scale_up(path).merge(path_color)
@@ -222,7 +222,7 @@ class Movement_Costs
       # Get the target and the cell it came from
       endpoint = state.target
       next_endpoint = dijkstra_search.came_from[endpoint]
-      while endpoint and next_endpoint
+      while endpoint && next_endpoint
         # Draw a path between them
         path = get_path_between(endpoint, next_endpoint)
         outputs.solids << move_and_scale_up(path).merge(path_color)
@@ -426,14 +426,14 @@ class Movement_Costs
     breadth_first_search.came_from[state.star] = nil
 
     until breadth_first_search.frontier.empty?
-      return if breadth_first_search.visited.has_key?(state.target)
+      return if breadth_first_search.visited.key?(state.target)
       # A step in the search
       # Takes the next frontier cell
       new_frontier = breadth_first_search.frontier.shift
       # For each of its neighbors
       adjacent_neighbors(new_frontier).each do | neighbor |
         # That have not been visited and are not walls
-        unless breadth_first_search.visited.has_key?(neighbor) || state.walls.has_key?(neighbor)
+        unless breadth_first_search.visited.key?(neighbor) || state.walls.key?(neighbor)
           # Add them to the frontier and mark them as visited in the first grid
           breadth_first_search.visited[neighbor] = true
           breadth_first_search.frontier << neighbor
@@ -464,7 +464,7 @@ class Movement_Costs
       # For each of the neighbors
       adjacent_neighbors(current).each do | neighbor |
         # Unless this cell is a wall or has already been explored.
-        unless dijkstra_search.came_from.has_key?(neighbor) or state.walls.has_key?(neighbor)
+        unless dijkstra_search.came_from.key?(neighbor) or state.walls.key?(neighbor)
           # Calculate the movement cost of getting to this cell and memo
           new_cost = dijkstra_search.cost_so_far[current] + cost(neighbor)
           dijkstra_search.cost_so_far[neighbor] = new_cost
@@ -482,7 +482,7 @@ class Movement_Costs
   end
 
   def cost(cell)
-    return 5 if state.hills.has_key? cell 
+    return 5 if state.hills.key? cell 
     1
   end
 
@@ -547,7 +547,7 @@ class Movement_Costs
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
     if mouse_over_grid?
-      if state.walls.has_key?(cell_closest_to_mouse) or state.hills.has_key?(cell_closest_to_mouse)
+      if state.walls.key?(cell_closest_to_mouse) or state.hills.key?(cell_closest_to_mouse)
         state.walls.delete(cell_closest_to_mouse)
         state.hills.delete(cell_closest_to_mouse)
         reset_search
@@ -561,7 +561,7 @@ class Movement_Costs
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
     if mouse_over_grid2?
-      if state.walls.has_key?(cell_closest_to_mouse2) or state.hills.has_key?(cell_closest_to_mouse2)
+      if state.walls.key?(cell_closest_to_mouse2) or state.hills.key?(cell_closest_to_mouse2)
         state.walls.delete(cell_closest_to_mouse2)
         state.hills.delete(cell_closest_to_mouse2)
         reset_search
@@ -572,7 +572,7 @@ class Movement_Costs
   # Adds a hill in the first grid in the cell the mouse is over
   def input_add_hill
     if mouse_over_grid?
-      unless state.hills.has_key?(cell_closest_to_mouse)
+      unless state.hills.key?(cell_closest_to_mouse)
         state.hills[cell_closest_to_mouse] = true
         reset_search
       end
@@ -583,7 +583,7 @@ class Movement_Costs
   # Adds a hill in the second grid in the cell the mouse is over
   def input_add_hill2
     if mouse_over_grid2?
-      unless state.hills.has_key?(cell_closest_to_mouse2)
+      unless state.hills.key?(cell_closest_to_mouse2)
         state.hills[cell_closest_to_mouse2] = true
         reset_search
       end
@@ -593,7 +593,7 @@ class Movement_Costs
   # Adds a wall in the first grid in the cell the mouse is over
   def input_add_wall
     if mouse_over_grid?
-      unless state.walls.has_key?(cell_closest_to_mouse)
+      unless state.walls.key?(cell_closest_to_mouse)
         state.hills.delete(cell_closest_to_mouse)
         state.walls[cell_closest_to_mouse] = true
         reset_search
@@ -604,7 +604,7 @@ class Movement_Costs
   # Adds a wall in the second grid in the cell the mouse is over
   def input_add_wall2
     if mouse_over_grid2?
-      unless state.walls.has_key?(cell_closest_to_mouse2)
+      unless state.walls.key?(cell_closest_to_mouse2)
         state.hills.delete(cell_closest_to_mouse2)
         state.walls[cell_closest_to_mouse2] = true
         reset_search

@@ -169,7 +169,7 @@ def move_tanks args
     tank[:x] += copy_sign(args.state.tank_speed, ((destination.x * args.state.tile_size) - tank[:x]))
     tank[:y] += copy_sign(args.state.tank_speed, ((destination.y * args.state.tile_size) - tank[:y]))
     # If the tank has reached its destination
-    if (destination.x * args.state.tile_size) == tank[:x] and
+    if (destination.x * args.state.tile_size) == tank[:x] &&
         (destination.y * args.state.tile_size) == tank[:y]
       # Set the destination to the next point in the path
       tank[:a_star].shift
@@ -269,9 +269,9 @@ def neighbors args, tile
    [tile.x, tile.y + 1],
    [tile.x + 1, tile.y],
    [tile.x - 1, tile.y]].reject do | neighbor |
-    args.state.a_star.came_from.has_key?(neighbor) or
+    args.state.a_star.came_from.key?(neighbor) or
       tile_out_of_bounds?(args, neighbor) or
-      args.state.walls.has_key? neighbor
+      args.state.walls.key? neighbor
   end
 end
 

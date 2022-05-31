@@ -42,20 +42,20 @@ class DetailedBreadthFirstSearch
     # Stores which step of the animation is being rendered
     # When the user moves the star or messes with the walls,
     # the breadth first search is recalculated up to this step
-    args.state.anim_steps = 0 
+    args.state.anim_steps = 0
 
     # At some step the animation will end,
     # and further steps won't change anything (the whole grid will be explored)
     # This step is roughly the grid's width * height
     # When anim_steps equals max_steps no more calculations will occur
     # and the slider will be at the end
-    args.state.max_steps  = args.state.grid.width * args.state.grid.height 
+    args.state.max_steps  = args.state.grid.width * args.state.grid.height
 
     # The location of the star and walls of the grid
     # They can be modified to have a different initial grid
     # Walls are stored in a hash for quick look up when doing the search
     args.state.star       = [3, 2]
-    args.state.walls      = {}    
+    args.state.walls      = {}
 
     # Variables that are used by the breadth first search
     # Storing cells that the search has visited, prevents unnecessary steps
@@ -73,7 +73,7 @@ class DetailedBreadthFirstSearch
     # We store this value, because we want to remember the value even when
     # the user's cursor is no longer over what they're interacting with, but
     # they are still clicking down on the mouse.
-    args.state.click_and_drag = :none 
+    args.state.click_and_drag = :none
 
     # The x, y, w, h values for the buttons
     # Allow easy movement of the buttons location
@@ -106,8 +106,8 @@ class DetailedBreadthFirstSearch
   # Every tick, the current state of the search is rendered on the screen,
   # User input is processed, and
   def tick
-    render 
-    input  
+    render
+    input
   end
 
   # This method is called from tick and renders everything every tick
@@ -115,8 +115,8 @@ class DetailedBreadthFirstSearch
     render_buttons
     render_slider
 
-    render_background       
-    render_visited 
+    render_background
+    render_visited
     render_frontier
     render_walls
     render_star
@@ -182,10 +182,10 @@ class DetailedBreadthFirstSearch
   # Which is a bunch of unvisited cells
   # Drawn first so other things can draw on top of it
   def render_background
-    render_unvisited  
+    render_unvisited
 
     # The grid lines make the cells appear separate
-    render_grid_lines 
+    render_grid_lines
   end
 
   # Draws a rectangle the size of the entire grid to represent unvisited cells
@@ -219,7 +219,7 @@ class DetailedBreadthFirstSearch
   # Draws the area that is going to be searched from
   # The frontier is the most outward parts of the search
   def render_frontier
-    state.frontier.each do |cell| 
+    state.frontier.each do |cell|
       outputs.solids << scale_up(cell).merge(frontier_color)
     end
   end
@@ -233,7 +233,7 @@ class DetailedBreadthFirstSearch
 
   # Renders cells that have been searched in the appropriate color
   def render_visited
-    state.visited.each_key do |cell| 
+    state.visited.each_key do |cell|
       outputs.solids << scale_up(cell).merge(visited_color)
     end
   end
@@ -241,7 +241,7 @@ class DetailedBreadthFirstSearch
   # Renders the star
   def render_star
     outputs.sprites << scale_up(state.star).merge({path: 'star.png'})
-  end 
+  end
 
   # Cells have a number rendered in them based on when they were explored
   # This is based off of their index in the cell_numbers array
@@ -269,7 +269,7 @@ class DetailedBreadthFirstSearch
     # Neighbors have a semi-transparent green layer over them
     # Unless the neighbor is a wall
     adjacent_neighbors(next_frontier).each do |neighbor|
-      unless state.walls.has_key?(neighbor)
+      unless state.walls.key?(neighbor)
         outputs.solids << scale_up(neighbor).merge(highlighter_green).merge({a: 70})
       end
     end
@@ -325,21 +325,21 @@ class DetailedBreadthFirstSearch
     input_buttons
 
     # Detects which if any click and drag input is occurring
-    detect_click_and_drag          
+    detect_click_and_drag
 
     # Does the appropriate click and drag input based on the click_and_drag variable
-    process_click_and_drag         
+    process_click_and_drag
   end
 
   # Detects and Process input for each button
   def input_buttons
-    input_left_button 
-    input_right_button     
+    input_left_button
+    input_right_button
   end
 
   # Checks if the previous step button is clicked
   # If it is, it pauses the animation and moves the search one step backward
-  def input_left_button 
+  def input_left_button
     if left_button_clicked?
       unless state.anim_steps == 0
         state.anim_steps -= 1
@@ -353,7 +353,7 @@ class DetailedBreadthFirstSearch
   def input_right_button
     if right_button_clicked?
       unless state.anim_steps == state.max_steps
-        state.anim_steps += 1           
+        state.anim_steps += 1
         # Although normally recalculate would be called here
         # because the right button only moves the search forward
         # We can just do that
@@ -367,12 +367,12 @@ class DetailedBreadthFirstSearch
 
   def recalculate
     # Resets the search
-    state.frontier = [] 
-    state.visited = {} 
+    state.frontier = []
+    state.visited = {}
     state.cell_numbers = []
 
     # Moves the animation forward one step at a time
-    state.anim_steps.times { calc } 
+    state.anim_steps.times { calc }
   end
 
 
@@ -382,29 +382,29 @@ class DetailedBreadthFirstSearch
   # Storing the value allows the user to continue the same edit as long as the
   # mouse left click is held
   def detect_click_and_drag
-    if inputs.mouse.up                  
-      state.click_and_drag = :none          
-    elsif star_clicked?                 
-      state.click_and_drag = :star          
-    elsif wall_clicked?                 
-      state.click_and_drag = :remove_wall   
-    elsif grid_clicked?                 
-      state.click_and_drag = :add_wall      
-    elsif slider_clicked?               
-      state.click_and_drag = :slider        
+    if inputs.mouse.up
+      state.click_and_drag = :none
+    elsif star_clicked?
+      state.click_and_drag = :star
+    elsif wall_clicked?
+      state.click_and_drag = :remove_wall
+    elsif grid_clicked?
+      state.click_and_drag = :add_wall
+    elsif slider_clicked?
+      state.click_and_drag = :slider
     end
   end
 
   # Processes input based on what the user is currently dragging
   def process_click_and_drag
-    if state.click_and_drag == :slider          
-      input_slider                          
-    elsif state.click_and_drag == :star         
-      input_star                            
-    elsif state.click_and_drag == :remove_wall  
-      input_remove_wall                     
-    elsif state.click_and_drag == :add_wall     
-      input_add_wall                        
+    if state.click_and_drag == :slider
+      input_slider
+    elsif state.click_and_drag == :star
+      input_star
+    elsif state.click_and_drag == :remove_wall
+      input_remove_wall
+    elsif state.click_and_drag == :add_wall
+      input_add_wall
     end
   end
 
@@ -414,24 +414,24 @@ class DetailedBreadthFirstSearch
     mouse_x = inputs.mouse.point.x
 
     # Bounds the mouse_x to the closest x value on the slider line
-    mouse_x = slider.x if mouse_x < slider.x 
-    mouse_x = slider.x + slider.w if mouse_x > slider.x + slider.w 
+    mouse_x = slider.x if mouse_x < slider.x
+    mouse_x = slider.x + slider.w if mouse_x > slider.x + slider.w
 
     # Sets the current search step to the one represented by the mouse x value
     # The slider's circle moves due to the render_slider method using anim_steps
     state.anim_steps = ((mouse_x - slider.x) / slider.spacing).to_i
 
-    recalculate 
+    recalculate
   end
 
   # Moves the star to the grid closest to the mouse
   # Only recalculates the search if the star changes position
-  # Called whenever the user is dragging the star 
+  # Called whenever the user is dragging the star
   def input_star
-    old_star = state.star.clone 
-    state.star = cell_closest_to_mouse 
-    unless old_star == state.star 
-      recalculate 
+    old_star = state.star.clone
+    state.star = cell_closest_to_mouse
+    unless old_star == state.star
+      recalculate
     end
   end
 
@@ -440,10 +440,10 @@ class DetailedBreadthFirstSearch
     # The mouse needs to be inside the grid, because we only want to remove walls
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
-    if mouse_inside_grid? 
-      if state.walls.has_key?(cell_closest_to_mouse)
-        state.walls.delete(cell_closest_to_mouse) 
-        recalculate 
+    if mouse_inside_grid?
+      if state.walls.key?(cell_closest_to_mouse)
+        state.walls.delete(cell_closest_to_mouse)
+        recalculate
       end
     end
   end
@@ -452,10 +452,10 @@ class DetailedBreadthFirstSearch
   def input_add_wall
     # Adds a wall to the hash
     # We can use the grid closest to mouse, because the cursor is inside the grid
-    if mouse_inside_grid? 
-      unless state.walls.has_key?(cell_closest_to_mouse)
-        state.walls[cell_closest_to_mouse] = true 
-        recalculate 
+    if mouse_inside_grid?
+      unless state.walls.key?(cell_closest_to_mouse)
+        state.walls[cell_closest_to_mouse] = true
+        recalculate
       end
     end
   end
@@ -470,22 +470,22 @@ class DetailedBreadthFirstSearch
   def calc
     # The setup to the search
     # Runs once when the there is no frontier or visited cells
-    if state.frontier.empty? && state.visited.empty?  
-      state.frontier << state.star                   
-      state.visited[state.star] = true              
+    if state.frontier.empty? && state.visited.empty?
+      state.frontier << state.star
+      state.visited[state.star] = true
     end
 
     # A step in the search
-    unless state.frontier.empty? 
+    unless state.frontier.empty?
       # Takes the next frontier cell
-      new_frontier = state.frontier.shift 
+      new_frontier = state.frontier.shift
       # For each of its neighbors
-      adjacent_neighbors(new_frontier).each do |neighbor| 
+      adjacent_neighbors(new_frontier).each do |neighbor|
         # That have not been visited and are not walls
-        unless state.visited.has_key?(neighbor) || state.walls.has_key?(neighbor) 
+        unless state.visited.key?(neighbor) || state.walls.key?(neighbor)
           # Add them to the frontier and mark them as visited
-          state.frontier << neighbor 
-          state.visited[neighbor] = true 
+          state.frontier << neighbor
+          state.visited[neighbor] = true
 
           # Also assign them a frontier number
           state.cell_numbers << neighbor
@@ -493,30 +493,30 @@ class DetailedBreadthFirstSearch
       end
     end
   end
-  
+
 
   # Returns a list of adjacent cells
   # Used to determine what the next cells to be added to the frontier are
   def adjacent_neighbors cell
-    neighbors = [] 
+    neighbors = []
 
-    neighbors << [cell.x, cell.y + 1] unless cell.y == grid.height - 1 
-    neighbors << [cell.x + 1, cell.y] unless cell.x == grid.width - 1 
-    neighbors << [cell.x, cell.y - 1] unless cell.y == 0 
-    neighbors << [cell.x - 1, cell.y] unless cell.x == 0 
+    neighbors << [cell.x, cell.y + 1] unless cell.y == grid.height - 1
+    neighbors << [cell.x + 1, cell.y] unless cell.x == grid.width - 1
+    neighbors << [cell.x, cell.y - 1] unless cell.y == 0
+    neighbors << [cell.x - 1, cell.y] unless cell.x == 0
 
-    neighbors 
+    neighbors
   end
 
   # When the user grabs the star and puts their cursor to the far right
   # and moves up and down, the star is supposed to move along the grid as well
   # Finding the grid closest to the mouse helps with this
   def cell_closest_to_mouse
-    x = (inputs.mouse.point.x / grid.cell_size).to_i 
-    y = (inputs.mouse.point.y / grid.cell_size).to_i 
-    x = grid.width - 1 if x > grid.width - 1 
-    y = grid.height - 1 if y > grid.height - 1 
-    [x, y] 
+    x = (inputs.mouse.point.x / grid.cell_size).to_i
+    y = (inputs.mouse.point.y / grid.cell_size).to_i
+    x = grid.width - 1 if x > grid.width - 1
+    y = grid.height - 1 if y > grid.height - 1
+    [x, y]
   end
 
 

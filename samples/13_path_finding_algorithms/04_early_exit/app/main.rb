@@ -354,7 +354,7 @@ class EarlyExitBreadthFirstSearch
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
     if mouse_inside_grid?
-      if state.walls.has_key?(cell_closest_to_mouse)
+      if state.walls.key?(cell_closest_to_mouse)
         state.walls.delete(cell_closest_to_mouse)
         reset_search
       end
@@ -367,7 +367,7 @@ class EarlyExitBreadthFirstSearch
     # the cursor is directly over
     # Recalculations should only occur when a wall is actually deleted
     if mouse_inside_grid2?
-      if state.walls.has_key?(cell_closest_to_mouse2)
+      if state.walls.key?(cell_closest_to_mouse2)
         state.walls.delete(cell_closest_to_mouse2)
         reset_search
       end
@@ -377,7 +377,7 @@ class EarlyExitBreadthFirstSearch
   # Adds a wall in the first grid in the cell the mouse is over
   def input_add_wall
     if mouse_inside_grid?
-      unless state.walls.has_key?(cell_closest_to_mouse)
+      unless state.walls.key?(cell_closest_to_mouse)
         state.walls[cell_closest_to_mouse] = true
         reset_search
       end
@@ -388,7 +388,7 @@ class EarlyExitBreadthFirstSearch
   # Adds a wall in the second grid in the cell the mouse is over
   def input_add_wall2
     if mouse_inside_grid2?
-      unless state.walls.has_key?(cell_closest_to_mouse2)
+      unless state.walls.key?(cell_closest_to_mouse2)
         state.walls[cell_closest_to_mouse2] = true
         reset_search
       end
@@ -425,11 +425,11 @@ class EarlyExitBreadthFirstSearch
       # For each of its neighbors
       adjacent_neighbors(new_frontier).each do |neighbor|
         # That have not been visited and are not walls
-        unless state.visited.has_key?(neighbor) || state.walls.has_key?(neighbor)
+        unless state.visited.key?(neighbor) || state.walls.key?(neighbor)
           # Add them to the frontier and mark them as visited in the first grid
           state.visited[neighbor] = true
           # Unless the target has been visited
-          unless state.visited.has_key?(state.target)
+          unless state.visited.key?(state.target)
             # Mark the neighbor as visited in the second grid as well
             state.early_exit_visited[neighbor] = true
           end
