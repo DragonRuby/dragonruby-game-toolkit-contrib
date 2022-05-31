@@ -330,30 +330,16 @@ class Heuristic_With_Walls
     # A large rect the size of the grid
     outputs.solids << bfs_scale_up(grid.rect).merge(default_color)
 
-    # The vertical grid lines
-    for x in 0..grid.width
-      outputs.lines << bfs_vertical_line(x)
-    end
-
-    # The horizontal grid lines
-    for y in 0..grid.height
-      outputs.lines << bfs_horizontal_line(y)
-    end
+    outputs.lines << (0..grid.width).map { |x| bfs_vertical_line(x) }
+    outputs.lines << (0..grid.height).map { |y| bfs_horizontal_line(y) }
   end
 
   def render_heuristic_grid
     # A large rect the size of the grid
     outputs.solids << heuristic_scale_up(grid.rect).merge(default_color)
 
-    # The vertical grid lines
-    for x in 0..grid.width
-      outputs.lines << heuristic_vertical_line(x)
-    end
-
-    # The horizontal grid lines
-    for y in 0..grid.height
-      outputs.lines << heuristic_horizontal_line(y)
-    end
+    outputs.lines << (0..grid.width).map { |x| heuristic_vertical_line(x) }
+    outputs.lines << (0..grid.height).map { |y| heuristic_horizontal_line(y) }
   end
 
   # Returns a vertical line for a column of the first grid

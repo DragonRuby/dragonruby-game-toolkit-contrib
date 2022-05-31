@@ -237,45 +237,24 @@ class A_Star_Algorithm
     # A large rect the size of the grid
     outputs.solids << dijkstra_scale_up(grid.rect).merge(default_color)
 
-    # The vertical grid lines
-    for x in 0..grid.width
-      outputs.lines << dijkstra_vertical_line(x)
-    end
-
-    # The horizontal grid lines
-    for y in 0..grid.height
-      outputs.lines << dijkstra_horizontal_line(y)
-    end
+    outputs.lines << (0..grid.width).map { |x| dijkstra_vertical_line(x) }
+    outputs.lines << (0..grid.height).map { |y| dijkstra_horizontal_line(y) }
   end
 
   def render_greedy_grid
     # A large rect the size of the grid
     outputs.solids << greedy_scale_up(grid.rect).merge(default_color)
 
-    # The vertical grid lines
-    for x in 0..grid.width
-      outputs.lines << greedy_vertical_line(x)
-    end
-
-    # The horizontal grid lines
-    for y in 0..grid.height
-      outputs.lines << greedy_horizontal_line(y)
-    end
+    outputs.lines << (0..grid.width).map { |x| greedy_vertical_line(x) }
+    outputs.lines << (0..grid.height).map { |y| greedy_horizontal_line(y) }
   end
 
   def render_a_star_grid
     # A large rect the size of the grid
     outputs.solids << a_star_scale_up(grid.rect).merge(default_color)
 
-    # The vertical grid lines
-    for x in 0..grid.width
-      outputs.lines << a_star_vertical_line(x)
-    end
-
-    # The horizontal grid lines
-    for y in 0..grid.height
-      outputs.lines << a_star_horizontal_line(y)
-    end
+    outputs.lines << (0..grid.width).map { |x| a_star_vertical_line(x) }
+    outputs.lines << (0..grid.height).map { |y| a_star_horizontal_line(y) }
   end
 
   # Returns a vertical line for a column of the first grid
