@@ -197,12 +197,11 @@ class DetailedBreadthFirstSearch
 
   # Draws grid lines to show the division of the grid into cells
   def render_grid_lines
-    for x in 0..grid.width
-      outputs.lines << scale_up(vertical_line(x)).merge(grid_line_color)
+    outputs.lines << (0..grid.width).map do |x|
+      scale_up(vertical_line(x)).merge(grid_line_color)
     end
-
-    for y in 0..grid.height
-      outputs.lines << scale_up(horizontal_line(y)).merge(grid_line_color)
+    outputs.lines << (0..grid.height).map do |y|
+      scale_up(horizontal_line(y)).merge(grid_line_color)
     end
   end
 

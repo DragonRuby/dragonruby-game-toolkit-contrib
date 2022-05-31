@@ -125,15 +125,10 @@ class Movement_Costs
 
   # Draws grid lines to show the division of the grid into cells
   def render_grid_lines
-    for x in 0..grid.width
-      outputs.lines << vertical_line(x)
-      outputs.lines << shifted_vertical_line(x)
-    end
-
-    for y in 0..grid.height
-      outputs.lines << horizontal_line(y)
-      outputs.lines << shifted_horizontal_line(y)
-    end
+    outputs.lines << (0..grid.width).map { |x| vertical_line(x) }
+    outputs.lines << (0..grid.width).map { |x| shifted_vertical_line(x) }
+    outputs.lines << (0..grid.height).map { |y| horizontal_line(y) }
+    outputs.lines << (0..grid.height).map { |y| shifted_horizontal_line(y) }
   end
 
   # A line the size of the grid, multiplied by the cell size for rendering

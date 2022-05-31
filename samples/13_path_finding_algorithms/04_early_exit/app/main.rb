@@ -103,15 +103,10 @@ class EarlyExitBreadthFirstSearch
 
   # Draws grid lines to show the division of the grid into cells
   def render_grid_lines
-    for x in 0..grid.width
-      outputs.lines << vertical_line(x)
-      outputs.lines << early_exit_vertical_line(x)
-    end
-
-    for y in 0..grid.height
-      outputs.lines << horizontal_line(y)
-      outputs.lines << early_exit_horizontal_line(y)
-    end
+    outputs.lines << (0..grid.width).map { |x| vertical_line(x) }
+    outputs.lines << (0..grid.width).map { |x| early_exit_vertical_line(x) }
+    outputs.lines << (0..grid.height).map { |y| horizontal_line(y) }
+    outputs.lines << (0..grid.height).map { |y| early_exit_horizontal_line(y) }
   end
 
   # Easy way to draw vertical lines given an index
