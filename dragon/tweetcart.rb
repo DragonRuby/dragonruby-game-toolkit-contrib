@@ -15,7 +15,7 @@ def $top_level.TICK &block
   end
 
   def $top_level.no_clear! render_target_name
-    $args.outputs[:render_target_name].clear_before_render = false
+    $args.outputs[render_target_name].clear_before_render = false
   end
 
   def $top_level.bg! *rgb
