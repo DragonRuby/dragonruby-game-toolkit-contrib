@@ -104,13 +104,15 @@ def render_horizontal_line args, y
 end
 
 def render_tile args, tile, color
-  args.outputs.solids << [
-    tile.x * args.state.tile_size,
-    tile.y * args.state.tile_size,
-    args.state.tile_size,
-    args.state.tile_size,
-    color
-  ]
+  args.outputs.solids << {
+    x: tile.x * args.state.tile_size,
+    y: tile.y * args.state.tile_size,
+    w: args.state.tile_size,
+    h: args.state.tile_size,
+    r: color[0]
+    g: color[1]
+    b: color[2]
+  }
 end
 
 def calc args
