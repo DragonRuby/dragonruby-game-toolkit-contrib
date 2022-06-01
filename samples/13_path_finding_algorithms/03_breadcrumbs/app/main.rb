@@ -203,12 +203,14 @@ class Breadcrumbs
 
   # Easy way to draw vertical lines given an index
   def vertical_line x
-    [x, 0, x, grid.height].map { |v| v * grid.cell_size }
+    line = { x: x, y: 0, w: 0, h: grid.height }
+    line.transform_values { |v| v * grid.cell_size }
   end
 
   # Easy way to draw horizontal lines given an index
   def horizontal_line y
-    [0, y, grid.width, y].map { |v| v * grid.cell_size }
+    line = { x: 0, y: y, w: grid.width, h: 0 }
+    line.transform_values { |v| v * grid.cell_size }
   end
 
   # Draws the walls on both grids

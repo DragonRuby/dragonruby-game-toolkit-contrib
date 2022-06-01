@@ -259,36 +259,36 @@ class A_Star_Algorithm
 
   # Returns a vertical line for a column of the first grid
   def dijkstra_vertical_line x
-    [x, 0, x, grid.height].map { |v| v * grid.cell_size }
+    line = { x: x, y: 0, w: 0, h: grid.height }
+    line.transform_values { |v| v * grid.cell_size }
   end
 
   # Returns a horizontal line for a column of the first grid
   def dijkstra_horizontal_line y
-    [0, y, grid.width, y].map { |v| v * grid.cell_size }
+    line = { x: 0, y: y, w: grid.width, h: 0 }
+    line.transform_values { |v| v * grid.cell_size }
   end
 
   # Returns a vertical line for a column of the second grid
   def greedy_vertical_line x
-    translated_x = x + grid.width + 1
-    dijkstra_vertical_line(translated_x)
+    dijkstra_vertical_line(x + grid.width + 1)
   end
 
   # Returns a horizontal line for a column of the second grid
   def greedy_horizontal_line y
-    x = grid.width + 1
-    [x, y, x + grid.width, y].map { |v| v * grid.cell_size }
+    line = { x: grid.width + 1, y: y, w: grid.width, h: 0 }
+    line.transform_values { |v| v * grid.cell_size }
   end
 
   # Returns a vertical line for a column of the third grid
   def a_star_vertical_line x
-    translated_x = x + grid.width + 1 + grid.width + 1
-    dijkstra_vertical_line(translated_x)
+    dijkstra_vertical_line(x + grid.width + 1 + grid.width + 1)
   end
 
   # Returns a horizontal line for a column of the third grid
   def a_star_horizontal_line y
-    x = grid.width + 1 + grid.width + 1
-    [x, y, x + grid.width, y].map { |v| v * grid.cell_size }
+    line = { x: grid.width + 1 + grid.width + 1, y: y, w: grid.width, h: 0 }
+    line.transform_values { |v| v * grid.cell_size }
   end
 
   # Renders the star on the first grid

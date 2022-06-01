@@ -110,23 +110,26 @@ class EarlyExitBreadthFirstSearch
   end
 
   # Easy way to draw vertical lines given an index
-  def vertical_line column
-    scale_up([column, 0, 0, grid.height])
+  def vertical_line x
+    line = { x: x, y: 0, w: 0, h: grid.height }
+    line.transform_values { |v| v * grid.cell_size }
   end
 
   # Easy way to draw horizontal lines given an index
-  def horizontal_line row
-    scale_up([0, row, grid.width, 0])
+  def horizontal_line y
+    line = { x: 0, y: y, w: grid.width, h: 0 }
+    line.transform_values { |v| v * grid.cell_size }
   end
 
   # Easy way to draw vertical lines given an index
-  def early_exit_vertical_line column
-    scale_up([column + grid.width + 1, 0, 0, grid.height])
+  def early_exit_vertical_line x
+    vertical_line(x + grid.width + 1)
   end
 
   # Easy way to draw horizontal lines given an index
-  def early_exit_horizontal_line row
-    scale_up([grid.width + 1, row, grid.width + grid.width + 1, 0])
+  def early_exit_horizontal_line y
+    line = { x: grid.width + 1, y: y, w: grid.width, h: 0 }
+    line.transform_values { |v| v * grid.cell_size }
   end
 
   # Draws the walls on both grids

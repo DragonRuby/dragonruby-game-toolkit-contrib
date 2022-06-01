@@ -86,21 +86,21 @@ def render_grid args
 end
 
 def render_vertical_line args, x
-  args.outputs.lines << [
-    x * args.state.tile_size,
-    0,
-    x * args.state.tile_size,
-    args.state.tile_size * args.state.grid_size,
-  ]
+  args.outputs.lines << {
+    x: x * args.state.tile_size,
+    y: 0,
+    w: 0,
+    h: args.state.grid_size * args.state.tile_size
+  }
 end
 
 def render_horizontal_line args, y
-  args.outputs.lines << [
-    0,
-    y * args.state.tile_size,
-    args.state.tile_size * args.state.grid_size,
-    y * args.state.tile_size,
-  ]
+  args.outputs.lines << {
+    x: 0,
+    y: y * args.state.tile_size,
+    w: args.state.grid_size * args.state.tile_size,
+    h: 0
+  }
 end
 
 def render_tile args, tile, color

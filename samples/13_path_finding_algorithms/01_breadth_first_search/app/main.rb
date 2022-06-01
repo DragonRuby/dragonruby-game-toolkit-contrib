@@ -281,12 +281,14 @@ class BreadthFirstSearch
 
   # Easy way to draw vertical lines given an index
   def vertical_line x
-    scale_up([column, 0, column, grid.height])
+    line = { x: x, y: 0, w: 0, h: grid.height }
+    line.transform_values { |v| v * grid.cell_size }
   end
 
   # Easy way to draw horizontal lines given an index
-  def horizontal_line row
-    scale_up([0, row, grid.width, row])
+  def horizontal_line y
+    line = { x: 0, y: y, w: grid.width, h: 0 }
+    line.transform_values { |v| v * grid.cell_size }
   end
 
   # Draws the area that is going to be searched from
