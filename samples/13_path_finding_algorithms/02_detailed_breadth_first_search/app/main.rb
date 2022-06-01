@@ -191,7 +191,7 @@ class DetailedBreadthFirstSearch
   # Draws a rectangle the size of the entire grid to represent unvisited cells
   # Unvisited cells are the default cell
   def render_unvisited
-    background = [0, 0, grid.width, grid.height]
+  n  background = [0, 0, grid.width, grid.height]
     outputs.solids << scale_up(background).merge(unvisited_color)
   end
 

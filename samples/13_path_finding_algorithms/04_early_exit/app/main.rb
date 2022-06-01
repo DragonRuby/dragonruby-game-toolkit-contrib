@@ -1,3 +1,6 @@
+# Contributors outside of DragonRuby who also hold Copyright:
+# - Sujay Vadlakonda: https://github.com/sujayvadlakonda
+
 # Comparison of a breadth first search with and without early exit
 # Inspired by https://www.redblobgames.com/pathfinding/a-star/introduction.html
 

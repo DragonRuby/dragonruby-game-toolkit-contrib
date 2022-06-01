@@ -1,3 +1,6 @@
+# Contributors outside of DragonRuby who also hold Copyright:
+# - Sujay Vadlakonda: https://github.com/sujayvadlakonda
+
 # This program is inspired by https://www.redblobgames.com/pathfinding/a-star/introduction.html
 
 # This time the heuristic search still explored less of the grid, hence finishing faster.

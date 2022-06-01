@@ -1,3 +1,6 @@
+# Contributors outside of DragonRuby who also hold Copyright:
+# - Sujay Vadlakonda: https://github.com/sujayvadlakonda
+
 # This program is inspired by https://www.redblobgames.com/pathfinding/a-star/introduction.html
 # The effectiveness of the Heuristic search algorithm is shown through this demonstration.
 # Notice that both searches find the shortest path
