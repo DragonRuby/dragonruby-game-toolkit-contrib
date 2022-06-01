@@ -271,14 +271,14 @@ def neighbors args, tile
    [tile.x, tile.y + 1],
    [tile.x + 1, tile.y],
    [tile.x - 1, tile.y]].reject do | neighbor |
-    args.state.a_star.came_from.key?(neighbor) or
-      tile_out_of_bounds?(args, neighbor) or
+    args.state.a_star.came_from.key?(neighbor) ||
+      tile_out_of_bounds?(args, neighbor) ||
       args.state.walls.key? neighbor
   end
 end
 
 def tile_out_of_bounds? args, tile
-  tile.x < 0 or tile.y < 0 or tile.x >= args.state.grid_size or tile.y >= args.state.grid_size
+  tile.x < 0 || tile.y < 0 || tile.x >= args.state.grid_size || tile.y >= args.state.grid_size
 end
 
 def grid_color
