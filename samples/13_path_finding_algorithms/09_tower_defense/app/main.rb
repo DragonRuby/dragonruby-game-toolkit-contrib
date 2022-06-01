@@ -109,8 +109,8 @@ def render_tile args, tile, color
     y: tile.y * args.state.tile_size,
     w: args.state.tile_size,
     h: args.state.tile_size,
-    r: color[0]
-    g: color[1]
+    r: color[0],
+    g: color[1],
     b: color[2]
   }
 end
@@ -270,10 +270,9 @@ def neighbors args, tile
   [[tile.x, tile.y - 1],
    [tile.x, tile.y + 1],
    [tile.x + 1, tile.y],
-   [tile.x - 1, tile.y]].reject do | neighbor |
-    args.state.a_star.came_from.key?(neighbor) ||
-      tile_out_of_bounds?(args, neighbor) ||
-      args.state.walls.key? neighbor
+   [tile.x - 1, tile.y]].reject do |neighbor|
+    args.state.a_star.came_from.key?(neighbor) || tile_out_of_bounds?(args, neighbor) ||
+      args.state.walls.key?(neighbor)
   end
 end
 
