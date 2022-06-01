@@ -224,11 +224,6 @@ def test_docs_process_ordered_list(_args, assert)
     2. Intermediate Introduction to Arrays in Ruby
     3. You may also want to try this
        free course provided at
-
-    Text
-
-    1. Another
-    2. List
   DOC
 
   assert.equal! called_methods, [
@@ -244,40 +239,20 @@ def test_docs_process_ordered_list(_args, assert)
     [:process_text, 'You may also want to try this free course provided at'],
     [:process_ordered_list_item_end],
     [:process_ordered_list_end],
-    [:process_paragraph_start],
-    [:process_text, 'Text'],
-    [:process_paragraph_end],
-    [:process_ordered_list_start],
-    [:process_ordered_list_item_start],
-    [:process_text, 'Another'],
-    [:process_ordered_list_item_end],
-    [:process_ordered_list_item_start],
-    [:process_text, 'List'],
-    [:process_ordered_list_item_end],
-    [:process_ordered_list_end],
     [:process_document_end]
   ]
 end
 
 def test_docs_process_unordered_list(_args, assert)
   called_methods = process_doc_string <<~DOC
-    Ok, here are few rules with regards to game development with GTK:
-
     - Your game is all going to happen under one function ...
     - that runs 60 times a second ...
     - and has to tell the computer
       what to draw each time.
-
-    That's an entire video game in one run-on sentence.
-
-    - another item
   DOC
 
   assert.equal! called_methods, [
     [:process_document_start],
-    [:process_paragraph_start],
-    [:process_text, 'Ok, here are few rules with regards to game development with GTK:'],
-    [:process_paragraph_end],
     [:process_unordered_list_start],
     [:process_unordered_list_item_start],
     [:process_text, 'Your game is all going to happen under one function ...'],
@@ -289,14 +264,141 @@ def test_docs_process_unordered_list(_args, assert)
     [:process_text, 'and has to tell the computer what to draw each time.'],
     [:process_unordered_list_item_end],
     [:process_unordered_list_end],
-    [:process_paragraph_start],
-    [:process_text, 'That\'s an entire video game in one run-on sentence.'],
-    [:process_paragraph_end],
+    [:process_document_end]
+  ]
+end
+
+def test_docs_header_closes_list(_args, assert)
+  called_methods = process_doc_string <<~DOC
+    1. One
+    2. Two
+
+    ** Header
+
+    - One
+    - Two
+
+    ** Header
+  DOC
+
+  assert.equal! called_methods, [
+    [:process_document_start],
+    [:process_ordered_list_start],
+    [:process_ordered_list_item_start],
+    [:process_text, 'One'],
+    [:process_ordered_list_item_end],
+    [:process_ordered_list_item_start],
+    [:process_text, 'Two'],
+    [:process_ordered_list_item_end],
+    [:process_ordered_list_end],
+    [:process_header_start, 2],
+    [:process_text, 'Header'],
+    [:process_header_end, 2],
     [:process_unordered_list_start],
     [:process_unordered_list_item_start],
-    [:process_text, 'another item'],
+    [:process_text, 'One'],
+    [:process_unordered_list_item_end],
+    [:process_unordered_list_item_start],
+    [:process_text, 'Two'],
     [:process_unordered_list_item_end],
     [:process_unordered_list_end],
+    [:process_header_start, 2],
+    [:process_text, 'Header'],
+    [:process_header_end, 2],
+    [:process_document_end]
+  ]
+end
+
+def test_docs_code_block_closes_list(_args, assert)
+  called_methods = process_doc_string <<~DOC
+    1. One
+    2. Two
+
+    #+begin_src
+      tick
+    #+end_src
+
+    - One
+    - Two
+
+    #+begin_src
+      tick
+    #+end_src
+  DOC
+
+  assert.equal! called_methods, [
+    [:process_document_start],
+    [:process_ordered_list_start],
+    [:process_ordered_list_item_start],
+    [:process_text, 'One'],
+    [:process_ordered_list_item_end],
+    [:process_ordered_list_item_start],
+    [:process_text, 'Two'],
+    [:process_ordered_list_item_end],
+    [:process_ordered_list_end],
+    [:process_code_block_start],
+    [:process_code_block_content, "tick\n"],
+    [:process_code_block_end],
+    [:process_unordered_list_start],
+    [:process_unordered_list_item_start],
+    [:process_text, 'One'],
+    [:process_unordered_list_item_end],
+    [:process_unordered_list_item_start],
+    [:process_text, 'Two'],
+    [:process_unordered_list_item_end],
+    [:process_unordered_list_end],
+    [:process_code_block_start],
+    [:process_code_block_content, "tick\n"],
+    [:process_code_block_end],
+    [:process_document_end]
+  ]
+end
+
+def test_docs_quote_closes_list(_args, assert)
+  called_methods = process_doc_string <<~DOC
+    1. One
+    2. Two
+
+    #+begin_quote
+    What game engine do you use?
+    #+end_quote
+
+    - One
+    - Two
+
+    #+begin_quote
+    What game engine do you use?
+    #+end_quote
+  DOC
+
+  assert.equal! called_methods, [
+    [:process_document_start],
+    [:process_ordered_list_start],
+    [:process_ordered_list_item_start],
+    [:process_text, 'One'],
+    [:process_ordered_list_item_end],
+    [:process_ordered_list_item_start],
+    [:process_text, 'Two'],
+    [:process_ordered_list_item_end],
+    [:process_ordered_list_end],
+    [:process_quote_start],
+    [:process_paragraph_start],
+    [:process_text, 'What game engine do you use?'],
+    [:process_paragraph_end],
+    [:process_quote_end],
+    [:process_unordered_list_start],
+    [:process_unordered_list_item_start],
+    [:process_text, 'One'],
+    [:process_unordered_list_item_end],
+    [:process_unordered_list_item_start],
+    [:process_text, 'Two'],
+    [:process_unordered_list_item_end],
+    [:process_unordered_list_end],
+    [:process_quote_start],
+    [:process_paragraph_start],
+    [:process_text, 'What game engine do you use?'],
+    [:process_paragraph_end],
+    [:process_quote_end],
     [:process_document_end]
   ]
 end
