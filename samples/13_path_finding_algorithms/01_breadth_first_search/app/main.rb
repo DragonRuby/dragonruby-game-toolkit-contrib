@@ -250,16 +250,26 @@ class BreadthFirstSearch
 
   # Draws the slider so the user can move it and see the progress of the search
   def render_slider
-    # Using primitives hides the line under the white circle of the slider
+    # Using a solid instead of a line, hides the line under the circle of the slider
     # Draws the line
-    outputs.primitives << [slider.x, slider.y, slider.x + slider.w, slider.y].line
+    outputs.solids << {
+      x: slider.x,
+      y: slider.y,
+      w: slider.w,
+      h: 2
+    }
     # The circle needs to be offset so that the center of the circle
     # overlaps the line instead of the upper right corner of the circle
     # The circle's x value is also moved based on the current seach step
     circle_x = (slider.x - slider.offset) + (state.anim_steps * slider.spacing)
     circle_y = (slider.y - slider.offset)
-    circle_rect = [circle_x, circle_y, 37, 37]
-    outputs.primitives << [circle_rect, 'circle-white.png'].sprite
+    outputs.sprites << {
+      x: circle_x,
+      y: circle_y,
+      w: 37,
+      h: 37,
+      path: 'circle-white.png'
+    }
   end
 
   # Draws what the grid looks like with nothing on it
