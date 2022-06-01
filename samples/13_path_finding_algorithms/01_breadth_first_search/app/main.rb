@@ -270,7 +270,9 @@ class BreadthFirstSearch
 
   # Draws a rectangle the size of the entire grid to represent unvisited cells
   def render_unvisited
-    outputs.solids << [scale_up([0, 0, grid.width, grid.height]), unvisited_color]
+    rect = { x: 0, y: 0, w: grid.width, h: grid.height }
+    rect = rect.transform_values { |v| v * grid.cell_size }
+    outputs.solids << rect.merge(unvisited_color)
   end
 
   # Draws grid lines to show the division of the grid into cells
@@ -629,12 +631,7 @@ class BreadthFirstSearch
 
   # Light brown
   def unvisited_color
-    [221, 212, 213]
-  end
-
-  # Black
-  def grid_line_color
-    [255, 255, 255]
+    { r: 221, g: 212, b: 213 }
   end
 
   # Dark Brown

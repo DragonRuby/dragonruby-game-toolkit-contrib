@@ -65,13 +65,12 @@ end
 
 def render_grid args
   # Draw a square the size and color of the grid
-  args.outputs.solids << [
-    0,
-    0,
-    args.state.grid_size * args.state.tile_size,
-    args.state.grid_size * args.state.tile_size,
-    grid_color
-  ]
+  args.outputs.solids << {
+    x: 0,
+    y: 0,
+    w: args.state.grid_size * args.state.tile_size,
+    h: args.state.grid_size * args.state.tile_size,
+  }.merge(grid_color)
 
   # Draw lines across the grid to show tiles
   (args.state.grid_size + 1).times do | value |
@@ -281,7 +280,7 @@ def tile_out_of_bounds? args, tile
 end
 
 def grid_color
-  [133, 226, 144]
+  { r: 133, g: 226, b: 144 }
 end
 
 def start_color
