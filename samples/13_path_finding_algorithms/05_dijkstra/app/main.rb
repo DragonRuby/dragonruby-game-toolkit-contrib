@@ -133,24 +133,25 @@ class Movement_Costs
 
   # A line the size of the grid, multiplied by the cell size for rendering
   def vertical_line x
-    [x, 0, x, grid.height].map { | v | v * grid.cell_size }
+    line = { x: x, y: 0, w: 0, h: grid.height }
+    line.transform_values { |v| v * grid.cell_size }
   end
 
   # A line the size of the grid, multiplied by the cell size for rendering
   def horizontal_line y
-    [0, y, grid.width, y].map { | v | v * grid.cell_size }
+    line = { x: 0, y: y, w: grid.width, h: 0 }
+    line.transform_values { |v| v * grid.cell_size }
   end
 
   # Translate vertical line by the size of the grid and 1
   def shifted_vertical_line x
-    translated_x = x + grid.width + 1
-    vertical_line translated_x
+    vertical_line(x + grid.width + 1)
   end
 
   # Get horizontal line and shift to the right
   def shifted_horizontal_line y
-    x = grid.width + 1
-    [x, y, x + grid.width, y].map { | v | v * grid.cell_size }
+    line = { x: grid.width + 1, y: y, w: grid.width, h: 0 }
+    line.transform_values { |v| v * grid.cell_size }
   end
 
   # Labels the grids
