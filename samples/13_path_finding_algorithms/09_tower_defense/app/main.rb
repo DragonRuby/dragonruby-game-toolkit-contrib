@@ -1,3 +1,6 @@
+# Contributors outside of DragonRuby who also hold Copyright:
+# - Sujay Vadlakonda: https://github.com/sujayvadlakonda
+
 # An example of some major components in a tower defence game
 # The pathing of the tanks is determined by A* algorithm -- try editing the walls
 

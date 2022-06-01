@@ -1,3 +1,6 @@
+# Contributors outside of DragonRuby who also hold Copyright:
+# - Sujay Vadlakonda: https://github.com/sujayvadlakonda
+
 # This program is inspired by https://www.redblobgames.com/pathfinding/a-star/introduction.html
 
 # The A* Search works by incorporating both the distance from the starting point

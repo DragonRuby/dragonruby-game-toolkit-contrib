@@ -1,3 +1,6 @@
+# Contributors outside of DragonRuby who also hold Copyright:
+# - Sujay Vadlakonda: https://github.com/sujayvadlakonda
+
 # Demonstrates how Dijkstra's Algorithm allows movement costs to be considered
 
 # Inspired by https://www.redblobgames.com/pathfinding/a-star/introduction.html

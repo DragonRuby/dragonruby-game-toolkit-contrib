@@ -1,5 +1,5 @@
 # Contributors outside of DragonRuby who also hold Copyright:
-# Sujay Vadlakonda
+# - Sujay Vadlakonda: https://github.com/sujayvadlakonda
 
 # A visual demonstration of a breadth first search
 # Inspired by https://www.redblobgames.com/pathfinding/a-star/introduction.html
