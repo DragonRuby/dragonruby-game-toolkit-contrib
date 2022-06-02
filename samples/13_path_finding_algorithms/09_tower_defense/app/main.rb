@@ -133,18 +133,18 @@ def calc_a_star args
   args.state.a_star.came_from[args.state.grid_start] = nil
 
   # Until a path to the goal has been found or there are no more tiles to explore
-  until (args.state.a_star.came_from.has_key?(args.state.grid_goal)|| args.state.a_star.frontier.empty?)
+  until (args.state.a_star.came_from.key?(args.state.grid_goal) || args.state.a_star.frontier.empty?)
     # For the first tile in the frontier
     tile_to_expand_from = args.state.a_star.frontier.shift
     # Add each of its neighbors to the frontier
-    neighbors(args, tile_to_expand_from).each do | tile |
+    neighbors(args, tile_to_expand_from).each do |tile|
       args.state.a_star.frontier << tile
       args.state.a_star.came_from[tile] = tile_to_expand_from
     end
   end
 
   # Stop calculating a path if the goal was never reached
-  return unless args.state.a_star.came_from.has_key? args.state.grid_goal
+  return unless args.state.a_star.came_from.key? args.state.grid_goal
 
   # Fill path by tracing back from the goal
   current_cell = args.state.grid_goal

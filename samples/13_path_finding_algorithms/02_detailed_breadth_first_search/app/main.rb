@@ -191,7 +191,7 @@ class DetailedBreadthFirstSearch
   # Draws a rectangle the size of the entire grid to represent unvisited cells
   # Unvisited cells are the default cell
   def render_unvisited
-  n  background = [0, 0, grid.width, grid.height]
+    background = [0, 0, grid.width, grid.height]
     outputs.solids << scale_up(background).merge(unvisited_color)
   end
 
@@ -239,7 +239,7 @@ class DetailedBreadthFirstSearch
 
   # Renders the star
   def render_star
-    outputs.sprites << scale_up(state.star).merge({path: 'star.png'})
+    outputs.sprites << scale_up(state.star).merge({ path: 'star.png' })
   end
 
   # Cells have a number rendered in them based on when they were explored
@@ -269,7 +269,7 @@ class DetailedBreadthFirstSearch
     # Unless the neighbor is a wall
     adjacent_neighbors(next_frontier).each do |neighbor|
       unless state.walls.key?(neighbor)
-        outputs.solids << scale_up(neighbor).merge(highlighter_green).merge({a: 70})
+        outputs.solids << scale_up(neighbor).merge(highlighter_green)
       end
     end
   end
@@ -571,37 +571,37 @@ class DetailedBreadthFirstSearch
 
   # Light brown
   def unvisited_color
-    {r: 221, g: 212, b: 213}
+    { r: 221, g: 212, b: 213 }
   end
 
   # Black
   def grid_line_color
-    {r: 255, g: 255, b: 255}
+    { r: 255, g: 255, b: 255 }
   end
 
   # Dark Brown
   def visited_color
-    {r: 204, g: 191, b: 179}
+    { r: 204, g: 191, b: 179 }
   end
 
   # Blue
   def frontier_color
-    {r: 103, g: 136, b: 204}
+    { r: 103, g: 136, b: 204 }
   end
 
   # Camo Green
   def wall_color
-    {r: 134, g: 134, b: 120}
+    { r: 134, g: 134, b: 120 }
   end
 
   # Next frontier to be expanded
   def highlighter_yellow
-    {r: 214, g: 231, b: 125}
+    { r: 214, g: 231, b: 125 }
   end
 
   # The neighbors of the next frontier to be expanded
   def highlighter_green
-    {r: 65, g: 191, b: 127}
+    { r: 65, g: 191, b: 127, a: 70 }
   end
 
   # Button background
