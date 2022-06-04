@@ -76,22 +76,12 @@ class Numeric
     return max if max && self > max
     return self
   end
-
+  
   def clamp_wrap min, max
     max, min = min, max if min > max
-    return self if self >= min && self <= max
-    return min if min == max
-    if self < min
-      overflow = min - self
-      return (max - overflow).clamp_wrap min, max
-    end
+    range = max - min + 1
 
-    if self > max
-      overflow = self - max
-      return (min + overflow).clamp_wrap min, max
-    end
-
-    return self
+    min + (self - min) % range
   end
 
   def elapsed_time tick_count_override = nil
