@@ -1,6 +1,3 @@
-#ifndef NULL
-#define NULL 0
-#endif
 #include <dragonruby.h>
 
 static drb_api_t *drb_api;
@@ -18,13 +15,13 @@ mrb_value update_scanner_texture(mrb_state *state, mrb_value value)
     // You could make this faster by making this array static (which will
     //  initialize it all to zero at startup), and then blanking the previous
     //  line and drawing the next, and not touching the rest.
-    Uint32 pixels[dimension * dimension];
+    uint32_t pixels[dimension * dimension];
     for (int i = 0; i < (dimension * dimension); i++) {
         pixels[i] = 0xFF000000;  // full alpha, full black
     }
 
     // Draw a green line that bounces up and down the sprite.
-    Uint32 *line = pixels + (pos * dimension);
+    uint32_t *line = pixels + (pos * dimension);
     for (int i = 0; i < dimension; i++) {
         line[i] = 0xFF00FF00;   // full alpha, full green
     }

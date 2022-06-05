@@ -701,7 +701,7 @@ module GTK
     attr_accessor :text, :history
 
     def initialize
-      @controllers = [Controller.new, Controller.new]
+      @controllers = [Controller.new, Controller.new, Controller.new, Controller.new]
       @keyboard = Keyboard.new
       @mouse = Mouse.new
       @touch = {}
@@ -780,6 +780,14 @@ module GTK
       @controllers[1]
     end
 
+    def controller_three
+      @controllers[2]
+    end
+
+    def controller_four
+      @controllers[3]
+    end
+
     # Clears all inputs.
     #
     # @return [void]
@@ -798,6 +806,8 @@ module GTK
       {
         controller_one: controller_one.serialize,
         controller_two: controller_two.serialize,
+        controller_three: controller_three.serialize,
+        controller_four: controller_four.serialize,
         keyboard: keyboard.serialize,
         mouse: mouse.serialize,
         text: text.serialize

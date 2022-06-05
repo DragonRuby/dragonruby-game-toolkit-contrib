@@ -199,6 +199,14 @@ module GTK
       @inputs.controller_two
     end
 
+    def controller_three
+      @inputs.controller_three
+    end
+
+    def controller_four
+      @inputs.controller_four
+    end
+
     def autocomplete_methods
       [:inputs, :outputs, :gtk, :state, :geometry, :audio, :grid, :layout, :fn]
     end

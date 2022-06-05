@@ -497,7 +497,10 @@ XML
   def code_sign_payload
     log_info "Signing app with #{@certificate_name}."
 
+    sh "xattr -cr \"#{tmp_directory}/ipa_root/Payload/#{@app_name}.app\""
     sh "CODESIGN_ALLOCATE=\"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\" /usr/bin/codesign -f -s \"#{@certificate_name}\" --entitlements #{tmp_directory}/Entitlements.plist \"#{tmp_directory}/ipa_root/Payload/#{@app_name}.app\""
+
+    sh "xattr -cr \"#{tmp_directory}/ipa_root/Payload/#{@app_name}.app/#{@app_name}\""
     sh "CODESIGN_ALLOCATE=\"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\" /usr/bin/codesign -f -s \"#{@certificate_name}\" --entitlements #{tmp_directory}/Entitlements.plist \"#{tmp_directory}/ipa_root/Payload/#{@app_name}.app/#{@app_name}\""
 
     @code_sign_completed = true

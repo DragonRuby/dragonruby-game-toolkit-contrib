@@ -175,14 +175,16 @@ S
   def __docs_search_results__ words = nil, &block
     words ||= ""
 
-    if words.strip.length != 0
-      each_word = words.split(' ').find_all { |w| w.strip.length > 3 }
-      block = lambda do |entry|
-        each_word.any? { |w| entry.downcase.include? w.downcase }
-      end
-    end
+    return [__docs_search_help_text__] if words.strip.length == 0 && !block
 
-    return [__docs_search_help_text__] if !block
+    each_word = words.split(' ').find_all { |w| w.strip.length > 3 }
+    block = lambda do |entry, meta|
+      entry_contains_all_words = each_word.all? do |w|
+        (entry.downcase.include? "#{w.downcase}")
+      end
+      m_contains_any_words = each_word.any? { |w| meta.m.include? w }
+      entry_contains_all_words || m_contains_any_words
+    end
 
     DocsOrganizer.sort_docs_classes!
 
@@ -190,17 +192,33 @@ S
 
     search_results = []
 
+    insert_headings_proc = lambda { |klass, m|
+      s = klass.send m
+
+      s = s.each_line.to_a.map do |s|
+        if s.start_with? "* "
+          "#{s.strip} [[#{klass}.#{m}]]\n"
+        elsif s.start_with? "*"
+          s
+        elsif s
+          ""
+        end
+      end.join.strip
+
+      block_result = this_block.call s if this_block.arity == 1
+      block_result = this_block.call s, m: m if this_block.arity == 2
+      search_results << s if block_result
+    }
+
     if self == Kernel
-      $docs_classes.each do |k|
-        DocsOrganizer.find_methods_with_docs(k).each do |m|
-          s = k.send m
-          search_results << s if block.call s
+      $docs_classes.each do |klass|
+        DocsOrganizer.find_methods_with_docs(klass).each do |m|
+          insert_headings_proc.call klass, m
         end
       end
     else
       DocsOrganizer.find_methods_with_docs(self).each do |m|
-        s = send m
-        search_results << s if block.call s
+        insert_headings_proc.call self, m
       end
     end
 
@@ -217,7 +235,7 @@ S
     $gtk.write_file_root "docs/search_results.txt", final_string
 
     if !final_string.include? "* DOCS: No results found."
-      log "* INFO: Search results have been written to docs/search_results.txt."
+      final_string += "\n* INFO: Search results have been written to docs/search_results.txt."
     end
 
     "\n" + final_string

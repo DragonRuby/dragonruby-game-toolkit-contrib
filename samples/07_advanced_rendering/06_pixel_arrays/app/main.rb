@@ -1,5 +1,3 @@
-$gtk.reset
-
 def tick args
   args.state.posinc ||= 1
   args.state.pos ||= 0
@@ -39,3 +37,5 @@ def tick args
   args.outputs.primitives << args.gtk.current_framerate_primitives
 end
 
+
+$gtk.reset

@@ -80,11 +80,10 @@ S
     <ul>
       <li><a href="/">Home</a></li>
       <li><a href="/docs.html">Docs</a></li>
+      <li><a href="/src_backup_changes.html">Source Code Backup</a>
       <li><a href="/dragon/control_panel/">Control Panel</a></li>
       <li><a href="/dragon/eval/">Console</a></li>
       <li><a href="/dragon/log/">Logs</a></li>
-      <li><a href="/dragon/puts/">Puts</a></li>
-      <li><a href="/dragon/code/">Code</a></li>
     </ul>
 S
     end
@@ -189,6 +188,13 @@ S
                   { 'Content-Type' => 'text/html' }
     end
 
+
+    def get_api_log args, req
+      req.respond 200,
+                  args.gtk.read_file("logs/log.txt"),
+                  { 'Content-Type' => 'text/plain' }
+    end
+
     def post_api_log args, req
       Log.log req.body
 
@@ -230,21 +236,27 @@ S
   </style>
   <body>
     <script>
+      var escape = document.createElement('textarea');
+      function escapeHTML(html) {
+          escape.textContent = html;
+          return escape.innerHTML;
+      }
+
       async function submitForm() {
           const result = await fetch("/dragon/eval/", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ code: document.getElementById("code").value }),
           });
-          document.getElementById("eval-result").innerHTML = await result.text();
+          document.getElementById("eval-result").innerHTML = escapeHTML(await result.text());
       }
     </script>
     <form>
-      <textarea name="code" id="code" rows="10" cols="80"># write your code here and set $result.\n$result = $gtk.args.state</textarea>
+      <textarea name="code" id="code" rows="10" cols="80"># write your code here\n$gtk.args.state</textarea>
       <br/>
       <input type="button" onclick="submitForm();" value="submit" />
     </form>
-    <pre>curl -H "Content-Type: application/json" --data '{ "code": "$result = $args.state" }' -X POST http://localhost:9001/dragon/eval/</pre>
+    <pre>curl -H "Content-Type: application/json" --data '{ "code": "$args.state" }' -X POST http://localhost:9001/dragon/eval/</pre>
     <div>Eval Result:</div>
     <pre id="eval-result"></pre>
     #{links}
@@ -259,22 +271,23 @@ S
     def post_api_eval args, req
       if json? req
         code = ($gtk.parse_json req.body)["code"]
-        code = code.gsub("$result", "$eval_result")
+        result = nil
         Object.new.instance_eval do
           begin
-            Kernel.eval code
+            result = Kernel.eval code
           rescue Exception => e
-            $eval_result = e
+            result = e
           end
         end
+
+        req.respond 200,
+                    "#{result}",
+                    { 'Content-Type' => 'text/plain' }
+      else
+        req.respond 200,
+                    "",
+                    { 'Content-Type' => 'text/plain' }
       end
-
-      req.respond 200,
-                  "#{$eval_result || $eval_results || "nil"}",
-                  { 'Content-Type' => 'text/plain' }
-
-      $eval_result  = nil
-      $eval_results = nil
     end
 
     def control_panel_view
@@ -308,6 +321,7 @@ S
     <form>
       <input type="button" value="Replay Recording" onclick="submitForm('/dragon/replay/');" />
     </form>
+
     <div id="success-notification"></div>
     #{links}
   </body>
@@ -319,6 +333,12 @@ S
       req.respond 200,
                   control_panel_view,
                   { 'Content-Type' => 'text/html' }
+    end
+
+    def get_api_changes args, req
+      req.respond 200,
+                  args.gtk.read_file("tmp/src_backup/src_backup_changes.txt"),
+                  { 'Content-Type' => 'text/plain' }
     end
 
     def json? req
@@ -358,6 +378,13 @@ S
       req.respond 200,
                   control_panel_view,
                   { 'Content-Type' => 'text/html' }
+    end
+
+    def get_api_log args, req
+      log_contents = $gtk.read_file "logs/#{$gtk.get_game_id}.log"
+      req.respond 200,
+                  log_contents,
+                  { 'Content-Type' => 'text/plain' }
     end
 
     def tick args
@@ -430,6 +457,8 @@ S
          handler:        :get_index },
        { match_criteria: { method: :get, uri: "/dragon/" },
          handler:        :get_index },
+       { match_criteria: { method: :get, uri: "/dragon/log/" },
+         handler:        :get_api_log },
        { match_criteria: { method: :post, uri: "/dragon/log/" },
          handler:        :post_api_log },
        { match_criteria: { method: :get, uri: "/dragon/eval/" },
@@ -460,6 +489,8 @@ S
          handler:        :post_api_code_update },
        { match_criteria: { method: :get, end_with_rb: true },
          handler:        :get_src_backup },
+       { match_criteria: { method: :get, uri: "/dragon/changes/" },
+         handler:        :get_api_changes },
        *static_file_routes
       ]
     end
@@ -524,22 +555,6 @@ S
     STATIC_FILES = {
       '/dragon/boot/' => {
         source: 'tmp/src_backup/boot.txt',
-        content_type: 'text/plain'
-      },
-      '/dragon/trace/' => {
-        source: 'logs/trace.txt',
-        content_type: 'text/plain'
-      },
-      '/dragon/puts/' => {
-        source: 'logs/puts.txt',
-        content_type: 'text/plain'
-      },
-      '/dragon/log/' => {
-        source: 'logs/log.txt',
-        content_type: 'text/plain'
-      },
-      '/dragon/changes/' => {
-        source: 'tmp/src_backup/src_backup_changes.txt',
         content_type: 'text/plain'
       },
       '/docs.html' => {

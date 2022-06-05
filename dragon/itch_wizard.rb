@@ -74,8 +74,6 @@ S
       return :need_icon
     end
 
-    puts "here!! success!!!"
-
     return :success
   end
 

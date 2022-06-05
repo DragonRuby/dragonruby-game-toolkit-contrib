@@ -73,6 +73,7 @@ module GTK
             'dragon/args_docs.rb',
             'dragon/console_prompt.rb',
             'dragon/console_menu.rb',
+            'dragon/console_evaluator.rb',
             'dragon/console.rb',
             'dragon/assert.rb',
             'dragon/tests.rb',

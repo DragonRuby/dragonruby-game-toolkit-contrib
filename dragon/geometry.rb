@@ -367,7 +367,7 @@ S
     end
 
     def self.contract_intersect_rect?
-      [:left, :right, :top, :bottom]
+      [:x, :y, :w, :h]
     end
 
     # @gtk
@@ -378,8 +378,8 @@ S
       return false if (rect_one.y + tolerance) > ((rect_two.y + rect_two.h) - tolerance)
       return true
     rescue Exception => e
-      context_help_rect_one = (rect_one.__help_contract_implementation contract_intersect_rect?)[:not_implemented_methods]
-      context_help_rect_two = (rect_two.__help_contract_implementation contract_intersect_rect?)[:not_implemented_methods]
+      context_help_rect_one = (rect_one.__help_contract_implementation__ contract_intersect_rect?)[:not_implemented_methods]
+      context_help_rect_two = (rect_two.__help_contract_implementation__ contract_intersect_rect?)[:not_implemented_methods]
       context_help = ""
       if context_help_rect_one && context_help_rect_one.length > 0
         context_help += <<-S

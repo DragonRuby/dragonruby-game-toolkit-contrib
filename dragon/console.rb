@@ -6,6 +6,7 @@
 # Contributors outside of DragonRuby who also hold Copyright:
 # - Kevin Fischer: https://github.com/kfischer-okarin
 # - Eli Raybon: https://github.com/eliraybon
+# - mooff: https://github.com/awfulcooking
 
 module GTK
   class Console
@@ -24,7 +25,7 @@ module GTK
                   :debug_color, :unfiltered_color
 
     def initialize
-      @font_style = FontStyle.new(font: 'font.ttf', size_enum: -1.5, line_height: 1.1)
+      @font_style = FontStyle.new(font: 'font.ttf', size_enum: -2, line_height: 1.1)
       @menu = Menu.new self
       @disabled = false
       @log_offset = 0
@@ -40,8 +41,9 @@ module GTK
       @nonhistory_input = ''
       @logo = 'console-logo.png'
       @history_fname = 'logs/console_history.txt'
-      @background_color = Color.new [0, 0, 0, 224]
-      @header_color = Color.new [100, 200, 220]
+      @background_color = Color.new [0, 0, 0, 255]
+      @header_color = Color.new [94, 170, 248]
+      @header_2_color = Color.new [216, 95, 135]
       @code_color = Color.new [210, 168, 255]
       @comment_color = Color.new [0, 200, 100]
       @animation_duration = 1.seconds
@@ -52,7 +54,7 @@ module GTK
       @debug_color = Color.new [0, 255, 0]
       @text_color = Color.new [255, 255, 255]
       @warn_color = Color.new [255, 255, 0]
-      @error_color = Color.new [200, 50, 50]
+      @error_color = Color.new [255, 80, 80]
       @unfiltered_color = Color.new [0, 255, 255]
 
       load_history
@@ -339,20 +341,37 @@ S
 
         if cmd == 'quit' || cmd == ':wq' || cmd == ':q!' || cmd == ':q' || cmd == ':wqa'
           $gtk.request_quit
+        elsif (cmd.start_with? "./dragonruby-publish") || (cmd.start_with? ".\\dragonruby-publish") || (cmd.start_with? "dragonruby-publish")
+          # TODO: maybe kick off the itch wizard here ~$wizards.itch.start~
+          puts "-> #{cmd}"
+          puts <<-S
+* INFO:
+It looks like you are trying to publish your game. The dragonruby-publish
+command must be run from your terminal (not the DragonRuby Console).
+S
         elsif cmd.start_with? ':'
           send ((cmd.gsub '-', '_').gsub ':', '')
         else
           puts "-> #{cmd}"
+
           begin
             @last_command = cmd
-            Kernel.eval("$results = (#{cmd})")
-            if $results.nil?
+
+            locals = (@locals ||= {})
+
+            results = GTK::ConsoleEvaluator.evaluate cmd
+           if results.nil?
               puts "=> nil"
-            elsif $results == :console_silent_eval
+            elsif results == :console_silent_eval
               # do nothing since the console is silent
             else
-              puts "=> #{$results}"
+              if cmd.include?("docs") && (results.is_a? String) && (results.start_with? "* ")
+                puts "=>\n#{results}"
+              else
+                puts "=> #{results}"
+              end
             end
+
             @last_command_errored = false
           rescue Exception => e
             try_search_docs e
@@ -621,7 +640,7 @@ S
     end
 
     def error_markers
-      ["exception:", "error:", "undefined method", "failed", "syntax", "deprecated"]
+      ["exception:", "error:", "undefined method", "failed", "syntax error", "deprecated"]
     end
 
     def include_subdued_markers? text
@@ -771,6 +790,16 @@ S
       (log_entry.start_with? "**** ")
     end
 
+    def include_header_1_marker? log_entry
+      return false if (log_entry.strip.include? ".rb")
+      (log_entry.start_with? "* ")
+    end
+
+    def include_header_2_marker? log_entry
+      return false if (log_entry.strip.include? ".rb")
+      (log_entry.start_with? "** ")
+    end
+
     def code? log_entry
       (just_symbol? log_entry) || (codeblock_marker? log_entry)
     end
@@ -804,8 +833,10 @@ S
         @error_color
       elsif include_subdued_markers? log_entry
         @text_color.mult_alpha(0.5)
-      elsif include_header_marker? log_entry
+      elsif include_header_1_marker? log_entry
         @header_color
+      elsif include_header_2_marker? log_entry
+        @header_2_color
       elsif log_entry.start_with?("====")
         @header_color
       else

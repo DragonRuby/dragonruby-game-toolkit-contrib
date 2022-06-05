@@ -20,17 +20,6 @@ module GTK
       @strict_entities
     end
 
-    def self.parse_serialization_data data
-      r = Entity.parse_serialization_data data
-      return r if r.is_a? OpenEntity
-      return r if r.is_a? StrictEntity
-      raise <<-S
-* ERROR:
-The save data looks to be corrupt.
-
-S
-    end
-
     def self.parse_serialization_data value
       if value.is_a?(Hash) && value[:entity_id] && value[:entity_strict]
         o = new_entity_strict value[:entity_name], value
