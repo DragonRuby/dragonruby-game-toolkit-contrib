@@ -37,6 +37,9 @@ class ScreenShake
     next_camera_angle = 180.0 / 20.0 * state.camera.trauma**2
     next_offset       = 100.0 * state.camera.trauma**2
 
+    # Ensure that the camera angle always switches from
+    # positive to negative and vice versa
+    # which gives the effect of shaking back and forth
     state.camera.angle = state.camera.angle > 0 ?
                            next_camera_angle * -1 :
                            next_camera_angle
