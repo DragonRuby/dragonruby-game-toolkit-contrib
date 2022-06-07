@@ -12,6 +12,9 @@ class ScreenShake
 
     # Add outputs to :scene
     outputs[:scene].solids << [100, 100, 100, 100, 135, 206, 250]
+    outputs[:scene].solids << [200, 300.from_top, 100, 100, 255, 189, 49]
+    outputs[:scene].solids << [900, 200, 50, 200, 176, 101, 0]
+    outputs[:scene].solids << [850, 300, 150, 100, 85, 107, 47]
 
     # Describe how to render :scene
     outputs.sprites << { x: 0 - state.camera.x_offset,
