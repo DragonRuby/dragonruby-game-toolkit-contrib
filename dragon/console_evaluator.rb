@@ -52,12 +52,16 @@ module GTK
 
 locals[:args] ||= $args
 locals[:gtk]  ||= $gtk
-_ = (#{cmd})
 
-local_variables.each do |name|
-  locals[name] = eval(name.to_s)
+begin
+  _ = begin
+    #{cmd}
+  end
+ensure
+  local_variables.each do |name|
+    locals[name] = eval(name.to_s)
+  end
 end
-_
 S
 
         GTK::ConsoleEvaluator.instance_eval code
