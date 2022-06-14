@@ -553,6 +553,12 @@ S
         prompt.delete
       elsif args.inputs.keyboard.key_down.tab
         prompt.autocomplete
+      elsif args.inputs.keyboard.control and (args.inputs.keyboard.key_down.plus or args.inputs.keyboard.key_down.equal_sign)
+        adjust_font_size +1
+        prompt.backspace
+      elsif args.inputs.keyboard.control and args.inputs.keyboard.key_down.hyphen
+        adjust_font_size -1
+        prompt.backspace
       end
 
       args.inputs.keyboard.key_down.clear
@@ -894,6 +900,11 @@ S
         @slide_progress = @toggled_at.global_ease(@animation_duration, :flip, :quint)
       end
       @slide_progress
+    end
+
+    def adjust_font_size(delta)
+      self.font_style = FontStyle.new(**font_style.to_hash, size_enum: font_style.size_enum + delta)
+      prompt.font_style = FontStyle.new(**prompt.font_style.to_hash, size_enum: prompt.font_style.size_enum + delta)
     end
   end
 end

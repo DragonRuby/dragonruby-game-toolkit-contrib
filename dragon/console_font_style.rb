@@ -13,7 +13,7 @@ module GTK
 
       def initialize(font:, size_enum:, line_height:)
         @font = font
-        @size_enum = size_enum
+        @size_enum = size_enum&.clamp(-10, 40)
         @line_height = line_height
       end
 
@@ -35,6 +35,10 @@ module GTK
           alignment_enum: alignment_enum,
           **color.to_h,
         }.label!
+      end
+
+      def to_hash
+        { font: font, size_enum: size_enum, line_height: line_height }
       end
     end
   end
