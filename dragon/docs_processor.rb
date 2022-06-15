@@ -24,6 +24,12 @@ module Docs
       while @index < @lines.length
         line = @lines[@index]
 
+        # Call one of
+        # - process_normal_line
+        # - process_code_block_line
+        # - process_ordered_list_line
+        # - process_unordered_list_line
+        # depending on the current line type.
         send :"process_#{@line_type}_line", line
 
         @index += 1
