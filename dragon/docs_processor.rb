@@ -35,8 +35,7 @@ module Docs
         @index += 1
       end
 
-      process_collected_text unless @collected_text.empty?
-      finish_paragraph_if_needed
+      finish_paragraph_or_list_if_needed
       send :"finish_#{@line_type}" unless @line_type == :normal
       call_processors :process_document_end
     end
@@ -79,8 +78,7 @@ module Docs
         process_collected_text
         call_processors :process_quote_start
       elsif line.start_with?('#+end_quote')
-        process_collected_text
-        finish_paragraph_if_needed
+        finish_paragraph_or_list_if_needed
         call_processors :process_quote_end
       elsif line.start_with?('1.')
         start_ordered_list line
@@ -96,8 +94,7 @@ module Docs
     end
 
     def process_header(line, level)
-      process_collected_text
-      finish_paragraph_if_needed
+      finish_paragraph_or_list_if_needed
 
       call_processors :process_header_start, level
       header_text = line.sub('*' * level, '').strip
@@ -215,11 +212,7 @@ module Docs
     end
 
     def process_text_line(line)
-      if line.empty?
-        process_collected_text
-        finish_paragraph_if_needed
-        return
-      end
+      return finish_paragraph_or_list_if_needed if line.empty?
 
       @collected_text << ' ' unless @collected_text.empty?
 
@@ -258,7 +251,8 @@ module Docs
       @collected_text << line[text_start..-1]
     end
 
-    def finish_paragraph_if_needed
+    def finish_paragraph_or_list_if_needed
+      process_collected_text
       return unless @inside_paragraph
 
       call_processors :process_paragraph_end
