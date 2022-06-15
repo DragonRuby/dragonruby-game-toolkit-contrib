@@ -90,6 +90,9 @@ module Docs
     end
 
     def process_header(line, level)
+      process_collected_text
+      finish_paragraph_if_needed
+
       call_processors :process_header_start, level
       header_text = line.sub('*' * level, '').strip
       process_text_line header_text
