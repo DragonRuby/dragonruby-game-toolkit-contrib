@@ -33,6 +33,11 @@ module GTK
         @cursor_position_px = ($gtk.calcstringbox (@prompt + @current_input_str[0...@cursor_position]), @font_style.size_enum, @font_style.font).x
       end
 
+      def font_style=(style)
+        @font_style = style
+        update_cursor_position_px
+      end
+
       def current_input_str=(str)
         @current_input_str = str
         @cursor_position = str.length
