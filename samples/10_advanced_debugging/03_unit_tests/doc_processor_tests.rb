@@ -320,6 +320,36 @@ def test_docs_empty_line_closes_list(_args, assert)
   ]
 end
 
+def test_docs_unindented_text_closes_list(_args, assert)
+  called_methods = process_doc_string <<~DOC
+    1. One
+    Not a list
+    - One
+    Not a list
+  DOC
+
+  assert.equal! called_methods, [
+    [:process_document_start],
+    [:process_ordered_list_start],
+    [:process_ordered_list_item_start],
+    [:process_text, 'One'],
+    [:process_ordered_list_item_end],
+    [:process_ordered_list_end],
+    [:process_paragraph_start],
+    [:process_text, 'Not a list'],
+    [:process_paragraph_end],
+    [:process_unordered_list_start],
+    [:process_unordered_list_item_start],
+    [:process_text, 'One'],
+    [:process_unordered_list_item_end],
+    [:process_unordered_list_end],
+    [:process_paragraph_start],
+    [:process_text, 'Not a list'],
+    [:process_paragraph_end],
+    [:process_document_end]
+  ]
+end
+
 def test_docs_header_closes_list(_args, assert)
   called_methods = process_doc_string <<~DOC
     1. One

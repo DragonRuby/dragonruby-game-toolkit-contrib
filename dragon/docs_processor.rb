@@ -142,7 +142,7 @@ module Docs
     end
 
     def start_ordered_list(line)
-      process_collected_text
+      finish_paragraph_or_list_if_needed
       @line_type = :ordered_list
       call_processors :process_ordered_list_start
       process_ordered_list_line line
@@ -174,7 +174,7 @@ module Docs
     end
 
     def start_unordered_list(line)
-      process_collected_text
+      finish_paragraph_or_list_if_needed
       @line_type = :unordered_list
       call_processors :process_unordered_list_start
       process_unordered_list_line line
