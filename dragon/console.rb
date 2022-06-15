@@ -429,7 +429,7 @@ S
 
     def inputs_clear_command? args
       return false if @disabled
-      args.inputs.keyboard.escape || args.inputs.keyboard.ctrl_g
+      args.inputs.keyboard.escape || args.inputs.keyboard.ctrl_g || args.inputs.keyboard.ctrl_c
     end
 
     def scroll_down_half
