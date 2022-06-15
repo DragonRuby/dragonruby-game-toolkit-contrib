@@ -62,7 +62,6 @@ def test_header_and_text_without_empty_lines(_args, assert)
   ]
 end
 
-
 def test_header_with_markup(_args, assert)
   called_methods = process_doc_string <<~DOC
     * DOCS: ~GTK::Runtime~
@@ -297,16 +296,36 @@ def test_docs_process_unordered_list(_args, assert)
   ]
 end
 
+def test_docs_empty_line_closes_list(_args, assert)
+  called_methods = process_doc_string <<~DOC
+    1. One
+
+    - One
+
+  DOC
+
+  assert.equal! called_methods, [
+    [:process_document_start],
+    [:process_ordered_list_start],
+    [:process_ordered_list_item_start],
+    [:process_text, 'One'],
+    [:process_ordered_list_item_end],
+    [:process_ordered_list_end],
+    [:process_unordered_list_start],
+    [:process_unordered_list_item_start],
+    [:process_text, 'One'],
+    [:process_unordered_list_item_end],
+    [:process_unordered_list_end],
+    [:process_document_end]
+  ]
+end
+
 def test_docs_header_closes_list(_args, assert)
   called_methods = process_doc_string <<~DOC
     1. One
-    2. Two
-
     ** Header
 
     - One
-    - Two
-
     ** Header
   DOC
 
@@ -316,9 +335,6 @@ def test_docs_header_closes_list(_args, assert)
     [:process_ordered_list_item_start],
     [:process_text, 'One'],
     [:process_ordered_list_item_end],
-    [:process_ordered_list_item_start],
-    [:process_text, 'Two'],
-    [:process_ordered_list_item_end],
     [:process_ordered_list_end],
     [:process_header_start, 2],
     [:process_text, 'Header'],
@@ -326,9 +342,6 @@ def test_docs_header_closes_list(_args, assert)
     [:process_unordered_list_start],
     [:process_unordered_list_item_start],
     [:process_text, 'One'],
-    [:process_unordered_list_item_end],
-    [:process_unordered_list_item_start],
-    [:process_text, 'Two'],
     [:process_unordered_list_item_end],
     [:process_unordered_list_end],
     [:process_header_start, 2],
@@ -341,15 +354,11 @@ end
 def test_docs_code_block_closes_list(_args, assert)
   called_methods = process_doc_string <<~DOC
     1. One
-    2. Two
-
     #+begin_src
       tick
     #+end_src
 
     - One
-    - Two
-
     #+begin_src
       tick
     #+end_src
@@ -361,9 +370,6 @@ def test_docs_code_block_closes_list(_args, assert)
     [:process_ordered_list_item_start],
     [:process_text, 'One'],
     [:process_ordered_list_item_end],
-    [:process_ordered_list_item_start],
-    [:process_text, 'Two'],
-    [:process_ordered_list_item_end],
     [:process_ordered_list_end],
     [:process_code_block_start],
     [:process_code_block_content, "tick\n"],
@@ -371,9 +377,6 @@ def test_docs_code_block_closes_list(_args, assert)
     [:process_unordered_list_start],
     [:process_unordered_list_item_start],
     [:process_text, 'One'],
-    [:process_unordered_list_item_end],
-    [:process_unordered_list_item_start],
-    [:process_text, 'Two'],
     [:process_unordered_list_item_end],
     [:process_unordered_list_end],
     [:process_code_block_start],
@@ -386,15 +389,11 @@ end
 def test_docs_quote_closes_list(_args, assert)
   called_methods = process_doc_string <<~DOC
     1. One
-    2. Two
-
     #+begin_quote
     What game engine do you use?
     #+end_quote
 
     - One
-    - Two
-
     #+begin_quote
     What game engine do you use?
     #+end_quote
@@ -406,9 +405,6 @@ def test_docs_quote_closes_list(_args, assert)
     [:process_ordered_list_item_start],
     [:process_text, 'One'],
     [:process_ordered_list_item_end],
-    [:process_ordered_list_item_start],
-    [:process_text, 'Two'],
-    [:process_ordered_list_item_end],
     [:process_ordered_list_end],
     [:process_quote_start],
     [:process_paragraph_start],
@@ -418,9 +414,6 @@ def test_docs_quote_closes_list(_args, assert)
     [:process_unordered_list_start],
     [:process_unordered_list_item_start],
     [:process_text, 'One'],
-    [:process_unordered_list_item_end],
-    [:process_unordered_list_item_start],
-    [:process_text, 'Two'],
     [:process_unordered_list_item_end],
     [:process_unordered_list_end],
     [:process_quote_start],

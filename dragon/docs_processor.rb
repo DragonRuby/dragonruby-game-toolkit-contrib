@@ -160,9 +160,10 @@ module Docs
       elsif line[0..2] == '   '
         list_item_content = line[3..-1].strip
         process_text_line list_item_content
-      elsif line.strip.empty?
+      else
         process_collected_text
         finish_ordered_list
+        process_normal_line line
       end
     end
 
@@ -191,9 +192,10 @@ module Docs
       elsif line[0..1] == '  '
         list_item_content = line[2..-1].strip
         process_text_line list_item_content
-      elsif line.strip.empty?
+      else
         process_collected_text
         finish_unordered_list
+        process_normal_line line
       end
     end
 
