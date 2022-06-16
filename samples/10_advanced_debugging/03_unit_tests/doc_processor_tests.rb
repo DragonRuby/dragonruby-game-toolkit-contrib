@@ -34,34 +34,6 @@ def test_docs_process_header(_args, assert)
   ]
 end
 
-def test_header_and_text_without_empty_lines(_args, assert)
-  called_methods = process_doc_string <<~DOC
-    ** ~args.gtk.platform~
-    Returns a ~String~ representing the operating system the game is running on.
-    ** ~args.gtk.request_quit~
-    Request that the runtime quit the game.
-  DOC
-
-  assert.equal! called_methods, [
-    [:process_document_start],
-    [:process_header_start, 2],
-    [:process_inline_code, 'args.gtk.platform'],
-    [:process_header_end, 2],
-    [:process_paragraph_start],
-    [:process_text, 'Returns a '],
-    [:process_inline_code, 'String'],
-    [:process_text, ' representing the operating system the game is running on.'],
-    [:process_paragraph_end],
-    [:process_header_start, 2],
-    [:process_inline_code, 'args.gtk.request_quit'],
-    [:process_header_end, 2],
-    [:process_paragraph_start],
-    [:process_text, 'Request that the runtime quit the game.'],
-    [:process_paragraph_end],
-    [:process_document_end]
-  ]
-end
-
 def test_header_with_markup(_args, assert)
   called_methods = process_doc_string <<~DOC
     * DOCS: ~GTK::Runtime~
@@ -242,6 +214,76 @@ def test_docs_process_paragraphs(_args, assert)
       "you'll need to start."
     ],
     [:process_paragraph_end],
+    [:process_document_end]
+  ]
+end
+
+def test_docs_header_ends_paragraph(_args, assert)
+  called_methods = process_doc_string <<~DOC
+    ** ~args.gtk.platform~
+    Returns a ~String~ representing the operating system the game is running on.
+    ** ~args.gtk.request_quit~
+    Request that the runtime quit the game.
+  DOC
+
+  assert.equal! called_methods, [
+    [:process_document_start],
+    [:process_header_start, 2],
+    [:process_inline_code, 'args.gtk.platform'],
+    [:process_header_end, 2],
+    [:process_paragraph_start],
+    [:process_text, 'Returns a '],
+    [:process_inline_code, 'String'],
+    [:process_text, ' representing the operating system the game is running on.'],
+    [:process_paragraph_end],
+    [:process_header_start, 2],
+    [:process_inline_code, 'args.gtk.request_quit'],
+    [:process_header_end, 2],
+    [:process_paragraph_start],
+    [:process_text, 'Request that the runtime quit the game.'],
+    [:process_paragraph_end],
+    [:process_document_end]
+  ]
+end
+
+def test_docs_code_block_ends_paragraph(_args, assert)
+  called_methods = process_doc_string <<~DOC
+    Before code block:
+    #+begin_src ruby
+      tick
+    #+end_src
+  DOC
+
+  assert.equal! called_methods, [
+    [:process_document_start],
+    [:process_paragraph_start],
+    [:process_text, 'Before code block:'],
+    [:process_paragraph_end],
+    [:process_code_block_start, :ruby],
+    [:process_code_block_content, "tick\n"],
+    [:process_code_block_end, :ruby],
+    [:process_document_end]
+  ]
+end
+
+def test_docs_quote_ends_paragraph(_args, assert)
+  called_methods = process_doc_string <<~DOC
+    Before quote:
+    #+begin_quote
+    What game engine do you use?
+    #+end_quote
+  DOC
+
+  assert.equal! called_methods, [
+    [:process_document_start],
+    [:process_paragraph_start],
+    [:process_text, 'Before quote:'],
+    [:process_paragraph_end],
+    [:process_quote_start],
+    [:process_paragraph_start],
+    [:process_text, 'What game engine do you use?'],
+    [:process_paragraph_end],
+    [:process_quote_end],
     [:process_document_end]
   ]
 end

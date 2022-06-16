@@ -73,9 +73,10 @@ module Docs
       elsif line.start_with?('***** ')
         process_header(line, 5)
       elsif line.start_with?('#+begin_src')
+        finish_paragraph_or_list_if_needed
         start_code_block(line)
       elsif line.start_with?('#+begin_quote')
-        process_collected_text
+        finish_paragraph_or_list_if_needed
         call_processors :process_quote_start
       elsif line.start_with?('#+end_quote')
         finish_paragraph_or_list_if_needed
