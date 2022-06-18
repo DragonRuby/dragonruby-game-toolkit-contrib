@@ -87,8 +87,14 @@ Returns ~true~ if: the ~left~ arrow or ~a~ key is pressed or held on the ~keyboa
 Returns ~true~ if: the ~right~ arrow or ~d~ key is pressed or held on the ~keyboard~; or if ~right~ is pressed or held on ~controller_one~; or if the ~left_analog~ on ~controller_one~ is tilted to the right.
 ** ~args.inputs.left_right~
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.left~ and ~args.inputs.right~.
+#+begin_src ruby
+  args.state.player[:x] += args.inputs.left_right * args.state.speed
+#+end_src
 ** ~args.inputs.up_down~
 Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.down~ and ~args.inputs.up~.
+#+begin_src ruby
+  args.state.player[:y] += args.inputs.up_down * args.state.speed
+#+end_src
 ** ~args.inputs.text~ OR ~args.inputs.history~
 Returns a string that represents the last key that was pressed on the keyboard.
 ** ~args.inputs.mouse~
@@ -285,7 +291,10 @@ Primitives are rendered first-in, first-out. The rendering order (sorted by bott
 ** ~args.outputs.background_color~
 Set ~args.outputs.background_color~ to an ~Array~ with ~RGB~ values (eg. ~[255, 255, 255]~ for the color white).
 ** ~args.outputs.sounds~
-Send a file path to this collection to play a sound. The sound file must be under the ~mygame~ directory. Example: ~args.outputs.sounds << "sounds/jump.wav"~.
+Send a file path to this collection to play a sound. The sound file must be under the ~mygame~ directory.
+#+begin_src ruby
+  args.outputs.sounds << "sounds/jump.wav"
+#+end_src
 ** ~args.outputs.solids~
 Send a Primitive to this collection to render a filled in rectangle to the screen. This collection is cleared at the end of every frame.
 ** ~args.outputs.static_solids~
@@ -319,7 +328,7 @@ Here are some general notes with regards to the arguments these geometric functi
 
 ** ~args.geometry.inside_rect? rect_1, rect_2~
 Returns ~true~ if ~rect_1~ is inside ~rect_2~.
-** ~args.geometry.intersect_rect? rect_2, rect_2~
+** ~args.geometry.intersect_rect? rect_1, rect_2~
 Returns ~true~ if ~rect_1~ intersects ~rect_2~.
 ** ~args.geometry.scale_rect rect, x_percentage, y_percentage~
 Returns a new rectangle that is scaled by the percentages provided.
