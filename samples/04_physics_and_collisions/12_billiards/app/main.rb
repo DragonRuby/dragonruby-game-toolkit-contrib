@@ -49,6 +49,7 @@ class BilliardsLite
     stick_vec_y = Math.sin(state.stick_angle.to_radians)
     ball_center_x = state.ball[:x] + (state.ball[:w] / 2)
     ball_center_y = state.ball[:y] + (state.ball[:h] / 2)
+    # Draws the line starting 15% of stick_length away from the ball
     outputs.lines << {
       x: ball_center_x + (stick_vec_x * state.stick_length * -0.15),
       y: ball_center_y + (stick_vec_y * state.stick_length * -0.15),
@@ -108,6 +109,7 @@ class BilliardsLite
     false
   end
 
+  # Math from https://stackoverflow.com/questions/573084/how-to-calculate-bounce-angle
   def collision(normal_vector)
     return if state.prevent_collision == normal_vector
     state.prevent_collision = normal_vector
@@ -125,7 +127,8 @@ class BilliardsLite
     state.collision_occurred_this_tick = true
   end
 
-
+  # The normal vector is the negative reciprocal of the parallel vector
+  # Similar to slopes in that manner
   def compute_normal_vector(line)
     h = line[:y2] - line[:y]
     w = line[:x2] - line[:x]
@@ -144,6 +147,7 @@ class BilliardsLite
     state.ball_speed > 0.1
   end
 
+  # The lines composing the boundaries of a rectangle
   def rect_to_lines(rect)
     x = rect[:x]
     y = rect[:y]
@@ -157,6 +161,7 @@ class BilliardsLite
 
   # This is different from args.geometry.line_intersect
   # This considers line segments instead of lines
+  # Source: http://jeffreythompson.org/collision-detection/line-line.php
   def line_intersect_line?(line_one, line_two)
     x1 = line_one[:x]
     y1 = line_one[:y]
