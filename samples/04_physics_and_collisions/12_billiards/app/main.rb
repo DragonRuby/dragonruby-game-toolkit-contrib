@@ -1,3 +1,5 @@
+# TODO Fix bug with line
+
 # Demonstrates collision against arbitrary lines using vector math.
 # Use arrow keys to move stick. Press space to add power, release to hit ball.
 
@@ -14,13 +16,7 @@ class BilliardsLite
   end
 
   def defaults
-    # Feel free to change these, but avoid spawning a wall on the ball.
-    state.walls = [
-      { x: 150, y: 200, x2: 150, y2: 600 },
-      { x: 150, y: 200, x2: 1150, y2: 200 },
-      { x: 1150, y: 200, x2: 1150, y2: 600 },
-      { x: 150, y: 600, x2: 1150, y2: 600 },
-    ]
+    state.walls ||= []
 
     state.ball ||= { x: 250, y: 250, w: 50, h: 50, path: 'circle-white.png' }
     state.ball_speed ||= 0
@@ -40,6 +36,7 @@ class BilliardsLite
     outputs.lines << state.walls
     outputs.sprites << state.ball
     render_stick
+    render_point_one
   end
 
   def render_stick
@@ -58,7 +55,21 @@ class BilliardsLite
     }
   end
 
+  def render_point_one
+    return unless state.point_one
+
+    outputs.lines << { x: state.point_one.x, y: state.point_one.y,
+                       x2: inputs.mouse.x, y2: inputs.mouse.y,
+                       r: 255 }
+  end
+
   def input
+    input_stick
+    input_lines
+    state.point_one = nil if inputs.keyboard.key_down.escape
+  end
+
+  def input_stick
     return if ball_moving?
 
     if inputs.keyboard.key_up.space
@@ -72,6 +83,18 @@ class BilliardsLite
     end
 
     state.stick_angle += inputs.keyboard.left_right
+  end
+
+  def input_lines
+    return unless inputs.mouse.click
+
+    if state.point_one
+      state.walls << { x: state.point_one.x, y: state.point_one.y,
+                       x2: inputs.mouse.click.x, y2: inputs.mouse.click.y }
+      state.point_one = nil
+    else
+      state.point_one = inputs.mouse.click.point
+    end
   end
 
   def hit_ball
@@ -99,6 +122,7 @@ class BilliardsLite
     state.prevent_collision = nil unless state.collision_occurred_this_tick
   end
 
+  # TODO Fix what's underneath this
   # This doesn't cover the case where the line is completely within the rect
   # Make lines bigger than ball rect
   def line_intersect_rect?(line, rect)
