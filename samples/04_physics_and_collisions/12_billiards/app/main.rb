@@ -89,12 +89,25 @@ class BilliardsLite
     return unless inputs.mouse.click
 
     if state.point_one
-      state.walls << { x: state.point_one.x, y: state.point_one.y,
-                       x2: inputs.mouse.click.x, y2: inputs.mouse.click.y }
+      x = snap(state.point_one.x)
+      y = snap(state.point_one.y)
+      x2 = snap(inputs.mouse.click.x)
+      y2 = snap(inputs.mouse.click.y)
+      state.walls << { x: x, y: y, x2: x2, y2: y2 }
       state.point_one = nil
     else
       state.point_one = inputs.mouse.click.point
     end
+  end
+
+  # FIX: does not snap negative numbers properly
+  def snap value
+    snap_number = 10
+    min = value.to_i.idiv(snap_number) * snap_number
+    max = min + snap_number
+    result = (max - value).abs < (min - value).abs ? max : min
+    puts "SNAP: #{ value } --> #{ result }"
+    result
   end
 
   def hit_ball
