@@ -158,6 +158,14 @@ def $top_level.TICK &block
   def $top_level.pal
     $tweetcart_palette
   end
+  
+  def $top_level.samp(arr_or_range)
+    if arr_or_range.is_a?(Range)
+      arr_or_range.to_a.sample
+    else
+      arr_or_range.sample
+    end
+  end
 end
 
 =begin
