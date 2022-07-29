@@ -1,5 +1,3 @@
-# TODO Fix bug with line
-
 # Demonstrates collision against arbitrary lines using vector math.
 # Use arrow keys to move stick. Press space to add power, release to hit ball.
 
@@ -13,6 +11,8 @@ class BilliardsLite
     render
     input
     calc
+
+    reset_ball if inputs.keyboard.key_down.r
   end
 
   def defaults
@@ -65,7 +65,7 @@ class BilliardsLite
 
   def input
     input_stick
-    input_lines
+    input_click if inputs.mouse.click
     state.point_one = nil if inputs.keyboard.key_down.escape
   end
 
@@ -85,9 +85,7 @@ class BilliardsLite
     state.stick_angle += inputs.keyboard.left_right
   end
 
-  def input_lines
-    return unless inputs.mouse.click
-
+  def input_walls
     if state.point_one
       x = snap(state.point_one.x)
       y = snap(state.point_one.y)
@@ -120,7 +118,7 @@ class BilliardsLite
   def calc
     state.ball[:x] += state.ball_speed * state.ball_vector[:x]
     state.ball[:y] += state.ball_speed * state.ball_vector[:y]
-    state.ball_speed *= 0.95
+    state.ball_speed *= 0.97
 
     calc_collisions
   end
@@ -135,9 +133,9 @@ class BilliardsLite
     state.prevent_collision = nil unless state.collision_occurred_this_tick
   end
 
-  # TODO Fix what's underneath this
+  # Line segment intersects rect if it intersects
+  # any of the lines that make up the rect
   # This doesn't cover the case where the line is completely within the rect
-  # Make lines bigger than ball rect
   def line_intersect_rect?(line, rect)
     rect_to_lines(rect).each do |rect_line|
       return true if line_intersect_line?(line, rect_line)
@@ -146,7 +144,7 @@ class BilliardsLite
     false
   end
 
-  # Math from https://stackoverflow.com/questions/573084/how-to-calculate-bounce-angle
+  # https://stackoverflow.com/questions/573084/
   def collision(normal_vector)
     return if state.prevent_collision == normal_vector
     state.prevent_collision = normal_vector
@@ -154,12 +152,12 @@ class BilliardsLite
     dot = dot(normal_vector, state.ball_vector)
     # Because normal vector is always normalized
     # There is no need to divide by normal vector * normal vector
-    parallel = vector_multiply(normal_vector, dot)
-    # ball vector = parallel component + perpendicular component
-    # so, perpendicular = ball vector - parallel
-    perpendicular = vector_minus(state.ball_vector, parallel)
-    # To bounce off a surface, invert the parallel component of the vector
-    state.ball_vector = vector_minus(perpendicular, parallel)
+    perpendicular = vector_multiply(normal_vector, dot)
+    # ball vector = perpendicular component + parallel component
+    # so, parallel = ball vector - perpendicular
+    parallel = vector_minus(state.ball_vector, perpendicular)
+    # To bounce off a surface, invert the perpendicular component of the vector
+    state.ball_vector = vector_minus(parallel, perpendicular)
 
     state.collision_occurred_this_tick = true
   end
@@ -190,6 +188,7 @@ class BilliardsLite
     y = rect[:y]
     x2 = rect[:x] + rect[:w]
     y2 = rect[:y] + rect[:h]
+
     [{ x: x, y: y, x2: x2, y2: y },
      { x: x, y: y, x2: x, y2: y2 },
      { x: x2, y: y, x2: x2, y2: y2 },
@@ -214,6 +213,12 @@ class BilliardsLite
     uB = ((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1))
 
     uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1
+  end
+
+  def reset_ball
+    state.ball = nil
+    state.ball_vector = nil
+    state.ball_speed = nil
   end
 end
 
