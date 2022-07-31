@@ -108,14 +108,20 @@ def $top_level.TICK &block
   def $top_level.tc
     $args.state.tick_count
   end
+  
+  def $top_level.scene! w = 1280, h = 720, scale = nil
+    scale ||= begin
+                x_scale = $args.grid.w / w
+                y_scale = $args.grid.h / h
+                x_scale < y_scale ? x_scale : y_scale
+              end
 
-  def $top_level.scene! w = 1280, h = 720
     $args.outputs[:scene].w = w
     $args.outputs[:scene].h = h
-    $args.state.tweet_scene.w = w
-    $args.state.tweet_scene.h = h
-    $args.state.tweet_scene.x = ($args.grid.w - w) / 2
-    $args.state.tweet_scene.y = ($args.grid.h - h) / 2
+    $args.state.tweet_scene.w = w * scale
+    $args.state.tweet_scene.h = h * scale
+    $args.state.tweet_scene.x = ($args.grid.w - w * scale) / 2
+    $args.state.tweet_scene.y = ($args.grid.h - h * scale) / 2
   end
 
   def create_tweetcart_palette
