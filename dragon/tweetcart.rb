@@ -14,7 +14,7 @@ def $top_level.TICK &block
     args.outputs.sprites << args.state.tweet_scene
   end
 
-  def $top_level.no_clear! render_target_name
+  def $top_level.no_clear! render_target_name = :scene
     $args.outputs[render_target_name].clear_before_render = false
   end
 
