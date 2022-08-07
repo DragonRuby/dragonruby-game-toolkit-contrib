@@ -83,7 +83,7 @@ class BilliardsLite
 
   def input
     input_stick
-    input_click if inputs.mouse.click
+    input_lines
     state.point_one = nil if inputs.keyboard.key_down.escape
   end
 
@@ -102,6 +102,8 @@ class BilliardsLite
   end
 
   def input_lines
+    return unless inputs.mouse.click
+
     if state.point_one
       x = snap(state.point_one.x)
       y = snap(state.point_one.y)
