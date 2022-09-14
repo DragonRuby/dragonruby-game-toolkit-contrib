@@ -26,10 +26,19 @@ end
 def tick args
 
   # Center body's values are set using an array
-  # Map is used to set values of 2000 other bodies
+  # Map is used to set values of 5000 other bodies
   # All bodies that intersect with center body are stored in collisions collection
-  args.state.center_body  ||= [640 - 100, 360 - 100, 200, 200] # calculations done to place body in center
-  args.state.other_bodies ||= 2000.map { [1280 * rand, 720 * rand, 10, 10] } # 2000 bodies given random position on screen
+  args.state.center_body  ||= { x: 640 - 100, y: 360 - 100, w: 200, h: 200 } # calculations done to place body in center
+  args.state.other_bodies ||= 5000.map do
+    { x: 1280 * rand,
+      y: 720 * rand,
+      w: 2,
+      h: 2,
+      path: :pixel,
+      r: 0,
+      g: 0,
+      b: 0 }
+  end # 2000 bodies given random position on screen
 
   # finds all bodies that intersect with center body, stores them in collisions
   collisions = args.state.other_bodies.find_all { |b| b.intersect_rect? args.state.center_body }
@@ -37,10 +46,18 @@ def tick args
   args.borders << args.state.center_body # outputs center body as a black border
 
   # transparency changes based on number of collisions; the more collisions, the redder (more transparent) the box becomes
-  args.solids  << [args.state.center_body, 255, 0, 0, collisions.length * 5] # center body is red solid
-  args.solids  << args.state.other_bodies # other bodies are output as (black) solids, as well
+  args.sprites  << { x: args.state.center_body.x,
+                     y: args.state.center_body.y,
+                     w: args.state.center_body.w,
+                     h: args.state.center_body.h,
+                     path: :pixel,
+                     a: collisions.length.idiv(2), # alpha value represents the number of collisions that occured
+                     r: 255,
+                     g: 0,
+                     b: 0 } # center body is red solid
+  args.sprites  << args.state.other_bodies # other bodies are output as (black) solids, as well
 
-  args.labels  << [10, 30, args.gtk.current_framerate] # outputs frame rate in bottom left corner
+  args.labels  << [10, 30, args.gtk.current_framerate.to_sf] # outputs frame rate in bottom left corner
 
   # Bodies are returned to bottom left corner if positions exceed scope of screen
   args.state.other_bodies.each do |b| # for each body in the other_bodies collection

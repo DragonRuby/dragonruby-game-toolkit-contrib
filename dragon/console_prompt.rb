@@ -235,9 +235,9 @@ S
       end
 
       def current_object
-        return Kernel unless last_period_index
+        return ConsoleEvaluator unless last_period_index
 
-        Kernel.eval(current_input_str[0...last_period_index])
+        ConsoleEvaluator.eval(current_input_str[0...last_period_index])
       rescue NameError
         nil
       end

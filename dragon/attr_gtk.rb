@@ -51,6 +51,10 @@ module AttrGTK
     args.layout
   end
 
+  def events
+    args.events
+  end
+
   def new_entity entity_type, init_hash = nil, &block
     args.state.new_entity entity_type, init_hash, &block
   end

@@ -85,7 +85,7 @@ class Game
         y: 0,
         z: rand(12) * 400,
       }
-    end.sort_by { |col| -col.z }
+    end
 
     outputs.sprites << state.columns.map do |col|
       citadel(col.x - 640, col.y - 400, state.z - col.z)

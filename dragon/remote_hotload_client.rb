@@ -25,7 +25,7 @@ module GTK
 
       if should_tick? && server_needed? && !local_state.notified
         if server_available?
-          remote_log "* REMOTE CLIENT INFO: Hotload server found at #{get_server_ip_address}:9001."
+          log_spam "* REMOTE HOTLOAD INFO: Hotload server found at #{get_server_ip_address}:9001."
         end
         local_state.notified = true
       end
@@ -54,11 +54,6 @@ module GTK
                                                               write_file_queue: [],
                                                               reloaded_files_times: [])
       @local_state.hotload_client
-    end
-
-    def remote_log message
-      log message
-      args.gtk.http_post "http://#{get_server_ip_address}:9001/dragon/log/", { message: "=======\n#{message}\n=======\n" }, ["Content-Type: application/x-www-form-urlencoded"]
     end
 
     def get_server_ip_address
@@ -98,15 +93,16 @@ module GTK
         # file with latest change,
         # latest file                              update_time  key
         # tmp/src_backup/src_backup_app_main.rb, 1597926596,  app/main.rb
+        log_spam "* REMOTE HOTLOAD INFO: Attempting http_get of http://#{get_server_ip_address}:9001/dragon/boot/"
         local_state.http_boot    = args.gtk.http_get "http://#{get_server_ip_address}:9001/dragon/boot/"
       elsif local_state.http_boot && local_state.http_boot[:http_response_code] == 200
         local_state.last_greatest_tick = local_state.http_boot[:response_data].strip.to_i
         local_state.greatest_tick = local_state.http_boot[:response_data].strip.to_i
         local_state.booted_at = local_state.greatest_tick
-        remote_log '* REMOTE CLIENT INFO: HTTP GET for local_state. boot.txt succeeded.'
-        remote_log "* REMOTE CLIENT INFO: Looking for changes after: #{local_state.greatest_tick}."
+        log_spam '* REMOTE HOTLOAD INFO: HTTP GET for local_state. boot.txt succeeded.'
+        log_spam "* REMOTE HOTLOAD INFO: Looking for changes after: #{local_state.greatest_tick}."
       elsif local_state.http_boot && local_state.http_boot[:http_response_code] == -1 && local_state.http_boot[:complete]
-        remote_log '* REMOTE CLIENT INFO: HTTP GET for boot.txt failed. Retrying.'
+        log_spam '* REMOTE HOTLOAD INFO: HTTP GET for boot.txt failed. Retrying.'
         local_state.http_boot = nil
         local_state.http_boot_debounce = 120
       end
@@ -116,6 +112,7 @@ module GTK
       return unless local_state.booted_at
 
       if !local_state.http_changes
+        log_spam "* REMOTE HOTLOAD INFO: Attempting http_get of http://#{get_server_ip_address}:9001/dragon/changes/"
         local_state.http_changes = args.gtk.http_get "http://#{get_server_ip_address}:9001/dragon/changes/"
       end
 
@@ -145,7 +142,7 @@ module GTK
               # then queue the file for reload
               current_updated_at = (local_state.changes[key] || { updated_at: 0 })[:updated_at]
               if updated_at > current_updated_at
-                remote_log "* REMOTE CLIENT INFO: Queueing file #{file_name} for update."
+                log_spam "* REMOTE HOTLOAD INFO: Queueing file #{file_name} for update."
                 local_state.changes[key] = { key: key,
                                              latest_file: file_name,
                                              updated_at: updated_at }
@@ -172,7 +169,7 @@ module GTK
 
       # create an http request for the file
       url = "http://#{get_server_ip_address}:9001/dragon/#{local_state.processing_file_changes[:latest_file]}"
-      remote_log "* REMOTE CLIENT INFO: Getting new version of #{local_state.processing_file_changes[:latest_file]} (#{url})."
+      log_spam "* REMOTE HOTLOAD INFO: Getting new version of #{local_state.processing_file_changes[:latest_file]} (#{url})."
       local_state.http_file_changes = args.gtk.http_get url
     end
 
@@ -180,11 +177,11 @@ module GTK
       return if !local_state.http_file_changes
 
       # if the http request has finished successfully
-      if local_state.http_file_changes[:http_response_code] == 200
+      if local_state.http_file_changes[:http_response_code] == 200 && local_state.http_file_changes[:complete]
         file_key = local_state.processing_file_changes[:key]
         # notify that a file will be reloaded
-        remote_log "* REMOTE CLIENT INFO: Loading #{file_key}: #{local_state.processing_file_changes[:latest_file]}"
-        remote_log "#{local_state.http_file_changes[:response_data]}"
+        log "* REMOTE HOTLOAD INFO: Loading #{file_key}: #{local_state.processing_file_changes[:latest_file]}"
+        log "#{local_state.http_file_changes[:response_data]}"
 
         # write the latest file with what came back from the response data
         local_state.write_file_queue << { path: file_key, text: local_state.http_file_changes[:response_data] }
@@ -198,6 +195,7 @@ module GTK
 
     def tick_write_file
       local_state.write_file_queue.each do |h|
+        log "* REMOTE HOTLOAD INFO: writing file #{h[:path]}"
         $gtk.write_file h[:path], h[:text]
       end
 

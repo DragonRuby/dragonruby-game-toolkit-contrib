@@ -1,0 +1,9 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=textureatlases
+gametitle=All Screen Properties
+version=1.0
+icon=sprites/icon.png
+hd=true
+allscreen=true
+allscreen_max_scale=400

@@ -542,7 +542,7 @@ module GTK
                   :button_bits, :button_left,
                   :button_middle, :button_right,
                   :button_x1, :button_x2,
-                  :wheel
+                  :wheel, :relative_x, :relative_y
 
     attr_accessor :click
     attr_accessor :previous_click
@@ -559,6 +559,8 @@ module GTK
       @button_right = false
       @button_x1 = false
       @button_x2 = false
+      @relative_x = 0
+      @relative_y = 0
       clear
     end
 
@@ -575,7 +577,11 @@ module GTK
     end
 
     def intersect_rect? other_rect
-      { x: point.x, y: point.y, w: 0, h: 0 }.intersect_rect? other_rect
+      rect.intersect_rect? other_rect
+    end
+
+    def rect
+      { x: point.x, y: point.y, w: 0, h: 0 }
     end
 
     alias_method :position, :point
@@ -591,6 +597,8 @@ module GTK
       @up    = nil
       @moved = nil
       @wheel = nil
+      @relative_x = 0
+      @relative_y = 0
     end
 
     def up
@@ -699,6 +707,7 @@ module GTK
     attr_accessor :finger_one, :finger_two
     attr_accessor :finger_left, :finger_right
     attr_accessor :text, :history
+    attr_accessor :headset
 
     def initialize
       @controllers = [Controller.new, Controller.new, Controller.new, Controller.new]
@@ -709,6 +718,7 @@ module GTK
       @finger_two = nil
       @text = []
       @http_requests = []
+      @headset = { position: { x: 0, y: 0, z: 0 } }
     end
 
     def up

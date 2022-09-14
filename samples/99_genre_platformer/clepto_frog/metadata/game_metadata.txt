@@ -1,6 +1,22 @@
-devid=amirrajan
-devtitle=Amir Rajan
-gameid=clepto-frog
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=cleptofrog
 gametitle=Clepto Frog
 version=1.0
-icon=sprites/square-green.png
+icon=sprites/icon.png
+
+# Below configurations requires a Pro license.
+
+# Uncomment these lines to see what the game looks
+# like with all screen mode
+# hd=true
+# allscreen=true
+
+# max scale options
+# allscreen_max_scale=100
+# allscreen_max_scale=125
+# allscreen_max_scale=150
+# allscreen_max_scale=200
+# allscreen_max_scale=250
+# allscreen_max_scale=300
+# allscreen_max_scale=400

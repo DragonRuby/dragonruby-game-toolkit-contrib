@@ -1,0 +1,7 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=hdlabels
+gametitle=HD Labels
+version=1.0
+icon=sprites/icon.png
+hd=true

@@ -81,7 +81,7 @@ S
       if m.to_s.start_with?("ctrl_")
         other_key = m.to_s.split("_").last
         define_singleton_method(m) do
-          self.key_down.send(other_key.to_sym) && self.control
+          return self.key_down.send(other_key.to_sym) && self.control
         end
 
         return send(m)

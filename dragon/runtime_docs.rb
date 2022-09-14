@@ -18,7 +18,11 @@ module RuntimeDocs
       :docs_api_summary_grid,
       :docs_platform?,
       :docs_calcstringbox,
+      :docs_stat_file,
+      :docs_list_files,
       :docs_write_file,
+      :docs_append_file,
+      :docs_delete_file,
       :docs_benchmark
     ]
   end
@@ -458,6 +462,8 @@ S
 This represents the DragonRuby Game Toolkit's Runtime Environment and can be accessed via ~args.gtk.METHOD~.
 ** ~args.gtk.argv~
 Returns a ~String~ that represents the parameters passed into the ~./dragonruby~ binary.
+** ~args.gtk.cli_arguments~
+Returns a ~Hash~ that contains parsed CLI arguments that have the format ~--ARGUMENT VALUE~.
 ** ~args.gtk.platform~
 Returns a ~String~ representing the operating system the game is running on.
 ** ~args.gtk.request_quit~
@@ -589,12 +595,67 @@ This function returns the width and height of a string.
 S
   end
 
+  def docs_stat_file
+    <<-S
+* DOCS: ~GTK::Runtime#state_file~
+This function takes in one parameter. The parameter is the file path and assumes the the game
+directory is the root. The method returns ~nil~ if the file doesn't exist otherwise it returns
+a ~Hash~ with the following information:
+
+#+begin_src ruby
+  # {
+  #   path: String,
+  #   file_size: Int,
+  #   mod_time: Int,
+  #   create_time: Int,
+  #   access_time: Int,
+  #   readonly: Boolean,
+  #   file_type: Symbol (:regular, :directory, :symlink, :other),
+  # }
+
+  def tick args
+    if args.inputs.mouse.click
+      args.gtk.write_file "last-mouse-click.txt", "Mouse was clicked at \#{args.state.tick_count}."
+    end
+
+    file_info = args.gtk.stat_file "last-mouse-click.txt"
+
+    if file_info
+      args.outputs.labels << {
+        x: 30,
+        y: 30.from_top,
+        text: file_info.to_s,
+        size_enum: -3
+      }
+    else
+      args.outputs.labels << {
+        x: 30,
+        y: 30.from_top,
+        text: "file does not exist, click to create file",
+        size_enum: -3
+      }
+    end
+  end
+#+end_src
+S
+  end
+
+  def docs_list_files
+    <<-S
+* DOCS: ~GTK::Runtime#list_files~
+This function takes in one parameter. The parameter is the directory path and assumes the the game
+directory is the root. The method returns an ~Array~ of ~String~ representing all files
+within the directory. Use ~GTK::Runtime#stat_file~ to determine whether a specific path is a file
+or a directory.
+S
+  end
+
   def docs_write_file
     <<-S
 * DOCS: ~GTK::Runtime#write_file~
 This function takes in two parameters. The first parameter is the file path and assumes the the game
-directory is the root. The second parameter is the string that will be written. The method overwrites whatever
-is currently in the file. Use ~GTK::Runtime#append_file~ to append to the file as opposed to overwriting.
+directory is the root. The second parameter is the string that will be written. The method **overwrites**
+whatever is currently in the file. Use ~GTK::Runtime#append_file~ to append to the file as opposed to overwriting.
 
 #+begin_src ruby
   def tick args
@@ -606,7 +667,57 @@ is currently in the file. Use ~GTK::Runtime#append_file~ to append to the file a
 S
   end
 
-      def docs_benchmark
+  def docs_append_file
+    <<-S
+* DOCS: ~GTK::Runtime#append_file~
+This function takes in two parameters. The first parameter is the file path and assumes the the game
+directory is the root. The second parameter is the string that will be written. The method appends to
+whatever is currently in the file (a new file is created if one does not alread exist). Use
+~GTK::Runtime#write_file~ to overwrite the file's contents as opposed to appending.
+
+#+begin_src ruby
+  def tick args
+    if args.inputs.mouse.click
+      args.gtk.write_file "last-mouse-click.txt", "Mouse was clicked at \#{args.state.tick_count}."
+    end
+  end
+#+end_src
+S
+  end
+
+  def docs_delete_file
+    <<-S
+* DOCS: ~GTK::Runtime#delete_file~
+This function takes in a single parameters. The parameter is the file path that should be deleted. This
+function will raise an exception if the path requesting to be deleted does not exist.
+
+Notes:
+
+- Use ~GTK::Runtime#delete_if_exist~ to only delete the file if it exists.
+- Use ~GTK::Runtime#stat_file~ to determine if a path exists.
+- Use ~GTK::Runtime#list_files~ to determine if a directory is empty.
+- You cannot delete files outside of your sandboxed game environment.
+
+Here is a list of reasons an exception could be raised:
+
+  - If the path is not found.
+  - If the path is still open (for reading or writing).
+  - If the path is not a file or directory.
+  - If the path is a circular symlink.
+  - If you do not have permissions to delete the path.
+  - If the directory attempting to be deleted is not empty.
+
+#+begin_src ruby
+  def tick args
+    if args.inputs.mouse.click
+      args.gtk.write_file "last-mouse-click.txt", "Mouse was clicked at \#{args.state.tick_count}."
+    end
+  end
+#+end_src
+S
+  end
+
+  def docs_benchmark
 <<-S
 * DOCS: ~GTK::Runtime#benchmark~
 You can use this function to compare the relative performance of methods.
@@ -636,8 +747,7 @@ You can use this function to compare the relative performance of methods.
   end
 #+end_src
 S
-      end
-
+  end
 end
 
 class GTK::Runtime

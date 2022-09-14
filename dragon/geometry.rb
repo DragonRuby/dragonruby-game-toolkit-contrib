@@ -46,12 +46,6 @@ module GTK
       Geometry.inside_rect? self, outer, tolerance
     end
 
-    # Returns true if a primitive's rectangle overlaps another primitive's rectangle.
-    # @gtk
-    def intersect_rect? other, tolerance = 0.1
-      Geometry.intersect_rect? self, other, tolerance
-    end
-
     def intersects_rect? *args
       Geometry.intersects_rect?(*args)
     end
@@ -368,43 +362,6 @@ S
 
     def self.contract_intersect_rect?
       [:x, :y, :w, :h]
-    end
-
-    # @gtk
-    def self.intersect_rect? rect_one, rect_two, tolerance = 0.1
-      return false if ((rect_one.x + rect_one.w) - tolerance) < (rect_two.x + tolerance)
-      return false if (rect_one.x + tolerance) > ((rect_two.x + rect_two.w) - tolerance)
-      return false if ((rect_one.y + rect_one.h) - tolerance) < (rect_two.y + tolerance)
-      return false if (rect_one.y + tolerance) > ((rect_two.y + rect_two.h) - tolerance)
-      return true
-    rescue Exception => e
-      context_help_rect_one = (rect_one.__help_contract_implementation__ contract_intersect_rect?)[:not_implemented_methods]
-      context_help_rect_two = (rect_two.__help_contract_implementation__ contract_intersect_rect?)[:not_implemented_methods]
-      context_help = ""
-      if context_help_rect_one && context_help_rect_one.length > 0
-        context_help += <<-S
-rect_one needs to implement the following methods: #{context_help_rect_one}
-
-You may want to try include the ~AttrRect~ module which will give you these methods.
-S
-      end
-
-      if context_help_rect_two && context_help_rect_two.length > 0
-        context_help += <<-S
-* FAILURE REASON:
-rect_two needs to implement the following methods: #{context_help_rect_two}
-NOTE: You may want to try include the ~GTK::Geometry~ module which will give you these methods.
-S
-      end
-
-      raise e, <<-S
-* ERROR:
-:intersect_rect? failed for
-- rect_one: #{rect_one}
-- rect_two: #{rect_two}
-#{context_help}
-\n#{e}
-S
     end
 
     # @gtk

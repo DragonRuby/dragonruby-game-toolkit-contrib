@@ -60,6 +60,19 @@ module GTK
 
     attr_accessor :left_margin, :bottom_margin
 
+    attr :allscreen_left,
+         :allscreen_right,
+         :allscreen_top,
+         :allscreen_bottom,
+         :allscreen_width,
+         :allscreen_height,
+         :render_width,
+         :render_height,
+         :render_scale,
+         :render_scale_enum,
+         :allscreen_offset_x,
+         :allscreen_offset_y
+
     def initialize runtime
       @runtime = runtime
       @ffi_draw = runtime.ffi_draw
@@ -122,6 +135,17 @@ module GTK
       @rect   = [@left, @bottom, @runtime.logical_width, @runtime.logical_height].rect
       @center = [@center_x, @center_y].point
       @ffi_draw.set_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
+      @device_left     ||= @left
+      @device_right    ||= @right
+      @device_top      ||= @top
+      @device_bottom   ||= @bottom
+      @device_width    ||= @runtime.logical_width
+      @device_height   ||= @runtime.logical_height
+      @render_width    ||= @runtime.logical_width
+      @render_height   ||= @runtime.logical_height
+      @render_scale    ||= 1.0
+      @render_offset_x ||= 0
+      @render_offset_y ||= 0
     end
 
     # Sets the rendering coordinate system to have its origin in the center.
@@ -142,6 +166,17 @@ module GTK
       @rect   = [@left, @bottom, @runtime.logical_width, @runtime.logical_height].rect
       @center = [@center_x, @center_y].point
       @ffi_draw.set_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
+      @device_left     ||= @left
+      @device_right    ||= @right
+      @device_top      ||= @top
+      @device_bottom   ||= @bottom
+      @device_width    ||= @runtime.logical_width
+      @device_height   ||= @runtime.logical_height
+      @render_width    ||= @runtime.logical_width
+      @render_height   ||= @runtime.logical_height
+      @render_scale    ||= 1.0
+      @render_offset_x ||= 0
+      @render_offset_y ||= 0
     end
 
     # The logical width used for rendering.

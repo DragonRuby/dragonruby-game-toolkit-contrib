@@ -130,7 +130,10 @@ class Game
     end
 
     args.outputs.background_color = [255, 255, 255]
-    args.outputs.primitives << args.gtk.current_framerate_primitives
+    framerate_primitives = args.gtk.current_framerate_primitives
+    framerate_primitives.find { |p| p.text }.each { |p| p.z = 1 }
+    framerate_primitives[-1].text = "cube count: #{state.cube_count} (#{state.cube_count * 12} triangles)"
+    args.outputs.primitives << framerate_primitives
   end
 
   def translate dx, dy, dz
@@ -193,7 +196,6 @@ class Game
       source_x:   0, source_y:   0,
       source_x2: 80, source_y2:  0,
       source_x3:  0, source_y3: 80,
-      a: 40,
       path: 'sprites/square/blue.png'
     }
 
@@ -205,7 +207,6 @@ class Game
       source_x:  80, source_y:   0,
       source_x2: 80, source_y2: 80,
       source_x3:  0, source_y3: 80,
-      a: 40,
       path: 'sprites/square/blue.png'
     }
   end

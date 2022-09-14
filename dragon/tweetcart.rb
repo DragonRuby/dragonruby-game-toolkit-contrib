@@ -14,6 +14,10 @@ def $top_level.TICK &block
     args.outputs.sprites << args.state.tweet_scene
   end
 
+  def $top_level.no_clr! render_target_name = :scene
+    $top_level.no_clear! render_target_name
+  end
+
   def $top_level.no_clear! render_target_name = :scene
     $args.outputs[render_target_name].clear_before_render = false
   end
@@ -108,7 +112,7 @@ def $top_level.TICK &block
   def $top_level.tc
     $args.state.tick_count
   end
-  
+
   def $top_level.scene! w = 1280, h = 720, scale = nil
     scale ||= begin
                 x_scale = $args.grid.w / w

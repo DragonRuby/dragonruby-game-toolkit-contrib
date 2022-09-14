@@ -84,6 +84,7 @@ S
       <li><a href="/dragon/control_panel/">Control Panel</a></li>
       <li><a href="/dragon/eval/">Console</a></li>
       <li><a href="/dragon/log/">Logs</a></li>
+      <li><a href="/dragon/code/">Code</a></li>
     </ul>
 S
     end

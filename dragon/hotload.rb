@@ -86,6 +86,7 @@ module GTK
             'dragon/runtime/backup.rb',
             'dragon/runtime/async_require.rb',
             'dragon/runtime/autocomplete.rb',
+            'dragon/runtime/texture_atlas.rb',
             'dragon/api.rb',
             'dragon/runtime.rb',
             'dragon/runtime_docs.rb',

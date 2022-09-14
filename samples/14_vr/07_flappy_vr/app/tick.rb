@@ -1,6 +1,30 @@
 class FlappyDragon
   attr_accessor :grid, :inputs, :state, :outputs
 
+  def background_z
+    -640
+  end
+
+  def flappy_sprite_z
+    -120
+  end
+
+  def game_text_z
+    0
+  end
+
+  def menu_overlay_z
+    10
+  end
+
+  def menu_text_z
+    menu_overlay_z + 1
+  end
+
+  def flash_z
+    1
+  end
+
   def tick
     defaults
     render
@@ -40,35 +64,36 @@ class FlappyDragon
   end
 
   def render_score
-    outputs.primitives << { x: 10, y: 710, text: "HI SCORE: #{state.hi_score}", **large_white_typeset }
-    outputs.primitives << { x: 10, y: 680, text: "SCORE: #{state.score}", **large_white_typeset }
-    outputs.primitives << { x: 10, y: 650, text: "DIFFICULTY: #{state.difficulty.upcase}", **large_white_typeset }
+    outputs.primitives << { x: 10, y: 710, z: game_text_z, text: "HI SCORE: #{state.hi_score}", **large_white_typeset }
+    outputs.primitives << { x: 10, y: 680, z: game_text_z, text: "SCORE: #{state.score}", **large_white_typeset }
+    outputs.primitives << { x: 10, y: 650, z: game_text_z, text: "DIFFICULTY: #{state.difficulty.upcase}", **large_white_typeset }
   end
 
   def render_menu
     return unless state.scene == :menu
     render_overlay
 
-    outputs.labels << { x: 640, y: 700, z: -640, text: "Flappy Dragon", size_enum: 50, alignment_enum: 1, **white }
-    outputs.labels << { x: 640, y: 500, z: -640, text: "Instructions: Press Spacebar to flap. Don't die.", size_enum: 4, alignment_enum: 1, **white }
-    outputs.labels << { x: 430, y: 430, z: -640, text: "[Tab]    Change difficulty", size_enum: 4, alignment_enum: 0, **white }
-    outputs.labels << { x: 430, y: 400, z: -640, text: "[Enter]  Start at New Difficulty ", size_enum: 4, alignment_enum: 0, **white }
-    outputs.labels << { x: 430, y: 370, z: -640, text: "[Escape] Cancel/Resume ", size_enum: 4, alignment_enum: 0, **white }
-    outputs.labels << { x: 640, y: 300, z: -640, text: "(mouse, touch, and game controllers work, too!) ", size_enum: 4, alignment_enum: 1, **white }
-    outputs.labels << { x: 640, y: 200, z: -640, text: "Difficulty: #{state.new_difficulty.capitalize}", size_enum: 4, alignment_enum: 1, **white }
+    outputs.labels << { x: 640, y: 700, z: menu_text_z, text: "Flappy Dragon", size_enum: 50, alignment_enum: 1, **white }
+    outputs.labels << { x: 640, y: 500, z: menu_text_z, text: "Instructions: Press Spacebar to flap. Don't die.", size_enum: 4, alignment_enum: 1, **white }
+    outputs.labels << { x: 430, y: 430, z: menu_text_z, text: "[Tab]    Change difficulty", size_enum: 4, alignment_enum: 0, **white }
+    outputs.labels << { x: 430, y: 400, z: menu_text_z, text: "[Enter]  Start at New Difficulty ", size_enum: 4, alignment_enum: 0, **white }
+    outputs.labels << { x: 430, y: 370, z: menu_text_z, text: "[Escape] Cancel/Resume ", size_enum: 4, alignment_enum: 0, **white }
+    outputs.labels << { x: 640, y: 300, z: menu_text_z, text: "(mouse, touch, and game controllers work, too!) ", size_enum: 4, alignment_enum: 1, **white }
+    outputs.labels << { x: 640, y: 200, z: menu_text_z, text: "Difficulty: #{state.new_difficulty.capitalize}", size_enum: 4, alignment_enum: 1, **white }
 
-    outputs.labels << { x: 10, y: 100, z: -640, text: "Code:   @amirrajan",     **white }
-    outputs.labels << { x: 10, y:  80, z: -640, text: "Art:    @mobypixel",     **white }
-    outputs.labels << { x: 10, y:  60, z: -640, text: "Music:  @mobypixel",     **white }
-    outputs.labels << { x: 10, y:  40, z: -640, text: "Engine: DragonRuby GTK", **white }
+    outputs.labels << { x: 10, y: 100, z: menu_text_z, text: "Code:   @amirrajan",     **white }
+    outputs.labels << { x: 10, y:  80, z: menu_text_z, text: "Art:    @mobypixel",     **white }
+    outputs.labels << { x: 10, y:  60, z: menu_text_z, text: "Music:  @mobypixel",     **white }
+    outputs.labels << { x: 10, y:  40, z: menu_text_z, text: "Engine: DragonRuby GTK", **white }
   end
 
   def render_overlay
-    overlay_rect = grid.rect.scale_rect(1.1, 0, 0)
+    overlay_rect = grid.rect.scale_rect(1.5, 0, 0)
     outputs.primitives << { x: overlay_rect.x - overlay_rect.w,
                             y: overlay_rect.y - overlay_rect.h,
                             w: overlay_rect.w * 4,
                             h: overlay_rect.h * 2,
+                            z: menu_overlay_z,
                             r: 0, g: 0, b: 0, a: 230 }.solid!
   end
 
@@ -83,10 +108,10 @@ class FlappyDragon
 
   def render_game_over
     return unless state.scene == :game
-    outputs.labels << { x: 638, y: 358, text: score_text,     z: -120, size_enum: 20, alignment_enum: 1 }
-    outputs.labels << { x: 635, y: 360, text: score_text,     z: -120, size_enum: 20, alignment_enum: 1, r: 255, g: 255, b: 255 }
-    outputs.labels << { x: 638, y: 428, text: countdown_text, z: -120, size_enum: 20, alignment_enum: 1 }
-    outputs.labels << { x: 635, y: 430, text: countdown_text, z: -120, size_enum: 20, alignment_enum: 1, r: 255, g: 255, b: 255 }
+    outputs.labels << { x: 638, y: 358, text: score_text,     z: game_text_z - 1,  size_enum: 20, alignment_enum: 1 }
+    outputs.labels << { x: 635, y: 360, text: score_text,     z: game_text_z,  size_enum: 20, alignment_enum: 1, r: 255, g: 255, b: 255 }
+    outputs.labels << { x: 638, y: 428, text: countdown_text, z: game_text_z - 1,  size_enum: 20, alignment_enum: 1 }
+    outputs.labels << { x: 635, y: 430, text: countdown_text, z: game_text_z,  size_enum: 20, alignment_enum: 1, r: 255, g: 255, b: 255 }
   end
 
   def render_background
@@ -95,8 +120,8 @@ class FlappyDragon
     scroll_point_at   = state.death_at if state.countdown > 0
     scroll_point_at ||= 0
 
-    outputs.sprites << { x: -640, y: -360, z: -640, w: 1280 * 2, h: 720 * 2, path: 'sprites/background.png' }
-    outputs.sprites << scrolling_background(scroll_point_at, 'sprites/parallax_back.png',   0.25, 0)
+    outputs.sprites << { x: -640, y: -360, z: background_z, w: 1280 * 2, h: 720 * 2, path: 'sprites/background.png' }
+    outputs.sprites << scrolling_background(scroll_point_at, 'sprites/parallax_back.png',   0.25, 1)
     outputs.sprites << scrolling_background(scroll_point_at, 'sprites/parallax_middle.png', 0.50, 50)
     outputs.sprites << scrolling_background(scroll_point_at, 'sprites/parallax_front.png',  1.00, 100, -80)
   end
@@ -106,8 +131,8 @@ class FlappyDragon
     w = 1440 * 2
     h =  720 * 2
     [
-      { x: w - at.*(rate) % w - w.half.half, y: y * 2 - 360, z: -640 + z, w: w, h: h, path: path },
-      { x: 0 - at.*(rate) % w - w.half.half, y: y * 2 - 360, z: -640 + z, w: w, h: h, path: path },
+      { x: w - at.*(rate) % w - w.half.half, y: y * 2 - 360, z: background_z + z, w: w, h: h, path: path },
+      { x: 0 - at.*(rate) % w - w.half.half, y: y * 2 - 360, z: background_z + z, w: w, h: h, path: path },
     ]
   end
 
@@ -148,7 +173,16 @@ class FlappyDragon
       x_offset *= -1
     end
 
-    a = 255 * (1 - z_ratio)
+    distance_from_background_to_flappy = (background_z - flappy_sprite_z).abs
+    distance_to_front = z_offset
+
+    if -z_offset < background_z + 100 + wall.w * 2
+      a = 0
+    else
+      percentage_to_front = distance_to_front / distance_from_background_to_flappy
+      a = 255 * (1 - percentage_to_front)
+    end
+
 
     back  = { x:     wall.x + x_offset,
               y:     wall.y,
@@ -218,6 +252,7 @@ class FlappyDragon
 
     outputs.primitives << { **grid.rect.to_hash,
                             **white,
+                            z: flash_z,
                             a: 255 * state.flash_at.ease(20, :flip) }.solid!
 
     state.flash_at = 0 if state.flash_at.elapsed_time > 20
@@ -410,7 +445,7 @@ class FlappyDragon
     state.walls = []
     state.y = 500
     state.x =  state.x_starting_point
-    state.z = -120
+    state.z = flappy_sprite_z
     state.dy = 0
     state.hi_score = state.hi_score.greater(state.score)
     state.score = 0

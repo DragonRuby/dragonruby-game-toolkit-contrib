@@ -1,3 +1,5 @@
+include MatrixFunctions
+
 def tick args
   args.grid.origin_center!
 
@@ -78,7 +80,7 @@ def render_square args, triangles
                             x3: triangles[0][2].x * 1280,
                             y3: triangles[0][2].y * 1280,
                             z3: triangles[0][2].z * 1280,
-                            a: 80,
+                            a: 255,
                             source_x:   0,
                             source_y:   0,
                             source_x2: 80,
@@ -96,7 +98,7 @@ def render_square args, triangles
                             x3: triangles[1][2].x * 1280,
                             y3: triangles[1][2].y * 1280,
                             z3: triangles[1][2].z * 1280,
-                            a: 80,
+                            a: 255,
                             source_x:  80,
                             source_y:   0,
                             source_x2: 80,

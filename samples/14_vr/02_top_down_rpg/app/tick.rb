@@ -14,7 +14,7 @@ class Game
     args.outputs.solids << args.state.player
 
     args.outputs.solids << args.state.walls.map { |s| s.to_hash.merge(z: 2, g: 80) }
-    args.outputs.solids << args.state.walls.map { |s| s.to_hash.merge(z: 6, g: 255, a: 128) }
+    args.outputs.solids << args.state.walls.map { |s| s.to_hash.merge(z: 10, g: 255, a: 50) }
 
     # if player's box intersects with goal, a label is output onto the screen
     if args.state.player.intersect_rect? args.state.goal
@@ -32,8 +32,8 @@ class Game
 
     move_player args, -1,  0 if args.inputs.keyboard.left  || args.inputs.controller_one.left # x position decreases by 1 if left key is pressed
     move_player args,  1,  0 if args.inputs.keyboard.right || args.inputs.controller_one.right # x position increases by 1 if right key is pressed
-    move_player args,  0,  1 if args.inputs.keyboard.up    || args.inputs.controller_one.down # y position increases by 1 if up is pressed
-    move_player args,  0, -1 if args.inputs.keyboard.down  || args.inputs.controller_one.up # y position decreases by 1 if down is pressed
+    move_player args,  0, -1 if args.inputs.keyboard.up    || args.inputs.controller_one.down # y position increases by 1 if up is pressed
+    move_player args,  0,  1 if args.inputs.keyboard.down  || args.inputs.controller_one.up # y position decreases by 1 if down is pressed
   end
 
   # Sets position, size, and color of the tile

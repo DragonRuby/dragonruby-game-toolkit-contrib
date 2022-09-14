@@ -1,8 +1,8 @@
 def skybox args, x, y, z, size
-  sprite = { a: 128, path: 'sprites/box.png' }
+  sprite = { a: 80, path: 'sprites/box.png' }
 
   front      = { x: x, y: y, z: z, w: size, h: size, **sprite }
-  front_720  = { x: x, y: y, z: z, w: size, h: size * 9.fdiv(16), **sprite }
+  front_720  = { x: x, y: y, z: z + 1, w: size, h: size * 9.fdiv(16), **sprite }
   back       = { x: x, y: y, z: z + size, w: size, h: size, **sprite }
   bottom     = { x: x, y: y - size.half, z: z + size.half, w: size, h: size, angle_x: 90, **sprite }
   top        = { x: x, y: y + size.half, z: z + size.half, w: size, h: size, angle_x: 90, **sprite }
@@ -33,7 +33,7 @@ def tick_game args
   end
 
   args.state.scale += args.inputs.controller_one.right_analog_x_perc * 0.01
-  args.state.z += args.inputs.controller_one.right_analog_y_perc * 1.5
+  args.state.z -= args.inputs.controller_one.right_analog_y_perc * 1.5
 
   args.state.scale = args.state.scale.clamp(0.05, 1.0)
   args.state.z = 0    if args.state.z < 0
@@ -50,15 +50,16 @@ def render_guides args
                   vertical_alignment_enum: 0, r: 255, g: 255, b: 255 }
 
   instructions = [
+    "controller position: #{args.inputs.controller_one.left_hand.x} #{args.inputs.controller_one.left_hand.y} #{args.inputs.controller_one.left_hand.z}",
     "scale: #{args.state.scale.to_sf} (right analog left/right)",
     "z: #{args.state.z.to_sf} (right analog up/down)",
-    "origin: :#{args.grid.name} (A button)"
+    "origin: :#{args.grid.name} (A button)",
   ]
 
   args.outputs.labels << instructions.map_with_index do |text, i|
     { x: 640,
-      y: 100 + ((instructions.length - (i + 1)) * 22),
-      z: args.state.z,
+      y: 100 + ((instructions.length - (i + 3)) * 22),
+      z: args.state.z + 2,
       a: 255,
       text: text,
       ** label_style,
@@ -72,20 +73,20 @@ def render_guides args
 
   args.outputs.primitives << [
     { x: size - 1280, y: size,        z:            0, w: 1280 * 2, r: 128, g: 128, b: 128, a:  64 }.line!,
-    { x: size - 1280, y: size,        z: args.state.z, w: 1280 * 2, r: 128, g: 128, b: 128, a: 255 }.line!,
+    { x: size - 1280, y: size,        z: args.state.z + 2, w: 1280 * 2, r: 128, g: 128, b: 128, a: 255 }.line!,
 
     { x: size - 1280, y: size_16_9,   z:            0, w: 1280 * 2, r: 128, g: 128, b: 128, a:  64 }.line!,
-    { x: size - 1280, y: size_16_9,   z: args.state.z, w: 1280 * 2, r: 128, g: 128, b: 128, a: 255 }.line!,
+    { x: size - 1280, y: size_16_9,   z: args.state.z + 2, w: 1280 * 2, r: 128, g: 128, b: 128, a: 255 }.line!,
 
     { x: size,        y: size - 1280, z:            0, h: 1280 * 2, r: 128, g: 128, b: 128, a:  64 }.line!,
-    { x: size,        y: size - 1280, z: args.state.z, h: 1280 * 2, r: 128, g: 128, b: 128, a: 255 }.line!,
+    { x: size,        y: size - 1280, z: args.state.z + 2, h: 1280 * 2, r: 128, g: 128, b: 128, a: 255 }.line!,
 
-    { x: size,        y: size,        z: args.state.z, size_enum: -2,
+    { x: size,        y: size,        z: args.state.z + 3, size_enum: -2,
       vertical_alignment_enum: 0,
       text: "#{size.to_sf}, #{size.to_sf}, #{args.state.z.to_sf}",
       r: 255, g: 255, b: 255, a: 255 }.label!,
 
-    { x: size,        y: size_16_9,   z: args.state.z, size_enum: -2,
+    { x: size,        y: size_16_9,   z: args.state.z + 3, size_enum: -2,
       vertical_alignment_enum: 0,
       text: "#{size.to_sf}, #{size_16_9.to_sf}, #{args.state.z.to_sf}",
       r: 255, g: 255, b: 255, a: 255 }.label!,
@@ -109,15 +110,15 @@ def render_guides args
     [
       { x: xdef.x,
         y: ydef.y,
-        z: args.state.z,
-        text: "#{xdef.x.to_sf}, #{ydef.y.to_sf} #{args.state.z}",
+        z: args.state.z + 3,
+        text: "#{xdef.x.to_sf}, #{ydef.y.to_sf} #{args.state.z.to_sf}",
         **label_style,
         alignment_enum: xdef.alignment_enum,
         vertical_alignment_enum: ydef.vertical_alignment_enum
       },
       { x: xdef.x,
         y: ydef.y - 20,
-        z: args.state.z,
+        z: args.state.z + 3,
         text: "#{ydef.description}, #{xdef.description}",
         **label_style,
         alignment_enum: xdef.alignment_enum,
@@ -145,7 +146,7 @@ def render_guides args
     ].map do |p|
       [
         p.merge(z:            0, a:  64),
-        p.merge(z: args.state.z, a: 255)
+        p.merge(z: args.state.z + 2, a: 255)
       ]
     end
   end

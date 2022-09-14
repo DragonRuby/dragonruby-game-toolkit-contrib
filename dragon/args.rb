@@ -21,6 +21,7 @@ module GTK
     attr_accessor :state
     attr_accessor :temp_state
     attr_accessor :runtime
+    attr_accessor :events
     alias_method :gtk, :runtime
     attr_accessor :passes
     attr_accessor :wizards
@@ -49,6 +50,9 @@ module GTK
       @layout = GTK::Layout.new @grid.w, @grid.h
       @easing = GTK::Easing
       @string = String
+      @events = {
+        resize_occurred: false
+      }
     end
 
 

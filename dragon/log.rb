@@ -176,6 +176,32 @@ class Object
     GTK::Log.puts(*args)
   end
 
+  # FIXME: clean up private api call to global
+  #        gtk instance (duplicated in runtime)
+  def log_spam str, subsystem = nil
+    $gtk.__log__ subsystem, 0, str
+  end
+
+  def log_debug str, subsystem = nil
+    $gtk.__log__ subsystem, 1, str
+  end
+
+  def log_info str, subsystem = nil
+    $gtk.__log__ subsystem, 2, str
+  end
+
+  def log_warn str, subsystem = nil
+    $gtk.__log__ subsystem, 3, str
+  end
+
+  def log_error str, subsystem = nil
+    $gtk.__log__ subsystem, 4, str
+  end
+
+  def log_unfiltered str, subsystem = nil
+    $gtk.__log__ subsystem, 0x7FFFFFFE, str
+  end
+
   def log_with_color xterm_escape_code, *args
     log_print xterm_escape_code
     log(*args)
