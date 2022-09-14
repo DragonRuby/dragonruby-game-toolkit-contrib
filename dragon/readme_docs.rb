@@ -6,20 +6,20 @@
 module GTK
   module ReadMeDocs
     def docs_method_sort_order
-      [
-        :docs_usage,
-        :docs_hello_world,
-        :docs_new_project,
-        :docs_deployment,
-        :docs_deployment_mobile,
-        :docs_dragonruby_philosophy,
-        :docs_faq,
-        :docs_ticks_and_frames,
-        :docs_sprites,
-        :docs_labels,
-        :docs_sounds,
-        :docs_game_state,
-        :docs_troubleshooting_performance
+      %i[
+        docs_usage
+        docs_hello_world
+        docs_new_project
+        docs_deployment
+        docs_deployment_mobile
+        docs_dragonruby_philosophy
+        docs_faq
+        docs_ticks_and_frames
+        docs_sprites
+        docs_labels
+        docs_sounds
+        docs_game_state
+        docs_troubleshooting_performance
       ]
     end
 
