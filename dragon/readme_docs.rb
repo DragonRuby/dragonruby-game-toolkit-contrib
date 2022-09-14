@@ -949,6 +949,7 @@ The data directories that will be written to in a production build are:
 - Windows: ~C:\\Users\\[username]\\AppData\\Roaming\\[devtitle]\\[gametitle]~
 - MacOS: ~$HOME/Library/Application Support/[gametitle]~
 - Linux: ~$HOME/.local/share/[gametitle]~
+- HTML5: The data will be written to the browser's IndexedDB.
 
 The values in square brackets are the values you set in your
 ~app/metadata/game_metadata.txt~ file.
