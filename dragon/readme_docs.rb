@@ -352,9 +352,9 @@ S
 
 * Starting a New DragonRuby Project
 
-The zip file is a complete, self contained project structure. To
-create a new project, unzip the zip file in its entirety and use
-that as a starting point for another game. This is the recommended
+The DRGTK zip that contains the engine is a complete, self contained project
+structure. To create a new project, unzip the zip file again in its entirety
+and use that as a starting point for another game. This is the recommended
 approach to starting a new project.
 
 ** Rationale
@@ -364,7 +364,7 @@ with your source code (it’s why we keep it small). It’s to protect “shelf 
 3 years from now we might be on a vastly different version of the engine.
 But you know that the code you’ve written will definitely work with the
 version that was committed to source control. It's strongly recommended that you
-do **not** keep DragonRuby Game Tooklit in a shared location and instead unzip
+do **not** keep DragonRuby Game Toolkit in a shared location and instead unzip
 a clean copy for ever game. That being said, You can optionally pass a directory
 when starting up DragonRuby from the terminal: ~./dragonruby ./non-defualt-game-directory~.
 
