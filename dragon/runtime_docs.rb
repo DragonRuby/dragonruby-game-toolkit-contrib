@@ -334,6 +334,12 @@ Here are some general notes with regards to the arguments these geometric functi
 Returns ~true~ if ~rect_1~ is inside ~rect_2~.
 ** ~args.geometry.intersect_rect? rect_1, rect_2~
 Returns ~true~ if ~rect_1~ intersects ~rect_2~.
+** ~args.geometry.find_intersect_rect rect_1, other_rects~
+Returns the first rect from the ~other_rects~ ~Array~ that intersects with ~rect_1~, or ~nil~ if there are no intersections.
+** ~args.geometry.find_collisions rects~
+Given an ~Array~ of rects, returns a ~Hash~ of collisions. Each entry maps two rects from the input ~Array~ that intersect.
+
+Note that in the event of an intersection of rects ~A~ and ~B~, the returned ~Hash~ will contain two entries: ~{A=>B,B=>A}~
 ** ~args.geometry.scale_rect rect, x_percentage, y_percentage~
 Returns a new rectangle that is scaled by the percentages provided.
 ** ~args.geometry.angle_to start_point, end_point~
