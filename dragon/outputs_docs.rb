@@ -219,9 +219,9 @@ be provided in any order.
   end
 #+end_src
 
-** Rendering a solid using a Class
+** Rendering a sprite using a Class
 
-You can also create a class with solid/border properties and render it as a primitive.
+You can also create a class with sprite properties and render it as a primitive.
 ALL properties must be on the class. *Additionally*, a method called ~primitive_marker~
 must be defined on the class.
 
