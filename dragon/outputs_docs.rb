@@ -222,24 +222,17 @@ be provided in any order.
 ** Rendering a sprite using a Class
 
 You can also create a class with sprite properties and render it as a primitive.
-ALL properties must be on the class. *Additionally*, a method called ~primitive_marker~
-must be defined on the class.
 
-Here is an example:
+A sprite class needs to have all of the properties of a sprite, plus a special ~primitive_marker~.
+
+To make this easy, use the ~attr_sprite~ module.
 
 #+begin_src
-  # Create type with ALL sprite properties AND primitive_marker
-  class Sprite
-    attr_accessor :x, :y, :w, :h, :path, :angle, :angle_anchor_x, :angle_anchor_y,  :tile_x, :tile_y, :tile_w, :tile_h, :source_x, :source_y, :source_w, :source_h, :flip_horizontally, :flip_vertically, :a, :r, :g, :b
+  # Create sprite type using the attr_sprite Module
+  class Circle
+    attr_sprite
 
-    def primitive_marker
-      :sprite
-    end
-  end
-
-  # Inherit from type
-  class Circle < Sprite
-  # constructor
+    # constructor
     def initialize x, y, size, path
       self.x = x
       self.y = y
@@ -247,6 +240,7 @@ Here is an example:
       self.h = size
       self.path = path
     end
+
     def serlialize
       {x:self.x, y:self.y, w:self.w, h:self.h, path:self.path}
     end
@@ -259,11 +253,14 @@ Here is an example:
       serlialize.to_s
     end
   end
+
   def tick args
     # render circle sprite
     args.outputs.sprites  << Circle.new(10, 10, 32,"sprites/circle/white.png")
   end
 #+end_src
+
+You can see the full list of sprite properties in the ruby module : [[https://github.com/DragonRuby/dragonruby-game-toolkit-contrib/blob/master/dragon/attr_sprite.rb]].
 
 S
   end
