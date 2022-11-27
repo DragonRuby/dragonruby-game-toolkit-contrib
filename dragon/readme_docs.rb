@@ -874,7 +874,7 @@ Sounds that end ~.ogg~ is considered background music and will loop:
   def tick args
     # Start a sound loop at the beginning of the game
     if args.state.tick_count == 0
-      args.outputs.sounds << 'background_music.ogg'
+      args.outputs.sounds << 'sounds/background_music.ogg'
     end
   end
 #+end_src
@@ -885,7 +885,7 @@ If you want to play a ~.ogg~ once as if it were a sound effect, you can do:
   def tick args
     # Play a sound every second
     if (args.state.tick_count % 60) == 0
-      args.gtk.queue_sound 'some-ogg.ogg'
+      args.gtk.queue_sound 'sounds/some-ogg.ogg'
     end
   end
 #+end_src
