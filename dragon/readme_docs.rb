@@ -874,10 +874,12 @@ Sounds that end ~.ogg~ is considered background music and will loop:
   def tick args
     # Start a sound loop at the beginning of the game
     if args.state.tick_count == 0
-      args.outputs.sounds << 'sounds/background_music.ogg'
+      args.audio[:music] = { input: "sounds/background_music.ogg", looping: true }
     end
   end
 #+end_src
+
+The key used to `args.audio` can be whatever you want it be, allowing you manage your music tracks based on the key.
 
 If you want to play a ~.ogg~ once as if it were a sound effect, you can do:
 
