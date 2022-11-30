@@ -5,8 +5,6 @@ def tick args
   args.state.player.h ||= 64
   args.state.player.direction ||= 1
 
-  args.state.player.is_moving = false
-
   # get the keyboard input and set player properties
   if args.inputs.keyboard.right
     args.state.player.x += 3
