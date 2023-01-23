@@ -419,7 +419,7 @@ class OneBitLowrezPaint
   end
 
   def to_draw_area point
-    x, y = point
+    x, y = point.x, point.y
     x -= rt_canvas.sprite.x
     y -= rt_canvas.sprite.y
     { x: x.idiv(rt_canvas.zoom),

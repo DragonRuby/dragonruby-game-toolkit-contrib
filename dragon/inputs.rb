@@ -491,7 +491,7 @@ module GTK
     def initialize x, y
       @x = x
       @y = y
-      @point = [x, y]
+      @point = { x: @x, y: @y, w: 0, h: 0 }
       @created_at = Kernel.tick_count
       @global_created_at = Kernel.global_tick_count
     end
@@ -548,6 +548,8 @@ module GTK
     attr_accessor :previous_click
     attr_accessor :x
     attr_accessor :y
+    attr_accessor :previous_x
+    attr_accessor :previous_y
 
     def initialize
       @x = 0
@@ -565,7 +567,7 @@ module GTK
     end
 
     def point
-      [@x, @y].point
+      { x: @x, y: @y, w: 0, h: 0 }
     end
 
     def inside_rect? rect
@@ -718,7 +720,10 @@ module GTK
       @finger_two = nil
       @text = []
       @http_requests = []
-      @headset = { position: { x: 0, y: 0, z: 0 } }
+      @headset = {
+        position: { x: 0, y: 0, z: 0 },
+        orientation: { x: 0, y: 0, z: 0 }
+      }
     end
 
     def up

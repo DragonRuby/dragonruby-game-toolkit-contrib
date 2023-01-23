@@ -76,7 +76,7 @@ class Numeric
     return max if max && self > max
     return self
   end
-  
+
   def clamp_wrap min, max
     max, min = min, max if min > max
     range = max - min + 1
@@ -312,7 +312,17 @@ S
   #
   # @gtk
   def vector max_value = 1
+    log_once :consider_to_vector!, <<-S
+* WARNGING: ~Numeric#vector~ is deprecated. Use ~Numeric#to_vector~.
+~Numeric#to_vector~ is more preformant and returns a ~Hash~ containing the keys ~x~ and ~y~ as opposed
+to an ~Array~ of ~[x, y]~. Please note that you will lose the ability to destucture the values of a ~Hash~.
+
+S
     [vector_x(max_value), vector_y(max_value)]
+  end
+
+  def to_vector max_value = 1
+    { x: vector_x(max_value), y: vector_y(max_value) }
   end
 
   # Returns the y component of a normal vector for a number that represents an angle in degrees.
@@ -665,6 +675,18 @@ class Fixnum
 
   def sin_d
     Math.sin self.to_radians
+  end
+
+  def tan
+    Math.tan self.to_radians
+  end
+
+  def tan_d
+    Math.tan self.to_radians
+  end
+
+  def tan_r
+    Math.tan self
   end
 
   def to_sf

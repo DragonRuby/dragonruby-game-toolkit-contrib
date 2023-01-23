@@ -47,7 +47,13 @@ module GTK
       @geometry = GTK::Geometry
       @fn = GTK::Fn
       @wizards = Wizards.new
-      @layout = GTK::Layout.new @grid.w, @grid.h
+      ratio_w = 16
+      ratio_h = 9
+      if runtime.orientation == :portrait
+        ratio_w = 9
+        ratio_h = 16
+      end
+      @layout = GTK::Layout.new @grid.w, @grid.h, ratio_w, ratio_h, runtime.orientation
       @easing = GTK::Easing
       @string = String
       @events = {

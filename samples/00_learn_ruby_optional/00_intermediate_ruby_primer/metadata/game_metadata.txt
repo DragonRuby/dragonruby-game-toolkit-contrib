@@ -1,0 +1,6 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=ruby-primer
+gametitle=Ruby Primer
+version=1.0
+icon=sprites/icon.png

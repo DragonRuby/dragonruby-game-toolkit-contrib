@@ -47,7 +47,7 @@ S
       return  0
     end
 
-    # Returns a normal vector (in the form of an Array with two values). If no directionals are held/down, the function returns nil.
+    # Returns a normal vector (in the form of a Hash with x, y keys). If no directionals are held/down, the function returns nil.
     #
     # The possible results are:
     #
@@ -59,14 +59,14 @@ S
     #
     # @gtk
     def directional_vector
-      lr, ud = [self.left_right, self.up_down]
+      lr, ud = self.left_right, self.up_down
 
       if lr == 0 && ud == 0
         return nil
       elsif lr.abs == ud.abs
-        return [45.vector_x * lr.sign, 45.vector_y * ud.sign, ud.sign]
+        return { x: 45.vector_x * lr.sign, y: 45.vector_y * ud.sign }
       else
-        return [lr, ud]
+        return { x: lr, y: ud }
       end
     end
 

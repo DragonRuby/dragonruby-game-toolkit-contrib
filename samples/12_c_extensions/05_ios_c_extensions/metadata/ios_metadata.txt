@@ -1,0 +1,6 @@
+teamid=TEAMID
+appid=APPID
+appname=ICON NAME
+version=1.0
+devcert=NAME OF DEV CERT
+prodcert=NAME OF PROD CERT

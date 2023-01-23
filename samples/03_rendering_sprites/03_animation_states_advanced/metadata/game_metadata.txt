@@ -1,0 +1,6 @@
+devid=dragonruby
+devtitle=DragonRuby LLP
+gameid=advanced-animation-states
+gametitle=Advanced Animation States
+version=1.0
+icon=metadata/icon.png

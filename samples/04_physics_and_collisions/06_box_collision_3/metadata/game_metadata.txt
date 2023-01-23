@@ -1,6 +1,6 @@
-devid=amirrajan
-devtitle=Amir Rajan
-gameid=hello-world
-gametitle=Hello World
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=sample-app
+gametitle=Sample App
 version=1.0
-icon=metadata/icon.png
+icon=sprites/icon.png

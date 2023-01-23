@@ -1,0 +1,6 @@
+teamid=L7H57V9CRD
+appid=com.scratchworkdevelopment.1bitanimate
+appname=1-Bit Animate
+version=1.0
+devcert=iPhone Developer: Amirali Rajan (P2B6225J87)
+prodcert=

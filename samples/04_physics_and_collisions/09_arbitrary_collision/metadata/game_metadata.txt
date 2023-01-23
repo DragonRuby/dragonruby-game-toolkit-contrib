@@ -1,6 +1,6 @@
-devid=canicvs
-devtitle=UTD Students
-gameid=physics-holedown-sample
-gametitle=Physics Holedown Sample App
-version=0.1
-icon=metadata/icon.png
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=sample-app
+gametitle=Sample App
+version=1.0
+icon=sprites/icon.png

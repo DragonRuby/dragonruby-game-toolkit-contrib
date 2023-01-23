@@ -672,7 +672,13 @@ Follows is a source code listing for all files that have been open sourced. This
         @geometry = GTK::Geometry
         @fn = GTK::Fn
         @wizards = Wizards.new
-        @layout = GTK::Layout.new @grid.w, @grid.h
+        ratio_w = 16
+        ratio_h = 9
+        if runtime.orientation == :portrait
+          ratio_w = 9
+          ratio_h = 16
+        end
+        @layout = GTK::Layout.new @grid.w, @grid.h, ratio_w, ratio_h, runtime.orientation
         @easing = GTK::Easing
         @string = String
         @events = {
@@ -1732,13 +1738,22 @@ Follows is a source code listing for all files that have been open sourced. This
         return visible?
       end
   
+      def logo_final_y
+        @logo_final_y = $gtk.args.layout.rect(row: 0, h: 1).center_y
+      end
+  
       def render args
         return if !@toggled_at
         return if slide_progress == 0
   
         @bottom = top - (h * slide_progress)
         args.outputs.reserved << [left, @bottom, w, h, *@background_color.mult_alpha(slide_progress)].solid
-        args.outputs.reserved << [right.shift_left(110), @bottom.shift_up(630), 100, 100, @logo, 0, (80.0 * slide_progress).to_i].sprite
+        args.outputs.reserved << { x: 20,
+                                   y: @bottom.shift_up(logo_final_y - 44),
+                                   w: 100,
+                                   h: 100,
+                                   path: @logo,
+                                   a: (80.0 * slide_progress).to_i }
   
         y = @bottom + 2  # just give us a little padding at the bottom.
         prompt.render args, x: left.shift_right(10), y: y
@@ -2290,31 +2305,33 @@ Follows is a source code listing for all files that have been open sourced. This
   
           @menu_shown ||= :hidden
   
+          col_max_index = $gtk.args.layout.col_max_index
+  
           if $gtk.production
             @buttons = [
-              (button id: :record,      row: 0, col:   9, text: "record gameplay",       method: :record_clicked),
-              (button id: :replay,      row: 0, col:  10, text: "start replay",          method: :replay_clicked),
+              (button id: :record,      row: 0, col:  col_max_index - 3, text: "record gameplay",       method: :record_clicked),
+              (button id: :replay,      row: 0, col:  col_max_index - 1, text: "start replay",          method: :replay_clicked),
               *custom_buttons
             ]
           elsif @menu_shown == :hidden
             @buttons = [
-              (button id: :show_menu,       row: 0, col: 10, text: "show menu", method: :show_menu_clicked),
+              (button id: :show_menu,       row: 0, col: col_max_index - 1, text: "show menu", method: :show_menu_clicked),
             ]
           else
             @buttons = [
-              (button id: :scroll_up,   row: 0, col:  6, text: "scroll up",             method: :scroll_up_clicked),
-              (button id: :scroll_down, row: 0, col:  7, text: "scroll down",           method: :scroll_down_clicked),
-              (button id: :scroll_down, row: 0, col:  8, text: "scroll end",            method: :scroll_end_clicked),
-              (button id: :close,       row: 0, col:  9, text: "close console",         method: :close_clicked),
-              (button id: :hide,        row: 0, col: 10, text: "hide menu",             method: :hide_menu_clicked),
+              (button id: :scroll_up,   row: 0, col: col_max_index - 9, text: "scroll up",             method: :scroll_up_clicked),
+              (button id: :scroll_down, row: 0, col: col_max_index - 7, text: "scroll down",           method: :scroll_down_clicked),
+              (button id: :scroll_down, row: 0, col: col_max_index - 5, text: "scroll end",            method: :scroll_end_clicked),
+              (button id: :close,       row: 0, col: col_max_index - 3, text: "close console",         method: :close_clicked),
+              (button id: :hide,        row: 0, col: col_max_index - 1, text: "hide menu",             method: :hide_menu_clicked),
   
-              (button id: :record,      row: 1, col:  7, text: "record gameplay",       method: :record_clicked),
-              (button id: :replay,      row: 1, col:  8, text: "start replay",          method: :replay_clicked),
-              (button id: :record,      row: 1, col:  9, text: "framerate diagnostics", method: :framerate_diagnostics_clicked),
-              (button id: :reset,       row: 1, col: 10, text: "reset game",            method: :reset_clicked),
+              (button id: :record,      row: 1, col: col_max_index - 7, text: "record gameplay",       method: :record_clicked),
+              (button id: :replay,      row: 1, col: col_max_index - 5, text: "start replay",          method: :replay_clicked),
+              (button id: :record,      row: 1, col: col_max_index - 3, text: "framerate diagnostics", method: :framerate_diagnostics_clicked),
+              (button id: :reset,       row: 1, col: col_max_index - 1, text: "reset game",            method: :reset_clicked),
   
-              (button id: :reset,       row: 2, col: 10, text: "docs",                  method: :docs_clicked),
-              (button id: :reset,       row: 2, col:  9, text: "itch wizard",           method: :itch_wizard_clicked),
+              (button id: :reset,       row: 2, col: col_max_index - 1, text: "docs",                  method: :docs_clicked),
+              (button id: :reset,       row: 2, col: col_max_index - 3, text: "itch wizard",           method: :itch_wizard_clicked),
               *custom_buttons
             ]
           end
@@ -2333,13 +2350,7 @@ Follows is a source code listing for all files that have been open sourced. This
         end
   
         def rect_for_layout row, col
-          col_width  = 100
-          row_height = 50
-          col_margin = 5
-          row_margin = 5
-          x = (col_margin + (col * col_width)  + (col * col_margin))
-          y = (row_margin + (row * row_height) + (row * row_margin) + row_height).from_top
-          { x: x, y: y, w: col_width, h: row_height }
+          $gtk.args.layout.rect(row: row, col: col, w: 2, h: 1)
         end
   
         def button args
@@ -3189,11 +3200,17 @@ Follows is a source code listing for all files that have been open sourced. This
   module GTK
     class Controller
       def left_hand
-        @left_hand  ||= { position: { x: 0, y: 0, z: 0 } }
+        @left_hand  ||= {
+          position: { x: 0, y: 0, z: 0 },
+          orientation: { x: 0, y: 0, z: 0 }
+        }
       end
   
       def right_hand
-        @right_hand ||= { position: { x: 0, y: 0, z: 0 } }
+        @right_hand ||= {
+          position: { x: 0, y: 0, z: 0 },
+          orientation: { x: 0, y: 0, z: 0 }
+        }
       end
   
       class Keys
@@ -3311,7 +3328,7 @@ Follows is a source code listing for all files that have been open sourced. This
         return  0
       end
   
-      # Returns a normal vector (in the form of an Array with two values). If no directionals are held/down, the function returns nil.
+      # Returns a normal vector (in the form of a Hash with x, y keys). If no directionals are held/down, the function returns nil.
       #
       # The possible results are:
       #
@@ -3323,14 +3340,14 @@ Follows is a source code listing for all files that have been open sourced. This
       #
       # @gtk
       def directional_vector
-        lr, ud = [self.left_right, self.up_down]
+        lr, ud = self.left_right, self.up_down
   
         if lr == 0 && ud == 0
           return nil
         elsif lr.abs == ud.abs
-          return [45.vector_x * lr.sign, 45.vector_y * ud.sign, ud.sign]
+          return { x: 45.vector_x * lr.sign, y: 45.vector_y * ud.sign }
         else
-          return [lr, ud]
+          return { x: lr, y: ud }
         end
       end
   
@@ -4051,6 +4068,7 @@ Follows is a source code listing for all files that have been open sourced. This
   module GTK
     class Grid
       include Serialize
+      include GridDeprecated
       SCREEN_Y_DIRECTION = -1.0
   
       # The coordinate system currently in use.
@@ -4111,17 +4129,21 @@ Follows is a source code listing for all files that have been open sourced. This
            :allscreen_bottom,
            :allscreen_width,
            :allscreen_height,
-           :render_width,
-           :render_height,
-           :render_scale,
-           :render_scale_enum,
            :allscreen_offset_x,
-           :allscreen_offset_y
+           :allscreen_offset_y,
+           :native_width,
+           :native_height,
+           :native_scale,
+           :native_scale_enum
   
       def initialize runtime
         @runtime = runtime
         @ffi_draw = runtime.ffi_draw
         origin_bottom_left!
+      end
+  
+      def orientation
+        @runtime.orientation
       end
   
       # Returns `x` plus the origin "x".
@@ -4180,17 +4202,16 @@ Follows is a source code listing for all files that have been open sourced. This
         @rect   = [@left, @bottom, @runtime.logical_width, @runtime.logical_height].rect
         @center = [@center_x, @center_y].point
         @ffi_draw.set_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
-        @device_left     ||= @left
-        @device_right    ||= @right
-        @device_top      ||= @top
-        @device_bottom   ||= @bottom
-        @device_width    ||= @runtime.logical_width
-        @device_height   ||= @runtime.logical_height
-        @render_width    ||= @runtime.logical_width
-        @render_height   ||= @runtime.logical_height
-        @render_scale    ||= 1.0
-        @render_offset_x ||= 0
-        @render_offset_y ||= 0
+        @device_left       ||= @left
+        @device_right      ||= @right
+        @device_top        ||= @top
+        @device_bottom     ||= @bottom
+        @device_width      ||= @runtime.logical_width
+        @device_height     ||= @runtime.logical_height
+        @native_width      ||= @runtime.logical_width
+        @native_height     ||= @runtime.logical_height
+        @native_scale      ||= 1.0
+        @native_scale_enum ||= 1.0
       end
   
       # Sets the rendering coordinate system to have its origin in the center.
@@ -4774,7 +4795,7 @@ Follows is a source code listing for all files that have been open sourced. This
       def initialize x, y
         @x = x
         @y = y
-        @point = [x, y]
+        @point = { x: @x, y: @y, w: 0, h: 0 }
         @created_at = Kernel.tick_count
         @global_created_at = Kernel.global_tick_count
       end
@@ -4831,6 +4852,8 @@ Follows is a source code listing for all files that have been open sourced. This
       attr_accessor :previous_click
       attr_accessor :x
       attr_accessor :y
+      attr_accessor :previous_x
+      attr_accessor :previous_y
   
       def initialize
         @x = 0
@@ -4848,7 +4871,7 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def point
-        [@x, @y].point
+        { x: @x, y: @y, w: 0, h: 0 }
       end
   
       def inside_rect? rect
@@ -5001,7 +5024,10 @@ Follows is a source code listing for all files that have been open sourced. This
         @finger_two = nil
         @text = []
         @http_requests = []
-        @headset = { position: { x: 0, y: 0, z: 0 } }
+        @headset = {
+          position: { x: 0, y: 0, z: 0 },
+          orientation: { x: 0, y: 0, z: 0 }
+        }
       end
   
       def up
@@ -5172,8 +5198,7 @@ Follows is a source code listing for all files that have been open sourced. This
         :create_payload_directory_dev,
   
         :create_payload,
-        :code_sign_payload,
-  
+        :code_sign_binary,
         :create_ipa,
         :deploy
       ]
@@ -5201,8 +5226,7 @@ Follows is a source code listing for all files that have been open sourced. This
         :create_payload_directory_prod,
   
         :create_payload,
-        :code_sign_payload,
-  
+        :code_sign_binary,
         :create_ipa,
         :print_publish_help
       ]
@@ -5226,10 +5250,11 @@ Follows is a source code listing for all files that have been open sourced. This
     def start opts = nil
       @opts = opts || {}
   
-      if !(@opts.is_a? Hash) || !($gtk.args.fn.eq_any? @opts[:env], :dev, :prod)
+      if !(@opts.is_a? Hash) || !($gtk.args.fn.eq_any? @opts[:env], :dev, :prod, :hotload)
         raise WizardException.new(
                 "* $wizards.ios.start needs to be provided an environment option.",
-                "** For development builds type: $wizards.ios.start env: :dev",
+                "** For a development with remote hotloading enabled, build type: $wizards.ios.start env: :hotload",
+                "** For a development build type: $wizards.ios.start env: :dev",
                 "** For production builds type: $wizards.ios.start env: :prod"
               )
       end
@@ -5244,8 +5269,12 @@ Follows is a source code listing for all files that have been open sourced. This
       log_info "Starting iOS Wizard so we can deploy to your device."
       @start_at = Kernel.global_tick_count
       steps.each do |m|
+        before_step = "before_#{m}".to_sym
+        after_step = "after_#{m}".to_sym
+        send before_step if respond_to? before_step
         log_info "Running step ~:#{m}~."
         result = (send m) || :success if @wizard_status[m][:result] != :success
+        send after_step if respond_to? after_step
         @wizard_status[m][:result] = result
         log_info "Running step ~:#{m}~ complete."
       end
@@ -5504,7 +5533,7 @@ Follows is a source code listing for all files that have been open sourced. This
     def check_for_device
       log_info "Looking for device."
   
-      if !cli_app_exist?(idevice_id_cli_app)
+      if !cli_app_exist?(idevice_id_path)
         raise WizardException.new(
            "* It doesn't look like you have the libimobiledevice iOS protocol library installed.",
            "** 1. Open Terminal.",
@@ -5544,7 +5573,15 @@ Follows is a source code listing for all files that have been open sourced. This
       log_info "I will be using certificate: '#{@certificate_name}'."
     end
   
-    def idevice_id_cli_app
+    def codesign_allocate_path
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate"
+    end
+  
+    def codesign_path
+      "/usr/bin/codesign"
+    end
+  
+    def idevice_id_path
       "idevice_id"
     end
   
@@ -5610,7 +5647,7 @@ Follows is a source code listing for all files that have been open sourced. This
       @entitlement_plist_written = true
     end
   
-    def code_sign_payload
+    def code_sign_binary
       log_info "Signing app with #{@certificate_name}."
   
       sh "xattr -cr \"#{tmp_directory}/ipa_root/Payload/#{@app_name}.app\""
@@ -5622,29 +5659,25 @@ Follows is a source code listing for all files that have been open sourced. This
       @code_sign_completed = true
     end
   
+    def __get_plist_orientation_value__
+      orientation_string = "UIInterfaceOrientationLandscapeRight"
+  
+      if $gtk.orientation == :portrait
+        orientation_string = "UIInterfaceOrientationPortrait"
+      end
+  
+      orientation_string
+    end
+  
     def development_write_info_plist
       log_info "Adding Info.plist."
+  
   
       info_plist_string = <<-XML
   <?xml version="1.0" encoding="UTF-8"?>
   <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
   <plist version="1.0">
   <dict>
-          <key>NSAppTransportSecurity</key>
-          <dict>
-                  <key>NSAllowsArbitraryLoads</key>
-                  <true/>
-                  <key>NSExceptionDomains</key>
-                  <dict>
-                          <key>google.com</key>
-                          <dict>
-                                  <key>NSExceptionAllowsInsecureHTTPLoads</key>
-                                  <true/>
-                                  <key>NSIncludesSubdomains</key>
-                                  <true/>
-                          </dict>
-                  </dict>
-          </dict>
           <key>BuildMachineOSBuild</key>
           <string>20D91</string>
           <key>CFBundleDevelopmentRegion</key>
@@ -5708,7 +5741,7 @@ Follows is a source code listing for all files that have been open sourced. This
           <key>DTPlatformName</key>
           <string>iphoneos</string>
           <key>DTPlatformVersion</key>
-          <string>14.4</string>
+          <string>11.0</string>
           <key>DTSDKBuild</key>
           <string>18D46</string>
           <key>DTSDKName</key>
@@ -5718,7 +5751,7 @@ Follows is a source code listing for all files that have been open sourced. This
           <key>DTXcodeBuild</key>
           <string>12D4e</string>
           <key>MinimumOSVersion</key>
-          <string>14.4</string>
+          <string>11.0</string>
           <key>UIAppFonts</key>
           <array/>
           <key>UIBackgroundModes</key>
@@ -5727,39 +5760,6 @@ Follows is a source code listing for all files that have been open sourced. This
           <array>
                   <integer>1</integer>
                   <integer>2</integer>
-          </array>
-          <key>UILaunchImages</key>
-          <array>
-                  <dict>
-                          <key>UILaunchImageMinimumOSVersion</key>
-                          <string>7.0</string>
-                          <key>UILaunchImageName</key>
-                          <string>Default-568h@2x</string>
-                          <key>UILaunchImageOrientation</key>
-                          <string>Portrait</string>
-                          <key>UILaunchImageSize</key>
-                          <string>{320, 568}</string>
-                  </dict>
-                  <dict>
-                          <key>UILaunchImageMinimumOSVersion</key>
-                          <string>7.0</string>
-                          <key>UILaunchImageName</key>
-                          <string>Default-667h@2x</string>
-                          <key>UILaunchImageOrientation</key>
-                          <string>Portrait</string>
-                          <key>UILaunchImageSize</key>
-                          <string>{375, 667}</string>
-                  </dict>
-                  <dict>
-                          <key>UILaunchImageMinimumOSVersion</key>
-                          <string>7.0</string>
-                          <key>UILaunchImageName</key>
-                          <string>Default-736h@3x</string>
-                          <key>UILaunchImageOrientation</key>
-                          <string>Portrait</string>
-                          <key>UILaunchImageSize</key>
-                          <string>{414, 736}</string>
-                  </dict>
           </array>
           <key>UILaunchStoryboardName</key>
           <string>SimpleSplash</string>
@@ -5773,7 +5773,7 @@ Follows is a source code listing for all files that have been open sourced. This
           <string>UIStatusBarStyleDefault</string>
           <key>UISupportedInterfaceOrientations</key>
           <array>
-                  <string>UIInterfaceOrientationLandscapeRight</string>
+                  <string>#{__get_plist_orientation_value__}</string>
           </array>
   </dict>
   </plist>
@@ -5872,7 +5872,7 @@ Follows is a source code listing for all files that have been open sourced. This
           <key>DTXcodeBuild</key>
           <string>12D4e</string>
           <key>MinimumOSVersion</key>
-          <string>14.4</string>
+          <string>11.0</string>
           <key>UIAppFonts</key>
           <array/>
           <key>UIBackgroundModes</key>
@@ -5881,39 +5881,6 @@ Follows is a source code listing for all files that have been open sourced. This
           <array>
                   <integer>1</integer>
                   <integer>2</integer>
-          </array>
-          <key>UILaunchImages</key>
-          <array>
-                  <dict>
-                          <key>UILaunchImageMinimumOSVersion</key>
-                          <string>7.0</string>
-                          <key>UILaunchImageName</key>
-                          <string>Default-568h@2x</string>
-                          <key>UILaunchImageOrientation</key>
-                          <string>Portrait</string>
-                          <key>UILaunchImageSize</key>
-                          <string>{320, 568}</string>
-                  </dict>
-                  <dict>
-                          <key>UILaunchImageMinimumOSVersion</key>
-                          <string>7.0</string>
-                          <key>UILaunchImageName</key>
-                          <string>Default-667h@2x</string>
-                          <key>UILaunchImageOrientation</key>
-                          <string>Portrait</string>
-                          <key>UILaunchImageSize</key>
-                          <string>{375, 667}</string>
-                  </dict>
-                  <dict>
-                          <key>UILaunchImageMinimumOSVersion</key>
-                          <string>7.0</string>
-                          <key>UILaunchImageName</key>
-                          <string>Default-736h@3x</string>
-                          <key>UILaunchImageOrientation</key>
-                          <string>Portrait</string>
-                          <key>UILaunchImageSize</key>
-                          <string>{414, 736}</string>
-                  </dict>
           </array>
           <key>UILaunchStoryboardName</key>
           <string>SimpleSplash</string>
@@ -5927,7 +5894,7 @@ Follows is a source code listing for all files that have been open sourced. This
           <string>UIStatusBarStyleDefault</string>
           <key>UISupportedInterfaceOrientations</key>
           <array>
-                  <string>UIInterfaceOrientationLandscapeRight</string>
+                  <string>#{__get_plist_orientation_value__}</string>
           </array>
   </dict>
   </plist>
@@ -5997,13 +5964,22 @@ Follows is a source code listing for all files that have been open sourced. This
       sh %Q[chmod -R 755 "#{tmp_directory}/ipa_root/Payload"]
     end
   
-    def create_payload_directory_dev
-      # write dev machine's ip address for hotloading
-      $gtk.write_file "app/server_ip_address.txt", $gtk.ffi_misc.get_local_ip_address.strip
+    def write_server_ip_address
+      sh %Q[mkdir -p "#{app_path}/metadata/"]
+      sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip}]
+      sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip} > "#{app_path}/metadata/DRAGONRUBY_REMOTE_HOTLOAD"]
+    end
   
+    def create_payload_directory_dev
       embed_mobileprovision
       clear_payload_directory
       stage_app
+      # write dev machine's ip address for hotloading
+      write_server_ip_address if @opts[:env] == :hotload
+  
+      # production build marker
+      sh %Q[mkdir -p "#{app_path}/metadata/"]
+      sh %Q[touch "#{app_path}/metadata/DRAGONRUBY_PRODUCTION_BUILD"]
     end
   
     def create_payload_directory_prod
@@ -6068,13 +6044,13 @@ Follows is a source code listing for all files that have been open sourced. This
   
     def compile_icons
       cmd = <<-S
-  "/Applications/Xcode.app/Contents/Developer/usr/bin/actool" --output-format human-readable-text \
-                                                              --notices --warnings --platform iphoneos \
-                                                              --minimum-deployment-target 10.3 \
-                                                              --target-device iphone \
-                                                              --target-device ipad  --app-icon 'AppIcon' \
-                                                              --output-partial-info-plist '#{app_path}/AssetCatalog-Info.plist' \
-                                                              --compress-pngs --compile "#{app_path}" \
+  "/Applications/Xcode.app/Contents/Developer/usr/bin/actool" --output-format human-readable-text \\
+                                                              --notices --warnings --platform iphoneos \\
+                                                              --minimum-deployment-target 10.3 \\
+                                                              --target-device iphone \\
+                                                              --target-device ipad  --app-icon 'AppIcon' \\
+                                                              --output-partial-info-plist '#{app_path}/AssetCatalog-Info.plist' \\
+                                                              --compress-pngs --compile "#{app_path}" \\
                                                               "#{app_path}/Assets.xcassets"
   S
       sh cmd
@@ -6090,6 +6066,10 @@ Follows is a source code listing for all files that have been open sourced. This
       start env: @opts[:env], version: version
     end
   
+    def app_name
+      @app_name
+    end
+  
     def app_version
       log_info "Attempting to retrieve App Version from metadata/ios_metadata.txt."
       ios_version_number = (ios_metadata.version || "").strip
@@ -6103,6 +6083,10 @@ Follows is a source code listing for all files that have been open sourced. This
     def determine_app_version
       @app_version = app_version
       return if @app_version
+    end
+  
+    def certificate_name
+      @certificate_name
     end
   end
 
@@ -6378,208 +6362,100 @@ Follows is a source code listing for all files that have been open sourced. This
   # layout.rb has been released under MIT (*only this file*).
   
   module GTK
-    class Margin
-      attr :left, :right, :top, :bottom
-  
-      def initialize
-        @left   = 0
-        @right  = 0
-        @top    = 0
-        @bottom = 0
-      end
-  
-      def serialize
-        {
-          left:   @left,
-          right:  @right,
-          top:    @top,
-          bottom: @bottom,
-        }
-      end
-  
-      def inspect
-        serialize.to_s
-      end
-  
-      def to_s
-        serialize.to_s
-      end
-    end
-  
-    class SafeArea
-      attr :w, :h, :margin
-  
-      def initialize
-        @w      = 0
-        @h      = 0
-        @margin = Margin.new
-      end
-  
-      def serialize
-        {
-          w:      @w,
-          h:      @h,
-          margin: @margin.serialize
-        }
-      end
-  
-      def inspect
-        serialize.to_s
-      end
-  
-      def to_s
-        serialize.to_s
-      end
-    end
-  
-    class GridArea
-      attr :w, :h, :margin, :gutter, :col_count, :row_count, :cell_w, :cell_h, :outer_gutter
-  
-      def initialize
-        @w            = 0
-        @h            = 0
-        @gutter       = 0
-        @outer_gutter = 0
-        @col_count    = 0
-        @row_count    = 0
-        @margin       = Margin.new
-      end
-  
-      def serialize
-        {
-          w:            @w,
-          h:            @h,
-          gutter:       @gutter,
-          outer_gutter: @outer_gutter,
-          col_count:    @col_count,
-          row_count:    @row_count,
-          margin:       @margin.serialize
-        }
-      end
-  
-      def inspect
-        serialize.to_s
-      end
-  
-      def to_s
-        serialize.to_s
-      end
-    end
-  
-    class ControlArea
-      attr :cell_size, :w, :h, :margin
-  
-      def initialize
-        @margin = Margin.new
-      end
-  
-      def serialize
-        {
-          cell_size: @cell_size,
-          w:         @w,
-          h:         @h,
-          margin:    @margin.serialize,
-        }
-      end
-  
-      def inspect
-        serialize.to_s
-      end
-  
-      def to_s
-        serialize.to_s
-      end
-    end
-  
-    class Device
-      attr :w, :h, :safe_area, :grid_area, :control_area, :name, :aspect
-  
-      def initialize
-        @name         = ""
-        @w            = 0
-        @h            = 0
-        @safe_area    = SafeArea.new
-        @grid_area    = GridArea.new
-        @control_area = ControlArea.new
-        @aspect       = AspectRatio.new
-      end
-  
-      def assert! result, message
-        return if result
-        raise message
-      end
-  
-      def check_math!
-        assert! (@control_area.w + @control_area.margin.left + @control_area.margin.right) == @w, "Math for Width didn't pan out."
-        assert! (@control_area.h + @control_area.margin.top + @control_area.margin.bottom) == @h, "Math for Height didn't pan out."
-      end
-  
-      def serialize
-        {
-          name:         @name,
-          w:            @w,
-          h:            @h,
-          aspect:       @aspect.serialize,
-          safe_area:    @safe_area.serialize,
-          grid_area:    @grid_area.serialize,
-          control_area: @control_area.serialize
-        }
-      end
-  
-      def inspect
-        serialize.to_s
-      end
-  
-      def to_s
-        serialize.to_s
-      end
-    end
-  
-    class AspectRatio
-      attr :w, :h, :u
-  
-      def initialize
-        @w = 0
-        @h = 0
-        @u = 0
-      end
-  
-      def serialize
-        {
-          w: @w,
-          h: @h,
-          u: @u
-        }
-      end
-  
-      def inspect
-        serialize.to_s
-      end
-  
-      def to_s
-        serialize.to_s
-      end
-    end
-  
     class Layout
-      attr :w, :h, :rect_cache
+      attr :w, :h, :ratio_w, :ratio_h, :orientation,
+           :gutter_left, :gutter_right, :gutter_top, :gutter_bottom,
+           :cell_size, :gutter
   
-      def initialize w, h
+      def initialize w, h, ratio_w, ratio_h, orientation
         @w = w
         @h = h
-        @rect_cache = {}
-        init_device @w, @h
+        @ratio_w = ratio_w
+        @ratio_h = ratio_h
+        @orientation = orientation
+  
+        @gutter_left   = 20
+        @gutter_right  = 20
+        @gutter_top    = 52
+        @gutter_bottom = 52
+        @cell_size     = 48
+        @gutter        = 4
+        @row_count     = 12
+        @col_count     = 24
+  
+        if @orientation == :portrait
+          @gutter_left   = 52
+          @gutter_right  = 52
+          @gutter_top    = 20
+          @gutter_bottom = 20
+          @cell_size     = 48
+          @gutter        = 4
+          @row_count     = 24
+          @col_count     = 12
+        end
       end
   
-      def u_for_16x9 w, h
-        u = (w.fdiv 16).floor
-        u = (h.fdiv 9).floor if (u * 9) > h
+      def rect *all_opts
+        opts = {}
   
-        {
-          u: u,
-          w: u * 16,
-          h: u * 9
+        if all_opts.length == 1
+          opts = all_opts.first
+        else
+          opts = {}
+          all_opts.each do |o|
+            opts.merge! o
+          end
+        end
+  
+        opts_col        = opts[:col] || 0
+        opts_row        = opts[:row] || 0
+        opts_row        = row_max_index - opts[:row_from_bottom] if opts[:row_from_bottom]
+        opts_col        = col_max_index - opts[:col_from_right] if opts[:col_from_right]
+        opts_w          = opts[:w]   || 1
+        opts_h          = opts[:h]   || 1
+        opts_max_height = opts[:max_height] || opts_h
+        opts_max_width  = opts[:max_width] || opts_w
+        opts_dx         = opts[:dx] || 0
+        opts_dy         = opts[:dy] || 0
+  
+        opts_h = opts[:max_height] if opts_h > opts_max_height
+        opts_w = opts[:max_width]  if opts_w > opts_max_width
+  
+        rect_x = @gutter_left + @gutter * opts_col + @cell_size * opts_col
+        rect_y = @h - @gutter_top - (@gutter * opts_row) - (@cell_size * opts_row) - (@cell_size * opts_h) - (@gutter * opts_h - 1)
+        rect_w = @gutter * (opts_w - 1) + (@cell_size * opts_w)
+        rect_h = @gutter * (opts_h - 1) + (@cell_size * opts_h)
+        rect_x += opts_dx
+        rect_y += opts_dy
+  
+        if opts[:include_row_gutter]
+          rect_x -= @gutter
+          rect_w += @gutter * 2
+        end
+  
+        if opts[:include_col_gutter]
+          rect_y -= @gutter
+          rect_h += @gutter * 2
+        end
+  
+        rect_w = 0 if rect_w < 0
+        rect_h = 0 if rect_h < 0
+  
+        center_x = rect_x + rect_w / 2
+        center_y = rect_y + rect_h / 2
+  
+        result = {
+          x: rect_x,
+          y: rect_y,
+          w: rect_w,
+          h: rect_h,
+          center_x: center_x,
+          center_y: center_y,
+          center: { x: center_x, y: center_y }
         }
+  
+        result.merge! opts[:merge] if opts[:merge]
+        result
       end
   
       def font_relative_size_enum size_enum
@@ -6641,14 +6517,14 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def control_rect
-        @control_rect ||= { x: device.control_area.margin.left,
-                            y: device.control_area.margin.top,
-                            w: device.control_area.w,
-                            h: device.control_area.h }
+        @control_rect ||= { x: @gutter_left,
+                            y: @gutter_bottom,
+                            w: @w - @gutter_left - @gutter_right,
+                            h: @h - @gutter_top - @gutter_buttom }
       end
   
       def row_count
-        device.grid_area.row_count
+        @row_count
       end
   
       def row_max_index
@@ -6656,7 +6532,7 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def col_count
-        device.grid_area.col_count
+        @col_count
       end
   
       def col_max_index
@@ -6664,23 +6540,23 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def gutter_height
-        device.grid_area.gutter
+        @gutter
       end
   
       def gutter_width
-        device.grid_area.gutter
+        @gutter
       end
   
       def outer_gutter
-        device.grid_area.outer_gutter
+        @gutter_left
       end
   
       def cell_height
-        device.control_area.cell_size
+        @cell_size
       end
   
       def cell_width
-        device.control_area.cell_size
+        @cell_size
       end
   
       def rect_defaults
@@ -6787,199 +6663,27 @@ Follows is a source code listing for all files that have been open sourced. This
         r
       end
   
-      def rect *all_opts
-        if all_opts.length == 1
-          opts = all_opts.first
-        else
-          opts = {}
-          all_opts.each do |o|
-            opts.merge! o
-          end
-        end
-  
-        opts.row = row_max_index - opts.row_from_bottom if opts.row_from_bottom
-        opts.col = col_max_index - opts.col_from_right if opts.col_from_right
-        opts = rect_defaults.merge opts
-        opts.row ||= 0
-        opts.col ||= 0
-  
-        result = send opts[:rect]
-        if opts[:row] && opts[:col] && opts[:w] && opts[:h]
-          col = rect_col opts[:col], opts[:w]
-          row = rect_row opts[:row], opts[:h]
-          result = control_rect.merge x: col.x,
-                                      y: row.y,
-                                      w: col.w,
-                                      h: row.h,
-                                      center_x: col.center_x,
-                                      center_y: row.center_y
-        elsif opts[:row] && !opts[:col]
-          result = rect_row opts[:row], opts[:h]
-        elsif !opts[:row] && opts[:col]
-          result = rect_col opts[:col], opts[:w]
-        else
-          raise "LayoutTheory::rect unable to process opts #{opts}."
-        end
-  
-        if opts[:max_height] && opts[:max_height] >= 0
-          if result[:h] > opts[:max_height]
-            delta = (result[:h] - opts[:max_height]) * 2
-            result[:y] += delta
-            result[:h] = opts[:max_height]
-          end
-        end
-  
-        if opts[:max_width] && opts[:max_width] >= 0
-          if result[:w] > opts[:max_width]
-            delta = (result[:w] - opts[:max_width]) * 2
-            result[:x] += delta
-            result[:w] = opts[:max_width]
-          end
-        end
-  
-        result[:x] += opts[:dx]
-        result[:y] += opts[:dy]
-  
-        if opts[:include_row_gutter]
-          result[:x] -= device.grid_area.gutter
-          result[:w] += device.grid_area.gutter * 2
-        end
-  
-        if opts[:include_col_gutter]
-          result[:y] -= device.grid_area.gutter
-          result[:h] += device.grid_area.gutter * 2
-        end
-  
-        result[:x] += opts[:dx]       if opts[:dx]
-        result[:x] *= opts[:dx_ratio] if opts[:dx_ratio]
-        result[:y] += opts[:dy]       if opts[:dy]
-        result[:y] *= opts[:dy_ratio] if opts[:dy_ratio]
-        result[:w] += opts[:dw]       if opts[:dw]
-        result[:w] *= opts[:dw_ratio] if opts[:dw_ratio]
-        result[:h] += opts[:dh]       if opts[:dh]
-        result[:h] *= opts[:dh_ratio] if opts[:dh_ratio]
-        result.merge! opts[:merge]    if opts[:merge]
-        result[:row] = opts[:row]
-        result[:col] = opts[:col]
-  
-        result[:h] = result[:h].clamp 0
-        result[:w] = result[:w].clamp 0
-  
-        if $gtk.args.grid.name == :center
-          result[:x] -= 640
-          result[:y] -= 360
-        end
-  
-        result
-      end
-  
       def rect_center reference, target
         delta_x = (reference.w - target.w).fdiv 2
         delta_y = (reference.h - target.h).fdiv 2
-        [target.x - delta_x, target.y - delta_y, target.w, target.h]
-      end
-  
-      def rect_row index, h
-        @rect_cache[:row] ||= {}
-        @rect_cache[:row][index] ||= {}
-        return @rect_cache[:row][index][h] if @rect_cache[:row][index][h]
-        row_h = (device.grid_area.gutter * (h - 1)) +
-                (device.control_area.cell_size * h)
-  
-        row_h = row_h.to_i
-        row_h -= 1 if row_h.odd?
-  
-        row_y = (control_rect.y) +
-                (device.grid_area.gutter * index) +
-                (device.control_area.cell_size * index)
-  
-        row_y = row_y.to_i
-        row_y += 1 if row_y.odd? && (index + 1) > @device.grid_area.row_count.half
-        row_y += 1 if row_y.odd? && (index + 1) <= @device.grid_area.row_count.half
-  
-        row_y = device.h - row_y - row_h
-  
-        result = control_rect.merge y: row_y, h: row_h, center_y: (row_y + row_h.half)
-        @rect_cache[:row][index][h] = result
-        @rect_cache[:row][index][h]
-      end
-  
-      def rect_col index, w
-        @rect_cache[:col] ||= {}
-        @rect_cache[:col][index] ||= {}
-        return @rect_cache[:col][index][w] if @rect_cache[:col][index][w]
-        col_x = (control_rect.x) +
-                (device.grid_area.gutter * index) +
-                (device.control_area.cell_size * index)
-  
-        col_x = col_x.to_i
-        col_x -= 1 if col_x.odd? && (index + 1) < @device.grid_area.col_count.half
-        col_x += 1 if col_x.odd? && (index + 1) >= @device.grid_area.col_count.half
-  
-        col_w = (device.grid_area.gutter * (w - 1)) +
-                (device.control_area.cell_size * w)
-  
-        col_w = col_w.to_i
-        col_w -= 1 if col_w.odd?
-  
-        result = control_rect.merge x: col_x, w: col_w, center_x: (col_x + col_w.half)
-        @rect_cache[:col][index][w] = result
-        @rect_cache[:col][index][w]
-      end
-  
-      def device
-        @device
-      end
-  
-      def init_device w, h
-        @device      = Device.new
-        @device.w    = w
-        @device.h    = h
-        @device.name = "Device"
-        @device.aspect.w = (u_for_16x9 w, h)[:w]
-        @device.aspect.h = (u_for_16x9 w, h)[:h]
-        @device.aspect.u = (u_for_16x9 w, h)[:u]
-        @device.safe_area.w             = @device.aspect.u * 16
-        @device.safe_area.h             = @device.aspect.u * 9
-        @device.safe_area.margin.left   = ((@device.w - @device.safe_area.w).fdiv 2).floor
-        @device.safe_area.margin.right  = ((@device.w - @device.safe_area.w).fdiv 2).floor
-        @device.safe_area.margin.top    = ((@device.h - @device.safe_area.h).fdiv 2).floor
-        @device.safe_area.margin.bottom = ((@device.h - @device.safe_area.h).fdiv 2).floor
-        @device.grid_area.outer_gutter  = @device.w / 80
-        @device.grid_area.gutter        = @device.w / 160
-  
-        @device.grid_area.w = @device.safe_area.w - (@device.grid_area.outer_gutter * 2)
-        @device.grid_area.h = @device.safe_area.h - (@device.grid_area.outer_gutter * 2)
-  
-        @device.grid_area.margin.left   = ((@device.w - @device.grid_area.w).fdiv 2).floor
-        @device.grid_area.margin.right  = ((@device.w - @device.grid_area.w).fdiv 2).floor
-        @device.grid_area.margin.top    = ((@device.h - @device.grid_area.h).fdiv 2).floor
-        @device.grid_area.margin.bottom = ((@device.h - @device.grid_area.h).fdiv 2).floor
-  
-        @device.grid_area.col_count = 24
-        @device.grid_area.row_count = 12
-        @device.grid_area.cell_w = ((@device.aspect.w - (@device.grid_area.outer_gutter * 2)) - ((@device.grid_area.col_count - 1) * @device.grid_area.gutter)).fdiv @device.grid_area.col_count
-        @device.grid_area.cell_h = ((@device.aspect.h - (@device.grid_area.outer_gutter * 2)) - ((@device.grid_area.row_count - 1) * @device.grid_area.gutter)).fdiv @device.grid_area.row_count
-  
-        @device.control_area.cell_size = @device.grid_area.cell_w
-        @device.control_area.cell_size = @device.grid_area.cell_h if @device.grid_area.cell_h < @device.grid_area.cell_w && @device.grid_area.cell_h > 0
-        @device.control_area.cell_size = @device.control_area.cell_size.floor
-        @device.control_area.w = (@device.control_area.cell_size * @device.grid_area.col_count) + (@device.grid_area.gutter * (@device.grid_area.col_count - 1))
-        @device.control_area.h = (@device.control_area.cell_size * @device.grid_area.row_count) + (@device.grid_area.gutter * (@device.grid_area.row_count - 1))
-        @device.control_area.margin.left  = (@device.w - @device.control_area.w).fdiv 2
-        @device.control_area.margin.right  = (@device.w - @device.control_area.w).fdiv 2
-        @device.control_area.margin.top  = (@device.h - @device.control_area.h).fdiv 2
-        @device.control_area.margin.bottom  = (@device.h - @device.control_area.h).fdiv 2
-        @device
+        { x: target.x - delta_x, y: target.y - delta_y, w: reference.w, h: reference.h }
       end
   
       def debug_primitives opts = {}
-        @primitives ||= col_count.map_with_index do |col|
-                          row_count.map_with_index do |row|
+        row_count_rework = 12
+        col_count_rework = 24
+  
+        if @orientation == :portrait
+          row_count_rework = 24
+          col_count_rework = 12
+        end
+  
+        @debug_primitives ||= col_count_rework.map_with_index do |col|
+                          row_count_rework.map_with_index do |row|
                             cell   = rect row: row, col: col
                             center = Geometry.rect_center_point cell
                             [
-                              cell.merge(opts).border,
+                              cell.merge(opts).border!,
                               cell.merge(opts)
                                   .label!(x: center.x,
                                           y: center.y,
@@ -6990,12 +6694,22 @@ Follows is a source code listing for all files that have been open sourced. This
                             ]
                           end
                         end
-                        @primitives
+        @debug_primitives
       end
   
       def serialize
         {
-          device: @device.serialize,
+          w: @w,
+          h: @h,
+          ratio_w: @ratio_w,
+          ratio_h: @ratio_h,
+          orientation: @orientation,
+          gutter_left: @gutter_left,
+          gutter_right: @gutter_right,
+          gutter_top: @gutter_top,
+          gutter_bottom: @gutter_bottom,
+          cell_size: @cell_size,
+          gutter: @gutter
         }
       end
   
@@ -7008,11 +6722,8 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def reset
-        @primitives = nil
-        @rect_cache ||= {}
-        @rect_cache.clear
+        @debug_primitives = nil
       end
-  
     end
   end
 
@@ -7449,7 +7160,7 @@ Follows is a source code listing for all files that have been open sourced. This
       return max if max && self > max
       return self
     end
-    
+  
     def clamp_wrap min, max
       max, min = min, max if min > max
       range = max - min + 1
@@ -7685,7 +7396,17 @@ Follows is a source code listing for all files that have been open sourced. This
     #
     # @gtk
     def vector max_value = 1
+      log_once :consider_to_vector!, <<-S
+  * WARNGING: ~Numeric#vector~ is deprecated. Use ~Numeric#to_vector~.
+  ~Numeric#to_vector~ is more preformant and returns a ~Hash~ containing the keys ~x~ and ~y~ as opposed
+  to an ~Array~ of ~[x, y]~. Please note that you will lose the ability to destucture the values of a ~Hash~.
+  
+  S
       [vector_x(max_value), vector_y(max_value)]
+    end
+  
+    def to_vector max_value = 1
+      { x: vector_x(max_value), y: vector_y(max_value) }
     end
   
     # Returns the y component of a normal vector for a number that represents an angle in degrees.
@@ -8038,6 +7759,18 @@ Follows is a source code listing for all files that have been open sourced. This
   
     def sin_d
       Math.sin self.to_radians
+    end
+  
+    def tan
+      Math.tan self.to_radians
+    end
+  
+    def tan_d
+      Math.tan self.to_radians
+    end
+  
+    def tan_r
+      Math.tan self
     end
   
     def to_sf
@@ -8416,15 +8149,15 @@ Follows is a source code listing for all files that have been open sourced. This
         local_state
       end
   
-      def initialize local_ip_address
-        local_state.local_ip_address = local_ip_address
+      def initialize server_ip_address
+        local_state.server_ip_address = server_ip_address || ""
+        puts "* INFO: Remote Hotload Client server_available? #{server_available?}"
       end
   
       def tick
         return unless server_available?
-        return unless server_needed?
   
-        if should_tick? && server_needed? && !local_state.notified
+        if should_tick? && !local_state.notified
           if server_available?
             log_spam "* REMOTE HOTLOAD INFO: Hotload server found at #{get_server_ip_address}:9001."
           end
@@ -8458,19 +8191,12 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def get_server_ip_address
-        return local_state.ip_address if local_state.ip_address
-        local_state.ip_address ||= ((gtk.read_file 'app/server_ip_address.txt') || "").strip
-        local_state.ip_address
+        local_state.server_ip_address
       end
   
       def server_available?
-        return false if gtk.platform == 'Emscripten'
+        return false if $gtk.platform == 'Emscripten'
         get_server_ip_address.length != 0
-      end
-  
-      def server_needed?
-        return false if gtk.platform == 'Emscripten'
-        local_state.local_ip_address != get_server_ip_address
       end
   
       def tick_changes
@@ -9111,8 +8837,8 @@ Follows is a source code listing for all files that have been open sourced. This
         def check_framerate
           if @framerate_diagnostics_requested
             log "================================"
-            log framerate_get_diagnostics
             @framerate_diagnostics_requested = false
+            log framerate_get_diagnostics if args.inputs.keyboard.has_focus
           end
   
           if !@paused

@@ -1,0 +1,11 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=layout-portrait
+gametitle=Layouts and Portrait Mode
+version=1.0
+icon=sprites/icon.png
+hd=true
+highdpi=true
+allscreen=true
+allscreen_max_scale=400
+orientation=portrait

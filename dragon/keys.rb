@@ -6,11 +6,17 @@
 module GTK
   class Controller
     def left_hand
-      @left_hand  ||= { position: { x: 0, y: 0, z: 0 } }
+      @left_hand  ||= {
+        position: { x: 0, y: 0, z: 0 },
+        orientation: { x: 0, y: 0, z: 0 }
+      }
     end
 
     def right_hand
-      @right_hand ||= { position: { x: 0, y: 0, z: 0 } }
+      @right_hand ||= {
+        position: { x: 0, y: 0, z: 0 },
+        orientation: { x: 0, y: 0, z: 0 }
+      }
     end
 
     class Keys

@@ -4,208 +4,100 @@
 # layout.rb has been released under MIT (*only this file*).
 
 module GTK
-  class Margin
-    attr :left, :right, :top, :bottom
-
-    def initialize
-      @left   = 0
-      @right  = 0
-      @top    = 0
-      @bottom = 0
-    end
-
-    def serialize
-      {
-        left:   @left,
-        right:  @right,
-        top:    @top,
-        bottom: @bottom,
-      }
-    end
-
-    def inspect
-      serialize.to_s
-    end
-
-    def to_s
-      serialize.to_s
-    end
-  end
-
-  class SafeArea
-    attr :w, :h, :margin
-
-    def initialize
-      @w      = 0
-      @h      = 0
-      @margin = Margin.new
-    end
-
-    def serialize
-      {
-        w:      @w,
-        h:      @h,
-        margin: @margin.serialize
-      }
-    end
-
-    def inspect
-      serialize.to_s
-    end
-
-    def to_s
-      serialize.to_s
-    end
-  end
-
-  class GridArea
-    attr :w, :h, :margin, :gutter, :col_count, :row_count, :cell_w, :cell_h, :outer_gutter
-
-    def initialize
-      @w            = 0
-      @h            = 0
-      @gutter       = 0
-      @outer_gutter = 0
-      @col_count    = 0
-      @row_count    = 0
-      @margin       = Margin.new
-    end
-
-    def serialize
-      {
-        w:            @w,
-        h:            @h,
-        gutter:       @gutter,
-        outer_gutter: @outer_gutter,
-        col_count:    @col_count,
-        row_count:    @row_count,
-        margin:       @margin.serialize
-      }
-    end
-
-    def inspect
-      serialize.to_s
-    end
-
-    def to_s
-      serialize.to_s
-    end
-  end
-
-  class ControlArea
-    attr :cell_size, :w, :h, :margin
-
-    def initialize
-      @margin = Margin.new
-    end
-
-    def serialize
-      {
-        cell_size: @cell_size,
-        w:         @w,
-        h:         @h,
-        margin:    @margin.serialize,
-      }
-    end
-
-    def inspect
-      serialize.to_s
-    end
-
-    def to_s
-      serialize.to_s
-    end
-  end
-
-  class Device
-    attr :w, :h, :safe_area, :grid_area, :control_area, :name, :aspect
-
-    def initialize
-      @name         = ""
-      @w            = 0
-      @h            = 0
-      @safe_area    = SafeArea.new
-      @grid_area    = GridArea.new
-      @control_area = ControlArea.new
-      @aspect       = AspectRatio.new
-    end
-
-    def assert! result, message
-      return if result
-      raise message
-    end
-
-    def check_math!
-      assert! (@control_area.w + @control_area.margin.left + @control_area.margin.right) == @w, "Math for Width didn't pan out."
-      assert! (@control_area.h + @control_area.margin.top + @control_area.margin.bottom) == @h, "Math for Height didn't pan out."
-    end
-
-    def serialize
-      {
-        name:         @name,
-        w:            @w,
-        h:            @h,
-        aspect:       @aspect.serialize,
-        safe_area:    @safe_area.serialize,
-        grid_area:    @grid_area.serialize,
-        control_area: @control_area.serialize
-      }
-    end
-
-    def inspect
-      serialize.to_s
-    end
-
-    def to_s
-      serialize.to_s
-    end
-  end
-
-  class AspectRatio
-    attr :w, :h, :u
-
-    def initialize
-      @w = 0
-      @h = 0
-      @u = 0
-    end
-
-    def serialize
-      {
-        w: @w,
-        h: @h,
-        u: @u
-      }
-    end
-
-    def inspect
-      serialize.to_s
-    end
-
-    def to_s
-      serialize.to_s
-    end
-  end
-
   class Layout
-    attr :w, :h, :rect_cache
+    attr :w, :h, :ratio_w, :ratio_h, :orientation,
+         :gutter_left, :gutter_right, :gutter_top, :gutter_bottom,
+         :cell_size, :gutter
 
-    def initialize w, h
+    def initialize w, h, ratio_w, ratio_h, orientation
       @w = w
       @h = h
-      @rect_cache = {}
-      init_device @w, @h
+      @ratio_w = ratio_w
+      @ratio_h = ratio_h
+      @orientation = orientation
+
+      @gutter_left   = 20
+      @gutter_right  = 20
+      @gutter_top    = 52
+      @gutter_bottom = 52
+      @cell_size     = 48
+      @gutter        = 4
+      @row_count     = 12
+      @col_count     = 24
+
+      if @orientation == :portrait
+        @gutter_left   = 52
+        @gutter_right  = 52
+        @gutter_top    = 20
+        @gutter_bottom = 20
+        @cell_size     = 48
+        @gutter        = 4
+        @row_count     = 24
+        @col_count     = 12
+      end
     end
 
-    def u_for_16x9 w, h
-      u = (w.fdiv 16).floor
-      u = (h.fdiv 9).floor if (u * 9) > h
+    def rect *all_opts
+      opts = {}
 
-      {
-        u: u,
-        w: u * 16,
-        h: u * 9
+      if all_opts.length == 1
+        opts = all_opts.first
+      else
+        opts = {}
+        all_opts.each do |o|
+          opts.merge! o
+        end
+      end
+
+      opts_col        = opts[:col] || 0
+      opts_row        = opts[:row] || 0
+      opts_row        = row_max_index - opts[:row_from_bottom] if opts[:row_from_bottom]
+      opts_col        = col_max_index - opts[:col_from_right] if opts[:col_from_right]
+      opts_w          = opts[:w]   || 1
+      opts_h          = opts[:h]   || 1
+      opts_max_height = opts[:max_height] || opts_h
+      opts_max_width  = opts[:max_width] || opts_w
+      opts_dx         = opts[:dx] || 0
+      opts_dy         = opts[:dy] || 0
+
+      opts_h = opts[:max_height] if opts_h > opts_max_height
+      opts_w = opts[:max_width]  if opts_w > opts_max_width
+
+      rect_x = @gutter_left + @gutter * opts_col + @cell_size * opts_col
+      rect_y = @h - @gutter_top - (@gutter * opts_row) - (@cell_size * opts_row) - (@cell_size * opts_h) - (@gutter * opts_h - 1)
+      rect_w = @gutter * (opts_w - 1) + (@cell_size * opts_w)
+      rect_h = @gutter * (opts_h - 1) + (@cell_size * opts_h)
+      rect_x += opts_dx
+      rect_y += opts_dy
+
+      if opts[:include_row_gutter]
+        rect_x -= @gutter
+        rect_w += @gutter * 2
+      end
+
+      if opts[:include_col_gutter]
+        rect_y -= @gutter
+        rect_h += @gutter * 2
+      end
+
+      rect_w = 0 if rect_w < 0
+      rect_h = 0 if rect_h < 0
+
+      center_x = rect_x + rect_w / 2
+      center_y = rect_y + rect_h / 2
+
+      result = {
+        x: rect_x,
+        y: rect_y,
+        w: rect_w,
+        h: rect_h,
+        center_x: center_x,
+        center_y: center_y,
+        center: { x: center_x, y: center_y }
       }
+
+      result.merge! opts[:merge] if opts[:merge]
+      result
     end
 
     def font_relative_size_enum size_enum
@@ -267,14 +159,14 @@ module GTK
     end
 
     def control_rect
-      @control_rect ||= { x: device.control_area.margin.left,
-                          y: device.control_area.margin.top,
-                          w: device.control_area.w,
-                          h: device.control_area.h }
+      @control_rect ||= { x: @gutter_left,
+                          y: @gutter_bottom,
+                          w: @w - @gutter_left - @gutter_right,
+                          h: @h - @gutter_top - @gutter_buttom }
     end
 
     def row_count
-      device.grid_area.row_count
+      @row_count
     end
 
     def row_max_index
@@ -282,7 +174,7 @@ module GTK
     end
 
     def col_count
-      device.grid_area.col_count
+      @col_count
     end
 
     def col_max_index
@@ -290,23 +182,23 @@ module GTK
     end
 
     def gutter_height
-      device.grid_area.gutter
+      @gutter
     end
 
     def gutter_width
-      device.grid_area.gutter
+      @gutter
     end
 
     def outer_gutter
-      device.grid_area.outer_gutter
+      @gutter_left
     end
 
     def cell_height
-      device.control_area.cell_size
+      @cell_size
     end
 
     def cell_width
-      device.control_area.cell_size
+      @cell_size
     end
 
     def rect_defaults
@@ -413,199 +305,27 @@ module GTK
       r
     end
 
-    def rect *all_opts
-      if all_opts.length == 1
-        opts = all_opts.first
-      else
-        opts = {}
-        all_opts.each do |o|
-          opts.merge! o
-        end
-      end
-
-      opts.row = row_max_index - opts.row_from_bottom if opts.row_from_bottom
-      opts.col = col_max_index - opts.col_from_right if opts.col_from_right
-      opts = rect_defaults.merge opts
-      opts.row ||= 0
-      opts.col ||= 0
-
-      result = send opts[:rect]
-      if opts[:row] && opts[:col] && opts[:w] && opts[:h]
-        col = rect_col opts[:col], opts[:w]
-        row = rect_row opts[:row], opts[:h]
-        result = control_rect.merge x: col.x,
-                                    y: row.y,
-                                    w: col.w,
-                                    h: row.h,
-                                    center_x: col.center_x,
-                                    center_y: row.center_y
-      elsif opts[:row] && !opts[:col]
-        result = rect_row opts[:row], opts[:h]
-      elsif !opts[:row] && opts[:col]
-        result = rect_col opts[:col], opts[:w]
-      else
-        raise "LayoutTheory::rect unable to process opts #{opts}."
-      end
-
-      if opts[:max_height] && opts[:max_height] >= 0
-        if result[:h] > opts[:max_height]
-          delta = (result[:h] - opts[:max_height]) * 2
-          result[:y] += delta
-          result[:h] = opts[:max_height]
-        end
-      end
-
-      if opts[:max_width] && opts[:max_width] >= 0
-        if result[:w] > opts[:max_width]
-          delta = (result[:w] - opts[:max_width]) * 2
-          result[:x] += delta
-          result[:w] = opts[:max_width]
-        end
-      end
-
-      result[:x] += opts[:dx]
-      result[:y] += opts[:dy]
-
-      if opts[:include_row_gutter]
-        result[:x] -= device.grid_area.gutter
-        result[:w] += device.grid_area.gutter * 2
-      end
-
-      if opts[:include_col_gutter]
-        result[:y] -= device.grid_area.gutter
-        result[:h] += device.grid_area.gutter * 2
-      end
-
-      result[:x] += opts[:dx]       if opts[:dx]
-      result[:x] *= opts[:dx_ratio] if opts[:dx_ratio]
-      result[:y] += opts[:dy]       if opts[:dy]
-      result[:y] *= opts[:dy_ratio] if opts[:dy_ratio]
-      result[:w] += opts[:dw]       if opts[:dw]
-      result[:w] *= opts[:dw_ratio] if opts[:dw_ratio]
-      result[:h] += opts[:dh]       if opts[:dh]
-      result[:h] *= opts[:dh_ratio] if opts[:dh_ratio]
-      result.merge! opts[:merge]    if opts[:merge]
-      result[:row] = opts[:row]
-      result[:col] = opts[:col]
-
-      result[:h] = result[:h].clamp 0
-      result[:w] = result[:w].clamp 0
-
-      if $gtk.args.grid.name == :center
-        result[:x] -= 640
-        result[:y] -= 360
-      end
-
-      result
-    end
-
     def rect_center reference, target
       delta_x = (reference.w - target.w).fdiv 2
       delta_y = (reference.h - target.h).fdiv 2
-      [target.x - delta_x, target.y - delta_y, target.w, target.h]
-    end
-
-    def rect_row index, h
-      @rect_cache[:row] ||= {}
-      @rect_cache[:row][index] ||= {}
-      return @rect_cache[:row][index][h] if @rect_cache[:row][index][h]
-      row_h = (device.grid_area.gutter * (h - 1)) +
-              (device.control_area.cell_size * h)
-
-      row_h = row_h.to_i
-      row_h -= 1 if row_h.odd?
-
-      row_y = (control_rect.y) +
-              (device.grid_area.gutter * index) +
-              (device.control_area.cell_size * index)
-
-      row_y = row_y.to_i
-      row_y += 1 if row_y.odd? && (index + 1) > @device.grid_area.row_count.half
-      row_y += 1 if row_y.odd? && (index + 1) <= @device.grid_area.row_count.half
-
-      row_y = device.h - row_y - row_h
-
-      result = control_rect.merge y: row_y, h: row_h, center_y: (row_y + row_h.half)
-      @rect_cache[:row][index][h] = result
-      @rect_cache[:row][index][h]
-    end
-
-    def rect_col index, w
-      @rect_cache[:col] ||= {}
-      @rect_cache[:col][index] ||= {}
-      return @rect_cache[:col][index][w] if @rect_cache[:col][index][w]
-      col_x = (control_rect.x) +
-              (device.grid_area.gutter * index) +
-              (device.control_area.cell_size * index)
-
-      col_x = col_x.to_i
-      col_x -= 1 if col_x.odd? && (index + 1) < @device.grid_area.col_count.half
-      col_x += 1 if col_x.odd? && (index + 1) >= @device.grid_area.col_count.half
-
-      col_w = (device.grid_area.gutter * (w - 1)) +
-              (device.control_area.cell_size * w)
-
-      col_w = col_w.to_i
-      col_w -= 1 if col_w.odd?
-
-      result = control_rect.merge x: col_x, w: col_w, center_x: (col_x + col_w.half)
-      @rect_cache[:col][index][w] = result
-      @rect_cache[:col][index][w]
-    end
-
-    def device
-      @device
-    end
-
-    def init_device w, h
-      @device      = Device.new
-      @device.w    = w
-      @device.h    = h
-      @device.name = "Device"
-      @device.aspect.w = (u_for_16x9 w, h)[:w]
-      @device.aspect.h = (u_for_16x9 w, h)[:h]
-      @device.aspect.u = (u_for_16x9 w, h)[:u]
-      @device.safe_area.w             = @device.aspect.u * 16
-      @device.safe_area.h             = @device.aspect.u * 9
-      @device.safe_area.margin.left   = ((@device.w - @device.safe_area.w).fdiv 2).floor
-      @device.safe_area.margin.right  = ((@device.w - @device.safe_area.w).fdiv 2).floor
-      @device.safe_area.margin.top    = ((@device.h - @device.safe_area.h).fdiv 2).floor
-      @device.safe_area.margin.bottom = ((@device.h - @device.safe_area.h).fdiv 2).floor
-      @device.grid_area.outer_gutter  = @device.w / 80
-      @device.grid_area.gutter        = @device.w / 160
-
-      @device.grid_area.w = @device.safe_area.w - (@device.grid_area.outer_gutter * 2)
-      @device.grid_area.h = @device.safe_area.h - (@device.grid_area.outer_gutter * 2)
-
-      @device.grid_area.margin.left   = ((@device.w - @device.grid_area.w).fdiv 2).floor
-      @device.grid_area.margin.right  = ((@device.w - @device.grid_area.w).fdiv 2).floor
-      @device.grid_area.margin.top    = ((@device.h - @device.grid_area.h).fdiv 2).floor
-      @device.grid_area.margin.bottom = ((@device.h - @device.grid_area.h).fdiv 2).floor
-
-      @device.grid_area.col_count = 24
-      @device.grid_area.row_count = 12
-      @device.grid_area.cell_w = ((@device.aspect.w - (@device.grid_area.outer_gutter * 2)) - ((@device.grid_area.col_count - 1) * @device.grid_area.gutter)).fdiv @device.grid_area.col_count
-      @device.grid_area.cell_h = ((@device.aspect.h - (@device.grid_area.outer_gutter * 2)) - ((@device.grid_area.row_count - 1) * @device.grid_area.gutter)).fdiv @device.grid_area.row_count
-
-      @device.control_area.cell_size = @device.grid_area.cell_w
-      @device.control_area.cell_size = @device.grid_area.cell_h if @device.grid_area.cell_h < @device.grid_area.cell_w && @device.grid_area.cell_h > 0
-      @device.control_area.cell_size = @device.control_area.cell_size.floor
-      @device.control_area.w = (@device.control_area.cell_size * @device.grid_area.col_count) + (@device.grid_area.gutter * (@device.grid_area.col_count - 1))
-      @device.control_area.h = (@device.control_area.cell_size * @device.grid_area.row_count) + (@device.grid_area.gutter * (@device.grid_area.row_count - 1))
-      @device.control_area.margin.left  = (@device.w - @device.control_area.w).fdiv 2
-      @device.control_area.margin.right  = (@device.w - @device.control_area.w).fdiv 2
-      @device.control_area.margin.top  = (@device.h - @device.control_area.h).fdiv 2
-      @device.control_area.margin.bottom  = (@device.h - @device.control_area.h).fdiv 2
-      @device
+      { x: target.x - delta_x, y: target.y - delta_y, w: reference.w, h: reference.h }
     end
 
     def debug_primitives opts = {}
-      @primitives ||= col_count.map_with_index do |col|
-                        row_count.map_with_index do |row|
+      row_count_rework = 12
+      col_count_rework = 24
+
+      if @orientation == :portrait
+        row_count_rework = 24
+        col_count_rework = 12
+      end
+
+      @debug_primitives ||= col_count_rework.map_with_index do |col|
+                        row_count_rework.map_with_index do |row|
                           cell   = rect row: row, col: col
                           center = Geometry.rect_center_point cell
                           [
-                            cell.merge(opts).border,
+                            cell.merge(opts).border!,
                             cell.merge(opts)
                                 .label!(x: center.x,
                                         y: center.y,
@@ -616,12 +336,22 @@ module GTK
                           ]
                         end
                       end
-                      @primitives
+      @debug_primitives
     end
 
     def serialize
       {
-        device: @device.serialize,
+        w: @w,
+        h: @h,
+        ratio_w: @ratio_w,
+        ratio_h: @ratio_h,
+        orientation: @orientation,
+        gutter_left: @gutter_left,
+        gutter_right: @gutter_right,
+        gutter_top: @gutter_top,
+        gutter_bottom: @gutter_bottom,
+        cell_size: @cell_size,
+        gutter: @gutter
       }
     end
 
@@ -634,10 +364,7 @@ module GTK
     end
 
     def reset
-      @primitives = nil
-      @rect_cache ||= {}
-      @rect_cache.clear
+      @debug_primitives = nil
     end
-
   end
 end

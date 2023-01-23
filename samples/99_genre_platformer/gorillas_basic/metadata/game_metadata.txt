@@ -1,6 +1,6 @@
 devid=dragonruby
 devtitle=DragonRuby LLC
-gameid=basicgorillas
-gametitle=Basic Gorillas
-version=1.1
-icon=sprites/left-0.png
+gameid=sample-app
+gametitle=Sample App
+version=1.0
+icon=sprites/icon.png

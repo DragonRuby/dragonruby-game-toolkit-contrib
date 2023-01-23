@@ -56,8 +56,7 @@ class IOSWizard < Wizard
       :create_payload_directory_dev,
 
       :create_payload,
-      :code_sign_payload,
-
+      :code_sign_binary,
       :create_ipa,
       :deploy
     ]
@@ -85,8 +84,7 @@ class IOSWizard < Wizard
       :create_payload_directory_prod,
 
       :create_payload,
-      :code_sign_payload,
-
+      :code_sign_binary,
       :create_ipa,
       :print_publish_help
     ]
@@ -110,10 +108,11 @@ class IOSWizard < Wizard
   def start opts = nil
     @opts = opts || {}
 
-    if !(@opts.is_a? Hash) || !($gtk.args.fn.eq_any? @opts[:env], :dev, :prod)
+    if !(@opts.is_a? Hash) || !($gtk.args.fn.eq_any? @opts[:env], :dev, :prod, :hotload)
       raise WizardException.new(
               "* $wizards.ios.start needs to be provided an environment option.",
-              "** For development builds type: $wizards.ios.start env: :dev",
+              "** For a development with remote hotloading enabled, build type: $wizards.ios.start env: :hotload",
+              "** For a development build type: $wizards.ios.start env: :dev",
               "** For production builds type: $wizards.ios.start env: :prod"
             )
     end
@@ -128,8 +127,12 @@ class IOSWizard < Wizard
     log_info "Starting iOS Wizard so we can deploy to your device."
     @start_at = Kernel.global_tick_count
     steps.each do |m|
+      before_step = "before_#{m}".to_sym
+      after_step = "after_#{m}".to_sym
+      send before_step if respond_to? before_step
       log_info "Running step ~:#{m}~."
       result = (send m) || :success if @wizard_status[m][:result] != :success
+      send after_step if respond_to? after_step
       @wizard_status[m][:result] = result
       log_info "Running step ~:#{m}~ complete."
     end
@@ -388,7 +391,7 @@ S
   def check_for_device
     log_info "Looking for device."
 
-    if !cli_app_exist?(idevice_id_cli_app)
+    if !cli_app_exist?(idevice_id_path)
       raise WizardException.new(
          "* It doesn't look like you have the libimobiledevice iOS protocol library installed.",
          "** 1. Open Terminal.",
@@ -428,7 +431,15 @@ S
     log_info "I will be using certificate: '#{@certificate_name}'."
   end
 
-  def idevice_id_cli_app
+  def codesign_allocate_path
+    "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate"
+  end
+
+  def codesign_path
+    "/usr/bin/codesign"
+  end
+
+  def idevice_id_path
     "idevice_id"
   end
 
@@ -494,7 +505,7 @@ XML
     @entitlement_plist_written = true
   end
 
-  def code_sign_payload
+  def code_sign_binary
     log_info "Signing app with #{@certificate_name}."
 
     sh "xattr -cr \"#{tmp_directory}/ipa_root/Payload/#{@app_name}.app\""
@@ -506,29 +517,25 @@ XML
     @code_sign_completed = true
   end
 
+  def __get_plist_orientation_value__
+    orientation_string = "UIInterfaceOrientationLandscapeRight"
+
+    if $gtk.orientation == :portrait
+      orientation_string = "UIInterfaceOrientationPortrait"
+    end
+
+    orientation_string
+  end
+
   def development_write_info_plist
     log_info "Adding Info.plist."
+
 
     info_plist_string = <<-XML
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-        <key>NSAppTransportSecurity</key>
-        <dict>
-                <key>NSAllowsArbitraryLoads</key>
-                <true/>
-                <key>NSExceptionDomains</key>
-                <dict>
-                        <key>google.com</key>
-                        <dict>
-                                <key>NSExceptionAllowsInsecureHTTPLoads</key>
-                                <true/>
-                                <key>NSIncludesSubdomains</key>
-                                <true/>
-                        </dict>
-                </dict>
-        </dict>
         <key>BuildMachineOSBuild</key>
         <string>20D91</string>
         <key>CFBundleDevelopmentRegion</key>
@@ -592,7 +599,7 @@ XML
         <key>DTPlatformName</key>
         <string>iphoneos</string>
         <key>DTPlatformVersion</key>
-        <string>14.4</string>
+        <string>11.0</string>
         <key>DTSDKBuild</key>
         <string>18D46</string>
         <key>DTSDKName</key>
@@ -602,7 +609,7 @@ XML
         <key>DTXcodeBuild</key>
         <string>12D4e</string>
         <key>MinimumOSVersion</key>
-        <string>14.4</string>
+        <string>11.0</string>
         <key>UIAppFonts</key>
         <array/>
         <key>UIBackgroundModes</key>
@@ -611,39 +618,6 @@ XML
         <array>
                 <integer>1</integer>
                 <integer>2</integer>
-        </array>
-        <key>UILaunchImages</key>
-        <array>
-                <dict>
-                        <key>UILaunchImageMinimumOSVersion</key>
-                        <string>7.0</string>
-                        <key>UILaunchImageName</key>
-                        <string>Default-568h@2x</string>
-                        <key>UILaunchImageOrientation</key>
-                        <string>Portrait</string>
-                        <key>UILaunchImageSize</key>
-                        <string>{320, 568}</string>
-                </dict>
-                <dict>
-                        <key>UILaunchImageMinimumOSVersion</key>
-                        <string>7.0</string>
-                        <key>UILaunchImageName</key>
-                        <string>Default-667h@2x</string>
-                        <key>UILaunchImageOrientation</key>
-                        <string>Portrait</string>
-                        <key>UILaunchImageSize</key>
-                        <string>{375, 667}</string>
-                </dict>
-                <dict>
-                        <key>UILaunchImageMinimumOSVersion</key>
-                        <string>7.0</string>
-                        <key>UILaunchImageName</key>
-                        <string>Default-736h@3x</string>
-                        <key>UILaunchImageOrientation</key>
-                        <string>Portrait</string>
-                        <key>UILaunchImageSize</key>
-                        <string>{414, 736}</string>
-                </dict>
         </array>
         <key>UILaunchStoryboardName</key>
         <string>SimpleSplash</string>
@@ -657,7 +631,7 @@ XML
         <string>UIStatusBarStyleDefault</string>
         <key>UISupportedInterfaceOrientations</key>
         <array>
-                <string>UIInterfaceOrientationLandscapeRight</string>
+                <string>#{__get_plist_orientation_value__}</string>
         </array>
 </dict>
 </plist>
@@ -756,7 +730,7 @@ XML
         <key>DTXcodeBuild</key>
         <string>12D4e</string>
         <key>MinimumOSVersion</key>
-        <string>14.4</string>
+        <string>11.0</string>
         <key>UIAppFonts</key>
         <array/>
         <key>UIBackgroundModes</key>
@@ -765,39 +739,6 @@ XML
         <array>
                 <integer>1</integer>
                 <integer>2</integer>
-        </array>
-        <key>UILaunchImages</key>
-        <array>
-                <dict>
-                        <key>UILaunchImageMinimumOSVersion</key>
-                        <string>7.0</string>
-                        <key>UILaunchImageName</key>
-                        <string>Default-568h@2x</string>
-                        <key>UILaunchImageOrientation</key>
-                        <string>Portrait</string>
-                        <key>UILaunchImageSize</key>
-                        <string>{320, 568}</string>
-                </dict>
-                <dict>
-                        <key>UILaunchImageMinimumOSVersion</key>
-                        <string>7.0</string>
-                        <key>UILaunchImageName</key>
-                        <string>Default-667h@2x</string>
-                        <key>UILaunchImageOrientation</key>
-                        <string>Portrait</string>
-                        <key>UILaunchImageSize</key>
-                        <string>{375, 667}</string>
-                </dict>
-                <dict>
-                        <key>UILaunchImageMinimumOSVersion</key>
-                        <string>7.0</string>
-                        <key>UILaunchImageName</key>
-                        <string>Default-736h@3x</string>
-                        <key>UILaunchImageOrientation</key>
-                        <string>Portrait</string>
-                        <key>UILaunchImageSize</key>
-                        <string>{414, 736}</string>
-                </dict>
         </array>
         <key>UILaunchStoryboardName</key>
         <string>SimpleSplash</string>
@@ -811,7 +752,7 @@ XML
         <string>UIStatusBarStyleDefault</string>
         <key>UISupportedInterfaceOrientations</key>
         <array>
-                <string>UIInterfaceOrientationLandscapeRight</string>
+                <string>#{__get_plist_orientation_value__}</string>
         </array>
 </dict>
 </plist>
@@ -881,13 +822,22 @@ XML
     sh %Q[chmod -R 755 "#{tmp_directory}/ipa_root/Payload"]
   end
 
-  def create_payload_directory_dev
-    # write dev machine's ip address for hotloading
-    $gtk.write_file "app/server_ip_address.txt", $gtk.ffi_misc.get_local_ip_address.strip
+  def write_server_ip_address
+    sh %Q[mkdir -p "#{app_path}/metadata/"]
+    sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip}]
+    sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip} > "#{app_path}/metadata/DRAGONRUBY_REMOTE_HOTLOAD"]
+  end
 
+  def create_payload_directory_dev
     embed_mobileprovision
     clear_payload_directory
     stage_app
+    # write dev machine's ip address for hotloading
+    write_server_ip_address if @opts[:env] == :hotload
+
+    # production build marker
+    sh %Q[mkdir -p "#{app_path}/metadata/"]
+    sh %Q[touch "#{app_path}/metadata/DRAGONRUBY_PRODUCTION_BUILD"]
   end
 
   def create_payload_directory_prod
@@ -952,13 +902,13 @@ SCRIPT
 
   def compile_icons
     cmd = <<-S
-"/Applications/Xcode.app/Contents/Developer/usr/bin/actool" --output-format human-readable-text \
-                                                            --notices --warnings --platform iphoneos \
-                                                            --minimum-deployment-target 10.3 \
-                                                            --target-device iphone \
-                                                            --target-device ipad  --app-icon 'AppIcon' \
-                                                            --output-partial-info-plist '#{app_path}/AssetCatalog-Info.plist' \
-                                                            --compress-pngs --compile "#{app_path}" \
+"/Applications/Xcode.app/Contents/Developer/usr/bin/actool" --output-format human-readable-text \\
+                                                            --notices --warnings --platform iphoneos \\
+                                                            --minimum-deployment-target 10.3 \\
+                                                            --target-device iphone \\
+                                                            --target-device ipad  --app-icon 'AppIcon' \\
+                                                            --output-partial-info-plist '#{app_path}/AssetCatalog-Info.plist' \\
+                                                            --compress-pngs --compile "#{app_path}" \\
                                                             "#{app_path}/Assets.xcassets"
 S
     sh cmd
@@ -974,6 +924,10 @@ S
     start env: @opts[:env], version: version
   end
 
+  def app_name
+    @app_name
+  end
+
   def app_version
     log_info "Attempting to retrieve App Version from metadata/ios_metadata.txt."
     ios_version_number = (ios_metadata.version || "").strip
@@ -987,5 +941,9 @@ S
   def determine_app_version
     @app_version = app_version
     return if @app_version
+  end
+
+  def certificate_name
+    @certificate_name
   end
 end

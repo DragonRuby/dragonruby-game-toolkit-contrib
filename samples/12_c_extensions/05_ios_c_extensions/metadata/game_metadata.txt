@@ -1,0 +1,9 @@
+devid=DEVID
+devtitle=DEVNAME
+gameid=ITCHIO-GAMEID
+gametitle=GAMENAME
+version=1.0
+icon=metadata/icon.png
+packageid=ANDROID-PACKAGE-ID
+hd=true
+highdpi=true

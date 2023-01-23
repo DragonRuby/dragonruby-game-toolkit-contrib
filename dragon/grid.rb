@@ -6,6 +6,7 @@
 module GTK
   class Grid
     include Serialize
+    include GridDeprecated
     SCREEN_Y_DIRECTION = -1.0
 
     # The coordinate system currently in use.
@@ -66,17 +67,21 @@ module GTK
          :allscreen_bottom,
          :allscreen_width,
          :allscreen_height,
-         :render_width,
-         :render_height,
-         :render_scale,
-         :render_scale_enum,
          :allscreen_offset_x,
-         :allscreen_offset_y
+         :allscreen_offset_y,
+         :native_width,
+         :native_height,
+         :native_scale,
+         :native_scale_enum
 
     def initialize runtime
       @runtime = runtime
       @ffi_draw = runtime.ffi_draw
       origin_bottom_left!
+    end
+
+    def orientation
+      @runtime.orientation
     end
 
     # Returns `x` plus the origin "x".
@@ -135,17 +140,16 @@ module GTK
       @rect   = [@left, @bottom, @runtime.logical_width, @runtime.logical_height].rect
       @center = [@center_x, @center_y].point
       @ffi_draw.set_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
-      @device_left     ||= @left
-      @device_right    ||= @right
-      @device_top      ||= @top
-      @device_bottom   ||= @bottom
-      @device_width    ||= @runtime.logical_width
-      @device_height   ||= @runtime.logical_height
-      @render_width    ||= @runtime.logical_width
-      @render_height   ||= @runtime.logical_height
-      @render_scale    ||= 1.0
-      @render_offset_x ||= 0
-      @render_offset_y ||= 0
+      @device_left       ||= @left
+      @device_right      ||= @right
+      @device_top        ||= @top
+      @device_bottom     ||= @bottom
+      @device_width      ||= @runtime.logical_width
+      @device_height     ||= @runtime.logical_height
+      @native_width      ||= @runtime.logical_width
+      @native_height     ||= @runtime.logical_height
+      @native_scale      ||= 1.0
+      @native_scale_enum ||= 1.0
     end
 
     # Sets the rendering coordinate system to have its origin in the center.

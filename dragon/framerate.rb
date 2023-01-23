@@ -23,8 +23,8 @@ module GTK
       def check_framerate
         if @framerate_diagnostics_requested
           log "================================"
-          log framerate_get_diagnostics
           @framerate_diagnostics_requested = false
+          log framerate_get_diagnostics if args.inputs.keyboard.has_focus
         end
 
         if !@paused

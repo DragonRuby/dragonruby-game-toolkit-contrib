@@ -15,15 +15,15 @@ module GTK
       local_state
     end
 
-    def initialize local_ip_address
-      local_state.local_ip_address = local_ip_address
+    def initialize server_ip_address
+      local_state.server_ip_address = server_ip_address || ""
+      puts "* INFO: Remote Hotload Client server_available? #{server_available?}"
     end
 
     def tick
       return unless server_available?
-      return unless server_needed?
 
-      if should_tick? && server_needed? && !local_state.notified
+      if should_tick? && !local_state.notified
         if server_available?
           log_spam "* REMOTE HOTLOAD INFO: Hotload server found at #{get_server_ip_address}:9001."
         end
@@ -57,19 +57,12 @@ module GTK
     end
 
     def get_server_ip_address
-      return local_state.ip_address if local_state.ip_address
-      local_state.ip_address ||= ((gtk.read_file 'app/server_ip_address.txt') || "").strip
-      local_state.ip_address
+      local_state.server_ip_address
     end
 
     def server_available?
-      return false if gtk.platform == 'Emscripten'
+      return false if $gtk.platform == 'Emscripten'
       get_server_ip_address.length != 0
-    end
-
-    def server_needed?
-      return false if gtk.platform == 'Emscripten'
-      local_state.local_ip_address != get_server_ip_address
     end
 
     def tick_changes

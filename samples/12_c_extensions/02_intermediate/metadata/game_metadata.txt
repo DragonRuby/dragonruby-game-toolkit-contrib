@@ -1,5 +1,6 @@
 devid=dragonruby
 devtitle=DragonRuby LLC
-gameid=cintermediate
-gametitle=C Extensions Intermediate
+gameid=sample-app
+gametitle=Sample App
 version=1.0
+icon=sprites/icon.png

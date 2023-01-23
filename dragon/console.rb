@@ -585,13 +585,22 @@ S
       return visible?
     end
 
+    def logo_final_y
+      @logo_final_y = $gtk.args.layout.rect(row: 0, h: 1).center_y
+    end
+
     def render args
       return if !@toggled_at
       return if slide_progress == 0
 
       @bottom = top - (h * slide_progress)
       args.outputs.reserved << [left, @bottom, w, h, *@background_color.mult_alpha(slide_progress)].solid
-      args.outputs.reserved << [right.shift_left(110), @bottom.shift_up(630), 100, 100, @logo, 0, (80.0 * slide_progress).to_i].sprite
+      args.outputs.reserved << { x: 20,
+                                 y: @bottom.shift_up(logo_final_y - 44),
+                                 w: 100,
+                                 h: 100,
+                                 path: @logo,
+                                 a: (80.0 * slide_progress).to_i }
 
       y = @bottom + 2  # just give us a little padding at the bottom.
       prompt.render args, x: left.shift_right(10), y: y
