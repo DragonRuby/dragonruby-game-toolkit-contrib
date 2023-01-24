@@ -755,6 +755,18 @@ class Float
   def cos_d
     Math.cos self.to_radians
   end
+
+  def tan
+    Math.tan self.to_radians
+  end
+
+  def tan_d
+    Math.tan self.to_radians
+  end
+
+  def tan_r
+    Math.tan self
+  end
 end
 
 class Integer
