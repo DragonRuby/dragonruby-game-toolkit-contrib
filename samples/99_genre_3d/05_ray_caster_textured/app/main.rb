@@ -17,7 +17,7 @@ def tick args
   defaults args
   calc args
   render args
-  args.outputs.sprites << { x: 0, y: 0, w: 1280 * 2.66, h: 720 * 2.25, path: :screen }
+  args.outputs.sprites << { x: 0, y: 0, w: 1280 * 1.5, h: 720 * 1.2, path: :screen }
   args.outputs.labels  << { x: 30, y: 30.from_top, text: "FPS: #{args.gtk.current_framerate.to_sf} X: #{args.state.player.x} Y: #{args.state.player.y}" }
 end
 
@@ -113,9 +113,9 @@ end
 def render args
   # Render the sky
   args.outputs[:screen].sprites << { x: 0,
-                                     y: 160,
-                                     w: 480,
-                                     h: 160,
+                                     y: 320,
+                                     w: 960,
+                                     h: 320,
                                      path: :pixel,
                                      r: 89,
                                      g: 125,
@@ -124,8 +124,8 @@ def render args
   # Render the floor
   args.outputs[:screen].sprites << { x: 0,
                                      y: 0,
-                                     w: 480,
-                                     h: 160,
+                                     w: 960,
+                                     h: 320,
                                      path: :pixel,
                                      r: 117,
                                      g: 113,
@@ -240,9 +240,9 @@ def render args
     ca = (args.state.player.angle - ra) % 360
     dist = dist * ca.cos_d
     # Determine the render height for the strip proportional to the display height
-    line_h = (args.state.stage.sz * 320) / (dist)
+    line_h = (args.state.stage.sz * 640) / (dist)
 
-    line_off = 160 - (line_h >> 1)
+    line_off = 320 - (line_h >> 1)
 
     # Tint darker further away
     tint = 1.0 - (dist / 500)
@@ -255,9 +255,9 @@ def render args
     tx = 63 - tx if (ra > 90 && ra < 270 && dis_v < dis_h)
 
     sprites_to_draw << {
-      x: r * 4,
+      x: r * 8,
       y: line_off,
-      w: 4,
+      w: 8,
       h: line_h,
       path: "sprites/wall_#{wall_texture}.png",
       source_x: tx,
@@ -292,9 +292,9 @@ def render args
       # The next 5 lines determine the screen x and y of (the center of) the enemy, and a scale
       next if dy == 0 # Avoid invalid Infinity/NaN calculations if the projected Y is 0
       ody = dy
-      dx = dx*480/dy + 240
-      dy = 32/dy + 32
-      scale = 64*180/(ody / 2)
+      dx = dx*640/(dy) + 480
+      dy = 32/dy + 192
+      scale = 64*360/(ody / 2)
 
       tint = 1.0 - (distance_to_enemy / 500)
 
@@ -304,15 +304,15 @@ def render args
 
       # Since dx stores the center x of the enemy on-screen, we start half the scale of the enemy to the left of dx
       x = dx - scale/2
-      next if (x > 480 or (dx + scale/2 <= 0)) # Skip rendering if the X position is entirely off screen
+      next if (x > 960 or (dx + scale/2 <= 0)) # Skip rendering if the X position is entirely off screen
       strip = 0                    # Keep track of the number of strips we've drawn
-      strip_width = scale / 32     # Draw the sprite in 32 strips
-      sample_width = 64/32         # For each strip we will sample 1/32 of sprite image, here we assume 64x64 sprites
+      strip_width = scale / 64     # Draw the sprite in 64 strips
+      sample_width = 1             # For each strip we will sample 1/64 of sprite image, here we assume 64x64 sprites
 
       until x >= dx + scale/2 do
-          if x > 0 && x < 480
+          if x > 0 && x < 960
               # Here we get the distance to the wall for this strip on the screen
-              wall_depth = depths[(x.to_i/4)]
+              wall_depth = depths[(x.to_i/8)]
               if ((distance_to_enemy < wall_depth))
                   sprites_to_draw << {
                       x: x,
