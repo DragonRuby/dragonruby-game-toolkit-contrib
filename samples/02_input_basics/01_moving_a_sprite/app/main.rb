@@ -14,17 +14,10 @@ def tick args
                             path: 'sprites/square/green.png' }
 
   # move the player around using the keyboard
-  if args.inputs.up
-    args.state.player.y += 10
-  elsif args.inputs.down
-    args.state.player.y -= 10
-  end
-
-  if args.inputs.left
-    args.state.player.x -= 10
-  elsif args.inputs.right
-    args.state.player.x += 10
-  end
+  args.state.player.y += 10 if args.inputs.up
+  args.state.player.y -= 10 if args.inputs.down
+  args.state.player.x -= 10 if args.inputs.left
+  args.state.player.x += 10 if args.inputs.right
 end
 
 $gtk.reset
