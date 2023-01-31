@@ -68,7 +68,7 @@ def render grid, outputs, state
   saturation,
   source_rect(state), # sprite sub division/tile (tile x, y, w, h)
   false, false,  # don't flip sprites
-  rotation_anchor]
+  angle_anchor]
 
   # also look at the create_sprite helper method
   #
@@ -89,8 +89,8 @@ def render grid, outputs, state
   #   source_h: source.h,
   #   flip_h: false,
   #   flip_v: false,
-  #   rotation_anchor_x: 0.7,
-  #   rotation_anchor_y: 0.5
+  #   angle_anchor_x: 0.7,
+  #   angle_anchor_y: 0.5
   # )
 end
 
@@ -106,8 +106,8 @@ def create_sprite path, options = {}
 
     # angle, rotation
     angle: 0,
-    rotation_anchor_x: 0.5,
-    rotation_anchor_y: 0.5,
+    angle_anchor_x: 0.5,
+    angle_anchor_y: 0.5,
 
     # color saturation (red, green, blue), transparency
     r: 255,
@@ -133,7 +133,7 @@ def create_sprite path, options = {}
     options[:angle], options[:a], options[:r], options[:g], options[:b], # angle, color, alpha
     options[:source_x], options[:source_y], options[:source_w], options[:source_h], # source rect keys
     options[:flip_h], options[:flip_v], # flip
-    options[:rotation_anchor_x], options[:rotation_anchor_y], # rotation anchor
+    options[:angle_anchor_x], options[:angle_anchor_y], # rotation anchor
   ] # hash keys contain corresponding values
 end
 
@@ -196,7 +196,7 @@ end
 # A sprite's center of rotation can be altered
 # Increasing either of these numbers would dramatically increase the
 # car's drift when it turns!
-def rotation_anchor
+def angle_anchor
   [0.7, 0.5]
 end
 
