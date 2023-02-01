@@ -288,7 +288,7 @@ Example of using ~Array#each~ in conjunction with ~args.state~ and
     # with a width and height of 50.
     args.state
         .rainbow_colors
-        .map do |color| # <-- ~Array#each~ usage
+        .each do |color| # <-- ~Array#each~ usage
           args.outputs.sprites << [
             color[:order] * 50,
             color[:order] * 50,
