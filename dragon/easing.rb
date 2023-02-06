@@ -55,9 +55,9 @@ module GTK
 
     def self.exec_definition definition, start_tick, duration, x
       if definition.is_a? Symbol
-        return Easing.send(definition, x).cap_min_max(0, 1)
+        return Easing.send(definition, x)
       elsif definition.is_a? Proc
-        return definition.call(x, start_tick, duration).cap_min_max(0, 1)
+        return definition.call(x, start_tick, duration)
       end
 
       raise <<-S
