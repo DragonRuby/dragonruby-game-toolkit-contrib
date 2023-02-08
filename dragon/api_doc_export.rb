@@ -14,7 +14,9 @@ module GTK
           entries << entry
         end
 
-        $gtk.write_file_root 'docs/api_docs.json', build_json(entries)
+        json = build_json(entries)
+        $gtk.write_file_root 'docs/api_docs.json', json
+        build_html(json)
       end
 
       private
@@ -43,6 +45,24 @@ module GTK
         when Array
           "[#{object.map { |v| build_json(v) }.join(',')}]"
         end
+      end
+
+      def build_html(json)
+        template = $gtk.read_file '.dragonruby/stubs/docs/api_docs.html'
+        escaped_json = escape_json_for_javascript_string_literal json
+        html = template.gsub(
+          '// ----- EXPORT PLACEHOLDER: API ENTRIES -----',
+          "const API_ENTRIES = JSON.parse('#{escaped_json}');"
+        )
+        $gtk.write_file_root 'docs/api_docs.html', html
+      end
+
+      def escape_json_for_javascript_string_literal(string)
+        # Welcome to backslash escape hell, lol
+        # Javascript string literals cannot contain real newlines, so we need to escape them
+        result = string.gsub('\\n') { '\\\\\\\\n' }
+        # Need to escape single quotes since we're using single quotes for the string literal
+        result.gsub!("'") { "\\\\'" }
       end
     end
   end
