@@ -9,14 +9,58 @@
         width: 50%;
         font-size: 1.5em;
       }
+
+      .api-entry {
+        /* TODO */
+      }
     </style>
   </head>
   <body>
     <h1>DragonRuby API Docs</h1>
     <input type="text" id="search" placeholder="Search..." />
+    <div id="results">
+
+    </div>
 
     <script>
       // ----- EXPORT PLACEHOLDER: API ENTRIES -----
+
+      const resultsElement = document.getElementById('results');
+      const searchElement = document.getElementById('search');
+
+      function apiEntriesMatching(searchValue) {
+        const results = [];
+        for (const entry of API_ENTRIES) {
+          if (entry.entry_name.toLowerCase().includes(searchValue.toLowerCase())) {
+            results.push(entry);
+          }
+        }
+        return results;
+      }
+
+      function renderEntry(entry) {
+        const text = entry.raw_text.replaceAll("\n", '<br />')
+        return `
+          <h2>${entry.entry_name}</h2>
+          <p>${text}</p>
+        `;
+      }
+
+      function updateSearchResults() {
+        const results = apiEntriesMatching(searchElement.value);
+
+        resultsElement.innerHTML = '';
+        for (const entry of results) {
+          const element = document.createElement('div');
+          element.className = 'api-entry';
+          element.innerHTML = renderEntry(entry)
+          resultsElement.appendChild(element);
+        }
+      }
+
+      searchElement.addEventListener('input', updateSearchResults);
+
+      updateSearchResults();
     </script>
   </body>
 </html>
