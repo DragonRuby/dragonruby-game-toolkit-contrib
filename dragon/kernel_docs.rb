@@ -85,6 +85,19 @@ S
         entries << entry
       end
     end
+
+    $gtk.write_file_root 'docs/api_docs.json', build_json(entries)
+  end
+
+  def build_json(object)
+    case object
+    when String
+      object.gsub('"', '\"').inspect
+    when Hash
+      "{#{object.map { |k, v| "#{k.to_s.inspect}: #{build_json(v)}" }.join(',')}}"
+    when Array
+      "[#{object.map { |v| build_json(v) }.join(',')}]"
+    end
   end
 end
 
