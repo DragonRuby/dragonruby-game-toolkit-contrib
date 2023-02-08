@@ -5,12 +5,14 @@ module GTK
         entries = []
 
         api_doc_methods.each do |klass, doc_method|
+          method_name = doc_method.to_s[5..]
           entry = {
-            class: klass.name,
-            method: doc_method.to_s[5..],
+            class_name: klass.name,
+            method_name: method_name,
+            entry_name: entry_name(klass, method_name),
             raw_text: klass.send(doc_method)
           }
-          puts "Exporting docs for #{entry[:class]}##{entry[:method]}"
+          puts "Exporting docs for #{entry[:entry_name]}"
           entries << entry
         end
 
@@ -34,6 +36,18 @@ module GTK
           end
         end
         result
+      end
+
+      def entry_name(klass, method_name)
+        if klass == GTK::Runtime
+          "args.gtk.#{method_name}"
+        elsif klass == GTK::Outputs
+          "args.outputs.#{method_name}"
+        elsif klass == GTK::Args
+          "args.#{method_name}"
+        else
+          "#{klass.name}##{method_name}"
+        end
       end
 
       def build_json(object)
