@@ -74,9 +74,9 @@ module GTK
       def escape_json_for_javascript_string_literal(string)
         # Welcome to backslash escape hell, lol
         # Javascript string literals cannot contain real newlines, so we need to escape them
-        result = string.gsub('\\n') { '\\\\\\\\n' }
+        result = string.gsub('\\n') { '\\\\\\\\n' } # \n -> \\n
         # Need to escape single quotes since we're using single quotes for the string literal
-        result.gsub!("'") { "\\\\'" }
+        result.gsub!("'") { "\\\\'" } # ' -> \'
       end
     end
   end
