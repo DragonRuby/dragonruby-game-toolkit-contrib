@@ -36,6 +36,7 @@ class OneBitLowrezPaint
     state.buttons_frame_selection.left = 10
     state.buttons_frame_selection.top  = grid.top - 10
     state.buttons_frame_selection.size = 20
+    state.buttons_frame_selection.items ||= []
 
     defaults_canvas_sprite
 

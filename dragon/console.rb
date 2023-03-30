@@ -89,6 +89,7 @@ module GTK
 
     def disable
       @disabled = true
+      @visible = false
     end
 
     def enable
@@ -194,6 +195,9 @@ module GTK
     # @gtk
     def hide
       if visible?
+        if @cursor_visibilty_before_show == false
+          $gtk.hide_cursor
+        end
         toggle
         @archived_log += @log
         if @archived_log.length > @max_log_lines
@@ -215,6 +219,14 @@ module GTK
     end
 
     def toggle
+      if !@visible
+        @cursor_visibilty_before_show = $gtk.cursor_shown?
+        $gtk.show_cursor
+      else
+        if @cursor_visibilty_before_show == false
+          $gtk.hide_cursor
+        end
+      end
       @visible = !@visible
       @toggled_at = Kernel.global_tick_count
     end
@@ -306,7 +318,7 @@ S
         method_name = ((string_e.split ":")[0].gsub "'", "")
         if !(method_name.include? " ")
           results = (Kernel.__docs_search_results__ method_name)
-          if !results.include? "* DOCS: No results found."
+          if !results.include? "* No results found."
             puts (results.join "\n")
             puts <<-S
 * INFO: #{results.length} matches(s) found in DOCS for ~#{method_name}~ (see above).
@@ -627,10 +639,12 @@ S
 
       render_log_offset args
 
-      args.outputs.reserved << { x: 10.from_right, y: @bottom + 10,
-                                 text: "Press CTRL+g or ESCAPE to clear the prompt.",
-                                 vertical_alignment_enum: 0,
-                                 alignment_enum: 2, r: 80, g: 80, b: 80 }.label!
+      if @prompt.str_len < 100
+        args.outputs.reserved << { x: 10.from_right, y: @bottom + 5,
+                                   text: "Press CTRL+g or ESCAPE to clear the prompt.",
+                                   vertical_alignment_enum: 0,
+                                   alignment_enum: 2, r: 80, g: 80, b: 80 }.label!
+      end
     end
 
     def render_log_offset args
@@ -684,7 +698,12 @@ S
 
     def tick args
       begin
-        return if @disabled
+        if @disabled
+          if console_toggle_key_down? args
+            args.gtk.notify! "Console is currently disabled (this message will not show up in a production build)."
+          end
+          return
+        end
         render args
         process_inputs args
         return unless should_tick?

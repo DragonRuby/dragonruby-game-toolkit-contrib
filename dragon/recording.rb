@@ -8,8 +8,8 @@ module GTK
   # @gtk
   class Replay
     # @gtk
-    def self.start file_name = nil
-      $recording.start_replay file_name
+    def self.start file_name = nil, speed: 1
+      $recording.start_replay file_name, speed: speed
     end
 
     # @gtk
@@ -22,12 +22,31 @@ module GTK
   class Recording
     def initialize runtime
       @runtime = runtime
-      @tick_count = 0
       @global_input_order = 1
     end
 
     def tick
-      @tick_count += 1
+      if @replay_next_tick && !is_replaying?
+        @replay_next_tick = nil
+        start_replay @replay_next_tick_file_name, speed: @replay_next_tick_simulation_speed
+        @replay_next_tick_simulation_speed = nil
+      end
+
+      if is_replaying? && @on_replay_tick
+        @on_replay_tick.call $gtk.args
+      end
+
+      if is_recording? && @on_recording_tick
+        @on_recording_tick.call $gtk.args
+      end
+    end
+
+    def on_replay_tick &block
+      @on_replay_tick = block
+    end
+
+    def on_recording_tick &block
+      @on_recording_tick = block
     end
 
     def start_recording seed_number = nil
@@ -63,15 +82,13 @@ Recording has begun with RNG seed value set to #{seed_number}.
 To stop recording use stop_recording(filename).
 The recording will stop without saving a file if a filename is nil.
 S
-
       $console.set_command "$recording.stop 'replay.txt'"
+      @is_recording = true
       @runtime.__reset__
       @seed_number = seed_number
       @runtime.set_rng seed_number
 
-      @tick_count = 0
       @global_input_order = 1
-      @is_recording = true
       @input_history = []
       @runtime.notify! "Recording started. When completed, open the console to save it using $recording.stop FILE_NAME (or cancel).", 300
     end
@@ -122,7 +139,7 @@ S
 
       if file_name
         text = "replay_version 2.0\n"
-        text << "stopped_at #{@tick_count}\n"
+        text << "stopped_at #{Kernel.tick_count}\n"
         text << "seed #{@seed_number}\n"
         text << "recorded_at #{Time.now.to_s}\n"
         @input_history.each do |items|
@@ -133,11 +150,21 @@ S
         log_info "The recording has been saved successfully at #{file_name}. You can use start_replay(\"#{file_name}\") to replay the recording."
       end
 
-      $console.set_command "$replay.start '#{file_name}'"
+      $console.set_command "$replay.start '#{file_name}', speed: 1"
       stop_recording_core
-      @runtime.notify! "Recording saved to #{file_name}. To replay it: $replay.start \"#{file_name}\"."
+      @runtime.notify! "Recording saved to #{file_name}. To replay it: ~$replay.start \"#{file_name}\", speed: 1~."
       log_info "You can run the replay later on startup using: ./dragonruby mygame --replay #{@replay_file_name}"
+      @recording_stopped_at = Kernel.global_tick_count
       nil
+    end
+
+    def recording_recently_completed?
+      return false if !@recording_stopped_at
+      (Kernel.global_tick_count - @recording_stopped_at) <= 5
+    end
+
+    def on_replay_completed_successfully &block
+      @replay_completed_successfully_block = block
     end
 
     def stop_recording_core
@@ -147,13 +174,19 @@ S
       @runtime.__reset__
     end
 
-    def start_replay file_name = nil
+    def replay_completed_successfully?
+      @replay_completed_successfully
+    end
+
+    def start_replay file_name = nil, speed: 1
+      return if replay_recently_stopped?
+      @replay_completed_successfully = false
       if !file_name
         log <<-S
 * ERROR:
 Please provide a file name to $recording.start.
 S
-        $console.set_command "$replay.start 'replay.txt'"
+        $console.set_command_silent "$replay.start 'replay.txt', speed: 1"
         return
       end
 
@@ -164,9 +197,14 @@ S
         raise "The replay file #{file_name} is not compatible with this version of DragonRuby Game Toolkit. Please recreate the replay (sorry)."
       end
 
+      @replay_started_at = Kernel.global_tick_count
       @replay_file_name = file_name
 
-      $replay_data = { input_history: { } }
+      $replay_data = {
+        input_history: { },
+        stopped_at_current_tick: 0
+      }
+
       text.each_line do |l|
         if l.strip.length == 0
           next
@@ -199,28 +237,68 @@ S
 
       @runtime.__reset__
       @runtime.set_rng $replay_data[:seed]
-      @tick_count = 0
       @is_replaying = true
-      log_info "Replay has been started."
-      @runtime.notify! "Replay started [#{@replay_file_name}]."
+      if speed
+        speed = speed.clamp(1, 7)
+        @runtime.simulation_speed = speed
+      end
+      log_info "Replay started =#{@replay_file_name}= speed: #{@runtime.simulation_speed}. (#{Kernel.global_tick_count})"
+      @runtime.notify! "Replay started =#{@replay_file_name}= speed: #{@runtime.simulation_speed}."
     end
 
-    def stop_replay notification_message =  "Replay has been stopped."
+    def replay_next_tick file_name, speed: 1
+      @replay_next_tick = true
+      @replay_next_tick_file_name = file_name
+      if speed
+        speed = speed.clamp(1, 7)
+        @replay_next_tick_simulation_speed = speed
+      end
+    end
+
+    def replay_completed_at
+      @replay_completed_at
+    end
+
+    def replay_stopped_at
+      @replay_stopped_at
+    end
+
+    def replay_recently_started?
+      return false if !@replay_started_at
+      (Kernel.global_tick_count - @replay_started_at) <= 5
+    end
+
+    def replay_recently_stopped?
+      return false if !@replay_stopped_at
+      (Kernel.global_tick_count - @replay_stopped_at) <= 5
+    end
+
+    def replay_recently_completed?
+      return false if !@replay_completed_at
+      (Kernel.global_tick_count - @replay_completed_at) <= 5
+    end
+
+    def clear_replay_stopped_at!
+      @replay_stopped_at = nil
+    end
+
+    def stop_replay notification_message = "Replay has been stopped."
+      @runtime.simulation_speed = 1
       if !is_replaying?
         log <<-S
 * ERROR:
-No replay is currently running. Call $replay.start FILE_NAME to start a replay.
+No replay is currently running. Call ~$replay.start FILE_NAME, speed: 1~ to start a replay.
 S
 
-        $console.set_command "$replay.start 'replay.txt'"
+        $console.set_command "$replay.start 'replay.txt', speed: 1"
         return
       end
-      log_info notification_message
-      @is_replaying = false
+      log_info "#{notification_message} (#{Kernel.global_tick_count})"
       $replay_data = nil
-      @tick_count = 0
       @global_input_order = 1
-      $console.set_command_silent "$replay.start '#{@replay_file_name}'"
+      @replay_stopped_at = Kernel.global_tick_count
+      $console.set_command_silent "$replay.start '#{@replay_file_name}', speed: 1"
+      @is_replaying = false
       @runtime.__reset__
       @runtime.notify! notification_message
     end
@@ -228,23 +306,39 @@ S
     def record_input_history name, value_1, value_2, value_count, clear_cache = false
       return if @is_replaying
       return unless @is_recording
-      @input_history << [name, value_1, value_2, value_count, @global_input_order, @tick_count]
+      @input_history << [name, value_1, value_2, value_count, @global_input_order, Kernel.tick_count]
       @global_input_order += 1
+    end
+
+    def tick_replay
+      if @on_replay_tick
+        @on_replay_tick.call @runtime.args
+      end
+      stage_replay_values
     end
 
     def stage_replay_values
       return unless @is_replaying
       return unless $replay_data
 
-      if $replay_data[:stopped_at] <= @tick_count
+      if ($replay_data[:stopped_at] - $replay_data[:stopped_at_current_tick]) <= 1
+        @replay_completed_successfully = true
+        if @replay_completed_successfully_block
+          @replay_completed_successfully_block.call @runtime.args
+        end
+        @replay_completed_at = Kernel.global_tick_count
         stop_replay "Replay completed [#{@replay_file_name}]. To rerun, bring up the Console and press enter."
+        @runtime.simulation_speed = 1
         return
       end
 
-      inputs_this_tick = $replay_data[:input_history][@tick_count]
+      inputs_this_tick = $replay_data[:input_history][$replay_data[:stopped_at_current_tick]]
 
-      if @tick_count.zmod? 60
-        log_info "Replay ends in #{($replay_data[:stopped_at] - @tick_count).idiv 60} second(s)."
+      $replay_data[:stopped_at_current_tick] += 1
+
+      if Kernel.global_tick_count.zmod?(60 * @runtime.simulation_speed)
+        calculated_tick_count = ($replay_data[:stopped_at] + @replay_started_at) - Kernel.global_tick_count
+        log_info "Replay ends in #{calculated_tick_count.idiv(60 * @runtime.simulation_speed)} second(s). (#{Kernel.global_tick_count})"
       end
 
       return unless inputs_this_tick

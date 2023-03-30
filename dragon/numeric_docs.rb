@@ -15,7 +15,7 @@ module NumericDocs
 
   def docs_frame_index
     <<-S
-* DOCS: ~Numeric#frame_index~
+** ~frame_index~
 
 This function is helpful for determining the index of frame-by-frame
   sprite animation. The numeric value ~self~ represents the moment the
@@ -85,7 +85,7 @@ S
 
   def docs_new?
     <<-S
-* DOCS: ~Numeric#created?~
+** ~new?~
 Returns true if ~Numeric#elapsed_time == 0~. Essentially communicating that
 number is equal to the current frame.
 
@@ -114,7 +114,7 @@ S
 
   def docs_elapsed?
     <<-S
-* DOCS: ~Numeric#elapsed?~
+** ~elapsed?~
 Returns true if ~Numeric#elapsed_time~ is greater than the number. An optional parameter can be
 passed into ~elapsed?~ which is added to the number before evaluating whether ~elapsed?~ is true.
 
@@ -185,7 +185,7 @@ S
 
   def docs_elapsed_time
     <<-S
-* DOCS: ~Numeric#elapsed_time~
+** ~elapsed_time~
 For a given number, the elapsed frames since that number is returned.
 `Kernel.tick_count` is used to determine how many frames have elapsed.
 An optional numeric argument can be passed in which will be used instead

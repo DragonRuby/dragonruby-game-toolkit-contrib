@@ -59,7 +59,7 @@ module GTK
       def framerate_below_threshold?
         @last_framerate ||= 60
         current_framerate < @last_framerate &&
-          current_framerate < 50 &&
+          current_framerate < 40 &&
           @previous_framerate > current_framerate &&
           Kernel.tick_count > 600
       end

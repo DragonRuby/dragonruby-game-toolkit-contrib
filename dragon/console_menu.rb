@@ -17,7 +17,7 @@ module GTK
       end
 
       def replay_clicked
-        $replay.start 'replay.txt'
+        $replay.start 'replay.txt', speed: 1
       end
 
       def reset_clicked

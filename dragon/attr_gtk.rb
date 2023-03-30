@@ -8,58 +8,77 @@ module AttrGTK
   attr_accessor :args
 
   def keyboard
-    args.inputs.keyboard
+    @args.inputs.keyboard
   end
 
   def grid
-    args.grid
+    @args.grid
   end
 
   def state
-    args.state
+    @args.state
   end
 
   def temp_state
-    args.temp_state
+    @args.temp_state
   end
 
   def inputs
-    args.inputs
+    @args.inputs
   end
 
   def outputs
-    args.outputs
+    @args.outputs
   end
 
   def gtk
-    args.gtk
+    @args.gtk
   end
 
   def passes
-    args.passes
+    @args.passes
   end
 
   def pixel_arrays
-    args.pixel_arrays
+    @args.pixel_arrays
   end
 
   def geometry
-    args.geometry
+    @args.geometry
   end
 
   def layout
-    args.layout
+    @args.layout
+  end
+
+  def easing
+    @args.easing
+  end
+
+  def audio
+    @args.audio
   end
 
   def events
-    args.events
+    @args.events
   end
 
   def new_entity entity_type, init_hash = nil, &block
-    args.state.new_entity entity_type, init_hash, &block
+    @args.state.new_entity entity_type, init_hash, &block
   end
 
   def new_entity_strict entity_type, init_hash = nil, &block
-    args.state.new_entity_strict entity_type, init_hash, &block
+    @args.state.new_entity_strict entity_type, init_hash, &block
+  end
+end
+
+class Object
+  def self.attr_gtk
+    include AttrGTK
+  end
+
+  def attr_gtk
+    return if self.is_a? AttrGTK
+    self.class.include AttrGTK
   end
 end

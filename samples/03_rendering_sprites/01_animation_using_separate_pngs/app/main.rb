@@ -100,11 +100,13 @@ def one_time_animation args
   # then the frame_index function returns nil.
   does_sprite_loop = false
 
-  sprite_index = args.state
-                     .start_looping_at
-                     .frame_index number_of_sprites,
-                                  number_of_frames_to_show_each_sprite,
-                                  does_sprite_loop
+  if args.state.start_looping_at
+    sprite_index = args.state
+                       .start_looping_at
+                       .frame_index number_of_sprites,
+                                    number_of_frames_to_show_each_sprite,
+                                    does_sprite_loop
+  end
 
   # This line sets the frame index to zero, if
   # the animation duration has passed (frame_index returned nil).

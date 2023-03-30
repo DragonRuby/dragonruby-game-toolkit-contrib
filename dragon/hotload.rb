@@ -122,7 +122,6 @@ module GTK
         return unless @hotload_if_needed == 60
         @hotload_if_needed = 0
         files_to_reload.each { |f| reload_if_needed f }
-        console.enable
       end
 
       def mailbox_timeout

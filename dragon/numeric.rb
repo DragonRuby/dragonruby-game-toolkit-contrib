@@ -400,6 +400,14 @@ S
     return self + magnitude
   end
 
+  def lerp to, step
+    self + step * (to - self)
+  end
+
+  def remap r1_begin, r1_end, r2_begin, r2_end
+    r2_begin + (r2_end - r2_begin) * ((self - r1_begin) / (r1_end - r1_begin))
+  end
+
   # Given `self` and a number representing `y` of a grid. This
   # function will return a one dimensional array containing the value
   # yielded by an implicit block.
@@ -754,6 +762,18 @@ class Float
 
   def cos_d
     Math.cos self.to_radians
+  end
+
+  def tan
+    Math.tan self.to_radians
+  end
+
+  def tan_d
+    Math.tan self.to_radians
+  end
+
+  def tan_r
+    Math.tan self
   end
 end
 

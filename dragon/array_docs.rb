@@ -7,20 +7,20 @@ module ArrayDocs
   def docs_method_sort_order
     [
       :docs_class,
+      :docs_map_2d,
+      :docs_include_any?,
+      :docs_any_intersect_rect?,
       :docs_map,
       :docs_each,
       :docs_reject_nil,
       :docs_reject_false,
       :docs_product,
-      :docs_map_2d,
-      :docs_include_any?,
-      :docs_any_intersect_rect?
     ]
   end
 
   def docs_include_any?
     <<-S
-* DOCS: ~Array#include_any?~
+** ~include_any?~
 
 Given a collection of items, the function will return
 ~true~ if any of ~self~'s items exists in the collection of items passed in:
@@ -30,7 +30,7 @@ S
 
   def docs_class
     <<-S
-* DOCS: ~Array~
+* ~Array~
 
 The Array class has been extend to provide methods that
 will help in common game development tasks. Array is one of the most
@@ -41,7 +41,7 @@ S
 
   def docs_reject_nil
     <<-S
-* DOCS: ~Array#reject_nil~
+** ~reject_nil~
 
 Returns an ~Enumerable~ rejecting items that are ~nil~, this is an alias
 for ~Array#compact~:
@@ -61,7 +61,7 @@ S
 
   def docs_reject_false
     <<-S
-* DOCS: ~Array#reject_false~
+** ~reject_false~
 
 Returns an `Enumerable` rejecting items that are `nil` or `false`.
 
@@ -78,7 +78,7 @@ S
 
   def docs_product
     <<-S
-* DOCS: ~Array#product~
+** ~product~
 
 Returns all combinations of values between two arrays.
 
@@ -108,7 +108,7 @@ S
 
   def docs_map_2d
     <<-S
-* DOCS: ~Array#map_2d~
+** ~map_2d~
 
 Assuming the array is an array of arrays, Given a block, each 2D array index invoked against the block.
 A 2D array is a common way to store data/layout for a stage.
@@ -142,7 +142,7 @@ S
 
   def docs_any_intersect_rect?
     <<-S
-* DOCS: ~Array#any_intersect_rect?~
+** ~any_intersect_rect?~
 
 Assuming the array contains objects that respond to ~left~, ~right~, ~top~, ~bottom~,
 this method returns ~true~ if any of the elements within
@@ -215,7 +215,7 @@ S
 
   def docs_map
     <<-S
-* DOCS: ~Array#map~
+** ~map~
 
 The function given a block returns a new ~Enumerable~ of values.
 
@@ -260,7 +260,7 @@ S
 
   def docs_each
     <<-S
-* DOCS: ~Array#each~
+** ~each~
 
 The function, given a block, invokes the block for each item in the
 ~Array~. ~Array#each~ is synonymous to foreach constructs in other languages.

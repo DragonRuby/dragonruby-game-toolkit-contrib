@@ -60,7 +60,7 @@ Instead of:
 
 #+begin_src
   args.outputs.sprites << [0, 0, 100, 100, 'sprites/enemy.png']
-#+begin_end
+#+end_src
 
 Do this:
 
@@ -70,7 +70,17 @@ Do this:
                             w: 100,
                             h: 100,
                             path: 'sprites/enemy.png' }
-#+begin_end
+#+end_src
+
+We will notify of places where that use Array Primitives if you add the following
+to your ~tick~ method.
+
+#+begin_src
+  def tick args
+    # add the following line to the top of your tick method
+    $gtk.warn_array_primitives!
+  end
+#+end_src
 
 ** Primitive Counts
 Here are the draw counts ordered by lowest to highest z order:

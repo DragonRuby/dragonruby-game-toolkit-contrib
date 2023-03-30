@@ -9,13 +9,14 @@ module OutputsDocs
       :docs_class,
       :docs_solids,
       :docs_borders,
-      :docs_sprites
+      :docs_sprites,
+      :docs_labels,
     ]
   end
 
   def docs_class
     <<-S
-* DOCS: ~GTK::Outputs~
+* ~Outputs~
 
 Outputs is how you render primitives to the screen. The minimal setup for
 rendering something to the screen is via a ~tick~ method defined in
@@ -29,6 +30,8 @@ mygame/app/main.rb
     args.outputs.lines      << [300, 300, 400, 400]
   end
 #+end_src
+
+** Render Order
 
 Primitives are rendered first-in, first-out. The rendering order (sorted by bottom-most to top-most):
 
@@ -45,7 +48,7 @@ S
 
   def docs_borders
     <<-S
-* DOCS: ~GTK::Outputs#borders~
+* ~Borders~
 
 Add primitives to this collection to render an unfilled solid to the screen. Take a look at the
 documentation for Outputs#solids.
@@ -75,7 +78,7 @@ S
 
   def docs_solids
     <<-S
-* DOCS: ~GTK::Outputs#solids~
+* ~Solids~
 
 Add primitives to this collection to render a solid to the screen.
 
@@ -126,9 +129,9 @@ be provided in any order.
   end
 #+end_src
 
-** Rendering a solid using a Class
+** Rendering a sprite using a Class
 
-You can also create a class with solid/border properties and render it as a primitive.
+You can also create a class with solid properties and render it as a primitive.
 ALL properties must be on the class. *Additionally*, a method called ~primitive_marker~
 must be defined on the class.
 
@@ -166,7 +169,7 @@ S
 
   def docs_sprites
     <<-S
-* DOCS: ~GTK::Outputs#sprites~
+* ~Sprites~
 
 Add primitives to this collection to render a sprite to the screen.
 
@@ -268,10 +271,71 @@ Here is an example:
 S
   end
 
+  def docs_labels
+    <<-S
+* ~Labels~
+
+Add primitives to this collection to render a label.
+
+** Rendering a label using an Array
+
+Labels represented as Arrays/Tuples:
+
+#+begin_src
+  def tick args
+                           #        X         Y              TEXT   SIZE_ENUM
+    args.outputs.labels << [175 + 150, 610 - 50, "Smaller label.",         0]
+  end
+#+end_src
+
+Here are all the properties that you can set with a
+label represented as an Array. It's recommended to move over to
+using Hashes once you've specified a lot of properties.
+
+#+begin_src
+  def tick args
+    args.outputs.labels << [
+      640,                   # X
+      360,                   # Y
+      "Hello world",         # TEXT
+      0,                     # SIZE_ENUM
+      1,                     # ALIGNMENT_ENUM
+      0,                     # RED
+      0,                     # GREEN
+      0,                     # BLUE
+      255,                   # ALPHA
+      "fonts/coolfont.ttf"   # FONT
+    ]
+  end
+end
+#+end_src
+
+** Rendering a label using a Hash
+
+#+begin_src
+  def tick args
+    args.outputs.labels << {
+        x:                       200,
+        y:                       550,
+        text:                    "dragonruby",
+        size_enum:               2,
+        alignment_enum:          1, # 0 = left, 1 = center, 2 = right
+        r:                       155,
+        g:                       50,
+        b:                       50,
+        a:                       255,
+        font:                    "fonts/manaspc.ttf",
+        vertical_alignment_enum: 0  # 0 = bottom, 1 = center, 2 = top
+    }
+  end
+#+end_src
+S
+  end
+
 
   def docs_screenshots
     <<-S
-* DOCS: ~GTK::Outputs#screenshots~
+* ~Screenshots~
 
 Add a hash to this collection to take a screenshot and save as png file.
 The keys of the hash can be provided in any order.

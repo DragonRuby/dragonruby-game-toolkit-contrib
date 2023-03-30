@@ -145,7 +145,7 @@ module GTK
         ":"  => [:colon],
         ";"  => [:semicolon],
         "="  => [:equal_sign],
-        "-"  => [:hyphen],
+        "-"  => [:hyphen, :minus],
         " "  => [:space],
         "$"  => [:dollar_sign],
         "\"" => [:double_quotation_mark],
@@ -584,6 +584,14 @@ module GTK
 
     def rect
       { x: point.x, y: point.y, w: 0, h: 0 }
+    end
+
+    def w
+      0
+    end
+
+    def h
+      0
     end
 
     alias_method :position, :point

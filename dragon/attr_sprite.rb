@@ -58,3 +58,23 @@ module AttrSprite
     @y = value
   end
 end
+
+class Object
+  def self.attr_sprite
+    include AttrSprite
+  end
+
+  def attr_sprite
+    return if self.is_a? AttrSprite
+    self.class.include AttrSprite
+  end
+
+  def self.attr_rect
+    include AttrRect
+  end
+
+  def attr_rect
+    return if self.is_a? AttrRect
+    self.class.include AttrRect
+  end
+end

@@ -50,24 +50,27 @@ module GTK
                      .reject { |k| k.start_with? "'" }
                      .reject { |k| k.include? "," }
                      .reject { |k| k.start_with? "#" }
-        others = ["def", "end"] +
-                 [ :entity_keys_by_ref,
-                   :entity_name,
-                   :as_hash,
-                   :clear!,
-                   :created_at_elapsed,
-                   :entity_id,
-                   "entity_id=",
-                   "tick_count=",
-                   :global_created_at_elapsed,
-                   :load_entity_data!,
-                   :meta,
-                   :meta!,
-                   :new?,
-                   :old?,
-                   :__original_eq_eq__, :set!,
-                   :update_entity_keys_by_ref,
-                   :with_meta] +
+
+        @autocomplete_always_ignore ||= ["def", "end"] +
+                                        [ :entity_keys_by_ref,
+                                          :entity_name,
+                                          :as_hash,
+                                          :clear!,
+                                          :created_at_elapsed,
+                                          :entity_id,
+                                          "entity_id=",
+                                          "tick_count=",
+                                          :global_created_at_elapsed,
+                                          :load_entity_data!,
+                                          :meta,
+                                          :meta!,
+                                          :new?,
+                                          :old?,
+                                          :__original_eq_eq__, :set!,
+                                          :update_entity_keys_by_ref,
+                                          :with_meta]
+
+        others = @autocomplete_always_ignore +
                  ignores + keys.find_all { |k| k.to_s.to_i.to_s == k.to_s }
 
         final = (keys - (others.map { |m| m.to_s })).uniq
@@ -86,15 +89,31 @@ module GTK
         return [] if word.strip.start_with? "#"
 
         if word[-1] == "." && token
-          lookup = {
+          @autocomplete_lookup ||= {
             'args'     => lambda { $gtk.args.autocomplete_methods },
             'inputs'   => lambda { $gtk.args.inputs.autocomplete_methods },
             'geometry' => lambda { $gtk.args.geometry.autocomplete_methods },
             'outputs'  => lambda { $gtk.args.outputs.autocomplete_methods },
             'layout'   => lambda { $gtk.args.layouts.autocomplete_methods },
             'keyboard' => lambda { $gtk.args.keyboard.autocomplete_methods },
-            'key_down' => lambda { $gtk.args.keyboard.key_down.autocomplete_methods },
-            'key_up'   => lambda { $gtk.args.keyboard.key_up.autocomplete_methods },
+            'controller_one' => lambda { $gtk.args.controller_one.autocomplete_methods },
+            'controller_two' => lambda { $gtk.args.controller_one.autocomplete_methods },
+            'controller_three' => lambda { $gtk.args.controller_one.autocomplete_methods },
+            'controller_four' => lambda { $gtk.args.controller_one.autocomplete_methods },
+            'key_down' => lambda do
+              if dots.include? "keyboard"
+                $gtk.args.keyboard.key_down.autocomplete_methods
+              else
+                $gtk.args.controller_one.key_down.autocomplete_methods
+              end
+            end,
+            'key_up'   => lambda do
+              if dots.include? "keyboard"
+                $gtk.args.keyboard.key_up.autocomplete_methods
+              else
+                $gtk.args.controller_one.key_up.autocomplete_methods
+              end
+            end,
             'state'    => lambda { $gtk.args.state.autocomplete_methods },
             'fn'       => lambda { $gtk.args.fn.autocomplete_methods },
             '$gtk'     => lambda { $gtk.autocomplete_methods },
@@ -102,6 +121,8 @@ module GTK
             'mouse'    => lambda { $gtk.args.inputs.mouse.autocomplete_methods },
             'click'    => lambda { [:x, :y, :point] }
           }
+
+          lookup = @autocomplete_lookup
 
           lookup_result = lookup[dot]
 

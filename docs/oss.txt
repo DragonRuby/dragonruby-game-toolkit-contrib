@@ -1024,59 +1024,127 @@ Follows is a source code listing for all files that have been open sourced. This
     attr_accessor :args
   
     def keyboard
-      args.inputs.keyboard
+      @args.inputs.keyboard
     end
   
     def grid
-      args.grid
+      @args.grid
     end
   
     def state
-      args.state
+      @args.state
     end
   
     def temp_state
-      args.temp_state
+      @args.temp_state
     end
   
     def inputs
-      args.inputs
+      @args.inputs
     end
   
     def outputs
-      args.outputs
+      @args.outputs
     end
   
     def gtk
-      args.gtk
+      @args.gtk
     end
   
     def passes
-      args.passes
+      @args.passes
     end
   
     def pixel_arrays
-      args.pixel_arrays
+      @args.pixel_arrays
     end
   
     def geometry
-      args.geometry
+      @args.geometry
     end
   
     def layout
-      args.layout
+      @args.layout
+    end
+  
+    def easing
+      @args.easing
+    end
+  
+    def audio
+      @args.audio
     end
   
     def events
-      args.events
+      @args.events
     end
   
     def new_entity entity_type, init_hash = nil, &block
-      args.state.new_entity entity_type, init_hash, &block
+      @args.state.new_entity entity_type, init_hash, &block
     end
   
     def new_entity_strict entity_type, init_hash = nil, &block
-      args.state.new_entity_strict entity_type, init_hash, &block
+      @args.state.new_entity_strict entity_type, init_hash, &block
+    end
+  end
+  
+  class Object
+    def self.attr_gtk
+      include AttrGTK
+    end
+  
+    def attr_gtk
+      return if self.is_a? AttrGTK
+      self.class.include AttrGTK
+    end
+  end
+
+#+end_src
+
+*** attr_line.rb
+#+begin_src ruby
+  # ./dragon/attr_line.rb
+  # coding: utf-8
+  # Copyright 2019 DragonRuby LLC
+  # MIT License
+  # attr_line.rb has been released under MIT (*only this file*).
+  
+  module AttrLine
+    attr_accessor :x, :y, :x2, :y2, :w, :h, :r, :g, :b, :a, :blendmode_enum
+  
+    def primitive_marker
+      :line
+    end
+  
+    def line
+      self
+    end
+  
+    def x1= value
+      @x = value
+    end
+  
+    def x1
+      @x
+    end
+  
+    def y1= value
+      @y = value
+    end
+  
+    def y1
+      @y
+    end
+  end
+  
+  class Object
+    def self.attr_line
+      include AttrLine
+    end
+  
+    def attr_line
+      return if self.is_a? AttrLine
+      self.class.include AttrLine
     end
   end
 
@@ -1143,6 +1211,26 @@ Follows is a source code listing for all files that have been open sourced. This
   
     def y1= value
       @y = value
+    end
+  end
+  
+  class Object
+    def self.attr_sprite
+      include AttrSprite
+    end
+  
+    def attr_sprite
+      return if self.is_a? AttrSprite
+      self.class.include AttrSprite
+    end
+  
+    def self.attr_rect
+      include AttrRect
+    end
+  
+    def attr_rect
+      return if self.is_a? AttrRect
+      self.class.include AttrRect
     end
   end
 
@@ -1242,6 +1330,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
       def disable
         @disabled = true
+        @visible = false
       end
   
       def enable
@@ -1347,6 +1436,9 @@ Follows is a source code listing for all files that have been open sourced. This
       # @gtk
       def hide
         if visible?
+          if @cursor_visibilty_before_show == false
+            $gtk.hide_cursor
+          end
           toggle
           @archived_log += @log
           if @archived_log.length > @max_log_lines
@@ -1368,6 +1460,14 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def toggle
+        if !@visible
+          @cursor_visibilty_before_show = $gtk.cursor_shown?
+          $gtk.show_cursor
+        else
+          if @cursor_visibilty_before_show == false
+            $gtk.hide_cursor
+          end
+        end
         @visible = !@visible
         @toggled_at = Kernel.global_tick_count
       end
@@ -1459,7 +1559,7 @@ Follows is a source code listing for all files that have been open sourced. This
           method_name = ((string_e.split ":")[0].gsub "'", "")
           if !(method_name.include? " ")
             results = (Kernel.__docs_search_results__ method_name)
-            if !results.include? "* DOCS: No results found."
+            if !results.include? "* No results found."
               puts (results.join "\n")
               puts <<-S
   * INFO: #{results.length} matches(s) found in DOCS for ~#{method_name}~ (see above).
@@ -1780,10 +1880,12 @@ Follows is a source code listing for all files that have been open sourced. This
   
         render_log_offset args
   
-        args.outputs.reserved << { x: 10.from_right, y: @bottom + 10,
-                                   text: "Press CTRL+g or ESCAPE to clear the prompt.",
-                                   vertical_alignment_enum: 0,
-                                   alignment_enum: 2, r: 80, g: 80, b: 80 }.label!
+        if @prompt.str_len < 100
+          args.outputs.reserved << { x: 10.from_right, y: @bottom + 5,
+                                     text: "Press CTRL+g or ESCAPE to clear the prompt.",
+                                     vertical_alignment_enum: 0,
+                                     alignment_enum: 2, r: 80, g: 80, b: 80 }.label!
+        end
       end
   
       def render_log_offset args
@@ -1837,7 +1939,12 @@ Follows is a source code listing for all files that have been open sourced. This
   
       def tick args
         begin
-          return if @disabled
+          if @disabled
+            if console_toggle_key_down? args
+              args.gtk.notify! "Console is currently disabled (this message will not show up in a production build)."
+            end
+            return
+          end
           render args
           process_inputs args
           return unless should_tick?
@@ -2249,7 +2356,7 @@ Follows is a source code listing for all files that have been open sourced. This
         end
   
         def replay_clicked
-          $replay.start 'replay.txt'
+          $replay.start 'replay.txt', speed: 1
         end
   
         def reset_clicked
@@ -3422,9 +3529,9 @@ Follows is a source code listing for all files that have been open sourced. This
         duration = end_tick - start_tick
         t = (current_tick - start_tick).fdiv duration
         time_allocation_per_curve = 1.fdiv(spline.length)
-        curve_index, curve_t = t.fdiv(time_allocation_per_curve).let do |spline_t|
-          [spline_t.to_i, spline_t - spline_t.to_i]
-        end
+        spline_t = t.fdiv(time_allocation_per_curve)
+        curve_index = spline_t.to_i
+        curve_t = spline_t - spline_t.to_i
         Geometry.cubic_bezier curve_t, *spline[curve_index]
       end
   
@@ -3474,6 +3581,38 @@ Follows is a source code listing for all files that have been open sourced. This
   
       def self.quint x
         x * x * x * x * x * x
+      end
+  
+      def self.smooth_start_quad x
+        quad x
+      end
+  
+      def self.smooth_stop_quad x
+        flip(quad(flip(x)))
+      end
+  
+      def self.smooth_start_cube x
+        cube x
+      end
+  
+      def self.smooth_stop_cube x
+        flip(cube(flip(x)))
+      end
+  
+      def self.smooth_start_quart x
+        quart x
+      end
+  
+      def self.smooth_stop_quart x
+        flip(quart(flip(x)))
+      end
+  
+      def self.smooth_start_quint x
+        quint x
+      end
+  
+      def self.smooth_stop_quint x
+        flip(quint(flip(x)))
       end
     end
   end
@@ -3711,7 +3850,6 @@ Follows is a source code listing for all files that have been open sourced. This
         Geometry.center_inside_rect_y self, other_rect
       end
   
-  
       # Returns a primitive that is anchored/repositioned based off its rectangle.
       # @gtk
       def anchor_rect anchor_x, anchor_y
@@ -3807,19 +3945,19 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def self.line_rise_run line
-        rise = (line.y2 - line.y).to_f
-        run  = (line.x2 - line.x).to_f
-        if rise.abs > run.abs && rise != 0
-          rise = rise.fdiv rise.abs
-          run = run.fdiv rise.abs
-        elsif run.abs > rise.abs && run != 0
-          rise = rise.fdiv run.abs
-          run = run.fdiv run.abs
-        else
-          rise = rise / rise.abs if rise != 0
-          run = run / run.abs if run != 0
+        rise_run = { x: line.x2 - line.x, y: line.y2 - line.y }
+        l = Math.sqrt(rise_run.x**2 + rise_run.y**2)
+  
+        normaized_rise_run_x = 0
+        normaized_rise_run_y = 0
+  
+        if l > 0
+          n_l = 1.fdiv(l)
+          normaized_rise_run_x = rise_run.x * n_l
+          normaized_rise_run_y = rise_run.y * n_l
         end
-        return { x: run , y: rise }
+  
+        { x: normaized_rise_run_x, y: normaized_rise_run_y }
       end
   
       # @gtk
@@ -3847,6 +3985,14 @@ Follows is a source code listing for all files that have been open sourced. This
           return :left if slope >= 0
           return :right
         end
+      end
+  
+      def self.line_to_rect line, min_w: 0, min_h: 0
+        line_rect line, min_w: 0, min_h: 0
+      end
+  
+      def line_to_rect min_w: 0, min_h: 0
+        Geometry.line_to_rect self, min_w: 0, min_h: 0
       end
   
       # @gtk
@@ -3923,22 +4069,13 @@ Follows is a source code listing for all files that have been open sourced. This
           x: x1 + t * (x2 - x1),
           y: y1 + t * (y2 - y1)
         }
-      rescue Exception => e
-  raise <<-S
-  * ERROR: ~Geometry::line_intersect~
-  The following exception was thrown for line_one: #{line_one}, line_two: #{line_two}
-  #{e}
-  
-  Consider passing in ~replace_infinity: VALUE~ to handle for vertical lines.
-  S
-      end
-  
-      def self.contract_intersect_rect?
-        [:x, :y, :w, :h]
       end
   
       # @gtk
       def self.to_square size, x, y, anchor_x = 0.5, anchor_y = nil
+        log_once :to_square, <<-S
+  * WARNING: Numeric#to_square and Geometry::to_square are deprecated and will not be replaced by another function.
+  S
         anchor_y ||= anchor_x
         x = x.shift_left(size * anchor_x)
         y = y.shift_down(size * anchor_y)
@@ -3958,7 +4095,7 @@ Follows is a source code listing for all files that have been open sourced. This
       def self.angle_from start_point, end_point
         d_y = end_point.y - start_point.y
         d_x = end_point.x - start_point.x
-        Math::PI.+(Math.atan2(d_y, d_x)).to_degrees
+        Math::PI.+(Math.atan2(d_y, d_x)).to_degrees % 360
       rescue Exception => e
         raise e, ":angle_from failed for start_point: #{start_point} end_point: #{end_point}.\n#{e}"
       end
@@ -4040,9 +4177,16 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def self.rect_to_line rect
-        l = rect.to_hash.line
-        l.merge(x2: l.x + l.w - 1,
-                y2: l.y + l.h)
+        {
+          x: rect.x,
+          y: rect.y,
+          x2: rect.x + rect.w - 1,
+          y2: rect.y + rect.h
+        }
+      end
+  
+      def rect_to_line
+        Geometry.rect_to_line self
       end
   
       def self.rect_center_point rect
@@ -4449,7 +4593,7 @@ Follows is a source code listing for all files that have been open sourced. This
           ":"  => [:colon],
           ";"  => [:semicolon],
           "="  => [:equal_sign],
-          "-"  => [:hyphen],
+          "-"  => [:hyphen, :minus],
           " "  => [:space],
           "$"  => [:dollar_sign],
           "\"" => [:double_quotation_mark],
@@ -4888,6 +5032,14 @@ Follows is a source code listing for all files that have been open sourced. This
   
       def rect
         { x: point.x, y: point.y, w: 0, h: 0 }
+      end
+  
+      def w
+        0
+      end
+  
+      def h
+        0
       end
   
       alias_method :position, :point
@@ -7484,6 +7636,14 @@ Follows is a source code listing for all files that have been open sourced. This
       return self + magnitude
     end
   
+    def lerp to, step
+      self + step * (to - self)
+    end
+  
+    def remap r1_begin, r1_end, r2_begin, r2_end
+      r2_begin + (r2_end - r2_begin) * ((self - r1_begin) / (r1_end - r1_begin))
+    end
+  
     # Given `self` and a number representing `y` of a grid. This
     # function will return a one dimensional array containing the value
     # yielded by an implicit block.
@@ -7839,6 +7999,18 @@ Follows is a source code listing for all files that have been open sourced. This
     def cos_d
       Math.cos self.to_radians
     end
+  
+    def tan
+      Math.tan self.to_radians
+    end
+  
+    def tan_d
+      Math.tan self.to_radians
+    end
+  
+    def tan_r
+      Math.tan self
+    end
   end
   
   class Integer
@@ -7876,8 +8048,8 @@ Follows is a source code listing for all files that have been open sourced. This
     # @gtk
     class Replay
       # @gtk
-      def self.start file_name = nil
-        $recording.start_replay file_name
+      def self.start file_name = nil, speed: 1
+        $recording.start_replay file_name, speed: speed
       end
   
       # @gtk
@@ -7890,12 +8062,31 @@ Follows is a source code listing for all files that have been open sourced. This
     class Recording
       def initialize runtime
         @runtime = runtime
-        @tick_count = 0
         @global_input_order = 1
       end
   
       def tick
-        @tick_count += 1
+        if @replay_next_tick && !is_replaying?
+          @replay_next_tick = nil
+          start_replay @replay_next_tick_file_name, speed: @replay_next_tick_simulation_speed
+          @replay_next_tick_simulation_speed = nil
+        end
+  
+        if is_replaying? && @on_replay_tick
+          @on_replay_tick.call $gtk.args
+        end
+  
+        if is_recording? && @on_recording_tick
+          @on_recording_tick.call $gtk.args
+        end
+      end
+  
+      def on_replay_tick &block
+        @on_replay_tick = block
+      end
+  
+      def on_recording_tick &block
+        @on_recording_tick = block
       end
   
       def start_recording seed_number = nil
@@ -7931,15 +8122,13 @@ Follows is a source code listing for all files that have been open sourced. This
   To stop recording use stop_recording(filename).
   The recording will stop without saving a file if a filename is nil.
   S
-  
         $console.set_command "$recording.stop 'replay.txt'"
+        @is_recording = true
         @runtime.__reset__
         @seed_number = seed_number
         @runtime.set_rng seed_number
   
-        @tick_count = 0
         @global_input_order = 1
-        @is_recording = true
         @input_history = []
         @runtime.notify! "Recording started. When completed, open the console to save it using $recording.stop FILE_NAME (or cancel).", 300
       end
@@ -7990,7 +8179,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
         if file_name
           text = "replay_version 2.0\n"
-          text << "stopped_at #{@tick_count}\n"
+          text << "stopped_at #{Kernel.tick_count}\n"
           text << "seed #{@seed_number}\n"
           text << "recorded_at #{Time.now.to_s}\n"
           @input_history.each do |items|
@@ -8001,11 +8190,21 @@ Follows is a source code listing for all files that have been open sourced. This
           log_info "The recording has been saved successfully at #{file_name}. You can use start_replay(\"#{file_name}\") to replay the recording."
         end
   
-        $console.set_command "$replay.start '#{file_name}'"
+        $console.set_command "$replay.start '#{file_name}', speed: 1"
         stop_recording_core
-        @runtime.notify! "Recording saved to #{file_name}. To replay it: $replay.start \"#{file_name}\"."
+        @runtime.notify! "Recording saved to #{file_name}. To replay it: ~$replay.start \"#{file_name}\", speed: 1~."
         log_info "You can run the replay later on startup using: ./dragonruby mygame --replay #{@replay_file_name}"
+        @recording_stopped_at = Kernel.global_tick_count
         nil
+      end
+  
+      def recording_recently_completed?
+        return false if !@recording_stopped_at
+        (Kernel.global_tick_count - @recording_stopped_at) <= 5
+      end
+  
+      def on_replay_completed_successfully &block
+        @replay_completed_successfully_block = block
       end
   
       def stop_recording_core
@@ -8015,13 +8214,19 @@ Follows is a source code listing for all files that have been open sourced. This
         @runtime.__reset__
       end
   
-      def start_replay file_name = nil
+      def replay_completed_successfully?
+        @replay_completed_successfully
+      end
+  
+      def start_replay file_name = nil, speed: 1
+        return if replay_recently_stopped?
+        @replay_completed_successfully = false
         if !file_name
           log <<-S
   * ERROR:
   Please provide a file name to $recording.start.
   S
-          $console.set_command "$replay.start 'replay.txt'"
+          $console.set_command_silent "$replay.start 'replay.txt', speed: 1"
           return
         end
   
@@ -8032,9 +8237,14 @@ Follows is a source code listing for all files that have been open sourced. This
           raise "The replay file #{file_name} is not compatible with this version of DragonRuby Game Toolkit. Please recreate the replay (sorry)."
         end
   
+        @replay_started_at = Kernel.global_tick_count
         @replay_file_name = file_name
   
-        $replay_data = { input_history: { } }
+        $replay_data = {
+          input_history: { },
+          stopped_at_current_tick: 0
+        }
+  
         text.each_line do |l|
           if l.strip.length == 0
             next
@@ -8067,28 +8277,68 @@ Follows is a source code listing for all files that have been open sourced. This
   
         @runtime.__reset__
         @runtime.set_rng $replay_data[:seed]
-        @tick_count = 0
         @is_replaying = true
-        log_info "Replay has been started."
-        @runtime.notify! "Replay started [#{@replay_file_name}]."
+        if speed
+          speed = speed.clamp(1, 7)
+          @runtime.simulation_speed = speed
+        end
+        log_info "Replay started =#{@replay_file_name}= speed: #{@runtime.simulation_speed}. (#{Kernel.global_tick_count})"
+        @runtime.notify! "Replay started =#{@replay_file_name}= speed: #{@runtime.simulation_speed}."
       end
   
-      def stop_replay notification_message =  "Replay has been stopped."
+      def replay_next_tick file_name, speed: 1
+        @replay_next_tick = true
+        @replay_next_tick_file_name = file_name
+        if speed
+          speed = speed.clamp(1, 7)
+          @replay_next_tick_simulation_speed = speed
+        end
+      end
+  
+      def replay_completed_at
+        @replay_completed_at
+      end
+  
+      def replay_stopped_at
+        @replay_stopped_at
+      end
+  
+      def replay_recently_started?
+        return false if !@replay_started_at
+        (Kernel.global_tick_count - @replay_started_at) <= 5
+      end
+  
+      def replay_recently_stopped?
+        return false if !@replay_stopped_at
+        (Kernel.global_tick_count - @replay_stopped_at) <= 5
+      end
+  
+      def replay_recently_completed?
+        return false if !@replay_completed_at
+        (Kernel.global_tick_count - @replay_completed_at) <= 5
+      end
+  
+      def clear_replay_stopped_at!
+        @replay_stopped_at = nil
+      end
+  
+      def stop_replay notification_message = "Replay has been stopped."
+        @runtime.simulation_speed = 1
         if !is_replaying?
           log <<-S
   * ERROR:
-  No replay is currently running. Call $replay.start FILE_NAME to start a replay.
+  No replay is currently running. Call ~$replay.start FILE_NAME, speed: 1~ to start a replay.
   S
   
-          $console.set_command "$replay.start 'replay.txt'"
+          $console.set_command "$replay.start 'replay.txt', speed: 1"
           return
         end
-        log_info notification_message
-        @is_replaying = false
+        log_info "#{notification_message} (#{Kernel.global_tick_count})"
         $replay_data = nil
-        @tick_count = 0
         @global_input_order = 1
-        $console.set_command_silent "$replay.start '#{@replay_file_name}'"
+        @replay_stopped_at = Kernel.global_tick_count
+        $console.set_command_silent "$replay.start '#{@replay_file_name}', speed: 1"
+        @is_replaying = false
         @runtime.__reset__
         @runtime.notify! notification_message
       end
@@ -8096,23 +8346,39 @@ Follows is a source code listing for all files that have been open sourced. This
       def record_input_history name, value_1, value_2, value_count, clear_cache = false
         return if @is_replaying
         return unless @is_recording
-        @input_history << [name, value_1, value_2, value_count, @global_input_order, @tick_count]
+        @input_history << [name, value_1, value_2, value_count, @global_input_order, Kernel.tick_count]
         @global_input_order += 1
+      end
+  
+      def tick_replay
+        if @on_replay_tick
+          @on_replay_tick.call @runtime.args
+        end
+        stage_replay_values
       end
   
       def stage_replay_values
         return unless @is_replaying
         return unless $replay_data
   
-        if $replay_data[:stopped_at] <= @tick_count
+        if ($replay_data[:stopped_at] - $replay_data[:stopped_at_current_tick]) <= 1
+          @replay_completed_successfully = true
+          if @replay_completed_successfully_block
+            @replay_completed_successfully_block.call @runtime.args
+          end
+          @replay_completed_at = Kernel.global_tick_count
           stop_replay "Replay completed [#{@replay_file_name}]. To rerun, bring up the Console and press enter."
+          @runtime.simulation_speed = 1
           return
         end
   
-        inputs_this_tick = $replay_data[:input_history][@tick_count]
+        inputs_this_tick = $replay_data[:input_history][$replay_data[:stopped_at_current_tick]]
   
-        if @tick_count.zmod? 60
-          log_info "Replay ends in #{($replay_data[:stopped_at] - @tick_count).idiv 60} second(s)."
+        $replay_data[:stopped_at_current_tick] += 1
+  
+        if Kernel.global_tick_count.zmod?(60 * @runtime.simulation_speed)
+          calculated_tick_count = ($replay_data[:stopped_at] + @replay_started_at) - Kernel.global_tick_count
+          log_info "Replay ends in #{calculated_tick_count.idiv(60 * @runtime.simulation_speed)} second(s). (#{Kernel.global_tick_count})"
         end
   
         return unless inputs_this_tick
@@ -8388,24 +8654,27 @@ Follows is a source code listing for all files that have been open sourced. This
                        .reject { |k| k.start_with? "'" }
                        .reject { |k| k.include? "," }
                        .reject { |k| k.start_with? "#" }
-          others = ["def", "end"] +
-                   [ :entity_keys_by_ref,
-                     :entity_name,
-                     :as_hash,
-                     :clear!,
-                     :created_at_elapsed,
-                     :entity_id,
-                     "entity_id=",
-                     "tick_count=",
-                     :global_created_at_elapsed,
-                     :load_entity_data!,
-                     :meta,
-                     :meta!,
-                     :new?,
-                     :old?,
-                     :__original_eq_eq__, :set!,
-                     :update_entity_keys_by_ref,
-                     :with_meta] +
+  
+          @autocomplete_always_ignore ||= ["def", "end"] +
+                                          [ :entity_keys_by_ref,
+                                            :entity_name,
+                                            :as_hash,
+                                            :clear!,
+                                            :created_at_elapsed,
+                                            :entity_id,
+                                            "entity_id=",
+                                            "tick_count=",
+                                            :global_created_at_elapsed,
+                                            :load_entity_data!,
+                                            :meta,
+                                            :meta!,
+                                            :new?,
+                                            :old?,
+                                            :__original_eq_eq__, :set!,
+                                            :update_entity_keys_by_ref,
+                                            :with_meta]
+  
+          others = @autocomplete_always_ignore +
                    ignores + keys.find_all { |k| k.to_s.to_i.to_s == k.to_s }
   
           final = (keys - (others.map { |m| m.to_s })).uniq
@@ -8424,15 +8693,31 @@ Follows is a source code listing for all files that have been open sourced. This
           return [] if word.strip.start_with? "#"
   
           if word[-1] == "." && token
-            lookup = {
+            @autocomplete_lookup ||= {
               'args'     => lambda { $gtk.args.autocomplete_methods },
               'inputs'   => lambda { $gtk.args.inputs.autocomplete_methods },
               'geometry' => lambda { $gtk.args.geometry.autocomplete_methods },
               'outputs'  => lambda { $gtk.args.outputs.autocomplete_methods },
               'layout'   => lambda { $gtk.args.layouts.autocomplete_methods },
               'keyboard' => lambda { $gtk.args.keyboard.autocomplete_methods },
-              'key_down' => lambda { $gtk.args.keyboard.key_down.autocomplete_methods },
-              'key_up'   => lambda { $gtk.args.keyboard.key_up.autocomplete_methods },
+              'controller_one' => lambda { $gtk.args.controller_one.autocomplete_methods },
+              'controller_two' => lambda { $gtk.args.controller_one.autocomplete_methods },
+              'controller_three' => lambda { $gtk.args.controller_one.autocomplete_methods },
+              'controller_four' => lambda { $gtk.args.controller_one.autocomplete_methods },
+              'key_down' => lambda do
+                if dots.include? "keyboard"
+                  $gtk.args.keyboard.key_down.autocomplete_methods
+                else
+                  $gtk.args.controller_one.key_down.autocomplete_methods
+                end
+              end,
+              'key_up'   => lambda do
+                if dots.include? "keyboard"
+                  $gtk.args.keyboard.key_up.autocomplete_methods
+                else
+                  $gtk.args.controller_one.key_up.autocomplete_methods
+                end
+              end,
               'state'    => lambda { $gtk.args.state.autocomplete_methods },
               'fn'       => lambda { $gtk.args.fn.autocomplete_methods },
               '$gtk'     => lambda { $gtk.autocomplete_methods },
@@ -8440,6 +8725,8 @@ Follows is a source code listing for all files that have been open sourced. This
               'mouse'    => lambda { $gtk.args.inputs.mouse.autocomplete_methods },
               'click'    => lambda { [:x, :y, :point] }
             }
+  
+            lookup = @autocomplete_lookup
   
             lookup_result = lookup[dot]
   
@@ -8873,7 +9160,7 @@ Follows is a source code listing for all files that have been open sourced. This
         def framerate_below_threshold?
           @last_framerate ||= 60
           current_framerate < @last_framerate &&
-            current_framerate < 50 &&
+            current_framerate < 40 &&
             @previous_framerate > current_framerate &&
             Kernel.tick_count > 600
         end
@@ -8959,7 +9246,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
   #+begin_src
     args.outputs.sprites << [0, 0, 100, 100, 'sprites/enemy.png']
-  #+begin_end
+  #+end_src
   
   Do this:
   
@@ -8969,7 +9256,17 @@ Follows is a source code listing for all files that have been open sourced. This
                               w: 100,
                               h: 100,
                               path: 'sprites/enemy.png' }
-  #+begin_end
+  #+end_src
+  
+  We will notify of places where that use Array Primitives if you add the following
+  to your ~tick~ method.
+  
+  #+begin_src
+    def tick args
+      # add the following line to the top of your tick method
+      $gtk.warn_array_primitives!
+    end
+  #+end_src
   
   ** Primitive Counts
   Here are the draw counts ordered by lowest to highest z order:
@@ -9197,7 +9494,6 @@ Follows is a source code listing for all files that have been open sourced. This
           return unless @hotload_if_needed == 60
           @hotload_if_needed = 0
           files_to_reload.each { |f| reload_if_needed f }
-          console.enable
         end
   
         def mailbox_timeout
@@ -9251,6 +9547,130 @@ Follows is a source code listing for all files that have been open sourced. This
           return if !force && @file_mtimes[file].current == @file_mtimes[file].last
           on_load_succeeded file if reload_ruby_file file
           @file_mtimes[file].last = @file_mtimes[file].current
+        end
+      end
+    end
+  end
+
+#+end_src
+
+*** runtime/notify.rb
+#+begin_src ruby
+  # ./dragon/runtime/notify.rb
+  # coding: utf-8
+  # Copyright 2019 DragonRuby LLC
+  # MIT License
+  # notify.rb has been released under MIT (*only this file*).
+  
+  module GTK
+    module Notify
+      def notify message, duration = 300
+        notify! message, duration
+      end
+  
+      def notify! message, duration = 300
+        return if self.production
+        message ||= ""
+        message = "#{message}"
+        return if @notification_message == message
+        @global_notification_at = Kernel.global_tick_count
+        @notification_duration = duration
+        @notification_message = message
+        @console.add_text "* NOTIFY: #{message}" if message.strip.length > 0
+      end
+  
+      def notify_subdued!
+        notify! "", 60
+      end
+  
+      def notify_extended! opts = {}
+        message   = opts.message  || ""
+        duration  = opts.duration || 300
+        env       = opts.env      || :dev
+        overwrite = opts.overwrite
+        return if env != :prod && self.production
+        return if !overwrite && @notification_message == message
+        @global_notification_at = Kernel.global_tick_count
+        @notification_duration = duration
+        @notification_message = message
+        @console.add_text "* NOTIFY: #{message}" if message.strip.length > 0
+      end
+  
+      def tick_notification
+        @notification_message = nil if @console.visible?
+        if @notification_message && @global_notification_at.elapsed_time(Kernel.global_tick_count) < @notification_duration
+          diff = @notification_duration - @global_notification_at.elapsed_time(Kernel.global_tick_count)
+          alpha = @global_notification_at.global_ease(15, :identity) * 255
+          if diff < 15
+            alpha = @global_notification_at.+(@notification_duration - 15).global_ease(15, :flip) * 255
+          end
+          if @notification_message.length != 0
+            @args.outputs.reserved << { x: @args.grid.left, y: args.grid.bottom, w: @logical_width, h: 40, r: 0, g: 0, b: 0, a: alpha }.solid!
+            @args.outputs.reserved << { x: @args.grid.left + 60, y: @args.grid.bottom + 30, text: @notification_message, r: 255, g: 255, b: 255, a: alpha }
+          end
+          @args.outputs.reserved << { x: @args.grid.left + 10, y: @args.grid.bottom, w: 40, h: 40, path: 'console-logo.png', a: alpha }
+        else
+          @notification_message = nil
+        end
+      end
+    end
+  end
+
+#+end_src
+
+*** runtime/process_argsv.rb
+#+begin_src ruby
+  # ./dragon/runtime/process_argsv.rb
+  # coding: utf-8
+  # Copyright 2019 DragonRuby LLC
+  # MIT License
+  # process_argsv.rb has been released under MIT (*only this file*).
+  
+  module GTK
+    class Runtime
+      module ProcessARGSV
+        def process_argsv
+          return if @argsv_processed
+          @argsv_processed = true
+  
+          @simulation_speed = (cli_arguments[:speed] || "1").to_i
+          @simulation_speed = @simulation_speed.abs
+          @simulation_speed = 1 if @simulation_speed == 0
+  
+          if cli_arguments.keys.include? :record
+            seed = cli_arguments[:seed] || 100
+            log_info "--record switch found. Recording will be started with a seed value of #{seed} (--seed)."
+            start_recording seed.to_i
+          elsif cli_arguments.keys.include? :replay
+            replay = cli_arguments[:replay] || "last_replay.txt"
+            log_info "--replay switch found. Replay will be started using file [#{replay}] (--replay FILENAME) with replay speed [#{@simulation_speed}] (--speed SPEED)."
+            start_replay replay, speed: @simulation_speed
+          elsif cli_arguments.keys.include? :eval
+            path = cli_arguments[:eval]
+            log_info "--eval switch found. Executing code inside of #{path} before first tick executes.", subsystem="Engine"
+            begin
+              raise "File does not exist: #{path}" unless read_file path
+              @eval_path = path
+            rescue Exception => e
+              log e
+            end
+  
+            if cli_arguments.keys.include? "no-tick".to_sym
+              log_info "--no-tick switch found. Exiting.", subsystem="Engine"
+              @no_tick = true
+            end
+          elsif cli_arguments.keys.include? :test
+            path = cli_arguments[:test]
+            log_info "--test switch found. Executing code inside of =#{path}=."
+            begin
+              raise "File does not exist: #{path}" unless read_file path
+              @test_path = path
+            rescue Exception => e
+              log e
+            end
+  
+            @no_tick = true
+          end
         end
       end
     end

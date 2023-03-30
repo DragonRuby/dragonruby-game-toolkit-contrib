@@ -87,9 +87,10 @@ class A_Star_Algorithm
     greedy.frontier  ||= []
     greedy.path      ||= []
 
-    a_star.frontier  ||= []
-    a_star.came_from ||= {}
-    a_star.path      ||= []
+    a_star.frontier    ||= []
+    a_star.came_from   ||= {}
+    a_star.path        ||= []
+    a_star.cost_so_far ||= {}
   end
 
   # All methods with render draw stuff on the screen

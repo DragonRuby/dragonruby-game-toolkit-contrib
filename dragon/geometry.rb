@@ -138,7 +138,6 @@ S
       Geometry.center_inside_rect_y self, other_rect
     end
 
-
     # Returns a primitive that is anchored/repositioned based off its rectangle.
     # @gtk
     def anchor_rect anchor_x, anchor_y
@@ -234,19 +233,19 @@ S
     end
 
     def self.line_rise_run line
-      rise = (line.y2 - line.y).to_f
-      run  = (line.x2 - line.x).to_f
-      if rise.abs > run.abs && rise != 0
-        rise = rise.fdiv rise.abs
-        run = run.fdiv rise.abs
-      elsif run.abs > rise.abs && run != 0
-        rise = rise.fdiv run.abs
-        run = run.fdiv run.abs
-      else
-        rise = rise / rise.abs if rise != 0
-        run = run / run.abs if run != 0
+      rise_run = { x: line.x2 - line.x, y: line.y2 - line.y }
+      l = Math.sqrt(rise_run.x**2 + rise_run.y**2)
+
+      normaized_rise_run_x = 0
+      normaized_rise_run_y = 0
+
+      if l > 0
+        n_l = 1.fdiv(l)
+        normaized_rise_run_x = rise_run.x * n_l
+        normaized_rise_run_y = rise_run.y * n_l
       end
-      return { x: run , y: rise }
+
+      { x: normaized_rise_run_x, y: normaized_rise_run_y }
     end
 
     # @gtk
@@ -274,6 +273,14 @@ S
         return :left if slope >= 0
         return :right
       end
+    end
+
+    def self.line_to_rect line, min_w: 0, min_h: 0
+      line_rect line, min_w: 0, min_h: 0
+    end
+
+    def line_to_rect min_w: 0, min_h: 0
+      Geometry.line_to_rect self, min_w: 0, min_h: 0
     end
 
     # @gtk
@@ -350,22 +357,13 @@ S
         x: x1 + t * (x2 - x1),
         y: y1 + t * (y2 - y1)
       }
-    rescue Exception => e
-raise <<-S
-* ERROR: ~Geometry::line_intersect~
-The following exception was thrown for line_one: #{line_one}, line_two: #{line_two}
-#{e}
-
-Consider passing in ~replace_infinity: VALUE~ to handle for vertical lines.
-S
-    end
-
-    def self.contract_intersect_rect?
-      [:x, :y, :w, :h]
     end
 
     # @gtk
     def self.to_square size, x, y, anchor_x = 0.5, anchor_y = nil
+      log_once :to_square, <<-S
+* WARNING: Numeric#to_square and Geometry::to_square are deprecated and will not be replaced by another function.
+S
       anchor_y ||= anchor_x
       x = x.shift_left(size * anchor_x)
       y = y.shift_down(size * anchor_y)
@@ -385,7 +383,7 @@ S
     def self.angle_from start_point, end_point
       d_y = end_point.y - start_point.y
       d_x = end_point.x - start_point.x
-      Math::PI.+(Math.atan2(d_y, d_x)).to_degrees
+      Math::PI.+(Math.atan2(d_y, d_x)).to_degrees % 360
     rescue Exception => e
       raise e, ":angle_from failed for start_point: #{start_point} end_point: #{end_point}.\n#{e}"
     end
@@ -467,9 +465,16 @@ S
     end
 
     def self.rect_to_line rect
-      l = rect.to_hash.line
-      l.merge(x2: l.x + l.w - 1,
-              y2: l.y + l.h)
+      {
+        x: rect.x,
+        y: rect.y,
+        x2: rect.x + rect.w - 1,
+        y2: rect.y + rect.h
+      }
+    end
+
+    def rect_to_line
+      Geometry.rect_to_line self
     end
 
     def self.rect_center_point rect
