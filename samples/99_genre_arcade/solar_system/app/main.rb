@@ -79,7 +79,10 @@ def calc args
   end
 
   if args.state.tick_count == 0
-    args.outputs.sounds << 'sounds/bg.ogg'
+    args.audio[:bg_music] = {
+      input: 'sounds/bg.ogg',
+      looping: true
+    }
   end
 end
 

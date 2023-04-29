@@ -69,7 +69,11 @@ S
 ** ~find_intersect_rect~
 
 Given a rect and a collection of rects, ~find_intersect_rect~ returns the first rect
-that intersects with the the first parameter. If you find yourself doing this:
+that intersects with the the first parameter.
+
+~:anchor_x~, and ~anchor_y~ is taken into consideration if the objects respond to these methods.
+
+If you find yourself doing this:
 
 #+begin_src
   collision = args.state.terrain.find { |t| t.intersect_rect? args.state.player }
@@ -89,7 +93,11 @@ S
 ** ~find_all_intersect_rect~
 
 Given a rect and a collection of rects, ~find_all_intersect_rect~ returns all rects
-that intersects with the the first parameter. If you find yourself doing this:
+that intersects with the the first parameter.
+
+~:anchor_x~, and ~anchor_y~ is taken into consideration if the objects respond to these methods.
+
+If you find yourself doing this:
 
 #+begin_src
   collisions = args.state.terrain.find_all { |t| t.intersect_rect? args.state.player }
@@ -106,7 +114,7 @@ S
 
   def docs_create_quad_tree
     <<-S
-* ~create_quad_tree~
+** ~create_quad_tree~
 
 Generates a quad tree from an array of rectangles. See ~find_intersect_rect_quad_tree~
 for usage.
@@ -199,7 +207,6 @@ determining the anchor position:
     args.outputs.borders << args.state.rect.anchor_rect(0.5, 0)
   end
 #+end_src
-
 
 S
   end
@@ -588,6 +595,8 @@ of overlap needed to be considered a true intersection. The default
 value of ~tolerance~ is ~0.1~ which keeps the function from returning
 true if only the edges of the rectangles overlap.
 
+~:anchor_x~, and ~anchor_y~ is taken into consideration if the objects respond to these methods.
+
 Here is an example where one rectangle is stationary, and another
 rectangle is controlled using directional input. The rectangles change
 color from blue to read if they intersect.
@@ -652,7 +661,7 @@ color from blue to read if they intersect.
 S
   end
 
-  def docs_intersect_rect?
+  def docs_inside_rect?
     <<-S
 ** ~inside_rect?~
 
@@ -669,6 +678,8 @@ Here is an example where one rectangle is stationary, and another
 rectangle is controlled using directional input. The rectangles change
 color from blue to read if the movable rectangle is entirely inside
 the stationary rectangle.
+
+~:anchor_x~, and ~anchor_y~ is taken into consideration if the objects respond to these methods.
 
 #+begin_src
   def tick args

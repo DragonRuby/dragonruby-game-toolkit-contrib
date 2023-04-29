@@ -20,6 +20,7 @@ module RuntimeDocs
       :docs_quit_requested?,
       :docs_set_window_fullscreen,
       :docs_window_fullscreen?,
+      :docs_set_window_scale,
 
       :docs_platform?,
       :docs_platform_mappings,
@@ -218,6 +219,16 @@ S
 ** ~quit_requested?~
 This function will return ~true~ if the game is about to exit (either
 from the user closing the game or if ~request_quit~ was invoked).
+S
+  end
+
+  def docs_set_window_scale
+    <<-S
+** ~set_window_fullscreen~
+This function takes in a float value and uses that to resize the game window
+to a percentage of 1280x720 (or 720x1280 in portrait mode). The valid scale options
+are 0.1, 0.25, 0.5, 0.75, 1.25, 1.5, 2.0, 2.5, 3.0, and 4.0. The float value you
+pass in will be floored to the nearest valid scale option.
 S
   end
 
@@ -1060,14 +1071,14 @@ Returns ~true~ if the right mouse button is down.
 Returns a bitmask for all buttons on the mouse: ~1~ for a button in the ~down~ state, ~0~ for a button in the ~up~ state.
 *** ~args.inputs.mouse.wheel~
 Represents the mouse wheel. Returns ~nil~ if no mouse wheel actions occurred.
-**** ~args.inputs.mouse.wheel.x~
+*** ~args.inputs.mouse.wheel.x~
 Returns the negative or positive number if the mouse wheel has changed in the ~x~ axis.
-**** ~args.inputs.mouse.wheel.y~
+*** ~args.inputs.mouse.wheel.y~
 Returns the negative or positive number if the mouse wheel has changed in the ~y~ axis.
 *** ~args.inputs.mouse.click~ OR ~.down~, ~.previous_click~, ~.up~
 The properties ~args.inputs.mouse.(click|down|previous_click|up)~ each return ~nil~ if the mouse button event didn't occur. And return an Entity
 that has an ~x~, ~y~ properties along with helper functions to determine collision: ~inside_rect?~, ~inside_circle~.
-** ~args.inputs.controller_one~, ~.controller_two~
+** ~args.inputs.controller_(one-four)~
 Represents controllers connected to the usb ports.
 *** ~args.inputs.controller_(one-four).up~
 Returns ~true~ if ~up~ is pressed or held on the directional or left analog.

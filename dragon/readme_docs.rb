@@ -400,7 +400,10 @@ binaries. You can upload this to Itch.io manually.
 For the HTML version of your game, after you upload the zip file, check the checkbox labeled
 ~This file will be played in the browser~.
 
-IMPORTANT: Be sure to set the ~Viewport dimensions~ to ~1280x720~ or your game will not be
+IMPORTANT: Be sure to set the ~Viewport dimensions~ to ~1280x720~ for landscape games or your game will not be
+positioned correctly on your Itch.io page.
+
+IMPORTANT: Be sure to set the ~Viewport dimensions~ to ~540x960~ for portrait games or your game will not be
 positioned correctly on your Itch.io page.
 
 For subsequent updates you can use an automated deployment to Itch.io:
@@ -414,6 +417,55 @@ friends to go to your game's very own webpage and buy it!
 
 If you make changes to your game, just re-run dragonruby-publish and it'll
 update the downloads for you.
+
+*** Consider Adding Pause When Game is In Background
+
+It's a good idea to pause the game if it doesn't have focus. Here's an example of how to do that
+
+#+begin_src
+  def tick args
+    # if the keyboard doesn't have focus, and the game is in production mode, and it isn't the first tick
+    if !args.inputs.keyboard.has_focus && args.gtk.production && args.state.tick_count != 0
+      args.outputs.background_color = [0, 0, 0]
+      args.outputs.labels << { x: 640, y: 360, text: "Game Paused (click to resume).", alignment_enum: 1, r: 255, g: 255, b: 255 }
+      # consider setting all audio volume to 0.0
+    else
+      # perform your regular tick function
+    end
+  end
+#+end_src
+
+*** Consider Adding a Request to Review Your Game In-Game
+
+Getting reviews of your game are extremely important and it's recommended that you put an option to review
+within the game itself. You can use ~args.gtk.open_url~ plus a review URL. Here's an example:
+
+#+begin_src
+  def tick args
+    # render the review button
+    args.state.review_button ||= { x: 640 - 50, y: 360 - 25, w: 100, h: 50, path: :pixel, r: 0, g: 0, b: 0 }
+    args.outputs.sprites << args.state.review_button
+    args.outputs.labels << { x: 640, y: 360, anchor_x: 0.5, anchor_y: 0.5, text: "Review" }
+
+    # check to see if the review button was clicked
+    if args.inputs.mouse.intersect_rect? args.state.review_button
+      # open platform specific review urls
+      if args.gtk.platform? :ios
+        # your app id is provided at Apple's Developer Portal (numeric value)
+        args.gtk.openurl "itms-apps://itunes.apple.com/app/idYOURGAMEID?action=write-review"
+      elsif args.gtk.platform? :android
+        # your app id is the name of your android package
+        args.gtk.openurl ""https://play.google.com/store/apps/details?id=YOURGAMEID"
+      elsif args.gtk.platform? :web
+        # if they are playing the web version of the game, take them to the purchase page on itch
+        args.gtk.openurl "https://amirrajan.itch.io/YOURGAMEID/purchase"
+      else
+        # if they are playing the desktop version of the game, take them to itch's rating page
+        args.gtk.openurl "https://amirrajan.itch.io/YOURGAMEID/rate?source=game"
+      end
+    end
+  end
+#+end_src
 S
     end
 
@@ -672,6 +724,11 @@ You can represent a sprite as a ~Hash~:
       angle_anchor_y: 1.0,
 
       blendmode_enum: 1
+
+      # labels anchor/alignment (default is nil)
+      # if these values are provided, they will be used over alignment_enum and vertical_alignment_enum
+      anchor_x: 0.5,
+      anchor_y: 0.5
     }
   end
 #+end_src
@@ -688,7 +745,8 @@ You can represent a sprite as an ~object~:
                   :source_x, :source_y, :source_w, :source_h,
                   :tile_x, :tile_y, :tile_w, :tile_h,
                   :flip_horizontally, :flip_vertically,
-                  :angle_anchor_x, :angle_anchor_y, :blendmode_enum
+                  :angle_anchor_x, :angle_anchor_y, :blendmode_enum,
+                  :anchor_x, :anchor_y
 
     def primitive_marker
       :sprite
@@ -775,13 +833,18 @@ An ~ALIGNMENT_ENUM~ of ~0~ represents "left aligned". ~1~ represents
 
 You can add additional metadata about your game within a label, which requires you to use a `Hash` instead.
 
+If you use a ~Hash~ to render a label, you can set the label's size using either ~SIZE_ENUM~ or ~SIZE_PX~. If
+both options are provided, ~SIZE_PX~ will be used.
+
 #+begin_src
   def tick args
     args.outputs.labels << {
       x:                       200,
       y:                       550,
       text:                    "dragonruby",
+      # size specification can be either size_enum or size_px
       size_enum:               2,
+      size_px:                 22,
       alignment_enum:          1,
       r:                       155,
       g:                       50,
@@ -789,6 +852,8 @@ You can add additional metadata about your game within a label, which requires y
       a:                       255,
       font:                    "fonts/manaspc.ttf",
       vertical_alignment_enum: 0, # 0 is bottom, 1 is middle, 2 is top
+      anchor_x: 0.5,
+      anchor_y: 0.5
       # You can add any properties you like (this will be ignored/won't cause errors)
       game_data_one:  "Something",
       game_data_two: {

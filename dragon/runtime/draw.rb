@@ -14,15 +14,19 @@ module GTK
           s = s.as_hash if s.is_a? OpenEntity
           w = s.w
           h = s.h
+          anchor_x = 0
+          anchor_y = 0
+          anchor_x = s.anchor_x if s.respond_to? :anchor_x
+          anchor_y = s.anchor_y if s.respond_to? :anchor_y
           if !w && !h
             @ffi_draw.draw_triangle s.x, s.y, s.x2, s.y2, s.x3, s.y3,
                                     s.r, s.g, s.b, s.a,
                                     nil, nil, nil, nil, nil, nil, nil,
                                     (s.blendmode_enum || 1)
           else
-            @ffi_draw.draw_solid_2 s.x, s.y, w, h,
+            @ffi_draw.draw_solid_3 s.x, s.y, w, h,
                                    s.r, s.g, s.b, s.a,
-                                   (s.blendmode_enum || 1)
+                                   (s.blendmode_enum || 1), anchor_x, anchor_y
           end
         end
       rescue Exception => e
@@ -55,7 +59,13 @@ module GTK
             if s.is_a? Hash
               @ffi_draw.draw_sprite_hash s
             else
-              @ffi_draw.draw_sprite_4 s.x, s.y, w, h,
+              anchor_x = nil
+              anchor_x = s.anchor_x if s.respond_to? :anchor_x
+
+              anchor_y = nil
+              anchor_y = s.anchor_y if s.respond_to? :anchor_y
+
+              @ffi_draw.draw_sprite_5 s.x, s.y, w, h,
                                       (s.path || 'pixel').to_s,
                                       s.angle,
                                       s.a, s.r, s.g, s.b,
@@ -63,7 +73,7 @@ module GTK
                                       !!s.flip_horizontally, !!s.flip_vertically,
                                       s.angle_anchor_x, s.angle_anchor_y,
                                       s.source_x, s.source_y, s.source_w, s.source_h,
-                                      (s.blendmode_enum || 1)
+                                      (s.blendmode_enum || 1), anchor_x, anchor_y
             end
           end
         end
@@ -96,13 +106,33 @@ module GTK
           l.draw_override @ffi_draw
         else
           l = l.as_hash if l.is_a? OpenEntity
-          @ffi_draw.draw_label_3 l.x, l.y,
+
+          size_px = if l.respond_to? :size_px
+                      l.size_px
+                    else
+                      nil
+                    end
+
+          anchor_x = if l.respond_to? :anchor_x
+                       l.anchor_x
+                     else
+                       nil
+                     end
+
+          anchor_y = if l.respond_to? :anchor_y
+                       l.anchor_y
+                     else
+                       nil
+                     end
+
+          @ffi_draw.draw_label_5 l.x, l.y,
                                  (l.text || '').to_s,
                                  l.size_enum, l.alignment_enum,
                                  l.r, l.g, l.b, l.a,
                                  l.font,
                                  (l.vertical_alignment_enum || 2),
-                                 (l.blendmode_enum || 1)
+                                 (l.blendmode_enum || 1), size_px,
+                                 anchor_x, anchor_y
         end
       rescue Exception => e
         raise_conversion_for_rendering_failed l, e, :label
@@ -140,9 +170,13 @@ module GTK
           s.draw_override @ffi_draw
         else
           s = s.as_hash if s.is_a? OpenEntity
-          @ffi_draw.draw_border_2 s.x, s.y, s.w, s.h,
+          anchor_x = 0
+          anchor_y = 0
+          anchor_x = s.anchor_x if s.respond_to? :anchor_x
+          anchor_y = s.anchor_y if s.respond_to? :anchor_y
+          @ffi_draw.draw_border_3 s.x, s.y, s.w, s.h,
                                   s.r, s.g, s.b, s.a,
-                                  (s.blendmode_enum || 1)
+                                  (s.blendmode_enum || 1), anchor_x, anchor_y
         end
       rescue Exception => e
         raise_conversion_for_rendering_failed s, e, :border

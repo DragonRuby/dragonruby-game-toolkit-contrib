@@ -25,13 +25,7 @@ begin # region: top level tick methods
   def render args
     args.outputs.borders << args.state.buttons.map { |b| b[:border] }
     args.outputs.labels  << args.state.buttons.map { |b| b[:label]  }
-    args.outputs.labels  << args.layout
-                              .rect(row: 0, col: 11.5)
-                              .yield_self { |r| r.merge y: r.y + r.h }
-                              .merge(text: "This is a Pro only feature. Click here to watch the YouTube video if you are on the Standard License.",
-                                     alignment_enum: 1)
   end
-
 
   def input args
     args.state.buttons.each do |b|

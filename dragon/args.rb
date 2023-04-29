@@ -46,6 +46,7 @@ module GTK
       @all_tests = []
       @geometry = GTK::Geometry
       @fn = GTK::Fn
+      @render_targets_render_at = {}
       @wizards = Wizards.new
       ratio_w = 16
       ratio_h = 9
@@ -127,6 +128,10 @@ module GTK
         @passes << @render_targets[name]
       end
       @render_targets[name]
+    end
+
+    def render_targets_render_at
+      @render_targets_render_at ||= {}
     end
 
     def solids
@@ -219,6 +224,15 @@ module GTK
 
     def autocomplete_methods
       [:inputs, :outputs, :gtk, :state, :geometry, :audio, :grid, :layout, :fn]
+    end
+
+    def reset
+      @state.tick_count = Kernel.tick_count
+      @outputs.clear
+      @audio.clear
+      # on reset of the game, we want to clear out render target's historical events
+      # this hash is used to control whether a render target will be marked as transient or not
+      @render_targets_render_at.clear
     end
 
     def method_missing name, *args, &block

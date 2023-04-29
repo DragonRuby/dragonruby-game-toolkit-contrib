@@ -545,6 +545,10 @@ module GTK
                   :wheel, :relative_x, :relative_y
 
     attr_accessor :click
+    attr_accessor :click_at
+    attr_accessor :global_click_at
+    attr_accessor :up_at
+    attr_accessor :global_up_at
     attr_accessor :previous_click
     attr_accessor :x
     attr_accessor :y
@@ -564,6 +568,22 @@ module GTK
       @relative_x = 0
       @relative_y = 0
       clear
+    end
+
+    def held
+      return false if !global_click_at
+      return true if global_click_at && !global_up_at
+      return global_up_at < global_click_at
+    end
+
+    def held_at
+      return nil if !held
+      return click_at + 1
+    end
+
+    def global_held_at
+      return nil if !held
+      return global_click_at + 1
     end
 
     def point

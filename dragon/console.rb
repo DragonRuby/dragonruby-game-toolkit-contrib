@@ -44,6 +44,7 @@ module GTK
       @background_color = Color.new [0, 0, 0, 255]
       @header_color = Color.new [94, 170, 248]
       @header_2_color = Color.new [216, 95, 135]
+      @header_3_color = Color.new [214, 134, 214]
       @code_color = Color.new [210, 168, 255]
       @comment_color = Color.new [0, 200, 100]
       @animation_duration = 1.seconds
@@ -828,6 +829,11 @@ S
       (log_entry.start_with? "** ")
     end
 
+    def include_header_3_marker? log_entry
+      return false if (log_entry.strip.include? ".rb")
+      (log_entry.start_with? "*** ")
+    end
+
     def code? log_entry
       (just_symbol? log_entry) || (codeblock_marker? log_entry)
     end
@@ -865,6 +871,8 @@ S
         @header_color
       elsif include_header_2_marker? log_entry
         @header_2_color
+      elsif include_header_3_marker? log_entry
+        @header_3_color
       elsif log_entry.start_with?("====")
         @header_color
       else

@@ -16,7 +16,15 @@ class Game
   end
 
   def add_enemy
-    state.enemies << { x: 1200 * rand, y: 600 * rand, w: 64, h: 64 }
+    state.enemies << {
+      x: 1200 * rand,
+      y: 600 * rand,
+      w: 64,
+      h: 64,
+      anchor_x: 0.5,
+      anchor_y: 0.5,
+      path: 'sprites/enemy.png'
+    }
   end
 
   def sprite_horizontal_run
@@ -28,6 +36,8 @@ class Game
       y: player.y,
       w: player.tile_size,
       h: player.tile_size,
+      anchor_x: 0.5,
+      anchor_y: 0.5,
       path: 'sprites/horizontal-run.png',
       tile_x: 0 + (tile_index * player.tile_size),
       tile_y: 0,
@@ -44,6 +54,8 @@ class Game
       y: player.y,
       w: player.tile_size,
       h: player.tile_size,
+      anchor_x: 0.5,
+      anchor_y: 0.5,
       path: 'sprites/horizontal-stand.png',
       flip_horizontally: player.dir_x > 0,
       # a: 40
@@ -54,10 +66,12 @@ class Game
     tile_index   = player.slash_at.frame_index(5, player.slash_frames.idiv(5), false) || 0
 
     {
-      x: player.x - 41.25,
-      y: player.y - 41.25,
+      x: player.x + player.dir_x.sign * 9.25,
+      y: player.y + 9.25,
       w: 165,
       h: 165,
+      anchor_x: 0.5,
+      anchor_y: 0.5,
       path: 'sprites/horizontal-slash.png',
       tile_x: 0 + (tile_index * 128),
       tile_y: 0,
@@ -108,8 +122,8 @@ class Game
     # movement
     if vector = inputs.directional_vector
       state.debug_label = vector
-      player.dir_x = vector.x
-      player.dir_y = vector.y
+      player.dir_x = vector.x if vector.x != 0
+      player.dir_y = vector.y if vector.y != 0
       player.is_moving = true
     else
       state.debug_label = vector
@@ -118,16 +132,15 @@ class Game
   end
 
   def calc_slash
-    # re-calc the location of the swords collision box
-    if player.dir_x.positive?
-      player.slash_collision_rect = [player.x + player.tile_size,
-                                     player.y + player.tile_size.half - 10,
-                                     40, 20]
-    else
-      player.slash_collision_rect = [player.x - 32 - 8,
-                                     player.y + player.tile_size.half - 10,
-                                     40, 20]
-    end
+    player.slash_collision_rect = {
+      x: player.x + player.dir_x.sign * 52,
+      y: player.y,
+      w: 40,
+      h: 20,
+      anchor_x: 0.5,
+      anchor_y: 0.5,
+      path: "sprites/debug-slash.png"
+    }
 
     # recalc sword's slash state
     player.slash_at = nil if slash_complete?

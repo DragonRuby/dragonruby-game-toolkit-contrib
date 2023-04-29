@@ -129,7 +129,7 @@ be provided in any order.
   end
 #+end_src
 
-** Rendering a sprite using a Class
+** Rendering a solid using a Class
 
 You can also create a class with solid properties and render it as a primitive.
 ALL properties must be on the class. *Additionally*, a method called ~primitive_marker~
@@ -140,10 +140,10 @@ Here is an example:
 #+begin_src
   # Create type with ALL solid properties AND primitive_marker
   class Solid
-    attr_accessor :x, :y, :w, :h, :r, :g, :b, :a
+    attr_accessor :x, :y, :w, :h, :r, :g, :b, :a, :anchor_x, :anchor_y
 
     def primitive_marker
-      :solid
+      :solid # or :border
     end
   end
 

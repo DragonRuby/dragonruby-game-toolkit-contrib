@@ -621,6 +621,9 @@ S
     parse_log << "- Line contains link marker: #{line_has_link_marker}"
 
     line_to_format = line.rstrip
+                         .gsub("&", "&amp;")
+                         .gsub("<", "&lt;")
+                         .gsub(">", "&gt;")
 
     # <code> logic
     if tilde_count.even? && tilde_count != 0

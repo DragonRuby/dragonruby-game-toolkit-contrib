@@ -407,10 +407,28 @@ S
       return nil if !inner_rect
       return nil if !outer_rect
 
-      inner_rect.x     + tolerance >= outer_rect.x     - tolerance &&
-      (inner_rect.x + inner_rect.w) - tolerance <= (outer_rect.x + outer_rect.w) + tolerance &&
-      inner_rect.y     + tolerance >= outer_rect.y     - tolerance &&
-      (inner_rect.y + inner_rect.h) - tolerance <= (outer_rect.y + outer_rect.h) + tolerance
+      inner_rect_anchor_x = 0
+      inner_rect_anchor_x = inner_rect.anchor_x || 0 if inner_rect.respond_to?(:anchor_x)
+
+      inner_rect_anchor_y = 0
+      inner_rect_anchor_y = inner_rect.anchor_y || 0 if inner_rect.respond_to?(:anchor_y)
+
+      outer_rect_anchor_x = 0
+      outer_rect_anchor_x = outer_rect.anchor_x || 0 if outer_rect.respond_to?(:anchor_x)
+
+      outer_rect_anchor_y = 0
+      outer_rect_anchor_y = outer_rect.anchor_y || 0 if outer_rect.respond_to?(:anchor_y)
+
+      inner_rect_x = inner_rect.x - inner_rect_anchor_x * inner_rect.w
+      inner_rect_y = inner_rect.y - inner_rect_anchor_y * inner_rect.h
+
+      outer_rect_x = outer_rect.x - outer_rect_anchor_x * outer_rect.w
+      outer_rect_y = outer_rect.y - outer_rect_anchor_y * outer_rect.h
+
+      inner_rect_x     + tolerance >= outer_rect_x     - tolerance &&
+      (inner_rect_x + inner_rect.w) - tolerance <= (outer_rect_x + outer_rect.w) + tolerance &&
+      inner_rect.y     + tolerance >= outer_rect_y     - tolerance &&
+      (inner_rect.y + inner_rect.h) - tolerance <= (outer_rect_y + outer_rect.h) + tolerance
     rescue Exception => e
       raise e, ":inside_rect? failed for inner_rect: #{inner_rect} outer_rect: #{outer_rect}.\n#{e}"
     end

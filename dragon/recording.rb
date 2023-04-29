@@ -239,7 +239,7 @@ S
       @runtime.set_rng $replay_data[:seed]
       @is_replaying = true
       if speed
-        speed = speed.clamp(1, 7)
+        speed = speed.clamp(1, 60)
         @runtime.simulation_speed = speed
       end
       log_info "Replay started =#{@replay_file_name}= speed: #{@runtime.simulation_speed}. (#{Kernel.global_tick_count})"
@@ -250,7 +250,7 @@ S
       @replay_next_tick = true
       @replay_next_tick_file_name = file_name
       if speed
-        speed = speed.clamp(1, 7)
+        speed = speed.clamp(1, 60)
         @replay_next_tick_simulation_speed = speed
       end
     end
@@ -321,6 +321,8 @@ S
       return unless @is_replaying
       return unless $replay_data
 
+      $replay_data[:stopped_at_current_tick] += 1
+
       if ($replay_data[:stopped_at] - $replay_data[:stopped_at_current_tick]) <= 1
         @replay_completed_successfully = true
         if @replay_completed_successfully_block
@@ -333,9 +335,6 @@ S
       end
 
       inputs_this_tick = $replay_data[:input_history][$replay_data[:stopped_at_current_tick]]
-
-      $replay_data[:stopped_at_current_tick] += 1
-
       if Kernel.global_tick_count.zmod?(60 * @runtime.simulation_speed)
         calculated_tick_count = ($replay_data[:stopped_at] + @replay_started_at) - Kernel.global_tick_count
         log_info "Replay ends in #{calculated_tick_count.idiv(60 * @runtime.simulation_speed)} second(s). (#{Kernel.global_tick_count})"

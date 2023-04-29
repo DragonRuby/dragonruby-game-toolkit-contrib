@@ -6,11 +6,22 @@
 module NumericDocs
   def docs_method_sort_order
     [
+      :docs_class,
       :docs_frame_index,
       :docs_elapsed_time,
       :docs_elapsed?,
       :docs_new?
     ]
+  end
+
+  def docs_class
+    <<-S
+* ~Numeric~
+
+The ~Numeric~ class has been extend to provide methods that
+will help in common game development tasks.
+
+S
   end
 
   def docs_frame_index
