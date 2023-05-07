@@ -9,11 +9,13 @@
 module RuntimeDocs
   def docs_method_sort_order
     [
+      :docs_indie_pro_functions,
       # indie/pro
       :docs_get_pixels,
       :docs_dlopen,
 
       # environment
+      :docs_environment_functions,
       :docs_calcstringbox,
 
       :docs_request_quit,
@@ -23,6 +25,7 @@ module RuntimeDocs
       :docs_set_window_scale,
 
       :docs_platform?,
+      :docs_production?,
       :docs_platform_mappings,
       :docs_open_url,
       :docs_system,
@@ -37,6 +40,7 @@ module RuntimeDocs
       :docs_set_cursor,
 
       # file
+      :docs_file_access_functions,
       :docs_list_files,
       :docs_stat_file,
       :docs_read_file,
@@ -46,19 +50,21 @@ module RuntimeDocs
       :docs_delete_file_if_exist,
 
       # encodings
+      :docs_encoding_functions,
       :docs_parse_json,
       :docs_parse_json_file,
       :docs_parse_xml,
       :docs_parse_xml_file,
 
       #network
+      :docs_network_functions,
       :docs_http_get,
       :docs_http_post,
       :docs_http_post_body,
       :docs_start_server!,
 
       #dev support
-      :docs_production?,
+      :docs_dev_support_functions,
       :docs_version,
       :docs_version_pro?,
 
@@ -110,6 +116,13 @@ module RuntimeDocs
     ]
   end
 
+  def docs_indie_pro_functions
+    <<-S
+** Indie and Pro Functions
+The following functions are only available at the Indie and Pro License tiers.
+S
+  end
+
   def docs_class
     <<-S
 * ~Runtime~
@@ -127,7 +140,7 @@ S
 
   def docs_get_pixels
     <<-S
-** ~get_pixels~
+*** ~get_pixels~
 Given a ~file_path~ to a sprite, this function returns a one dimensional
 array of hexadecimal values representing the ARGB of each pixel in
 a sprite.
@@ -139,7 +152,7 @@ S
 
   def docs_dlopen
     <<-S
-** ~dlopen~
+*** ~dlopen~
 Loads a precompiled C Extension into your game.
 
 See the sample apps at ~./samples/12_c_extensions~ for detailed
@@ -147,9 +160,16 @@ walkthroughs of creating C extensions.
 S
   end
 
+  def docs_environment_functions
+    <<-S
+** Environment and Utility Functions
+The following functions will help in interacting with the OS and rendering pipeline.
+S
+  end
+
   def docs_calcstringbox
     <<-S
-** ~calcstringbox~
+*** ~calcstringbox~
 Returns the render width and render height as a tuple for a piece of text. The
 parameters this method takes are:
 - ~text~: the text you want to get the width and height of.
@@ -199,7 +219,7 @@ S
 
   def docs_request_quit
     <<-S
-** ~request_quit~
+*** ~request_quit~
 Call this function to exit your game. You will be given one additional tick
 if you need to perform any housekeeping before that game closes.
 
@@ -216,7 +236,7 @@ S
 
   def docs_quit_requested?
     <<-S
-** ~quit_requested?~
+*** ~quit_requested?~
 This function will return ~true~ if the game is about to exit (either
 from the user closing the game or if ~request_quit~ was invoked).
 S
@@ -224,7 +244,7 @@ S
 
   def docs_set_window_scale
     <<-S
-** ~set_window_fullscreen~
+*** ~set_window_scale~
 This function takes in a float value and uses that to resize the game window
 to a percentage of 1280x720 (or 720x1280 in portrait mode). The valid scale options
 are 0.1, 0.25, 0.5, 0.75, 1.25, 1.5, 2.0, 2.5, 3.0, and 4.0. The float value you
@@ -234,7 +254,7 @@ S
 
   def docs_set_window_fullscreen
     <<-S
-** ~set_window_fullscreen~
+*** ~set_window_fullscreen~
 This function takes in a single boolean parameter. ~true~ to make the
 game fullscreen, ~false~ to return the game back to windowed mode.
 
@@ -256,14 +276,14 @@ S
 
   def docs_window_fullscreen?
     <<-S
-** ~window_fullscreen?~
+*** ~window_fullscreen?~
 Returns true if the window is currently in fullscreen mode.
 S
   end
 
   def docs_open_url
     <<-S
-** ~open_url~
+*** ~open_url~
 Given a uri represented as a string. This fuction will open the uri in the user's default browser.
 
 #+begin_src
@@ -279,7 +299,7 @@ S
 
   def docs_system
     <<-S
-** ~system~
+*** ~system~
 Given an OS dependent cli command represented as a string, this
 function executes the command and ~puts~ the results to the DragonRuby
 Console (returns ~nil~).
@@ -297,7 +317,7 @@ S
 
   def docs_exec
     <<-S
-** ~exec~
+*** ~exec~
 Given an OS dependent cli command represented as a string, this
 function executes the command and returns a ~string~ representing the results.
 
@@ -316,28 +336,28 @@ S
 
   def docs_show_cursor
     <<-S
-** ~show_cursor~
+*** ~show_cursor~
 Shows the mouse cursor.
 S
   end
 
   def docs_hide_cursor
  <<-S
-** ~hide_cursor~
+*** ~hide_cursor~
 Hides the mouse cursor.
 S
   end
 
   def docs_cursor_shown?
  <<-S
-** ~cursor_shown?~
+*** ~cursor_shown?~
 Returns ~true~ if the mouse cursor is visible.
 S
   end
 
   def docs_set_mouse_grab
     <<-S
-** ~set_mouse_grab~
+*** ~set_mouse_grab~
 Takes in a numeric parameter representing the mouse grab mode.
 - ~0~: Ungrabs the mouse.
 - ~1~: Grabs the mouse.
@@ -347,7 +367,7 @@ S
 
   def docs_set_system_cursor
     <<-S
-** ~set_system_cursor~
+*** ~set_system_cursor~
 Takes in a string value of ~"arrow"~, ~"ibeam"~, ~"wait"~, or ~"hand"~
 and sets the mouse curosor to the corresponding system cursor (if available on the OS).
 S
@@ -355,7 +375,7 @@ S
 
   def docs_set_cursor
     <<-S
-** ~set_cursor~
+*** ~set_cursor~
 Replaces the mouse cursor with a sprite. Takes in a ~path~ to the sprite, and optionally an ~x~ and ~y~ value
 representing the realtive positioning the sprite will have to the mouse cursor.
 
@@ -373,7 +393,7 @@ S
 
   def docs_read_file
     <<-S
-** ~read_file~
+*** ~read_file~
 Given a file path, a string will be returned representing the contents
 of the file. ~nil~ will be returned if the file does not exist. You
 can use ~stat_file~ to get additional information of a
@@ -383,15 +403,22 @@ S
 
   def docs_delete_file_if_exist
     <<-S
-** ~delete_file_if_exist~
+*** ~delete_file_if_exist~
 Has the same behavior as ~delete_file~ except this
 function does not throw an exception.
 S
   end
 
+  def docs_encoding_functions
+    <<-S
+** XML and JSON
+The following functions help with parsing xml and json.
+S
+  end
+
   def docs_parse_json
     <<-S
-** ~parse_json~
+*** ~parse_json~
 Given a json string, this function returns a hash representing the
 json data.
 
@@ -404,7 +431,7 @@ S
 
   def docs_parse_json_file
     <<-S
-** ~parse_json_file~
+*** ~parse_json_file~
 Same behavior as ~parse_json_file~ except a file path is
 read for the json string.
 S
@@ -412,7 +439,7 @@ S
 
   def docs_parse_xml
     <<-S
-** ~parse_xml~
+*** ~parse_xml~
 Given xml data as a string, this function will return a hash that
 represents the xml data in the following recursive structure:
 
@@ -428,15 +455,22 @@ S
 
   def docs_parse_xml_file
     <<-S
-** ~parse_xml_file~
+*** ~parse_xml_file~
 Function has the same behavior as ~parse_xml~ except that
 the parameter must be a file path that contains xml contents.
 S
   end
 
+  def docs_network_functions
+    <<-S
+** Network IO Functions
+The following functions help with interacting with the network.
+S
+  end
+
   def docs_http_get
     <<-S
-** ~http_get~
+*** ~http_get~
 Returns an object that represents an http response which will
 eventually have a value. This http_get method is invoked
 asynchronously. Check for completion before attempting to read results.
@@ -467,7 +501,7 @@ S
 
   def docs_http_post
     <<-S
-** ~http_post~
+*** ~http_post~
 Returns an object that represents an http response which will
 eventually have a value. This http_post method is invoked
 asynchronously. Check for completion before attempting to read results.
@@ -509,7 +543,7 @@ S
 
   def docs_http_post_body
     <<-S
-** ~http_post_body~
+*** ~http_post_body~
 Returns an object that represents an http response which will
 eventually have a value. This http_post_body method is invoked
 asynchronously. Check for completion before attempting to read results.
@@ -550,7 +584,7 @@ S
 
   def docs_start_server!
     <<-S
-** ~start_server!~
+*** ~start_server!~
 Starts a in-game http server that can be process http requests. When
 your game is running in development mode. A dev server is started at
 ~http://localhost:9001~
@@ -581,30 +615,30 @@ Here's how you would responde to http requests:
 S
   end
 
-  def docs_production?
+  def docs_dev_support_functions
     <<-S
-** ~production?~
-Returns true if the game is being run in a released/shipped state.
+** Developer Support Functions
+The following functions help support the development process. It is not recommended to use this functions in "production" game logic.
 S
   end
 
   def docs_version
     <<-S
-** ~version~
+*** ~version~
 Returns a string representing the version of DragonRuby you are running.
 S
   end
 
   def docs_version_pro?
     <<-S
-** ~version_pro?~
+*** ~version_pro?~
 Returns ~true~ if the version of DragonRuby is NOT Standard Edition.
 S
   end
 
   def docs_reset
     <<-S
-** ~reset~
+*** ~reset~
 Resets DragonRuby's internal state as if it were just
 started. ~args.state.tick_count~ is set to ~0~ and ~args.state~ is
 cleared of any values. This function is helpful when you are
@@ -627,7 +661,7 @@ S
 
   def docs_reset_next_tick
     <<-S
-** ~reset_next_tick~
+*** ~reset_next_tick~
 Has the same behavior as ~reset~ except the reset occurs
 before ~tick~ is executed again. ~reset~ resets the
 environment immediately (while the ~tick~ method is inflight). It's
@@ -653,7 +687,7 @@ S
 
   def docs_reset_sprite
     <<-S
-** ~reset_sprite~
+*** ~reset_sprite~
 Sprites when loaded are cached. This method invalidates the cache
 record of a sprite so that updates on from the disk can be loaded.
 S
@@ -661,7 +695,7 @@ S
 
   def docs_calcspritebox
     <<-S
-** ~calcspritebox~
+*** ~calcspritebox~
 Given a path to a sprite, this method returns the ~width~ and ~height~ of a sprite as a tuple.
 
 NOTE: This method should be used for development purposes only and is
@@ -673,7 +707,7 @@ S
 
   def docs_current_framerate
     <<-S
-** ~current_framerate~
+*** ~current_framerate~
 Returns a float value representing the framerate of your game. This is
 an approximation/moving average of your framerate and should
 eventually settle to 60fps.
@@ -690,7 +724,7 @@ S
 
   def docs_framerate_diagnostics_primitives
     <<-S
-** ~framerate_diagnostics_primitives~
+*** ~framerate_diagnostics_primitives~
 Returns a set of primitives that can be rendered to the screen which
 provide more detailed information about the speed of your simulation
 (framerate, draw call count, mouse position, etc).
@@ -705,7 +739,7 @@ S
 
   def docs_warn_array_primitives!
     <<-S
-** ~warn_array_primitives!~
+*** ~warn_array_primitives!~
 This function helps you audit your game of usages of array-based
 primitives. While array-based primitives are simple to create and use,
 they are slower to process than ~Hash~ or ~Class~ based primitives.
@@ -735,7 +769,7 @@ S
 
   def docs_notify!
     <<-S
-** ~notify!~
+*** ~notify!~
 Given a string, this function will present a message at the bottom of
 your game. This method is only invoked in dev mode and is useful for debugging.
 
@@ -759,7 +793,7 @@ S
 
   def docs_notify_extended!
     <<-S
-** ~notify_extended!~
+*** ~notify_extended!~
 Has similar behavior as notify! except you have additional options to
 show messages in a production environment.
 #+begin_src
@@ -776,7 +810,7 @@ S
 
   def docs_slowmo!
     <<-S
-** ~slowmo!~
+*** ~slowmo!~
 Given a numeric value representing the factor of 60fps. This function
 will bring your simulation loop down to slower rate. This method is
 intended to be used for debugging purposes.
@@ -797,7 +831,7 @@ S
 
   def docs_show_console
     <<-S
-** ~show_console~
+*** ~show_console~
 Shows the DragonRuby console. Useful when debugging/customizing an
 in-game dev workflow.
 S
@@ -805,7 +839,7 @@ S
 
   def docs_hide_console
     <<-S
-** ~hide_console~
+*** ~hide_console~
 Shows the DragonRuby console. Useful when debugging/customizing an
 in-game dev workflow.
 S
@@ -813,7 +847,7 @@ S
 
   def docs_enable_console
     <<-S
-** ~enable_console~
+*** ~enable_console~
 Enables the DragonRuby Console so that it can be presented by pressing
 the tilde key (the key next to the number 1 key).
 S
@@ -821,7 +855,7 @@ S
 
   def docs_disable_console
     <<-S
-** ~disable_console~
+*** ~disable_console~
 Disables the DragonRuby Console so that it won't show up even if you
 press the tilde key or call ~args.gtk.show_console~.
 S
@@ -829,7 +863,7 @@ S
 
   def docs_start_recording
     <<-S
-** ~start_recording~
+*** ~start_recording~
 Resets the game to tick ~0~ and starts recording gameplay. Useful for
 visual regression tests/verification.
 S
@@ -837,7 +871,7 @@ S
 
   def docs_stop_recording
     <<-S
-** ~stop_recording~
+*** ~stop_recording~
 Function takes in a destination file for the currently recording
 gameplay. This file can be used to replay a recording.
 S
@@ -845,14 +879,14 @@ S
 
   def docs_cancel_recording
     <<-S
-** ~cancel_recording~
+*** ~cancel_recording~
 Function cancels a gameplay recording session and discards the replay.
 S
   end
 
   def docs_start_replay
     <<-S
-** ~start_replay~
+*** ~start_replay~
 Given a file that represents a recording, this method will run the
 recording against the current codebase.
 
@@ -870,14 +904,14 @@ S
 
   def docs_stop_replay
     <<-S
-** ~stop_replay~
+*** ~stop_replay~
 Function stops a replay that is currently executing.
 S
   end
 
   def docs_get_base_dir
     <<-S
-** ~get_base_dir~
+*** ~get_base_dir~
 Returns the path to the location of the dragonruby binary. In
 production mode, this value will be the same as the value returned by
 ~get_game_dir~. Function should only be used for
@@ -887,7 +921,7 @@ S
 
   def docs_get_game_dir
     <<-S
-** ~get_game_dir~
+*** ~get_game_dir~
 Returns the location within sandbox storage that the game is
 running. When developing your game, this value will be your ~mygame~
 directory. In production, it'll return a value that is OS specific (eg
@@ -901,7 +935,7 @@ S
 
   def docs_get_game_dir_url
     <<-S
-** ~get_game_dir_url~
+*** ~get_game_dir_url~
 Returns a url encoded string representing the sandbox location for
 game data.
 S
@@ -909,7 +943,7 @@ S
 
   def docs_open_game_dir
     <<-S
-** ~open_game_dir~
+*** ~open_game_dir~
 Opens the game directory in the OS's file explorer. This should be
 used for debugging purposes only.
 S
@@ -917,7 +951,7 @@ S
 
   def docs_write_file_root
     <<-S
-** ~write_file_root~
+*** ~write_file_root~
 Given a file path and contents, the contents will be written to a
 directory outside of the game directory. This method should be used
 for development purposes only. In production this method will write to
@@ -927,7 +961,7 @@ S
 
   def docs_append_file_root
     <<-S
-** ~append_file_root~
+*** ~append_file_root~
 Has the same behavior as ~write_file_root~ except that it
 appends the contents as opposed to overwriting them.
 S
@@ -935,7 +969,7 @@ S
 
   def docs_argv
     <<-S
-** ~argv~
+*** ~argv~
 Returns a string representing the command line arguments passed to the
 DragonRuby binary. This should be used for development/debugging purposes only.
 S
@@ -943,7 +977,7 @@ S
 
   def docs_cli_arguments
     <<-S
-** ~cli_arguments~
+*** ~cli_arguments~
 Returns a ~Hash~ for command line arguments in the format of ~--switch value~
 (two hyphens preceding the switch flag with the value seperated by a
 space). This should be used for development/debugging purposes only.
@@ -952,7 +986,7 @@ S
 
   def docs_reload_history
     <<-S
-** ~reload_history~
+*** ~reload_history~
 Returns a ~Hash~ representing the code files that have be loaded for
 your game along with timings for the events. This should be used for
 development/debugging purposes only.
@@ -961,7 +995,7 @@ S
 
   def docs_reload_history_pending
     <<-S
-** ~reload_history_pending~
+*** ~reload_history_pending~
 Returns a ~Hash~ for files that have been queued for reload, but
 haven't been processed yet. This should be used for
 development/debugging purposes only.
@@ -970,7 +1004,7 @@ S
 
   def docs_reload_if_needed
     <<-S
-** ~reload_if_needed~
+*** ~reload_if_needed~
 Given a file name, this function will queue the file for reload if
 it's been modified. An optional second parameter can be passed in to
 signify if the file should be forced loaded regardless of modified
@@ -1356,9 +1390,16 @@ Returns the grid's height (always 720).
 S
   end
 
+  def docs_production?
+    <<-S
+*** ~production?~
+Returns true if the game is being run in a released/shipped state.
+S
+  end
+
   def docs_platform?
     <<-S
-** ~platform?~
+*** ~platform?~
 You can ask DragonRuby which platform your game is currently being run on. This can be
 useful if you want to perform different pieces of logic based on where the game is running.
 
@@ -1396,7 +1437,7 @@ S
 
   def docs_platform_mappings
     <<-S
-** ~platform_mappings~
+*** ~platform_mappings~
 These are the current platform categorizations (~args.gtk.platform_mappings~):
 #+begin_src ruby
   {
@@ -1418,7 +1459,7 @@ S
 
   def docs_stat_file
     <<-S
-** ~stat_file~
+*** ~stat_file~
 This function takes in one parameter. The parameter is the file path and assumes the the game
 directory is the root. The method returns ~nil~ if the file doesn't exist otherwise it returns
 a ~Hash~ with the following information:
@@ -1461,9 +1502,16 @@ a ~Hash~ with the following information:
 S
   end
 
+  def docs_file_access_functions
+    <<-S
+** File IO Functions
+The following functions give you the ability to interact with the file system.
+S
+  end
+
   def docs_list_files
     <<-S
-** ~list_files~
+*** ~list_files~
 This function takes in one parameter. The parameter is the directory path and assumes the the game
 directory is the root. The method returns an ~Array~ of ~String~ representing all files
 within the directory. Use ~stat_file~ to determine whether a specific path is a file
@@ -1473,7 +1521,7 @@ S
 
   def docs_write_file
     <<-S
-** ~write_file~
+*** ~write_file~
 This function takes in two parameters. The first parameter is the file path and assumes the the game
 directory is the root. The second parameter is the string that will be written. The method **overwrites**
 whatever is currently in the file. Use ~append_file~ to append to the file as opposed to overwriting.
@@ -1490,7 +1538,7 @@ S
 
   def docs_append_file
     <<-S
-** ~append_file~
+*** ~append_file~
 This function takes in two parameters. The first parameter is the file path and assumes the the game
 directory is the root. The second parameter is the string that will be written. The method appends to
 whatever is currently in the file (a new file is created if one does not alread exist). Use
@@ -1508,7 +1556,7 @@ S
 
   def docs_delete_file
     <<-S
-** ~delete_file~
+*** ~delete_file~
 This function takes in a single parameters. The parameter is the file path that should be deleted. This
 function will raise an exception if the path requesting to be deleted does not exist.
 
@@ -1540,8 +1588,8 @@ S
 
   def docs_benchmark
 <<-S
-** ~benchmark~
-You can use this function to compare the relative performance of methods.
+*** ~benchmark~
+You can use this function to compare the relative performance of blocks of code.
 
 #+begin_src ruby
   def tick args

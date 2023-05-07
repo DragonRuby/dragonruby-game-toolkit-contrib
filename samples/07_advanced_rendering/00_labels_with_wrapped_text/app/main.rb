@@ -41,6 +41,7 @@ def clear_message_queue args
 end
 
 def render_messages args
+  args.outputs[:textbox].transient!
   args.outputs[:textbox].w = 400
   args.outputs[:textbox].h = 720
 

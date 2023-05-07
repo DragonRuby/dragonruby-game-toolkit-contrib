@@ -269,6 +269,21 @@ S
     true_lines << true_line
   end
 
+  def __docs_generate_link_id__ text
+    text = text.strip.downcase
+    text = text.gsub("*", "-")
+    text = text.gsub("~", "-")
+    text = text.gsub("[", "-")
+    text = text.gsub("]", "-")
+    text = text.gsub(":", "-")
+    text = text.gsub(" ", "-")
+    text = text.gsub(".", "-")
+    text = text.gsub(",", "-")
+    text = text.gsub("'", "-")
+    text = text.gsub("?", "-")
+    text
+  end
+
   # may god have mercy on your soul if you try to expand this
   def __docs_to_html__ string
     parse_log = []
@@ -392,21 +407,6 @@ S
     inside_ul           = false
     inside_ol           = false
 
-    text_to_id = lambda do |text|
-      text = text.strip.downcase
-      text = text.gsub("*", "-")
-      text = text.gsub("~", "-")
-      text = text.gsub("[", "-")
-      text = text.gsub("]", "-")
-      text = text.gsub(":", "-")
-      text = text.gsub(" ", "-")
-      text = text.gsub(".", "-")
-      text = text.gsub(",", "-")
-      text = text.gsub("'", "-")
-      text = text.gsub("?", "-")
-      text
-    end
-
     close_list_if_needed = lambda do |inside_ul, inside_ol|
       begin
         result = ""
@@ -435,34 +435,34 @@ S
         inside_ol = false
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
-        link_id = text_to_id.call l
+        link_id = __docs_generate_link_id__ l
         toc_html += "<li><a class='header-1' href='##{link_id}'>#{formatted_html}</a></li>\n"
-        content_html += "<h1 id='#{link_id}'>#{formatted_html}</h1>\n"
+        content_html += "<h1 id='#{link_id}'>#{formatted_html} <a style='font-size: small; float: right;' href='##{link_id}'>link</a></h1> \n"
       elsif l.start_with? "** "
         parse_log << "- H2 detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
         inside_ol = false
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
-        link_id = text_to_id.call l
+        link_id = __docs_generate_link_id__ l
         toc_html += "<ul><li><a class='header-2' href='##{link_id}'>#{formatted_html}</a></li></ul>"
-        content_html += "<h2 id='#{link_id}'>#{__docs_line_to_html__ l, parse_log}</h2>\n"
+        content_html += "<h2 id='#{link_id}'>#{__docs_line_to_html__ l, parse_log} <a style='font-size: small; float: right;' href='##{link_id}'>link</a></h2> \n"
       elsif l.start_with? "*** "
         parse_log << "- H3 detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
         inside_ol = false
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
-        link_id = text_to_id.call l
+        link_id = __docs_generate_link_id__ l
         toc_html += "<ul><ul><li><a class='header-3' href='##{link_id}'>#{formatted_html}</a></li></ul></ul>"
-        content_html += "<h3 id='#{link_id}'>#{__docs_line_to_html__ l, parse_log}</h3>\n"
+        content_html += "<h3 id='#{link_id}'>#{__docs_line_to_html__ l, parse_log} <a style='font-size: small; float: right;' href='##{link_id}'>link</a></h3> \n"
       elsif l.start_with? "**** "
         parse_log << "- H4 detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
         inside_ol = false
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
-        link_id = text_to_id.call l
+        link_id = __docs_generate_link_id__ l
         # toc_html += "<ul><ul><ul><li><a href='##{link_id}'>#{formatted_html}</a></li></ul></ul></ul>"
         content_html += "<h4>#{__docs_line_to_html__ l, parse_log}</h4>\n"
       elsif l.start_with? "***** "
@@ -471,7 +471,7 @@ S
         inside_ol = false
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
-        link_id = text_to_id.call l
+        link_id = __docs_generate_link_id__ l
         # toc_html += "<ul><ul><ul><li><a href='##{link_id}'>#{formatted_html}</a></li></ul></ul></ul>"
         content_html += "<h5>#{__docs_line_to_html__ l, parse_log}</h5>\n"
       elsif l.strip.length == 0 && !inside_pre

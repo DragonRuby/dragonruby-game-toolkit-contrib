@@ -42,6 +42,7 @@ def render_main args
 end
 
 def render_scene args
+  args.outputs[:scene].transient!
   args.outputs[:scene].background_color = [255, 255, 255, 0]
 
   # center line

@@ -26,6 +26,7 @@ class Game
 
   def render
     outputs.background_color = [32, 32, 32]
+    outputs[:scene].transient!
     outputs[:scene].w = 128
     outputs[:scene].h = 128
     outputs[:scene].borders << { x: 0, y: 0, w: 128, h: 128, r: 255, g: 255, b: 255 }

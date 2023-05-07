@@ -55,6 +55,7 @@ def render_mouse_crosshairs args, mouse
 end
 
 def emulate_lowrez_scene args, sprites, labels, borders, solids, mouse
+  args.render_target(:lowrez).transient!
   args.render_target(:lowrez).solids  << [0, 0, 1280, 720]
   args.render_target(:lowrez).sprites << sprites
   args.render_target(:lowrez).borders << borders

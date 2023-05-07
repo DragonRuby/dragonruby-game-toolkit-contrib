@@ -20,6 +20,7 @@ def tick args
   args.outputs.primitives << { x: 10, y: 50.from_top, text: "space to cycle target hero", r: 255, g: 255, b: 255}.label!
 
   # render scene
+  args.outputs[:scene].transient!
   args.outputs[:scene].w = args.state.world.w
   args.outputs[:scene].h = args.state.world.h
 

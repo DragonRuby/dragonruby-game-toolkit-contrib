@@ -98,6 +98,7 @@ module GTK
             'dragon/ios_wizard.rb',
             'dragon/itch_wizard.rb',
             'dragon/runtime/benchmark.rb',
+            'dragon/tweetcart.rb',
           ] + core_files_to_reload + @required_files
         end
       end

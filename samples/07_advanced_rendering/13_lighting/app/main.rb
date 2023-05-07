@@ -24,6 +24,7 @@ def render args
   args.outputs.background_color = [0, 0, 0]
 
   # render scene
+  args.outputs[:scene].transient!
   args.outputs[:scene].sprites << { x:        0, y:   0, w: 1280, h: 720, path: :pixel }
   args.outputs[:scene].sprites << { x: 640 - 40, y: 100, w:   80, h:  80, path: 'sprites/square/blue.png' }
   args.outputs[:scene].sprites << { x: 640 - 40, y: 200, w:   80, h:  80, path: 'sprites/square/blue.png' }
@@ -33,6 +34,7 @@ def render args
 
   # render light
   swinging_light_w = 1100
+  args.outputs[:lights].transient!
   args.outputs[:lights].background_color = [0, 0, 0, 0]
   args.outputs[:lights].sprites << { x: 640 - swinging_light_w.half,
                                      y: -1300,
@@ -50,6 +52,7 @@ def render args
                                      path: "sprites/lights/mask.png" }
 
   # merge unlighted scene with lights
+  args.outputs[:lighted_scene].transient!
   args.outputs[:lighted_scene].sprites << { x: 0, y: 0, w: 1280, h: 720, path: :lights, blendmode_enum: 0 }
   args.outputs[:lighted_scene].sprites << { blendmode_enum: 2, x: 0, y: 0, w: 1280, h: 720, path: :scene }
 

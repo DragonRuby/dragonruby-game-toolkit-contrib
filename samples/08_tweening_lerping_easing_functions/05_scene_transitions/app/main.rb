@@ -9,6 +9,7 @@ class SceneOne
   attr_gtk
 
   def tick
+    outputs[:scene].transient!
     outputs[:scene].labels << { x: 640,
                                 y: 360,
                                 text: "I am scene ONE. Press enter to go to scene TWO.",
@@ -23,6 +24,7 @@ class SceneTwo
   attr_gtk
 
   def tick
+    outputs[:scene].transient!
     outputs[:scene].labels << { x: 640,
                                 y: 360,
                                 text: "I am scene TWO. Press enter to go to scene ONE.",

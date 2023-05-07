@@ -9,6 +9,7 @@ def tick args
   # clear the render target on the first tick, and then never again. Draw
   #  another box to it every tick, accumulating over time.
   clear_target = (args.state.tick_count == 0) || (args.inputs.keyboard.key_down.space)
+  args.render_target(:accumulation).transient = true
   args.render_target(:accumulation).background_color = [ 0, 0, 0, 0 ];
   args.render_target(:accumulation).clear_before_render = clear_target
   args.render_target(:accumulation).solids << [args.state.x, args.state.y, 25, 25, 255, 0, 0, 255];

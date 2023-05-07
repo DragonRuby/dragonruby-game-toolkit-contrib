@@ -94,6 +94,7 @@ def add_rect args, x, y
 end
 
 def generate_scene args, quad_tree
+  args.outputs[:scene].transient!
   args.outputs[:scene].w = 1280
   args.outputs[:scene].h = 720
   args.outputs[:scene].solids << { x: 0, y: 0, w: 1280, h: 720, r: 255, g: 255, b: 255 }

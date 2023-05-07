@@ -26,6 +26,7 @@ def create_combined_sprite args
 
   # define the dimensions of the combined sprite
   # the name of the combined sprite is :two_squares
+  args.outputs[:two_squares].transient!
   args.outputs[:two_squares].w = 80
   args.outputs[:two_squares].h = 80
 

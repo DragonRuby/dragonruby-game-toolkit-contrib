@@ -1304,8 +1304,8 @@ Sure, an _implementation/runtime_ can be slow though, but then we'd have to talk
 which runtime.
 
 Here's a some quick demonstrations of how well DragonRuby Game Toolkit Performs:
-- [[https://youtu.be/MFR-dvsllA4]]
-- [[https://youtu.be/UuY7CWdvyWM]]
+- DragonRuby vs Unity: [[https://youtu.be/MFR-dvsllA4]]
+- DragonRuby vs PyGame: [[https://youtu.be/fuRGs6j6fPQ]]
 
 *** Dynamic languages are slow.
 
@@ -1342,10 +1342,9 @@ All this being said, we do have parts of the engine open sourced on GitHub: [[ht
 
 *** DragonRuby is for pay. You should offer a free version.
 
-If you can afford to pay for DragonRuby, you should (and will). We don't go
-around telling writers that they should give us their books for free,
-and only require payment if we read the entire thing. It's time we stop asking that
-of software products.
+If you can afford to pay for DragonRuby, you should (and will). We don't tell authors
+that they should give us their books for free, and only require payment if we read the
+entire thing. It's time we stop asking that of software products.
 
 That being said, we will _never_ put someone out financially. We have
 income assistance for anyone that can't afford a license to any one of
@@ -1388,10 +1387,8 @@ that don't value the same things we do.
 
 *** What if I build something with DragonRuby, but DragonRuby LLP becomes insolvent.
 
-That won't happen if the development world stop asking for free stuff
-and non-trivially compensate open source developers. Look, we want to be
-able to work on the stuff we love, every day of our lives. And we'll go
-to great lengths to make that happen.
+We want to be able to work on the stuff we love, every day of our lives. And we'll go
+to great lengths to make that continues.
 
 But, in the event that sad day comes, our partnership bylaws state that
 _all_ DragonRuby IP that can be legally open sourced, will be released

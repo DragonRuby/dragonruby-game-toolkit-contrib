@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright 2019 DragonRuby LLC
+# Copyright 2020 DragonRuby LLC
 # MIT License
 # args_docs.rb has been released under MIT (*only this file*).
 
@@ -7,7 +7,8 @@ module ArgsDocs
   def docs_method_sort_order
     [
       :docs_audio,
-      :docs_easing
+      :docs_easing,
+      :docs_pixel_array,
     ]
   end
 
@@ -39,7 +40,7 @@ Looping sounds or sounds that should stop early must be removed manually.
 When you assign a hash to an audio output, a ~:length~ key will be added to the hash on the following tick.
 This will tell you the duration of the audio file in seconds (float).
 
-** Audio synthesis (Pro only)
+** Audio synthesis
 
 Instead of a path to an audio file you can specify an array ~[channels, sample_rate, sound_source]~ for ~input~
 to procedurally generate sound. You do this by providing an array of float values between -1.0 and 1.0 that
@@ -272,6 +273,52 @@ If you don't want to create a lambda, you can register an easing definition like
   end
 #+end_src
 
+S
+  end
+
+  def docs_pixel_array
+    <<-S
+* ~pixel_arrays~
+
+A ~PixelArray~ object with a width, height and an Array of pixels which are hexadecimal color values in ABGR format.
+
+NOTE: This is an Indie/Pro feature and not available in the Standard license.
+
+You can create a pixel array like this:
+
+#+begin_src
+  w = 200
+  h = 100
+  args.pixel_array(:my_pixel_array).w = w
+  args.pixel_array(:my_pixel_array).h = h
+#+end_src
+
+You'll also need to fill the pixels with values, if they are ~nil~, the array will render with the checkerboard texture.  You can use #00000000 to fill with transparent pixels if desired.
+
+#+begin_src
+args.pixel_array(:my_pixel_array).pixels.fill #FF00FF00, 0, w * h
+#+end_src
+
+Note: To convert from rgb hex (like skyblue #87CEEB) to abgr hex, you split it in pairs pair (eg ~87~ ~CE~ ~EB~) and reverse the order (eg ~EB~ ~CE~ ~87~) add join them again: ~#EBCE87~. Then add the alpha component in front ie: ~FF~ for full opacity: ~#FFEBCE87~.
+
+You can draw it by using the symbol for ~:path~
+
+#+begin_src
+  args.outputs.sprites << { x: 500, y: 300, w: 200, h: 100, path: :my_pixel_array) }
+#+end_src
+
+If you want access a specific x, y position, you can do it like this for a bottom-left coordinate system:
+
+#+begin_src
+  x = 150
+  y = 33
+  args.pixel_array(:my_pixel_array).pixels[(height - y) * width + x] = 0xFFFFFFFF
+#+end_src
+
+** Related Sample Apps
+
+- Animation using pixel arrays: ~./samples/07_advanced_rendering/06_pixel_arrays~
+- Load a pixel array from a png: ~./samples/07_advanced_rendering/06_pixel_arrays_from_file/~
 S
   end
 end

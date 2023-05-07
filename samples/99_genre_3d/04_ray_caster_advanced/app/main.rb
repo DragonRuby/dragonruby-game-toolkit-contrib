@@ -32,7 +32,7 @@ def defaults args
   args.state.stage ||= {
     w: 8,       # Width of the tile map
     h: 8,       # Height of the tile map
-    sz: 64,     # To define a 3D space, define a size (in arbitrary units) we consider one map tile to be. 
+    sz: 64,     # To define a 3D space, define a size (in arbitrary units) we consider one map tile to be.
     layout: [
       1, 1, 1, 1, 2, 1, 1, 1,
       1, 0, 1, 0, 0, 0, 0, 1,
@@ -54,7 +54,7 @@ def defaults args
     fire_cooldown_wait: 0,
     fire_cooldown_duration: 15
   }
-  
+
   # Add an initial alien enemy.
   # The :bright property indicates that this entity doesn't produce light and should appear dimmer over distance.
   args.state.enemies ||= [{ x: 280, y: 280, type: :alien, bright: false, expired: false }]
@@ -177,6 +177,7 @@ end
 
 def render args
   # Render the sky
+  args.outputs[:screen].transient!
   args.outputs[:screen].sprites << { x: 0,
                                      y: 320,
                                      w: 960,
@@ -206,7 +207,7 @@ def render args
   # Save distances of each wall hit. This is used subsequently when drawing sprites.
   depths = []
 
-  # Cast 120 rays across 60 degress - we'll consider the next 0.5 degrees each ray 
+  # Cast 120 rays across 60 degress - we'll consider the next 0.5 degrees each ray
   120.times do |r|
 
     # The next ~120 lines are largely the same as the previous sample. The changes are:
@@ -215,20 +216,20 @@ def render args
     #   - `depths` is used later when rendering enemies and bullet.
     # - We draw a slice of a wall texture instead of a solid color.
     # - The wall strip for the array hit is appended to `sprites_to_draw` instead of being drawn immediately.
-    dof = 0             
-    max_dof = 8        
+    dof = 0
+    max_dof = 8
     dis_v = 100000
 
     ra_tan = Math.tan(ra * Math::PI / 180)
 
     if ra.cos_d > 0.001
-      rx = ((args.state.player.x >> 6) << 6) + 64                       
-                                                                        
-      ry = (args.state.player.x - rx) * ra_tan + args.state.player.y;   
-      xo = 64                                                           
-      yo = -xo * ra_tan                                                 
+      rx = ((args.state.player.x >> 6) << 6) + 64
+
+      ry = (args.state.player.x - rx) * ra_tan + args.state.player.y;
+      xo = 64
+      yo = -xo * ra_tan
     elsif ra.cos_d < -0.001
-      rx = ((args.state.player.x >> 6) << 6) - 0.0001                   
+      rx = ((args.state.player.x >> 6) << 6) - 0.0001
       ry = (args.state.player.x - rx) * ra_tan + args.state.player.y
       xo = -64
       yo = -xo * ra_tan
@@ -239,8 +240,8 @@ def render args
     end
 
     while dof < max_dof
-      mx = rx >> 6      
-      mx = mx.to_i      
+      mx = rx >> 6
+      mx = mx.to_i
       my = ry >> 6
       my = my.to_i
       mp = my * args.state.stage.w + mx
@@ -317,7 +318,7 @@ def render args
     # Wall texturing - Determine the section of source texture to use
     tx = dis_v > dis_h ? (rx.to_i % 64).to_i : (ry.to_i % 64).to_i
     # If player is looking backwards towards a tile then flip the side of the texture to sample.
-    # The sample wall textures have a diagonal stripe pattern - if you comment out these 2 lines, 
+    # The sample wall textures have a diagonal stripe pattern - if you comment out these 2 lines,
     # you will see what goes wrong with texturing.
     tx = 63 - tx if (ra > 180 && dis_v > dis_h)
     tx = 63 - tx if (ra > 90 && ra < 270 && dis_v < dis_h)
@@ -354,7 +355,7 @@ def render args
   end
   things_to_draw = things_to_draw.sort_by { |t| t[:dist] }.reverse
 
-  # Now draw everything, most distant entities first. 
+  # Now draw everything, most distant entities first.
   things_to_draw.each do |t|
       distance_to_thing = t[:dist]
       # The crux of drawing a sprite in a raycast view is to:
@@ -367,7 +368,7 @@ def render args
       sn = Math.sin(args.state.player.angle * Math::PI / 180)
       dx = ty * cs + tx * sn
       dy = tx * cs - ty * sn
-      
+
       # The next 5 lines determine the screen x and y of (the center of) the entity, and a scale
       next if dy == 0 # Avoid invalid Infinity/NaN calculations if the projected Y is 0
       ody = dy

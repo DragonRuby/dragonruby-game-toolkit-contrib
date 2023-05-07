@@ -139,6 +139,7 @@ class Game
 
   def render
     # create a render target to represent the camera's viewport
+    outputs[:scene].transient!
     outputs[:scene].w = state.world_size
     outputs[:scene].h = state.world_size
 

@@ -71,6 +71,7 @@ class StartScene
   def tick
     return if state.current_scene != :start
     @play_button.tick state.tick_count, inputs.mouse
+    outputs[:start_scene].transient!
     outputs[:start_scene].labels << layout.point(row: 0, col: 12).merge(text: "Squares", anchor_x: 0.5, anchor_y: 0.5, size_px: 64)
     outputs[:start_scene].primitives << @play_button.prefab(easing)
   end
@@ -94,6 +95,7 @@ class GameOverScene
   def tick
     return if state.current_scene != :game_over
     @replay_button.tick state.tick_count, inputs.mouse
+    outputs[:game_over_scene].transient!
     outputs[:game_over_scene].labels << layout.point(row: 0, col: 12).merge(text: "Game Over", anchor_x: 0.5, anchor_y: 0.5, size_px: 64)
     outputs[:game_over_scene].primitives << @replay_button.prefab(easing)
 
@@ -333,7 +335,7 @@ class GameScene
   end
 
   def scene_outputs
-    outputs[:game_scene]
+    outputs[:game_scene].transient!
   end
 
   def player

@@ -77,8 +77,9 @@ module GTK
 
         if $gtk.production
           @buttons = [
-            (button id: :record,      row: 0, col:  col_max_index - 3, text: "record gameplay",       method: :record_clicked),
-            (button id: :replay,      row: 0, col:  col_max_index - 1, text: "start replay",          method: :replay_clicked),
+            (button id: :replay,      row: 0, col: col_max_index - 1, text: "start replay",          method: :replay_clicked),
+            (button id: :record,      row: 0, col: col_max_index - 3, text: "record gameplay",       method: :record_clicked),
+            (button id: :close,       row: 0, col: col_max_index - 5, text: "close console",         method: :close_clicked),
             *custom_buttons
           ]
         elsif @menu_shown == :hidden

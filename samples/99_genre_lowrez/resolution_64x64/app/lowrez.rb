@@ -44,7 +44,7 @@ class LowrezOutputs
 
   def outputs_lowrez
     return @args.outputs if @args.state.tick_count <= 0
-    return @args.outputs[:lowrez]
+    return @args.outputs[:lowrez].transient!
   end
 
   def solids
