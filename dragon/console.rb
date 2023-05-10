@@ -44,6 +44,7 @@ module GTK
       @background_color = Color.new [0, 0, 0, 255]
       @header_color = Color.new [94, 170, 248]
       @header_2_color = Color.new [216, 95, 135]
+      @header_3_color = Color.new [214, 134, 214]
       @code_color = Color.new [210, 168, 255]
       @comment_color = Color.new [0, 200, 100]
       @animation_duration = 1.seconds
@@ -89,6 +90,7 @@ module GTK
 
     def disable
       @disabled = true
+      @visible = false
     end
 
     def enable
@@ -194,6 +196,9 @@ module GTK
     # @gtk
     def hide
       if visible?
+        if @cursor_visibilty_before_show == false
+          $gtk.hide_cursor
+        end
         toggle
         @archived_log += @log
         if @archived_log.length > @max_log_lines
@@ -215,6 +220,14 @@ module GTK
     end
 
     def toggle
+      if !@visible
+        @cursor_visibilty_before_show = $gtk.cursor_shown?
+        $gtk.show_cursor
+      else
+        if @cursor_visibilty_before_show == false
+          $gtk.hide_cursor
+        end
+      end
       @visible = !@visible
       @toggled_at = Kernel.global_tick_count
     end
@@ -306,7 +319,7 @@ S
         method_name = ((string_e.split ":")[0].gsub "'", "")
         if !(method_name.include? " ")
           results = (Kernel.__docs_search_results__ method_name)
-          if !results.include? "* DOCS: No results found."
+          if !results.include? "* No results found."
             puts (results.join "\n")
             puts <<-S
 * INFO: #{results.length} matches(s) found in DOCS for ~#{method_name}~ (see above).
@@ -627,10 +640,12 @@ S
 
       render_log_offset args
 
-      args.outputs.reserved << { x: 10.from_right, y: @bottom + 10,
-                                 text: "Press CTRL+g or ESCAPE to clear the prompt.",
-                                 vertical_alignment_enum: 0,
-                                 alignment_enum: 2, r: 80, g: 80, b: 80 }.label!
+      if @prompt.str_len < 100
+        args.outputs.reserved << { x: 10.from_right, y: @bottom + 5,
+                                   text: "Press CTRL+g or ESCAPE to clear the prompt.",
+                                   vertical_alignment_enum: 0,
+                                   alignment_enum: 2, r: 80, g: 80, b: 80 }.label!
+      end
     end
 
     def render_log_offset args
@@ -684,7 +699,12 @@ S
 
     def tick args
       begin
-        return if @disabled
+        if @disabled
+          if console_toggle_key_down? args
+            args.gtk.notify! "Console is currently disabled (this message will not show up in a production build)."
+          end
+          return
+        end
         render args
         process_inputs args
         return unless should_tick?
@@ -809,6 +829,11 @@ S
       (log_entry.start_with? "** ")
     end
 
+    def include_header_3_marker? log_entry
+      return false if (log_entry.strip.include? ".rb")
+      (log_entry.start_with? "*** ")
+    end
+
     def code? log_entry
       (just_symbol? log_entry) || (codeblock_marker? log_entry)
     end
@@ -846,6 +871,8 @@ S
         @header_color
       elsif include_header_2_marker? log_entry
         @header_2_color
+      elsif include_header_3_marker? log_entry
+        @header_3_color
       elsif log_entry.start_with?("====")
         @header_color
       else

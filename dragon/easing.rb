@@ -37,9 +37,9 @@ module GTK
       duration = end_tick - start_tick
       t = (current_tick - start_tick).fdiv duration
       time_allocation_per_curve = 1.fdiv(spline.length)
-      curve_index, curve_t = t.fdiv(time_allocation_per_curve).let do |spline_t|
-        [spline_t.to_i, spline_t - spline_t.to_i]
-      end
+      spline_t = t.fdiv(time_allocation_per_curve)
+      curve_index = spline_t.to_i
+      curve_t = spline_t - spline_t.to_i
       Geometry.cubic_bezier curve_t, *spline[curve_index]
     end
 
@@ -89,6 +89,38 @@ S
 
     def self.quint x
       x * x * x * x * x * x
+    end
+
+    def self.smooth_start_quad x
+      quad x
+    end
+
+    def self.smooth_stop_quad x
+      flip(quad(flip(x)))
+    end
+
+    def self.smooth_start_cube x
+      cube x
+    end
+
+    def self.smooth_stop_cube x
+      flip(cube(flip(x)))
+    end
+
+    def self.smooth_start_quart x
+      quart x
+    end
+
+    def self.smooth_stop_quart x
+      flip(quart(flip(x)))
+    end
+
+    def self.smooth_start_quint x
+      quint x
+    end
+
+    def self.smooth_stop_quint x
+      flip(quint(flip(x)))
     end
   end
 end

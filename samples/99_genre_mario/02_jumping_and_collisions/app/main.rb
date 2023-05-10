@@ -98,6 +98,7 @@ class Game
 
   def render_grid
     if state.tick_count == 0
+      outputs[:grid].transient!
       outputs[:grid].background_color = [0, 0, 0, 0]
       outputs[:grid].borders << available_brick_locations
       outputs[:grid].labels  << available_brick_locations.map do |b|

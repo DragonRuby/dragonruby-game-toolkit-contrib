@@ -51,6 +51,7 @@ class Game
     @args.state.hero_sprite = "sprites/herodown100.png"
     @args.state.hero_x = 608
     @args.state.hero_y = 720-656
+    @args.state.hero.sprite ||= []
     set_gem_values
   end
 

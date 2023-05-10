@@ -33,7 +33,7 @@ class NokiaOutputs
 
   def outputs_nokia
     return @args.outputs if @args.state.tick_count <= 0
-    return @args.outputs[:nokia]
+    return @args.outputs[:nokia].transient!
   end
 
   def solids

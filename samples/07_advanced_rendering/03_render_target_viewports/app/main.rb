@@ -446,6 +446,7 @@ def tick args
   $tech_demo.grid = args.grid
   $tech_demo.args = args
   $tech_demo.outputs = args.render_target(:mini_map)
+  $tech_demo.outputs.transient = true
   $tech_demo.tick
   args.outputs.labels  << [830, 715, "Render target:", [-2, 0, 0, 0, 0, 255]]
   args.outputs.sprites << [0, 0, 1280, 720, :mini_map]

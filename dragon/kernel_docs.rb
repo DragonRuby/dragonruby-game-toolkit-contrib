@@ -10,7 +10,7 @@ module KernelDocs
 
   def docs_class
     <<-S
-* DOCS: ~Kernel~
+* ~Kernel~
 
 Kernel in the DragonRuby Runtime has patches for how standard out is handled and also
 contains a unit of time in games called a tick.
@@ -20,7 +20,7 @@ S
 
   def docs_tick_count
     <<-S
-* DOCS: ~Kernel::tick_count~
+** ~tick_count~
 
 Returns the current tick of the game. This value is reset if you call $gtk.reset.
 
@@ -29,7 +29,7 @@ S
 
   def docs_global_tick_count
     <<-S
-* DOCS: ~Kernel::global_tick_count~
+** ~global_tick_count~
 
 Returns the current tick of the application from the point it was started. This value is never reset.
 
@@ -38,7 +38,7 @@ S
 
   def docs_export_docs!
     <<-S
-* DOCS: ~Kernel::export_docs!~
+** ~export_docs!~
 
 Exports all GTK documentation to txt files and saves them to a docs directory.
 

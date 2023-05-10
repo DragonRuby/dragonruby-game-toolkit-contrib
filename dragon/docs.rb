@@ -28,11 +28,12 @@ module DocsOrganizer
     [
       GTK::ReadMe,
       GTK::Runtime,
-      Array,
+      GTK::Geometry,
       GTK::Args,
       GTK::Outputs,
       GTK::Mouse,
       GTK::OpenEntity,
+      Array,
       Numeric,
       Kernel,
     ]
@@ -93,7 +94,7 @@ module Docs
     list = $docs_classes.map { |mod| "** #{mod.name}.docs" }.join "\n"
     <<-S
 
-* DOCS:
+* Documentation
 Here are the classes that have documentation. You can call the .docs method
 on any of these classes:
 #{list}
@@ -112,7 +113,7 @@ S
     if self == Kernel
       <<-S
 
-* DOCS: #{self.name}
+* #{self.name}
 Some Classes in Game Toolkit have a method called docs. You can invoke this
 method interactively to see information about functions within the engine.
 For example, invoking ~Kernel.docs_tick_count~ will give you documentation
@@ -142,7 +143,7 @@ S
     else
       <<-S
 
-* DOCS: #{self.name}
+* #{self.name}
 #{docs_methods}
 S
     end
@@ -154,7 +155,7 @@ S
 
   def __docs_search_help_text__
     <<-S
-* DOCS: How To Search The Docs
+* How To Search The Docs
 To search docs you can use Kernel.docs_search (or just ~docs_search~) by providing it a search term.
 For example:
 
@@ -195,6 +196,8 @@ S
     insert_headings_proc = lambda { |klass, m|
       s = klass.send m
 
+      next if !s
+
       s = s.each_line.to_a.map do |s|
         if s.start_with? "* "
           "#{s.strip} [[#{klass}.#{m}]]\n"
@@ -230,11 +233,11 @@ S
 
     final_string = results.join "\n"
 
-    final_string = "* DOCS: No results found." if final_string.strip.length == 0
+    final_string = "* No results found." if final_string.strip.length == 0
 
     $gtk.write_file_root "docs/search_results.txt", final_string
 
-    if !final_string.include? "* DOCS: No results found."
+    if !final_string.include? "* No results found."
       final_string += "\n* INFO: Search results have been written to docs/search_results.txt."
     end
 
@@ -264,6 +267,21 @@ S
     true_line.rstrip!
     parse_log << "*** True Line Result\n#{true_line}"
     true_lines << true_line
+  end
+
+  def __docs_generate_link_id__ text
+    text = text.strip.downcase
+    text = text.gsub("*", "-")
+    text = text.gsub("~", "-")
+    text = text.gsub("[", "-")
+    text = text.gsub("]", "-")
+    text = text.gsub(":", "-")
+    text = text.gsub(" ", "-")
+    text = text.gsub(".", "-")
+    text = text.gsub(",", "-")
+    text = text.gsub("'", "-")
+    text = text.gsub("?", "-")
+    text
   end
 
   # may god have mercy on your soul if you try to expand this
@@ -389,20 +407,6 @@ S
     inside_ul           = false
     inside_ol           = false
 
-    text_to_id = lambda do |text|
-      text = text.strip.downcase
-      text = text.gsub("*", "-")
-      text = text.gsub("~", "-")
-      text = text.gsub("[", "-")
-      text = text.gsub("]", "-")
-      text = text.gsub(":", "-")
-      text = text.gsub(" ", "-")
-      text = text.gsub(".", "-")
-      text = text.gsub(",", "-")
-      text = text.gsub("?", "-")
-      text
-    end
-
     close_list_if_needed = lambda do |inside_ul, inside_ol|
       begin
         result = ""
@@ -431,34 +435,34 @@ S
         inside_ol = false
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
-        link_id = text_to_id.call l
+        link_id = __docs_generate_link_id__ l
         toc_html += "<li><a class='header-1' href='##{link_id}'>#{formatted_html}</a></li>\n"
-        content_html += "<h1 id='#{link_id}'>#{formatted_html}</h1>\n"
+        content_html += "<h1 id='#{link_id}'>#{formatted_html} <a style='font-size: small; float: right;' href='##{link_id}'>link</a></h1> \n"
       elsif l.start_with? "** "
         parse_log << "- H2 detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
         inside_ol = false
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
-        link_id = text_to_id.call l
+        link_id = __docs_generate_link_id__ l
         toc_html += "<ul><li><a class='header-2' href='##{link_id}'>#{formatted_html}</a></li></ul>"
-        content_html += "<h2 id='#{link_id}'>#{__docs_line_to_html__ l, parse_log}</h2>\n"
+        content_html += "<h2 id='#{link_id}'>#{__docs_line_to_html__ l, parse_log} <a style='font-size: small; float: right;' href='##{link_id}'>link</a></h2> \n"
       elsif l.start_with? "*** "
         parse_log << "- H3 detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
         inside_ol = false
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
-        link_id = text_to_id.call l
+        link_id = __docs_generate_link_id__ l
         toc_html += "<ul><ul><li><a class='header-3' href='##{link_id}'>#{formatted_html}</a></li></ul></ul>"
-        content_html += "<h3 id='#{link_id}'>#{__docs_line_to_html__ l, parse_log}</h3>\n"
+        content_html += "<h3 id='#{link_id}'>#{__docs_line_to_html__ l, parse_log} <a style='font-size: small; float: right;' href='##{link_id}'>link</a></h3> \n"
       elsif l.start_with? "**** "
         parse_log << "- H4 detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
         inside_ol = false
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
-        link_id = text_to_id.call l
+        link_id = __docs_generate_link_id__ l
         # toc_html += "<ul><ul><ul><li><a href='##{link_id}'>#{formatted_html}</a></li></ul></ul></ul>"
         content_html += "<h4>#{__docs_line_to_html__ l, parse_log}</h4>\n"
       elsif l.start_with? "***** "
@@ -467,7 +471,7 @@ S
         inside_ol = false
         inside_ul = false
         formatted_html = __docs_line_to_html__ l, parse_log
-        link_id = text_to_id.call l
+        link_id = __docs_generate_link_id__ l
         # toc_html += "<ul><ul><ul><li><a href='##{link_id}'>#{formatted_html}</a></li></ul></ul></ul>"
         content_html += "<h5>#{__docs_line_to_html__ l, parse_log}</h5>\n"
       elsif l.strip.length == 0 && !inside_pre
@@ -478,13 +482,13 @@ S
         inside_ol = false
         inside_ul = false
         inside_pre = true
-        content_html << '<pre><code class="language-ruby">'
+        content_html << '<pre>'
       elsif l.start_with? "#+end_src"
         parse_log << "- PRE end detected."
         inside_ol = false
         inside_ul = false
         inside_pre = false
-        content_html << "</code></pre>\n"
+        content_html << "</pre>\n"
       elsif l.start_with? "#+begin_quote"
         parse_log << "- BLOCKQUOTE start detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
@@ -555,7 +559,12 @@ S
         end
 
         if inside_pre
-          content_html << "#{l.rstrip[2..-1]}\n"
+          pre = l.rstrip[2..-1] || ""
+          escaped_pre = pre.gsub("&", "&amp;")
+                           .gsub("<", "&lt;")
+                           .gsub(">", "&gt;")
+
+          content_html << "#{escaped_pre}\n"
         else
           parse_log << "- P detected."
 
@@ -598,9 +607,9 @@ S
     elsif line.start_with? "* "
       line = line.gsub "* ", ""
       parse_log << "- Line contains ~* ~... gsub-ing empty string"
-    elsif line.start_with? "* DOCS: "
-      line = line.gsub "* DOCS: ", ""
-      parse_log << "- Line contains ~* DOCS:~... gsub-ing empty string"
+    elsif line.start_with? "* "
+      line = line.gsub "* ", ""
+      parse_log << "- Line contains ~* ~... gsub-ing empty string"
     else
       parse_log << "- Line does not appear to be a header."
     end
@@ -612,6 +621,9 @@ S
     parse_log << "- Line contains link marker: #{line_has_link_marker}"
 
     line_to_format = line.rstrip
+                         .gsub("&", "&amp;")
+                         .gsub("<", "&lt;")
+                         .gsub(">", "&gt;")
 
     # <code> logic
     if tilde_count.even? && tilde_count != 0

@@ -20,7 +20,7 @@ def defaults args
   args.state.num_balls ||= 0
   args.state.ball_created_at ||= args.state.tick_count
   args.state.ball_hypotenuse = (10**2 + 10**2)**0.5
-  args.state.ballParents ||=nil
+  args.state.ballParents ||= []
 
   init_blocks args
   init_balls args

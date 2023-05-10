@@ -36,6 +36,7 @@ class OneBitLowrezPaint
     state.buttons_frame_selection.left = 10
     state.buttons_frame_selection.top  = grid.top - 10
     state.buttons_frame_selection.size = 20
+    state.buttons_frame_selection.items ||= []
 
     defaults_canvas_sprite
 
@@ -55,6 +56,7 @@ class OneBitLowrezPaint
 
     return unless state.tick_count == 1
 
+    outputs[:rt_canvas].transient!
     outputs[:rt_canvas].width      = rt_canvas.width
     outputs[:rt_canvas].height     = rt_canvas.height
     outputs[:rt_canvas].sprites   << (rt_canvas.size + 1).map_with_index do |x|
@@ -116,6 +118,7 @@ class OneBitLowrezPaint
   def render_animation_frame_thumbnails
     return if state.tick_count.zero?
 
+    outputs[:current_animation_frame].transient!
     outputs[:current_animation_frame].width   = rt_canvas.size
     outputs[:current_animation_frame].height  = rt_canvas.size
     outputs[:current_animation_frame].solids <<  selected_animation_frame[:pixels].map_with_index do |f, i|
@@ -350,6 +353,7 @@ class OneBitLowrezPaint
   def update_animation_frame_render_target animation_frame
     return if !animation_frame
 
+    outputs[animation_frame[:rt_name]].transient = true
     outputs[animation_frame[:rt_name]].width   = state.rt_canvas.size
     outputs[animation_frame[:rt_name]].height  = state.rt_canvas.size
     outputs[animation_frame[:rt_name]].solids << animation_frame[:pixels].map do |f|

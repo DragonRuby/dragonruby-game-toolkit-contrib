@@ -145,7 +145,7 @@ module GTK
         ":"  => [:colon],
         ";"  => [:semicolon],
         "="  => [:equal_sign],
-        "-"  => [:hyphen],
+        "-"  => [:hyphen, :minus],
         " "  => [:space],
         "$"  => [:dollar_sign],
         "\"" => [:double_quotation_mark],
@@ -545,6 +545,10 @@ module GTK
                   :wheel, :relative_x, :relative_y
 
     attr_accessor :click
+    attr_accessor :click_at
+    attr_accessor :global_click_at
+    attr_accessor :up_at
+    attr_accessor :global_up_at
     attr_accessor :previous_click
     attr_accessor :x
     attr_accessor :y
@@ -566,6 +570,22 @@ module GTK
       clear
     end
 
+    def held
+      return false if !global_click_at
+      return true if global_click_at && !global_up_at
+      return global_up_at < global_click_at
+    end
+
+    def held_at
+      return nil if !held
+      return click_at + 1
+    end
+
+    def global_held_at
+      return nil if !held
+      return global_click_at + 1
+    end
+
     def point
       { x: @x, y: @y, w: 0, h: 0 }
     end
@@ -584,6 +604,14 @@ module GTK
 
     def rect
       { x: point.x, y: point.y, w: 0, h: 0 }
+    end
+
+    def w
+      0
+    end
+
+    def h
+      0
     end
 
     alias_method :position, :point

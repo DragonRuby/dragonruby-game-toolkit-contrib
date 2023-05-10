@@ -7,7 +7,6 @@ module GTK
   module ReadMeDocs
     def docs_method_sort_order
       %i[
-        docs_usage
         docs_hello_world
         docs_new_project
         docs_deployment
@@ -24,68 +23,37 @@ module GTK
       ]
     end
 
-    def docs_usage
-      <<-S
-* DragonRuby Game Toolkit Live Docs
-
-The information contained here is all available via the DragonRuby
-Console. You can Open the DragonRuby Console by pressing [`] [~] [²]
-[^] [º] or [§] within your game.
-
-To search docs you can type ~docs_search "SEARCH TERM"~ or if you want
-to get fancy you can provide a ~lambda~ to filter documentation:
-
-#+begin_src
-  docs_search { |entry| (entry.include? "Array") && (!entry.include? "Enumerable") }
-#+end_src
-S
-    end
-
     def docs_hello_world
 <<-S
-* Hello World
+* Welcome
 
-Welcome to DragonRuby Game Toolkit. Take the steps below to get started.
+Welcome to DragonRuby Game Toolkit!
 
-* Join the Discord and Subscribe to the News Letter
+The information contained here is all available in your the
+zip file at ~./docs/docs.html~. You can browse the docs in a local website
+by starting up DragonRuby and going to ~http://localhost:9001~.
 
-Our Discord channel is [[http://discord.dragonruby.org]].
+* Community
+
+Our Discord server is extremely supportive and helpful. It's the best
+place to get answers to your questions. The developers of DragonRuby
+are also on this server if you have any feedback or bug reports.
+
+The Link to Our Discord Server is: [[http://discord.dragonruby.org]].
 
 The News Letter will keep you in the loop with regards to current
 DragonRuby Events: [[http://dragonrubydispatch.com]].
 
-Those who use DragonRuby are called Dragon Riders. This identity is
-incredibly important to us. When someone asks you:
+* Book
 
-#+begin_quote
-What game engine do you use?
-#+end_quote
+Brett Chalupa (one of our community members) has written a book to help you get started: [[https://book.dragonriders.community/]]
 
-Reply with:
-
-#+begin_quote
-I am a Dragon Rider.
-#+end_quote
-
-* Intro Videos
+* Tutorial Video
 
 Here are some videos to help you get the lay of the land.
 
-** Quick Api Tour
-
-1. Beginner Introduction to DragonRuby Game Toolkit: [[https://youtu.be/ixw7TJhU08E]]
-
-** If You Are Completely New to Ruby and Programming
-
-1. Intermediate Introduction to Ruby Syntax: [[https://youtu.be/HG-XRZ5Ppgc]]
-2. Intermediate Introduction to Arrays in Ruby: [[https://youtu.be/N72sEYFRqfo]]
-3. You may also want to try this free course provided at [[http://dragonruby.school]].
-
-** If You Have Game Dev Experience
-
 1. Building Tetris - Part 1: [[https://youtu.be/xZMwRSbC4rY]]
 2. Building Tetris - Part 2: [[https://youtu.be/C3LLzDUDgz4]]
-3. Low Res Game Jam Tutorial: [[https://youtu.be/pCI90ukKCME]]
 
 * Getting Started Tutorial
 
@@ -352,9 +320,9 @@ S
 
 * Starting a New DragonRuby Project
 
-The zip file is a complete, self contained project structure. To
-create a new project, unzip the zip file in its entirety and use
-that as a starting point for another game. This is the recommended
+The DRGTK zip that contains the engine is a complete, self contained project
+structure. To create a new project, unzip the zip file again in its entirety
+and use that as a starting point for another game. This is the recommended
 approach to starting a new project.
 
 ** Rationale
@@ -364,7 +332,7 @@ with your source code (it’s why we keep it small). It’s to protect “shelf 
 3 years from now we might be on a vastly different version of the engine.
 But you know that the code you’ve written will definitely work with the
 version that was committed to source control. It's strongly recommended that you
-do **not** keep DragonRuby Game Tooklit in a shared location and instead unzip
+do **not** keep DragonRuby Game Toolkit in a shared location and instead unzip
 a clean copy for ever game. That being said, You can optionally pass a directory
 when starting up DragonRuby from the terminal: ~./dragonruby ./non-defualt-game-directory~.
 
@@ -428,8 +396,15 @@ Linux thing.)
 A directory called ~./build~ will be created that contains your
 binaries. You can upload this to Itch.io manually.
 
-For the HTML version of your game after you upload it. Check the checkbox labeled
-"This file will be played in the browser".
+*** Browser Game Settings
+For the HTML version of your game, after you upload the zip file, check the checkbox labeled
+~This file will be played in the browser~.
+
+IMPORTANT: Be sure to set the ~Viewport dimensions~ to ~1280x720~ for landscape games or your game will not be
+positioned correctly on your Itch.io page.
+
+IMPORTANT: Be sure to set the ~Viewport dimensions~ to ~540x960~ for portrait games or your game will not be
+positioned correctly on your Itch.io page.
 
 For subsequent updates you can use an automated deployment to Itch.io:
 
@@ -442,6 +417,55 @@ friends to go to your game's very own webpage and buy it!
 
 If you make changes to your game, just re-run dragonruby-publish and it'll
 update the downloads for you.
+
+*** Consider Adding Pause When Game is In Background
+
+It's a good idea to pause the game if it doesn't have focus. Here's an example of how to do that
+
+#+begin_src
+  def tick args
+    # if the keyboard doesn't have focus, and the game is in production mode, and it isn't the first tick
+    if !args.inputs.keyboard.has_focus && args.gtk.production && args.state.tick_count != 0
+      args.outputs.background_color = [0, 0, 0]
+      args.outputs.labels << { x: 640, y: 360, text: "Game Paused (click to resume).", alignment_enum: 1, r: 255, g: 255, b: 255 }
+      # consider setting all audio volume to 0.0
+    else
+      # perform your regular tick function
+    end
+  end
+#+end_src
+
+*** Consider Adding a Request to Review Your Game In-Game
+
+Getting reviews of your game are extremely important and it's recommended that you put an option to review
+within the game itself. You can use ~args.gtk.open_url~ plus a review URL. Here's an example:
+
+#+begin_src
+  def tick args
+    # render the review button
+    args.state.review_button ||= { x: 640 - 50, y: 360 - 25, w: 100, h: 50, path: :pixel, r: 0, g: 0, b: 0 }
+    args.outputs.sprites << args.state.review_button
+    args.outputs.labels << { x: 640, y: 360, anchor_x: 0.5, anchor_y: 0.5, text: "Review" }
+
+    # check to see if the review button was clicked
+    if args.inputs.mouse.intersect_rect? args.state.review_button
+      # open platform specific review urls
+      if args.gtk.platform? :ios
+        # your app id is provided at Apple's Developer Portal (numeric value)
+        args.gtk.openurl "itms-apps://itunes.apple.com/app/idYOURGAMEID?action=write-review"
+      elsif args.gtk.platform? :android
+        # your app id is the name of your android package
+        args.gtk.openurl ""https://play.google.com/store/apps/details?id=YOURGAMEID"
+      elsif args.gtk.platform? :web
+        # if they are playing the web version of the game, take them to the purchase page on itch
+        args.gtk.openurl "https://amirrajan.itch.io/YOURGAMEID/purchase"
+      else
+        # if they are playing the desktop version of the game, take them to itch's rating page
+        args.gtk.openurl "https://amirrajan.itch.io/YOURGAMEID/rate?source=game"
+      end
+    end
+  end
+#+end_src
 S
     end
 
@@ -672,21 +696,39 @@ You can represent a sprite as a ~Hash~:
       y: 360 - 50,
       w: 100,
       h: 100,
+
       path: 'sprites/square-blue.png',
       angle: 0,
+
       a: 255,
       r: 255,
       g: 255,
       b: 255,
+
+      # source_ properties have origin of bottom left
       source_x:  0,
       source_y:  0,
       source_w: -1,
       source_h: -1,
+
+      # tile_ properties have origin of top left
+      tile_x:  0,
+      tile_y:  0,
+      tile_w: -1,
+      tile_h: -1,
+
       flip_vertically: false,
       flip_horizontally: false,
+
       angle_anchor_x: 0.5,
       angle_anchor_y: 1.0,
+
       blendmode_enum: 1
+
+      # labels anchor/alignment (default is nil)
+      # if these values are provided, they will be used over alignment_enum and vertical_alignment_enum
+      anchor_x: 0.5,
+      anchor_y: 0.5
     }
   end
 #+end_src
@@ -703,7 +745,8 @@ You can represent a sprite as an ~object~:
                   :source_x, :source_y, :source_w, :source_h,
                   :tile_x, :tile_y, :tile_w, :tile_h,
                   :flip_horizontally, :flip_vertically,
-                  :angle_anchor_x, :angle_anchor_y, :blendmode_enum
+                  :angle_anchor_x, :angle_anchor_y, :blendmode_enum,
+                  :anchor_x, :anchor_y
 
     def primitive_marker
       :sprite
@@ -790,13 +833,18 @@ An ~ALIGNMENT_ENUM~ of ~0~ represents "left aligned". ~1~ represents
 
 You can add additional metadata about your game within a label, which requires you to use a `Hash` instead.
 
+If you use a ~Hash~ to render a label, you can set the label's size using either ~SIZE_ENUM~ or ~SIZE_PX~. If
+both options are provided, ~SIZE_PX~ will be used.
+
 #+begin_src
   def tick args
     args.outputs.labels << {
       x:                       200,
       y:                       550,
       text:                    "dragonruby",
+      # size specification can be either size_enum or size_px
       size_enum:               2,
+      size_px:                 22,
       alignment_enum:          1,
       r:                       155,
       g:                       50,
@@ -804,6 +852,8 @@ You can add additional metadata about your game within a label, which requires y
       a:                       255,
       font:                    "fonts/manaspc.ttf",
       vertical_alignment_enum: 0, # 0 is bottom, 1 is middle, 2 is top
+      anchor_x: 0.5,
+      anchor_y: 0.5
       # You can add any properties you like (this will be ignored/won't cause errors)
       game_data_one:  "Something",
       game_data_two: {
@@ -1034,7 +1084,7 @@ The ~scale_rect~ method can be used to change the scale of a sprite by a given ~
 
 Optionally, you can scale the sprite around a specified anchor point. In the example below, setting both ~anchor_x~ and ~anchor_y~ to 0.5 scales the sprite proportionally on all four sides).
 
-See also: DOCS: GTK::Geometry#scale_rect
+See also: ~Geometry#scale_rect~
 
 #+begin_src ruby
   def tick args
@@ -1254,8 +1304,8 @@ Sure, an _implementation/runtime_ can be slow though, but then we'd have to talk
 which runtime.
 
 Here's a some quick demonstrations of how well DragonRuby Game Toolkit Performs:
-- [[https://youtu.be/MFR-dvsllA4]]
-- [[https://youtu.be/UuY7CWdvyWM]]
+- DragonRuby vs Unity: [[https://youtu.be/MFR-dvsllA4]]
+- DragonRuby vs PyGame: [[https://youtu.be/fuRGs6j6fPQ]]
 
 *** Dynamic languages are slow.
 
@@ -1292,10 +1342,9 @@ All this being said, we do have parts of the engine open sourced on GitHub: [[ht
 
 *** DragonRuby is for pay. You should offer a free version.
 
-If you can afford to pay for DragonRuby, you should (and will). We don't go
-around telling writers that they should give us their books for free,
-and only require payment if we read the entire thing. It's time we stop asking that
-of software products.
+If you can afford to pay for DragonRuby, you should (and will). We don't tell authors
+that they should give us their books for free, and only require payment if we read the
+entire thing. It's time we stop asking that of software products.
 
 That being said, we will _never_ put someone out financially. We have
 income assistance for anyone that can't afford a license to any one of
@@ -1338,10 +1387,8 @@ that don't value the same things we do.
 
 *** What if I build something with DragonRuby, but DragonRuby LLP becomes insolvent.
 
-That won't happen if the development world stop asking for free stuff
-and non-trivially compensate open source developers. Look, we want to be
-able to work on the stuff we love, every day of our lives. And we'll go
-to great lengths to make that happen.
+We want to be able to work on the stuff we love, every day of our lives. And we'll go
+to great lengths to make that continues.
 
 But, in the event that sad day comes, our partnership bylaws state that
 _all_ DragonRuby IP that can be legally open sourced, will be released

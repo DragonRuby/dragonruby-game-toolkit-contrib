@@ -1,5 +1,6 @@
 def tick args
   # set the render target width and height to match the label
+  args.outputs[:scene].transient!
   args.outputs[:scene].w = 220
   args.outputs[:scene].h = 30
 

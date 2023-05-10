@@ -161,5 +161,5 @@ def defaults 🎮
   #Your score
   🎮.💰 ||= 0
   #Spawns Food randomly
-  spawn_🍎(🎮) unless 🎮.🍎?
+  spawn_🍎(🎮) unless 🎮.🍎
 end

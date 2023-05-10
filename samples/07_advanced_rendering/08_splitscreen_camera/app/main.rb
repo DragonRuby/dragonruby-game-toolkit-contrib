@@ -27,6 +27,7 @@ class CameraMovement
   #==============================================================================================
   #Default functions
   def defaults
+    outputs[:scene].transient!
     outputs[:scene].background_color = [0,0,0]
     state.trauma ||= 0.0
     state.trauma_power ||= 2
@@ -255,6 +256,7 @@ class CameraMovement
      offsetX = 32
      offsetY = 32
 
+     outputs[:scene_magenta].transient!
      outputs[:scene_magenta].sprites << {x: (-state.camera_magenta.x*2),
                                          y: (-state.camera_magenta.y),
                                          w: outputs[:scene].width*2,
@@ -267,6 +269,7 @@ class CameraMovement
     zoomFactor = 1
     offsetX = 32
     offsetY = 32
+    outputs[:scene_cyan].transient!
     outputs[:scene_cyan].sprites << {x: (-state.camera_cyan.x*2),
                                      y: (-state.camera_cyan.y),
                                      w: outputs[:scene].width*2,

@@ -19,6 +19,7 @@ class Game
   end
 
   def render
+    outputs[:scene].transient!
     outputs[:scene].sprites << ([0, 0, 933, 700, 'sprites/arena.png'].center_inside_rect grid.rect)
     outputs[:scene].sprites << target_sprite
     outputs[:scene].sprites << player_sprite
