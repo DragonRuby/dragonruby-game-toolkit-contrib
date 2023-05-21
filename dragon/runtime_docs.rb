@@ -447,7 +447,8 @@ represents the xml data in the following recursive structure:
 {
   type: :element,
   name: "Person",
-  children: [...]
+  children: [...],
+  attributes: {...}
 }
 #+end_src
 S
