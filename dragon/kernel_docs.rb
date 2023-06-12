@@ -60,9 +60,11 @@ S
     $gtk.write_file_root 'docs/docs.txt', "#{final_string}"
     $gtk.write_file_root 'docs/docs.html', html_parse_result[:html]
     $gtk.write_file_root 'docs/parse_log.txt', (html_parse_result[:parse_log].join "\n")
+    $gtk.write_file_root "docs/version.txt", "#{GTK_VERSION}"
 
     log "* INFO: All docs have been exported to docs/docs.txt."
     log "* INFO: All docs have been exported to docs/docs.html."
+    log "* INFO: To view docs locally go to http://localhost:9001/docs.html execute ~$gtk.open_docs~."
 
     nil
   end

@@ -9,12 +9,35 @@ module ArgsDocs
       :docs_audio,
       :docs_easing,
       :docs_pixel_array,
+      :docs_cvars
     ]
+  end
+
+  def docs_cvars
+    <<-S
+* ~args.cvars~
+
+Hash contains metadata pulled from the files under the ~./metadata~ directory. To get the
+keys that are available type ~$args.cvars.keys~ in the Console. Here is an example of how
+to retrieve the game version number:
+
+#+begin_src
+  def tick args
+    args.outputs.labels << {
+      x: 640,
+      y: 360,
+      text: args.cvars["game_metadata.version"].value.to_s
+    }
+  end
+#+end_src
+
+Each CVar has the following properties ~value~, ~name~, ~description~, ~type~, ~locked~.
+S
   end
 
   def docs_audio
     <<-S
-* ~Audio~
+* ~args.audio~
 
 Hash that contains audio sources that are playing. If you want to add a new sound add a hash with keys/values as
 in the following example:
@@ -39,6 +62,18 @@ Looping sounds or sounds that should stop early must be removed manually.
 
 When you assign a hash to an audio output, a ~:length~ key will be added to the hash on the following tick.
 This will tell you the duration of the audio file in seconds (float).
+
+** Audio encoding trouble shooting
+
+If audio doesn't seem to be working, try re-encoding it via ~ffmpeg~:
+
+#+begin_src
+  # re-encode ogg
+  ffmpeg -i ./mygame/sounds/SOUND.ogg -ac 2 -b:a 160k -ar 44100 -acodec libvorbis ./mygame/sounds/SOUND-converted.ogg
+
+  # convert wav to ogg
+  ffmpeg -i ./mygame/sounds/SOUND.wav -ac 2 -b:a 160k -ar 44100 -acodec libvorbis ./mygame/sounds/SOUND-converted.ogg
+#+end_src
 
 ** Audio synthesis
 
@@ -91,7 +126,7 @@ S
 
   def docs_easing
     <<-S
-* ~Easing~
+* ~args.easing~
 
 This function will give you a float value between ~0~ and ~1~ that represents a percentage. You need to give the
 funcation a ~start_tick~, ~current_tick~, duration, and easing ~definitions~.
@@ -278,11 +313,9 @@ S
 
   def docs_pixel_array
     <<-S
-* ~pixel_arrays~
+* Pixel Arrays
 
 A ~PixelArray~ object with a width, height and an Array of pixels which are hexadecimal color values in ABGR format.
-
-NOTE: This is an Indie/Pro feature and not available in the Standard license.
 
 You can create a pixel array like this:
 

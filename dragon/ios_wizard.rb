@@ -34,7 +34,7 @@ class IOSWizard < Wizard
     ]
   end
 
-  def steps_development_build
+  def steps_dev_build
     [
       *prerequisite_steps,
 
@@ -45,7 +45,7 @@ class IOSWizard < Wizard
       :determine_devcert,
 
       :clear_tmp_directory,
-      :stage_app,
+      :stage_ios_app,
 
       :development_write_info_plist,
 
@@ -53,16 +53,44 @@ class IOSWizard < Wizard
       :compile_icons,
       :clear_payload_directory,
 
-      :create_payload_directory_dev,
+      :create_dev_payload_directory,
 
       :create_payload,
       :code_sign_binary,
       :create_ipa,
-      :deploy
+      :deploy_to_device
     ]
   end
 
-  def steps_production_build
+  def steps_sim_build
+    [
+      *prerequisite_steps,
+
+      :check_for_device,
+      :check_for_dev_profile,
+
+      *app_metadata_retrieval_steps,
+      :determine_devcert,
+
+      :clear_tmp_directory,
+      :stage_sim_app,
+
+      :development_write_info_plist,
+
+      :write_entitlements_plist,
+      :compile_icons,
+      :clear_payload_directory,
+
+      :create_sim_payload_directory,
+
+      :create_payload,
+      :code_sign_binary,
+      :create_ipa,
+      :deploy_to_sim
+    ]
+  end
+
+  def steps_prod_build
     [
       *prerequisite_steps,
 
@@ -73,7 +101,7 @@ class IOSWizard < Wizard
       :determine_prodcert,
 
       :clear_tmp_directory,
-      :stage_app,
+      :stage_ios_app,
 
       :production_write_info_plist,
 
@@ -81,7 +109,7 @@ class IOSWizard < Wizard
       :compile_icons,
       :clear_payload_directory,
 
-      :create_payload_directory_prod,
+      :create_prod_payload_directory,
 
       :create_payload,
       :code_sign_binary,
@@ -105,21 +133,39 @@ class IOSWizard < Wizard
     sprite_path
   end
 
+  def production_build?
+    @build_type == :prod
+  end
+
+  def dev_build?
+    @build_type == :dev || hotload_build?
+  end
+
+  def sim_build?
+    @build_type == :sim
+  end
+
+  def hotload_build?
+    @build_type == :hotload || sim_build?
+  end
+
   def start opts = nil
     @opts = opts || {}
 
-    if !(@opts.is_a? Hash) || !($gtk.args.fn.eq_any? @opts[:env], :dev, :prod, :hotload)
+    if !(@opts.is_a? Hash) || !($gtk.args.fn.eq_any? @opts[:env], :dev, :prod, :hotload, :sim)
       raise WizardException.new(
-              "* $wizards.ios.start needs to be provided an environment option.",
-              "** For a development with remote hotloading enabled, build type: $wizards.ios.start env: :hotload",
-              "** For a development build type: $wizards.ios.start env: :dev",
-              "** For production builds type: $wizards.ios.start env: :prod"
+              "* $wizards.ios.start needs to be provided an ~env:~ option.",
+              "** To deploy your app to an iOS device connected to your computer:\n   $wizards.ios.start env: :dev",
+              "** To deploy your app with hotloading to an iOS device connected to your computer:\n   $wizards.ios.start env: :hotload",
+              "** To deploy your app to the iOS Simulator:\n   $wizards.ios.start env: :sim",
+              "** To deploy your app for sale on the AppStore:\n   $wizards.ios.start env: :prod",
             )
     end
 
-    @production_build = (@opts[:env] == :prod)
-    @steps = steps_development_build
-    @steps = steps_production_build if @production_build
+    @build_type = @opts[:env]
+    @steps = steps_dev_build
+    @steps = steps_prod_build if production_build?
+    @steps = steps_sim_build if sim_build?
     @certificate_name = nil
     @app_version = opts[:version]
     @app_version = "1.0" if @opts[:env] == :dev && !@app_version
@@ -422,10 +468,12 @@ S
   def check_for_certs
     log_info "Attempting to find certificates on your computer."
 
-    if @production_build
+    if production_build?
       @certificate_name = ios_metadata[:prodcert]
-    else
+    elsif dev_build?
       @certificate_name = ios_metadata[:devcert]
+    else
+      raise "I don't know how to ~check_for_certs~ for a build_type/env of #{@build_type}."
     end
 
     log_info "I will be using certificate: '#{@certificate_name}'."
@@ -466,7 +514,7 @@ S
   end
 
   def write_entitlements_plist
-    if @production_build
+    if production_build?
       entitlement_plist_string = <<-XML
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -544,7 +592,11 @@ XML
         <string>:app_name</string>
         <key>CFBundleExecutable</key>
         <string>:app_name</string>
-        <key>CFBundleIconFiles</key>
+        <key>NSAppTransportSecurity</key>
+        <dict>
+          <key>NSAllowsArbitraryLoads</key>
+          <true/>
+        </dict>        <key>CFBundleIconFiles</key>
         <array>
                 <string>AppIcon60x60</string>
         </array>
@@ -803,10 +855,23 @@ XML
     sh %Q[rm -rf "#{app_path}/metadata"]
   end
 
-  def stage_app
+  def stage_ios_app
     log_info "Staging."
     sh "mkdir -p #{tmp_directory}"
     sh "cp -R #{relative_path}/dragonruby-ios.app/ \"#{tmp_directory}/#{@app_name}.app/\""
+    sh "mv \"#{tmp_directory}/#{@app_name}.app/Runtime\" \"#{tmp_directory}/#{@app_name}.app/#{@app_name}\""
+    sh %Q[cp -r "#{root_folder}/app/" "#{app_path}/app/"]
+    sh %Q[cp -r "#{root_folder}/sounds/" "#{app_path}/sounds/"]
+    sh %Q[cp -r "#{root_folder}/sprites/" "#{app_path}/sprites/"]
+    sh %Q[cp -r "#{root_folder}/data/" "#{app_path}/data/"]
+    sh %Q[cp -r "#{root_folder}/fonts/" "#{app_path}/fonts/"]
+    sh %Q[cp -r "#{root_folder}/metadata/" "#{app_path}/metadata/"]
+  end
+
+  def stage_sim_app
+    log_info "Staging."
+    sh "mkdir -p #{tmp_directory}"
+    sh "cp -R #{relative_path}/dragonruby-ios-simulator.app/ \"#{tmp_directory}/#{@app_name}.app/\""
     sh "mv \"#{tmp_directory}/#{@app_name}.app/Runtime\" \"#{tmp_directory}/#{@app_name}.app/#{@app_name}\""
     sh %Q[cp -r "#{root_folder}/app/" "#{app_path}/app/"]
     sh %Q[cp -r "#{root_folder}/sounds/" "#{app_path}/sounds/"]
@@ -828,24 +893,35 @@ XML
     sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip} > "#{app_path}/metadata/DRAGONRUBY_REMOTE_HOTLOAD"]
   end
 
-  def create_payload_directory_dev
+  def create_dev_payload_directory
     embed_mobileprovision
     clear_payload_directory
-    stage_app
+    stage_ios_app
     # write dev machine's ip address for hotloading
-    write_server_ip_address if @opts[:env] == :hotload
+    write_server_ip_address if hotload_build?
 
     # production build marker
     sh %Q[mkdir -p "#{app_path}/metadata/"]
     sh %Q[touch "#{app_path}/metadata/DRAGONRUBY_PRODUCTION_BUILD"]
   end
 
-  def create_payload_directory_prod
+  def create_prod_payload_directory
     # production builds does not hotload ip address
     sh %Q[rm "#{root_folder}/app/server_ip_address.txt"]
 
     embed_mobileprovision
-    stage_app
+    stage_ios_app
+
+    # production build marker
+    sh %Q[mkdir -p "#{app_path}/metadata/"]
+    sh %Q[touch "#{app_path}/metadata/DRAGONRUBY_PRODUCTION_BUILD"]
+  end
+
+  def create_sim_payload_directory
+    embed_mobileprovision
+    clear_payload_directory
+    stage_sim_app
+    write_server_ip_address
 
     # production build marker
     sh %Q[mkdir -p "#{app_path}/metadata/"]
@@ -876,9 +952,73 @@ SCRIPT
     result
   end
 
-  def deploy
+  def deploy_to_device
+    sh "ideviceinstaller --uninstall #{@app_id}"
     sh "ideviceinstaller -i \"#{tmp_directory}/#{@app_name}.ipa\""
     log_info "Check your device!!"
+  end
+
+  def simctl_list_devices
+    output = sh "xcrun simctl list devices"
+
+    # get only installed devices
+    output = output.split("-- Unavailable").first
+
+    devices = {}
+    current_version_number_string = nil
+    output.each_line do |l|
+      if l.start_with? "-- iOS"
+        current_version_number_string = l.strip.gsub("-- iOS ", "").gsub(" --", "")
+      else
+        tokens = l.gsub("(Booted)", "")
+                  .gsub("(Shutdown)", "")
+                  .strip.split(" (")
+
+        device_name = tokens.first.strip
+        device_id = tokens.last.gsub(")", "").strip
+        device_name_2 = if tokens.length <= 2
+                          ""
+                        else
+                          tokens[1].gsub(")", "").strip
+                        end
+
+        if !device_id.include? "Devices"
+          devices[device_id] = {
+            name: device_name,
+            name_2: device_name_2,
+            version_string: current_version_number_string,
+            version_number: current_version_number_string.split(".").map(&:to_i),
+            id: device_id
+          }
+        end
+      end
+    end
+
+    devices
+  end
+
+  def simctl_list_devices_max_version
+    devices = simctl_list_devices
+    max_version_number = devices.map { |k, v| v.version_number }.max
+    max_version_number_string = max_version_number.join(".")
+    devices.reject! { |k, v| v.version_string != max_version_number_string }
+    devices
+  end
+
+  def simctl_iphone_device_id_max_version
+    devices = simctl_list_devices_max_version
+    k, v = devices.find { |k, v| v.name.include?("iPhone") && !v.name.include?("SE") }
+    k
+  end
+
+  def deploy_to_sim
+    device_id = simctl_iphone_device_id_max_version
+    sh "xcrun simctl boot #{device_id}"
+    sh "open -a Simulator"
+    sh "xcrun simctl uninstall #{device_id} #{@app_id}"
+    sh "xcrun simctl install #{device_id} \"#{tmp_directory}/#{@app_name}.app\""
+    sh "xcrun simctl launch #{device_id} #{@app_id}"
+    puts "Check your simulator!!\nYou can use cmd+left/right arrow to rotate the device."
   end
 
   def print_publish_help

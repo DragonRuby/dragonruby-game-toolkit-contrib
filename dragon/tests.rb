@@ -120,6 +120,12 @@ not start with "test_".
 S
     end
 
+    def clear_summary
+      @passed.clear
+      @inconclusive.clear
+      @failed.clear
+    end
+
     def print_summary
       log "** Summary"
       log "*** Passed"

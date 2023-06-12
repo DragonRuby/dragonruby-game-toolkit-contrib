@@ -71,6 +71,7 @@ module RuntimeDocs
       :docs_reset,
       :docs_reset_next_tick,
       :docs_reset_sprite,
+      :docs_reset_sprites,
       :docs_calcspritebox,
 
       :docs_current_framerate,
@@ -688,8 +689,16 @@ S
   def docs_reset_sprite
     <<-S
 *** ~reset_sprite~
-Sprites when loaded are cached. This method invalidates the cache
+Sprites when loaded are cached. Given a string parameter, this method invalidates the cache
 record of a sprite so that updates on from the disk can be loaded.
+S
+  end
+
+  def docs_reset_sprites
+    <<-S
+*** ~reset_sprites~
+Sprites when loaded are cached. This method invalidates the cache
+record of all sprites so that updates on from the disk can be loaded.
 S
   end
 
@@ -1050,7 +1059,7 @@ Creates a new Entity with a ~type~, and initial properties. An option block can 
 #+end_src
 ** ~args.state.new_entity_strict~
 Creates a new Strict Entity. While Entities created via ~args.state.new_entity~ can have new properties added later on, Entities created
-using ~args.state.new_entity~ must define all properties that are allowed during its initialization. Attempting to add new properties after
+using ~args.state.new_entity_strict~ must define all properties that are allowed during its initialization. Attempting to add new properties after
 initialization will result in an exception.
 ** ~args.state.tick_count~
 Returns the current tick of the game. ~args.state.tick_count~ is ~0~ when the game is first started or if the game is reset via ~$gtk.reset~.
@@ -1111,9 +1120,12 @@ Returns the negative or positive number if the mouse wheel has changed in the ~x
 Returns the negative or positive number if the mouse wheel has changed in the ~y~ axis.
 *** ~args.inputs.mouse.click~ OR ~.down~, ~.previous_click~, ~.up~
 The properties ~args.inputs.mouse.(click|down|previous_click|up)~ each return ~nil~ if the mouse button event didn't occur. And return an Entity
-that has an ~x~, ~y~ properties along with helper functions to determine collision: ~inside_rect?~, ~inside_circle~.
+that has an ~x~, ~y~ properties along with helper functions to determine collision: ~inside_rect?~, ~inside_circle~. This value will be true if any
+of the mouse's buttons caused these events. To scope to a specific button use ~.button_left~, ~.button_middle~, ~.button_right~, or ~.button_bits~.
 ** ~args.inputs.controller_(one-four)~
 Represents controllers connected to the usb ports.
+** ~args.inputs.controller_(one-four).active~
+Returns true if any of the controller's buttons were used.
 *** ~args.inputs.controller_(one-four).up~
 Returns ~true~ if ~up~ is pressed or held on the directional or left analog.
 *** ~args.inputs.controller_(one-four).down~
@@ -1154,6 +1166,8 @@ Returns ~true~ if the specific button is being held. ~args.inputs.controller_(on
 Returns ~true~ if the specific button was released. ~args.inputs.controller_(one-four).key_up.BUTTON~ will be true only on the frame the button was released.
 ** ~args.inputs.keyboard~
 Represents the user's keyboard
+** ~args.inputs.keyboard.active~
+Returns true if any keys on the keyboard were pressed.
 *** ~args.inputs.keyboard.has_focus~
 Returns ~true~ if the game has keyboard focus.
 *** ~args.inputs.keyboard.up~

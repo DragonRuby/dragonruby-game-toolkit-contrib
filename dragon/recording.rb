@@ -178,6 +178,13 @@ S
       @replay_completed_successfully
     end
 
+    def __parse_replay_value__ value
+      return value if !value
+      return value.gsub(':', '').to_sym if value.start_with? ':'
+      return value == 'true' if value == 'true' || value == 'false'
+      return value.to_f
+    end
+
     def start_replay file_name = nil, speed: 1
       return if replay_recently_stopped?
       @replay_completed_successfully = false
@@ -205,6 +212,21 @@ S
         stopped_at_current_tick: 0
       }
 
+      # the replay file is a text file with the following format:
+      # replay_version 2.0 (the version of the replay file)
+      # stopped_at 123456789 (tick count when the recording was stopped)
+      # seed 123456789 (rng seed that was used to record the replay)
+      # recorded_at 2019-01-01 12:00:00 -0500 (date and time when the recording was created)
+      # inputs recorded as an array (delimited by new lines)
+      # all record inputs have 6 entires except for mouse wheel which can have 6 or 7 entries (new parameters were added)
+      # example:
+      #   for entries with 6 parameters:
+      #   [function_called, parameter_1, parameter_2 (if applicable), parameter count (1 or 2), input order, tick count]
+      #   [:mouse_button_up, 1, 0, 1, 1, 3]
+      #
+      #   for entries with 7 parameters:
+      #   [function_called, parameter_1, parameter_2 (if applicable), parameter_3 (if applicable), parameter count (always 3), input order, tick count]
+      #   [:mouse_wheel, 1, 0, 1, 1, 3]
       text.each_line do |l|
         if l.strip.length == 0
           next
@@ -217,13 +239,58 @@ S
         elsif l.start_with? 'recorded_at'
           $replay_data[:recorded_at] = l.split(' ')[1..-1].join(' ')
         elsif l.start_with? '['
-          name, value_1, value_2, value_count, id, tick_count = l.strip.gsub('[', '').gsub(']', '').split(',')
+          # this is the logic to parse the array of inputs
+          items = l.strip.gsub('[', '').gsub(']', '').split(',')
+
+          # item 0 is the function name
+          name        = __parse_replay_value__ items[0]
+          value_1     = nil
+          value_2     = nil
+          value_3     = nil
+          value_count = 0
+          id          = 0
+          tick_count  = 0
+
+          # if the name is mouse_wheel, handle the 6 or 7 parameter case (6 parameters is the old format)
+          if name == :mouse_wheel
+            # always set the number of parameters for mouse wheel to 3
+            value_count = 3
+
+            # value_3 is nil if there are only 6 parameters
+            if items.length == 6
+              # when destructoring items, we don't need the name (first item) or the value_count (4th item)
+              _, value_1, value_2, _, id, tick_count = items
+              value_3 = nil
+            elsif items.length == 7
+              # when destructoring items, we don't need the name (first item) or the value_count (4th item)
+              _, value_1, value_2, value_3, _, id, tick_count = items
+            else
+              raise "Unable to parse replay entry #{l.strip}. Expected 6 or 7 values for mouse_wheel."
+            end
+          elsif items.length == 6
+            # general case for 6 parameters
+            _, value_1, value_2, value_count, id, tick_count = items
+            value_3 = nil
+          elsif items.length == 7
+            # general case for 7 parameters
+            _, value_1, value_2, value_3, value_count, id, tick_count = items
+          else
+            raise "Unable able to parse replay entry #{l.strip}. Expected 6 or 7 values."
+          end
+
+          # deserialize the string value into the correct type
+          value_1 = __parse_replay_value__ value_1
+          value_2 = __parse_replay_value__ value_2
+          value_3 = __parse_replay_value__ value_3
+
+          # create a dictionary entry for the input
           $replay_data[:input_history][tick_count.to_i] ||= []
           $replay_data[:input_history][tick_count.to_i] << {
             id: id.to_i,
-            name: name.gsub(':', '').to_sym,
-            value_1: value_1.to_f,
-            value_2: value_2.to_f,
+            name: name,
+            value_1: value_1,
+            value_2: value_2,
+            value_3: value_3,
             value_count: value_count.to_i
           }
         else
@@ -303,10 +370,18 @@ S
       @runtime.notify! notification_message
     end
 
+    # 1 or 2 params
     def record_input_history name, value_1, value_2, value_count, clear_cache = false
       return if @is_replaying
       return unless @is_recording
       @input_history << [name, value_1, value_2, value_count, @global_input_order, Kernel.tick_count]
+      @global_input_order += 1
+    end
+
+    def record_input_history_3_params name, value_1, value_2, value_3, clear_cache = false
+      return if @is_replaying
+      return unless @is_recording
+      @input_history << [name, value_1, value_2, value_3, 3, @global_input_order, Kernel.tick_count]
       @global_input_order += 1
     end
 
@@ -345,6 +420,7 @@ S
         args = []
         args << v[:value_1] if v[:value_count] >= 1
         args << v[:value_2] if v[:value_count] >= 2
+        args << v[:value_3] if v[:value_count] >= 3
         args << :replay
         $gtk.send v[:name], *args
       end

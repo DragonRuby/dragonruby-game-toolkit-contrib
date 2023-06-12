@@ -3,7 +3,7 @@ devtitle=DragonRuby LLC
 gameid=cleptofrog
 gametitle=Clepto Frog
 version=1.0
-icon=sprites/icon.png
+icon=metadata/icon.png
 
 # Below configurations requires a Pro license.
 

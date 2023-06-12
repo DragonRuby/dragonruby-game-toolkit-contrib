@@ -88,6 +88,7 @@ module GTK
             'dragon/runtime/autocomplete.rb',
             'dragon/runtime/texture_atlas.rb',
             'dragon/runtime/download_stb_rb.rb',
+            'dragon/runtime/auto_test.rb',
             'dragon/api.rb',
             'dragon/runtime.rb',
             'dragon/runtime_docs.rb',
@@ -146,7 +147,7 @@ module GTK
         reload_if_needed 'app/mailbox.rb'
       end
 
-      def hotload_if_needed
+      def tick_hotload
         return if Kernel.tick_count <= 0 && !paused?
         hotload_source_files
         check_mailbox

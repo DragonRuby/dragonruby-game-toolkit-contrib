@@ -1120,6 +1120,39 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
+*** attr_label.rb
+#+begin_src ruby
+  # ./dragon/attr_label.rb
+  # coding: utf-8
+  # Copyright 2019 DragonRuby LLC
+  # MIT License
+  # attr_line.rb has been released under MIT (*only this file*).
+  
+  module AttrLabel
+    attr_accessor :x, :y, :z,
+         :text,
+         :size_enum, :alignment_enum,
+         :vertical_alignment_enum,
+         :r, :g, :b, :a,
+         :font,
+         :blendmode_enum,
+         :anchor_x, :anchor_y, :size_px
+  end
+  
+  
+  class Object
+    def self.attr_label
+      include AttrLabel
+    end
+  
+    def attr_label
+      return if self.is_a? AttrLabel
+      self.class.include AttrLabel
+    end
+  end
+
+#+end_src
+
 *** attr_line.rb
 #+begin_src ruby
   # ./dragon/attr_line.rb
@@ -2828,7 +2861,8 @@ Follows is a source code listing for all files that have been open sourced. This
            :right_analog_x_raw,
            :right_analog_y_raw,
            :right_analog_x_perc,
-           :right_analog_y_perc
+           :right_analog_y_perc,
+           :active
   
       attr :connected
   
@@ -2862,6 +2896,7 @@ Follows is a source code listing for all files that have been open sourced. This
         @key_down.clear
         @key_up.clear
         @key_held.clear
+        @active = nil
       end
   
       def up
@@ -2935,6 +2970,8 @@ Follows is a source code listing for all files that have been open sourced. This
   module GTK
     class Controller
       class Config
+        attr :disabled
+  
         def initialize runtime
           @runtime = runtime
           @raw_joysticks = {}   # things that aren't game controllers to try to configure.
@@ -2949,6 +2986,7 @@ Follows is a source code listing for all files that have been open sourced. This
           @playing_around = false
           @used_bindings = {}
           @bindings = []
+          @disabled = false
           @parts = [
             [ 919, 282, 'A button', 'a' ],
             [ 960, 323, 'B button', 'b' ],
@@ -3270,6 +3308,7 @@ Follows is a source code listing for all files that have been open sourced. This
         end
   
         def tick args
+          return false if @disabled
           return true if play_around args
           return false if !choose_target
   
@@ -4325,7 +4364,9 @@ Follows is a source code listing for all files that have been open sourced. This
            :native_width,
            :native_height,
            :native_scale,
-           :native_scale_enum
+           :native_scale_enum,
+           :window_width,
+           :window_height
   
       def initialize runtime
         @runtime = runtime
@@ -4883,6 +4924,8 @@ Follows is a source code listing for all files that have been open sourced. This
       # @gtk
       attr_accessor :has_focus
   
+      attr :active
+  
       def initialize
         @key_up      = KeyboardKeys.new
         @key_held    = KeyboardKeys.new
@@ -4945,6 +4988,7 @@ Follows is a source code listing for all files that have been open sourced. This
         @key_up.clear
         @key_held.clear
         @key_down.clear
+        @active = nil
       end
   
       def serialize
@@ -5037,7 +5081,8 @@ Follows is a source code listing for all files that have been open sourced. This
                     :button_bits, :button_left,
                     :button_middle, :button_right,
                     :button_x1, :button_x2,
-                    :wheel, :relative_x, :relative_y
+                    :wheel, :relative_x, :relative_y,
+                    :active
   
       attr_accessor :click
       attr_accessor :click_at
@@ -5118,6 +5163,7 @@ Follows is a source code listing for all files that have been open sourced. This
           @previous_click.global_created_at = @click.global_created_at
         end
   
+        @active = nil
         @click = nil
         @up    = nil
         @moved = nil
@@ -5395,7 +5441,7 @@ Follows is a source code listing for all files that have been open sourced. This
       ]
     end
   
-    def steps_development_build
+    def steps_dev_build
       [
         *prerequisite_steps,
   
@@ -5406,7 +5452,7 @@ Follows is a source code listing for all files that have been open sourced. This
         :determine_devcert,
   
         :clear_tmp_directory,
-        :stage_app,
+        :stage_ios_app,
   
         :development_write_info_plist,
   
@@ -5414,16 +5460,44 @@ Follows is a source code listing for all files that have been open sourced. This
         :compile_icons,
         :clear_payload_directory,
   
-        :create_payload_directory_dev,
+        :create_dev_payload_directory,
   
         :create_payload,
         :code_sign_binary,
         :create_ipa,
-        :deploy
+        :deploy_to_device
       ]
     end
   
-    def steps_production_build
+    def steps_sim_build
+      [
+        *prerequisite_steps,
+  
+        :check_for_device,
+        :check_for_dev_profile,
+  
+        *app_metadata_retrieval_steps,
+        :determine_devcert,
+  
+        :clear_tmp_directory,
+        :stage_sim_app,
+  
+        :development_write_info_plist,
+  
+        :write_entitlements_plist,
+        :compile_icons,
+        :clear_payload_directory,
+  
+        :create_sim_payload_directory,
+  
+        :create_payload,
+        :code_sign_binary,
+        :create_ipa,
+        :deploy_to_sim
+      ]
+    end
+  
+    def steps_prod_build
       [
         *prerequisite_steps,
   
@@ -5434,7 +5508,7 @@ Follows is a source code listing for all files that have been open sourced. This
         :determine_prodcert,
   
         :clear_tmp_directory,
-        :stage_app,
+        :stage_ios_app,
   
         :production_write_info_plist,
   
@@ -5442,7 +5516,7 @@ Follows is a source code listing for all files that have been open sourced. This
         :compile_icons,
         :clear_payload_directory,
   
-        :create_payload_directory_prod,
+        :create_prod_payload_directory,
   
         :create_payload,
         :code_sign_binary,
@@ -5466,21 +5540,39 @@ Follows is a source code listing for all files that have been open sourced. This
       sprite_path
     end
   
+    def production_build?
+      @build_type == :prod
+    end
+  
+    def dev_build?
+      @build_type == :dev || hotload_build?
+    end
+  
+    def sim_build?
+      @build_type == :sim
+    end
+  
+    def hotload_build?
+      @build_type == :hotload || sim_build?
+    end
+  
     def start opts = nil
       @opts = opts || {}
   
-      if !(@opts.is_a? Hash) || !($gtk.args.fn.eq_any? @opts[:env], :dev, :prod, :hotload)
+      if !(@opts.is_a? Hash) || !($gtk.args.fn.eq_any? @opts[:env], :dev, :prod, :hotload, :sim)
         raise WizardException.new(
-                "* $wizards.ios.start needs to be provided an environment option.",
-                "** For a development with remote hotloading enabled, build type: $wizards.ios.start env: :hotload",
-                "** For a development build type: $wizards.ios.start env: :dev",
-                "** For production builds type: $wizards.ios.start env: :prod"
+                "* $wizards.ios.start needs to be provided an ~env:~ option.",
+                "** To deploy your app to an iOS device connected to your computer:\n   $wizards.ios.start env: :dev",
+                "** To deploy your app with hotloading to an iOS device connected to your computer:\n   $wizards.ios.start env: :hotload",
+                "** To deploy your app to the iOS Simulator:\n   $wizards.ios.start env: :sim",
+                "** To deploy your app for sale on the AppStore:\n   $wizards.ios.start env: :prod",
               )
       end
   
-      @production_build = (@opts[:env] == :prod)
-      @steps = steps_development_build
-      @steps = steps_production_build if @production_build
+      @build_type = @opts[:env]
+      @steps = steps_dev_build
+      @steps = steps_prod_build if production_build?
+      @steps = steps_sim_build if sim_build?
       @certificate_name = nil
       @app_version = opts[:version]
       @app_version = "1.0" if @opts[:env] == :dev && !@app_version
@@ -5783,10 +5875,12 @@ Follows is a source code listing for all files that have been open sourced. This
     def check_for_certs
       log_info "Attempting to find certificates on your computer."
   
-      if @production_build
+      if production_build?
         @certificate_name = ios_metadata[:prodcert]
-      else
+      elsif dev_build?
         @certificate_name = ios_metadata[:devcert]
+      else
+        raise "I don't know how to ~check_for_certs~ for a build_type/env of #{@build_type}."
       end
   
       log_info "I will be using certificate: '#{@certificate_name}'."
@@ -5827,7 +5921,7 @@ Follows is a source code listing for all files that have been open sourced. This
     end
   
     def write_entitlements_plist
-      if @production_build
+      if production_build?
         entitlement_plist_string = <<-XML
   <?xml version="1.0" encoding="UTF-8"?>
   <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -5905,7 +5999,11 @@ Follows is a source code listing for all files that have been open sourced. This
           <string>:app_name</string>
           <key>CFBundleExecutable</key>
           <string>:app_name</string>
-          <key>CFBundleIconFiles</key>
+          <key>NSAppTransportSecurity</key>
+          <dict>
+            <key>NSAllowsArbitraryLoads</key>
+            <true/>
+          </dict>        <key>CFBundleIconFiles</key>
           <array>
                   <string>AppIcon60x60</string>
           </array>
@@ -6164,10 +6262,23 @@ Follows is a source code listing for all files that have been open sourced. This
       sh %Q[rm -rf "#{app_path}/metadata"]
     end
   
-    def stage_app
+    def stage_ios_app
       log_info "Staging."
       sh "mkdir -p #{tmp_directory}"
       sh "cp -R #{relative_path}/dragonruby-ios.app/ \"#{tmp_directory}/#{@app_name}.app/\""
+      sh "mv \"#{tmp_directory}/#{@app_name}.app/Runtime\" \"#{tmp_directory}/#{@app_name}.app/#{@app_name}\""
+      sh %Q[cp -r "#{root_folder}/app/" "#{app_path}/app/"]
+      sh %Q[cp -r "#{root_folder}/sounds/" "#{app_path}/sounds/"]
+      sh %Q[cp -r "#{root_folder}/sprites/" "#{app_path}/sprites/"]
+      sh %Q[cp -r "#{root_folder}/data/" "#{app_path}/data/"]
+      sh %Q[cp -r "#{root_folder}/fonts/" "#{app_path}/fonts/"]
+      sh %Q[cp -r "#{root_folder}/metadata/" "#{app_path}/metadata/"]
+    end
+  
+    def stage_sim_app
+      log_info "Staging."
+      sh "mkdir -p #{tmp_directory}"
+      sh "cp -R #{relative_path}/dragonruby-ios-simulator.app/ \"#{tmp_directory}/#{@app_name}.app/\""
       sh "mv \"#{tmp_directory}/#{@app_name}.app/Runtime\" \"#{tmp_directory}/#{@app_name}.app/#{@app_name}\""
       sh %Q[cp -r "#{root_folder}/app/" "#{app_path}/app/"]
       sh %Q[cp -r "#{root_folder}/sounds/" "#{app_path}/sounds/"]
@@ -6189,24 +6300,35 @@ Follows is a source code listing for all files that have been open sourced. This
       sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip} > "#{app_path}/metadata/DRAGONRUBY_REMOTE_HOTLOAD"]
     end
   
-    def create_payload_directory_dev
+    def create_dev_payload_directory
       embed_mobileprovision
       clear_payload_directory
-      stage_app
+      stage_ios_app
       # write dev machine's ip address for hotloading
-      write_server_ip_address if @opts[:env] == :hotload
+      write_server_ip_address if hotload_build?
   
       # production build marker
       sh %Q[mkdir -p "#{app_path}/metadata/"]
       sh %Q[touch "#{app_path}/metadata/DRAGONRUBY_PRODUCTION_BUILD"]
     end
   
-    def create_payload_directory_prod
+    def create_prod_payload_directory
       # production builds does not hotload ip address
       sh %Q[rm "#{root_folder}/app/server_ip_address.txt"]
   
       embed_mobileprovision
-      stage_app
+      stage_ios_app
+  
+      # production build marker
+      sh %Q[mkdir -p "#{app_path}/metadata/"]
+      sh %Q[touch "#{app_path}/metadata/DRAGONRUBY_PRODUCTION_BUILD"]
+    end
+  
+    def create_sim_payload_directory
+      embed_mobileprovision
+      clear_payload_directory
+      stage_sim_app
+      write_server_ip_address
   
       # production build marker
       sh %Q[mkdir -p "#{app_path}/metadata/"]
@@ -6237,9 +6359,73 @@ Follows is a source code listing for all files that have been open sourced. This
       result
     end
   
-    def deploy
+    def deploy_to_device
+      sh "ideviceinstaller --uninstall #{@app_id}"
       sh "ideviceinstaller -i \"#{tmp_directory}/#{@app_name}.ipa\""
       log_info "Check your device!!"
+    end
+  
+    def simctl_list_devices
+      output = sh "xcrun simctl list devices"
+  
+      # get only installed devices
+      output = output.split("-- Unavailable").first
+  
+      devices = {}
+      current_version_number_string = nil
+      output.each_line do |l|
+        if l.start_with? "-- iOS"
+          current_version_number_string = l.strip.gsub("-- iOS ", "").gsub(" --", "")
+        else
+          tokens = l.gsub("(Booted)", "")
+                    .gsub("(Shutdown)", "")
+                    .strip.split(" (")
+  
+          device_name = tokens.first.strip
+          device_id = tokens.last.gsub(")", "").strip
+          device_name_2 = if tokens.length <= 2
+                            ""
+                          else
+                            tokens[1].gsub(")", "").strip
+                          end
+  
+          if !device_id.include? "Devices"
+            devices[device_id] = {
+              name: device_name,
+              name_2: device_name_2,
+              version_string: current_version_number_string,
+              version_number: current_version_number_string.split(".").map(&:to_i),
+              id: device_id
+            }
+          end
+        end
+      end
+  
+      devices
+    end
+  
+    def simctl_list_devices_max_version
+      devices = simctl_list_devices
+      max_version_number = devices.map { |k, v| v.version_number }.max
+      max_version_number_string = max_version_number.join(".")
+      devices.reject! { |k, v| v.version_string != max_version_number_string }
+      devices
+    end
+  
+    def simctl_iphone_device_id_max_version
+      devices = simctl_list_devices_max_version
+      k, v = devices.find { |k, v| v.name.include?("iPhone") && !v.name.include?("SE") }
+      k
+    end
+  
+    def deploy_to_sim
+      device_id = simctl_iphone_device_id_max_version
+      sh "xcrun simctl boot #{device_id}"
+      sh "open -a Simulator"
+      sh "xcrun simctl uninstall #{device_id} #{@app_id}"
+      sh "xcrun simctl install #{device_id} \"#{tmp_directory}/#{@app_name}.app\""
+      sh "xcrun simctl launch #{device_id} #{@app_id}"
+      puts "Check your simulator!!\nYou can use cmd+left/right arrow to rotate the device."
     end
   
     def print_publish_help
@@ -6354,28 +6540,28 @@ Follows is a source code listing for all files that have been open sourced. This
       log "#+end_src"
       metadata = get_metadata
   
-      if metadata[:dev_id].start_with?("#") || !@dev_id
+      if metadata[:devid].start_with?("#") || !@devid
         log "* PROMPT: Please provide your username for Itch."
-        $console.set_command "$wizards.itch.set_dev_id \"#{metadata[:dev_id]}\""
-        return :need_dev_id
+        $console.set_command "$wizards.itch.set_devid \"#{metadata[:devid]}\""
+        return :need_devid
       end
   
-      if metadata[:dev_title].start_with?("#") || !@dev_title
+      if metadata[:devtitle].start_with?("#") || !@devtitle
         log "* PROMPT: Please provide developer's/company's name that you want displayed."
-        $console.set_command "$wizards.itch.set_dev_title \"#{metadata[:dev_title]}\""
-        return :need_dev_title
+        $console.set_command "$wizards.itch.set_devtitle \"#{metadata[:devtitle]}\""
+        return :need_devtitle
       end
   
-      if metadata[:game_id].start_with?("#") || !@game_id
+      if metadata[:gameid].start_with?("#") || !@gameid
         log "* PROMPT: Please provide the id for you game. This is the id you specified when you set up a new game page on Itch."
-        $console.set_command "$wizards.itch.set_game_id \"#{metadata[:game_id]}\""
-        return :need_game_id
+        $console.set_command "$wizards.itch.set_gameid \"#{metadata[:gameid]}\""
+        return :need_gameid
       end
   
-      if metadata[:game_title].start_with?("#") || !@game_title
+      if metadata[:gametitle].start_with?("#") || !@gametitle
         log "* PROMPT: Please provide the display name for your game. (This can include spaces)"
-        $console.set_command "$wizards.itch.set_game_title \"#{metadata[:game_title]}\""
-        return :need_game_title
+        $console.set_command "$wizards.itch.set_gametitle \"#{metadata[:gametitle]}\""
+        return :need_gametitle
       end
   
       if metadata[:version].start_with?("#") || !@version
@@ -6393,23 +6579,23 @@ Follows is a source code listing for all files that have been open sourced. This
       return :success
     end
   
-    def set_dev_id value
-      @dev_id = value
+    def set_devid value
+      @devid = value
       start
     end
   
-    def set_dev_title value
-      @dev_title = value
+    def set_devtitle value
+      @devtitle = value
       start
     end
   
-    def set_game_id value
-      @game_id = value
+    def set_gameid value
+      @gameid = value
       start
     end
   
-    def set_game_title value
-      @game_title = value
+    def set_gametitle value
+      @gametitle = value
       start
     end
   
@@ -6426,26 +6612,26 @@ Follows is a source code listing for all files that have been open sourced. This
   
     def write_metadata
       text = ""
-      if @dev_id
-        text += "devid=#{@dev_id}\n"
+      if @devid
+        text += "devid=#{@devid}\n"
       else
         text += "#devid=myname\n"
       end
   
-      if @dev_title
-        text += "devtitle=#{@dev_title}\n"
+      if @devtitle
+        text += "devtitle=#{@devtitle}\n"
       else
         text += "#devtitle=My Name\n"
       end
   
-      if @game_id
-        text += "gameid=#{@game_id}\n"
+      if @gameid
+        text += "gameid=#{@gameid}\n"
       else
         text += "#gameid=gameid\n"
       end
   
-      if @game_title
-        text += "gametitle=#{@game_title}\n"
+      if @gametitle
+        text += "gametitle=#{@gametitle}\n"
       else
         text += "#gametitle=Game Name\n"
       end
@@ -6532,10 +6718,10 @@ Follows is a source code listing for all files that have been open sourced. This
     end
   
     def reset
-      @dev_id = nil
-      @dev_title = nil
-      @game_id = nil
-      @game_title = nil
+      @devid = nil
+      @devtitle = nil
+      @gameid = nil
+      @gametitle = nil
       @version = nil
       @icon = nil
       init_wizard_status
@@ -8285,6 +8471,13 @@ Follows is a source code listing for all files that have been open sourced. This
         @replay_completed_successfully
       end
   
+      def __parse_replay_value__ value
+        return value if !value
+        return value.gsub(':', '').to_sym if value.start_with? ':'
+        return value == 'true' if value == 'true' || value == 'false'
+        return value.to_f
+      end
+  
       def start_replay file_name = nil, speed: 1
         return if replay_recently_stopped?
         @replay_completed_successfully = false
@@ -8312,6 +8505,21 @@ Follows is a source code listing for all files that have been open sourced. This
           stopped_at_current_tick: 0
         }
   
+        # the replay file is a text file with the following format:
+        # replay_version 2.0 (the version of the replay file)
+        # stopped_at 123456789 (tick count when the recording was stopped)
+        # seed 123456789 (rng seed that was used to record the replay)
+        # recorded_at 2019-01-01 12:00:00 -0500 (date and time when the recording was created)
+        # inputs recorded as an array (delimited by new lines)
+        # all record inputs have 6 entires except for mouse wheel which can have 6 or 7 entries (new parameters were added)
+        # example:
+        #   for entries with 6 parameters:
+        #   [function_called, parameter_1, parameter_2 (if applicable), parameter count (1 or 2), input order, tick count]
+        #   [:mouse_button_up, 1, 0, 1, 1, 3]
+        #
+        #   for entries with 7 parameters:
+        #   [function_called, parameter_1, parameter_2 (if applicable), parameter_3 (if applicable), parameter count (always 3), input order, tick count]
+        #   [:mouse_wheel, 1, 0, 1, 1, 3]
         text.each_line do |l|
           if l.strip.length == 0
             next
@@ -8324,13 +8532,58 @@ Follows is a source code listing for all files that have been open sourced. This
           elsif l.start_with? 'recorded_at'
             $replay_data[:recorded_at] = l.split(' ')[1..-1].join(' ')
           elsif l.start_with? '['
-            name, value_1, value_2, value_count, id, tick_count = l.strip.gsub('[', '').gsub(']', '').split(',')
+            # this is the logic to parse the array of inputs
+            items = l.strip.gsub('[', '').gsub(']', '').split(',')
+  
+            # item 0 is the function name
+            name        = __parse_replay_value__ items[0]
+            value_1     = nil
+            value_2     = nil
+            value_3     = nil
+            value_count = 0
+            id          = 0
+            tick_count  = 0
+  
+            # if the name is mouse_wheel, handle the 6 or 7 parameter case (6 parameters is the old format)
+            if name == :mouse_wheel
+              # always set the number of parameters for mouse wheel to 3
+              value_count = 3
+  
+              # value_3 is nil if there are only 6 parameters
+              if items.length == 6
+                # when destructoring items, we don't need the name (first item) or the value_count (4th item)
+                _, value_1, value_2, _, id, tick_count = items
+                value_3 = nil
+              elsif items.length == 7
+                # when destructoring items, we don't need the name (first item) or the value_count (4th item)
+                _, value_1, value_2, value_3, _, id, tick_count = items
+              else
+                raise "Unable to parse replay entry #{l.strip}. Expected 6 or 7 values for mouse_wheel."
+              end
+            elsif items.length == 6
+              # general case for 6 parameters
+              _, value_1, value_2, value_count, id, tick_count = items
+              value_3 = nil
+            elsif items.length == 7
+              # general case for 7 parameters
+              _, value_1, value_2, value_3, value_count, id, tick_count = items
+            else
+              raise "Unable able to parse replay entry #{l.strip}. Expected 6 or 7 values."
+            end
+  
+            # deserialize the string value into the correct type
+            value_1 = __parse_replay_value__ value_1
+            value_2 = __parse_replay_value__ value_2
+            value_3 = __parse_replay_value__ value_3
+  
+            # create a dictionary entry for the input
             $replay_data[:input_history][tick_count.to_i] ||= []
             $replay_data[:input_history][tick_count.to_i] << {
               id: id.to_i,
-              name: name.gsub(':', '').to_sym,
-              value_1: value_1.to_f,
-              value_2: value_2.to_f,
+              name: name,
+              value_1: value_1,
+              value_2: value_2,
+              value_3: value_3,
               value_count: value_count.to_i
             }
           else
@@ -8410,10 +8663,18 @@ Follows is a source code listing for all files that have been open sourced. This
         @runtime.notify! notification_message
       end
   
+      # 1 or 2 params
       def record_input_history name, value_1, value_2, value_count, clear_cache = false
         return if @is_replaying
         return unless @is_recording
         @input_history << [name, value_1, value_2, value_count, @global_input_order, Kernel.tick_count]
+        @global_input_order += 1
+      end
+  
+      def record_input_history_3_params name, value_1, value_2, value_3, clear_cache = false
+        return if @is_replaying
+        return unless @is_recording
+        @input_history << [name, value_1, value_2, value_3, 3, @global_input_order, Kernel.tick_count]
         @global_input_order += 1
       end
   
@@ -8452,6 +8713,7 @@ Follows is a source code listing for all files that have been open sourced. This
           args = []
           args << v[:value_1] if v[:value_count] >= 1
           args << v[:value_2] if v[:value_count] >= 2
+          args << v[:value_3] if v[:value_count] >= 3
           args << :replay
           $gtk.send v[:name], *args
         end
@@ -8481,8 +8743,9 @@ Follows is a source code listing for all files that have been open sourced. This
         local_state
       end
   
-      def initialize server_ip_address
+      def initialize server_ip_address, port
         local_state.server_ip_address = server_ip_address || ""
+        local_state.server_port = port
         puts "* INFO: Remote Hotload Client server_available? #{server_available?}"
       end
   
@@ -8491,7 +8754,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
         if should_tick? && !local_state.notified
           if server_available?
-            log_spam "* REMOTE HOTLOAD INFO: Hotload server found at #{get_server_ip_address}:9001."
+            log_spam "* REMOTE HOTLOAD INFO: Hotload server found at #{get_server_ip_address}:#{get_server_port}."
           end
           local_state.notified = true
         end
@@ -8526,6 +8789,14 @@ Follows is a source code listing for all files that have been open sourced. This
         local_state.server_ip_address
       end
   
+      def get_server_port
+        local_state.server_port
+      end
+  
+      def get_server_url path
+        return "http://#{get_server_ip_address}:#{get_server_port}/#{path}"
+      end
+  
       def server_available?
         return false if $gtk.platform == 'Emscripten'
         get_server_ip_address.length != 0
@@ -8552,8 +8823,8 @@ Follows is a source code listing for all files that have been open sourced. This
           # file with latest change,
           # latest file                              update_time  key
           # tmp/src_backup/src_backup_app_main.rb, 1597926596,  app/main.rb
-          log_spam "* REMOTE HOTLOAD INFO: Attempting http_get of http://#{get_server_ip_address}:9001/dragon/boot/"
-          local_state.http_boot    = args.gtk.http_get "http://#{get_server_ip_address}:9001/dragon/boot/"
+          log_spam "* REMOTE HOTLOAD INFO: Attempting http_get of #{get_server_url('dragon/boot/')}"
+          local_state.http_boot    = args.gtk.http_get(get_server_url('dragon/boot/'))
         elsif local_state.http_boot && local_state.http_boot[:http_response_code] == 200
           local_state.last_greatest_tick = local_state.http_boot[:response_data].strip.to_i
           local_state.greatest_tick = local_state.http_boot[:response_data].strip.to_i
@@ -8571,8 +8842,8 @@ Follows is a source code listing for all files that have been open sourced. This
         return unless local_state.booted_at
   
         if !local_state.http_changes
-          log_spam "* REMOTE HOTLOAD INFO: Attempting http_get of http://#{get_server_ip_address}:9001/dragon/changes/"
-          local_state.http_changes = args.gtk.http_get "http://#{get_server_ip_address}:9001/dragon/changes/"
+          log_spam "* REMOTE HOTLOAD INFO: Attempting http_get of #{get_server_url('dragon/changes/')}"
+          local_state.http_changes = args.gtk.http_get(get_server_url('dragon/changes/'))
         end
   
         if local_state.http_changes && local_state.http_changes[:http_response_code] == 200 && local_state.booted_at
@@ -8627,7 +8898,7 @@ Follows is a source code listing for all files that have been open sourced. This
         local_state.processing_file_changes = local_state.changes_queue.shift
   
         # create an http request for the file
-        url = "http://#{get_server_ip_address}:9001/dragon/#{local_state.processing_file_changes[:latest_file]}"
+        url = get_server_url("/dragon/#{local_state.processing_file_changes[:latest_file]}")
         log_spam "* REMOTE HOTLOAD INFO: Getting new version of #{local_state.processing_file_changes[:latest_file]} (#{url})."
         local_state.http_file_changes = args.gtk.http_get url
       end
@@ -10904,247 +11175,191 @@ Follows is a source code listing for all files that have been open sourced. This
       args.outputs[:scene].w = 160
       args.outputs[:scene].h = 90
       args.outputs[:scene].background_color = [0, 0, 0, 0]
+      $args.state.tweetcart_state ||= {
+        pallet_number: 0,
+        render_method: :scene
+      }
       args.state.tweet_scene ||= { x: 0, y: 0, w: 1280, h: 720, path: :scene }
-      args.state.tweet_scene_pixels ||= { x: 0, y: 0, w: 1280, h: 720, path: :pixels }
       $tweetcart_palette ||= create_tweetcart_palette
       block.call args
-  
-      if  $args.state.tweetcart_state.render_mode == :pixels
-        args.outputs.sprites << args.state.tweet_scene_pixels
-      else
+      if args.state.tweetcart_state.render_method == :scene
         args.outputs.sprites << args.state.tweet_scene
+      elsif args.state.tweetcart_state.render_method == :pixels
+        args.pixel_array(:pixels).width = 160
+        args.pixel_array(:pixels).height = 90
+        r, g, b = $tweetcart_palette[args.state.tweetcart_state.pallet_number]
+        abgr_hex = (0xFF << 24) | (b << 16) | (g << 8) | r
+        args.pixel_array(:pixels).pixels.fill(abgr_hex, 0, 160 * 90)
+        args.outputs.primitives << { x: 0, y: 0, w: 1280, h: 720, path: :pixels }
+      else
+        raise "I don't know how to process $args.state.tweetcart_state with value #{$args.state.tweetcart_state}"
       end
     end
   
-    class << $top_level
-      def no_clr! render_target_name = :scene
-        no_clear! render_target_name
-      end
+    def $top_level.pixels!
+      return if $args.state.tweetcart_state.render_method == :pixels
+      $args.state.tweetcart_state.render_method = :pixels
+    end
   
-      def no_clear! render_target_name = :scene
-        $args.outputs[render_target_name].clear_before_render = false
-      end
+    def $top_level.color pallet_number
+      $args.state.tweetcart_state.pallet_number = pallet_number
+    end
   
-      def bg! *rgb
-        r,g,b = rgb
+    def $top_level.no_clr! render_target_name = :scene
+      $top_level.no_clear! render_target_name
+    end
+  
+    def $top_level.no_clear! render_target_name = :scene
+      $args.outputs[render_target_name].clear_before_render = false
+    end
+  
+    def $top_level.bg! *rgb
+      r,g,b = rgb
+      r ||= 255
+      g ||= r
+      b ||= g
+      $args.outputs.background_color = [r, g, b]
+    end
+  
+    def $top_level.slds
+      $args.outputs[:scene].sprites
+    end
+  
+    def $top_level.slds! *os
+      if (os.first.is_a? Numeric)
+        sld!(*os)
+      else
+        os.each { |o| sld!(*o) }
+      end
+    end
+  
+    def $top_level.sld! *params
+      x, y, w, h, r, g, b, a = nil
+      if params.length == 2
+        x, y = params
+      elsif params.length == 3 && (params.last.is_a? Array)
+        x = params[0]
+        y = params[1]
+        r, g, b, a = params[2]
         r ||= 255
         g ||= r
         b ||= g
-        $args.outputs.background_color = [r, g, b]
-      end
-  
-      def slds
-        $args.outputs[:scene].sprites
-      end
-  
-      def slds! *os
-        if (os.first.is_a? Numeric)
-          sld!(*os)
-        else
-          os.each { |o| sld!(*o) }
-        end
-      end
-  
-      def sld! *params
-        x, y, w, h, r, g, b, a = nil
-        if params.length == 2
-          x, y = params
-        elsif params.length == 3 && (params.last.is_a? Array)
-          x = params[0]
-          y = params[1]
-          r, g, b, a = params[2]
-          r ||= 255
-          g ||= r
-          b ||= g
-          a ||= 255
-        elsif params.length == 4
-          x, y, w, h = params
-        elsif params.length == 5 && (params.last.is_a? Array)
-          x = params[0]
-          y = params[1]
-          w = params[2]
-          h = params[3]
-          r,g,b,a = params[4]
-          r ||= 255
-          g ||= r
-          b ||= g
-          a ||= 255
-        elsif params.length >= 7
-          x, y, w, h, r, g, b = params
-        else
-          raise "I don't know how to render #{params} with reasonable defaults."
-        end
-  
-        w ||= 1
-        h ||= 1
-        r ||= 255
-        g ||= 255
-        b ||= 255
         a ||= 255
-  
-        slds << { x: x, y: y,
-                  w: w, h: h,
-                  r: r, g: g, b: b, a: a,
-                  path: :pixel }
+      elsif params.length == 4
+        x, y, w, h = params
+      elsif params.length == 5 && (params.last.is_a? Array)
+        x = params[0]
+        y = params[1]
+        w = params[2]
+        h = params[3]
+        r,g,b,a = params[4]
+        r ||= 255
+        g ||= r
+        b ||= g
+        a ||= 255
+      elsif params.length >= 7
+        x, y, w, h, r, g, b = params
+      else
+        raise "I don't know how to render #{params} with reasonable defaults."
       end
   
-      def sin_r radians
-        Math.sin radians
-      end
+      w ||= 1
+      h ||= 1
+      r ||= 255
+      g ||= 255
+      b ||= 255
+      a ||= 255
   
-      def cos_r radians
-        Math.cos radians
-      end
+      slds << { x: x, y: y,
+                w: w, h: h,
+                r: r, g: g, b: b, a: a,
+                path: :pixel }
+    end
   
-      def sin degrees
-        Math.sin degrees.to_radians
-      end
+    def $top_level.sin_r radians
+      Math.sin radians
+    end
   
-      def cos degrees
-        Math.cos degrees.to_radians
-      end
+    def $top_level.cos_r radians
+      Math.cos radians
+    end
   
-      def sin_d degrees
-        Math.sin degrees.to_radians
-      end
+    def $top_level.sin degrees
+      Math.sin degrees.to_radians
+    end
   
-      def cos_d degrees
-        Math.cos degrees.to_radians
-      end
+    def $top_level.cos degrees
+      Math.cos degrees.to_radians
+    end
   
-      def tc
-        $args.state.tick_count
-      end
+    def $top_level.sin_d degrees
+      Math.sin degrees.to_radians
+    end
   
-      def scene! w = 1280, h = 720, scale = nil
-        scale ||= begin
-                    x_scale = $args.grid.w / w
-                    y_scale = $args.grid.h / h
-                    x_scale < y_scale ? x_scale : y_scale
-                  end
+    def $top_level.cos_d degrees
+      Math.cos degrees.to_radians
+    end
   
-        $args.state.tweetcart_state.render_mode == :scene
-        $args.outputs[:scene].w = w
-        $args.outputs[:scene].h = h
-        $args.state.tweet_scene.w = w * scale
-        $args.state.tweet_scene.h = h * scale
-        $args.state.tweet_scene.x = ($args.grid.w - w * scale) / 2
-        $args.state.tweet_scene.y = ($args.grid.h - h * scale) / 2
-      end
+    def $top_level.tc
+      $args.state.tick_count
+    end
   
-      def create_tweetcart_palette
-        [
-          [   0,   0,   0 ],
-          [  34,  32,  52 ],
-          [  69,  40,  60 ],
-          [ 102,  57,  49 ],
-          [ 143,  86,  59 ],
-          [ 223, 113,  38 ],
-          [ 217, 160, 102 ],
-          [ 238, 195, 154 ],
-          [ 251, 242,  54 ],
-          [ 153, 229,  80 ],
-          [ 106, 190,  48 ],
-          [  55, 148, 110 ],
-          [  75, 105,  47 ],
-          [  82,  75,  36 ],
-          [  50,  60,  57 ],
-          [  63,  63, 116 ],
-          [  48,  96, 130 ],
-          [  91, 110, 225 ],
-          [  99, 155, 255 ],
-          [  95, 205, 228 ],
-          [ 203, 219, 252 ],
-          [ 255, 255, 255 ],
-          [ 155, 173, 183 ],
-          [ 132, 126, 135 ],
-          [ 105, 106, 106 ],
-          [  89,  86,  82 ],
-          [ 118,  66, 138 ],
-          [ 172,  50,  50 ],
-          [ 217,  87,  99 ],
-          [ 215, 123, 186 ],
-          [ 143, 151,  74 ],
-          [ 138, 111,  48 ]
-        ]
-      end
+    def $top_level.scene! w = 1280, h = 720, scale = nil
+      scale ||= begin
+                  x_scale = $args.grid.w / w
+                  y_scale = $args.grid.h / h
+                  x_scale < y_scale ? x_scale : y_scale
+                end
   
-      def pal
-        $tweetcart_palette
-      end
+      $args.outputs[:scene].w = w
+      $args.outputs[:scene].h = h
+      $args.state.tweet_scene.w = w * scale
+      $args.state.tweet_scene.h = h * scale
+      $args.state.tweet_scene.x = ($args.grid.w - w * scale) / 2
+      $args.state.tweet_scene.y = ($args.grid.h - h * scale) / 2
+    end
   
-      def pixels!
-        return if $args.state.tweetcart_state.render_mode == :pixels
-        tweetcart_state.render_mode = :pixels
-        tweetcart_state.color = 0
-        $args.pixel_array(:pixels).w = 160
-        $args.pixel_array(:pixels).h = 90
-        $args.pixel_array(:pixels).pixels.fill(0xFFFFFFFF, 0, 160 * 90)  # black, full alpha
-      end
+    def create_tweetcart_palette
+      [
+        [   0,   0,   0 ],
+        [  34,  32,  52 ],
+        [  69,  40,  60 ],
+        [ 102,  57,  49 ],
+        [ 143,  86,  59 ],
+        [ 223, 113,  38 ],
+        [ 217, 160, 102 ],
+        [ 238, 195, 154 ],
+        [ 251, 242,  54 ],
+        [ 153, 229,  80 ],
+        [ 106, 190,  48 ],
+        [  55, 148, 110 ],
+        [  75, 105,  47 ],
+        [  82,  75,  36 ],
+        [  50,  60,  57 ],
+        [  63,  63, 116 ],
+        [  48,  96, 130 ],
+        [  91, 110, 225 ],
+        [  99, 155, 255 ],
+        [  95, 205, 228 ],
+        [ 203, 219, 252 ],
+        [ 255, 255, 255 ],
+        [ 155, 173, 183 ],
+        [ 132, 126, 135 ],
+        [ 105, 106, 106 ],
+        [  89,  86,  82 ],
+        [ 118,  66, 138 ],
+        [ 172,  50,  50 ],
+        [ 217,  87,  99 ],
+        [ 215, 123, 186 ],
+        [ 143, 151,  74 ],
+        [ 138, 111,  48 ]
+      ]
+    end
   
-      def tweetcart_state
-        $args.state.tweetcart_state ||= {}
-      end
-  
-      def color pal_number
-        tweetcart_state.color = pal_number
-      end
-  
-      def pset x, y, pal_number = tweetcart_state.color
-        r, g, b = pal[pal_number]
-        abgr_hex = (255 << 24) + (b << 16) + (g << 8) + r
-        row_increment = y * 160
-        $args.pixel_array(:pixels).pixels.fill(abgr_hex, x + row_increment, 1)
-      end
-  
-      def pget x, y
-        row_increment = y * 160
-        abgr_hex = $args.pixel_array(:pixels).pixels[x + row_increment]
-        r = (abgr_hex & 0x000000FF)
-        g = (abgr_hex & 0x0000FF00) >> 8
-        b = (abgr_hex & 0x00FF0000) >> 16
-        pal.index([r, g, b])
-      end
-  
-      def rectfill x, y, w, h, pal_number = tweetcart_state.color
-        r, g, b = pal[pal_number]
-        abgr_hex = (255 << 24) + (b << 16) + (g << 8) + r
-        h.times do |i|
-          row_increment = (y + i) * 160
-          $args.pixel_array(:pixels).pixels.fill(abgr_hex, x + row_increment, w)
-        end
-      end
-  
-      def circfill cx, cy, cr, pal_number = tweetcart_state.color
-        r, g, b = pal[pal_number]
-        abgr_hex = (255 << 24) + (b << 16) + (g << 8) + r
-  
-        x0 = cx
-        y0 = cy
-        radius = cr
-  
-        x = 0
-        y = radius
-        p = 1 - radius
-  
-        while x <= y
-          rect_fill x0 - x, y0 + y, 2 * x, 1, pal_number
-          rect_fill x0 - x, y0 - y, 2 * x, 1, pal_number
-          rect_fill x0 - y, y0 + x, 2 * y, 1, pal_number
-          rect_fill x0 - y, y0 - x, 2 * y, 1, pal_number
-  
-          x += 1
-          if p < 0
-            p += 2 * x + 1
-          else
-            y -= 1
-            p += 2 * (x - y) + 1
-          end
-        end
-      end
-    end # end $top_level class
-  end # end TICK
-  
+    def $top_level.pal
+      $tweetcart_palette
+    end
+  end
   
   =begin
   wht  = [255] * 3
@@ -11169,19 +11384,6 @@ Follows is a source code listing for all files that have been open sourced. This
             [70, 70, 10, 10, wht],
             [80, 80, 4, 4, 255, 0, 255]
   }
-  
-  $gtk.reset
-  =end
-  
-  =begin
-  TICK {
-    pixels!
-    color 0
-    circfill 10, 10, 5, 20
-    rectfill 20, 10, 5
-  }
-  
-  $gtk.reset
   =end
 
 #+end_src
@@ -11207,16 +11409,25 @@ Follows is a source code listing for all files that have been open sourced. This
         metadata = $gtk.read_file metadata_file_path
       end
   
-      dev_id, dev_title, game_id, game_title, version, icon = *metadata.each_line.to_a
+      kvps = metadata.each_line
+                     .reject { |l| l.strip.length == 0 || (l.strip.start_with? "#") }
+                     .map do |l|
+                       key, value = l.split("=")
+                       [key.strip.to_sym, value.strip]
+                     end.flatten
   
-      {
-        dev_id:     dev_id.strip.gsub("#", "").gsub("devid=", ""),
-        dev_title:  dev_title.strip.gsub("#", "").gsub("devtitle=", ""),
-        game_id:    game_id.strip.gsub("#", "").gsub("gameid=", ""),
-        game_title: game_title.strip.gsub("#", "").gsub("gametitle=", ""),
-        version:    version.strip.gsub("#", "").gsub("version=", ""),
-        icon:       icon.strip.gsub("#", "").gsub("icon=", "")
+      default_metadata = {
+        devid: "myname",
+        devtitle: "My Name",
+        gameid: "mygame",
+        gametitle: "My Game",
+        version: "0.1",
+        icon: "metadata/icon.png"
       }
+  
+      parsed_metadata = Hash[*kvps]
+  
+      default_metadata.merge parsed_metadata
     end
   end
   

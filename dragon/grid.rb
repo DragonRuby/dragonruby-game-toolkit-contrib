@@ -72,7 +72,9 @@ module GTK
          :native_width,
          :native_height,
          :native_scale,
-         :native_scale_enum
+         :native_scale_enum,
+         :window_width,
+         :window_height
 
     def initialize runtime
       @runtime = runtime

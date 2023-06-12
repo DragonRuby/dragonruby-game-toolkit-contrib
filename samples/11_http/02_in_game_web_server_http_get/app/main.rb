@@ -8,6 +8,10 @@ def tick args
   args.outputs.background_color = [0, 0, 0]
   args.outputs.labels << [640, 600, "Point your web browser at http://localhost:#{args.state.port}/", 10, 1, 255, 255, 255]
 
+  if args.state.tick_count == 1
+    $gtk.openurl "http://localhost:3000"
+  end
+
   args.inputs.http_requests.each { |req|
     puts("METHOD: #{req.method}");
     puts("URI: #{req.uri}");

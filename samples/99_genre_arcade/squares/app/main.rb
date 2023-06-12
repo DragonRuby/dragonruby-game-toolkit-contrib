@@ -459,6 +459,13 @@ def tick args
   $game ||= RootScene.new args
   $game.args = args
   $game.tick
+
+  if args.inputs.keyboard.key_down.forward_slash
+    @show_fps = !@show_fps
+  end
+  if @show_fps
+    args.outputs.primitives << args.gtk.current_framerate_primitives
+  end
 end
 
 $gtk.reset

@@ -38,28 +38,28 @@ S
     log "#+end_src"
     metadata = get_metadata
 
-    if metadata[:dev_id].start_with?("#") || !@dev_id
+    if metadata[:devid].start_with?("#") || !@devid
       log "* PROMPT: Please provide your username for Itch."
-      $console.set_command "$wizards.itch.set_dev_id \"#{metadata[:dev_id]}\""
-      return :need_dev_id
+      $console.set_command "$wizards.itch.set_devid \"#{metadata[:devid]}\""
+      return :need_devid
     end
 
-    if metadata[:dev_title].start_with?("#") || !@dev_title
+    if metadata[:devtitle].start_with?("#") || !@devtitle
       log "* PROMPT: Please provide developer's/company's name that you want displayed."
-      $console.set_command "$wizards.itch.set_dev_title \"#{metadata[:dev_title]}\""
-      return :need_dev_title
+      $console.set_command "$wizards.itch.set_devtitle \"#{metadata[:devtitle]}\""
+      return :need_devtitle
     end
 
-    if metadata[:game_id].start_with?("#") || !@game_id
+    if metadata[:gameid].start_with?("#") || !@gameid
       log "* PROMPT: Please provide the id for you game. This is the id you specified when you set up a new game page on Itch."
-      $console.set_command "$wizards.itch.set_game_id \"#{metadata[:game_id]}\""
-      return :need_game_id
+      $console.set_command "$wizards.itch.set_gameid \"#{metadata[:gameid]}\""
+      return :need_gameid
     end
 
-    if metadata[:game_title].start_with?("#") || !@game_title
+    if metadata[:gametitle].start_with?("#") || !@gametitle
       log "* PROMPT: Please provide the display name for your game. (This can include spaces)"
-      $console.set_command "$wizards.itch.set_game_title \"#{metadata[:game_title]}\""
-      return :need_game_title
+      $console.set_command "$wizards.itch.set_gametitle \"#{metadata[:gametitle]}\""
+      return :need_gametitle
     end
 
     if metadata[:version].start_with?("#") || !@version
@@ -77,23 +77,23 @@ S
     return :success
   end
 
-  def set_dev_id value
-    @dev_id = value
+  def set_devid value
+    @devid = value
     start
   end
 
-  def set_dev_title value
-    @dev_title = value
+  def set_devtitle value
+    @devtitle = value
     start
   end
 
-  def set_game_id value
-    @game_id = value
+  def set_gameid value
+    @gameid = value
     start
   end
 
-  def set_game_title value
-    @game_title = value
+  def set_gametitle value
+    @gametitle = value
     start
   end
 
@@ -110,26 +110,26 @@ S
 
   def write_metadata
     text = ""
-    if @dev_id
-      text += "devid=#{@dev_id}\n"
+    if @devid
+      text += "devid=#{@devid}\n"
     else
       text += "#devid=myname\n"
     end
 
-    if @dev_title
-      text += "devtitle=#{@dev_title}\n"
+    if @devtitle
+      text += "devtitle=#{@devtitle}\n"
     else
       text += "#devtitle=My Name\n"
     end
 
-    if @game_id
-      text += "gameid=#{@game_id}\n"
+    if @gameid
+      text += "gameid=#{@gameid}\n"
     else
       text += "#gameid=gameid\n"
     end
 
-    if @game_title
-      text += "gametitle=#{@game_title}\n"
+    if @gametitle
+      text += "gametitle=#{@gametitle}\n"
     else
       text += "#gametitle=Game Name\n"
     end
@@ -216,10 +216,10 @@ S
   end
 
   def reset
-    @dev_id = nil
-    @dev_title = nil
-    @game_id = nil
-    @game_title = nil
+    @devid = nil
+    @devtitle = nil
+    @gameid = nil
+    @gametitle = nil
     @version = nil
     @icon = nil
     init_wizard_status

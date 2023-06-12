@@ -388,6 +388,8 @@ module GTK
     # @gtk
     attr_accessor :has_focus
 
+    attr :active
+
     def initialize
       @key_up      = KeyboardKeys.new
       @key_held    = KeyboardKeys.new
@@ -450,6 +452,7 @@ module GTK
       @key_up.clear
       @key_held.clear
       @key_down.clear
+      @active = nil
     end
 
     def serialize
@@ -542,7 +545,8 @@ module GTK
                   :button_bits, :button_left,
                   :button_middle, :button_right,
                   :button_x1, :button_x2,
-                  :wheel, :relative_x, :relative_y
+                  :wheel, :relative_x, :relative_y,
+                  :active
 
     attr_accessor :click
     attr_accessor :click_at
@@ -623,6 +627,7 @@ module GTK
         @previous_click.global_created_at = @click.global_created_at
       end
 
+      @active = nil
       @click = nil
       @up    = nil
       @moved = nil

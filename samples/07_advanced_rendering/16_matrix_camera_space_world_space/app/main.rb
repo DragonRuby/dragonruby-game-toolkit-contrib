@@ -85,10 +85,10 @@ class Game
     should_update_matricies = false
 
     # + and - keys zoom in and out
-    if inputs.keyboard.equal_sign || inputs.keyboard.plus
+    if inputs.keyboard.equal_sign || inputs.keyboard.plus || inputs.mouse.wheel && inputs.mouse.wheel.y > 0
       state.camera.zoom += 0.01 * state.camera.zoom
       should_update_matricies = true
-    elsif inputs.keyboard.minus
+    elsif inputs.keyboard.minus || inputs.mouse.wheel && inputs.mouse.wheel.y < 0
       state.camera.zoom -= 0.01 * state.camera.zoom
       should_update_matricies = true
     end

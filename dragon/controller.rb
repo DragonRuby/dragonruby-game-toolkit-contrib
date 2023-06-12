@@ -17,7 +17,8 @@ module GTK
          :right_analog_x_raw,
          :right_analog_y_raw,
          :right_analog_x_perc,
-         :right_analog_y_perc
+         :right_analog_y_perc,
+         :active
 
     attr :connected
 
@@ -51,6 +52,7 @@ module GTK
       @key_down.clear
       @key_up.clear
       @key_held.clear
+      @active = nil
     end
 
     def up

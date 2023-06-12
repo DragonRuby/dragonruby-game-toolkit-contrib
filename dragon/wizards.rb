@@ -16,16 +16,25 @@ class Wizard
       metadata = $gtk.read_file metadata_file_path
     end
 
-    dev_id, dev_title, game_id, game_title, version, icon = *metadata.each_line.to_a
+    kvps = metadata.each_line
+                   .reject { |l| l.strip.length == 0 || (l.strip.start_with? "#") }
+                   .map do |l|
+                     key, value = l.split("=")
+                     [key.strip.to_sym, value.strip]
+                   end.flatten
 
-    {
-      dev_id:     dev_id.strip.gsub("#", "").gsub("devid=", ""),
-      dev_title:  dev_title.strip.gsub("#", "").gsub("devtitle=", ""),
-      game_id:    game_id.strip.gsub("#", "").gsub("gameid=", ""),
-      game_title: game_title.strip.gsub("#", "").gsub("gametitle=", ""),
-      version:    version.strip.gsub("#", "").gsub("version=", ""),
-      icon:       icon.strip.gsub("#", "").gsub("icon=", "")
+    default_metadata = {
+      devid: "myname",
+      devtitle: "My Name",
+      gameid: "mygame",
+      gametitle: "My Game",
+      version: "0.1",
+      icon: "metadata/icon.png"
     }
+
+    parsed_metadata = Hash[*kvps]
+
+    default_metadata.merge parsed_metadata
   end
 end
 
