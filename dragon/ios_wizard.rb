@@ -1011,8 +1011,28 @@ SCRIPT
     k
   end
 
+  def simctl_iphone_device_id_by_name
+    devices = simctl_list_devices
+    k, v = devices.find { |k, v| v.name.downcase.include?(@opts[:sim_name].downcase) }
+    k      
+  end
+
   def deploy_to_sim
-    device_id = simctl_iphone_device_id_max_version
+    device_id = nil
+    if @opts[:sim_name]
+      device_id = simctl_iphone_device_id_by_name
+      if !device_id
+        $console.set_command "$wizards.ios.start env: :#{@opts[:env]}, sim_name: \"#{@opts[:sim_name]}\""
+        raise WizardException.new(
+          "* Unable to find simulator named '#{@opts[:sim_name]}'.",
+          "** The name must (at least partially) match the name of an existing simulator.",
+          "** Open your iOS simulator and check File > Open Simulator to see the options."
+        )
+      end
+    else
+      device_id = simctl_iphone_device_id_max_version
+    end
+
     sh "xcrun simctl boot #{device_id}"
     sh "open -a Simulator"
     sh "xcrun simctl uninstall #{device_id} #{@app_id}"
