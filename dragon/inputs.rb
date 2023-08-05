@@ -286,9 +286,9 @@ module GTK
     # @gtk
     def all
       @scrubbed_ivars ||= self.instance_variables
-                              .reject { |i| i == :@all || i == :@scrubbed_ivars }
-                              .map { |i| i.to_s.gsub("@", "") }
-
+                              .filter_map do |i|
+                                i.to_s.gsub("@", "") unless i == :@all || i == :@scrubbed_ivars
+                              end
       get(@scrubbed_ivars).map { |k, _| k }
     end
 
