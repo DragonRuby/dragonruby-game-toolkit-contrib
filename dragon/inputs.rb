@@ -3,6 +3,9 @@
 # MIT License
 # inputs.rb has been released under MIT (*only this file*).
 
+# Contributors outside of DragonRuby who also hold Copyright:
+# RicardoTrindade: https://github.com/RicardoTrindade
+
 module GTK
   # Represents all the keys available on the keyboard.
   # @gtk
