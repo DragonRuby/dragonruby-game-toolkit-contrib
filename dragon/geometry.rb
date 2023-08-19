@@ -504,3 +504,5 @@ S
     end
   end # module Geometry
 end # module GTK
+
+Geometry = GTK::Geometry

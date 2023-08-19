@@ -1,0 +1,7 @@
+devid=amirrajan
+devtitle=Amir Rajan
+gameid=sample-app
+gametitle=Sample App
+version=1.0
+icon=metadata/icon.png
+packageid=net.amirrajan.acarthatturns

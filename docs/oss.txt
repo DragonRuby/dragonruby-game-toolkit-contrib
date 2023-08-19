@@ -1,6 +1,6 @@
-** OSS
+* OSS
 Follows is a source code listing for all files that have been open sourced. This code can be found online at [[https://github.com/DragonRuby/dragonruby-game-toolkit-contrib/]].
-*** api.rb
+** api.rb
 #+begin_src ruby
   # ./dragon/api.rb
   # coding: utf-8
@@ -620,7 +620,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** args.rb
+** args.rb
 #+begin_src ruby
   # ./dragon/args.rb
   # coding: utf-8
@@ -881,7 +881,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** assert.rb
+** assert.rb
 #+begin_src ruby
   # ./dragon/assert.rb
   # coding: utf-8
@@ -1025,7 +1025,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** attr_gtk.rb
+** attr_gtk.rb
 #+begin_src ruby
   # ./dragon/attr_gtk.rb
   # coding: utf-8
@@ -1035,67 +1035,71 @@ Follows is a source code listing for all files that have been open sourced. This
   
   module AttrGTK
     def args= value
-      @__args__ = value
+      @args = value
     end
   
     def args
-      @__args__
+      @args
     end
   
     def keyboard
-      @__keyboard__ ||= @__args__.inputs.keyboard
+      @keyboard ||= @args.inputs.keyboard
     end
   
     def grid
-      @__grid__ ||= @__args__.grid
+      @grid ||= @args.grid
     end
   
     def state
-      @__state__ ||= @__args__.state
+      @state ||= @args.state
     end
   
     def temp_state
-      @__temp_state__ ||= @__args__.temp_state
+      @temp_state ||= @args.temp_state
     end
   
     def inputs
-      @__inputs__ ||= @__args__.inputs
+      @inputs ||= @args.inputs
     end
   
     def outputs
-      @__outputs__ ||= @__args__.outputs
+      @outputs ||= @args.outputs
     end
   
     def gtk
-      @__gtk__ ||= @__args__.gtk
+      @gtk ||= @args.gtk
     end
   
     def passes
-      @__passes__ ||= @__args__.passes
+      @passes ||= @args.passes
     end
   
     def pixel_arrays
-      @__pixel_arrays__ ||= @__args__.pixel_arrays
+      @pixel_arrays ||= @args.pixel_arrays
     end
   
     def geometry
-      @__geometry__ ||= @__args__.geometry
+      @geometry ||= @args.geometry
     end
   
     def layout
-      @__layout__ ||= @__args__.layout
+      @layout ||= @args.layout
     end
   
     def easing
-      @__easing__ ||= @__args__.easing
+      @easing ||= @args.easing
     end
   
     def audio
-      @__audio__ ||= @__args__.audio
+      @audio ||= @args.audio
     end
   
     def events
-      @__events__ ||= @__args__.events
+      @events ||= @args.events
+    end
+  
+    def cvars
+      @cvars ||= @args.cvars
     end
   
     def new_entity entity_type, init_hash = nil, &block
@@ -1104,6 +1108,12 @@ Follows is a source code listing for all files that have been open sourced. This
   
     def new_entity_strict entity_type, init_hash = nil, &block
       self.state.new_entity_strict entity_type, init_hash, &block
+    end
+  end
+  
+  class Module
+    def attr_gtk
+      include AttrGTK
     end
   end
   
@@ -1120,7 +1130,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** attr_label.rb
+** attr_label.rb
 #+begin_src ruby
   # ./dragon/attr_label.rb
   # coding: utf-8
@@ -1153,7 +1163,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** attr_line.rb
+** attr_line.rb
 #+begin_src ruby
   # ./dragon/attr_line.rb
   # coding: utf-8
@@ -1202,7 +1212,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** attr_sprite.rb
+** attr_sprite.rb
 #+begin_src ruby
   # ./dragon/attr_sprite.rb
   # coding: utf-8
@@ -1289,7 +1299,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** console.rb
+** console.rb
 #+begin_src ruby
   # ./dragon/console.rb
   # coding: utf-8
@@ -1474,7 +1484,7 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def visible?
-        @visible
+        !!@visible
       end
   
       def open reason = nil
@@ -2230,7 +2240,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** console_color.rb
+** console_color.rb
 #+begin_src ruby
   # ./dragon/console_color.rb
   # coding: utf-8
@@ -2271,7 +2281,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** console_evaluator.rb
+** console_evaluator.rb
 #+begin_src ruby
   # ./dragon/console_evaluator.rb
   # coding: utf-8
@@ -2348,7 +2358,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** console_font_style.rb
+** console_font_style.rb
 #+begin_src ruby
   # ./dragon/console_font_style.rb
   # coding: utf-8
@@ -2395,7 +2405,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** console_menu.rb
+** console_menu.rb
 #+begin_src ruby
   # ./dragon/console_menu.rb
   # coding: utf-8
@@ -2559,7 +2569,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** console_prompt.rb
+** console_prompt.rb
 #+begin_src ruby
   # ./dragon/console_prompt.rb
   # coding: utf-8
@@ -2839,7 +2849,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** controller.rb
+** controller.rb
 #+begin_src ruby
   # ./dragon/controller.rb
   # coding: utf-8
@@ -2955,7 +2965,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** controller/config.rb
+** controller/config.rb
 #+begin_src ruby
   # ./dragon/controller/config.rb
   # coding: utf-8
@@ -3364,7 +3374,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** controller/keys.rb
+** controller/keys.rb
 #+begin_src ruby
   # ./dragon/controller/keys.rb
   # coding: utf-8
@@ -3451,7 +3461,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** directional_input_helper_methods.rb
+** directional_input_helper_methods.rb
 #+begin_src ruby
   # ./dragon/directional_input_helper_methods.rb
   # coding: utf-8
@@ -3555,7 +3565,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** easing.rb
+** easing.rb
 #+begin_src ruby
   # ./dragon/easing.rb
   # coding: utf-8
@@ -3689,7 +3699,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** entity.rb
+** entity.rb
 #+begin_src ruby
   # ./dragon/entity.rb
   # coding: utf-8
@@ -3775,7 +3785,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** geometry.rb
+** geometry.rb
 #+begin_src ruby
   # ./dragon/geometry.rb
   # coding: utf-8
@@ -4284,10 +4294,12 @@ Follows is a source code listing for all files that have been open sourced. This
       end
     end # module Geometry
   end # module GTK
+  
+  Geometry = GTK::Geometry
 
 #+end_src
 
-*** grid.rb
+** grid.rb
 #+begin_src ruby
   # ./dragon/grid.rb
   # coding: utf-8
@@ -4531,7 +4543,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** inputs.rb
+** inputs.rb
 #+begin_src ruby
   # ./dragon/inputs.rb
   # coding: utf-8
@@ -5146,6 +5158,10 @@ Follows is a source code listing for all files that have been open sourced. This
         { x: point.x, y: point.y, w: 0, h: 0 }
       end
   
+      def merge o
+        rect.merge o
+      end
+  
       def w
         0
       end
@@ -5279,6 +5295,7 @@ Follows is a source code listing for all files that have been open sourced. This
       attr_accessor :finger_left, :finger_right
       attr_accessor :text, :history
       attr_accessor :headset
+      attr :last_active
   
       def initialize
         @controllers = [Controller.new, Controller.new, Controller.new, Controller.new]
@@ -5402,7 +5419,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** ios_wizard.rb
+** ios_wizard.rb
 #+begin_src ruby
   # ./dragon/ios_wizard.rb
   # coding: utf-8
@@ -5473,7 +5490,6 @@ Follows is a source code listing for all files that have been open sourced. This
       [
         *prerequisite_steps,
   
-        :check_for_device,
         :check_for_dev_profile,
   
         *app_metadata_retrieval_steps,
@@ -6277,6 +6293,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
     def stage_sim_app
       log_info "Staging."
+      sh "codesign --remove-signature #{relative_path}/dragonruby-ios-simulator.app/Runtime"
       sh "mkdir -p #{tmp_directory}"
       sh "cp -R #{relative_path}/dragonruby-ios-simulator.app/ \"#{tmp_directory}/#{@app_name}.app/\""
       sh "mv \"#{tmp_directory}/#{@app_name}.app/Runtime\" \"#{tmp_directory}/#{@app_name}.app/#{@app_name}\""
@@ -6418,8 +6435,28 @@ Follows is a source code listing for all files that have been open sourced. This
       k
     end
   
+    def simctl_iphone_device_id_by_name
+      devices = simctl_list_devices
+      k, v = devices.find { |k, v| v.name.downcase.include?(@opts[:sim_name].downcase) }
+      k
+    end
+  
     def deploy_to_sim
-      device_id = simctl_iphone_device_id_max_version
+      device_id = nil
+      if @opts[:sim_name]
+        device_id = simctl_iphone_device_id_by_name
+        if !device_id
+          $console.set_command "$wizards.ios.start env: :#{@opts[:env]}, sim_name: \"#{@opts[:sim_name]}\""
+          raise WizardException.new(
+            "* Unable to find simulator named '#{@opts[:sim_name]}'.",
+            "** The name must (at least partially) match the name of an existing simulator.",
+            "** Open your iOS simulator and check File > Open Simulator to see the options."
+          )
+        end
+      else
+        device_id = simctl_iphone_device_id_max_version
+      end
+  
       sh "xcrun simctl boot #{device_id}"
       sh "open -a Simulator"
       sh "xcrun simctl uninstall #{device_id} #{@app_id}"
@@ -6497,7 +6534,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** itch_wizard.rb
+** itch_wizard.rb
 #+begin_src ruby
   # ./dragon/itch_wizard.rb
   # coding: utf-8
@@ -6758,7 +6795,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** layout.rb
+** layout.rb
 #+begin_src ruby
   # ./dragon/layout.rb
   # coding: utf-8
@@ -7134,7 +7171,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** log.rb
+** log.rb
 #+begin_src ruby
   # ./dragon/log.rb
   # coding: utf-8
@@ -7176,10 +7213,14 @@ Follows is a source code listing for all files that have been open sourced. This
         Object.print(*args)
       end
   
-      def self.puts_important *args
+      def self.puts_important *args, message_code: nil
         return if $gtk.production
         $gtk.append_file_root 'logs/log.txt', args.join("\n")
-        $gtk.notify! "Important notification occurred."
+        if message_code
+          $gtk.notify! "An important notification occurred. Open Console to see details. #{message_code}"
+        else
+          $gtk.notify! "An important notification occurred. Open Console to see details."
+        end
         args.each { |obj| $gtk.log obj }
       end
   
@@ -7286,6 +7327,14 @@ Follows is a source code listing for all files that have been open sourced. This
         write_to_log_and_puts ""
         write_to_log_and_puts "[Message ID: #{id}]"
         write_to_log_and_puts ""
+      end
+  
+      def self.puts_once_important *ids, message
+        id = "#{ids}"
+        @once ||= {}
+        return if @once[id]
+        @once[id] = id
+        puts_important "#{message}", message_code: id
       end
   
       def self.puts_once_info *ids, message
@@ -7428,6 +7477,10 @@ Follows is a source code listing for all files that have been open sourced. This
       GTK::Log.puts_once(*ids, message)
     end
   
+    def log_once_important *ids, message
+      GTK::Log.puts_once_important(*ids, message)
+    end
+  
     def log_once_info *ids, message
       GTK::Log.puts_once_info(*ids, message)
     end
@@ -7435,7 +7488,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** metadata.rb
+** metadata.rb
 #+begin_src ruby
   # ./dragon/metadata.rb
   # coding: utf-8
@@ -7484,7 +7537,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** numeric.rb
+** numeric.rb
 #+begin_src ruby
   # ./dragon/numeric.rb
   # coding: utf-8
@@ -7495,12 +7548,6 @@ Follows is a source code listing for all files that have been open sourced. This
   class Numeric
     include ValueType
     include NumericDeprecated
-  
-    alias_method :gt,  :>
-    alias_method :gte, :>=
-    alias_method :lt,  :<
-    alias_method :lte, :<=
-    alias_method :__original_eq_eq__, :== unless Numeric.instance_methods.include? :__original_eq_eq__
   
     def to_layout_row opts = {}
       $layout.rect(row: self,
@@ -7647,14 +7694,6 @@ Follows is a source code listing for all files that have been open sourced. This
     def ten
       10
     end
-  
-    alias_method :gt,        :>
-    alias_method :above?,    :>
-    alias_method :right_of?, :>
-  
-    alias_method :lt,       :<
-    alias_method :below?,   :<
-    alias_method :left_of?, :<
   
     def shift_right i
       self + i
@@ -7969,76 +8008,71 @@ Follows is a source code listing for all files that have been open sourced. This
       (0..self).to_a
     end
   
-    # @gtk
-    def map
-      unless block_given?
-        raise <<-S
-  * ERROR:
-  A block is required for Numeric#map.
+    def each(&blk)
+      return to_enum(:each) if !blk
   
-  S
+      i = 0
+      _self = self.to_i
+      while i < _self
+        blk[i]
+        i += 1
       end
   
-      self.to_i.times.map do
-        yield
-      end
+      self
     end
   
-    def each
-      unless block_given?
-        raise <<-S
-  * ERROR:
-  A block is required for Numeric#each.
+    def each_with_index(&blk)
+      return to_enum(:each_with_index) if !blk
   
-  S
+      i = 0
+      _self = self.to_i
+      while i < _self
+        blk[i, i]
+        i += 1
       end
   
-      self.to_i.times do
-        yield
-      end
+      self
     end
   
-    def times_with_index
-      unless block_given?
-        raise <<-S
-  * ERROR:
-  A block is required for Numeric#times_with_index.
+    def map(&blk)
+      return to_enum(:map) if !blk
   
-  S
+      i = 0
+      acc = []
+      _self = self.to_i
+      while i < _self
+        acc << blk[i]
+        i += 1
       end
   
-      self.to_i.times.with_index do |i|
-        yield i
-      end
+      acc
     end
   
-    def each_with_index
-      unless block_given?
-        raise <<-S
-  * ERROR:
-  A block is required for Numeric#each_with_index.
+    def map_with_index(&blk)
+      return to_enum(:map_with_index) if !blk
   
-  S
+      i = 0
+      acc = []
+      _self = self.to_i
+      while i < _self
+        acc << blk[i, i]
+        i += 1
       end
   
-      self.to_i.times.with_index do |i|
-        yield i
-      end
+      acc
     end
   
-    # @gtk
-    def map_with_index
-      unless block_given?
-        raise <<-S
-  * ERROR:
-  A block is required for Numeric#map.
+    def times_with_index(&blk)
+      return to_enum(:times_with_index) if !blk
   
-  S
+      i = 0
+      _self = self.to_i
+      while i < _self
+        blk[i, i]
+        i += 1
       end
   
-      self.to_i.times.map do |i|
-        yield i
-      end
+      self
     end
   
     def __raise_arithmetic_exception__ other, m, e
@@ -8105,12 +8139,6 @@ Follows is a source code listing for all files that have been open sourced. This
   
   class Fixnum
     include ValueType
-  
-    alias_method :__original_eq_eq__,    :== unless Fixnum.instance_methods.include? :__original_eq_eq__
-    alias_method :__original_add__,      :+  unless Fixnum.instance_methods.include? :__original_add__
-    alias_method :__original_subtract__, :-  unless Fixnum.instance_methods.include? :__original_subtract__
-    alias_method :__original_multiply__, :*  unless Fixnum.instance_methods.include? :__original_multiply__
-    alias_method :__original_divide__,   :-  unless Fixnum.instance_methods.include? :__original_divide__
   
     # Returns `true` if the numeric value is evenly divisible by 2.
     #
@@ -8198,11 +8226,6 @@ Follows is a source code listing for all files that have been open sourced. This
   class Float
     include ValueType
   
-    alias_method :__original_add__,      :+ unless Float.instance_methods.include? :__original_add__
-    alias_method :__original_subtract__, :- unless Float.instance_methods.include? :__original_subtract__
-    alias_method :__original_multiply__, :* unless Float.instance_methods.include? :__original_multiply__
-    alias_method :__original_divide__,   :- unless Float.instance_methods.include? :__original_divide__
-  
     def serialize
       self
     end
@@ -8267,14 +8290,8 @@ Follows is a source code listing for all files that have been open sourced. This
   end
   
   class Integer
-    alias_method :__original_round__,    :round  unless Integer.instance_methods.include? :__original_round__
-    alias_method :__original_add__,      :+      unless Integer.instance_methods.include? :__original_add__
-    alias_method :__original_subtract__, :-      unless Integer.instance_methods.include? :__original_subtract__
-    alias_method :__original_multiply__, :*      unless Integer.instance_methods.include? :__original_multiply__
-    alias_method :__original_divide__,   :-      unless Integer.instance_methods.include? :__original_divide__
-  
     def round *args
-      __original_round__
+      self
     end
   
     def nan?
@@ -8288,7 +8305,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** recording.rb
+** recording.rb
 #+begin_src ruby
   # ./dragon/recording.rb
   # coding: utf-8
@@ -8313,9 +8330,12 @@ Follows is a source code listing for all files that have been open sourced. This
   
     # @gtk
     class Recording
+      attr :should_reset_after_replay_completed
+  
       def initialize runtime
         @runtime = runtime
         @global_input_order = 1
+        @should_reset_after_replay_completed = true
       end
   
       def tick
@@ -8375,7 +8395,9 @@ Follows is a source code listing for all files that have been open sourced. This
   To stop recording use stop_recording(filename).
   The recording will stop without saving a file if a filename is nil.
   S
-        $console.set_command "$recording.stop 'replay.txt'"
+        $console.set_command_extended histories: ["$recording.start #{seed_number}"],
+                                      command: "$recording.stop 'replay.txt'"
+        @keys_to_ignore_during_recording = $console.console_toggle_keys.map { |k| k.without_ending_bang }
         @is_recording = true
         @runtime.__reset__
         @seed_number = seed_number
@@ -8392,11 +8414,11 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def is_replaying?
-        @is_replaying
+        !!@is_replaying
       end
   
       def is_recording?
-        @is_recording
+        !!@is_recording
       end
   
       # @gtk
@@ -8431,8 +8453,13 @@ Follows is a source code listing for all files that have been open sourced. This
         end
   
         if file_name
+          stopped_at = Kernel.tick_count
+          # if the last input was ignored, then we want to set stopped at to the point in time before the last input was ignored.
+          if @last_recorded_input_was_ignored
+            stopped_at -= stopped_at - @last_recorded_input_was_ignored_at
+          end
           text = "replay_version 2.0\n"
-          text << "stopped_at #{Kernel.tick_count}\n"
+          text << "stopped_at #{stopped_at}\n"
           text << "seed #{@seed_number}\n"
           text << "recorded_at #{Time.now.to_s}\n"
           @input_history.each do |items|
@@ -8659,21 +8686,46 @@ Follows is a source code listing for all files that have been open sourced. This
         @replay_stopped_at = Kernel.global_tick_count
         $console.set_command_silent "$replay.start '#{@replay_file_name}', speed: 1"
         @is_replaying = false
-        @runtime.__reset__
+        @runtime.__reset__ if @should_reset_after_replay_completed
         @runtime.notify! notification_message
+      end
+  
+      def record_input? name, raw_key, modifier_keys
+        return false if $gtk.console.visible?
+        return false if @is_replaying
+        return false unless @is_recording
+        # do not record console activation
+        if name == :key_up_raw || name == :key_down_raw
+          names = KeyboardKeys.sdl_to_key raw_key, modifier_keys
+          return false if (names & @keys_to_ignore_during_recording).length > 0
+          return false if @input_history.length == 0 && names.include?(:enter)
+        end
+        return true
+      end
+  
+      # these values are used later to determine if the replay length should be shortened
+      # (for example if the last bits of the replay were in the console/wouldn't be recorded)
+      def capture_record_input_timestamps name, raw_key, modifier_keys
+        if !record_input? name, raw_key, modifier_keys
+          @last_recorded_input_was_ignored_at ||= Kernel.tick_count
+          @last_recorded_input_was_ignored ||= true
+        else
+          @last_recorded_input_was_ignored_at = nil
+          @last_recorded_input_was_ignored = nil
+        end
       end
   
       # 1 or 2 params
       def record_input_history name, value_1, value_2, value_count, clear_cache = false
-        return if @is_replaying
-        return unless @is_recording
+        capture_record_input_timestamps name, value_1, value_2
+        return if !record_input? name, value_1, value_2
         @input_history << [name, value_1, value_2, value_count, @global_input_order, Kernel.tick_count]
         @global_input_order += 1
       end
   
       def record_input_history_3_params name, value_1, value_2, value_3, clear_cache = false
-        return if @is_replaying
-        return unless @is_recording
+        capture_record_input_timestamps name, value_1, value_2
+        return if !record_input? name, value_1, value_2
         @input_history << [name, value_1, value_2, value_3, 3, @global_input_order, Kernel.tick_count]
         @global_input_order += 1
       end
@@ -8723,7 +8775,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** remote_hotload_client.rb
+** remote_hotload_client.rb
 #+begin_src ruby
   # ./dragon/remote_hotload_client.rb
   # coding: utf-8
@@ -8936,7 +8988,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** runtime/async_require.rb
+** runtime/async_require.rb
 #+begin_src ruby
   # ./dragon/runtime/async_require.rb
   # coding: utf-8
@@ -8982,8 +9034,14 @@ Follows is a source code listing for all files that have been open sourced. This
   
           log "** INFO: =#{path}= queued to load via ~require~. (#{Kernel.global_tick_count}, #{Kernel.tick_count})", subsystem="Engine"
   
-          @reload_list << path   # We deal with and clear this array in C.
-          @reload_list.uniq!
+          if @load_status == :ready
+            @reload_list << path
+            @reload_list.uniq!
+            __require_sync__ path
+          else
+            @reload_list << path
+            @reload_list.uniq!
+          end
         rescue Exception => e
           raise e, "* EXCEPTION: ~Runtime#mark_ruby_file_for_reload~ failed for =#{path}=.\n#{e}"
         end
@@ -9018,6 +9076,7 @@ Follows is a source code listing for all files that have been open sourced. This
             end
           end
   
+          @last_reload_complete_global_at = Kernel.global_tick_count
           $layout.reset if $layout
           $gtk.reset_framerate_calculation
   
@@ -9071,6 +9130,9 @@ Follows is a source code listing for all files that have been open sourced. This
             Kernel.global_tick_count = -1
             $gtk.write_file_root (File.join backup_directory, "boot.txt"), Time.now.to_i.to_s
             $top_level.boot @args if $top_level.respond_to? :boot
+            @args.state.tick_count = -1
+            Kernel.global_tick_count = -1
+            Kernel.tick_count = -1
             reset_all_mtimes
           end
         end
@@ -9114,7 +9176,7 @@ Follows is a source code listing for all files that have been open sourced. This
             else
               mark_ruby_file_for_reload file
             end
-            log_debug "Marked #{file} for reload. (#{Kernel.global_tick_count})", subsystem="Engine"
+            log_debug "Reloaded #{file}. (#{Kernel.global_tick_count})", subsystem="Engine"
             notify_subdued!
             return true
           else
@@ -9124,7 +9186,7 @@ Follows is a source code listing for all files that have been open sourced. This
               @main_rb_load_exception = { file: file, error: syntax_check_result }
             else
               raise <<~S
-              ** Failed to reload #{file}.
+              ** Failed to load/reload #{file}.
               #{syntax_check_result}
   
               S
@@ -9152,7 +9214,105 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** runtime/autocomplete.rb
+** runtime/auto_test.rb
+#+begin_src ruby
+  # ./dragon/runtime/auto_test.rb
+  # coding: utf-8
+  # Copyright 2019 DragonRuby LLC
+  # MIT License
+  # auto_test.rb has been released under MIT (*only this file*).
+  
+  module GTK
+    class Runtime
+      module AutoTest
+        def auto_test_run
+          return if !can_auto_test?
+          puts "* INFO: ~auto_test_run~ invoked (#{Kernel.global_tick_count})."
+          puts @auto_test_files
+          auto_test_run_tests
+        end
+  
+        def can_auto_test?
+          return false if @production
+          return false if @load_status != :ready
+          return false if !@auto_test_initialized
+          return true
+        end
+  
+        def tick_auto_test
+          return if (Kernel.global_tick_count % 60) != 0
+          auto_test_initialize
+          return if !can_auto_test?
+          tick_auto_test_discover_tests
+          tick_auto_test_run_changed
+          tick_auto_test_reset_all_mtimes
+          auto_test_initialize
+        end
+  
+        def auto_test_initialize
+          return if @auto_test_initialized
+          return if Kernel.global_tick_count < 60
+          @auto_test_files = {}
+          @required_files.find_all { |f| f.end_with? "tests.rb" }
+                         .each do |f|
+                           log "* INFO: Test =#{f}= found and added to hotload file list."
+                           reload_if_needed f, true
+                           @auto_test_files[f] = {
+                             current: @ffi_file.mtime(f),
+                             last: @ffi_file.mtime(f)
+                           }
+                         end
+          @auto_test_initialized = true
+        end
+  
+        def tick_auto_test_run_changed
+          @auto_test_files.each do |k, v|
+            v.current = @ffi_file.mtime k
+          end
+  
+          if @changes_detected
+            auto_test_run_tests
+            @changes_detected = false
+          else
+            files_updated = @auto_test_files.any? { |k, v| v[:current] != v[:last] }
+            @changes_detected = true if files_updated
+          end
+        end
+  
+        def auto_test_run_tests
+          return if !can_auto_test?
+          $tests.start
+          $tests.clear_summary
+        end
+  
+        def tick_auto_test_reset_all_mtimes
+          @auto_test_files.each do |k, v|
+            v.current = @ffi_file.mtime k
+            v.last = @ffi_file.mtime k
+          end
+        end
+  
+        def tick_auto_test_discover_tests
+          test_files = list_files "tests"
+          test_files.each do |f|
+            test_path = "tests/#{f}"
+            if !@required_files.include? test_path
+              if f.end_with? "tests.rb"
+                log "* INFO: Test =#{test_path}= found and added to hotload file list."
+                reload_if_needed test_path, true
+                @required_files << test_path
+                @auto_test_files[test_path] = { current: @ffi_file.mtime(test_path), last: @ffi_file.mtime(test_path) }
+              end
+            end
+          end
+        end
+      end # end autotest
+    end # end runtime
+  end # end gtk
+
+#+end_src
+
+** runtime/autocomplete.rb
 #+begin_src ruby
   # ./dragon/runtime/autocomplete.rb
   # coding: utf-8
@@ -9330,7 +9490,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** runtime/benchmark.rb
+** runtime/benchmark.rb
 #+begin_src ruby
   # ./dragon/runtime/benchmark.rb
   # coding: utf-8
@@ -9446,7 +9606,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** runtime/download_stb_rb.rb
+** runtime/download_stb_rb.rb
 #+begin_src ruby
   # ./dragon/runtime/download_stb_rb.rb
   # coding: utf-8
@@ -9576,7 +9736,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** runtime/draw.rb
+** runtime/draw.rb
 #+begin_src ruby
   # ./dragon/runtime/draw.rb
   # coding: utf-8
@@ -9813,7 +9973,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** runtime/framerate.rb
+** runtime/framerate.rb
 #+begin_src ruby
   # ./dragon/runtime/framerate.rb
   # coding: utf-8
@@ -9832,10 +9992,33 @@ Follows is a source code listing for all files that have been open sourced. This
           (current_framerate || 0) - (@previous_framerate || 0)
         end
   
+        def disable_framerate_warning!
+          @framerate_disable_warning = true
+          log "Framerate warning disabled. To re-enable, call ~$gtk.enable_framerate_warning!~"
+        end
+  
+        def enable_framerate_warning!
+          @framerate_disable_warning = false
+          log "Framerate warning re-enabled. To disable, call ~$gtk.disable_framerate_warning!~"
+        end
+  
         def reset_framerate_calculation
           @tick_speed_sum = 0
           @tick_speed_count = 0
-          @previous_framerate = 0
+          @framerate_warning_message_shown_at = -1
+        end
+  
+        def framerate_should_show_warning?
+          return false if @framerate_disable_warning
+          return false if Kernel.global_tick_count < 0
+          return false if (Kernel.global_tick_count - (@last_reset_global_at || 0)) < 1800
+          return false if (Kernel.global_tick_count - (@last_reload_complete_global_at || 0)) < 1800
+          has_debounce_elapsed = if @framerate_warning_message_shown_at == -1
+                                   true
+                                 else
+                                   (Kernel.global_tick_count - @framerate_warning_message_shown_at) > 1800
+                                 end
+          !(@console.visible? || @recording.is_replaying?) && has_debounce_elapsed
         end
   
         def check_framerate
@@ -9849,15 +10032,31 @@ Follows is a source code listing for all files that have been open sourced. This
             if @tick_time
               @tick_speed_count += 1
               @tick_speed_sum += Time.now.to_i - @tick_time
-              if @tick_speed_count > 60 * 2
+              if @tick_speed_count > 120
                 if framerate_below_threshold?
-                  @last_framerate = current_framerate
-                  if !@console.visible? && !@recording.is_replaying?
-                    log framerate_warning_message
+                  @framerate_warning_message_shown_at ||= -1
+                  if framerate_should_show_warning?
+                    GTK::Log.puts_important("* WARNING: Framerate below 30fps for over 120 frames.", message_code: [:framerate_warning])
+                    log(framerate_warning_message)
+                    @framerate_warning_message_shown_at = Kernel.global_tick_count
+                    @framerate_captured_diagnostics = {
+                      solids_length: @args.outputs.solids.length,
+                      static_solids_length: @args.outputs.static_solids.length,
+                      sprites_length: @args.outputs.sprites.length,
+                      static_sprites_length: @args.outputs.static_sprites.length,
+                      primitives_length: @args.outputs.primitives.length,
+                      static_primitives_length: @args.outputs.static_primitives.length,
+                      labels_length: @args.outputs.labels.length,
+                      static_labels_length: @args.outputs.static_labels.length,
+                      lines_length: @args.outputs.lines.length,
+                      static_lines_length: @args.outputs.static_lines.length,
+                      borders_length: @args.outputs.borders.length,
+                      static_borders_length: @args.outputs.static_borders.length,
+                      debug_length: @args.outputs.debug.length,
+                      static_debug_length: @args.outputs.static_debug.length,
+                    }
                   end
                 end
-  
-                @previous_framerate = current_framerate.floor
               end
             end
   
@@ -9875,11 +10074,7 @@ Follows is a source code listing for all files that have been open sourced. This
         end
   
         def framerate_below_threshold?
-          @last_framerate ||= 60
-          current_framerate < @last_framerate &&
-            current_framerate < 40 &&
-            @previous_framerate > current_framerate &&
-            Kernel.tick_count > 600
+          return current_framerate < 30 && Kernel.tick_count > 60
         end
   
         def current_framerate
@@ -9887,6 +10082,8 @@ Follows is a source code listing for all files that have been open sourced. This
           r = 100.fdiv(@tick_speed_sum.fdiv(@tick_speed_count) * 100)
           if (r.nan? || r.infinite? || r > 58)
             r = 60
+          else
+            r = r.round
           end
           r || 60
         rescue
@@ -9898,7 +10095,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** runtime/framerate_diagnostics.rb
+** runtime/framerate_diagnostics.rb
 #+begin_src ruby
   # ./dragon/runtime/framerate_diagnostics.rb
   # coding: utf-8
@@ -9909,7 +10106,13 @@ Follows is a source code listing for all files that have been open sourced. This
   module GTK
     class Runtime
       module FramerateDiagnostics
+        def get_framerate_diagnostics
+          framerate_get_diagnostics
+        end
+  
         def framerate_get_diagnostics
+          @framerate_captured_diagnostics ||= {}
+  
           <<-S
   * INFO: Framerate Diagnostics
   You can display these diagnostics using:
@@ -9988,15 +10191,21 @@ Follows is a source code listing for all files that have been open sourced. This
   ** Primitive Counts
   Here are the draw counts ordered by lowest to highest z order:
   
-  PRIMITIVE   COUNT, STATIC COUNT
-  solids:     #{@args.outputs.solids.length}, #{@args.outputs.static_solids.length}
-  sprites:    #{@args.outputs.sprites.length}, #{@args.outputs.static_sprites.length}
-  primitives: #{@args.outputs.primitives.length}, #{@args.outputs.static_primitives.length}
-  labels:     #{@args.outputs.labels.length}, #{@args.outputs.static_labels.length}
-  lines:      #{@args.outputs.lines.length}, #{@args.outputs.static_lines.length}
-  borders:    #{@args.outputs.borders.length}, #{@args.outputs.static_borders.length}
-  debug:      #{@args.outputs.debug.length}, #{@args.outputs.static_debug.length}
-  reserved:   #{@args.outputs.reserved.length}, #{@args.outputs.static_reserved.length}
+  PRIMITIVE          COUNT
+  solids:            #{@framerate_captured_diagnostics.solids_length}
+  static_solids:     #{@framerate_captured_diagnostics.static_solids_length}
+  sprites:           #{@framerate_captured_diagnostics.sprites_length}
+  static_sprites:    #{@framerate_captured_diagnostics.static_sprites_length}
+  primitives:        #{@framerate_captured_diagnostics.primitives_length}
+  static_primitives: #{@framerate_captured_diagnostics.static_primitives_length}
+  labels:            #{@framerate_captured_diagnostics.labels_length}
+  static_labels:     #{@framerate_captured_diagnostics.static_labels_length}
+  lines:             #{@framerate_captured_diagnostics.lines_length}
+  static_lines:      #{@framerate_captured_diagnostics.static_lines_length}
+  borders:           #{@framerate_captured_diagnostics.borders_length}
+  static_borders:    #{@framerate_captured_diagnostics.static_borders_length}
+  debug:             #{@framerate_captured_diagnostics.debug_length}
+  static_debug:      #{@framerate_captured_diagnostics.static_debug_length}
   
   ** Additional Help
   Come to the DragonRuby Discord channel if you need help troubleshooting performance issues. http://discord.dragonruby.org.
@@ -10007,19 +10216,9 @@ Follows is a source code listing for all files that have been open sourced. This
   
         def framerate_warning_message
           <<-S
-  * WARNING:
-  Your average framerate dropped below 60 fps for two seconds.
-  
-  The average FPS was #{current_framerate}.
-  
-  ** How To Disable Warning
-  If this warning is getting annoying put the following in your tick method:
-  
-  #+begin_src
-    args.gtk.log_level = :off
-  #+end_src
-  
-  #{framerate_get_diagnostics}
+  * WARNING: The average FPS was #{current_framerate}.
+  - $gtk.get_framerate_diagnostics  : Get framerate diagnostics.
+  - $gtk.disable_framerate_warning! : Disable this warning.
     S
         end
   
@@ -10084,7 +10283,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** runtime/hotload.rb
+** runtime/hotload.rb
 #+begin_src ruby
   # ./dragon/runtime/hotload.rb
   # coding: utf-8
@@ -10170,6 +10369,7 @@ Follows is a source code listing for all files that have been open sourced. This
               'dragon/runtime/draw.rb',
               'dragon/runtime/deprecated.rb',
               'dragon/runtime/framerate.rb',
+              'dragon/runtime/framerate_diagnostics.rb',
               'dragon/runtime/c_bridge.rb',
               'dragon/runtime/hotload.rb',
               'dragon/runtime/backup.rb',
@@ -10177,6 +10377,7 @@ Follows is a source code listing for all files that have been open sourced. This
               'dragon/runtime/autocomplete.rb',
               'dragon/runtime/texture_atlas.rb',
               'dragon/runtime/download_stb_rb.rb',
+              'dragon/runtime/auto_test.rb',
               'dragon/api.rb',
               'dragon/runtime.rb',
               'dragon/runtime_docs.rb',
@@ -10235,7 +10436,7 @@ Follows is a source code listing for all files that have been open sourced. This
           reload_if_needed 'app/mailbox.rb'
         end
   
-        def hotload_if_needed
+        def tick_hotload
           return if Kernel.tick_count <= 0 && !paused?
           hotload_source_files
           check_mailbox
@@ -10273,7 +10474,106 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** runtime/notify.rb
+** runtime/messages.rb
+#+begin_src ruby
+  # ./dragon/runtime/messages.rb
+  # coding: utf-8
+  # Copyright 2019 DragonRuby LLC
+  # MIT License
+  # notify.rb has been released under MIT (*only this file*).
+  
+  module GTK
+    class Runtime
+      module Messages
+        def messages_stop_music_is_deprecated
+          <<-S
+  * WARNING: ~Runtime#stop_music~ is deprecated and will be removed in future versions.
+  
+  Sounds that loop are no longer supported via args.outputs.sounds:
+  
+  1. Migrate over to ~args.audio~ (for more info see type ~args.docs_audio~ in the Console).
+  2. Delete the usage of ~stop_music~.
+  
+  For details
+  S
+        end
+  
+        def messages_looping_sounds_behavior_change
+        <<-S
+  * WARNING: ~Outputs#sounds~ no longer supports looping (one-time sounds are still supported).
+  
+  Use ~Args#audio~ instead for looping sounds.
+  
+  Here's how to migrate looping sounds. Here's an example of bg music being started on tick zero:
+  
+  #+begin_src
+    def tick args
+      if args.state.tick_count == 0
+        # bg music will not loop after completion
+        # use args.audio to create a looping (see below)
+        args.outputs.sounds << "sounds/bg-music.ogg"
+      end
+    end
+  #+end_src
+  
+  The example above becomes:
+  
+  #+begin_src
+    def tick args
+      if args.state.tick_count == 0
+        args.audio[:bg_music] = { input: "sounds/bg-music.ogg", looping: true }
+      end
+    end
+  #+end_src
+  
+  Additional options that can be passed to ~Args#audio~:
+  
+  #+begin_src
+    def tick args
+      if args.state.tick_count == 0
+        args.audio[:bg_music] = {
+          input:  "sounds/bg-music.ogg",
+          looping: true,
+          gain:    1.0,
+          pitch:   1.0,
+          paused:  false,
+          # additional keys/values to help with context (metadata) can be added safely
+        }
+      end
+    end
+  #+end_src
+  
+  You can use ~Args#audio~ for one time sounds too.
+  
+  The following is still valid/supported:
+  
+  #+begin_src
+    def tick args
+      # play a non-looping sound every second
+      if (args.state.tick_count % 60) == 0
+        args.outputs.sounds << "sounds/coin.wav"
+      end
+    end
+  #+end_src
+  
+  But can be written to use ~args.audio~ as:
+  
+  #+begin_src
+    def tick args
+      if (args.state.tick_count % 60) == 0
+        args.audio[:coin] = { input: "sounds/coin.wav" }
+      end
+    end
+  #+end_src
+  S
+        end # end looping_sounds_behavior_change_message
+      end # end messages module
+    end # end runtime class
+  end # end gtk
+
+#+end_src
+
+** runtime/notify.rb
 #+begin_src ruby
   # ./dragon/runtime/notify.rb
   # coding: utf-8
@@ -10337,7 +10637,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** runtime/process_argsv.rb
+** runtime/process_argsv.rb
 #+begin_src ruby
   # ./dragon/runtime/process_argsv.rb
   # coding: utf-8
@@ -10394,6 +10694,8 @@ Follows is a source code listing for all files that have been open sourced. This
             end
   
             @no_tick = true
+          else
+            @argsv_processed = true
           end
         end
   
@@ -10460,7 +10762,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** runtime/save_state_load_state.rb
+** runtime/save_state_load_state.rb
 #+begin_src ruby
   # ./dragon/runtime/save_state_load_state.rb
   # coding: utf-8
@@ -10682,7 +10984,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** string.rb
+** string.rb
 #+begin_src ruby
   # ./dragon/string.rb
   # coding: utf-8
@@ -10816,11 +11118,26 @@ Follows is a source code listing for all files that have been open sourced. This
     def serialize
       self
     end
+  
+    # !!! FIXME: Strange bug where garbage bytes are still left over after a strip for a string.
+    alias_method :__original_strip__, :strip unless String.instance_methods.include?(:__original_strip__)
+    def strip
+      "#{__original_strip__}"
+    end
+  
+    def indent count, indent_char: "  ", pad_line_with_space: false
+      count = 0 if count < 0
+      spaces = indent_char * count
+      spaces += " " if pad_line_with_space
+      self.each_line.map do |l|
+        "#{spaces}#{l}"
+      end.join
+    end
   end
 
 #+end_src
 
-*** tests.rb
+** tests.rb
 #+begin_src ruby
   # ./dragon/tests.rb
   # coding: utf-8
@@ -10945,6 +11262,12 @@ Follows is a source code listing for all files that have been open sourced. This
   S
       end
   
+      def clear_summary
+        @passed.clear
+        @inconclusive.clear
+        @failed.clear
+      end
+  
       def print_summary
         log "** Summary"
         log "*** Passed"
@@ -10971,7 +11294,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** trace.rb
+** trace.rb
 #+begin_src ruby
   # ./dragon/trace.rb
   # coding: utf-8
@@ -11161,7 +11484,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** tweetcart.rb
+** tweetcart.rb
 #+begin_src ruby
   # ./dragon/tweetcart.rb
   # coding: utf-8
@@ -11388,7 +11711,7 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
-*** wizards.rb
+** wizards.rb
 #+begin_src ruby
   # ./dragon/wizards.rb
   # coding: utf-8

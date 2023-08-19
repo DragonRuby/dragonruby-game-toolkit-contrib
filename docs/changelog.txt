@@ -1,3 +1,229 @@
+* 5.5
+** [Bugfix] [Support] Web builds hosted on Itch.io were not working in
+   Safari nor Chrome on Android. We found a work around for this.
+** [Samples] Added sample app that shows how to use cameras in
+   combination with a tactical grid.
+   Location of sample app: =./samples/07_advanced_rendering/16_camera_space_world_space_simple_grid_map=
+* 5.4
+** [Bugfix] ~outputs.static_primitives~ now correctly renders labels.
+* 5.3
+** [Support] ~require~ statements are now processed synchronously.
+** [Support] ~require_relative~ added.
+** [Bugfix] ~outputs.primitives~ checks for ~draw_override~ before looking for ~primitive_marker~.
+* 5.2
+** [Support] [Pro] [Indie] C Extensions can be used on WASM/Web builds.
+   $gtk.dlopen will look for assemblies under =mygame/native/emscripten-wasm=.
+   See Emscripten docs for compilation steps [[https://emscripten.org/docs/getting_started/downloads.html]].
+** [Samples] Added sample app that shows how to convert from screen space to world space without using matricies.
+   Location of sample: =./samples/07_advanced_rendering/16_camera_space_world_space_simple=
+   NOTE: This is a **really** good foundation for building games with a camera that pans and zooms.
+** [Support] Suppress framerate warnings after a recent =$gtk.reset= or =require= of a file.
+** [Bugfix] Passing nested enumerables to ~args.outputs...~ no longer causes a segfault.
+* 5.1
+** [Support] Added ~Inputs#last_active~.
+   This function returns the last active input which will be set to either ~:keyboard~,
+   ~:mouse~, or ~:controller~. The function is helpful when you need to present on screen
+   instructions based on the input the player chose to play with.
+
+   Example:
+
+   #+begin_src
+     def tick args
+       if args.inputs.last_active == :controller
+         args.outputs.labels << { x: 60, y: 60, text: "Use the D-Pad to move around." }
+       else
+         args.outputs.labels << { x: 60, y: 60, text: "Use the arrow keys to move around." }
+       end
+     end
+   #+end_src
+** [Support] Added ~cvars~ attribute accessor to the ~attr_gtk~ class macro.
+   ~args.cvars~ is now accessible at the top level if you mix in ~attr_gtk~.
+
+   Example:
+
+   #+begin_src
+     class Game
+       attr_gtk
+
+       def tick
+         # render a label with the game version
+	 # (no need to prefix cvars with args)
+         outputs.labels << {
+           x: 640,
+           y: 360,
+           text: args.cvars["game_metadata.version"].value.to_s
+         }
+       end
+     end
+
+     def tick args
+       $game ||= Game.new
+       $game.args = args
+       $game.tick
+     end
+
+     def reset
+       $game = nil
+     end
+   #+end_src
+** [Bugfix] [Pro] [iOS] Regress in ~$wizards.ios.start env: :sim~ has been resolved.
+** [OSS] [Performance] More preformant ~Numeric#map(_with_index)~ and Numeric#each(_with_index).
+   Performance improvements made to ~NumericHmap~ and ~Numeric#each~. Special thanks to
+   levi@discord for contributing this optimization.
+* 5.0
+** [IMPORTANT] This release has minor breaking changes. They are trivial to resolve.
+   Come to the DragonRuby Discord Server and we'll help you work through any issues.
+   [[http://discord.dragonruby.org]].
+
+   Let's start with some good news before we get into breaking changes.
+** [Support] Portrait orientation enabled for all license tiers.
+   In ~metadata/game_metadata.txt~, you can set ~orientation=portrait~ and DragonRuby will
+   be presented with a logical resolution of 720x1280.
+*** Limitations/Differences between license tiers.
+    - The Standard and Indie tier's portrait resolution is fixed to 720p (with scaling).
+    - You will still need a Pro license to:
+      - Render your game in HD and High DPI.
+      - Leverage auto-discovery of Texture Atlases (Pro tier supports resolutions
+        from 720p all the way to 4K).
+      - Deploy your portrait (or landscape) game to a mobile device, AppStore, or Google Play.
+      - Render outside of the game's safe area (All Screen Mode).
+
+    I hope the ability to prototype a portrait game encourages y'all to upgrade to Pro
+    so you can play the games you've built on your phone (even potentially release to the AppStore and Google Play).
+
+    Okay, now for the breaking changes (don't panic).
+** [BREAKING] ~Outputs#sounds~ no longer supports looping audio. Migrate to ~Args#audio~.
+   If you were passing ~.ogg~ values into ~args.outputs.sounds~, they will no longer loop.
+   All sounds passed into this collection will play once. Example:
+
+   #+begin_src
+     def tick args
+       if args.state.tick_count == 0
+         # bg music will not loop after completion
+         # use args.audio to create a looping (see below)
+         args.outputs.sounds << "sounds/bg-music.ogg"
+       end
+     end
+   #+end_src
+
+   If you want audio to loop, use ~args.audio~:
+
+   #+begin_src
+     def tick args
+       if args.state.tick_count == 0
+         args.audio[:bg_music] = { input: "sounds/bg-music.ogg", looping: true }
+       end
+     end
+   #+end_src
+
+   A warning message will be provided by DrangonRuby if we detect this breaking change.
+** [BREAKING] Property based access in ~Hash#(x|x1|y|y1)~ no longer consults ~rect~, ~point~.
+   The following behavior of ~Hash#(x|x1|y|y1)~ was experimental and has been removed
+   (it's unlikely that you even used this/knew about it).
+
+   This is the ~Hash~ behavior in 4.x:
+
+   #+begin_src
+     some_hash = {
+       rect: {
+         x: 0,
+	 y: 0,
+	 w: 100,
+	 h: 100
+       }
+     }
+
+     puts some_hash.x      # -> 0
+     puts some_hash.x1     # -> 0
+     puts some_hash.rect.x # -> 0
+   #+end_src
+
+   This is the ~Hash~ behavior in 5.0:
+
+   #+begin_src
+     some_hash = {
+       rect: {
+         x: 0,
+	 y: 0,
+	 w: 100,
+	 h: 100
+       }
+     }
+
+     puts some_hash.x      # -> nil
+     puts some_hash.x1     # -> nil
+     puts some_hash.rect.x # -> 0
+   #+end_src
+
+   Keep an eye out for null reference exceptions and check to see if
+   you have a nested ~Hash~ with ~rect~ or ~point~ defined.
+
+   That's it for breaking changes.
+** [Pro] [iOS] Device type can now be specified when deploying to the simulator.
+   ~$wizards.ios.start~ now supports a ~:sim_name~ argument. If you don't provide one, your
+   game will be deployed to an iPhone 14 Simulator. Example:
+   #+begin_src
+     # this command is run in DragonRuby's Console
+     $wizards.ios.start env: :sim, sim_name: "iPad Pro (12.9-inch)"
+   #+end_src
+
+   To get available simulators, you can run the following command in a terminal window:
+   #+begin_src
+     # run this command in a terminal window (not DragonRuby's Console)
+     xcrun simctl list devices
+   #+end_src
+
+   A thank you goes out to death.au@discord for adding this capability.
+** [Performance] Performance of property based access of ~Hash~ values improved by ~30%.
+   Expect to see a small improvement if you use attribute accessors to access
+   ~Hash~ values (eg ~some_hash.x~ vs ~some_hash[:x]~).
+** [Support] Framerate notification made less obtrusive and can be disabled.
+   The FPS warning messages have been modified to not show a wall of text in the console. You
+   can toggle the warning message using ~$gtk.(disable|enable)_framerate_warning!~. It is enabled
+   by default and will provide instructions on how to disable the warning in case you forget
+   this method name.
+** [Bugfix] Fixed segfault of http apis if an invalid URL is passed to the function.
+   A thank you goes out to thedarkmagi@discord for finding unique was of crashing
+   DragonRuby.
+** [Bugfix] ~$gtk.reset_and_replay FILE_NAME, speed: SPEED~ no longer ignores the ~speed:~ parameter.
+** [Bugfix] Invocation of ~$gtk.calcstringbox~ no longer crashes web builds.
+** [Docs] Added more comprehensive docs for ~args.audio~ and fixed code examples for ~gtk.http_post~.
+** [OSS] ~attr_gtk~ implementation uses predictable ~iVar~ names.
+   A number of people got tripped up in using ~attr_gtk~ because of the ~@__PROP__~ naming
+   convention. The naming convention has been changed to the more easily guessable ~@PROP~ format.
+** [mRuby] Small performance improvements to ~mrb_obj_value~ have been made.
+   The function is used frequently in the virtual machine, so it was worth making a small change
+   to this runtime machinery.
+** [Note] My sincerest condolences to anyone upset about not having a DR version number of 4.20.
+* 4.19
+** [Pro] [iOS] Fixed iOS wizard's simulator deployment.
+** [Performance] Small performance improvement to value retrieval of ~Hash~ via ~method_missing~.
+** [Docs] Docs added/refined for creating a new DR project and deploying/publishing.
+** [Bugfix] Web games no longer crash on Safari.
+   Note: There is a bug in how Itch.io serves up the COOP COEP headers which needs to be fixed
+   before web games will work with Safari (opening up an issue with Itch pending).
+* 4.18
+** [Pro] C Extensions has access to more mRuby functions.
+   You now have access to ~300 mRuby functions. For usage example, see the sample located at
+   =samples/12_c_extensions/04_handcrafted_extension_advanced=
+
+   Let us know if there's a function you'd like added that we haven't exposed.
+** [Bugfix] ~Module#purge_class~ takes into consideration the module context as opposed to ~Object~.
+   This function is useful if you want to reinitialize a class without functions that may have been
+   added via hotloading but no longer exist in source code.
+** [Docs] New doc pages have been added.
+   - Both Docs and Samples are located at =index.(html|txt)=
+   - Just Docs are located at =docs.(html|txt)=
+   - Just Samples are located at =samples.(html|txt)=
+   - Open Sourced files are located at =oss.txt=
+
+   The pages above are located locally within the =./docs= directory and online at [[docs.dragonruby.org]]
+
+   Note:
+   This change breaks permalinks to samples. If you have them referenced anywhere, you'll need to update them. :sadpanda:
+* 4.17
+** [Bugfix] Fixed file persistence accross sessions for webbuilds.
+** [Performance] Added caching of symbols used in C (minor performance improvement in load times).
 * 4.16
 ** [Pro] [iOS] Http apis have been re-introduced.
    Http apis have be re-enabled and use standard iOS apis as opposed

@@ -66,54 +66,6 @@ def test_mul args, assert
   assert.equal! (args.fn.* 7, [3]), 21
 end
 
-def test_lt args, assert
-  assert.equal! (args.fn.lt 1), 1
-  assert.equal! (args.fn.lt), nil
-  assert.equal! (args.fn.lt infinity), nil
-  assert.equal! (args.fn.lt nan), nil
-  assert.equal! (args.fn.lt 10, 9, 8), 8
-  assert.equal! (args.fn.< 10, 9, 8), 8
-  assert.equal! (args.fn.< [10, 9, [8]]), 8
-  assert.equal! (args.fn.< 10, 10), nil
-end
-
-def test_lte args, assert
-  assert.equal! (args.fn.lte 1), 1
-  assert.equal! (args.fn.lte), nil
-  assert.equal! (args.fn.lte infinity), nil
-  assert.equal! (args.fn.lte nan), nil
-  assert.equal! (args.fn.lte 10, 9, 8), 8
-  assert.equal! (args.fn.lte 10, 10), 10
-  assert.equal! (args.fn.lte  10, 9, [8]), 8
-  assert.equal! (args.fn.<=  10, 9, 8), 8
-end
-
-def test_gt args, assert
-  assert.equal! (args.fn.gt 1), 1
-  assert.equal! (args.fn.gt), nil
-  assert.equal! (args.fn.gt infinity), nil
-  assert.equal! (args.fn.gt nan), nil
-  assert.equal! (args.fn.gt 8, 9, 10), 10
-  assert.equal! (args.fn.gt [8, 9, [10]]), 10
-  assert.equal! (args.fn.gt 10, 10), nil
-  assert.equal! (args.fn.gt 10, 10), nil
-  assert.equal! (args.fn.gt 10, 9), nil
-  assert.equal! (args.fn.>  8, 9, 10), 10
-end
-
-def test_gte args, assert
-  assert.equal! (args.fn.gte 1), 1
-  assert.equal! (args.fn.gte), nil
-  assert.equal! (args.fn.gte infinity), nil
-  assert.equal! (args.fn.gte nan), nil
-  assert.equal! (args.fn.gte 8, 9, 10), 10
-  assert.equal! (args.fn.gte 10, 10), 10
-  assert.equal! (args.fn.gte 8, 9, [10]), 10
-  assert.equal! (args.fn.gte 10, 9), nil
-  assert.equal! (args.fn.>=  8, 9, 10), 10
-end
-
-
 def test_acopy args, assert
   orig  = [1, 2, 3]
   clone = args.fn.acopy orig

@@ -7,12 +7,6 @@ class Numeric
   include ValueType
   include NumericDeprecated
 
-  alias_method :gt,  :>
-  alias_method :gte, :>=
-  alias_method :lt,  :<
-  alias_method :lte, :<=
-  alias_method :__original_eq_eq__, :== unless Numeric.instance_methods.include? :__original_eq_eq__
-
   def to_layout_row opts = {}
     $layout.rect(row: self,
                  col: opts.col || 0,
@@ -158,14 +152,6 @@ S
   def ten
     10
   end
-
-  alias_method :gt,        :>
-  alias_method :above?,    :>
-  alias_method :right_of?, :>
-
-  alias_method :lt,       :<
-  alias_method :below?,   :<
-  alias_method :left_of?, :<
 
   def shift_right i
     self + i
@@ -480,76 +466,71 @@ S
     (0..self).to_a
   end
 
-  # @gtk
-  def map
-    unless block_given?
-      raise <<-S
-* ERROR:
-A block is required for Numeric#map.
+  def each(&blk)
+    return to_enum(:each) if !blk
 
-S
+    i = 0
+    _self = self.to_i
+    while i < _self
+      blk[i]
+      i += 1
     end
 
-    self.to_i.times.map do
-      yield
-    end
+    self
   end
 
-  def each
-    unless block_given?
-      raise <<-S
-* ERROR:
-A block is required for Numeric#each.
+  def each_with_index(&blk)
+    return to_enum(:each_with_index) if !blk
 
-S
+    i = 0
+    _self = self.to_i
+    while i < _self
+      blk[i, i]
+      i += 1
     end
 
-    self.to_i.times do
-      yield
-    end
+    self
   end
 
-  def times_with_index
-    unless block_given?
-      raise <<-S
-* ERROR:
-A block is required for Numeric#times_with_index.
+  def map(&blk)
+    return to_enum(:map) if !blk
 
-S
+    i = 0
+    acc = []
+    _self = self.to_i
+    while i < _self
+      acc << blk[i]
+      i += 1
     end
 
-    self.to_i.times.with_index do |i|
-      yield i
-    end
+    acc
   end
 
-  def each_with_index
-    unless block_given?
-      raise <<-S
-* ERROR:
-A block is required for Numeric#each_with_index.
+  def map_with_index(&blk)
+    return to_enum(:map_with_index) if !blk
 
-S
+    i = 0
+    acc = []
+    _self = self.to_i
+    while i < _self
+      acc << blk[i, i]
+      i += 1
     end
 
-    self.to_i.times.with_index do |i|
-      yield i
-    end
+    acc
   end
 
-  # @gtk
-  def map_with_index
-    unless block_given?
-      raise <<-S
-* ERROR:
-A block is required for Numeric#map.
+  def times_with_index(&blk)
+    return to_enum(:times_with_index) if !blk
 
-S
+    i = 0
+    _self = self.to_i
+    while i < _self
+      blk[i, i]
+      i += 1
     end
 
-    self.to_i.times.map do |i|
-      yield i
-    end
+    self
   end
 
   def __raise_arithmetic_exception__ other, m, e
@@ -616,12 +597,6 @@ end
 
 class Fixnum
   include ValueType
-
-  alias_method :__original_eq_eq__,    :== unless Fixnum.instance_methods.include? :__original_eq_eq__
-  alias_method :__original_add__,      :+  unless Fixnum.instance_methods.include? :__original_add__
-  alias_method :__original_subtract__, :-  unless Fixnum.instance_methods.include? :__original_subtract__
-  alias_method :__original_multiply__, :*  unless Fixnum.instance_methods.include? :__original_multiply__
-  alias_method :__original_divide__,   :-  unless Fixnum.instance_methods.include? :__original_divide__
 
   # Returns `true` if the numeric value is evenly divisible by 2.
   #
@@ -709,11 +684,6 @@ end
 class Float
   include ValueType
 
-  alias_method :__original_add__,      :+ unless Float.instance_methods.include? :__original_add__
-  alias_method :__original_subtract__, :- unless Float.instance_methods.include? :__original_subtract__
-  alias_method :__original_multiply__, :* unless Float.instance_methods.include? :__original_multiply__
-  alias_method :__original_divide__,   :- unless Float.instance_methods.include? :__original_divide__
-
   def serialize
     self
   end
@@ -778,14 +748,8 @@ class Float
 end
 
 class Integer
-  alias_method :__original_round__,    :round  unless Integer.instance_methods.include? :__original_round__
-  alias_method :__original_add__,      :+      unless Integer.instance_methods.include? :__original_add__
-  alias_method :__original_subtract__, :-      unless Integer.instance_methods.include? :__original_subtract__
-  alias_method :__original_multiply__, :*      unless Integer.instance_methods.include? :__original_multiply__
-  alias_method :__original_divide__,   :-      unless Integer.instance_methods.include? :__original_divide__
-
   def round *args
-    __original_round__
+    self
   end
 
   def nan?

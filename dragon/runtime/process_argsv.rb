@@ -52,6 +52,8 @@ module GTK
           end
 
           @no_tick = true
+        else
+          @argsv_processed = true
         end
       end
 

@@ -6,7 +6,13 @@
 module GTK
   class Runtime
     module FramerateDiagnostics
+      def get_framerate_diagnostics
+        framerate_get_diagnostics
+      end
+
       def framerate_get_diagnostics
+        @framerate_captured_diagnostics ||= {}
+
         <<-S
 * INFO: Framerate Diagnostics
 You can display these diagnostics using:
@@ -85,15 +91,21 @@ to your ~tick~ method.
 ** Primitive Counts
 Here are the draw counts ordered by lowest to highest z order:
 
-PRIMITIVE   COUNT, STATIC COUNT
-solids:     #{@args.outputs.solids.length}, #{@args.outputs.static_solids.length}
-sprites:    #{@args.outputs.sprites.length}, #{@args.outputs.static_sprites.length}
-primitives: #{@args.outputs.primitives.length}, #{@args.outputs.static_primitives.length}
-labels:     #{@args.outputs.labels.length}, #{@args.outputs.static_labels.length}
-lines:      #{@args.outputs.lines.length}, #{@args.outputs.static_lines.length}
-borders:    #{@args.outputs.borders.length}, #{@args.outputs.static_borders.length}
-debug:      #{@args.outputs.debug.length}, #{@args.outputs.static_debug.length}
-reserved:   #{@args.outputs.reserved.length}, #{@args.outputs.static_reserved.length}
+PRIMITIVE          COUNT
+solids:            #{@framerate_captured_diagnostics.solids_length}
+static_solids:     #{@framerate_captured_diagnostics.static_solids_length}
+sprites:           #{@framerate_captured_diagnostics.sprites_length}
+static_sprites:    #{@framerate_captured_diagnostics.static_sprites_length}
+primitives:        #{@framerate_captured_diagnostics.primitives_length}
+static_primitives: #{@framerate_captured_diagnostics.static_primitives_length}
+labels:            #{@framerate_captured_diagnostics.labels_length}
+static_labels:     #{@framerate_captured_diagnostics.static_labels_length}
+lines:             #{@framerate_captured_diagnostics.lines_length}
+static_lines:      #{@framerate_captured_diagnostics.static_lines_length}
+borders:           #{@framerate_captured_diagnostics.borders_length}
+static_borders:    #{@framerate_captured_diagnostics.static_borders_length}
+debug:             #{@framerate_captured_diagnostics.debug_length}
+static_debug:      #{@framerate_captured_diagnostics.static_debug_length}
 
 ** Additional Help
 Come to the DragonRuby Discord channel if you need help troubleshooting performance issues. http://discord.dragonruby.org.
@@ -104,19 +116,9 @@ S
 
       def framerate_warning_message
         <<-S
-* WARNING:
-Your average framerate dropped below 60 fps for two seconds.
-
-The average FPS was #{current_framerate}.
-
-** How To Disable Warning
-If this warning is getting annoying put the following in your tick method:
-
-#+begin_src
-  args.gtk.log_level = :off
-#+end_src
-
-#{framerate_get_diagnostics}
+* WARNING: The average FPS was #{current_framerate}.
+- $gtk.get_framerate_diagnostics  : Get framerate diagnostics.
+- $gtk.disable_framerate_warning! : Disable this warning.
   S
       end
 

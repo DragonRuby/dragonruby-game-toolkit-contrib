@@ -33,11 +33,11 @@ def input_panel args
   results = args.state.panel
 
   if args.state.mouse_state == :held && args.inputs.mouse.position.inside_rect?(results.pitch_slider_rect.rect)
-    audio_entry.pitch = 2.0 * ((args.inputs.mouse.x - results.pitch_slider_rect.x).to_f / (results.pitch_slider_rect.w - 1.0))
+    audio_entry.pitch = 2.0 * ((args.inputs.mouse.x - results.pitch_slider_rect.rect.x).to_f / (results.pitch_slider_rect.rect.w - 1.0))
   elsif args.state.mouse_state == :held && args.inputs.mouse.position.inside_rect?(results.playtime_slider_rect.rect)
-    audio_entry.playtime = audio_entry.length_ * ((args.inputs.mouse.x - results.playtime_slider_rect.x).to_f / (results.playtime_slider_rect.w - 1.0))
+    audio_entry.playtime = audio_entry.length_ * ((args.inputs.mouse.x - results.playtime_slider_rect.rect.x).to_f / (results.playtime_slider_rect.rect.w - 1.0))
   elsif args.state.mouse_state == :held && args.inputs.mouse.position.inside_rect?(results.gain_slider_rect.rect)
-    audio_entry.gain = (args.inputs.mouse.x - results.gain_slider_rect.x).to_f / (results.gain_slider_rect.w - 1.0)
+    audio_entry.gain = (args.inputs.mouse.x - results.gain_slider_rect.rect.x).to_f / (results.gain_slider_rect.rect.w - 1.0)
   elsif args.inputs.mouse.click && args.inputs.mouse.position.inside_rect?(results.looping_checkbox_rect.rect)
     audio_entry.looping = !audio_entry.looping
   elsif args.inputs.mouse.click && args.inputs.mouse.position.inside_rect?(results.paused_checkbox_rect.rect)

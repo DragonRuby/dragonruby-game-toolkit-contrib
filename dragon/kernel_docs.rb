@@ -47,19 +47,28 @@ S
 
   def export_docs!
     DocsOrganizer.sort_docs_classes!
-    final_string = ""
+    docs_string = ""
     $docs_classes.each do |k|
       log "* INFO: Retrieving docs for #{k.name}."
-      final_string += k.docs_all
+      docs_string += k.docs_all
     end
 
-    final_string += "\n" + (($gtk.read_file "docs/source.txt") || "")
+    samples_string = (($gtk.read_file "docs/samples.txt") || "")
+    index_string = docs_string + "\n" + samples_string
 
-    html_parse_result = (__docs_to_html__ final_string)
+    index_parse_result = __docs_to_html__ index_string
+    docs_parse_result = __docs_to_html__ docs_string
+    samples_parse_result = __docs_to_html__ samples_string
 
-    $gtk.write_file_root 'docs/docs.txt', "#{final_string}"
-    $gtk.write_file_root 'docs/docs.html', html_parse_result[:html]
-    $gtk.write_file_root 'docs/parse_log.txt', (html_parse_result[:parse_log].join "\n")
+    $gtk.write_file_root 'docs/index.txt', "#{index_string}"
+    $gtk.write_file_root 'docs/index.html', index_parse_result[:html]
+
+    $gtk.write_file_root 'docs/docs.txt', "#{docs_string}"
+    $gtk.write_file_root 'docs/docs.html', docs_parse_result[:html]
+
+    $gtk.write_file_root 'docs/samples.txt', "#{samples_string}"
+    $gtk.write_file_root 'docs/samples.html', samples_parse_result[:html]
+
     $gtk.write_file_root "docs/version.txt", "#{GTK_VERSION}"
 
     log "* INFO: All docs have been exported to docs/docs.txt."

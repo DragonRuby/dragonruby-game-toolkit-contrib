@@ -105,6 +105,8 @@ module RuntimeDocs
       :docs_argv,
       :docs_cli_arguments,
 
+      :docs_download_stb_rb,
+
       :docs_reload_history,
       :docs_reload_history_pending,
       :docs_reload_if_needed,
@@ -517,9 +519,9 @@ asynchronously. Check for completion before attempting to read results.
   def tick args
     # perform an http get and print the response when available
 
-    args.state.form_fields ||= { "userId" => "\#{Time.now.to_i}" }
+    args.state.form_fields ||= { "userId" => "#{Time.now.to_i}" }
     args.state.result ||= args.gtk.http_post "http://httpbin.org/post",
-                                             form_fields,
+                                             args.state.form_fields,
                                              ["Content-Type: application/x-www-form-urlencoded"]
 
 
@@ -993,6 +995,38 @@ space). This should be used for development/debugging purposes only.
 S
   end
 
+
+  def docs_download_stb_rb
+      <<-S
+*** ~download_stb_rb(_raw)~
+These two functions can help facilitate the integration of external code files. OSS contributors
+are encouraged to create libraries that all fit in one file (lowering the barrier to
+entry for adoption).
+
+Examples:
+
+#+begin_src
+  def tick args
+  end
+
+  # option 1:
+  # source code will be downloaded from the specified GitHub url, and saved locally with a
+  # predefined folder convension.
+  $gtk.download_stb_rb "https://github.com/xenobrain/ruby_vectormath/blob/main/vectormath_2d.rb"
+
+  # option 2:
+  # source code will be downloaded from the specified GitHub username, repository, and file.
+  # code will be saved locally with a predefined folder convension.
+  $gtk.download_stb_rb "xenobrain", "ruby_vectormath", "vectormath_2d.rb"
+
+  # option 3:
+  # source code will be downloaded from a direct/raw url and saved to a direct/raw local path.
+  $gtk.download_stb_rb_raw "https://raw.githubusercontent.com/xenobrain/ruby_vectormath/main/vectormath_2d.rb",
+                           "lib/xenobrain/ruby_vectionmath/vectormath_2d.rb"
+#+end_src
+S
+  end
+
   def docs_reload_history
     <<-S
 *** ~reload_history~
@@ -1068,8 +1102,26 @@ S
 
   def docs_api_summary_inputs
     <<-S
+** ~args.events.resize_occured~
+This property will be set to true if the window is resized.
 * ~args.inputs~
 Access using input using ~args.inputs~.
+** ~args.inputs.last_active~
+This function returns the last active input which will be set to either ~:keyboard~,
+~:mouse~, or ~:controller~. The function is helpful when you need to present on screen
+instructions based on the input the player chose to play with.
+
+#+begin_src
+  def tick args
+    if args.inputs.last_active == :controller
+      args.outputs.labels << { x: 60, y: 60, text: "Use the D-Pad to move around." }
+    else
+      args.outputs.labels << { x: 60, y: 60, text: "Use the arrow keys to move around." }
+    end
+  end
+#+end_src
+~:mouse~, or ~:controller~. The function is helpful when you need to present on screen
+instructions based on the input the player chose to play with.
 ** ~args.inputs.up~
 Returns ~true~ if: the ~up~ arrow or ~w~ key is pressed or held on the ~keyboard~; or if ~up~ is pressed or held on ~controller_one~; or if the ~left_analog~ on ~controller_one~ is tilted upwards.
 ** ~args.inputs.down~
@@ -1251,11 +1303,11 @@ Returns a ~Hash~ with all keys on the keyboard in their respective state. The ~H
 - ~:down_or_held~
 - ~:up~
 ** ~args.inputs.touch~
-Returns a ~Hash~ representing all touch points on a touch device. This api is only available in Indie, and Pro versions.
+Returns a ~Hash~ representing all touch points on a touch device.
 ** ~args.inputs.finger_left~
-Returns a ~Hash~ with ~x~ and ~y~ denoting a touch point that is on the left side of the screen. This api is only available in Indie, and Pro versions.
+Returns a ~Hash~ with ~x~ and ~y~ denoting a touch point that is on the left side of the screen.
 ** ~args.inputs.finger_right~
-Returns a ~Hash~ with ~x~ and ~y~ denoting a touch point that is on the right side of the screen. This api is only available in Indie, and Pro versions.
+Returns a ~Hash~ with ~x~ and ~y~ denoting a touch point that is on the right side of the screen.
 S
   end
 
@@ -1520,6 +1572,13 @@ S
     <<-S
 ** File IO Functions
 The following functions give you the ability to interact with the file system.
+
+IMPORTANT: File access functions are sandoxed and assume that the
+~dragonruby~ binary lives alongside the game you are building. Do not
+expect these functions to return correct values if you are attempting
+to run the ~dragonruby~ binary from a shared location. It's
+recommended that the directory structure contained in the zip is not
+altered and games are built using that starter template.
 S
   end
 

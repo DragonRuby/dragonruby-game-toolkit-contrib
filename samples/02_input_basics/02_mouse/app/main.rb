@@ -58,7 +58,7 @@ def tick args
 end
 
 def small_label args, x, row, message
-  # This method effectively combines the row_to_px and small_font methods
+  # This method effectively combines the row_to_px
   # It changes the given row value to a DragonRuby pixel value
   # and adds the customization parameters
   { x: x, y: row_to_px(args, row), text: message, alignment_enum: -2 }

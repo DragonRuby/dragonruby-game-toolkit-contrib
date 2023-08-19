@@ -39,29 +39,135 @@ S
     <<-S
 * ~args.audio~
 
-Hash that contains audio sources that are playing. If you want to add a new sound add a hash with keys/values as
-in the following example:
+Hash that contains audio sources that are playing.
+
+Sounds that don't specify ~looping: true~ will be removed automatically from
+the hash after the playback ends. Looping sounds or sounds that should
+stop early must be removed manually.
+
+When you assign a hash to an audio output, a ~:length~ key will be
+added to the hash on the following tick. This will tell you the
+duration of the audio file in seconds (float).
+
+** One-Time Sounds
+
+Here's how to play audio one-time (does not loop).
+
+#+begin_src
+  def tick args
+    # play a one-time non-looping sound every second
+    if (args.state.tick_count % 60) == 0
+      args.audio[:coin] = { input: "sounds/coin.wav" }
+      # OR
+      args.outputs.sounds << "sounds/coin.wav"
+    end
+  end
+#+end_src
+
+** Looping Audio
+
+Here's how to play audio that loops (eg background music), and how to stop the sound.
+
+#+begin_src
+  def tick args
+    if args.state.tick_count == 0
+      args.audio[:bg_music] = { input: "sounds/bg-music.ogg", looping: true }
+    end
+
+    # stop sound if space key is pressed
+    if args.inputs.keyboard.key_down.space
+      args.audio[:bg_music] = nil
+      # OR
+      args.audio.delete :bg_music
+    end
+  end
+#+end_src
+
+** Setting Additional Audio Properties
+
+Here are additional properties that can be set.
 
 #+begin_src
   def tick args
     # The values below (except for input of course) are the default values that apply if you don't
     # specify the value in the hash.
-    args.audio[:my_audio] = {
-      input: 'sound/boom.wav',  # Filename
-      x: 0.0, y: 0.0, z: 0.0,   # Relative position to the listener, x, y, z from -1.0 to 1.0
-      gain: 1.0,                # Volume (0.0 to 1.0)
-      pitch: 1.0,               # Pitch of the sound (1.0 = original pitch)
-      paused: false,            # Set to true to pause the sound at the current playback position
-      looping: false,           # Set to true to loop the sound/music until you stop it
+    args.audio[:my_audio] ||= {
+      input: 'sound/boom.wav',  # file path relative to mygame directory
+      gain:    1.0,             # Volume (float value 0.0 to 1.0)
+      pitch:   1.0,             # Pitch of the sound (1.0 = original pitch)
+      paused:  false,           # Set to true to pause the sound at the current playback position
+      looping: true,            # Set to true to loop the sound/music until you stop it
+      foobar:  :baz             # additional keys/values can be safely added to help with context/game logic (ie metadata)
     }
   end
 #+end_src
 
-Sounds that don't specify ~looping: true~ will be removed automatically from the hash after the playback ends.
-Looping sounds or sounds that should stop early must be removed manually.
+IMPORTANT: Please take note that ~gain~ and ~pitch~ must be given ~float~ values (eg ~gain: 1.0~, not ~gain: 1~ or ~game: 0~).
 
-When you assign a hash to an audio output, a ~:length~ key will be added to the hash on the following tick.
-This will tell you the duration of the audio file in seconds (float).
+** Advanced Audio Manipulate (Crossfade)
+
+Take a look at the Audio Mixer sample app for a non-trival example of how to use these properties. The
+sample app is located within the DragonRuby zip file at ~./samples/07_advanced_audio/01_audio_mixer~.
+
+Here's an example of crossfading two bg music tracks.
+
+#+begin_src
+  def tick args
+    # start bg-1.ogg at the start
+    if args.state.tick_count == 0
+      args.audio[:bg_music] = { input: "sounds/bg-1.ogg", looping: true, gain: 0.0 }
+    end
+
+    # if space is pressed cross fade to new bg music
+    if args.inputs.keyboard.key_down.space
+      # get the current bg music and create a new audio entry that represents the crossfade
+      current_bg_music = args.audio[:bg_music]
+
+      # cross fade audio entry
+      args.audio[:bg_music_fade] = {
+        input:    current_bg_music[:input],
+        looping:  true,
+        gain:     current_bg_music[:gain],
+        pitch:    current_bg_music[:pitch],
+        paused:   false,
+        playtime: current_bg_music[:playtime]
+      }
+
+      # replace the current playing background music (toggling between bg-1.ogg and bg-2.ogg)
+      # set the gain/volume to 0.0 (this will be increased to 1.0 accross ticks)
+      new_background_music = { looping: true, gain: 0.0 }
+
+      # determine track to play (swap between bg-1 and bg-2)
+      new_background_music[:input] = if current_bg_music.input == "sounds/bg-1.ogg"
+                                       "sounds/bg-2.ogg"
+                                     else
+                                       "sounds/bg-2.ogg"
+                                     end
+
+      # bg music audio entry
+      args.audio[:bg_music] = new_background_music
+    end
+
+    # process cross fade (happens every tick)
+    # increase the volume of bg_music every tick until it's at 100%
+    if args.audio[:bg_music] && args.audio[:bg_music].gain < 1.0
+      # increase the gain 1% every tick until we are at 100%
+      args.audio[:bg_music].gain += 0.01
+      # clamp value to 1.0 max value
+      args.audio[:bg_music].gain = 1.0 if args.audio[:bg_music].gain > 1.0
+    end
+
+    # decrease the volume of cross fade bg music until it's 0.0, then delete it
+    if args.audio[:bg_music_fade] && args.audio[:bg_music_fade].gain > 0.0
+      # decrease by 1% every frame
+      args.audio[:bg_music_fade].gain -= 0.01
+      # delete audio when it's at 0%
+      if args.audio[:bg_music_fade].gain <= 0.0
+        args.audio[:bg_music_fade] = nil
+      end
+    end
+  end
+#+end_src
 
 ** Audio encoding trouble shooting
 

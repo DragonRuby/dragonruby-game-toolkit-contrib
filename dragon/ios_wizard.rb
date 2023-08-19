@@ -66,7 +66,6 @@ class IOSWizard < Wizard
     [
       *prerequisite_steps,
 
-      :check_for_device,
       :check_for_dev_profile,
 
       *app_metadata_retrieval_steps,
@@ -870,6 +869,7 @@ XML
 
   def stage_sim_app
     log_info "Staging."
+    sh "codesign --remove-signature #{relative_path}/dragonruby-ios-simulator.app/Runtime"
     sh "mkdir -p #{tmp_directory}"
     sh "cp -R #{relative_path}/dragonruby-ios-simulator.app/ \"#{tmp_directory}/#{@app_name}.app/\""
     sh "mv \"#{tmp_directory}/#{@app_name}.app/Runtime\" \"#{tmp_directory}/#{@app_name}.app/#{@app_name}\""
@@ -1014,7 +1014,7 @@ SCRIPT
   def simctl_iphone_device_id_by_name
     devices = simctl_list_devices
     k, v = devices.find { |k, v| v.name.downcase.include?(@opts[:sim_name].downcase) }
-    k      
+    k
   end
 
   def deploy_to_sim

@@ -1,20 +1,4 @@
 def tick args
-  if !args.gtk.version_pro?
-    args.outputs.labels << { x: args.grid.w / 2,
-                             y: args.grid.h / 2,
-                             alignment_enum: 1,
-                             vertical_alignment_enum: 1,
-                             text: "Portrait mode is a Pro feature." }
-    return
-  elsif args.gtk.version_pro? && args.grid.orientation == :landscape
-    args.outputs.labels << { x: args.grid.w / 2,
-                             y: args.grid.h / 2,
-                             alignment_enum: 1,
-                             vertical_alignment_enum: 1,
-                             text: "Landscape orientation detected. Make sure your metadata/game_metadata.txt has the value orientation=portrait." }
-    return
-  end
-
   args.outputs.solids << args.layout.rect(row: 0, col: 0, w: 12, h: 24, include_row_gutter: true, include_col_gutter: true).merge(b: 255, a: 80)
 
   # rows (light blue)

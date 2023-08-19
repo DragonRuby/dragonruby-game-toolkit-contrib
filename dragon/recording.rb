@@ -20,9 +20,12 @@ module GTK
 
   # @gtk
   class Recording
+    attr :should_reset_after_replay_completed
+
     def initialize runtime
       @runtime = runtime
       @global_input_order = 1
+      @should_reset_after_replay_completed = true
     end
 
     def tick
@@ -82,7 +85,9 @@ Recording has begun with RNG seed value set to #{seed_number}.
 To stop recording use stop_recording(filename).
 The recording will stop without saving a file if a filename is nil.
 S
-      $console.set_command "$recording.stop 'replay.txt'"
+      $console.set_command_extended histories: ["$recording.start #{seed_number}"],
+                                    command: "$recording.stop 'replay.txt'"
+      @keys_to_ignore_during_recording = $console.console_toggle_keys.map { |k| k.without_ending_bang }
       @is_recording = true
       @runtime.__reset__
       @seed_number = seed_number
@@ -99,11 +104,11 @@ S
     end
 
     def is_replaying?
-      @is_replaying
+      !!@is_replaying
     end
 
     def is_recording?
-      @is_recording
+      !!@is_recording
     end
 
     # @gtk
@@ -138,8 +143,13 @@ S
       end
 
       if file_name
+        stopped_at = Kernel.tick_count
+        # if the last input was ignored, then we want to set stopped at to the point in time before the last input was ignored.
+        if @last_recorded_input_was_ignored
+          stopped_at -= stopped_at - @last_recorded_input_was_ignored_at
+        end
         text = "replay_version 2.0\n"
-        text << "stopped_at #{Kernel.tick_count}\n"
+        text << "stopped_at #{stopped_at}\n"
         text << "seed #{@seed_number}\n"
         text << "recorded_at #{Time.now.to_s}\n"
         @input_history.each do |items|
@@ -366,21 +376,46 @@ S
       @replay_stopped_at = Kernel.global_tick_count
       $console.set_command_silent "$replay.start '#{@replay_file_name}', speed: 1"
       @is_replaying = false
-      @runtime.__reset__
+      @runtime.__reset__ if @should_reset_after_replay_completed
       @runtime.notify! notification_message
+    end
+
+    def record_input? name, raw_key, modifier_keys
+      return false if $gtk.console.visible?
+      return false if @is_replaying
+      return false unless @is_recording
+      # do not record console activation
+      if name == :key_up_raw || name == :key_down_raw
+        names = KeyboardKeys.sdl_to_key raw_key, modifier_keys
+        return false if (names & @keys_to_ignore_during_recording).length > 0
+        return false if @input_history.length == 0 && names.include?(:enter)
+      end
+      return true
+    end
+
+    # these values are used later to determine if the replay length should be shortened
+    # (for example if the last bits of the replay were in the console/wouldn't be recorded)
+    def capture_record_input_timestamps name, raw_key, modifier_keys
+      if !record_input? name, raw_key, modifier_keys
+        @last_recorded_input_was_ignored_at ||= Kernel.tick_count
+        @last_recorded_input_was_ignored ||= true
+      else
+        @last_recorded_input_was_ignored_at = nil
+        @last_recorded_input_was_ignored = nil
+      end
     end
 
     # 1 or 2 params
     def record_input_history name, value_1, value_2, value_count, clear_cache = false
-      return if @is_replaying
-      return unless @is_recording
+      capture_record_input_timestamps name, value_1, value_2
+      return if !record_input? name, value_1, value_2
       @input_history << [name, value_1, value_2, value_count, @global_input_order, Kernel.tick_count]
       @global_input_order += 1
     end
 
     def record_input_history_3_params name, value_1, value_2, value_3, clear_cache = false
-      return if @is_replaying
-      return unless @is_recording
+      capture_record_input_timestamps name, value_1, value_2
+      return if !record_input? name, value_1, value_2
       @input_history << [name, value_1, value_2, value_3, 3, @global_input_order, Kernel.tick_count]
       @global_input_order += 1
     end

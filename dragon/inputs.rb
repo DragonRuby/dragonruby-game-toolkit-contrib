@@ -610,6 +610,10 @@ module GTK
       { x: point.x, y: point.y, w: 0, h: 0 }
     end
 
+    def merge o
+      rect.merge o
+    end
+
     def w
       0
     end
@@ -743,6 +747,7 @@ module GTK
     attr_accessor :finger_left, :finger_right
     attr_accessor :text, :history
     attr_accessor :headset
+    attr :last_active
 
     def initialize
       @controllers = [Controller.new, Controller.new, Controller.new, Controller.new]

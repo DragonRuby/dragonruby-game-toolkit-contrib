@@ -41,8 +41,14 @@ module GTK
 
         log "** INFO: =#{path}= queued to load via ~require~. (#{Kernel.global_tick_count}, #{Kernel.tick_count})", subsystem="Engine"
 
-        @reload_list << path   # We deal with and clear this array in C.
-        @reload_list.uniq!
+        if @load_status == :ready
+          @reload_list << path
+          @reload_list.uniq!
+          __require_sync__ path
+        else
+          @reload_list << path
+          @reload_list.uniq!
+        end
       rescue Exception => e
         raise e, "* EXCEPTION: ~Runtime#mark_ruby_file_for_reload~ failed for =#{path}=.\n#{e}"
       end
@@ -77,6 +83,7 @@ module GTK
           end
         end
 
+        @last_reload_complete_global_at = Kernel.global_tick_count
         $layout.reset if $layout
         $gtk.reset_framerate_calculation
 
@@ -130,6 +137,9 @@ S
           Kernel.global_tick_count = -1
           $gtk.write_file_root (File.join backup_directory, "boot.txt"), Time.now.to_i.to_s
           $top_level.boot @args if $top_level.respond_to? :boot
+          @args.state.tick_count = -1
+          Kernel.global_tick_count = -1
+          Kernel.tick_count = -1
           reset_all_mtimes
         end
       end
@@ -173,7 +183,7 @@ S
           else
             mark_ruby_file_for_reload file
           end
-          log_debug "Marked #{file} for reload. (#{Kernel.global_tick_count})", subsystem="Engine"
+          log_debug "Reloaded #{file}. (#{Kernel.global_tick_count})", subsystem="Engine"
           notify_subdued!
           return true
         else
@@ -183,7 +193,7 @@ S
             @main_rb_load_exception = { file: file, error: syntax_check_result }
           else
             raise <<~S
-            ** Failed to reload #{file}.
+            ** Failed to load/reload #{file}.
             #{syntax_check_result}
 
             S

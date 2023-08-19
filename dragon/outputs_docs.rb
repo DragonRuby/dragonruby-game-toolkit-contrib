@@ -250,18 +250,20 @@ Here is an example:
       self.h = size
       self.path = path
     end
-    def serlialize
+
+    def serialize
       {x:self.x, y:self.y, w:self.w, h:self.h, path:self.path}
     end
 
     def inspect
-      serlialize.to_s
+      serialize.to_s
     end
 
     def to_s
-      serlialize.to_s
+      serialize.to_s
     end
   end
+
   def tick args
     # render circle sprite
     args.outputs.sprites  << Circle.new(10, 10, 32,"sprites/circle/white.png")

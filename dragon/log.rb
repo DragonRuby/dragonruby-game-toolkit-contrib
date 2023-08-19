@@ -37,10 +37,14 @@ module GTK
       Object.print(*args)
     end
 
-    def self.puts_important *args
+    def self.puts_important *args, message_code: nil
       return if $gtk.production
       $gtk.append_file_root 'logs/log.txt', args.join("\n")
-      $gtk.notify! "Important notification occurred."
+      if message_code
+        $gtk.notify! "An important notification occurred. Open Console to see details. #{message_code}"
+      else
+        $gtk.notify! "An important notification occurred. Open Console to see details."
+      end
       args.each { |obj| $gtk.log obj }
     end
 
@@ -147,6 +151,14 @@ module GTK
       write_to_log_and_puts ""
       write_to_log_and_puts "[Message ID: #{id}]"
       write_to_log_and_puts ""
+    end
+
+    def self.puts_once_important *ids, message
+      id = "#{ids}"
+      @once ||= {}
+      return if @once[id]
+      @once[id] = id
+      puts_important "#{message}", message_code: id
     end
 
     def self.puts_once_info *ids, message
@@ -287,6 +299,10 @@ class Object
 
   def log_once *ids, message
     GTK::Log.puts_once(*ids, message)
+  end
+
+  def log_once_important *ids, message
+    GTK::Log.puts_once_important(*ids, message)
   end
 
   def log_once_info *ids, message

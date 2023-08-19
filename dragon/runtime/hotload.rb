@@ -81,6 +81,7 @@ module GTK
             'dragon/runtime/draw.rb',
             'dragon/runtime/deprecated.rb',
             'dragon/runtime/framerate.rb',
+            'dragon/runtime/framerate_diagnostics.rb',
             'dragon/runtime/c_bridge.rb',
             'dragon/runtime/hotload.rb',
             'dragon/runtime/backup.rb',

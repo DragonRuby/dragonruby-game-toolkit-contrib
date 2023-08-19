@@ -129,4 +129,19 @@ S
   def serialize
     self
   end
+
+  # !!! FIXME: Strange bug where garbage bytes are still left over after a strip for a string.
+  alias_method :__original_strip__, :strip unless String.instance_methods.include?(:__original_strip__)
+  def strip
+    "#{__original_strip__}"
+  end
+
+  def indent count, indent_char: "  ", pad_line_with_space: false
+    count = 0 if count < 0
+    spaces = indent_char * count
+    spaces += " " if pad_line_with_space
+    self.each_line.map do |l|
+      "#{spaces}#{l}"
+    end.join
+  end
 end

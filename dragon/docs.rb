@@ -297,6 +297,9 @@ S
   </head>
   <body>
     <div id='table-of-contents'>
+      <li><a class='header-1' href='index.html'>Docs and Samples</a></li>
+      <li><a class='header-1' href='docs.html'>Docs</a></li>
+      <li><a class='header-1' href='samples.html'>Samples</a></li>
 S
     html_toc_end_to_content_start = <<-S
     </div>

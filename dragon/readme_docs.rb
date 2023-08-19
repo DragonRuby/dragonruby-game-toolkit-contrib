@@ -321,22 +321,70 @@ S
 
 * Starting a New DragonRuby Project
 
-The DRGTK zip that contains the engine is a complete, self contained project
+The DragonRuby zip that contains the engine is a complete, self contained project
 structure. To create a new project, unzip the zip file again in its entirety
 and use that as a starting point for another game. This is the recommended
 approach to starting a new project.
 
-** Rationale
+** Considerations For Public Git Repositories
 
-The DRGTK binary/package in its entirety is designed to be committed
-with your source code (it’s why we keep it small). It’s to protect “shelf life”.
-3 years from now we might be on a vastly different version of the engine.
-But you know that the code you’ve written will definitely work with the
-version that was committed to source control. It's strongly recommended that you
-do **not** keep DragonRuby Game Toolkit in a shared location and instead unzip
-a clean copy for ever game. That being said, You can optionally pass a directory
-when starting up DragonRuby from the terminal: ~./dragonruby ./non-defualt-game-directory~.
+You can open source your game's code given the following options.
 
+*** Option 1 (Recommended)
+
+Your public repository needs only to contain the contents of ~./mygame~. This approach
+is the cleanest and doesn't require your ~.gitignore~ to be polluted with DragonRuby
+specific files.
+
+*** Option 2 (Restrictions Apply)
+
+IMPORTANT: Do NOT commit ~dragonruby-publish(.exe)~, or ~dragonruby-bind(.exe)~.
+
+#+begin_src
+  dragonruby
+  dragonruby.exe
+  dragonruby-publish
+  dragonruby-publish.exe
+  dragonruby-bind
+  dragonruby-bind.exe
+  /tmp/
+  /builds/
+  /logs/
+  /samples/
+  /docs/
+  /.dragonruby/
+#+end_src
+
+If you'd like people who do not own a DragonRuby license to run your game, you may include
+the ~dragonruby(.exe)~ binary within the repo. This permission is granted in good-faith
+and can be revoked if abused.
+
+** Considerations For Private Git Repos
+
+The following ~.gitignore~ should be used for private repositories (commercial games).
+
+#+begin_src
+  /tmp/
+  /logs/
+#+end_src
+
+You'll notice that everything else is committed to source control (even the
+~./builds~ directory).
+
+The DragonRuby binary/package is designed to be committed in its entirety
+with your source code (it’s why we keep it small). This protects the “shelf life”
+for commercial games. 3 years from now, we might be on a vastly different version
+of the engine. But you know that the code you’ve written will definitely work with the
+version that was committed to source control. For private repositories, it's strongly
+recommended that you do NOT keep DragonRuby Game Toolkit in a shared location and
+instead unzip a clean copy for every game (and commit everything to source control).
+
+IMPORTANT: File access functions are sandoxed and assume that the
+~dragonruby~ binary lives alongside the game you are building. Do not
+expect file access functions to return correct values if you are attempting
+to run the ~dragonruby~ binary from a shared location. It's
+recommended that the directory structure contained in the zip is not
+altered and games are built using that starter template.
 S
     end
 
@@ -398,14 +446,12 @@ A directory called ~./build~ will be created that contains your
 binaries. You can upload this to Itch.io manually.
 
 *** Browser Game Settings
-For the HTML version of your game, after you upload the zip file, check the checkbox labeled
-~This file will be played in the browser~.
+For the HTML version of your game, the following configuration is required for your game to run correctly:
 
-IMPORTANT: Be sure to set the ~Viewport dimensions~ to ~1280x720~ for landscape games or your game will not be
-positioned correctly on your Itch.io page.
-
-IMPORTANT: Be sure to set the ~Viewport dimensions~ to ~540x960~ for portrait games or your game will not be
-positioned correctly on your Itch.io page.
+- Check the checkbox labeled ~This file will be played in the browser~ for the html version of your game (it's one of the zip files you'll upload).
+- Ensure that ~Embed options -> SharedArrayBuffer support~ is checked.
+- Be sure to set the ~Viewport dimensions~ to ~1280x720~ for landscape games or your game will not be positioned correctly on your Itch.io page.
+- Be sure to set the ~Viewport dimensions~ to ~540x960~ for portrait games or your game will not be positioned correctly on your Itch.io page.
 
 For subsequent updates you can use an automated deployment to Itch.io:
 
@@ -484,10 +530,19 @@ S
 If you have a Pro subscription, you also have the capability to deploy
 to mobile devices.
 
+** Deploying to iOS
+
 To deploy to iOS, you need to have a Mac running MacOS Catalina, an
 iOS device, and an active/paid Developer Account with Apple. From the
 Console type: ~$wizards.ios.start~ and you will be guided through the
 deployment process.
+
+- ~$wizards.ios.start env: :dev~ will deploy to an iOS device connected via USB.
+- ~$wizards.ios.start env: :hotload~ will deploy to an iOS device connected via USB with hotload enabled.
+- ~$wizards.ios.start env: :sim~ will deploy to the iOS simulator.
+- ~$wizards.ios.start env: :prod~ will package your game for distribution via Apple's AppStore.
+
+** Deploying to Android
 
 To deploy to Android, you need to have an Android emulator/device, and
 an environment that is able to run Android SDK. ~dragonruby-publish~
@@ -497,10 +552,17 @@ varies from OS to OS. Here's an example of what the command might look
 like:
 
 #+begin_src
-  > adb logcat -e mygame # you'll want to run this in a separate terminal
-  > keytool -genkey -v -keystore mygame.keystore -alias mygame -keyalg RSA -keysize 2048 -validity 10000
-  > apksigner sign --ks mygame.keystore mygame-android.apk
-  > adb install mygame-android.apk
+  # generating a keystore
+  keytool -genkey -v -keystore APP.keystore -alias mygame -keyalg RSA -keysize 2048 -validity 10000
+
+  # deploying to a local device/emulator
+  apksigner sign --ks mygame.keystore mygame-android.apk
+  adb install mygame-android.apk
+  # read logs of device
+  adb logcat -e mygame
+
+  # signing for Google Play
+  apksigner sign --min-sdk-version 21 --ks ./profiles/APP.keystore ./builds/APP-googleplay.aab
 #+end_src
 S
     end
@@ -631,7 +693,9 @@ make sure all three depots are included.
 
 ** Configuring ~dragonruby-publish~
 
-You only have to do this part once when first setting up your game.
+You only have to do this part once when first setting up your game. Note that this
+capability is only available for Indie and Pro license tiers. If you have a Standard
+DragonRuby License, you'll need to use the Steamworks toolchains directly.
 
 Go add a text file to your game's ~metadata~ directory called
 ~steam_metadata.txt~ ... note that this file will be filtered out
@@ -1492,7 +1556,7 @@ You can use DragonRuby's replay capabilities to troubleshoot:
 
 1. DragonRuby is hot loaded which gives you a very fast feedback loop (if the game throws an exception, it's because of the code you just added).
 2. Use ~./dragonruby mygame --record~ to create a game play recording that you can use to find the exception (you can replay a recording by executing ~./dragonruby mygame --replay last_replay.txt~ or through the DragonRuby Console using ~$gtk.recording.start_replay "last_replay.txt"~.
-3. DragonRuby also ships with a unit testing facility. You can invoke the following command to run a test: ~./dragonruby . --eval some_ruby_file.rb --no-tick~.
+3. DragonRuby also ships with a unit testing facility. You can invoke the following command to run a test: ~./dragonruby mygame --test tests/some_ruby_file.rb~.
 4. Get into the habit of adding debugging facilities within the game itself. You can add drawing primitives to ~args.outputs.debug~ that will render on top of your game but will be ignored in a production release.
 5. Debugging something that runs at 60fps is (imo) not that helpful. The exception you are seeing could have been because of a change that occurred many frames ago.
 

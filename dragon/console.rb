@@ -180,7 +180,7 @@ module GTK
     end
 
     def visible?
-      @visible
+      !!@visible
     end
 
     def open reason = nil

@@ -5,67 +5,71 @@
 
 module AttrGTK
   def args= value
-    @__args__ = value
+    @args = value
   end
 
   def args
-    @__args__
+    @args
   end
 
   def keyboard
-    @__keyboard__ ||= @__args__.inputs.keyboard
+    @keyboard ||= @args.inputs.keyboard
   end
 
   def grid
-    @__grid__ ||= @__args__.grid
+    @grid ||= @args.grid
   end
 
   def state
-    @__state__ ||= @__args__.state
+    @state ||= @args.state
   end
 
   def temp_state
-    @__temp_state__ ||= @__args__.temp_state
+    @temp_state ||= @args.temp_state
   end
 
   def inputs
-    @__inputs__ ||= @__args__.inputs
+    @inputs ||= @args.inputs
   end
 
   def outputs
-    @__outputs__ ||= @__args__.outputs
+    @outputs ||= @args.outputs
   end
 
   def gtk
-    @__gtk__ ||= @__args__.gtk
+    @gtk ||= @args.gtk
   end
 
   def passes
-    @__passes__ ||= @__args__.passes
+    @passes ||= @args.passes
   end
 
   def pixel_arrays
-    @__pixel_arrays__ ||= @__args__.pixel_arrays
+    @pixel_arrays ||= @args.pixel_arrays
   end
 
   def geometry
-    @__geometry__ ||= @__args__.geometry
+    @geometry ||= @args.geometry
   end
 
   def layout
-    @__layout__ ||= @__args__.layout
+    @layout ||= @args.layout
   end
 
   def easing
-    @__easing__ ||= @__args__.easing
+    @easing ||= @args.easing
   end
 
   def audio
-    @__audio__ ||= @__args__.audio
+    @audio ||= @args.audio
   end
 
   def events
-    @__events__ ||= @__args__.events
+    @events ||= @args.events
+  end
+
+  def cvars
+    @cvars ||= @args.cvars
   end
 
   def new_entity entity_type, init_hash = nil, &block
@@ -74,6 +78,12 @@ module AttrGTK
 
   def new_entity_strict entity_type, init_hash = nil, &block
     self.state.new_entity_strict entity_type, init_hash, &block
+  end
+end
+
+class Module
+  def attr_gtk
+    include AttrGTK
   end
 end
 

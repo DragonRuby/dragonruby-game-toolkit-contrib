@@ -24,7 +24,6 @@ APIs listing that haven't been encountered in a previous sample apps:
 
 def tick args
   tick_instructions args, "Sample app shows how keyboard events are registered and accessed.", 360
-  # Notice how small_font accounts for all the remaining parameters
   args.outputs.labels << { x: 460, y: row_to_px(args, 0), text: "Current game time: #{args.state.tick_count}", size_enum: -1 }
   args.outputs.labels << { x: 460, y: row_to_px(args, 2), text: "Keyboard input: args.inputs.keyboard.key_up.h", size_enum: -1 }
   args.outputs.labels << { x: 460, y: row_to_px(args, 3), text: "Press \"h\" on the keyboard.", size_enum: -1 }
@@ -83,7 +82,7 @@ def tick_help_text args
   args.outputs.labels << { x: 10, y: row_to_px(args, 6), text: "This is the api for the keys you've pressed:", size_enum: -1, r: 180 }
 
   if !args.state.help_available
-    args.outputs.labels << [10, row_to_px(args, 7),  "Press a key and I'll show code to access the key and what value will be returned if you used the code.", small_font]
+    args.outputs.labels << [10, row_to_px(args, 7),  "Press a key and I'll show code to access the key and what value will be returned if you used the code."]
     return
   end
 
