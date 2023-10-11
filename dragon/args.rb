@@ -4,9 +4,6 @@
 # args.rb has been released under MIT (*only this file*).
 
 module GTK
-  # This class is the one you'll interact with the most. It's
-  # constructed by the DragonRuby Runtime and is provided to you on
-  # each tick.
   class Args
     include ArgsDeprecated
     include Serialize
@@ -62,10 +59,6 @@ module GTK
       }
     end
 
-
-    # The number of ticks since the start of the game.
-    #
-    # @return [Integer]
     def tick_count
       @state.tick_count
     end
@@ -202,14 +195,10 @@ module GTK
       @inputs.mouse
     end
 
-    # @see Inputs#controller_one
-    # @return (see Inputs#controller_one)
     def controller_one
       @inputs.controller_one
     end
 
-    # @see Inputs#controller_two
-    # @return (see Inputs#controller_two)
     def controller_two
       @inputs.controller_two
     end

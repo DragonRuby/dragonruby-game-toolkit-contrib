@@ -46,7 +46,6 @@ module GTK
       Object.methods.find_all { |m| m.start_with? "test_" }
     end
 
-    # @gtk
     def start
       log "* TEST: gtk.test.start has been invoked."
       if test_methods_focused.length != 0

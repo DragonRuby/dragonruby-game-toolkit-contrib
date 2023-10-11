@@ -93,6 +93,7 @@ module GTK
             'args'     => lambda { $gtk.args.autocomplete_methods },
             'inputs'   => lambda { $gtk.args.inputs.autocomplete_methods },
             'geometry' => lambda { $gtk.args.geometry.autocomplete_methods },
+            'assert'   => lambda { GTK::Assert.instance_methods(false) },
             'outputs'  => lambda { $gtk.args.outputs.autocomplete_methods },
             'layout'   => lambda { $gtk.args.layouts.autocomplete_methods },
             'keyboard' => lambda { $gtk.args.keyboard.autocomplete_methods },

@@ -1072,12 +1072,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
   APIs listing that haven't been encountered in a previous sample apps:
   
-  - args.outputs.labels: An array. Values in this array generate labels
-    the screen.
-  - args.grid.(left|right|top|bottom): Pixel value for the boundaries of the virtual
-    720 p screen (Dragon Ruby Game Toolkits's virtual resolution is always 1280x720).
-  - Numeric#shift_(left|right|up|down): Shifts the Numeric in the correct direction
-    by adding or subracting.
+  - args.outputs.labels: An array. Values in this array generate labels the screen.
   
   =end
   
@@ -1089,61 +1084,75 @@ Follows is a source code listing for all files that have been open sourced. This
   # The code above does the following:
   # 1. GET the place where labels go: args.outputs.labels
   # 2. Request a new LABEL be ADDED: <<
-  # 3. The DEFINITION of a SOLID is the ARRAY:
+  # 3. The DEFINITION of a LABEL is the ARRAY:
   #     [320, 640, "Example", 3,     1,   255,   0,    0,    200,  manaspace.ttf]
   #     [ X ,  Y,    TEXT,   SIZE, ALIGN, RED, GREEN, BLUE, ALPHA, FONT STYLE]
+  # 4. It's recommended to use hashes so that you're not reliant on positional values:
+  #    { x: 320, y: 640, text: "Example", size_enum: 3, alignment_enum: 1, r: 255, g: 0, b: 0, a: 200, font: "manaspace.ttf" }
   
   
   # The tick method is called by DragonRuby every frame
   # args contains all the information regarding the game.
   def tick args
-    tick_instructions args, "Sample app shows different version of label sizes and alignments. And how to use hashes instead of arrays."
+    # render the current frame to the screen centered vertically and horizontally at 640, 620
+    args.outputs.labels << { x: 640, y: 620, anchor_x: 0.5, anchor_y: 0.5, text: "frame: #{args.state.tick_count}" }
+  
     # Here are some examples of simple labels, with the minimum number of parameters
     # Note that the default values for the other parameters are 0, except for Alpha which is 255 and Font Style which is the default font
-    args.outputs.labels << [400, 620, "Here is a label with just an x, y, and text"]
-  
-    args.outputs.labels << [args.grid.left.shift_right(5), args.grid.top.shift_down(5), "This is a label located at the top left."]
-    args.outputs.labels << [args.grid.left.shift_right(5), args.grid.bottom.shift_up(30), "This is a label located at the bottom left."]
-    args.outputs.labels << [args.grid.right.shift_left(420), args.grid.top.shift_down(5), "This is a label located at the top right."]
-    args.outputs.labels << [args.grid.right.shift_left(440), args.grid.bottom.shift_up(30), "This is a label located at the bottom right."]
+    args.outputs.labels << { x: 5,          y: 720 - 5, text: "This is a label located at the top left." }
+    args.outputs.labels << { x: 5,          y:      30, text: "This is a label located at the bottom left." }
+    args.outputs.labels << { x: 1280 - 420, y: 720 - 5, text: "This is a label located at the top right." }
+    args.outputs.labels << { x: 1280 - 440, y: 30,      text: "This is a label located at the bottom right." }
   
     # Demonstration of the Size Parameter
-    args.outputs.labels << [175 + 150, 610 - 50, "Smaller label.",  -2]
-    args.outputs.labels << [175 + 150, 580 - 50, "Small label.",    -1]
-    args.outputs.labels << [175 + 150, 550 - 50, "Medium label.",    0]
-    args.outputs.labels << [175 + 150, 520 - 50, "Large label.",     1]
-    args.outputs.labels << [175 + 150, 490 - 50, "Larger label.",    2]
+    args.outputs.labels << { x: 175 + 150, y: 610 - 50, text: "Smaller label.",  size_enum: -2 } # size_enum of -2 is equivalent to using size_px: 18
+    args.outputs.labels << { x: 175 + 150, y: 580 - 50, text: "Small label.",    size_enum: -1 } # size_enum of -1 is equivalent to using size_px: 20
+    args.outputs.labels << { x: 175 + 150, y: 550 - 50, text: "Medium label.",   size_enum:  0 } # size_enum of  0 is equivalent to using size_px: 22
+    args.outputs.labels << { x: 175 + 150, y: 520 - 50, text: "Large label.",    size_enum:  1 } # size_enum of  0 is equivalent to using size_px: 24
+    args.outputs.labels << { x: 175 + 150, y: 490 - 50, text: "Larger label.",   size_enum:  2 } # size_enum of  0 is equivalent to using size_px: 26
   
     # Demonstration of the Align Parameter
-    args.outputs.labels << [260 + 150, 345 - 50, "Left aligned.",    0, 2]
-    args.outputs.labels << [260 + 150, 325 - 50, "Center aligned.",  0, 1]
-    args.outputs.labels << [260 + 150, 305 - 50, "Right aligned.",   0, 0]
+    args.outputs.lines  << { x: 175 + 150, y: 0, h: 720 }
+  
+    args.outputs.labels << { x: 175 + 150, y: 345 - 50, text: "Left aligned.",   alignment_enum: 0 } # alignment_enum: 0 is equivalent to anchor_x: 0
+    args.outputs.labels << { x: 175 + 150, y: 325 - 50, text: "Center aligned.", alignment_enum: 1 } # alignment_enum: 1 is equivalent to anchor_x: 0.5
+    args.outputs.labels << { x: 175 + 150, y: 305 - 50, text: "Right aligned.",  alignment_enum: 2 } # alignment_enum: 2 is equivalent to anchor_x: 1
   
     # Demonstration of the RGBA parameters
-    args.outputs.labels << [600  + 150, 590 - 50, "Red Label.",       0, 0, 255,   0,   0]
-    args.outputs.labels << [600  + 150, 570 - 50, "Green Label.",     0, 0,   0, 255,   0]
-    args.outputs.labels << [600  + 150, 550 - 50, "Blue Label.",      0, 0,   0,   0, 255]
-    args.outputs.labels << [600  + 150, 530 - 50, "Faded Label.",     0, 0,   0,   0,   0, 128]
+    args.outputs.labels << { x: 600  + 150, y: 590 - 50, text: "Red Label.",   r: 255, g:   0, b:   0 }
+    args.outputs.labels << { x: 600  + 150, y: 570 - 50, text: "Green Label.", r:   0, g: 255, b:   0 }
+    args.outputs.labels << { x: 600  + 150, y: 550 - 50, text: "Blue Label.",  r:   0, g:   0, b: 255 }
+    args.outputs.labels << { x: 600  + 150, y: 530 - 50, text: "Faded Label.", r:   0, g:   0, b:   0, a: 128 }
   
     # Demonstration of the Font parameter
     # In order to use a font of your choice, add its ttf file to the project folder, where the app folder is
-    args.outputs.labels << [690 + 150, 330 - 20, "Custom font (Array)", 0, 1, 125, 0, 200, 255, "manaspc.ttf" ]
-    args.outputs.primitives << { x: 690 + 150,
-                                 y: 330 - 50,
-                                 text: "Custom font (Hash)",
-                                 size_enum: 0,
-                                 alignment_enum: 1,
-                                 r: 125,
-                                 g: 0,
-                                 b: 200,
-                                 a: 255,
-                                 font: "manaspc.ttf" }.label!
+    # Again, it's recommended to use hashes so that you're not reliant on positional values.
+    args.outputs.labels << [690 + 150,               # x
+                            330 - 20,                # y
+                            "Custom font (Array)",   # text
+                            0,                       # size_enum
+                            1,                       # alignment_enum
+                            125,                     # r
+                            0,                       # g
+                            200,                     # b
+                            255,                     # a
+                            "manaspc.ttf" ]          # font
+  
+    args.outputs.labels << { x: 690 + 150,
+                             y: 330 - 50,
+                             text: "Custom font (Hash)",
+                             size_enum: 0,                 # equivalent to size_px:  22
+                             alignment_enum: 1,            # equivalent to anchor_x: 0.5
+                             vertical_alignment_enum: 2,   # equivalent to anchor_y: 1
+                             r: 125,
+                             g: 0,
+                             b: 200,
+                             a: 255,
+                             font: "manaspc.ttf" }
   
     # Primitives can hold anything, and can be given a label in the following forms
-    args.outputs.primitives << [690 + 150, 330 - 80, "Custom font (.primitives Array)", 0, 1, 125, 0, 200, 255, "manaspc.ttf" ].label
-  
     args.outputs.primitives << { x: 690 + 150,
-                                 y: 330 - 110,
+                                 y: 330 - 80,
                                  text: "Custom font (.primitives Hash)",
                                  size_enum: 0,
                                  alignment_enum: 1,
@@ -1151,21 +1160,7 @@ Follows is a source code listing for all files that have been open sourced. This
                                  g: 0,
                                  b: 200,
                                  a: 255,
-                                 font: "manaspc.ttf" }.label!
-  end
-  
-  def tick_instructions args, text, y = 715
-    return if args.state.key_event_occurred
-    if args.inputs.mouse.click ||
-       args.inputs.keyboard.directional_vector ||
-       args.inputs.keyboard.key_down.enter ||
-       args.inputs.keyboard.key_down.escape
-      args.state.key_event_occurred = true
-    end
-  
-    args.outputs.debug << [0, y - 50, 1280, 60].solid
-    args.outputs.debug << [640, y, text, 1, 1, 255, 255, 255].label
-    args.outputs.debug << [640, y - 25, "(click to dismiss instructions)" , -2, 1, 255, 255, 255].label
+                                 font: "manaspc.ttf" }
   end
 
 #+end_src
@@ -3116,6 +3111,159 @@ Follows is a source code listing for all files that have been open sourced. This
   version=1.0
   devcert=iPhone Developer: Amirali Rajan (P2B6225J87)
   prodcert=
+
+#+end_src
+
+*** Animation States Intermediate - main.rb
+#+begin_src ruby
+  # ./samples/03_rendering_sprites/03_animation_states_intermediate/app/main.rb
+  def tick args
+    defaults args
+    input args
+    calc args
+    render args
+  end
+  
+  def defaults args
+    # uncomment the line below to slow the game down by a factor of 4 -> 15 fps (for debugging)
+    # args.gtk.slowmo! 4
+  
+    args.state.player ||= {
+      x: 144,                # render x of the player
+      y: 32,                 # render y of the player
+      w: 144 * 2,            # render width of the player
+      h: 72 * 2,             # render height of the player
+      dx: 0,                 # velocity x of the player
+      action: :standing,     # current action/status of the player
+      action_at: 0,          # frame that the action occurred
+      previous_direction: 1, # direction the player was facing last frame
+      direction: 1,          # direction the player is facing this frame
+      launch_speed: 4,       # speed the player moves when they start running
+      run_acceleration: 1,   # how much the player accelerates when running
+      run_top_speed: 8,      # the top speed the player can run
+      friction: 0.9,         # how much the player slows down when have stopped attempting to run
+      anchor_x: 0.5,         # render anchor x of the player
+      anchor_y: 0            # render anchor y of the player
+    }
+  end
+  
+  def input args
+    # if the directional has been pressed on the input device
+    if args.inputs.left_right != 0
+      # determine if the player is currently running or not,
+      # if they aren't, set their dx to their launch speed
+      # otherwise, add the run acceleration to their dx
+      if args.state.player.action != :running
+        args.state.player.dx = args.state.player.launch_speed * args.inputs.left_right.sign
+      else
+        args.state.player.dx += args.inputs.left_right * args.state.player.run_acceleration
+      end
+  
+      # capture the direction the player is facing and the previous direction
+      args.state.player.previous_direction = args.state.player.direction
+      args.state.player.direction = args.inputs.left_right.sign
+    end
+  end
+  
+  def calc args
+    # clamp the player's dx to the top speed
+    args.state.player.dx = args.state.player.dx.clamp(-args.state.player.run_top_speed, args.state.player.run_top_speed)
+  
+    # move the player by their dx
+    args.state.player.x += args.state.player.dx
+  
+    # capture the player's hitbox
+    player_hitbox = hitbox args.state.player
+  
+    # check boundary collisions and stop the player if they are colliding with the ednges of the screen
+    if (player_hitbox.x - player_hitbox.w / 2) < 0
+      args.state.player.x = player_hitbox.w / 2
+      args.state.player.dx = 0
+      # if the player is not standing, set them to standing and capture the frame
+      if args.state.player.action != :standing
+        args.state.player.action = :standing
+        args.state.player.action_at = args.state.tick_count
+      end
+    elsif (player_hitbox.x + player_hitbox.w / 2) > 1280
+      args.state.player.x = 1280 - player_hitbox.w / 2
+      args.state.player.dx = 0
+  
+      # if the player is not standing, set them to standing and capture the frame
+      if args.state.player.action != :standing
+        args.state.player.action = :standing
+        args.state.player.action_at = args.state.tick_count
+      end
+    end
+  
+    # if the player's dx is not 0, they are running. update their action and capture the frame if needed
+    if args.state.player.dx.abs > 0
+      if args.state.player.action != :running || args.state.player.direction != args.state.player.previous_direction
+        args.state.player.action = :running
+        args.state.player.action_at = args.state.tick_count
+      end
+    elsif args.inputs.left_right == 0
+      # if the player's dx is 0 and they are not currently trying to run (left_right == 0), set them to standing and capture the frame
+      if args.state.player.action != :standing
+        args.state.player.action = :standing
+        args.state.player.action_at = args.state.tick_count
+      end
+    end
+  
+    # if the player is not trying to run (left_right == 0), slow them down by the friction amount
+    if args.inputs.left_right == 0
+      args.state.player.dx *= args.state.player.friction
+  
+      # if the player's dx is less than 1, set it to 0
+      if args.state.player.dx.abs < 1
+        args.state.player.dx = 0
+      end
+    end
+  end
+  
+  def render args
+    # determine if the player should be flipped horizontally
+    flip_horizontally = args.state.player.direction == -1
+    # determine the path to the sprite to render, the idle sprite is used if action == :standing
+    path = "sprites/link-idle.png"
+  
+    # if the player is running, determine the frame to render
+    if args.state.player.action == :running
+      # the sprite animation's first 3 frames represent the launch of the run, so we skip them on the animation loop
+      # by setting the repeat_index to 3 (the 4th frame)
+      frame_index = args.state.player.action_at.frame_index(count: 9, hold_for: 8, repeat: true, repeat_index: 3)
+      path = "sprites/link-run-#{frame_index}.png"
+  
+      args.outputs.labels << { x: args.state.player.x - 144, y: args.state.player.y + 230, text: "action:      #{args.state.player.action}" }
+      args.outputs.labels << { x: args.state.player.x - 144, y: args.state.player.y + 200, text: "action_at:   #{args.state.player.action_at}" }
+      args.outputs.labels << { x: args.state.player.x - 144, y: args.state.player.y + 170, text: "frame_index: #{frame_index}" }
+    else
+      args.outputs.labels << { x: args.state.player.x - 144, y: args.state.player.y + 230, text: "action:      #{args.state.player.action}" }
+      args.outputs.labels << { x: args.state.player.x - 144, y: args.state.player.y + 200, text: "action_at:   #{args.state.player.action_at}" }
+      args.outputs.labels << { x: args.state.player.x - 144, y: args.state.player.y + 170, text: "frame_index: n/a" }
+    end
+  
+  
+    # render the player's hitbox and sprite (the hitbox is used to determine boundary collision)
+    args.outputs.borders << hitbox(args.state.player)
+    args.outputs.borders << args.state.player
+  
+    # render the player's sprite
+    args.outputs.sprites << args.state.player.merge(path: path, flip_horizontally: flip_horizontally)
+  end
+  
+  def hitbox entity
+    {
+      x: entity.x,
+      y: entity.y + 5,
+      w: 64,
+      h: 96,
+      anchor_x: 0.5,
+      anchor_y: 0
+    }
+  end
+  
+  
+  $gtk.reset
 
 #+end_src
 
@@ -8794,11 +8942,11 @@ Follows is a source code listing for all files that have been open sourced. This
     # render a light blue background for the toolbar button that is currently
     # being hovered over (if any)
     if toolbar_button
-      args.outputs.primitives << toolbar_button.button_rect.merge(primitive_marker: :solid, a: 10, b: 255)
+      args.outputs.primitives << toolbar_button.button_rect.merge(primitive_marker: :solid, a: 64, b: 255)
     end
   
     # put a blue background around the currently selected tile
-    args.outputs.primitives << args.state.selected_tile.button_rect.merge(primitive_marker: :solid, b: 255)
+    args.outputs.primitives << args.state.selected_tile.button_rect.merge(primitive_marker: :solid, b: 255, r: 128, a: 64)
   
     if !mouse_intersects_toolbar
       if terrain_tile
@@ -8839,6 +8987,7 @@ Follows is a source code listing for all files that have been open sourced. This
           **toolbar_tile.button_rect,
           primitive_marker: primitive_type,
           a: 64,
+          g: 128
         },
         {
           x:  toolbar_tile.button_rect.x,
@@ -44499,24 +44648,31 @@ Follows is a source code listing for all files that have been open sourced. This
 #+begin_src ruby
   # ./samples/99_genre_rpg_topdown/topdown_starting_point/app/main.rb
   =begin
-  
    APIs listing that haven't been encountered in previous sample apps:
   
    - reverse: Returns a new string with the characters from original string in reverse order.
-     For example, the command
-     "dragonruby".reverse
-     would return the string
-     "yburnogard".
+     For example, the command "dragonruby".reverse would return the string "yburnogard".
      Reverse is not only limited to strings, but can be applied to arrays and other collections.
   
    Reminders:
   
-   - ARRAY#intersect_rect?: Returns true or false depending on if two rectangles intersect.
+   - HASH#intersect_rect?: Returns true or false depending on if two rectangles intersect.
   
-   - args.outputs.labels: An array. The values generate a label.
-     The parameters are [X, Y, TEXT, SIZE, ALIGNMENT, RED, GREEN, BLUE, ALPHA, FONT STYLE]
-     For more information about labels, go to mygame/documentation/02-labels.md.
-  
+   - args.outputs.labels: Added a hash to this collection will generate a label.
+     The parameters are:
+     {
+       x: X,
+       y: y,
+       text: TEXT,
+       size_px: 22 (optional),
+       anchor_x: 0 (optional),
+       anchor_y: 0 (optional),
+       r: RED (optional),
+       g: GREEN (optional),
+       b: BLUE (optional),
+       a: ALPHA (optional),
+       font: PATH_TO_TTF (optional)
+     }
   =end
   
   # This code shows a maze and uses input from the keyboard to move the user around the screen.
@@ -44531,13 +44687,13 @@ Follows is a source code listing for all files that have been open sourced. This
     generate_map args
   
     # Adds walls, goal, and player to args.outputs.solids so they appear on screen
-    args.outputs.solids << args.state.walls
-    args.outputs.solids << args.state.goal
-    args.outputs.solids << args.state.player
+    args.outputs.sprites << args.state.walls
+    args.outputs.sprites << args.state.goal
+    args.outputs.sprites << args.state.player
   
     # If player's box intersects with goal, a label is output onto the screen
     if args.state.player.intersect_rect? args.state.goal
-      args.outputs.labels << [30, 720 - 30, "You're a wizard Harry!!"] # 30 pixels lower than top of screen
+      args.outputs.labels << { x: 30, y: 720 - 30, text: "You're a wizard Harry!!" } # 30 pixels lower than top of screen
     end
   
     move_player args, -1,  0 if args.inputs.keyboard.left # x position decreases by 1 if left key is pressed
@@ -44547,12 +44703,17 @@ Follows is a source code listing for all files that have been open sourced. This
   end
   
   # Sets position, size, and color of the tile
-  def tile args, x, y, *color
-    [x * args.state.tile_size, # sets definition for array using method parameters
-     y * args.state.tile_size, # multiplying by tile_size sets x and y to correct position using pixel values
-     args.state.tile_size,
-     args.state.tile_size,
-     *color]
+  def tile args, x, y, r, g, b
+    {
+      x: x * args.state.tile_size, # sets definition for array using method parameters
+      y: y * args.state.tile_size, # multiplying by tile_size sets x and y to correct position using pixel values
+      w: args.state.tile_size,
+      h: args.state.tile_size,
+      path: :pixel,
+      r: r,
+      g: g,
+      b: b
+    }
   end
   
   # Creates map by adding tiles to the wall, as well as a goal (that the player needs to reach)
@@ -44593,18 +44754,20 @@ Follows is a source code listing for all files that have been open sourced. This
   end
   
   # Allows the player to move their box around the screen
-  def move_player args, *vector
-    box = args.state.player.shift_rect(vector) # box is able to move at an angle
+  def move_player args, vector_x, vector_y
+    player = args.state.player
+    next_x = player.x + vector_x * args.state.player_speed
+    next_y = player.y + vector_y * args.state.player_speed
+    next_position = args.state.player.merge x: next_x, y: next_y
   
     # If the player's box hits a wall, it is not able to move further in that direction
-    return if args.state.walls
-                  .any_intersect_rect?(box)
+    return if next_x < 0 || (next_x + player.w) > 1280
+    return if next_y < 0 || (next_y + player.h) > 720
+    return if args.state.walls.any_intersect_rect? next_position
   
     # Player's box is able to move at angles (not just the four general directions) fast
-    args.state.player =
-      args.state.player
-          .shift_rect(vector.x * args.state.player_speed, # if we don't multiply by speed, then
-                      vector.y * args.state.player_speed) # the box will move extremely slow
+    args.state.player.x = next_x
+    args.state.player.y = next_y
   end
 
 #+end_src

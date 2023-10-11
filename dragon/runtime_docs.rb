@@ -128,7 +128,7 @@ S
 
   def docs_class
     <<-S
-* ~Runtime~
+* ~Runtime~ (~args.gtk~)
 The ~GTK::Runtime~ class is the core of DragonRuby. It is globally
 accessible via ~$gtk~ or inside of the ~tick~ method through ~args~.
 
@@ -658,7 +658,36 @@ booted up.
 #+end_src
 
 NOTE: ~args.gtk.reset~ does not reset global variables or instance of
-classes you have have constructed.
+classes you have have constructed. If you want to also reset global
+variables or instances of classes when $gtk.reset is called. Define
+a ~reset~ method. Here's an example:
+
+#+begin_src
+  class Game
+    def initialize
+      puts "Game initialize called"
+    end
+  end
+
+  def tick args
+    $game ||= Game.new
+
+    if args.state.tick_count == 0
+      puts "tick_count is 0"
+    end
+
+    # if r is pressed on the keyboard, reset the game
+    if args.inputs.keyboard.key_down.r
+      args.gtk.reset
+    end
+  end
+
+  # custom reset function
+  def reset
+    puts "Custom reset function was called."
+    $game = nil
+  end
+#+end_src
 S
   end
 
@@ -700,7 +729,8 @@ S
     <<-S
 *** ~reset_sprites~
 Sprites when loaded are cached. This method invalidates the cache
-record of all sprites so that updates on from the disk can be loaded.
+record of all sprites so that updates on from the disk can be loaded. This function is automatically
+called when ~args.gtk.reset~ (~$gtk.reset~) is invoked.
 S
   end
 
@@ -1059,7 +1089,7 @@ S
 
   def docs_api_summary_state
     <<-S
-* ~args.state~
+* State (~args.state~)
 Store your game state inside of this ~state~. Properties with arbitrary nesting is allowed and a backing Entity will be created on your behalf.
 #+begin_src
   def tick args
@@ -1067,21 +1097,21 @@ Store your game state inside of this ~state~. Properties with arbitrary nesting 
     args.state.player.y ||= 0
   end
 #+end_src
-** ~args.state.*.entity_id~
+** ~entity_id~
 Entities automatically receive an ~entity_id~ of type ~Fixnum~.
-** ~args.state.*.entity_type~
+** ~entity_type~
 Entities can have an ~entity_type~ which is represented as a ~Symbol~.
-** ~args.state.*.created_at~
+** ~created_at~
 Entities have ~created_at~ set to ~args.state.tick_count~ when they are created.
-** ~args.state.*.created_at_elapsed~
+** ~created_at_elapsed~
 Returns the elapsed number of ticks since creation.
-** ~args.state.*.global_created_at~
+** ~global_created_at~
 Entities have ~global_created_at~ set to ~Kernel.global_tick_count~ when they are created.
-** ~args.state.*.global_created_at_elapsed~
+** ~global_created_at_elapsed~
 Returns the elapsed number of global ticks since creation.
-** ~args.state.*.as_hash~
+** ~as_hash~
 Entity cast to a ~Hash~ so you can update values as if you were updating a ~Hash~.
-** ~args.state.new_entity~
+** ~new_entity~
 Creates a new Entity with a ~type~, and initial properties. An option block can be passed to change the newly created entity:
 #+begin_src ruby
   def tick args
@@ -1091,7 +1121,7 @@ Creates a new Entity with a ~type~, and initial properties. An option block can 
     end
   end
 #+end_src
-** ~args.state.new_entity_strict~
+** ~new_entity_strict~
 Creates a new Strict Entity. While Entities created via ~args.state.new_entity~ can have new properties added later on, Entities created
 using ~args.state.new_entity_strict~ must define all properties that are allowed during its initialization. Attempting to add new properties after
 initialization will result in an exception.
@@ -1102,11 +1132,9 @@ S
 
   def docs_api_summary_inputs
     <<-S
-** ~args.events.resize_occured~
-This property will be set to true if the window is resized.
-* ~args.inputs~
+* Inputs (~args.inputs~)
 Access using input using ~args.inputs~.
-** ~args.inputs.last_active~
+** ~last_active~
 This function returns the last active input which will be set to either ~:keyboard~,
 ~:mouse~, or ~:controller~. The function is helpful when you need to present on screen
 instructions based on the input the player chose to play with.
@@ -1122,117 +1150,126 @@ instructions based on the input the player chose to play with.
 #+end_src
 ~:mouse~, or ~:controller~. The function is helpful when you need to present on screen
 instructions based on the input the player chose to play with.
-** ~args.inputs.up~
+** ~locale~
+Returns the ISO 639-1 two-letter langauge code based on OS preferences. Refer to the following link for locale strings: [[https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes]]).
+
+Defaults to "en" if locale can't be retrieved (~args.inputs.locale_raw~ will be nil in this case).
+** ~up~
 Returns ~true~ if: the ~up~ arrow or ~w~ key is pressed or held on the ~keyboard~; or if ~up~ is pressed or held on ~controller_one~; or if the ~left_analog~ on ~controller_one~ is tilted upwards.
-** ~args.inputs.down~
+** ~down~
 Returns ~true~ if: the ~down~ arrow or ~s~ key is pressed or held on the ~keyboard~; or if ~down~ is pressed or held on ~controller_one~; or if the ~left_analog~ on ~controller_one~ is tilted downwards.
-** ~args.inputs.left~
+** ~left~
 Returns ~true~ if: the ~left~ arrow or ~a~ key is pressed or held on the ~keyboard~; or if ~left~ is pressed or held on ~controller_one~; or if the ~left_analog~ on ~controller_one~ is tilted to the left.
-** ~args.inputs.right~
+** ~right~
 Returns ~true~ if: the ~right~ arrow or ~d~ key is pressed or held on the ~keyboard~; or if ~right~ is pressed or held on ~controller_one~; or if the ~left_analog~ on ~controller_one~ is tilted to the right.
-** ~args.inputs.left_right~
+** ~left_right~
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.left~ and ~args.inputs.right~.
 #+begin_src ruby
   args.state.player[:x] += args.inputs.left_right * args.state.speed
 #+end_src
-** ~args.inputs.up_down~
+** ~up_down~
 Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.down~ and ~args.inputs.up~.
 #+begin_src ruby
   args.state.player[:y] += args.inputs.up_down * args.state.speed
 #+end_src
-** ~args.inputs.text~ OR ~args.inputs.history~
+** ~text~
 Returns a string that represents the last key that was pressed on the keyboard.
-** ~args.inputs.mouse~
+** Mouse (~args.inputs.mouse~)
 Represents the user's mouse.
-*** ~args.inputs.mouse.has_focus~
+*** ~has_focus~
 Return's true if the game has mouse focus.
-*** ~args.inputs.mouse.x~
+*** ~x~
 Returns the current ~x~ location of the mouse.
-*** ~args.inputs.mouse.y~
+*** ~y~
 Returns the current ~y~ location of the mouse.
-*** ~args.inputs.mouse.inside_rect? rect~
+*** ~inside_rect? rect~
 Return. ~args.inputs.mouse.inside_rect?~ takes in any primitive that responds to ~x, y, w, h~:
-*** ~args.inputs.mouse.inside_circle? center_point, radius~
+*** ~inside_circle? center_point, radius~
 Returns ~true~ if the mouse is inside of a specified circle. ~args.inputs.mouse.inside_circle?~ takes in any primitive that responds to ~x, y~ (which represents the circle's center), and takes in a ~radius~:
-*** ~args.inputs.mouse.moved~
+*** ~moved~
 Returns ~true~ if the mouse has moved on the current frame.
-*** ~args.inputs.mouse.button_left~
+*** ~button_left~
 Returns ~true~ if the left mouse button is down.
-*** ~args.inputs.mouse.button_middle~
+*** ~button_middle~
 Returns ~true~ if the middle mouse button is down.
-*** ~args.inputs.mouse.button_right~
+*** ~button_right~
 Returns ~true~ if the right mouse button is down.
-*** ~args.inputs.mouse.button_bits~
+*** ~button_bits~
 Returns a bitmask for all buttons on the mouse: ~1~ for a button in the ~down~ state, ~0~ for a button in the ~up~ state.
-*** ~args.inputs.mouse.wheel~
-Represents the mouse wheel. Returns ~nil~ if no mouse wheel actions occurred.
-*** ~args.inputs.mouse.wheel.x~
-Returns the negative or positive number if the mouse wheel has changed in the ~x~ axis.
-*** ~args.inputs.mouse.wheel.y~
-Returns the negative or positive number if the mouse wheel has changed in the ~y~ axis.
-*** ~args.inputs.mouse.click~ OR ~.down~, ~.previous_click~, ~.up~
+*** ~wheel~
+Represents the mouse wheel. Returns ~nil~ if no mouse wheel actions occurred. Otherwise ~args.inputs.mouse.wheel~ will
+return a ~Hash~ with ~x~, and ~y~ (representing movement on each axis).
+*** ~click~ OR ~down~, ~previous_click~, ~up~
 The properties ~args.inputs.mouse.(click|down|previous_click|up)~ each return ~nil~ if the mouse button event didn't occur. And return an Entity
 that has an ~x~, ~y~ properties along with helper functions to determine collision: ~inside_rect?~, ~inside_circle~. This value will be true if any
 of the mouse's buttons caused these events. To scope to a specific button use ~.button_left~, ~.button_middle~, ~.button_right~, or ~.button_bits~.
-** ~args.inputs.controller_(one-four)~
+** Touch
+The following touch apis are available on touch devices (iOS, Android, Mobile Web, Surface).
+*** ~args.inputs.touch~
+Returns a ~Hash~ representing all touch points on a touch device.
+*** ~args.inputs.finger_left~
+Returns a ~Hash~ with ~x~ and ~y~ denoting a touch point that is on the left side of the screen.
+*** ~args.inputs.finger_right~
+Returns a ~Hash~ with ~x~ and ~y~ denoting a touch point that is on the right side of the screen.
+** Controller (~args.inputs.controller_(one-four)~)
 Represents controllers connected to the usb ports.
-** ~args.inputs.controller_(one-four).active~
+*** ~active~
 Returns true if any of the controller's buttons were used.
-*** ~args.inputs.controller_(one-four).up~
+*** ~up~
 Returns ~true~ if ~up~ is pressed or held on the directional or left analog.
-*** ~args.inputs.controller_(one-four).down~
+*** ~down~
 Returns ~true~ if ~down~ is pressed or held on the directional or left analog.
-*** ~args.inputs.controller_(one-four).left~
+*** ~left~
 Returns ~true~ if ~left~ is pressed or held on the directional or left analog.
-*** ~args.inputs.controller_(one-four).right~
+*** ~right~
 Returns ~true~ if ~right~ is pressed or held on the directional or left analog.
-*** ~args.inputs.controller_(one-four).left_right~
+*** ~left_right~
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.controller_(one-four).left~ and ~args.inputs.controller_(one-four).right~.
-*** ~args.inputs.controller_(one-four).up_down~
+*** ~up_down~
 Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.controller_(one-four).up~ and ~args.inputs.controller_(one-four).down~.
-*** ~args.inputs.controller_(one-four).(left_analog_x_raw|right_analog_x_raw)~
+*** ~(left|right)_analog_x_raw~
 Returns the raw integer value for the analog's horizontal movement (~-32,000 to +32,000~).
-*** ~args.inputs.controller_(one-four).left_analog_y_raw|right_analog_y_raw)~
+*** ~(left|right)_analog_y_raw~
 Returns the raw integer value for the analog's vertical movement (~-32,000 to +32,000~).
-*** ~args.inputs.controller_(one-four).left_analog_x_perc|right_analog_x_perc)~
+*** ~(left|right)_analog_x_perc~
 Returns a number between ~-1~ and ~1~ which represents the percentage the analog is moved horizontally as a ratio of the maximum horizontal movement.
-*** ~args.inputs.controller_(one-four).left_analog_y_perc|right_analog_y_perc)~
+*** ~(left|right)_analog_y_perc~
 Returns a number between ~-1~ and ~1~ which represents the percentage the analog is moved vertically as a ratio of the maximum vertical movement.
-*** ~args.inputs.controller_(one-four).directional_up~
+*** ~directional_up~
 Returns ~true~ if ~up~ is pressed or held on the directional.
-*** ~args.inputs.controller_(one-four).directional_down~
+*** ~directional_down~
 Returns ~true~ if ~down~ is pressed or held on the directional.
-*** ~args.inputs.controller_(one-four).directional_left~
+*** ~directional_left~
 Returns ~true~ if ~left~ is pressed or held on the directional.
-*** ~args.inputs.controller_(one-four).directional_right~
+*** ~directional_right~
 Returns ~true~ if ~right~ is pressed or held on the directional.
-*** ~args.inputs.controller_(one-four).(a|b|x|y|l1|r1|l2|r2|l3|r3|start|select)~
+*** ~(a|b|x|y|l1|r1|l2|r2|l3|r3|start|select)~
 Returns ~true~ if the specific button is pressed or held.
-*** ~args.inputs.controller_(one-four).truthy_keys~
+*** ~truthy_keys~
 Returns a collection of ~Symbol~s that represent all keys that are in the pressed or held state.
-*** ~args.inputs.controller_(one-four).key_down~
+*** ~key_down~
 Returns ~true~ if the specific button was pressed on this frame. ~args.inputs.controller_(one-four).key_down.BUTTON~ will only be true on the frame it was pressed.
-*** ~args.inputs.controller_(one-four).key_held~
+*** ~key_held~
 Returns ~true~ if the specific button is being held. ~args.inputs.controller_(one-four).key_held.BUTTON~ will be true for all frames after ~key_down~ (until released).
-*** ~args.inputs.controller_(one-four).key_up~
+*** ~key_up~
 Returns ~true~ if the specific button was released. ~args.inputs.controller_(one-four).key_up.BUTTON~ will be true only on the frame the button was released.
-** ~args.inputs.keyboard~
-Represents the user's keyboard
-** ~args.inputs.keyboard.active~
+** Keyboard (~args.inputs.keyboard~)
+Represents the user's keyboard.
+*** ~active~
 Returns true if any keys on the keyboard were pressed.
-*** ~args.inputs.keyboard.has_focus~
+*** ~has_focus~
 Returns ~true~ if the game has keyboard focus.
-*** ~args.inputs.keyboard.up~
+*** ~up~
 Returns ~true~ if ~up~ or ~w~ is pressed or held on the keyboard.
-*** ~args.inputs.keyboard.down~
+*** ~down~
 Returns ~true~ if ~down~ or ~s~ is pressed or held on the keyboard.
-*** ~args.inputs.keyboard.left~
+*** ~left~
 Returns ~true~ if ~left~ or ~a~ is pressed or held on the keyboard.
-*** ~args.inputs.keyboard.right~
+*** ~right~
 Returns ~true~ if ~right~ or ~d~ is pressed or held on the keyboard.
-*** ~args.inputs.keyboard.left_right~
+*** ~left_right~
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.keyboard.left~ and ~args.inputs.keyboard.right~.
-*** ~args.inputs.keyboard.up_down~
+*** ~up_down~
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.keyboard.up~ and ~args.inputs.keyboard.up~.
 *** keyboard properties
 The following properties represent keys on the keyboard and are available on ~args.inputs.keyboard.KEY~, ~args.inputs.keyboard.key_down.KEY~, ~args.inputs.keyboard.key_held.KEY~, and ~args.inputs.keyboard.key_up.KEY~:
@@ -1296,24 +1333,18 @@ The following properties represent keys on the keyboard and are available on ~ar
 - ~up_down~
 - ~directional_vector~
 - ~truthy_keys~
-*** ~inputs.keyboard.keys~
+*** ~keys~
 Returns a ~Hash~ with all keys on the keyboard in their respective state. The ~Hash~ contains the following ~keys~
 - ~:down~
 - ~:held~
 - ~:down_or_held~
 - ~:up~
-** ~args.inputs.touch~
-Returns a ~Hash~ representing all touch points on a touch device.
-** ~args.inputs.finger_left~
-Returns a ~Hash~ with ~x~ and ~y~ denoting a touch point that is on the left side of the screen.
-** ~args.inputs.finger_right~
-Returns a ~Hash~ with ~x~ and ~y~ denoting a touch point that is on the right side of the screen.
 S
   end
 
   def docs_api_summary_outputs
     <<-S
-* ~args.outputs~
+* Outputs (~args.outputs~)
 
 Outputs is how you render primitives to the screen. The minimal setup for
 rendering something to the screen is via a ~tick~ method defined in
@@ -1321,10 +1352,12 @@ mygame/app/main.rb
 
 #+begin_src
   def tick args
-    args.outputs.solids     << [0, 0, 100, 100]
-    args.outputs.sprites    << [100, 100, 100, 100, "sprites/square/blue.png"]
-    args.outputs.labels     << [200, 200, "Hello World"]
-    args.outputs.lines      << [300, 300, 400, 400]
+    args.outputs.solids     << { x: 0,   y: 0,   w: 100, h: 100 }
+    args.outputs.sprites    << { x: 100, y: 100, w: 100, h: 100, path: "sprites/square/blue.png" }
+    args.outputs.primitives << { x: 100, y: 100, w: 100, h: 100, path: "sprites/square/blue.png" } # accepts all render types
+    args.outputs.labels     << { x: 200, y: 200, text: "Hello World" }
+    args.outputs.lines      << { x: 300, y: 300, x2: 400, y2: 400]
+    args.outputs.borders    << { x: 0,   y: 0,   w: 100, h: 100 }
   end
 #+end_src
 
@@ -1338,35 +1371,35 @@ Primitives are rendered first-in, first-out. The rendering order (sorted by bott
 - ~borders~
 - ~debug~: Accepts all render primitives. Use this to render primitives for debugging (production builds of your game will not render this layer).
 
-** ~args.outputs.background_color~
+** ~background_color~
 Set ~args.outputs.background_color~ to an ~Array~ with ~RGB~ values (eg. ~[255, 255, 255]~ for the color white).
-** ~args.outputs.sounds~
+** ~sounds~
 Send a file path to this collection to play a sound. The sound file must be under the ~mygame~ directory.
 #+begin_src ruby
   args.outputs.sounds << "sounds/jump.wav"
 #+end_src
-** ~args.outputs.solids~
+** ~solids~
 Send a Primitive to this collection to render a filled in rectangle to the screen. This collection is cleared at the end of every frame.
-** ~args.outputs.static_solids~
+** ~static_solids~
 Send a Primitive to this collection to render a filled in rectangle to the screen. This collection is not cleared at the end of every frame. And objects can be mutated by reference.
-** ~args.outputs.sprites~, ~.static_sprites~
+** ~sprites~, ~static_sprites~
 Send a Primitive to this collection to render a sprite to the screen.
-** ~args.outputs.primitives~, ~.static_primitives~
+** ~primitives~, ~static_primitives~
 Send a Primitive of any type and it'll be rendered. The Primitive must have a ~primitive_marker~ that returns ~:solid~, ~:sprite~, ~:label~, ~:line~, ~:border~.
-** ~args.outputs.labels~, ~.static_labels~
+** ~labels~, ~static_labels~
 Send a Primitive to this collection to render text to the screen.
-** ~args.outputs.lines~, ~.static_lines~
+** ~lines~, ~static_lines~
 Send a Primitive to this collection to render a line to the screen.
-** ~args.outputs.borders~, ~.static_borders~
+** ~borders~, ~.static_borders~
 Send a Primitive to this collection to render an unfilled rectangle to the screen.
-** ~args.outputs.debug~, ~.static_debug~
+** ~debug~, ~.static_debug~
 Send any Primitive to this collection which represents things you render to the screen for debugging purposes. Primitives in this collection will not be rendered in a production release of your game.
 S
   end
 
   def docs_api_summary_easing
     <<-S
-* ~args.easing~
+* Easing (~args.easing~)
 A set of functions that allow you to determine the current progression of an easing function.
 ** ~args.easing.ease start_tick, current_tick, duration, easing_functions~
 Given a start, current, duration, and easing function names, ~ease~ returns a number between 0 and 1 that represents the progress of an easing function.
@@ -1406,53 +1439,116 @@ This example will move a box at a linear speed from 0 to 1280 and then back to 0
     args.outputs.solids << { x: 1280 * current_progress, y: 360, w: 10, h: 10 }
   end
 #+end_src
-* ~args.string~
-Useful string functions not included in Ruby core libraries.
-** ~args.string.wrapped_lines string, max_character_length~
-This function will return a collection of strings given an input
-~string~ and ~max_character_length~. The collection of strings returned will split the
-input string into strings of ~length <= max_character_length~.
-
-The following example takes a string with new lines and creates a label for each one.
-Labels (~args.outputs.labels~) ignore newline characters ~\\n~.
-
-#+begin_src ruby
-  def tick args
-    long_string = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\nInteger dolor velit, ultricies vitae libero vel, aliquam imperdiet enim."
-    max_character_length = 30
-    long_strings_split = args.string.wrapped_lines long_string, max_character_length
-    args.outputs.labels << long_strings_split.map_with_index do |s, i|
-      { x: 10, y: 600 - (i * 20), text: s }
-    end
-  end
-#+end_src
 S
   end
 
   def docs_api_summary_grid
     <<-S
-* ~args.grid~
+* Grid (~args.grid~)
 Returns the virtual grid for the game.
-** ~args.grid.name~
+** ~name~
 Returns either ~:origin_bottom_left~ or ~:origin_center~.
-** ~args.grid.bottom~
+** ~bottom~
 Returns the ~y~ value that represents the bottom of the grid.
-** ~args.grid.top~
+** ~top~
 Returns the ~y~ value that represents the top of the grid.
-** ~args.grid.left~
+** ~left~
 Returns the ~x~ value that represents the left of the grid.
-** ~args.grid.right~
+** ~right~
 Returns the ~x~ value that represents the right of the grid.
-** ~args.grid.rect~
+** ~rect~
 Returns a rectangle Primitive that represents the grid.
-** ~args.grid.origin_bottom_left!~
+** ~origin_bottom_left!~
 Change the grids coordinate system to 0, 0 at the bottom left corner.
-** ~args.grid.origin_center!~
+** ~origin_center!~
 Change the grids coordinate system to 0, 0 at the center of the screen.
-** ~args.grid.w~
-Returns the grid's width (always 1280).
-** ~args.grid.h~
-Returns the grid's height (always 720).
+** ~orientation~
+Returns either ~:portrait~ or ~:landscape~. The orientation of your game is set within ~./mygame/metadata/game_metadata.txt~.
+** ~w~
+Returns the grid's width (value is 1280 if orientation ~:landscape~, and 720 if orientation is ~:portrait~).
+** ~h~
+Returns the grid's width (value is 720 if orientation ~:landscape~, and 1280 if orientation is ~:portrait~).
+* Grid All Screen / HD Properties
+The following properties are available to Pro license holders. Setting ~hd=true~ and ~allscreen=true~ in ~./mygame/metadata/game_metadata.txt~
+will enable All Screen Mode.
+
+Please review the sample app located at ~./samples/07_advanced_rendering_hd/03_allscreen_properties~.
+
+When All Screen mode is enabled, you can render outside of the 1280x720 safe area. The 1280x720 logical canvas will be centered
+within the screen and scaled to one of the following closest/bess-fit resolutions.
+
+- 720p: 1280x720
+- HD+: 1600x900
+- 1080p: 1920x1080
+- 1440p: 2560x1440
+- 1880p: 3200x1800
+- 4k: 3840x2160
+- 5k: 6400x2880
+
+Regardless of the rendering resolution, your logical canvas will always be 1280x720 and all ~allscreen_*~ values will be at this same logical scale.
+** ~allscreen_left~
+Returns the position of the left edge of the screen at the logical scale of 1280x720. For example, if the window's width is 1290x720, then ~allscreen_left~ will be -5.
+** ~allscreen_right~
+Returns the position of the right edge of the screen at the logical scale of 1280x720. For example, if the window's width is 1290x720, then ~allscreen_left~ will be 1285.
+** ~allscreen_bottom~
+Returns the position of the bottom edge of the screen at the logical scale of 1280x720. For example, if the window's width is 1280x730, then ~allscreen_top~ will be -5.
+** ~allscreen_top~
+Returns the position of the top edge of the screen at the logical scale of 1280x720. For example, if the window's width is 1280x730, then ~allscreen_top~ will be 725.
+** ~allscreen_offset_x~
+Returns the number of pixels that the 1280x720 canvas is offset from the left so that it's centered in the screen.
+** ~allscreen_offset_y~
+Returns the number of pixels that the 1280x720 canvas is offset from the bottom so that it's centered in the screen.
+** ~window_width~
+Returns the true width of the window. High DPI settings are not taken into consideration.
+** ~window_height~
+Returns the true height of the window. High DPI settings are not taken into consideration.
+** ~native_width~
+Returns the true width of the window. High DPI settings (macOS, iOS, Android) are taken into consideration.
+** ~native_height~
+Returns the true height of the window. High DPI settings (macOS, iOS, Android) are taken into consideration.
+** ~native_scale~
+Returns a decimal value representing the rendering scale of the game.
+
+- 720p: 1.0
+- HD+: 1.25
+- 1080p: 1.5
+- 1440p: 2.0
+- 1880p: 2.5
+- 4k: 3.0
+- 5k: 4.0
+
+** ~native_scale_enum~
+Returns an integer value representing the rendering scale of the game.
+
+- 720p: 100
+- HD+: 125
+- 1080p: 150
+- 1440p: 200
+- 1880p: 250
+- 4k: 300
+- 5k: 400
+
+The enum value is taken into consideration when rendering a sprite through texture atlases.
+
+Given the following code:
+
+#+begin_src
+  def tick args
+    args.outputs.sprites << { x: 0, y: 0, w: 100, h: 100, path: "sprites/player.png" }
+  end
+#+end_src
+
+The sprite path of ~sprites/player.png~ will be replaced according to the following naming conventions
+(fallback to a lower resolution is automatically handled if a sprite with naming convention isn't found):
+
+- 720p: ~sprites/player.png~ (100x100)
+- HD+: ~sprites/player@125.png~ (125x125)
+- 1080p: ~sprites/player@150.png~ (150x150)
+- 1440p: ~sprites/player@200.png~ (200x200)
+- 1880p: ~sprites/player@250.png~ (250x250)
+- 4k: ~sprites/player@300.png~ (300x300)
+- 5k: ~sprites/player@400.png~ (400x400)
+
 S
   end
 
@@ -1460,6 +1556,10 @@ S
     <<-S
 *** ~production?~
 Returns true if the game is being run in a released/shipped state.
+
+If you want to simulate a production build. Add an empty file called ~DRAGONRUBY_PRODUCTION_BUILD~
+inside of the ~metadata~ folder. This will turn of all logging and all creation of temp files used
+for development purposes.
 S
   end
 
@@ -1477,24 +1577,27 @@ You can see all available platform categorizations via the ~args.gtk.platform_ma
 Here's an example of how to use ~args.gtk.platform? category_symbol~:
 #+begin_src ruby
   def tick args
+    label_style = { x: 640, y: 360, anchor_x: 0.5, anchor_y: 0.5 }
     if    args.gtk.platform? :macos
-      args.outputs.labels << { x: 640, y: 360,
-                               text: "I am running on MacOS.", alignment_enum: 1 }
+      args.outputs.labels << { text: "I am running on MacOS.", **label_style }
     elsif args.gtk.platform? :win
-      args.outputs.labels << { x: 640, y: 360,
-                               text: "I am running on Windows.", alignment_enum: 1 }
+      args.outputs.labels << { text: "I am running on Windows.", **label_style }
     elsif args.gtk.platform? :linux
-      args.outputs.labels << { x: 640, y: 360,
-                               text: "I am running on Linux.", alignment_enum: 1 }
+      args.outputs.labels << { text: "I am running on Linux.", **label_style }
     elsif args.gtk.platform? :web
-      args.outputs.labels << { x: 640, y: 360,
-                               text: "I am running on a web page.", alignment_enum: 1 }
+      args.outputs.labels << { text: "I am running on a web page.", **label_style }
     elsif args.gtk.platform? :android
-      args.outputs.labels << { x: 640, y: 360,
-                               text: "I am running on Android.", alignment_enum: 1 }
+      args.outputs.labels << { text: "I am running on Android.", **label_style }
     elsif args.gtk.platform? :ios
-      args.outputs.labels << { x: 640, y: 360,
-                               text: "I am running on iOS.", alignment_enum: 1 }
+      args.outputs.labels << { text: "I am running on iOS.", **label_style }
+    elsif args.gtk.platform? :touch
+      args.outputs.labels << { text: "I am running on a device that supports touch (either iOS/Android native or mobile web).", **label_style }
+    elsif args.gtk.platform? :steam
+      args.outputs.labels << { text: "I am running via steam (covers both desktop and steamdeck).", **label_style }
+    elsif args.gtk.platform? :steam_deck
+      args.outputs.labels << { text: "I am running via steam on the Steam Deck (not steam desktop).", **label_style }
+    elsif args.gtk.platform? :steam_desktop
+      args.outputs.labels << { text: "I am running via steam on desktop (not steam deck).", **label_style }
     end
   end
 #+end_src
@@ -1507,12 +1610,13 @@ S
 These are the current platform categorizations (~args.gtk.platform_mappings~):
 #+begin_src ruby
   {
-    "Mac OS X"   => [:desktop, :macos, :osx, :mac, :macosx],
-    "Windows"    => [:desktop, :windows, :win],
-    "Linux"      => [:desktop, :linux, :nix],
-    "Emscripten" => [:web,     :wasm, :html, :emscripten],
-    "iOS"        => [:mobile,  :ios, ],
-    "Android"    => [:mobile,  :android],
+    "Mac OS X"   => [:desktop, :macos, :osx, :mac, :macosx], # may also include :steam and :steam_desktop run via steam
+    "Windows"    => [:desktop, :windows, :win],              # may also include :steam and :steam_desktop run via steam
+    "Linux"      => [:desktop, :linux, :nix],                # may also include :steam and :steam_desktop run via steam
+    "Emscripten" => [:web, :wasm, :html, :emscripten],       # may also include :touch if running in the web browser on mobile
+    "iOS"        => [:mobile, :ios, :touch],
+    "Android"    => [:mobile, :android, :touch],
+    "Steam Deck" => [:steamdeck, :steam_deck, :steam],
   }
 #+end_src
 

@@ -5,20 +5,16 @@
 
 module GTK
   # FIXME: Gross
-  # @gtk
   class Replay
-    # @gtk
     def self.start file_name = nil, speed: 1
       $recording.start_replay file_name, speed: speed
     end
 
-    # @gtk
     def self.stop
       $recording.stop_replay
     end
   end
 
-  # @gtk
   class Recording
     attr :should_reset_after_replay_completed
 
@@ -98,7 +94,6 @@ S
       @runtime.notify! "Recording started. When completed, open the console to save it using $recording.stop FILE_NAME (or cancel).", 300
     end
 
-    # @gtk
     def start seed_number = nil
       start_recording seed_number
     end
@@ -111,12 +106,10 @@ S
       !!@is_recording
     end
 
-    # @gtk
     def stop file_name = nil
       stop_recording file_name
     end
 
-    # @gtk
     def cancel
       stop_recording_core
       @runtime.notify! "Recording cancelled."

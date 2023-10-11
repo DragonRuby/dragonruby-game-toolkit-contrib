@@ -78,12 +78,10 @@ S
     String.wrapped_lines self, length
   end
 
-  # @gtk
   def wrap length
     wrapped_lines(length).join.rstrip
   end
 
-  # @gtk
   def multiline?
     include? "\n"
   end

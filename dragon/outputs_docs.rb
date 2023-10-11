@@ -16,7 +16,7 @@ module OutputsDocs
 
   def docs_class
     <<-S
-* ~Outputs~
+* Outputs (~args.outputs~)
 
 Outputs is how you render primitives to the screen. The minimal setup for
 rendering something to the screen is via a ~tick~ method defined in
@@ -124,7 +124,10 @@ be provided in any order.
       r:    0,
       g:  255,
       b:    0,
-      a:  255
+      a:  255,
+      anchor_x: 0,
+      anchor_y: 0,
+      blendmode_enum: 1
     }
   end
 #+end_src
@@ -140,7 +143,7 @@ Here is an example:
 #+begin_src
   # Create type with ALL solid properties AND primitive_marker
   class Solid
-    attr_accessor :x, :y, :w, :h, :r, :g, :b, :a, :anchor_x, :anchor_y
+    attr_accessor :x, :y, :w, :h, :r, :g, :b, :a, :anchor_x, :anchor_y, :blendmode_enum
 
     def primitive_marker
       :solid # or :border
@@ -222,7 +225,7 @@ be provided in any order.
   end
 #+end_src
 
-** Rendering a solid using a Class
+** Rendering a sprite using a Class
 
 You can also create a class with solid/border properties and render it as a primitive.
 ALL properties must be on the class. *Additionally*, a method called ~primitive_marker~
@@ -233,7 +236,13 @@ Here is an example:
 #+begin_src
   # Create type with ALL sprite properties AND primitive_marker
   class Sprite
-    attr_accessor :x, :y, :w, :h, :path, :angle, :angle_anchor_x, :angle_anchor_y,  :tile_x, :tile_y, :tile_w, :tile_h, :source_x, :source_y, :source_w, :source_h, :flip_horizontally, :flip_vertically, :a, :r, :g, :b
+  attr_accessor :x, :y, :w, :h, :path, :angle, :a, :r, :g, :b, :tile_x,
+                :tile_y, :tile_w, :tile_h, :flip_horizontally,
+                :flip_vertically, :angle_anchor_x, :angle_anchor_y, :id,
+                :angle_x, :angle_y, :z,
+                :source_x, :source_y, :source_w, :source_h, :blendmode_enum,
+                :source_x2, :source_y2, :source_x3, :source_y3, :x2, :y2, :x3, :y3,
+                :anchor_x, :anchor_y
 
     def primitive_marker
       :sprite
@@ -333,7 +342,6 @@ end
 #+end_src
 S
   end
-
 
   def docs_screenshots
     <<-S

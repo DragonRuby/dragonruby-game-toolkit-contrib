@@ -107,7 +107,6 @@ module GTK
       $trace_puts.clear
     end
 
-    # @gtk
     def self.trace! instance = nil
       $trace_history ||= []
       $trace_enabled = true

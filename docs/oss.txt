@@ -629,9 +629,6 @@ Follows is a source code listing for all files that have been open sourced. This
   # args.rb has been released under MIT (*only this file*).
   
   module GTK
-    # This class is the one you'll interact with the most. It's
-    # constructed by the DragonRuby Runtime and is provided to you on
-    # each tick.
     class Args
       include ArgsDeprecated
       include Serialize
@@ -687,10 +684,6 @@ Follows is a source code listing for all files that have been open sourced. This
         }
       end
   
-  
-      # The number of ticks since the start of the game.
-      #
-      # @return [Integer]
       def tick_count
         @state.tick_count
       end
@@ -827,14 +820,10 @@ Follows is a source code listing for all files that have been open sourced. This
         @inputs.mouse
       end
   
-      # @see Inputs#controller_one
-      # @return (see Inputs#controller_one)
       def controller_one
         @inputs.controller_one
       end
   
-      # @see Inputs#controller_two
-      # @return (see Inputs#controller_two)
       def controller_two
         @inputs.controller_two
       end
@@ -1497,7 +1486,6 @@ Follows is a source code listing for all files that have been open sourced. This
         toggle if hidden?
       end
   
-      # @gtk
       def hide
         if visible?
           if @cursor_visibilty_before_show == false
@@ -2055,7 +2043,6 @@ Follows is a source code listing for all files that have been open sourced. This
         show show_reason
       end
   
-      # @gtk
       def set_command command, show_reason = nil
         set_command_silent command, show_reason
         show show_reason
@@ -2858,7 +2845,6 @@ Follows is a source code listing for all files that have been open sourced. This
   # controller.rb has been released under MIT (*only this file*).
   
   module GTK
-    # @gtk
     class Controller
       attr :key_down
       attr :key_up
@@ -3522,8 +3508,6 @@ Follows is a source code listing for all files that have been open sourced. This
       # - ~[   0,   -1]~ which denotes that only down is being held/pressed.
       # - ~[-0.707,  0.707]~ which denotes that right and up are being pressed/held.
       # - ~[-0.707, -0.707]~ which denotes that left and down are being pressed/held.
-      #
-      # @gtk
       def directional_vector
         lr, ud = self.left_right, self.up_down
   
@@ -3831,7 +3815,6 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       # Returns true if a primitive's rectangle is entirely inside another primitive's rectangle.
-      # @gtk
       def inside_rect? outer, tolerance = 0.0
         Geometry.inside_rect? self, outer, tolerance
       end
@@ -3853,25 +3836,21 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       # Scales a primitive rect by a percentage.
-      # @gtk
       def scale_rect percentage, *anchors
         Geometry.scale_rect self, percentage, *anchors
       end
   
       # Returns the angle from one primitive to another primitive.
-      # @gtk
       def angle_to other_point
         Geometry.angle_to self, other_point
       end
   
       # Returns the angle to one primitive from another primitive.
-      # @gtk
       def angle_from other_point
         Geometry.angle_from self, other_point
       end
   
       # Returns true if a primitive is within a circle specified by the circle's center and radius.
-      # @gtk
       def point_inside_circle? circle_center_point, radius
         Geometry.point_inside_circle? self, circle_center_point, radius
       end
@@ -3929,7 +3908,6 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       # Returns a primitive that is anchored/repositioned based off its rectangle.
-      # @gtk
       def anchor_rect anchor_x, anchor_y
         current_w = self.w
         current_h = self.h
@@ -3942,7 +3920,6 @@ Follows is a source code listing for all files that have been open sourced. This
         raise ":angle_given_point has been deprecated use :angle_from instead."
       end
   
-      # @gtk
       def self.shift_line line, x, y
         if line.is_a?(Array) || line.is_a?(Hash)
           new_line = line.dup
@@ -3970,7 +3947,6 @@ Follows is a source code listing for all files that have been open sourced. This
   S
       end
   
-      # @gtk
       def self.line_y_intercept line, replace_infinity: nil
         line.y - line_slope(line, replace_infinity: replace_infinity) * line.x
       rescue Exception => e
@@ -3983,14 +3959,12 @@ Follows is a source code listing for all files that have been open sourced. This
   S
       end
   
-      # @gtk
       def self.angle_between_lines line_one, line_two, replace_infinity: nil
         m_line_one = line_slope line_one, replace_infinity: replace_infinity
         m_line_two = line_slope line_two, replace_infinity: replace_infinity
         Math.atan((m_line_one - m_line_two) / (1 + m_line_two * m_line_one)).to_degrees
       end
   
-      # @gtk
       def self.line_slope line, replace_infinity: nil
         if line.is_a? Hash
           # check to see if replace_inifinity exists on the hash
@@ -4038,7 +4012,6 @@ Follows is a source code listing for all files that have been open sourced. This
         { x: normaized_rise_run_x, y: normaized_rise_run_y }
       end
   
-      # @gtk
       def self.ray_test point, line
         slope = (line.y2 - line.y).fdiv(line.x2 - line.x)
   
@@ -4073,7 +4046,6 @@ Follows is a source code listing for all files that have been open sourced. This
         Geometry.line_to_rect self, min_w: 0, min_h: 0
       end
   
-      # @gtk
       def self.line_rect line, min_w: 0, min_h: 0
         if min_w < 0 || min_h < 0
         raise <<-S
@@ -4117,7 +4089,6 @@ Follows is a source code listing for all files that have been open sourced. This
         { x: x, y: y, w: w, h: h }
       end
   
-      # @gtk
       def self.line_intersect line_one, line_two, replace_infinity: nil
         x1 = line_one.x
         y1 = line_one.y
@@ -4149,7 +4120,6 @@ Follows is a source code listing for all files that have been open sourced. This
         }
       end
   
-      # @gtk
       def self.to_square size, x, y, anchor_x = 0.5, anchor_y = nil
         log_once :to_square, <<-S
   * WARNING: Numeric#to_square and Geometry::to_square are deprecated and will not be replaced by another function.
@@ -4162,14 +4132,12 @@ Follows is a source code listing for all files that have been open sourced. This
         raise e, ":to_square failed for size: #{size} x: #{x} y: #{y} anchor_x: #{anchor_x} anchor_y: #{anchor_y}.\n#{e}"
       end
   
-      # @gtk
       def self.distance point_one, point_two
         Math.sqrt((point_two.x - point_one.x)**2 + (point_two.y - point_one.y)**2)
       rescue Exception => e
         raise e, ":distance failed for point_one: #{point_one} point_two #{point_two}.\n#{e}"
       end
   
-      # @gtk
       def self.angle_from start_point, end_point
         d_y = end_point.y - start_point.y
         d_x = end_point.x - start_point.x
@@ -4178,21 +4146,18 @@ Follows is a source code listing for all files that have been open sourced. This
         raise e, ":angle_from failed for start_point: #{start_point} end_point: #{end_point}.\n#{e}"
       end
   
-      # @gtk
       def self.angle_to start_point, end_point
         angle_from end_point, start_point
       rescue Exception => e
         raise e, ":angle_to failed for start_point: #{start_point} end_point: #{end_point}.\n#{e}"
       end
   
-      # @gtk
       def self.point_inside_circle? point, circle_center_point, radius
         (point.x - circle_center_point.x) ** 2 + (point.y - circle_center_point.y) ** 2 < radius ** 2
       rescue Exception => e
         raise e, ":point_inside_circle? failed for point: #{point} circle_center_point: #{circle_center_point} radius: #{radius}.\n#{e}"
       end
   
-      # @gtk
       def self.inside_rect? inner_rect, outer_rect, tolerance = 0.0
         return nil if !inner_rect
         return nil if !outer_rect
@@ -4223,7 +4188,6 @@ Follows is a source code listing for all files that have been open sourced. This
         raise e, ":inside_rect? failed for inner_rect: #{inner_rect} outer_rect: #{outer_rect}.\n#{e}"
       end
   
-      # @gtk
       def self.scale_rect_extended rect,
                                    percentage_x: percentage_x,
                                    percentage_y: percentage_y,
@@ -4258,7 +4222,6 @@ Follows is a source code listing for all files that have been open sourced. This
         raise e, ":scale_rect_extended failed for rect: #{rect} percentage_x: #{percentage_x} percentage_y: #{percentage_y} anchors_x: #{anchor_x} anchor_y: #{anchor_y}.\n#{e}"
       end
   
-      # @gtk
       def self.scale_rect rect, percentage, *anchors
         anchor_x, anchor_y = *anchors.flatten
         anchor_x ||= 0
@@ -4289,6 +4252,10 @@ Follows is a source code listing for all files that have been open sourced. This
         { x: rect.x + rect.w.half, y: rect.y + rect.h.half }
       end
   
+      def self.center rect
+        { x: rect.x + rect.w.half, y: rect.y + rect.h.half }
+      end
+  
       def rect_center_point
         Geometry.rect_center_point self
       end
@@ -4313,54 +4280,15 @@ Follows is a source code listing for all files that have been open sourced. This
       include GridDeprecated
       SCREEN_Y_DIRECTION = -1.0
   
-      # The coordinate system currently in use.
-      #
-      # @return [Symbol] `:bottom_left` or `:center`
       attr_accessor :name
-  
-      # Returns the "x" coordinate indicating the bottom of the screen.
-      #
-      # @return [Float]
       attr_accessor :bottom
-  
-      # Returns the "x" coordinate indicating the top of the screen.
-      #
-      # @return [Float]
       attr_accessor :top
-  
-      # Returns the "y" coordinate indicating the left of the screen.
-      #
-      # @return [Float]
       attr_accessor :left
-  
-      # Returns the "y" coordinate indicating the right of the screen.
-      #
-      # @return [Float]
       attr_accessor :right
-  
-      # Returns the "x" coordinate indicating the center of the screen.
-      #
-      # @return [Float]
       attr_accessor :center_x
-  
-      # Returns the "y" coordinate indicating the center of the screen.
-      #
-      # @return [Float]
       attr_accessor :center_y
-  
-      # Returns the bottom left and top right coordinates in a single list.
-      #
-      # @return [[Float, Float, Float, Float]]
       attr_accessor :rect
-  
-      # Returns the "x" coordinate of the origin.
-      #
-      # @return [Float]
       attr_accessor :origin_x
-  
-      # Returns the "y" coordinate of the origin.
-      #
-      # @return [Float]
       attr_accessor :origin_y
   
       attr_accessor :left_margin, :bottom_margin
@@ -4390,30 +4318,18 @@ Follows is a source code listing for all files that have been open sourced. This
         @runtime.orientation
       end
   
-      # Returns `x` plus the origin "x".
-      #
-      # @return [Float]
       def transform_x x
         @origin_x + x
       end
   
-      # Returns `x` minus the origin "x".
-      #
-      # @return [Float]
       def untransform_x x
         x - @origin_x
       end
   
-      # Returns `y` plus the origin "y".
-      #
-      # @return [Float]
       def transform_y y
         @origin_y + y * SCREEN_Y_DIRECTION
       end
   
-      # Returns `y` minus the origin "y".
-      #
-      # @return [Float]
       def untransform_y y
         @origin_y + y * SCREEN_Y_DIRECTION
       end
@@ -4426,10 +4342,6 @@ Follows is a source code listing for all files that have been open sourced. This
         @ffi_draw = value
       end
   
-      # Sets the rendering coordinate system to have its origin in the bottom left.
-      #
-      # @return [void]
-      # @gtk
       def origin_bottom_left!
         return if @name == :bottom_left
         @name = :bottom_left
@@ -4458,10 +4370,6 @@ Follows is a source code listing for all files that have been open sourced. This
         @native_scale_enum ||= 1.0
       end
   
-      # Sets the rendering coordinate system to have its origin in the center.
-      #
-      # @return [void]
-      # @gtk
       def origin_center!
         return if @name == :center
         @name = :center
@@ -4489,44 +4397,26 @@ Follows is a source code listing for all files that have been open sourced. This
         @render_offset_y ||= 0
       end
   
-      # The logical width used for rendering.
-      #
-      # @return [Float]
       def w
         @runtime.logical_width
       end
   
-      # Half the logical width used for rendering.
-      #
-      # @return [Float]
       def w_half
         w.half
       end
   
-      # The logical height used for rendering.
-      #
-      # @return [Float]
       def h
         @runtime.logical_height
       end
   
-      # Half the logical height used for rendering.
-      #
-      # @return [Float]
       def h_half
         h.half
       end
   
-      # Returns the coordinates indicating the center of the screen.
-      #
-      # @return [[Float, Float]]
       def center
         @center
       end
   
-      # Returns the coordinates indicating the bottom right of the screen.
-      #
-      # @return [[Float, Float]]
       def bottom_right
         [@right, @bottom].point
       end
@@ -4552,12 +4442,9 @@ Follows is a source code listing for all files that have been open sourced. This
   # inputs.rb has been released under MIT (*only this file*).
   
   module GTK
-    # Represents all the keys available on the keyboard.
-    # @gtk
     class KeyboardKeys
       include Serialize
   
-      # @gtk
       attr_accessor :exclamation_point,
                     :zero, :one, :two, :three, :four,
                     :five, :six, :seven, :eight, :nine,
@@ -4773,27 +4660,23 @@ Follows is a source code listing for all files that have been open sourced. This
         @scrubbed_ivars = nil
       end
   
-      # @gtk
       def left_right
         return -1 if self.left
         return  1 if self.right
         return  0
       end
   
-      # @gtk
       def up_down
         return  1 if self.up
         return -1 if self.down
         return  0
       end
   
-      # @gtk
       def truthy_keys
         get(all).find_all { |_, v| v }
                 .map { |k, _| k.to_sym }
       end
   
-      # @gtk
       def all? keys
         values = get(keys.map { |k| k.without_ending_bang })
         all_true = values.all? do |k, v|
@@ -4809,7 +4692,6 @@ Follows is a source code listing for all files that have been open sourced. This
         all_true
       end
   
-      # @gtk
       def any? keys
         values = get(keys.map { |k| k.without_ending_bang })
         any_true = values.any? do |k, v|
@@ -4825,13 +4707,11 @@ Follows is a source code listing for all files that have been open sourced. This
         any_true
       end
   
-      # @gtk
       def clear_key key
         @scrubbed_ivars = nil
         self.instance_variable_set("@#{key.without_ending_bang}", false)
       end
   
-      # @gtk
       def all
         @scrubbed_ivars ||= self.instance_variables
                                 .reject { |i| i == :@all || i == :@scrubbed_ivars }
@@ -4840,7 +4720,6 @@ Follows is a source code listing for all files that have been open sourced. This
         get(@scrubbed_ivars).map { |k, _| k }
       end
   
-      # @gtk
       def get collection
         return [] if collection.length == 0
         collection.map do |m|
@@ -4854,7 +4733,6 @@ Follows is a source code listing for all files that have been open sourced. This
         end
       end
   
-      # @gtk
       def set collection, value = true
         return if collection.length == 0
         @scrubbed_ivars = nil
@@ -4917,23 +4795,11 @@ Follows is a source code listing for all files that have been open sourced. This
   end
   
   module GTK
-    # @gtk
     class Keyboard
   
-      # @return [KeyboardKeys]
-      # @gtk
       attr_accessor :key_up
-  
-      # @return [KeyboardKeys]
-      # @gtk
       attr_accessor :key_held
-  
-      # @return [KeyboardKeys]
-      # @gtk
       attr_accessor :key_down
-  
-      # @return [Boolean]
-      # @gtk
       attr_accessor :has_focus
   
       attr :active
@@ -5036,7 +4902,6 @@ Follows is a source code listing for all files that have been open sourced. This
     class MousePoint
       include GTK::Geometry
   
-      # @gtk
       attr_accessor :x, :y, :point, :created_at, :global_created_at
   
       def initialize x, y
@@ -5080,12 +4945,7 @@ Follows is a source code listing for all files that have been open sourced. This
       end
     end
   
-    # Provides access to the mouse.
-    #
-    # @gtk
     class Mouse
-  
-      # @gtk
       attr_accessor :moved,
                     :moved_at,
                     :global_moved_at,
@@ -5221,12 +5081,7 @@ Follows is a source code listing for all files that have been open sourced. This
       alias_method :inspect, :to_s
     end
   
-    # Provides access to multitouch input
-    #
-    # @gtk
     class FingerTouch
-  
-      # @gtk
       attr_accessor :moved,
                     :moved_at,
                     :global_moved_at,
@@ -5296,6 +5151,8 @@ Follows is a source code listing for all files that have been open sourced. This
       attr_accessor :text, :history
       attr_accessor :headset
       attr :last_active
+      attr :touch_enabled
+      attr :locale, :locale_raw
   
       def initialize
         @controllers = [Controller.new, Controller.new, Controller.new, Controller.new]
@@ -5313,23 +5170,19 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def up
-        keyboard.up ||
-          (controller_one && controller_one.up)
+        keyboard.up || (controller_one && controller_one.up)
       end
   
       def down
-        keyboard.down ||
-          (controller_one && controller_one.down)
+        keyboard.down || (controller_one && controller_one.down)
       end
   
       def left
-        keyboard.left ||
-          (controller_one && controller_one.left)
+        keyboard.left || (controller_one && controller_one.left)
       end
   
       def right
-        keyboard.right ||
-          (controller_one && controller_one.right)
+        keyboard.right || (controller_one && controller_one.right)
       end
   
       def directional_vector
@@ -5341,42 +5194,43 @@ Follows is a source code listing for all files that have been open sourced. This
         keyboard.directional_angle || (controller_one && controller_one.directional_angle)
       end
   
-      # Returns a signal indicating right (`1`), left (`-1`), or neither ('0').
-      #
-      # @return [Integer]
       def left_right
         return -1 if self.left
         return  1 if self.right
         return  0
       end
   
-      # Returns a signal indicating up (`1`), down (`-1`), or neither ('0').
-      #
-      # @return [Integer]
+      def left_right_arrow
+        return -1 if keyboard.left_arrow || (controller_one && controller_one.directional_left)
+        return  1 if keyboard.right_arrow || (controller_one && controller_one.directional_right)
+        return  0
+      end
+  
+      alias_method :left_right_directional, :left_right_arrow
+  
       def up_down
         return  1 if self.up
         return -1 if self.down
         return  0
       end
   
-      # Returns the coordinates of the last click.
-      #
-      # @return [Float, Float]
+      def up_down_arrow
+        return  1 if keyboard.up_arrow || (controller_one && controller_one.directional_up)
+        return -1 if keyboard.down_arrow || (controller_one && controller_one.directional_down)
+        return  0
+      end
+  
+      alias_method :up_down_directional, :up_down_arrow
+  
       def click
         return nil unless @mouse.click
         return @mouse.click.point
       end
   
-      # The first controller.
-      #
-      # @return [Controller]
       def controller_one
         @controllers[0]
       end
   
-      # The second controller.
-      #
-      # @return [Controller]
       def controller_two
         @controllers[1]
       end
@@ -5389,9 +5243,6 @@ Follows is a source code listing for all files that have been open sourced. This
         @controllers[3]
       end
   
-      # Clears all inputs.
-      #
-      # @return [void]
       def clear
         @mouse.clear
         @keyboard.clear
@@ -5402,7 +5253,6 @@ Follows is a source code listing for all files that have been open sourced. This
         @finger_two = nil
       end
   
-      # @return [Hash]
       def serialize
         {
           controller_one: controller_one.serialize,
@@ -5413,6 +5263,10 @@ Follows is a source code listing for all files that have been open sourced. This
           mouse: mouse.serialize,
           text: text.serialize
         }
+      end
+  
+      def touch_enabled?
+        @touch_enabled
       end
     end
   end
@@ -7580,15 +7434,11 @@ Follows is a source code listing for all files that have been open sourced. This
     end
   
     # Converts a numeric value representing seconds into frames.
-    #
-    # @gtk
     def seconds
       self * 60
     end
   
     # Divides the number by `2.0` and returns a `float`.
-    #
-    # @gtk
     def half
       self / 2.0
     end
@@ -7635,10 +7485,29 @@ Follows is a source code listing for all files that have been open sourced. This
     # Returns `true` if the numeric value has passed a duration/offset number.
     # `Kernel.tick_count` is used to determine if a number represents an elapsed
     # moment in time.
-    #
-    # @gtk
     def elapsed? offset = 0, tick_count_override = Kernel.tick_count
       (self + offset) < tick_count_override
+    end
+  
+    def Numeric.frame_index start_at: 0, count:, hold_for:, repeat: false,  repeat_index: 0, tick_count_override: Kernel.tick_count
+      return nil if tick_count_override < start_at
+      animation_length = hold_for * count
+  
+      if !repeat && (start_at + animation_length) <= (tick_count_override)
+        return nil
+      else
+        et = start_at.elapsed_time tick_count_override
+        afc = count
+  
+        if et >= animation_length
+          afc = count - repeat_index
+          et += repeat_index * hold_for
+          i = et.idiv(hold_for) % afc
+          return i + repeat_index
+        end
+  
+        return et.idiv(hold_for) % afc
+      end
     end
   
     def frame_index *opts
@@ -7648,27 +7517,20 @@ Follows is a source code listing for all files that have been open sourced. This
         hold_for            = frame_count_or_hash[:hold_for]
         repeat              = frame_count_or_hash[:repeat]
         tick_count_override = frame_count_or_hash[:tick_count_override]
+        repeat_index        = frame_count_or_hash[:repeat_index]
       else
         frame_count = frame_count_or_hash
       end
   
+      repeat_index ||= 0
       tick_count_override ||= Kernel.tick_count
-      animation_frame_count = frame_count
-      animation_frame_hold_time = hold_for
-      animation_length = animation_frame_hold_time * animation_frame_count
-      return nil if Kernel.tick_count < self
   
-      if !repeat && (self + animation_length) <= (tick_count_override)
-        return nil
-      else
-        return self.elapsed_time(tick_count_override).idiv(animation_frame_hold_time) % animation_frame_count
-      end
-    rescue Exception => e
-      raise <<-S
-  * ERROR:
-  #{opts}
-  #{e}
-  S
+      Numeric.frame_index start_at: self,
+                          count: frame_count,
+                          hold_for: hold_for,
+                          repeat: repeat,
+                          tick_count_override: tick_count_override,
+                          repeat_index: repeat_index
     end
   
     def zero?
@@ -7719,8 +7581,6 @@ Follows is a source code listing for all files that have been open sourced. This
   
     # This provides a way for a numeric value to be randomized based on a combination
     # of two options: `:sign` and `:ratio`.
-    #
-    # @gtk
     def randomize *definitions
       result = self
   
@@ -7751,8 +7611,6 @@ Follows is a source code listing for all files that have been open sourced. This
     end
   
     # Easing function progress/percentage for a specific point in time.
-    #
-    # @gtk
     def ease_extended tick_count_override, duration, default_before, default_after, *definitions
       GTK::Easing.ease_extended self,
                                 tick_count_override,
@@ -7763,8 +7621,6 @@ Follows is a source code listing for all files that have been open sourced. This
     end
   
     # Easing function progress/percentage for a specific point in time.
-    #
-    # @gtk
     def global_ease duration, *definitions
       ease_extended Kernel.global_tick_count,
                     duration,
@@ -7774,8 +7630,6 @@ Follows is a source code listing for all files that have been open sourced. This
     end
   
     # Easing function progress/percentage for a specific point in time.
-    #
-    # @gtk
     def ease duration, *definitions
       ease_extended Kernel.tick_count,
                     duration,
@@ -7785,8 +7639,6 @@ Follows is a source code listing for all files that have been open sourced. This
     end
   
     # Easing function progress/percentage for a specific point in time.
-    #
-    # @gtk
     def ease_spline_extended tick_count_override, duration, spline
       GTK::Easing.ease_spline_extended self,
                                        tick_count_override,
@@ -7795,8 +7647,6 @@ Follows is a source code listing for all files that have been open sourced. This
     end
   
     # Easing function progress/percentage for a specific point in time.
-    #
-    # @gtk
     def global_ease_spline duration, spline
       ease_spline_extended Kernel.global_tick_count,
                            duration,
@@ -7804,8 +7654,6 @@ Follows is a source code listing for all files that have been open sourced. This
     end
   
     # Easing function progress/percentage for a specific point in time.
-    #
-    # @gtk
     def ease_spline duration, spline
       ease_spline_extended Kernel.tick_count,
                            duration,
@@ -7813,15 +7661,11 @@ Follows is a source code listing for all files that have been open sourced. This
     end
   
     # Converts a number representing an angle in degrees to radians.
-    #
-    # @gtk
     def to_radians
       self * Math::PI.fdiv(180)
     end
   
     # Converts a number representing an angle in radians to degrees.
-    #
-    # @gtk
     def to_degrees
       self / Math::PI.fdiv(180)
     end
@@ -7830,15 +7674,11 @@ Follows is a source code listing for all files that have been open sourced. This
     #
     # @example
     #   5.to_square 100, 300 # returns [100, 300, 5, 5]
-    #
-    # @gtk
     def to_square x, y, anchor_x = 0.5, anchor_y = nil
       GTK::Geometry.to_square(self, x, y, anchor_x, anchor_y)
     end
   
     # Returns a normal vector for a number that represents an angle in degrees.
-    #
-    # @gtk
     def vector max_value = 1
       log_once :consider_to_vector!, <<-S
   * WARNGING: ~Numeric#vector~ is deprecated. Use ~Numeric#to_vector~.
@@ -7849,23 +7689,33 @@ Follows is a source code listing for all files that have been open sourced. This
       [vector_x(max_value), vector_y(max_value)]
     end
   
+    def to_vector_r max_value = 1
+      { x: vector_x_r(max_value), y: vector_y_r(max_value) }
+    end
+  
+    def vector_x_r max_value = 1
+      max_value * Math.cos(self)
+    end
+  
+    def vector_y_r max_value = 1
+      max_value * Math.sin(self)
+    end
+  
     def to_vector max_value = 1
       { x: vector_x(max_value), y: vector_y(max_value) }
     end
   
-    # Returns the y component of a normal vector for a number that represents an angle in degrees.
-    #
-    # @gtk
     def vector_y max_value = 1
       max_value * Math.sin(self.to_radians)
     end
   
-    # Returns the x component of a normal vector for a number that represents an angle in degrees.
-    #
-    # @gtk
     def vector_x max_value = 1
       max_value * Math.cos(self.to_radians)
     end
+  
+    alias_method :vector_x_d, :vector_x
+    alias_method :vector_y_d, :vector_y
+    alias_method :to_vector_d, :to_vector
   
     def x_vector max_value = 1
       vector_x max_value
@@ -7903,23 +7753,18 @@ Follows is a source code listing for all files that have been open sourced. This
       self * n
     end
   
-    # @gtk
     def fdiv n
       self / n.to_f
     end
   
     # Divides `self` by a number `n` as a float, and converts it `to_i`.
-    #
-    # @gtk
     def idiv n
-      (self / n.to_f).to_i
+      (self / n.to_f).floor
     end
   
     # Returns a numeric value that is a quantity `magnitude` closer to
     #`self`. If the distance between `self` and `target` is less than
     #the `magnitude` then `target` is returned.
-    #
-    # @gtk
     def towards target, magnitude
       return self if self == target
       delta = (self - target).abs
@@ -7947,8 +7792,6 @@ Follows is a source code listing for all files that have been open sourced. This
     #   #     x y   x y  x y  x y  x y  x y
     #   #     0*0,  0*1  1*0  1*1  2*0  2*1
     #   # => [  0,    0,   0,   1,   0,   2]
-    #
-    # @gtk
     def map_with_ys ys, &block
       self.times.flat_map do |x|
         ys.map_with_index do |y|
@@ -8141,23 +7984,17 @@ Follows is a source code listing for all files that have been open sourced. This
     include ValueType
   
     # Returns `true` if the numeric value is evenly divisible by 2.
-    #
-    # @gtk
     def even?
       return (self % 2) == 0
     end
   
     # Returns `true` if the numeric value is *NOT* evenly divisible by 2.
-    #
-    # @gtk
     def odd?
       return !even?
     end
   
     # Returns `-1` if the number is less than `0`. `+1` if the number
     # is greater than `0`. Returns `0` if the number is equal to `0`.
-    #
-    # @gtk
     def sign
       return -1 if self < 0
       return  1 if self > 0
@@ -8165,15 +8002,11 @@ Follows is a source code listing for all files that have been open sourced. This
     end
   
     # Returns `true` if number is greater than `0`.
-    #
-    # @gtk
     def pos?
       sign > 0
     end
   
     # Returns `true` if number is less than `0`.
-    #
-    # @gtk
     def neg?
       sign < 0
     end
@@ -8230,7 +8063,6 @@ Follows is a source code listing for all files that have been open sourced. This
       self
     end
   
-    # @gtk
     def sign
       return -1 if self < 0
       return  1 if self > 0
@@ -8315,20 +8147,16 @@ Follows is a source code listing for all files that have been open sourced. This
   
   module GTK
     # FIXME: Gross
-    # @gtk
     class Replay
-      # @gtk
       def self.start file_name = nil, speed: 1
         $recording.start_replay file_name, speed: speed
       end
   
-      # @gtk
       def self.stop
         $recording.stop_replay
       end
     end
   
-    # @gtk
     class Recording
       attr :should_reset_after_replay_completed
   
@@ -8408,7 +8236,6 @@ Follows is a source code listing for all files that have been open sourced. This
         @runtime.notify! "Recording started. When completed, open the console to save it using $recording.stop FILE_NAME (or cancel).", 300
       end
   
-      # @gtk
       def start seed_number = nil
         start_recording seed_number
       end
@@ -8421,12 +8248,10 @@ Follows is a source code listing for all files that have been open sourced. This
         !!@is_recording
       end
   
-      # @gtk
       def stop file_name = nil
         stop_recording file_name
       end
   
-      # @gtk
       def cancel
         stop_recording_core
         @runtime.notify! "Recording cancelled."
@@ -9201,12 +9026,9 @@ Follows is a source code listing for all files that have been open sourced. This
   
         def load_main_rb
           return if @load_status != :dragonruby_started
-          if @ffi_file.path_exists('app/main.rbc')
-            reload_if_needed 'app/main.rbc', true
-          elsif @ffi_file.path_exists('app/main.rb')
-            reload_if_needed 'app/main.rb', true
+          if @ffi_file.path_exists('app/main.rb') || @ffi_file.path_exists('app/main.rbc')
+            require 'app/main.rb'
           end
-          @load_status = :main_rb_first_time_load
         end
       end # GTK::Runtime::AsyncRequire
     end # GTK::Runtime
@@ -9410,6 +9232,7 @@ Follows is a source code listing for all files that have been open sourced. This
               'args'     => lambda { $gtk.args.autocomplete_methods },
               'inputs'   => lambda { $gtk.args.inputs.autocomplete_methods },
               'geometry' => lambda { $gtk.args.geometry.autocomplete_methods },
+              'assert'   => lambda { GTK::Assert.instance_methods(false) },
               'outputs'  => lambda { $gtk.args.outputs.autocomplete_methods },
               'layout'   => lambda { $gtk.args.layouts.autocomplete_methods },
               'keyboard' => lambda { $gtk.args.keyboard.autocomplete_methods },
@@ -9536,7 +9359,7 @@ Follows is a source code listing for all files that have been open sourced. This
             elsif average_time == candidate.time
               difference_percentage = 0
             else
-              difference_percentage = ((1 - ((first_place.time * 1000) / (candidate.time * 1000))) * 100).round
+              difference_percentage = ((((candidate.time * 1000) / (first_place.time * 1000))) * 100).round
             end
   
             difference_time = ((first_place.time - candidate.time) * 1000).round
@@ -9564,7 +9387,7 @@ Follows is a source code listing for all files that have been open sourced. This
   ** Average time for experiments were too small. Increase the number of iterations.
   S
           else
-            difference_percentage = ((1 - ((first_place.time * 1000) / (second_place.time * 1000))) * 100).round
+            difference_percentage = ((((second_place.time * 1000) / (first_place.time * 1000))) * 100).round
           end
   
           difference_time = first_place.time.-(second_place.time).*(1000).abs.round
@@ -9591,7 +9414,8 @@ Follows is a source code listing for all files that have been open sourced. This
             summary += <<-S
   ** Fastest:    #{r.first_place.name}
   ** Second:     #{r.second_place.name}
-  ** Margin:     #{r.difference_percentage}%, #{r.difference_time.abs}ms (#{r.first_place.time_ms}ms vs #{r.second_place.time_ms}ms)
+  ** Margin %:   #{r.second_place.name} was #{r.difference_percentage}% slower than #{r.first_place.name}
+  ** Margin ms:  #{r.second_place.name} took #{r.difference_time.abs}ms longer than #{r.first_place.name} (#{r.first_place.time_ms}ms vs #{r.second_place.time_ms}ms)
   ** Times:
   #{r.times.map { |t| "*** #{t.name}: #{t.time_ms}ms (#{t.difference_percentage}% #{t.difference_time.abs}ms)." }.join("\n")}
   S
@@ -10726,7 +10550,7 @@ Follows is a source code listing for all files that have been open sourced. This
           return if !@eval_path
   
           if !reload_list_history[@eval_path]
-            mark_ruby_file_for_reload @eval_path
+            require @eval_path
             return
           end
   
@@ -10744,7 +10568,7 @@ Follows is a source code listing for all files that have been open sourced. This
           return if !@test_path
   
           if !reload_list_history[@test_path]
-            mark_ruby_file_for_reload @test_path
+            require @test_path
             return
           end
   
@@ -10791,7 +10615,7 @@ Follows is a source code listing for all files that have been open sourced. This
             state = maybe_file
           end
   
-          state.__delete_thrash_count__!
+          state.__delete_thrash_count__! if state.respond_to? :__delete_thrash_count__!
   
           result = state.to_s
   
@@ -11067,12 +10891,10 @@ Follows is a source code listing for all files that have been open sourced. This
       String.wrapped_lines self, length
     end
   
-    # @gtk
     def wrap length
       wrapped_lines(length).join.rstrip
     end
   
-    # @gtk
     def multiline?
       include? "\n"
     end
@@ -11188,7 +11010,6 @@ Follows is a source code listing for all files that have been open sourced. This
         Object.methods.find_all { |m| m.start_with? "test_" }
       end
   
-      # @gtk
       def start
         log "* TEST: gtk.test.start has been invoked."
         if test_methods_focused.length != 0
@@ -11406,7 +11227,6 @@ Follows is a source code listing for all files that have been open sourced. This
         $trace_puts.clear
       end
   
-      # @gtk
       def self.trace! instance = nil
         $trace_history ||= []
         $trace_enabled = true

@@ -1,8 +1,125 @@
+* 5.8
+** [Bugfix] Wasm/web builds with looping audio no longer crash.
+* 5.7
+** [Support] Added ~Geometry::find_all_intersect_rect_quad_tree~.
+   Function is useful if ~Geometry::find_all_intersect_rect~ doesn't meet performance needs
+   and if the rectangles that are checked do not change every frame. See docs for usage example.
+** [Support] Better handling of full screen mode for web builds.
+** [Bugfix] [mRuby] ~Hash~ double-splat format in mRuby 3.0 changed the original Hash. This has been fixed.
+   Special thanks to Sophira@discord and Pineapple@discord for finding and bumping the fix of this issue.
+*** Repro:
+    #+begin_src
+      hash   = { }
+      result = { **hash, a: 1, b: 2 }
+      puts result # { a => 1, b => 2 }
+      puts hash   # Wrong: { a => 1, b => 2 } mRuby <3.2 (DragonRuby <5.7)
+      puts hash   # Right: { }                mRuby 3.2 (DragonRuby 5.7)
+    #end_src
+*** Pertinent links that describe the issue in detail:
+    - https://github.com/mruby/mruby/commit/12d51807a397545d5cf423d2f9bd9b52b7e4a786
+    - https://github.com/mruby/mruby/pull/5640#issuecomment-1032674395
+*** Performance of ~Hash~ double-splat vs ~merge~ vs ~merge!~
+    #+begin_src
+      def tick args
+        if args.inputs.keyboard.key_down.r
+          args.gtk.console.show
+          args.gtk.benchmark iterations: 100000,
+                             merge: -> () {
+                               a = { x: 0, y: 0, w: 100, h: 100 }
+                               b = { r: 255, g: 255, b: 255 }
+                               c = { anchor_x: 0.5, anchor_y: 0.5 }
+                               d = { path: :pixel }
+                               e = a.merge(b).merge(c).merge(d)
+                             },
+                             merge_bang: -> () {
+                               a = { x: 0, y: 0, w: 100, h: 100 }
+                               b = { r: 255, g: 255, b: 255 }
+                               c = { anchor_x: 0.5, anchor_y: 0.5 }
+                               d = { path: :pixel }
+                               e = a.merge(b).merge!(c).merge!(d)
+                             },
+                             splat: -> () {
+                               a = { x: 0, y: 0, w: 100, h: 100 }
+                               b = { r: 255, g: 255, b: 255 }
+                               c = { anchor_x: 0.5, anchor_y: 0.5 }
+                               d = { path: :pixel }
+                               e = { **a, **b, **c, **d }
+                             }
+        end
+      end
+
+      * BENCHMARK RESULT: splat is fastest
+      ** Iterations: 100000
+      ** Fastest:    splat
+      ** Second:     merge_bang
+      ** Margin %:   merge_bang was 465% slower than splat
+      ** Margin ms:  merge_bang took 723ms longer than splat (198ms vs 921ms)
+      ** Times:
+      *** splat: 198ms (0% 0ms).
+      *** merge_bang: 921ms (465% 723ms).
+      *** merge: 993ms (502% 795ms).
+    #+end_src
+* 5.6
+** [Pro] [Android] Minimum target SDK increased to API 31 to stay in compliance with Google Play App submissions.
+** [Pro] [BugFix] Nested required files are correctly loaded if ~compile_ruby=true~ for the game's metadata.
+   Thank you to dishcandanty@discord and drewhamlett@discord for repro and testing support.
+** [Performance] ~args.geometry.find_all_intersect_rect rect, rects~ is 20% faster.
+** [Docs] Docs added for ~args.audio[].(x|y|z)~ usage.
+** [Support] ~$gtk.platform? key~ and ~$gtk.platform_mappings~ provides more granularity across platforms.
+   Example:
+   #+begin_src
+     def tick args
+       label_style = { x: 640, y: 360, anchor_x: 0.5, anchor_y: 0.5 }
+       if    args.gtk.platform? :macos # other options :win, :linux, :web, :android, :ios
+         args.outputs.labels << { text: "I am running on MacOS.", **label_style }
+       elsif args.gtk.platform? :touch
+         args.outputs.labels << { text: "I am running on a device that supports touch (either iOS/Android native or mobile web).", **label_style }
+       elsif args.gtk.platform? :steam
+         args.outputs.labels << { text: "I am running via steam (covers both desktop and steamdeck).", **label_style }
+       elsif args.gtk.platform? :steam_deck
+         args.outputs.labels << { text: "I am running via steam on the Steam Deck (not steam desktop).", **label_style }
+       elsif args.gtk.platform? :steam_desktop
+         args.outputs.labels << { text: "I am running via steam on desktop (not steam deck).", **label_style }
+       end
+     end
+   #+end_src
+   For additional details, see docs.
+** [Support] ~Numeric#frame_index~ now supports allows for a ~repeat_index:~ option.
+   The ~repeat_index~ option is helpful if your sprite animation has start frames that shouldn't be
+   considered if a loop of the animation occurs.
+   Example:
+   #+begin_src
+     def tick args
+       start_looping_at = 0
+
+       sprite_index =
+         start_looping_at.frame_index count: 5,        # sprite animation contains 2 starting frames
+                                      hold_for: 4,
+                                      repeat: true,
+                                      repeat_index: 2, # start from index 2 on repeat
+                                      tick_count_override: args.state.tick_count
+
+       sprite_index ||= 0
+
+       args.outputs.sprites << [
+         640 - 50,
+         360 - 50,
+         100,
+         100,
+         "sprites/dragon-\#{sprite_index}.png"
+       ]
+     end
+   #+end_src
+** [Support] Added ~args.inputs.locale~.
+   The function returns the ISO 639-1 two-letter language code based on OS preferences (see https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
+** [BugFix] ~Numeric#idiv~ returns correct values for integer division of negative numbers.
+   Thank you to Ceph@discord for pointing out this oversight.
+** [Samples] Added sample app that shows how to use the new ~repeat_index~ parameter on ~Numeric#frame_index~.
+   Sample app location: =samples/03_rendering_sprites/03_animation_states_intermediate=
 * 5.5
 ** [Bugfix] [Support] Web builds hosted on Itch.io were not working in
    Safari nor Chrome on Android. We found a work around for this.
-** [Samples] Added sample app that shows how to use cameras in
-   combination with a tactical grid.
+** [Samples] Added sample app that shows how to use cameras in combination with a tactical grid.
    Location of sample app: =./samples/07_advanced_rendering/16_camera_space_world_space_simple_grid_map=
 * 5.4
 ** [Bugfix] ~outputs.static_primitives~ now correctly renders labels.

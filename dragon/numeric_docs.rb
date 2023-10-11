@@ -67,7 +67,9 @@ Example using variables:
   end
 #+end_src
 
-Example using named parameters:
+Example using named parameters. The named parameters version allows you to
+also specify a ~repeat_index~ which is useful if your animation has starting
+frames that shouldn't be considered when looped:
 
 #+begin_src ruby
   def tick args
@@ -77,7 +79,32 @@ Example using named parameters:
       start_looping_at.frame_index count: 6,
                                    hold_for: 4,
                                    repeat: true,
+                                   repeat_index: 0,
                                    tick_count_override: args.state.tick_count
+
+    sprite_index ||= 0
+
+    args.outputs.sprites << [
+      640 - 50,
+      360 - 50,
+      100,
+      100,
+      "sprites/dragon-\#{sprite_index}.png"
+    ]
+  end
+#+end_src
+
+The named parameter variant of ~frame_index~ is also available on ~Numeric~:
+
+#+begin_src ruby
+  def tick args
+    sprite_index =
+      Numeric.frame_index start_at: 0,
+                          count: 6,
+                          hold_for: 4,
+                          repeat: true,
+                          repeat_index: 0,
+                          tick_count_override: args.state.tick_count
 
     sprite_index ||= 0
 

@@ -24,7 +24,7 @@ module GTK
           state = maybe_file
         end
 
-        state.__delete_thrash_count__!
+        state.__delete_thrash_count__! if state.respond_to? :__delete_thrash_count__!
 
         result = state.to_s
 

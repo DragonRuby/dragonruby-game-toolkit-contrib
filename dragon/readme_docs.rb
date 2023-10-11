@@ -34,7 +34,11 @@ The information contained here is all available in your the
 zip file at ~./docs/docs.html~. You can browse the docs in a local website
 by starting up DragonRuby and going to ~http://localhost:9001~.
 
-* Community
+* Tips for Learning DragonRuby Game Toolkit
+
+The following tips will help you learn the DragonRuby quickly.
+
+** Tip #1: Join the Community
 
 Our Discord server is extremely supportive and helpful. It's the best
 place to get answers to your questions. The developers of DragonRuby
@@ -45,16 +49,21 @@ The Link to Our Discord Server is: [[http://discord.dragonruby.org]].
 The News Letter will keep you in the loop with regards to current
 DragonRuby Events: [[http://dragonrubydispatch.com]].
 
-* Book
+** Tip #2: Read the Book
 
 Brett Chalupa (one of our community members) has written a book to help you get started: [[https://book.dragonriders.community/]]
 
-* Tutorial Video
+** Tip #3: Watch the Tutorial Video
 
 Here are some videos to help you get the lay of the land.
 
 1. Building Tetris - Part 1: [[https://youtu.be/xZMwRSbC4rY]]
 2. Building Tetris - Part 2: [[https://youtu.be/C3LLzDUDgz4]]
+
+** Tip #4: Go Through the Sample Apps in Order
+
+The sample apps are located in the ~./samples~ directory. The samples are ordered by increasing
+difficulty and cover all aspects of the game engine.
 
 * Getting Started Tutorial
 
@@ -141,9 +150,9 @@ inline.
     # you use arrays to draw things and we figure out the details.
     # If you want to draw text on the screen, you give it an array (the thing
     # in the [ brackets ]), with an X and Y coordinate and the text to draw.
-    # The "<<" thing says "append this array onto the list of them at
+    # The "<<" thing says "append this hash onto the list of them at
     # args.outputs.labels)
-    args.outputs.labels << [580, 400, 'Hello World!']
+    args.outputs.labels << { x: 580, y: 400, text: 'Hello World!' }
   end
 #+end_src
 
@@ -169,8 +178,8 @@ started. Let's have it draw every frame with our text:
 
 #+begin_src ruby
   def tick args
-    args.outputs.labels  << [580, 400, 'Hello World!']
-    args.outputs.sprites << [576, 100, 128, 101, 'dragonruby.png']
+    args.outputs.labels  << { x: 580, y: 400, text: 'Hello World!' }
+    args.outputs.sprites << { x: 576, y: 100, w: 128, h: 101, path: 'dragonruby.png' }
   end
 #+end_src
 
@@ -201,9 +210,16 @@ Ok, now we have an image on the screen, let's animate it:
 #+begin_src ruby
   def tick args
     args.state.rotation  ||= 0
-    args.outputs.labels  << [580, 400, 'Hello World!' ]
-    args.outputs.sprites << [576, 100, 128, 101, 'dragonruby.png', args.state.rotation]
+
     args.state.rotation  -= 1
+
+    args.outputs.labels  << { x: 580, y: 400, text: 'Hello World!' }
+    args.outputs.sprites << { x: 576,
+                              y: 100,
+                              w: 128,
+                              h: 101,
+                              path: 'dragonruby.png',
+                              angle: args.state.rotation }
   end
 #+end_src
 
@@ -252,17 +268,17 @@ Now, let's move that image around.
     args.state.y ||= 100
 
     if args.inputs.mouse.click
-      args.state.x = args.inputs.mouse.click.point.x - 64
-      args.state.y = args.inputs.mouse.click.point.y - 50
+      args.state.x = args.inputs.mouse.x - 64
+      args.state.y = args.inputs.mouse.y - 50
     end
 
-    args.outputs.labels  << [580, 400, 'Hello World!']
-    args.outputs.sprites << [args.state.x,
-                             args.state.y,
-                             128,
-                             101,
-                             'dragonruby.png',
-                             args.state.rotation]
+    args.outputs.labels  << { x: 580, y: 400, text: 'Hello World!' }
+    args.outputs.sprites << { x: args.state.x,
+                              y: args.state.y,
+                              w: 128,
+                              h: 101,
+                              path: 'dragonruby.png',
+                              angle: args.state.rotation }
 
     args.state.rotation -= 1
   end
@@ -368,8 +384,7 @@ The following ~.gitignore~ should be used for private repositories (commercial g
   /logs/
 #+end_src
 
-You'll notice that everything else is committed to source control (even the
-~./builds~ directory).
+You'll notice that everything else is committed to source control (even the ~./samples~, ~./docs~, and ~./builds~ directory).
 
 The DragonRuby binary/package is designed to be committed in its entirety
 with your source code (it’s why we keep it small). This protects the “shelf life”
@@ -926,6 +941,9 @@ The following code renders a sprite with a ~width~ and ~height~ of
 
 ~args.outputs.sprites~ is used to render a sprite.
 
+NOTE: Rendering using an ~Array~ is "quick and dirty". It's generally recommended that
+      you render using ~Hashes~ long term.
+
 #+begin_src ruby
   def tick args
     args.outputs.sprites << [
@@ -959,7 +977,7 @@ Here are all the properties you can set on a sprite.
   end
 #+end_src
 
-** Different Sprite Representations
+** Rendering a Sprite Using a ~Hash~
 
 Using ordinal positioning can get a little unruly given so many
 properties you have control over.
@@ -1013,17 +1031,22 @@ You can represent a sprite as a ~Hash~:
 The ~blendmode_enum~ value can be set to ~0~ (no blending), ~1~ (alpha blending),
 ~2~ (additive blending), ~3~ (modulo blending), ~4~ (multiply blending).
 
-You can represent a sprite as an ~object~:
+** Rendering a Sprite Using a ~Class~
+
+You can represent a sprite as an ~class~ and manually define all sprite properties:
 
 #+begin_src ruby
   # Create type with ALL sprite properties AND primitive_marker
+  # you can manually define all sprite properties
   class Sprite
     attr_accessor :x, :y, :w, :h, :path, :angle, :a, :r, :g, :b,
-                  :source_x, :source_y, :source_w, :source_h,
-                  :tile_x, :tile_y, :tile_w, :tile_h,
                   :flip_horizontally, :flip_vertically,
-                  :angle_anchor_x, :angle_anchor_y, :blendmode_enum,
+                  :angle_anchor_x, :angle_anchor_y,
+                  :blendmode_enum,
                   :anchor_x, :anchor_y
+                  :tile_x, :tile_y, :tile_w, :tile_h,
+                  :source_x, :source_y, :source_w, :source_h,
+                  :source_x2, :source_y2, :source_x3, :source_y3, :x2, :y2, :x3, :y3,
 
     def primitive_marker
       :sprite
@@ -1031,20 +1054,45 @@ You can represent a sprite as an ~object~:
   end
 
   class BlueSquare < Sprite
-    def initialize opts
-      @x = opts[:x]
-      @y = opts[:y]
-      @w = opts[:w]
-      @h = opts[:h]
+    def initialize(x: 0, y: 0, w: 0, h: 0k
+      @x = x
+      @y = y
+      @w = w
+      @h = h
       @path = 'sprites/square-blue.png'
     end
   end
 
   def tick args
-    args.outputs.sprites << (BlueSquare.new x: 640 - 50,
-                                            y: 360 - 50,
-                                            w: 50,
-                                            h: 50)
+    args.outputs.sprites << BlueSquare.new(x: 640 - 50,
+                                           y: 360 - 50,
+                                           w: 50,
+                                           h: 50)
+  end
+#+end_src
+
+You can represent a sprite using the ~attr_sprite~ helper method:
+
+#+begin_src
+  class BlueSquare
+    # invoke the helper function at the class level for
+    # anything you want to represent as a sprite
+    attr_sprite
+
+    def initialize(x: 0, y: 0, w: 0, h: 0k
+      @x = x
+      @y = y
+      @w = w
+      @h = h
+      @path = 'sprites/square-blue.png'
+    end
+  end
+
+  def tick args
+    args.outputs.sprites << BlueSquare.new(x: 640 - 50,
+                                           y: 360 - 50,
+                                           w: 50,
+                                           h: 50)
   end
 #+end_src
 S
@@ -1058,6 +1106,9 @@ S
 
 Labels are how you display text. This code will go directly inside of
 the ~def tick args~ method.
+
+NOTE: Rendering using an ~Array~ is "quick and dirty". It's generally recommended that
+      you render using ~Hashes~ long term.
 
 Here is the minimum code:
 
@@ -1292,6 +1343,13 @@ development tools like level editors.
 
 For more details on the implementation of the sandboxed filesystem, see Ryan
 C. Gordon's PhysicsFS documentation: [[https://icculus.org/physfs/]]
+
+IMPORTANT: File access functions are sandoxed and assume that the
+~dragonruby~ binary lives alongside the game you are building. Do not
+expect file access functions to return correct values if you are attempting
+to run the ~dragonruby~ binary from a shared location. It's
+recommended that the directory structure contained in the zip is not
+altered and games are built using that starter template.
 S
     end
 
@@ -1333,10 +1391,10 @@ S
 <<-S
 ** Troubleshoot Performance
 
-1. If you're using ~Array~s for your primitives (~args.outputs.sprites << []~), use ~Hash~ instead (~args.outputs.sprites << { x: ... }~).
-2. If you're using ~Entity~ for your primitives (~args.outputs.sprites << args.state.new_entity~), use ~StrictEntity~ instead (~args.outputs.sprites << args.state.new_entity_strict~).
-3. Use ~.each~ instead of ~.map~ if you don't care about the return value.
-4. When concatenating primitives to outputs, do them in bulk. Instead of:
+- If you're using ~Array~s for your primitives (~args.outputs.sprites << []~), use ~Hash~ instead (~args.outputs.sprites << { x: ... }~).
+- If you're using ~Entity~ for your primitives (~args.outputs.sprites << args.state.new_entity~), use ~StrictEntity~ instead (~args.outputs.sprites << args.state.new_entity_strict~).
+- Use ~.each~ instead of ~.map~ if you don't care about the return value.
+- When concatenating primitives to outputs, do them in bulk. Instead of:
 #+begin_src ruby
   args.state.bullets.each do |bullet|
     args.outputs.sprites << bullet.sprite
@@ -1348,8 +1406,27 @@ do
     b.sprite
   end
 #+end_src
-5. Use ~args.outputs.static_~ variant for things that don't change often (take a look at the Basic Gorillas sample app and Dueling Starships sample app to see how ~static_~ is leveraged.
-6. Consider using a ~render_target~ if you're doing some form of a camera that moves a lot of primitives (take a look at the Render Target sample apps for more info).
+- Use ~args.outputs.static_~ variant for things that don't change often (take a look at the Basic Gorillas sample app and Dueling Starships sample app to see how ~static_~ is leveraged.
+- Consider using a ~render_target~ if you're doing some form of a camera that moves a lot of primitives (take a look at the Render Target sample apps for more info).
+- Avoid deleting or adding to an array during iteration. Instead of:
+#+begin_src ruby
+  args.state.fx_queue |fx|
+    fx.count_down ||= 255
+    fx.countdown -= 5
+    if fx.countdown < 0
+      args.state.fx_queue.delete fx
+    end
+  end
+#+end_src
+Do:
+#+begin_src ruby
+  args.state.fx_queue |fx|
+    fx.count_down ||= 255
+    fx.countdown -= 5
+  end
+
+  args.state.fx_queue.reject! { |fx| fx.countdown < 0 }
+#+end_src
 S
     end
 

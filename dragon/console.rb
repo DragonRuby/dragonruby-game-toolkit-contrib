@@ -193,7 +193,6 @@ module GTK
       toggle if hidden?
     end
 
-    # @gtk
     def hide
       if visible?
         if @cursor_visibilty_before_show == false
@@ -751,7 +750,6 @@ S
       show show_reason
     end
 
-    # @gtk
     def set_command command, show_reason = nil
       set_command_silent command, show_reason
       show show_reason

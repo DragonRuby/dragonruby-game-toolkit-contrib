@@ -41,7 +41,7 @@ module GTK
           elsif average_time == candidate.time
             difference_percentage = 0
           else
-            difference_percentage = ((1 - ((first_place.time * 1000) / (candidate.time * 1000))) * 100).round
+            difference_percentage = ((((candidate.time * 1000) / (first_place.time * 1000))) * 100).round
           end
 
           difference_time = ((first_place.time - candidate.time) * 1000).round
@@ -69,7 +69,7 @@ S
 ** Average time for experiments were too small. Increase the number of iterations.
 S
         else
-          difference_percentage = ((1 - ((first_place.time * 1000) / (second_place.time * 1000))) * 100).round
+          difference_percentage = ((((second_place.time * 1000) / (first_place.time * 1000))) * 100).round
         end
 
         difference_time = first_place.time.-(second_place.time).*(1000).abs.round
@@ -96,7 +96,8 @@ S
           summary += <<-S
 ** Fastest:    #{r.first_place.name}
 ** Second:     #{r.second_place.name}
-** Margin:     #{r.difference_percentage}%, #{r.difference_time.abs}ms (#{r.first_place.time_ms}ms vs #{r.second_place.time_ms}ms)
+** Margin %:   #{r.second_place.name} was #{r.difference_percentage}% slower than #{r.first_place.name}
+** Margin ms:  #{r.second_place.name} took #{r.difference_time.abs}ms longer than #{r.first_place.name} (#{r.first_place.time_ms}ms vs #{r.second_place.time_ms}ms)
 ** Times:
 #{r.times.map { |t| "*** #{t.name}: #{t.time_ms}ms (#{t.difference_percentage}% #{t.difference_time.abs}ms)." }.join("\n")}
 S

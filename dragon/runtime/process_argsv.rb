@@ -84,7 +84,7 @@ module GTK
         return if !@eval_path
 
         if !reload_list_history[@eval_path]
-          mark_ruby_file_for_reload @eval_path
+          require @eval_path
           return
         end
 
@@ -102,7 +102,7 @@ module GTK
         return if !@test_path
 
         if !reload_list_history[@test_path]
-          mark_ruby_file_for_reload @test_path
+          require @test_path
           return
         end
 

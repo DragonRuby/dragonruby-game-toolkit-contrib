@@ -56,8 +56,6 @@ S
     # - ~[   0,   -1]~ which denotes that only down is being held/pressed.
     # - ~[-0.707,  0.707]~ which denotes that right and up are being pressed/held.
     # - ~[-0.707, -0.707]~ which denotes that left and down are being pressed/held.
-    #
-    # @gtk
     def directional_vector
       lr, ud = self.left_right, self.up_down
 

@@ -97,7 +97,8 @@ Here are additional properties that can be set.
       pitch:   1.0,             # Pitch of the sound (1.0 = original pitch)
       paused:  false,           # Set to true to pause the sound at the current playback position
       looping: true,            # Set to true to loop the sound/music until you stop it
-      foobar:  :baz             # additional keys/values can be safely added to help with context/game logic (ie metadata)
+      foobar:  :baz,            # additional keys/values can be safely added to help with context/game logic (ie metadata)
+      x: 0.0, y: 0.0, z: 0.0    # Relative position to the listener, x, y, z from -1.0 to 1.0
     }
   end
 #+end_src

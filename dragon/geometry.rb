@@ -41,7 +41,6 @@ module GTK
     end
 
     # Returns true if a primitive's rectangle is entirely inside another primitive's rectangle.
-    # @gtk
     def inside_rect? outer, tolerance = 0.0
       Geometry.inside_rect? self, outer, tolerance
     end
@@ -63,25 +62,21 @@ module GTK
     end
 
     # Scales a primitive rect by a percentage.
-    # @gtk
     def scale_rect percentage, *anchors
       Geometry.scale_rect self, percentage, *anchors
     end
 
     # Returns the angle from one primitive to another primitive.
-    # @gtk
     def angle_to other_point
       Geometry.angle_to self, other_point
     end
 
     # Returns the angle to one primitive from another primitive.
-    # @gtk
     def angle_from other_point
       Geometry.angle_from self, other_point
     end
 
     # Returns true if a primitive is within a circle specified by the circle's center and radius.
-    # @gtk
     def point_inside_circle? circle_center_point, radius
       Geometry.point_inside_circle? self, circle_center_point, radius
     end
@@ -139,7 +134,6 @@ S
     end
 
     # Returns a primitive that is anchored/repositioned based off its rectangle.
-    # @gtk
     def anchor_rect anchor_x, anchor_y
       current_w = self.w
       current_h = self.h
@@ -152,7 +146,6 @@ S
       raise ":angle_given_point has been deprecated use :angle_from instead."
     end
 
-    # @gtk
     def self.shift_line line, x, y
       if line.is_a?(Array) || line.is_a?(Hash)
         new_line = line.dup
@@ -180,7 +173,6 @@ rule for a long time (and why intersects_rect? has been deprecated).
 S
     end
 
-    # @gtk
     def self.line_y_intercept line, replace_infinity: nil
       line.y - line_slope(line, replace_infinity: replace_infinity) * line.x
     rescue Exception => e
@@ -193,14 +185,12 @@ Consider passing in ~replace_infinity: VALUE~ to handle for vertical lines.
 S
     end
 
-    # @gtk
     def self.angle_between_lines line_one, line_two, replace_infinity: nil
       m_line_one = line_slope line_one, replace_infinity: replace_infinity
       m_line_two = line_slope line_two, replace_infinity: replace_infinity
       Math.atan((m_line_one - m_line_two) / (1 + m_line_two * m_line_one)).to_degrees
     end
 
-    # @gtk
     def self.line_slope line, replace_infinity: nil
       if line.is_a? Hash
         # check to see if replace_inifinity exists on the hash
@@ -248,7 +238,6 @@ S
       { x: normaized_rise_run_x, y: normaized_rise_run_y }
     end
 
-    # @gtk
     def self.ray_test point, line
       slope = (line.y2 - line.y).fdiv(line.x2 - line.x)
 
@@ -283,7 +272,6 @@ S
       Geometry.line_to_rect self, min_w: 0, min_h: 0
     end
 
-    # @gtk
     def self.line_rect line, min_w: 0, min_h: 0
       if min_w < 0 || min_h < 0
       raise <<-S
@@ -327,7 +315,6 @@ S
       { x: x, y: y, w: w, h: h }
     end
 
-    # @gtk
     def self.line_intersect line_one, line_two, replace_infinity: nil
       x1 = line_one.x
       y1 = line_one.y
@@ -359,7 +346,6 @@ S
       }
     end
 
-    # @gtk
     def self.to_square size, x, y, anchor_x = 0.5, anchor_y = nil
       log_once :to_square, <<-S
 * WARNING: Numeric#to_square and Geometry::to_square are deprecated and will not be replaced by another function.
@@ -372,14 +358,12 @@ S
       raise e, ":to_square failed for size: #{size} x: #{x} y: #{y} anchor_x: #{anchor_x} anchor_y: #{anchor_y}.\n#{e}"
     end
 
-    # @gtk
     def self.distance point_one, point_two
       Math.sqrt((point_two.x - point_one.x)**2 + (point_two.y - point_one.y)**2)
     rescue Exception => e
       raise e, ":distance failed for point_one: #{point_one} point_two #{point_two}.\n#{e}"
     end
 
-    # @gtk
     def self.angle_from start_point, end_point
       d_y = end_point.y - start_point.y
       d_x = end_point.x - start_point.x
@@ -388,21 +372,18 @@ S
       raise e, ":angle_from failed for start_point: #{start_point} end_point: #{end_point}.\n#{e}"
     end
 
-    # @gtk
     def self.angle_to start_point, end_point
       angle_from end_point, start_point
     rescue Exception => e
       raise e, ":angle_to failed for start_point: #{start_point} end_point: #{end_point}.\n#{e}"
     end
 
-    # @gtk
     def self.point_inside_circle? point, circle_center_point, radius
       (point.x - circle_center_point.x) ** 2 + (point.y - circle_center_point.y) ** 2 < radius ** 2
     rescue Exception => e
       raise e, ":point_inside_circle? failed for point: #{point} circle_center_point: #{circle_center_point} radius: #{radius}.\n#{e}"
     end
 
-    # @gtk
     def self.inside_rect? inner_rect, outer_rect, tolerance = 0.0
       return nil if !inner_rect
       return nil if !outer_rect
@@ -433,7 +414,6 @@ S
       raise e, ":inside_rect? failed for inner_rect: #{inner_rect} outer_rect: #{outer_rect}.\n#{e}"
     end
 
-    # @gtk
     def self.scale_rect_extended rect,
                                  percentage_x: percentage_x,
                                  percentage_y: percentage_y,
@@ -468,7 +448,6 @@ S
       raise e, ":scale_rect_extended failed for rect: #{rect} percentage_x: #{percentage_x} percentage_y: #{percentage_y} anchors_x: #{anchor_x} anchor_y: #{anchor_y}.\n#{e}"
     end
 
-    # @gtk
     def self.scale_rect rect, percentage, *anchors
       anchor_x, anchor_y = *anchors.flatten
       anchor_x ||= 0
@@ -496,6 +475,10 @@ S
     end
 
     def self.rect_center_point rect
+      { x: rect.x + rect.w.half, y: rect.y + rect.h.half }
+    end
+
+    def self.center rect
       { x: rect.x + rect.w.half, y: rect.y + rect.h.half }
     end
 

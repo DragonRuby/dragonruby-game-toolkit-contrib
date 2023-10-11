@@ -24,13 +24,14 @@ module GeometryDocs
       :docs_find_intersect_rect,
       :docs_find_all_intersect_rect,
       :docs_find_intersect_rect_quad_tree,
+      :docs_find_all_intersect_rect_quad_tree,
       :docs_quad_tree_create,
     ]
   end
 
   def docs_class
     <<-S
-* ~Geometry~
+* Geometry (~args.geometry~)
 
 The Geometry ~module~ contains methods for calculations that are
 frequently used in game development. For convenience, this ~module~ is
@@ -169,6 +170,62 @@ if ~find_intersect_rect~ isn't fast enough.
     if collision
       args.outputs.solids << collision.merge(r: 255)
     end
+
+    # render player as green
+    args.outputs.solids << args.state.player.merge(g: 255)
+
+    # render boxes as borders
+    args.outputs.borders << args.state.boxes
+  end
+#+end_src
+S
+  end
+
+  def docs_find_all_intersect_rect_quad_tree
+    <<-S
+** ~find_all_intersect_rect_quad_tree~
+
+This is a faster collision algorithm for determining if a
+rectangle intersects other rectangles in an array. In order to use
+~find_all_intersect_rect_quad_tree~, you must first generate a quad
+tree data structure using ~create_quad_tree~. Use this function
+if ~find_all_intersect_rect~ isn't fast enough.
+#+begin_src
+  def tick args
+    # create a player
+    args.state.player ||= {
+      x: 640 - 10,
+      y: 360 - 10,
+      w: 20,
+      h: 20
+    }
+
+    # allow control of player movement using arrow keys
+    args.state.player.x += args.inputs.left_right * 5
+    args.state.player.y += args.inputs.up_down * 5
+
+    # generate 40 random rectangles
+    args.state.boxes ||= 40.map do
+      {
+        x: 1180 * rand + 50,
+        y: 620 * rand + 50,
+        w: 100,
+        h: 100
+      }
+    end
+
+    # generate a quad tree based off of rectangles.
+    # the quad tree should only be generated once for
+    # a given array of rectangles. if the rectangles
+    # change, then the quad tree must be regenerated
+    args.state.quad_tree ||= args.geometry.quad_tree_create args.state.boxes
+
+    # use quad tree and find_intersect_rect_quad_tree to determine collision with player
+    collisions = args.geometry.find_all_intersect_rect_quad_tree args.state.player,
+                                                                args.state.quad_tree
+
+    # if there is a collision render a red box
+    args.outputs.solids << collisions.map { |c| c.merge(r: 255) }
 
     # render player as green
     args.outputs.solids << args.state.player.merge(g: 255)

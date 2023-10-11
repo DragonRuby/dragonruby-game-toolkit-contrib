@@ -4,12 +4,9 @@
 # inputs.rb has been released under MIT (*only this file*).
 
 module GTK
-  # Represents all the keys available on the keyboard.
-  # @gtk
   class KeyboardKeys
     include Serialize
 
-    # @gtk
     attr_accessor :exclamation_point,
                   :zero, :one, :two, :three, :four,
                   :five, :six, :seven, :eight, :nine,
@@ -225,27 +222,23 @@ module GTK
       @scrubbed_ivars = nil
     end
 
-    # @gtk
     def left_right
       return -1 if self.left
       return  1 if self.right
       return  0
     end
 
-    # @gtk
     def up_down
       return  1 if self.up
       return -1 if self.down
       return  0
     end
 
-    # @gtk
     def truthy_keys
       get(all).find_all { |_, v| v }
               .map { |k, _| k.to_sym }
     end
 
-    # @gtk
     def all? keys
       values = get(keys.map { |k| k.without_ending_bang })
       all_true = values.all? do |k, v|
@@ -261,7 +254,6 @@ module GTK
       all_true
     end
 
-    # @gtk
     def any? keys
       values = get(keys.map { |k| k.without_ending_bang })
       any_true = values.any? do |k, v|
@@ -277,13 +269,11 @@ module GTK
       any_true
     end
 
-    # @gtk
     def clear_key key
       @scrubbed_ivars = nil
       self.instance_variable_set("@#{key.without_ending_bang}", false)
     end
 
-    # @gtk
     def all
       @scrubbed_ivars ||= self.instance_variables
                               .reject { |i| i == :@all || i == :@scrubbed_ivars }
@@ -292,7 +282,6 @@ module GTK
       get(@scrubbed_ivars).map { |k, _| k }
     end
 
-    # @gtk
     def get collection
       return [] if collection.length == 0
       collection.map do |m|
@@ -306,7 +295,6 @@ module GTK
       end
     end
 
-    # @gtk
     def set collection, value = true
       return if collection.length == 0
       @scrubbed_ivars = nil
@@ -369,23 +357,11 @@ S
 end
 
 module GTK
-  # @gtk
   class Keyboard
 
-    # @return [KeyboardKeys]
-    # @gtk
     attr_accessor :key_up
-
-    # @return [KeyboardKeys]
-    # @gtk
     attr_accessor :key_held
-
-    # @return [KeyboardKeys]
-    # @gtk
     attr_accessor :key_down
-
-    # @return [Boolean]
-    # @gtk
     attr_accessor :has_focus
 
     attr :active
@@ -488,7 +464,6 @@ module GTK
   class MousePoint
     include GTK::Geometry
 
-    # @gtk
     attr_accessor :x, :y, :point, :created_at, :global_created_at
 
     def initialize x, y
@@ -532,12 +507,7 @@ module GTK
     end
   end
 
-  # Provides access to the mouse.
-  #
-  # @gtk
   class Mouse
-
-    # @gtk
     attr_accessor :moved,
                   :moved_at,
                   :global_moved_at,
@@ -673,12 +643,7 @@ module GTK
     alias_method :inspect, :to_s
   end
 
-  # Provides access to multitouch input
-  #
-  # @gtk
   class FingerTouch
-
-    # @gtk
     attr_accessor :moved,
                   :moved_at,
                   :global_moved_at,
@@ -748,6 +713,8 @@ module GTK
     attr_accessor :text, :history
     attr_accessor :headset
     attr :last_active
+    attr :touch_enabled
+    attr :locale, :locale_raw
 
     def initialize
       @controllers = [Controller.new, Controller.new, Controller.new, Controller.new]
@@ -765,23 +732,19 @@ module GTK
     end
 
     def up
-      keyboard.up ||
-        (controller_one && controller_one.up)
+      keyboard.up || (controller_one && controller_one.up)
     end
 
     def down
-      keyboard.down ||
-        (controller_one && controller_one.down)
+      keyboard.down || (controller_one && controller_one.down)
     end
 
     def left
-      keyboard.left ||
-        (controller_one && controller_one.left)
+      keyboard.left || (controller_one && controller_one.left)
     end
 
     def right
-      keyboard.right ||
-        (controller_one && controller_one.right)
+      keyboard.right || (controller_one && controller_one.right)
     end
 
     def directional_vector
@@ -793,42 +756,43 @@ module GTK
       keyboard.directional_angle || (controller_one && controller_one.directional_angle)
     end
 
-    # Returns a signal indicating right (`1`), left (`-1`), or neither ('0').
-    #
-    # @return [Integer]
     def left_right
       return -1 if self.left
       return  1 if self.right
       return  0
     end
 
-    # Returns a signal indicating up (`1`), down (`-1`), or neither ('0').
-    #
-    # @return [Integer]
+    def left_right_arrow
+      return -1 if keyboard.left_arrow || (controller_one && controller_one.directional_left)
+      return  1 if keyboard.right_arrow || (controller_one && controller_one.directional_right)
+      return  0
+    end
+
+    alias_method :left_right_directional, :left_right_arrow
+
     def up_down
       return  1 if self.up
       return -1 if self.down
       return  0
     end
 
-    # Returns the coordinates of the last click.
-    #
-    # @return [Float, Float]
+    def up_down_arrow
+      return  1 if keyboard.up_arrow || (controller_one && controller_one.directional_up)
+      return -1 if keyboard.down_arrow || (controller_one && controller_one.directional_down)
+      return  0
+    end
+
+    alias_method :up_down_directional, :up_down_arrow
+
     def click
       return nil unless @mouse.click
       return @mouse.click.point
     end
 
-    # The first controller.
-    #
-    # @return [Controller]
     def controller_one
       @controllers[0]
     end
 
-    # The second controller.
-    #
-    # @return [Controller]
     def controller_two
       @controllers[1]
     end
@@ -841,9 +805,6 @@ module GTK
       @controllers[3]
     end
 
-    # Clears all inputs.
-    #
-    # @return [void]
     def clear
       @mouse.clear
       @keyboard.clear
@@ -854,7 +815,6 @@ module GTK
       @finger_two = nil
     end
 
-    # @return [Hash]
     def serialize
       {
         controller_one: controller_one.serialize,
@@ -865,6 +825,10 @@ module GTK
         mouse: mouse.serialize,
         text: text.serialize
       }
+    end
+
+    def touch_enabled?
+      @touch_enabled
     end
   end
 end

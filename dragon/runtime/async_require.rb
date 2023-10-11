@@ -208,12 +208,9 @@ S
 
       def load_main_rb
         return if @load_status != :dragonruby_started
-        if @ffi_file.path_exists('app/main.rbc')
-          reload_if_needed 'app/main.rbc', true
-        elsif @ffi_file.path_exists('app/main.rb')
-          reload_if_needed 'app/main.rb', true
+        if @ffi_file.path_exists('app/main.rb') || @ffi_file.path_exists('app/main.rbc')
+          require 'app/main.rb'
         end
-        @load_status = :main_rb_first_time_load
       end
     end # GTK::Runtime::AsyncRequire
   end # GTK::Runtime

@@ -4,7 +4,6 @@
 # controller.rb has been released under MIT (*only this file*).
 
 module GTK
-  # @gtk
   class Controller
     attr :key_down
     attr :key_up

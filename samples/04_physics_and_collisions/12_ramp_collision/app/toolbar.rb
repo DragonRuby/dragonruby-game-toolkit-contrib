@@ -157,11 +157,11 @@ def tick_toolbar args
   # render a light blue background for the toolbar button that is currently
   # being hovered over (if any)
   if toolbar_button
-    args.outputs.primitives << toolbar_button.button_rect.merge(primitive_marker: :solid, a: 10, b: 255)
+    args.outputs.primitives << toolbar_button.button_rect.merge(primitive_marker: :solid, a: 64, b: 255)
   end
 
   # put a blue background around the currently selected tile
-  args.outputs.primitives << args.state.selected_tile.button_rect.merge(primitive_marker: :solid, b: 255)
+  args.outputs.primitives << args.state.selected_tile.button_rect.merge(primitive_marker: :solid, b: 255, r: 128, a: 64)
 
   if !mouse_intersects_toolbar
     if terrain_tile
@@ -202,6 +202,7 @@ def tick_toolbar args
         **toolbar_tile.button_rect,
         primitive_marker: primitive_type,
         a: 64,
+        g: 128
       },
       {
         x:  toolbar_tile.button_rect.x,

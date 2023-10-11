@@ -9,54 +9,15 @@ module GTK
     include GridDeprecated
     SCREEN_Y_DIRECTION = -1.0
 
-    # The coordinate system currently in use.
-    #
-    # @return [Symbol] `:bottom_left` or `:center`
     attr_accessor :name
-
-    # Returns the "x" coordinate indicating the bottom of the screen.
-    #
-    # @return [Float]
     attr_accessor :bottom
-
-    # Returns the "x" coordinate indicating the top of the screen.
-    #
-    # @return [Float]
     attr_accessor :top
-
-    # Returns the "y" coordinate indicating the left of the screen.
-    #
-    # @return [Float]
     attr_accessor :left
-
-    # Returns the "y" coordinate indicating the right of the screen.
-    #
-    # @return [Float]
     attr_accessor :right
-
-    # Returns the "x" coordinate indicating the center of the screen.
-    #
-    # @return [Float]
     attr_accessor :center_x
-
-    # Returns the "y" coordinate indicating the center of the screen.
-    #
-    # @return [Float]
     attr_accessor :center_y
-
-    # Returns the bottom left and top right coordinates in a single list.
-    #
-    # @return [[Float, Float, Float, Float]]
     attr_accessor :rect
-
-    # Returns the "x" coordinate of the origin.
-    #
-    # @return [Float]
     attr_accessor :origin_x
-
-    # Returns the "y" coordinate of the origin.
-    #
-    # @return [Float]
     attr_accessor :origin_y
 
     attr_accessor :left_margin, :bottom_margin
@@ -86,30 +47,18 @@ module GTK
       @runtime.orientation
     end
 
-    # Returns `x` plus the origin "x".
-    #
-    # @return [Float]
     def transform_x x
       @origin_x + x
     end
 
-    # Returns `x` minus the origin "x".
-    #
-    # @return [Float]
     def untransform_x x
       x - @origin_x
     end
 
-    # Returns `y` plus the origin "y".
-    #
-    # @return [Float]
     def transform_y y
       @origin_y + y * SCREEN_Y_DIRECTION
     end
 
-    # Returns `y` minus the origin "y".
-    #
-    # @return [Float]
     def untransform_y y
       @origin_y + y * SCREEN_Y_DIRECTION
     end
@@ -122,10 +71,6 @@ module GTK
       @ffi_draw = value
     end
 
-    # Sets the rendering coordinate system to have its origin in the bottom left.
-    #
-    # @return [void]
-    # @gtk
     def origin_bottom_left!
       return if @name == :bottom_left
       @name = :bottom_left
@@ -154,10 +99,6 @@ module GTK
       @native_scale_enum ||= 1.0
     end
 
-    # Sets the rendering coordinate system to have its origin in the center.
-    #
-    # @return [void]
-    # @gtk
     def origin_center!
       return if @name == :center
       @name = :center
@@ -185,44 +126,26 @@ module GTK
       @render_offset_y ||= 0
     end
 
-    # The logical width used for rendering.
-    #
-    # @return [Float]
     def w
       @runtime.logical_width
     end
 
-    # Half the logical width used for rendering.
-    #
-    # @return [Float]
     def w_half
       w.half
     end
 
-    # The logical height used for rendering.
-    #
-    # @return [Float]
     def h
       @runtime.logical_height
     end
 
-    # Half the logical height used for rendering.
-    #
-    # @return [Float]
     def h_half
       h.half
     end
 
-    # Returns the coordinates indicating the center of the screen.
-    #
-    # @return [[Float, Float]]
     def center
       @center
     end
 
-    # Returns the coordinates indicating the bottom right of the screen.
-    #
-    # @return [[Float, Float]]
     def bottom_right
       [@right, @bottom].point
     end
