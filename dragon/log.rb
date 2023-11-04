@@ -215,10 +215,9 @@ class Object
   end
 
   def log_with_color xterm_escape_code, *args
-    log_print xterm_escape_code
-    log(*args)
-  ensure
-    log_reset_color
+    message_id, message = args
+    message ||= message_id
+    log("#{xterm_escape_code}#{message}#{XTERM_COLOR[:reset]}")
   end
 
   def log_reset_color
