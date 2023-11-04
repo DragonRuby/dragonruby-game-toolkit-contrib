@@ -1,3 +1,6 @@
+# Contributors outside of DragonRuby who also hold Copyright:
+# - eejit: https://github.com/eejitgames
+
 def tick args
   # STOP! Watch the following presentation first!!!!
   # Math for Game Programmers: Fast and Funky 1D Nonlinear Transformations
@@ -32,12 +35,24 @@ def tick args
   # [:quart]
   # [:quint]
 
+  # Smooth start variations are also known as:
+  # [:smooth_start_quad]
+  # [:smooth_start_cube]
+  # [:smooth_start_quart]
+  # [:smooth_start_quint]
+
   # Linear reversed, and smooth stop are the same as the animations defined above, but reversed:
   # [:flip, :identity]
   # [:flip, :quad, :flip]
   # [:flip, :cube, :flip]
   # [:flip, :quart, :flip]
   # [:flip, :quint, :flip]
+
+  # Smooth stop variations are also known as:
+  # [:smooth_stop_quad]
+  # [:smooth_stop_cube]
+  # [:smooth_stop_quart]
+  # [:smooth_stop_quint]
 
   # You can also do custom definitions. See the bottom of the file details
   # on how to do that. I've defined a couple for you:
@@ -50,11 +65,19 @@ def tick args
   # args.state.animation_type = [:cube]
   # args.state.animation_type = [:quart]
   # args.state.animation_type = [:quint]
+  # args.state.animation_type = [:smooth_start_quad]
+  # args.state.animation_type = [:smooth_start_cube]
+  # args.state.animation_type = [:smooth_start_quart]
+  # args.state.animation_type = [:smooth_start_quint]
   # args.state.animation_type = [:flip, :identity]
   # args.state.animation_type = [:flip, :quad, :flip]
   # args.state.animation_type = [:flip, :cube, :flip]
   # args.state.animation_type = [:flip, :quart, :flip]
   # args.state.animation_type = [:flip, :quint, :flip]
+  # args.state.animation_type = [:smooth_stop_quad]
+  # args.state.animation_type = [:smooth_stop_cube]
+  # args.state.animation_type = [:smooth_stop_quart]
+  # args.state.animation_type = [:smooth_stop_quint]
   # args.state.animation_type = [:smoothest_start]
   # args.state.animation_type = [:smoothest_stop]
 
@@ -128,5 +151,37 @@ module Easing
 
   def self.quint x
     x * x * x * x * x * x
+  end
+
+  def self.smooth_start_quad x
+    quad x
+  end
+
+  def self.smooth_stop_quad x
+    flip(quad(flip(x)))
+  end
+
+  def self.smooth_start_cube x
+    cube x
+  end
+
+  def self.smooth_stop_cube x
+    flip(cube(flip(x)))
+  end
+
+  def self.smooth_start_quart x
+    quart x
+  end
+
+  def self.smooth_stop_quart x
+    flip(quart(flip(x)))
+  end
+
+  def self.smooth_start_quint x
+    quint x
+  end
+
+  def self.smooth_stop_quint x
+    flip(quint(flip(x)))
   end
 end
