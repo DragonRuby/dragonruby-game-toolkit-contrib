@@ -48,7 +48,7 @@ module GTK
 
     # @gtk
     def start
-      log "* TEST: gtk.test.start has been invoked."
+      log_cyan "* TEST: gtk.test.start has been invoked."
       if test_methods_focused.length != 0
         @is_running = true
         test_methods_focused.each { |m| run_test m }
@@ -76,12 +76,12 @@ module GTK
 
     def log_inconclusive m
       self.inconclusive << {m: m}
-      log "Inconclusive."
+      log_yellow "Inconclusive."
     end
 
     def log_passed m
       self.passed << {m: m}
-      log "Passed."
+      log_green "Passed."
     end
 
     def log_no_tests_found
@@ -97,7 +97,7 @@ S
     end
 
     def log_test_running m
-      log "** Running: #{m}"
+      log_cyan "** Running: #{m}"
     end
 
     def test_signature_invalid_exception? e, m
@@ -127,24 +127,24 @@ S
     end
 
     def print_summary
-      log "** Summary"
-      log "*** Passed"
-      log "#{self.passed.length} test(s) passed."
-      self.passed.each { |h| log "**** :#{h[:m]}" }
-      log "*** Inconclusive"
+      log_cyan "** Summary"
+      log_green "*** Passed"
+      log_green "#{self.passed.length} test(s) passed."
+      self.passed.each { |h| log_green "**** :#{h[:m]}" }
+      log_yellow "*** Inconclusive"
       if self.inconclusive.length > 0
         log_once :assertion_ok_note, <<-S
 NOTE FOR INCONCLUSIVE TESTS: No assertion was performed in the test.
 Add assert.ok! at the end of the test if you are using your own assertions.
 S
       end
-      log "#{self.inconclusive.length} test(s) inconclusive."
-      self.inconclusive.each { |h| log "**** :#{h[:m]}" }
-      log "*** Failed"
-      log "#{self.failed.length} test(s) failed."
+      log_yellow "#{self.inconclusive.length} test(s) inconclusive."
+      self.inconclusive.each { |h| log_yellow "**** :#{h[:m]}" }
+      log_red "*** Failed"
+      log_red "#{self.failed.length} test(s) failed."
       self.failed.each do |h|
-        log "**** Test name: :#{h[:m]}"
-        log "#{h[:e].to_s.gsub("* ERROR:", "").strip}\n#{h[:e].__backtrace_to_org__}"
+        log_red "**** Test name: :#{h[:m]}"
+        log_red "#{h[:e].to_s.gsub("* ERROR:", "").strip}\n#{h[:e].__backtrace_to_org__}"
       end
     end
   end
