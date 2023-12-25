@@ -1,3 +1,82 @@
+* 5.11
+** [Samples] Added sample app that shows how to implement a clipping of a sprite.
+   Sample app location: =samples/07_advanced_rendering/01_render_targets_clip_area=
+** [Bugfix] Audio was not looping in web builds. This has been fixed.
+** [Bugfix] ~args.inputs.keyboard.key_held.char~ has parity with ~.key_(up|down).char~.
+   NOTE: ~args.inputs.keyboard.key_held.char~ will only return the ascii value
+         of the last key that was held. Use ~args.inputs.keyboard.key_held.truthy_keys~
+         to get an ~Array~ of ~Symbols~ representing all keys being held.
+
+         To get a picture of all key states ~args.inputs.keyboard.keys~ returns a ~Hash~
+         with the following keys: ~:down~, ~:held~, ~:down_or_held~, ~:up~.
+
+    This is a demonstration of the behavior (see =./samples/02_input_basics/01_keyboard= for a more detailed example):
+
+    #+begin_src
+      def tick args
+        # uncomment the line below to see the value changes at a slower rate
+        # $gtk.slowmo! 30
+
+        keyboard = args.inputs.keyboard
+
+        args.outputs.labels << { x: 30,
+                                 y: 720,
+                                 text: "use the J key to test" }
+
+        args.outputs.labels << { x: 30,
+                                 y: 720 - 30,
+                                 text: "key_down.char: \#{keyboard.key_down.char.inspect}" }
+
+        args.outputs.labels << { x: 30,
+                                 y: 720 - 60,
+                                 text: "key_down.j:    \#{keyboard.key_down.j}" }
+
+        args.outputs.labels << { x: 30,
+                                 y: 720 - 30,
+                                 text: "key_held.char: \#{keyboard.key_held.char.inspect}" }
+
+        args.outputs.labels << { x: 30,
+                                 y: 720 - 60,
+                                 text: "key_held.j:    \#{keyboard.key_held.j}" }
+
+        args.outputs.labels << { x: 30,
+                                 y: 720 - 30,
+                                 text: "key_up.char:   \#{keyboard.key_up.char.inspect}" }
+
+        args.outputs.labels << { x: 30,
+                                 y: 720 - 60,
+                                 text: "key_up.j:      \#{keyboard.key_up.j}" }
+      end
+    #+end_src
+* 5.10
+** [Support] [Pro] Support added for XCode 15.0, 15.1 Beta and MacOS Sonoma.
+   ~$wizards.ios~ enhanced to automatically install a default device if none are present.
+
+   NOTE: If you are creating C Extensions for iOS, take note that a new linker
+         has been released with XCode 15.0 and may require you to add the following
+         compilation flags for your C Extension to work: ~-Wl,-undefined -Wl,dynamic_lookup~
+** [Support] Added ~$wizards.itch.help~ and ~$wizards.ios.help~.
+* 5.9
+** [Support] [Pro] HD scaling "stretch to fit" has been added.
+   There are scenarios where a dev may prefer their HD game to fill the entire screen
+   instead of being pixel perfect. To set your game to be scaled to fit (while still
+   retaining a 16:9 aspect ratio) set the following properties inside of =./metadata/game_metadata.txt=:
+
+   #+begin_src
+     # enables hd mode
+     hd=true
+     # render the letterbox
+     hd_letterbox=true
+     # set the scaling to "stretch to fit"
+     hd_max_scale=0
+   #+end_src
+
+   A full explanation of the hd_max_scale property is available in =./metadata/game_metadata.txt=.
+** [Support] [Pro] Added support for texture atlases for games at 1.75 scale (2240x1260)
+   See args.grid documentation for details of this new texture atlas.
+** [Bugfix] Defining a top level method called ~event~ no longer causes an exception.
+** [Support] ~args.layout.rect~ and ~args.layout.debug_primitives~ documentation added.
+** [Support] ~args.layout.debug_primitives~ enhanced to provide more layout information.
 * 5.8
 ** [Bugfix] Wasm/web builds with looping audio no longer crash.
 * 5.7

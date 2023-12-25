@@ -1,271 +1,309 @@
-include MatrixFunctions
-
-class BouncingBall
+class Game
   attr_gtk
 
   def tick
+    outputs.labels << { x: 30, y: 30.from_top,
+                        text: "left/right arrow keys to spin, up arrow to jump, ctrl+r to reset, click two points to place terrain" }
     defaults
-    render
-    input
     calc
-
-    reset_ball if args.inputs.keyboard.key_down.r
-
-    args.state.debug = !args.state.debug if inputs.keyboard.key_down.g
-    debug if args.state.debug
+    render
   end
 
   def defaults
-    args.state.rest ||= false
-    args.state.debug ||= false
+    state.terrain ||= []
 
-    state.walls ||= [
-      { x: 50.from_left, y: 50.from_bottom, x2: 50.from_left, y2: 50.from_top },
-      { x: 50.from_left, y: 50.from_bottom, x2: 50.from_right, y2: 50.from_bottom },
-      { x: 50.from_left, y: 50.from_top, x2: 50.from_right, y2: 50.from_top },
-      { x: 50.from_right, y: 50.from_bottom, x2: 50.from_right, y2: 50.from_top },
-    ]
+    state.player ||= { x: 100,
+                       y: 640,
+                       dx: 0,
+                       dy: 0,
+                       radius: 12,
+                       drag: 0.05477,
+                       gravity: 0.03,
+                       entropy: 0.9,
+                       angle: 0,
+                       angle_velocity: 0,
+                       elasticity: 0.5 }
 
-    state.ball ||= { x: 250, y: 250, w: 50, h: 50, path: 'circle-white.png' }
-    state.ball_old_x ||= state.ball[:x]
-    state.ball_old_y ||= state.ball[:y]
-    state.ball_vector ||= vec2(0, 0)
-
-    state.stick_length = 200
-    state.stick_angle ||= 0
-    state.stick_power ||= 0
-
-    # Prevent consecutive bounces on the same normal vector
-    # Solves issue where ball gets stuck on a wall
-    state.prevent_collision ||= {}
-
-    state.physics.gravity = 0.4
-    state.physics.restitution = 0.80
-    state.physics.friction = 0.70
-  end
-
-  def render
-    outputs.lines << state.walls
-    outputs.sprites << state.ball
-    render_stick
-    render_point_one
-  end
-
-  def render_stick
-    stick_vec_x = Math.cos(state.stick_angle.to_radians)
-    stick_vec_y = Math.sin(state.stick_angle.to_radians)
-    ball_center_x = state.ball[:x] + (state.ball[:w] / 2)
-    ball_center_y = state.ball[:y] + (state.ball[:h] / 2)
-    # Draws the line starting 15% of stick_length away from the ball
-    outputs.lines << {
-      x: ball_center_x + (stick_vec_x * state.stick_length * -0.15),
-      y: ball_center_y + (stick_vec_y * state.stick_length * -0.15),
-      w: stick_vec_x * state.stick_length * -1,
-      h: stick_vec_y * state.stick_length * -1,
-    }
-  end
-
-  def render_point_one
-    return unless state.point_one
-
-    outputs.lines << { x: state.point_one.x, y: state.point_one.y,
-                       x2: inputs.mouse.x, y2: inputs.mouse.y,
-                       r: 255 }
-  end
-
-  def input
-    input_stick
-    input_lines
-    state.point_one = nil if inputs.keyboard.key_down.escape
-  end
-
-  def input_stick
-    if inputs.keyboard.key_up.space
-      hit_ball
-      state.stick_power = 0
+    state.grid_points ||= (1280.idiv(40) + 1).flat_map do |x|
+      (720.idiv(40) + 1).map do |y|
+        { x: x * 40,
+          y: y * 40,
+          w: 40,
+          h: 40,
+          anchor_x: 0.5,
+          anchor_y: 0.5 }
+      end
     end
-
-    if inputs.keyboard.key_held.space
-      state.stick_power += 1 unless state.stick_power >= 50
-      outputs.labels << [100, 100, state.stick_power]
-    end
-
-    state.stick_angle += inputs.keyboard.left_right
-  end
-
-  def input_lines
-    return unless inputs.mouse.click
-
-    if state.point_one
-      x = snap(state.point_one.x)
-      y = snap(state.point_one.y)
-      x2 = snap(inputs.mouse.click.x)
-      y2 = snap(inputs.mouse.click.y)
-      state.walls << { x: x, y: y, x2: x2, y2: y2 }
-      state.point_one = nil
-    else
-      state.point_one = inputs.mouse.click.point
-    end
-  end
-
-  # FIX: does not snap negative numbers properly
-  def snap value
-    snap_number = 10
-    min = value.to_i.idiv(snap_number) * snap_number
-    max = min + snap_number
-    result = (max - value).abs < (min - value).abs ? max : min
-    puts "SNAP: #{ value } --> #{ result }" if state.debug
-    result
-  end
-
-  def hit_ball
-    vec_x = Math.cos(state.stick_angle.to_radians) * state.stick_power
-    vec_y = Math.sin(state.stick_angle.to_radians) * state.stick_power
-    state.ball_vector = vec2(vec_x, vec_y)
-    state.rest = false
-  end
-
-  def entropy
-    state.ball_vector[:x].abs + state.ball_vector[:y].abs
-  end
-
-  # Ball is resting if
-  # entropy is low, ball is touching a line
-  # the line is not steep and the ball is above the line
-  def ball_is_resting?(walls, true_normal)
-    entropy < 1.5 && !walls.empty? && true_normal[:y] > 0.96
   end
 
   def calc
-    walls = []
-    state.walls.each do |wall|
-      if line_intersect_rect?(wall, state.ball)
-        walls << wall unless state.prevent_collision.key?(wall)
+    player.y = 720  if player.y < 0
+    player.x = 1280 if player.x < 0
+    player.x = 0    if player.x > 1280
+    player.angle_velocity = player.angle_velocity.clamp(-30, 30)
+    calc_edit_mode
+    calc_play_mode
+  end
+
+  def calc_edit_mode
+    state.current_grid_point = geometry.find_intersect_rect(inputs.mouse, state.grid_points)
+    calc_edit_mode_click
+  end
+
+  def calc_edit_mode_click
+    return if !state.current_grid_point
+    return if !inputs.mouse.click
+
+    if !state.start_point
+      state.start_point = state.current_grid_point
+    else
+      state.terrain << { x: state.start_point.x,
+                         y: state.start_point.y,
+                         x2: state.current_grid_point.x,
+                         y2: state.current_grid_point.y }
+      state.start_point = nil
+    end
+  end
+
+  def calc_play_mode
+    player.x += player.dx
+    player.dy -= player.gravity
+    player.y += player.dy
+    player.angle += player.angle_velocity
+    player.dy += player.dy * player.drag ** 2 * -1
+    player.dx += player.dx * player.drag ** 2 * -1
+    player.colliding = false
+    player.colliding_with = nil
+
+    if inputs.keyboard.key_down.up
+      player.dy += 5 * player.angle.vector_y
+      player.dx += 5 * player.angle.vector_x
+    end
+    player.angle_velocity += inputs.left_right * -1
+    collisions = player_terrain_collisions
+    collisions.each do |collision|
+      collide! player, collision
+    end
+
+    if player.colliding_with
+      roll! player, player.colliding_with
+    end
+  end
+
+  def reflect_velocity! circle, line
+    slope = geometry.line_slope line, replace_infinity: 1000
+    slope_angle = geometry.line_angle line, replace_infinity: 1000
+    if slope_angle == 90 || slope_angle == 270
+      circle.dx *= -circle.elasticity
+    else
+      circle.angle_velocity += slope * (circle.dx.abs + circle.dy.abs)
+      vec = line.x2 - line.x, line.y2 - line.y
+      len = Math.sqrt(vec.x**2 + vec.y**2)
+
+      vec.x /= len
+      vec.y /= len
+
+      n = geometry.vec2_normal vec
+
+      v_dot_n = geometry.vec2_dot_product({ x: circle.dx, y: circle.dy }, n)
+
+      circle.dx = circle.dx - n.x * (2 * v_dot_n)
+      circle.dy = circle.dy - n.y * (2 * v_dot_n)
+      circle.dx *= circle.elasticity
+      circle.dy *= circle.elasticity
+      half_terminal_velocity = 10
+      impact_intensity = (circle.dy.abs) / half_terminal_velocity
+      impact_intensity = 1 if impact_intensity > 1
+
+      final = (0.9 - 0.8 * impact_intensity)
+      next_angular_velocity = circle.angle_velocity * final
+      circle.angle_velocity *= final
+
+      if (circle.dx.abs + circle.dy.abs) <= 0.2
+        circle.dx = 0
+        circle.dy = 0
+        circle.angle_velocity *= 0.99
+      end
+
+      if circle.angle_velocity.abs <= 0.1
+        circle.angle_velocity = 0
       end
     end
+  end
 
-    state.prevent_collision = {}
-    walls.each { |w| state.prevent_collision[w] = true }
+  def position_on_line! circle, line
+    circle.colliding = true
+    point = geometry.line_normal line, circle
+    if point.y > circle.y
+      circle.colliding_from_above = true
+    else
+      circle.colliding_from_above = false
+    end
 
-    normals = walls.map { |w| compute_proper_normal(w) }
-    true_normal = normals.inject { |a, b| normalize(vector_add(a, b)) }
+    circle.colliding_with = line
 
-    unless state.rest
-      state.ball_vector = collision(true_normal) unless walls.empty?
-      state.ball_old_x = state.ball[:x]
-      state.ball_old_y = state.ball[:y]
-      state.ball[:x] += state.ball_vector[:x]
-      state.ball[:y] += state.ball_vector[:y]
-      state.ball_vector[:y] -= state.physics.gravity
+    if !geometry.point_on_line? point, line
+      distance_from_start_of_line = geometry.distance_squared({ x: line.x, y: line.y }, point)
+      distance_from_end_of_line = geometry.distance_squared({ x: line.x2, y: line.y2 }, point)
+      if distance_from_start_of_line < distance_from_end_of_line
+        point = { x: line.x, y: line.y }
+      else
+        point = { x: line.x2, y: line.y2 }
+      end
+    end
+    angle = geometry.angle_to point, circle
+    circle.y = point.y + angle.vector_y * (circle.radius)
+    circle.x = point.x + angle.vector_x * (circle.radius)
+  end
 
-      if ball_is_resting?(walls, true_normal)
-        state.ball[:y] += 1
-        state.rest = true
+  def collide! circle, line
+    return if !line
+    position_on_line! circle, line
+    reflect_velocity! circle, line
+    next_player = { x: player.x + player.dx,
+                    y: player.y + player.dy,
+                    radius: player.radius }
+  end
+
+  def roll! circle, line
+    slope_angle = geometry.line_angle line, replace_infinity: 1000
+    ax = -circle.gravity * slope_angle.vector_y
+    ay = -circle.gravity * slope_angle.vector_x
+    if slope_angle == -1000 || slope_angle == 1000
+      ax = 0
+      circle.dy += -circle.gravity
+    else
+      friction_coefficient = 0.0001
+      friction_force = friction_coefficient * circle.gravity * slope_angle.vector_x
+
+      circle.dy += ay
+      circle.dx += ax
+
+      if circle.colliding_from_above
+        circle.dx += circle.angle_velocity * slope_angle.vector_x * 0.1
+        circle.dy += circle.angle_velocity * slope_angle.vector_y * 0.1
+      else
+        circle.dx += circle.angle_velocity * slope_angle.vector_x * -0.1
+        circle.dy += circle.angle_velocity * slope_angle.vector_y * -0.1
+      end
+
+      if circle.dx != 0
+        circle.dx -= friction_force * (circle.dx / circle.dx.abs)
+      end
+
+      if circle.dy != 0
+        circle.dy -= friction_force * (circle.dy / circle.dy.abs)
       end
     end
   end
 
-  # Line segment intersects rect if it intersects
-  # any of the lines that make up the rect
-  # This doesn't cover the case where the line is completely within the rect
-  def line_intersect_rect?(line, rect)
-    rect_to_lines(rect).each do |rect_line|
-      return true if segments_intersect?(line, rect_line)
+  def player_terrain_collisions
+    terrain.find_all do |terrain|
+      geometry.circle_intersect_line? player, terrain
     end
-
-    false
   end
 
-  # https://stackoverflow.com/questions/573084/
-  def collision(normal_vector)
-    dot_product = dot(state.ball_vector, normal_vector)
-    normal_square = dot(normal_vector, normal_vector)
-    perpendicular = vector_multiply(normal_vector, (dot_product / normal_square))
-    parallel = vector_minus(state.ball_vector, perpendicular)
-    perpendicular = vector_multiply(perpendicular, state.physics.restitution)
-    parallel = vector_multiply(parallel, state.physics.friction)
-    vector_minus(parallel, perpendicular)
+  def render
+    render_current_grid_point
+    render_preview_line
+    render_grid_points
+    render_terrain
+    render_player
+    render_player_terrain_collisions
   end
 
-  # https://stackoverflow.com/questions/1243614/
-  def compute_normals(line)
-    h = line[:y2] - line[:y]
-    w = line[:x2] - line[:x]
-    a = normalize vec2(-h, w)
-    b = normalize vec2(h, -w)
-    [a, b]
+  def render_player_terrain_collisions
+    collisions = player_terrain_collisions
+    outputs.lines << collisions.map do |collision|
+                       { x: collision.x,
+                         y: collision.y,
+                         x2: collision.x2,
+                         y2: collision.y2,
+                         r: 255,
+                         g: 0,
+                         b: 0 }
+                     end
   end
 
-  # https://stackoverflow.com/questions/3838319/
-  # Get the normal vector that points at the ball from the center of the line
-  def compute_proper_normal(line)
-    normals = compute_normals(line)
-    ball_center_x = state.ball_old_x + (state.ball[:w] / 2)
-    ball_center_y = state.ball_old_y + (state.ball[:h] / 2)
-    v1 = vec2(line[:x2] - line[:x], line[:y2] - line[:y])
-    v2 = vec2(line[:x2] - ball_center_x, line[:y2] - ball_center_y)
-    cp = v1[:x] * v2[:y] - v1[:y] * v2[:x]
-    cp < 0 ? normals[0] : normals[1]
+  def render_current_grid_point
+    return if state.game_mode == :play
+    return if !state.current_grid_point
+    outputs.sprites << state.current_grid_point
+                            .merge(w: 8,
+                                   h: 8,
+                                   anchor_x: 0.5,
+                                   anchor_y: 0.5,
+                                   path: :solid,
+                                   g: 0,
+                                   r: 0,
+                                   b: 0,
+                                   a: 128)
   end
 
-  def vector_multiply(vector, value)
-    vec2(vector[:x] * value, vector[:y] * value)
+  def render_preview_line
+    return if state.game_mode == :play
+    return if !state.start_point
+    return if !state.current_grid_point
+
+    outputs.lines << { x: state.start_point.x,
+                       y: state.start_point.y,
+                       x2: state.current_grid_point.x,
+                       y2: state.current_grid_point.y }
   end
 
-  def vector_minus(vec_a, vec_b)
-    vec2(vec_a[:x] - vec_b[:x], vec_a[:y] - vec_b[:y])
+  def render_grid_points
+    outputs
+      .sprites << state
+                    .grid_points
+                    .map do |point|
+      point.merge w: 8,
+                  h: 8,
+                  anchor_x: 0.5,
+                  anchor_y: 0.5,
+                  path: :solid,
+                  g: 255,
+                  r: 255,
+                  b: 255,
+                  a: 128
+    end
   end
 
-  def vector_add a, b
-    vec2(a[:x] + b[:x], a[:y] + b[:y])
+  def render_terrain
+    outputs.lines << state.terrain
   end
 
-  # The lines composing the boundaries of a rectangle
-  def rect_to_lines(rect)
-    x = rect[:x]
-    y = rect[:y]
-    x2 = rect[:x] + rect[:w]
-    y2 = rect[:y] + rect[:h]
-    [{ x: x, y: y, x2: x2, y2: y },
-     { x: x, y: y, x2: x, y2: y2 },
-     { x: x2, y: y, x2: x2, y2: y2 },
-     { x: x, y: y2, x2: x2, y2: y2 }]
+  def render_player
+    outputs.sprites << player_prefab
   end
 
-  # This is different from args.geometry.line_intersect
-  # This considers line segments instead of lines
-  # http://jeffreythompson.org/collision-detection/line-line.php
-  def segments_intersect?(line_one, line_two)
-    x1 = line_one[:x]
-    y1 = line_one[:y]
-    x2 = line_one[:x2]
-    y2 = line_one[:y2]
-
-    x3 = line_two[:x]
-    y3 = line_two[:y]
-    x4 = line_two[:x2]
-    y4 = line_two[:y2]
-
-    uA = ((x4-x3)*(y1-y3) - (y4-y3)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1))
-    uB = ((x2-x1)*(y1-y3) - (y2-y1)*(x1-x3)) / ((y4-y3)*(x2-x1) - (x4-x3)*(y2-y1))
-
-    uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1
+  def player_prefab
+    flip_horizontally = player.facing == -1
+    { x: player.x,
+      y: player.y,
+      w: player.radius * 2,
+      h: player.radius * 2,
+      angle: player.angle,
+      anchor_x: 0.5,
+      anchor_y: 0.5,
+      path: "sprites/circle/blue.png" }
   end
 
-  def reset_ball
-    state.ball = nil
-    state.ball_vector = nil
-    state.rest = false
+  def player
+    state.player
   end
 
-  def debug
-    outputs.labels << { x: 50.from_left, y: 50.from_top, text: "Entropy: #{entropy}"}
+  def terrain
+    state.terrain
   end
 end
 
-
 def tick args
-  $game ||= BouncingBall.new
+  $game ||= Game.new
   $game.args = args
   $game.tick
+end
+
+def reset args
+  $terrain = args.state.terrain
+  $game = nil
 end

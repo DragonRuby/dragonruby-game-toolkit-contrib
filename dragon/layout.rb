@@ -15,10 +15,13 @@ module GTK
       @ratio_w = ratio_w
       @ratio_h = ratio_h
       @orientation = orientation
+      initialize_gutters
+    end
 
-      @gutter_left   = 20
-      @gutter_right  = 20
-      @gutter_top    = 52
+    def initialize_gutters
+      @gutter_left   = 18
+      @gutter_right  = 18
+      @gutter_top    = 47
       @gutter_bottom = 52
       @cell_size     = 48
       @gutter        = 4
@@ -26,10 +29,10 @@ module GTK
       @col_count     = 24
 
       if @orientation == :portrait
-        @gutter_left   = 52
-        @gutter_right  = 52
-        @gutter_top    = 20
-        @gutter_bottom = 20
+        @gutter_left   = 50
+        @gutter_right  = 50
+        @gutter_top    = 15
+        @gutter_bottom = 15
         @cell_size     = 48
         @gutter        = 4
         @row_count     = 24
@@ -320,22 +323,68 @@ module GTK
         col_count_rework = 12
       end
 
-      @debug_primitives ||= col_count_rework.map_with_index do |col|
-                        row_count_rework.map_with_index do |row|
-                          cell   = rect row: row, col: col
-                          center = Geometry.rect_center_point cell
-                          [
-                            cell.merge(opts).border!,
-                            cell.merge(opts)
-                                .label!(x: center.x,
-                                        y: center.y,
-                                        text: "#{row},#{col}",
-                                        size_enum: -3,
-                                        vertical_alignment_enum: 1,
-                                        alignment_enum: 1)
-                          ]
-                        end
-                      end
+      if !@debug_primitives
+        single_cell = rect row: row_count_rework - 1, col: 0, w: 1, h: 1
+        double_cell = rect row: row_count_rework - 1, col: 0, w: 2, h: 2
+        single_row = rect row: 0, col: 0, w: col_count_rework, h: 1
+        single_col = rect row: 0, col: 0, w: 1, h: row_count_rework
+        safe_area = rect row: 0, col: 0, w: col_count_rework, h: row_count_rework, include_row_gutter: true, include_col_gutter: true
+        bg_rect = rect row: 0, col: 1, w: 10, h: 1
+
+        center_vertical = { x: $gtk.args.grid.w.idiv(2), y: safe_area.y, w: gutter, h: safe_area.h, path: :pixel, r: 128, g: 128, b: 128, anchor_x: 0.5 }
+        center_horizontal = { x: safe_area.x, y: $gtk.args.grid.h.idiv(2), w: safe_area.w, h: gutter, path: :pixel, r: 128, g: 128, b: 128, anchor_y: 0.5 }
+
+        values = [
+          "scaling: [#{$gtk.args.grid.native_scale_enum.fdiv(100).to_sf}]",
+          "safe area: [#{safe_area.x},#{safe_area.y},#{safe_area.w},#{safe_area.h}]",
+          "cell: [#{single_cell.w},#{single_cell.h}]",
+          "cell 2X: [#{double_cell.w},#{double_cell.h}]"
+        ]
+
+        single_cell_label = { x: safe_area.center.x,
+                              y: safe_area.y + safe_area.h - 12,
+                              text: values.join(" "),
+                              anchor_x: 0.5,
+                              anchor_y: 1.0,
+                              r: 255, g: 255, b: 255, a: 255,
+                              size_px: 12 }
+
+        single_cell_bg = { x: bg_rect.x, y: safe_area.y + safe_area.h - 12, h: 12, w: bg_rect.w, path: :pixel, r: 0, g: 0, b: 0, a: 255 }
+
+        single_cell_border = { **safe_area, primitive_marker: :border }
+
+        @debug_primitives = col_count_rework.map_with_index do |col|
+          row_count_rework.map_with_index do |row|
+            cell   = rect row: row, col: col
+            center = Geometry.rect_center_point cell
+            [
+              cell.merge(opts).border!(row: row, col: col, docs: "border for cell at row #{row}, col #{col}"),
+              cell.merge(opts)
+                .label!(x: cell.center.x,
+                        y: cell.center.y,
+                        text: "#{row},#{col}",
+                        size_px: 12,
+                        anchor_x: 0.5,
+                        anchor_y: 0.5 + 0.5,
+                        row: row,
+                        col: col,
+                        docs: "label for cell at row #{row}, col #{col}"),
+              cell.merge(opts)
+                .label!(x: cell.center.x,
+                        y: cell.center.y,
+                        text: "#{cell.x},#{cell.y}",
+                        size_px: 12,
+                        anchor_x: 0.5,
+                        anchor_y: 0.5 - 0.5,
+                        row: row,
+                        col: col,
+                        docs: "label for cell at row #{row}, col #{col}")
+
+            ]
+          end
+        end.flatten + [center_horizontal, center_vertical, single_cell_border, single_cell_bg, single_cell_label]
+      end
+
       @debug_primitives
     end
 
@@ -365,6 +414,7 @@ module GTK
 
     def reset
       @debug_primitives = nil
+      initialize_gutters
     end
   end
 end

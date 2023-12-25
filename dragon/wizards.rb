@@ -36,6 +36,65 @@ class Wizard
 
     default_metadata.merge parsed_metadata
   end
+
+  def help
+    puts "* INFO: No help available for Wizard of type ~#{self.class.name}~"
+  end
+
+  def process_wizard_exception e
+    # queue the exception to be added after current standard out has been processed.
+    queue_at = Kernel.global_tick_count + 3
+    $console.clear_logs global_at: queue_at - 1
+    $console.add_primitive ("=" * $console.console_text_width), global_at: queue_at
+    e.console_primitives.each do |p|
+      $console.add_primitive p, global_at: queue_at
+    end
+    $console.add_primitive ("=" * $console.console_text_width), global_at: queue_at
+  end
+
+  def last_executed_steps
+    @last_executed_steps
+  end
+
+  def execute_steps steps
+    log "================"
+    log "* INFO: Starting #{display_name}."
+    @start_at = Kernel.global_tick_count
+
+    @last_executed_steps = steps
+
+    steps.each do |m|
+      before_step = "before_#{m}".to_sym
+      after_step = "after_#{m}".to_sym
+      send before_step if respond_to? before_step
+      log_info "Running step ~:#{m}~."
+      if @wizard_status[m][:result] != :success
+        result = (send m)
+        if !result || result.is_a?(Symbol) == false
+          raise "Step ~:#{m}~ returned nil. Expected a symbol (:success if everything went well)."
+        end
+
+        return result if result != :success
+      end
+      send after_step if respond_to? after_step
+      @wizard_status[m][:result] = result
+      log_info "Running step ~:#{m}~ complete."
+    end
+
+    return :success
+  rescue Exception => e
+    if e.is_a? WizardException
+      process_wizard_exception e
+    else
+      log_error e.to_s
+      log e.__backtrace_to_org__
+    end
+    return :exception
+  end
+
+  def display_name
+    self.class.name
+  end
 end
 
 class WizardException < Exception

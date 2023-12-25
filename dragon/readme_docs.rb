@@ -301,8 +301,8 @@ like one frame every few seconds--then there's likely a simple fix.
 You're probably running a desktop environment: menus, apps, web browsers,
 etc. This is okay! Launch the terminal app and type:
 
-#+begin_src
-sudo raspi-config
+#+begin_src bash
+  sudo raspi-config
 #+end_src
 
 It'll ask you for your password (if you don't know, try "raspberry"), and then
@@ -342,6 +342,20 @@ structure. To create a new project, unzip the zip file again in its entirety
 and use that as a starting point for another game. This is the recommended
 approach to starting a new project.
 
+The DragonRuby binary/package is designed to be committed in its entirety
+with your source code (it’s why we keep it small). This protects the “shelf life”
+for commercial games. 3 years from now, we might be on a vastly different version
+of the engine. But you know that the code you’ve written will definitely work with the
+version that was committed to source control.
+
+It's strongly recommended that you :b:do NOT keep DragonRuby Game Toolkit in a shared location:/b: and
+instead unzip a clean copy for every game (and commit everything to source control).
+
+File access functions are sandoxed and assume that the ~dragonruby~ binary lives alongside
+the game you are building. Do not expect file access functions to return correct values if you are attempting
+to run the ~dragonruby~ binary from a shared location. It's recommended that the directory
+structure contained in the zip is not altered and games are built using that starting directory structure.
+
 ** Considerations For Public Git Repositories
 
 You can open source your game's code given the following options.
@@ -356,7 +370,7 @@ specific files.
 
 IMPORTANT: Do NOT commit ~dragonruby-publish(.exe)~, or ~dragonruby-bind(.exe)~.
 
-#+begin_src
+#+begin_src plaintext
   dragonruby
   dragonruby.exe
   dragonruby-publish
@@ -379,27 +393,13 @@ and can be revoked if abused.
 
 The following ~.gitignore~ should be used for private repositories (commercial games).
 
-#+begin_src
+#+begin_src plaintext
   /tmp/
   /logs/
 #+end_src
 
 You'll notice that everything else is committed to source control (even the ~./samples~, ~./docs~, and ~./builds~ directory).
 
-The DragonRuby binary/package is designed to be committed in its entirety
-with your source code (it’s why we keep it small). This protects the “shelf life”
-for commercial games. 3 years from now, we might be on a vastly different version
-of the engine. But you know that the code you’ve written will definitely work with the
-version that was committed to source control. For private repositories, it's strongly
-recommended that you do NOT keep DragonRuby Game Toolkit in a shared location and
-instead unzip a clean copy for every game (and commit everything to source control).
-
-IMPORTANT: File access functions are sandoxed and assume that the
-~dragonruby~ binary lives alongside the game you are building. Do not
-expect file access functions to return correct values if you are attempting
-to run the ~dragonruby~ binary from a shared location. It's
-recommended that the directory structure contained in the zip is not
-altered and games are built using that starter template.
 S
     end
 
@@ -489,7 +489,11 @@ It's a good idea to pause the game if it doesn't have focus. Here's an example o
     # if the keyboard doesn't have focus, and the game is in production mode, and it isn't the first tick
     if !args.inputs.keyboard.has_focus && args.gtk.production && args.state.tick_count != 0
       args.outputs.background_color = [0, 0, 0]
-      args.outputs.labels << { x: 640, y: 360, text: "Game Paused (click to resume).", alignment_enum: 1, r: 255, g: 255, b: 255 }
+      args.outputs.labels << { x: 640,
+                               y: 360,
+                               text: "Game Paused (click to resume).",
+                               alignment_enum: 1,
+                               r: 255, g: 255, b: 255 }
       # consider setting all audio volume to 0.0
     else
       # perform your regular tick function
@@ -511,7 +515,14 @@ within the game itself. You can use ~args.gtk.open_url~ plus a review URL. Here'
 #+begin_src
   def tick args
     # render the review button
-    args.state.review_button ||= { x: 640 - 50, y: 360 - 25, w: 100, h: 50, path: :pixel, r: 0, g: 0, b: 0 }
+    args.state.review_button ||= { x: 640 - 50,
+                                   y: 360 - 25,
+                                   w: 100,
+                                   h: 50,
+                                   path: :pixel,
+                                   r: 0,
+                                   g: 0,
+                                   b: 0 }
     args.outputs.sprites << args.state.review_button
     args.outputs.labels << { x: 640, y: 360, anchor_x: 0.5, anchor_y: 0.5, text: "Review" }
 
@@ -523,7 +534,7 @@ within the game itself. You can use ~args.gtk.open_url~ plus a review URL. Here'
         args.gtk.openurl "itms-apps://itunes.apple.com/app/idYOURGAMEID?action=write-review"
       elsif args.gtk.platform? :android
         # your app id is the name of your android package
-        args.gtk.openurl ""https://play.google.com/store/apps/details?id=YOURGAMEID"
+        args.gtk.openurl "https://play.google.com/store/apps/details?id=YOURGAMEID"
       elsif args.gtk.platform? :web
         # if they are playing the web version of the game, take them to the purchase page on itch
         args.gtk.openurl "https://amirrajan.itch.io/YOURGAMEID/purchase"
@@ -571,13 +582,13 @@ like:
   keytool -genkey -v -keystore APP.keystore -alias mygame -keyalg RSA -keysize 2048 -validity 10000
 
   # deploying to a local device/emulator
-  apksigner sign --ks mygame.keystore mygame-android.apk
-  adb install mygame-android.apk
+  apksigner sign --min-sdk-version 21 --ks ./profiles/mygame.keystore ./builds/APP-android.apk
+  adb install ./builds/APP-android.apk
   # read logs of device
   adb logcat -e mygame
 
   # signing for Google Play
-  apksigner sign --min-sdk-version 21 --ks ./profiles/APP.keystore ./builds/APP-googleplay.aab
+  apksigner sign --min-sdk-version 33 --ks ./profiles/APP.keystore ./builds/APP-googleplay.aab
 #+end_src
 S
     end
@@ -956,27 +967,6 @@ NOTE: Rendering using an ~Array~ is "quick and dirty". It's generally recommende
   end
 #+end_src
 
-** More Sprite Properties As An Array
-
-Here are all the properties you can set on a sprite.
-
-#+begin_src ruby
-  def tick args
-    args.outputs.sprites << [
-      100,                       # X
-      100,                       # Y
-      32,                        # W
-      64,                        # H
-      'sprites/square-blue.png', # PATH
-      0,                         # ANGLE
-      255,                       # ALPHA
-      0,                         # RED_SATURATION
-      255,                       # GREEN_SATURATION
-      0                          # BLUE_SATURATION
-    ]
-  end
-#+end_src
-
 ** Rendering a Sprite Using a ~Hash~
 
 Using ordinal positioning can get a little unruly given so many
@@ -1020,8 +1010,7 @@ You can represent a sprite as a ~Hash~:
 
       blendmode_enum: 1
 
-      # labels anchor/alignment (default is nil)
-      # if these values are provided, they will be used over alignment_enum and vertical_alignment_enum
+      # sprites anchor/alignment (default is nil)
       anchor_x: 0.5,
       anchor_y: 0.5
     }
@@ -1030,71 +1019,6 @@ You can represent a sprite as a ~Hash~:
 
 The ~blendmode_enum~ value can be set to ~0~ (no blending), ~1~ (alpha blending),
 ~2~ (additive blending), ~3~ (modulo blending), ~4~ (multiply blending).
-
-** Rendering a Sprite Using a ~Class~
-
-You can represent a sprite as an ~class~ and manually define all sprite properties:
-
-#+begin_src ruby
-  # Create type with ALL sprite properties AND primitive_marker
-  # you can manually define all sprite properties
-  class Sprite
-    attr_accessor :x, :y, :w, :h, :path, :angle, :a, :r, :g, :b,
-                  :flip_horizontally, :flip_vertically,
-                  :angle_anchor_x, :angle_anchor_y,
-                  :blendmode_enum,
-                  :anchor_x, :anchor_y
-                  :tile_x, :tile_y, :tile_w, :tile_h,
-                  :source_x, :source_y, :source_w, :source_h,
-                  :source_x2, :source_y2, :source_x3, :source_y3, :x2, :y2, :x3, :y3,
-
-    def primitive_marker
-      :sprite
-    end
-  end
-
-  class BlueSquare < Sprite
-    def initialize(x: 0, y: 0, w: 0, h: 0k
-      @x = x
-      @y = y
-      @w = w
-      @h = h
-      @path = 'sprites/square-blue.png'
-    end
-  end
-
-  def tick args
-    args.outputs.sprites << BlueSquare.new(x: 640 - 50,
-                                           y: 360 - 50,
-                                           w: 50,
-                                           h: 50)
-  end
-#+end_src
-
-You can represent a sprite using the ~attr_sprite~ helper method:
-
-#+begin_src
-  class BlueSquare
-    # invoke the helper function at the class level for
-    # anything you want to represent as a sprite
-    attr_sprite
-
-    def initialize(x: 0, y: 0, w: 0, h: 0k
-      @x = x
-      @y = y
-      @w = w
-      @h = h
-      @path = 'sprites/square-blue.png'
-    end
-  end
-
-  def tick args
-    args.outputs.sprites << BlueSquare.new(x: 640 - 50,
-                                           y: 360 - 50,
-                                           w: 50,
-                                           h: 50)
-  end
-#+end_src
 S
     end
 

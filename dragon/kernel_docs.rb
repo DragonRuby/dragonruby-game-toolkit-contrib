@@ -56,9 +56,9 @@ S
     samples_string = (($gtk.read_file "docs/samples.txt") || "")
     index_string = docs_string + "\n" + samples_string
 
-    index_parse_result = __docs_to_html__ index_string
-    docs_parse_result = __docs_to_html__ docs_string
-    samples_parse_result = __docs_to_html__ samples_string
+    index_parse_result = Docs.__docs_to_html__ index_string
+    docs_parse_result = Docs.__docs_to_html__ docs_string, warn_long_lines: true
+    samples_parse_result = Docs.__docs_to_html__ samples_string, warn_long_lines: false
 
     $gtk.write_file_root 'docs/index.txt', "#{index_string}"
     $gtk.write_file_root 'docs/index.html', index_parse_result[:html]

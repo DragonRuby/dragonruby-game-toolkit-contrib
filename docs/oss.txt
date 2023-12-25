@@ -1350,6 +1350,8 @@ Follows is a source code listing for all files that have been open sourced. This
         @warn_color = Color.new [255, 255, 0]
         @error_color = Color.new [255, 80, 80]
         @unfiltered_color = Color.new [0, 255, 255]
+        @add_primitive_queue = []
+        @clear_logs_request_queue = []
   
         load_history
       end
@@ -1408,12 +1410,20 @@ Follows is a source code listing for all files that have been open sourced. This
         nil
       end
   
-      def add_primitive obj
+      def __add_primitive__ obj
         if obj.is_a? Hash
           add_sprite obj
         else
           add_text obj
         end
+        nil
+      end
+  
+      def add_primitive obj, global_at: nil
+        @add_primitive_queue << {
+          global_at: global_at || Kernel.global_tick_count,
+          primitive: obj
+        }
         nil
       end
   
@@ -2003,6 +2013,8 @@ Follows is a source code listing for all files that have been open sourced. This
           calc args
           prompt.tick
           menu.tick args
+          process_add_primitive_queue
+          process_clear_logs_request_queue
         rescue Exception => e
           begin
             puts "#{e}"
@@ -2012,6 +2024,26 @@ Follows is a source code listing for all files that have been open sourced. This
           @disabled = true
           $stdout.puts e
           $stdout.puts "* FATAL: The GTK::Console console threw an unhandled exception and has been reset. You should report this exception (along with reproduction steps) to DragonRuby."
+        end
+      end
+  
+      def process_clear_logs_request_queue
+        if @clear_logs_request_queue.any? { |entry| entry.global_at <= Kernel.global_tick_count }
+          @log.clear
+          @archived_log.clear
+          @clear_logs_request_queue.reject! { |entry| entry.global_at <= Kernel.global_tick_count }
+        end
+      end
+  
+      def process_add_primitive_queue
+        @add_primitive_queue.find_all do |entry|
+          entry.global_at <= Kernel.global_tick_count
+        end.each do |entry|
+          __add_primitive__ entry.primitive
+        end
+  
+        @add_primitive_queue.reject! do |entry|
+          entry.global_at <= Kernel.global_tick_count
         end
       end
   
@@ -2221,6 +2253,10 @@ Follows is a source code listing for all files that have been open sourced. This
           @slide_progress = @toggled_at.global_ease(@animation_duration, :flip, :quint)
         end
         @slide_progress
+      end
+  
+      def clear_logs global_at: Kernel.global_tick_count
+        @clear_logs_request_queue << { global_at: global_at }
       end
     end
   end
@@ -4428,6 +4464,70 @@ Follows is a source code listing for all files that have been open sourced. This
       def y
         0
       end
+  
+      def hd_left
+        @allscreen_left
+      end
+  
+      def hd_left= value
+        @allscreen_left = value
+      end
+  
+      def hd_right
+        @allscreen_right
+      end
+  
+      def hd_right= value
+        @allscreen_right = value
+      end
+  
+      def hd_top
+        @allscreen_top
+      end
+  
+      def hd_top= value
+        @allscreen_top = value
+      end
+  
+      def hd_bottom
+        @allscreen_bottom
+      end
+  
+      def hd_bottom= value
+        @allscreen_bottom = value
+      end
+  
+      def hd_width
+        @allscreen_width
+      end
+  
+      def hd_width= value
+        @allscreen_width = value
+      end
+  
+      def hd_height
+        @allscreen_height
+      end
+  
+      def hd_height= value
+        @allscreen_height = value
+      end
+  
+      def hd_offset_x
+        @allscreen_offset_x
+      end
+  
+      def hd_offset_x= value
+        @allscreen_offset_x = value
+      end
+  
+      def hd_offset_y
+        @allscreen_offset_y
+      end
+  
+      def hd_offset_y= value
+        @allscreen_offset_y = value
+      end
     end
   end
 
@@ -4733,10 +4833,9 @@ Follows is a source code listing for all files that have been open sourced. This
         end
       end
   
-      def set collection, value = true
+      def set collection, value
         return if collection.length == 0
         @scrubbed_ivars = nil
-        value = Kernel.tick_count if value
   
         collection.each do |m|
           m_to_s = m.to_s
@@ -5284,16 +5383,44 @@ Follows is a source code listing for all files that have been open sourced. This
   # Contributors outside of DragonRuby who also hold Copyright: Michał Dudziński
   
   class IOSWizard < Wizard
+    def help
+      puts <<~S
+           * INFO: Help for #{self.class.name}
+             Here are the available options for this wizard (these options can be invoked through the DragonRuby Console):
+           ** Device
+           *** Deploy app to device connected via USB:
+               #+begin_src
+                 $wizards.ios.start env: :dev
+               #+end_src
+           ** Simulator
+           *** Deploy app to simulator
+               The default simulator is iPhone 13 Pro Max and will be automatically installed if it doesn't exist.
+               #+begin_src
+                 $wizards.ios.start env: :sim
+               #+end_src
+           *** Deploy app to simulator and specify a device (partial device name allowed):
+               #+begin_src
+                 $wizards.ios.start env: :sim, sim_name: "iPad Pro"
+               #+end_src
+           *** Reset simulators
+               Delete all content from simulators and reset them
+               #+begin_src
+                 $wizards.ios.reset_simulators
+               #+end_src
+           ** Distribution
+           *** Package app for production release:
+               #+begin_src
+                 $wizards.ios.start env: :prod
+               #+end_src
+           S
+    end
+  
     def initialize
       @doctor_executed_at = 0
     end
   
     def relative_path
       (File.dirname $gtk.binary_path)
-    end
-  
-    def steps
-      @steps ||= []
     end
   
     def prerequisite_steps
@@ -5343,6 +5470,7 @@ Follows is a source code listing for all files that have been open sourced. This
     def steps_sim_build
       [
         *prerequisite_steps,
+        :install_simulator_if_needed,
   
         :check_for_dev_profile,
   
@@ -5430,52 +5558,23 @@ Follows is a source code listing for all files that have been open sourced. This
       @opts = opts || {}
   
       if !(@opts.is_a? Hash) || !($gtk.args.fn.eq_any? @opts[:env], :dev, :prod, :hotload, :sim)
-        raise WizardException.new(
-                "* $wizards.ios.start needs to be provided an ~env:~ option.",
-                "** To deploy your app to an iOS device connected to your computer:\n   $wizards.ios.start env: :dev",
-                "** To deploy your app with hotloading to an iOS device connected to your computer:\n   $wizards.ios.start env: :hotload",
-                "** To deploy your app to the iOS Simulator:\n   $wizards.ios.start env: :sim",
-                "** To deploy your app for sale on the AppStore:\n   $wizards.ios.start env: :prod",
-              )
+        process_wizard_exception WizardException.new(
+                                   "* $wizards.ios.start needs to be provided an ~env:~ option.",
+                                   "** To deploy your app to an iOS device connected to your computer:\n   $wizards.ios.start env: :dev",
+                                   "** To deploy your app with hotloading to an iOS device connected to your computer:\n   $wizards.ios.start env: :hotload",
+                                   "** To deploy your app to the iOS Simulator:\n   $wizards.ios.start env: :sim",
+                                   "** To deploy your app for sale on the AppStore:\n   $wizards.ios.start env: :prod",
+                                   "** For more help type:\n   $wizards.ios.help",
+                                 )
       end
   
       @build_type = @opts[:env]
-      @steps = steps_dev_build
-      @steps = steps_prod_build if production_build?
-      @steps = steps_sim_build if sim_build?
       @certificate_name = nil
       @app_version = opts[:version]
       @app_version = "1.0" if @opts[:env] == :dev && !@app_version
       init_wizard_status
-      log_info "Starting iOS Wizard so we can deploy to your device."
-      @start_at = Kernel.global_tick_count
-      steps.each do |m|
-        before_step = "before_#{m}".to_sym
-        after_step = "after_#{m}".to_sym
-        send before_step if respond_to? before_step
-        log_info "Running step ~:#{m}~."
-        result = (send m) || :success if @wizard_status[m][:result] != :success
-        send after_step if respond_to? after_step
-        @wizard_status[m][:result] = result
-        log_info "Running step ~:#{m}~ complete."
-      end
+      result = execute_steps get_steps_to_execute
       nil
-    rescue Exception => e
-      if e.is_a? WizardException
-        $console.log.clear
-        $console.archived_log.clear
-        log "=" * $console.console_text_width
-        e.console_primitives.each do |p|
-          $console.add_primitive p
-        end
-        log "=" * $console.console_text_width
-      else
-        log_error e.to_s
-        log e.__backtrace_to_org__
-      end
-  
-      init_wizard_status
-      $console.set_command "$wizards.ios.start env: :#{@opts[:env]}"
     end
   
     def always_fail
@@ -5484,7 +5583,11 @@ Follows is a source code listing for all files that have been open sourced. This
     end
   
     def check_for_xcode
-      if !cli_app_exist?(xcodebuild_cli_app)
+      result = sh "xcrun simctl list devices"
+  
+      simctl_missing = result.include? "unable to find utility"
+  
+      if !cli_app_exist?(xcodebuild_cli_app) || simctl_missing
         raise WizardException.new(
           "* You need Xcode to use $wizards.ios.start.",
           { w: 75, h: 75, path: get_reserved_sprite("xcode.png") },
@@ -5495,6 +5598,8 @@ Follows is a source code listing for all files that have been open sourced. This
           "** 3. After installing. Open up Xcode to accept the EULA."
         )
       end
+  
+      :success
     end
   
     def check_for_brew
@@ -5508,21 +5613,23 @@ Follows is a source code listing for all files that have been open sourced. This
           { w: 700, h: 99, path: get_reserved_sprite("terminal.png") },
         )
       end
+  
+      :success
     end
   
     def init_wizard_status
       @wizard_status = {}
-      steps.each do |m|
+      get_steps_to_execute.each do |m|
         @wizard_status[m] = { result: :not_started }
       end
   
       previous_step = nil
       next_step = nil
-      steps.each_cons(2) do |current_step, next_step|
+      get_steps_to_execute.each_cons(2) do |current_step, next_step|
         @wizard_status[current_step][:next_step] = next_step
       end
   
-      steps.reverse.each_cons(2) do |current_step, previous_step|
+      get_steps_to_execute.reverse.each_cons(2) do |current_step, previous_step|
         @wizard_status[current_step][:previous_step] = previous_step
       end
     end
@@ -5530,6 +5637,10 @@ Follows is a source code listing for all files that have been open sourced. This
     def restart
       init_wizard_status
       start
+    end
+  
+    def reset
+      init_wizard_status
     end
   
     def check_for_distribution_profile
@@ -5552,6 +5663,8 @@ Follows is a source code listing for all files that have been open sourced. This
           { w: 200, h: 124, path: get_reserved_sprite("profiles-folder.png") },
         )
       end
+  
+      :success
     end
   
     def check_for_dev_profile
@@ -5574,6 +5687,8 @@ Follows is a source code listing for all files that have been open sourced. This
           { w: 200, h: 124, path: get_reserved_sprite("profiles-folder.png") },
         )
       end
+  
+      :success
     end
   
     def provisioning_profile_path environment
@@ -5640,12 +5755,14 @@ Follows is a source code listing for all files that have been open sourced. This
       @team_id = (ios_metadata.teamid || "")
       raise_ios_metadata_required if @team_id.strip.length == 0
       log_info "Team Identifer is: #{@team_id}"
+      :success
     end
   
     def determine_app_name
       @app_name = (ios_metadata.appname || "")
       raise_ios_metadata_required if @app_name.strip.length == 0
       log_info "App name is: #{@app_name}."
+      :success
     end
   
     def provisioning_profile_xml environment
@@ -5672,18 +5789,21 @@ Follows is a source code listing for all files that have been open sourced. This
       @app_id = ios_metadata.appid
       raise_ios_metadata_required if @app_id.strip.length == 0
       log_info "App Identifier is set to: #{@app_id}"
+      :success
     end
   
     def determine_devcert
       @certificate_name = ios_metadata.devcert
       raise_ios_metadata_required if @certificate_name.strip.length == 0
       log_info "Dev Certificate is set to: #{@certificate_name}"
+      :success
     end
   
     def determine_prodcert
       @certificate_name = ios_metadata.prodcert
       raise_ios_metadata_required if @certificate_name.strip.length == 0
       log_info "Production (Distribution) Certificate is set to: #{@certificate_name}"
+      :success
     end
   
     def set_app_name name
@@ -5703,6 +5823,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
     def clear_tmp_directory
       sh "rm -rf #{tmp_directory}"
+      :success
     end
   
     def set_app_id id
@@ -5740,6 +5861,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
       @device_id = connected_devices.first
       log_info "I will be using device with UUID #{@device_id}"
+      :success
     end
   
     def check_for_certs
@@ -5754,6 +5876,8 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       log_info "I will be using certificate: '#{@certificate_name}'."
+  
+      :success
     end
   
     def codesign_allocate_path
@@ -5828,6 +5952,7 @@ Follows is a source code listing for all files that have been open sourced. This
       sh "/usr/bin/plutil -convert xml1 \"#{tmp_directory}/Entitlements.plist\""
   
       @entitlement_plist_written = true
+      :success
     end
   
     def code_sign_binary
@@ -5840,6 +5965,7 @@ Follows is a source code listing for all files that have been open sourced. This
       sh "CODESIGN_ALLOCATE=\"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\" /usr/bin/codesign -f -s \"#{@certificate_name}\" --entitlements #{tmp_directory}/Entitlements.plist \"#{tmp_directory}/ipa_root/Payload/#{@app_name}.app/#{@app_name}\""
   
       @code_sign_completed = true
+      :success
     end
   
     def __get_plist_orientation_value__
@@ -5976,6 +6102,7 @@ Follows is a source code listing for all files that have been open sourced. This
       $gtk.write_file_root "tmp/ios/Info.txt", info_plist_string.strip
   
       @info_plist_written = true
+      :success
     end
   
     def production_write_info_plist
@@ -6098,6 +6225,7 @@ Follows is a source code listing for all files that have been open sourced. This
       $gtk.write_file_root "tmp/ios/Info.txt", info_plist_string.strip
   
       @info_plist_written = true
+      :success
     end
   
     def device_orientation_xml
@@ -6120,6 +6248,7 @@ Follows is a source code listing for all files that have been open sourced. This
     def embed_mobileprovision
       sh %Q[cp #{@provisioning_profile_path} "#{app_path}/embedded.mobileprovision"]
       sh %Q[/usr/bin/plutil -convert binary1 "#{app_path}/Info.plist"]
+      :success
     end
   
     def clear_payload_directory
@@ -6130,6 +6259,7 @@ Follows is a source code listing for all files that have been open sourced. This
       sh %Q[rm -rf "#{app_path}/data"]
       sh %Q[rm -rf "#{app_path}/fonts"]
       sh %Q[rm -rf "#{app_path}/metadata"]
+      :success
     end
   
     def stage_ios_app
@@ -6143,6 +6273,7 @@ Follows is a source code listing for all files that have been open sourced. This
       sh %Q[cp -r "#{root_folder}/data/" "#{app_path}/data/"]
       sh %Q[cp -r "#{root_folder}/fonts/" "#{app_path}/fonts/"]
       sh %Q[cp -r "#{root_folder}/metadata/" "#{app_path}/metadata/"]
+      :success
     end
   
     def stage_sim_app
@@ -6157,18 +6288,21 @@ Follows is a source code listing for all files that have been open sourced. This
       sh %Q[cp -r "#{root_folder}/data/" "#{app_path}/data/"]
       sh %Q[cp -r "#{root_folder}/fonts/" "#{app_path}/fonts/"]
       sh %Q[cp -r "#{root_folder}/metadata/" "#{app_path}/metadata/"]
+      :success
     end
   
     def create_payload
       sh %Q[mkdir -p #{tmp_directory}/ipa_root/Payload]
       sh %Q[cp -r "#{app_path}" "#{tmp_directory}/ipa_root/Payload"]
       sh %Q[chmod -R 755 "#{tmp_directory}/ipa_root/Payload"]
+      :success
     end
   
     def write_server_ip_address
       sh %Q[mkdir -p "#{app_path}/metadata/"]
       sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip}]
       sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip} > "#{app_path}/metadata/DRAGONRUBY_REMOTE_HOTLOAD"]
+      :success
     end
   
     def create_dev_payload_directory
@@ -6181,6 +6315,7 @@ Follows is a source code listing for all files that have been open sourced. This
       # production build marker
       sh %Q[mkdir -p "#{app_path}/metadata/"]
       sh %Q[touch "#{app_path}/metadata/DRAGONRUBY_PRODUCTION_BUILD"]
+      :success
     end
   
     def create_prod_payload_directory
@@ -6193,6 +6328,7 @@ Follows is a source code listing for all files that have been open sourced. This
       # production build marker
       sh %Q[mkdir -p "#{app_path}/metadata/"]
       sh %Q[touch "#{app_path}/metadata/DRAGONRUBY_PRODUCTION_BUILD"]
+      :success
     end
   
     def create_sim_payload_directory
@@ -6204,11 +6340,13 @@ Follows is a source code listing for all files that have been open sourced. This
       # production build marker
       sh %Q[mkdir -p "#{app_path}/metadata/"]
       sh %Q[touch "#{app_path}/metadata/DRAGONRUBY_PRODUCTION_BUILD"]
+      :success
     end
   
     def create_ipa
       do_zip
       sh "cp \"#{tmp_directory}/ipa_root/archive.zip\" \"#{tmp_directory}/#{@app_name}.ipa\""
+      :success
     end
   
     def do_zip
@@ -6218,6 +6356,7 @@ Follows is a source code listing for all files that have been open sourced. This
   popd
   SCRIPT
   
+      :success
       sh "sh #{tmp_directory}/do_zip.sh"
     end
   
@@ -6234,6 +6373,7 @@ Follows is a source code listing for all files that have been open sourced. This
       sh "ideviceinstaller --uninstall #{@app_id}"
       sh "ideviceinstaller -i \"#{tmp_directory}/#{@app_name}.ipa\""
       log_info "Check your device!!"
+      :success
     end
   
     def simctl_list_devices
@@ -6273,6 +6413,32 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       devices
+    end
+  
+    def install_simulator_if_needed
+      results = sh "xcrun simctl list devices"
+      results = results.split("== Devices ==").last
+      iphone_13_pro_max_line = results.split("\n").find { |line| line.include? "iPhone 13 Pro Max" }
+      if iphone_13_pro_max_line && iphone_13_pro_max_line.include?("unavailable")
+        iphone_13_pro_max_line = nil
+      end
+  
+      if !iphone_13_pro_max_line
+        puts "* INFO: Installing iPhone 13 Pro Max simulator..."
+        install_command =  "xcrun simctl create \"iPhone 13 Pro Max\" com.apple.CoreSimulator.SimDeviceType.iPhone-13-Pro-Max"
+        results = sh install_command
+        if results.include? "Could not find an"
+          raise WizardException.new(
+            "* ERROR: Unable to install simulator a default simulator.",
+            "** Please run the following command in your terminal:",
+            "",
+            "     xcodebuild -downloadPlatform iOS",
+            ""
+          )
+        end
+      end
+  
+      :success
     end
   
     def simctl_list_devices_max_version
@@ -6317,6 +6483,7 @@ Follows is a source code listing for all files that have been open sourced. This
       sh "xcrun simctl install #{device_id} \"#{tmp_directory}/#{@app_name}.app\""
       sh "xcrun simctl launch #{device_id} #{@app_id}"
       puts "Check your simulator!!\nYou can use cmd+left/right arrow to rotate the device."
+      :success
     end
   
     def print_publish_help
@@ -6336,6 +6503,8 @@ Follows is a source code listing for all files that have been open sourced. This
         sh "open /Applications/Transporter.app"
         sh "open ./tmp/ios/"
       end
+  
+      :success
     end
   
     def compile_icons
@@ -6350,6 +6519,7 @@ Follows is a source code listing for all files that have been open sourced. This
                                                               "#{app_path}/Assets.xcassets"
   S
       sh cmd
+      :success
     end
   
     def stage_native_libs
@@ -6378,11 +6548,34 @@ Follows is a source code listing for all files that have been open sourced. This
   
     def determine_app_version
       @app_version = app_version
-      return if @app_version
+      return :success if @app_version
     end
   
     def certificate_name
       @certificate_name
+    end
+  
+    def display_name
+      "iOS Wizard"
+    end
+  
+    def reset_simulators
+      sh "killall \"Simulator\" 2> /dev/null"
+      sh "xcrun simctl delete unavailable"
+      sh "xcrun simctl shutdown all"
+      sh "xcrun simctl erase all"
+    end
+  
+    def get_steps_to_execute
+      if sim_build?
+        steps_sim_build
+      elsif dev_build?
+        steps_dev_build
+      elsif production_build?
+        steps_prod_build
+      else
+        []
+      end
     end
   end
 
@@ -6397,10 +6590,19 @@ Follows is a source code listing for all files that have been open sourced. This
   # itch_wizard.rb has been released under MIT (*only this file*).
   
   class ItchWizard < Wizard
-    def steps
+    def help
+      puts <<~S
+           * INFO: Help for #{self.class.name}
+           To run this wizard, type the following into the DragonRuby Console:
+  
+             $wizards.itch.start
+  
+           S
+    end
+  
+    def itch_steps
       [
-        :check_metadata,
-        :deploy,
+        :check_metadata
       ]
     end
   
@@ -6498,7 +6700,9 @@ Follows is a source code listing for all files that have been open sourced. This
     def set_icon value
       @icon = value
       write_metadata
-      start
+      deploy
+      reset
+      $console.set_command "$wizards.itch.start"
     end
   
     def write_metadata
@@ -6571,41 +6775,14 @@ Follows is a source code listing for all files that have been open sourced. This
   
       $gtk.openurl "https://itch.io/dashboard"
   
+      puts "* INFO: Builds for your game are located within the =./builds= directory."
+  
       :success
     end
   
     def start
-      log "================"
-      log "* INFO: Starting Itch Wizard."
-      @start_at = Kernel.global_tick_count
-      steps.each do |m|
-        begin
-          log_info "Running Itch Wizard Step: ~$wizards.itch.#{m}~"
-          result = (send m) || :success
-          @wizard_status[m][:result] = result
-          if result != :success
-            log_info "Exiting wizard. :#{result}"
-            break
-          end
-        rescue Exception => e
-          if e.is_a? WizardException
-            $console.log.clear
-            $console.archived_log.clear
-            log "=" * $console.console_text_width
-            e.console_primitives.each do |p|
-              $console.add_primitive p
-            end
-            log "=" * $console.console_text_width
-            $console.set_command (e.console_command || "$wizards.itch.start")
-          else
-            log_error "Step #{m} failed."
-            log_error e.to_s
-            $console.set_command "$wizards.itch.start"
-          end
-  
-          break
-        end
-      end
+      execute_steps itch_steps
+      nil
     end
   
     def reset
@@ -6630,20 +6807,24 @@ Follows is a source code listing for all files that have been open sourced. This
     def init_wizard_status
       @wizard_status = {}
   
-      steps.each do |m|
+      itch_steps.each do |m|
         @wizard_status[m] = { result: :not_started }
       end
   
       previous_step = nil
       next_step = nil
   
-      steps.each_cons(2) do |current_step, next_step|
+      itch_steps.each_cons(2) do |current_step, next_step|
         @wizard_status[current_step][:next_step] = next_step
       end
   
-      steps.reverse.each_cons(2) do |current_step, previous_step|
+      itch_steps.reverse.each_cons(2) do |current_step, previous_step|
         @wizard_status[current_step][:previous_step] = previous_step
       end
+    end
+  
+    def display_name
+      "Itch Wizard"
     end
   end
 
@@ -6669,10 +6850,13 @@ Follows is a source code listing for all files that have been open sourced. This
         @ratio_w = ratio_w
         @ratio_h = ratio_h
         @orientation = orientation
+        initialize_gutters
+      end
   
-        @gutter_left   = 20
-        @gutter_right  = 20
-        @gutter_top    = 52
+      def initialize_gutters
+        @gutter_left   = 18
+        @gutter_right  = 18
+        @gutter_top    = 47
         @gutter_bottom = 52
         @cell_size     = 48
         @gutter        = 4
@@ -6680,10 +6864,10 @@ Follows is a source code listing for all files that have been open sourced. This
         @col_count     = 24
   
         if @orientation == :portrait
-          @gutter_left   = 52
-          @gutter_right  = 52
-          @gutter_top    = 20
-          @gutter_bottom = 20
+          @gutter_left   = 50
+          @gutter_right  = 50
+          @gutter_top    = 15
+          @gutter_bottom = 15
           @cell_size     = 48
           @gutter        = 4
           @row_count     = 24
@@ -6974,22 +7158,68 @@ Follows is a source code listing for all files that have been open sourced. This
           col_count_rework = 12
         end
   
-        @debug_primitives ||= col_count_rework.map_with_index do |col|
-                          row_count_rework.map_with_index do |row|
-                            cell   = rect row: row, col: col
-                            center = Geometry.rect_center_point cell
-                            [
-                              cell.merge(opts).border!,
-                              cell.merge(opts)
-                                  .label!(x: center.x,
-                                          y: center.y,
-                                          text: "#{row},#{col}",
-                                          size_enum: -3,
-                                          vertical_alignment_enum: 1,
-                                          alignment_enum: 1)
-                            ]
-                          end
-                        end
+        if !@debug_primitives
+          single_cell = rect row: row_count_rework - 1, col: 0, w: 1, h: 1
+          double_cell = rect row: row_count_rework - 1, col: 0, w: 2, h: 2
+          single_row = rect row: 0, col: 0, w: col_count_rework, h: 1
+          single_col = rect row: 0, col: 0, w: 1, h: row_count_rework
+          safe_area = rect row: 0, col: 0, w: col_count_rework, h: row_count_rework, include_row_gutter: true, include_col_gutter: true
+          bg_rect = rect row: 0, col: 1, w: 10, h: 1
+  
+          center_vertical = { x: $gtk.args.grid.w.idiv(2), y: safe_area.y, w: gutter, h: safe_area.h, path: :pixel, r: 128, g: 128, b: 128, anchor_x: 0.5 }
+          center_horizontal = { x: safe_area.x, y: $gtk.args.grid.h.idiv(2), w: safe_area.w, h: gutter, path: :pixel, r: 128, g: 128, b: 128, anchor_y: 0.5 }
+  
+          values = [
+            "scaling: [#{$gtk.args.grid.native_scale_enum.fdiv(100).to_sf}]",
+            "safe area: [#{safe_area.x},#{safe_area.y},#{safe_area.w},#{safe_area.h}]",
+            "cell: [#{single_cell.w},#{single_cell.h}]",
+            "cell 2X: [#{double_cell.w},#{double_cell.h}]"
+          ]
+  
+          single_cell_label = { x: safe_area.center.x,
+                                y: safe_area.y + safe_area.h - 12,
+                                text: values.join(" "),
+                                anchor_x: 0.5,
+                                anchor_y: 1.0,
+                                r: 255, g: 255, b: 255, a: 255,
+                                size_px: 12 }
+  
+          single_cell_bg = { x: bg_rect.x, y: safe_area.y + safe_area.h - 12, h: 12, w: bg_rect.w, path: :pixel, r: 0, g: 0, b: 0, a: 255 }
+  
+          single_cell_border = { **safe_area, primitive_marker: :border }
+  
+          @debug_primitives = col_count_rework.map_with_index do |col|
+            row_count_rework.map_with_index do |row|
+              cell   = rect row: row, col: col
+              center = Geometry.rect_center_point cell
+              [
+                cell.merge(opts).border!(row: row, col: col, docs: "border for cell at row #{row}, col #{col}"),
+                cell.merge(opts)
+                  .label!(x: cell.center.x,
+                          y: cell.center.y,
+                          text: "#{row},#{col}",
+                          size_px: 12,
+                          anchor_x: 0.5,
+                          anchor_y: 0.5 + 0.5,
+                          row: row,
+                          col: col,
+                          docs: "label for cell at row #{row}, col #{col}"),
+                cell.merge(opts)
+                  .label!(x: cell.center.x,
+                          y: cell.center.y,
+                          text: "#{cell.x},#{cell.y}",
+                          size_px: 12,
+                          anchor_x: 0.5,
+                          anchor_y: 0.5 - 0.5,
+                          row: row,
+                          col: col,
+                          docs: "label for cell at row #{row}, col #{col}")
+  
+              ]
+            end
+          end.flatten + [center_horizontal, center_vertical, single_cell_border, single_cell_bg, single_cell_label]
+        end
+  
         @debug_primitives
       end
   
@@ -7019,6 +7249,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
       def reset
         @debug_primitives = nil
+        initialize_gutters
       end
     end
   end
@@ -7793,11 +8024,19 @@ Follows is a source code listing for all files that have been open sourced. This
     #   #     0*0,  0*1  1*0  1*1  2*0  2*1
     #   # => [  0,    0,   0,   1,   0,   2]
     def map_with_ys ys, &block
-      self.times.flat_map do |x|
-        ys.map_with_index do |y|
-          yield x, y
+      results = []
+      x_i = 0
+      xs = self
+  
+      while x_i < xs
+        y_i = 0
+        while y_i < ys
+          results << yield(x_i, y_i)
+          y_i += 1
         end
+        x_i += 1
       end
+      results
     rescue Exception => e
       raise_immediately e, :map_with_ys, [self, ys]
     end
@@ -11571,6 +11810,65 @@ Follows is a source code listing for all files that have been open sourced. This
       parsed_metadata = Hash[*kvps]
   
       default_metadata.merge parsed_metadata
+    end
+  
+    def help
+      puts "* INFO: No help available for Wizard of type ~#{self.class.name}~"
+    end
+  
+    def process_wizard_exception e
+      # queue the exception to be added after current standard out has been processed.
+      queue_at = Kernel.global_tick_count + 3
+      $console.clear_logs global_at: queue_at - 1
+      $console.add_primitive ("=" * $console.console_text_width), global_at: queue_at
+      e.console_primitives.each do |p|
+        $console.add_primitive p, global_at: queue_at
+      end
+      $console.add_primitive ("=" * $console.console_text_width), global_at: queue_at
+    end
+  
+    def last_executed_steps
+      @last_executed_steps
+    end
+  
+    def execute_steps steps
+      log "================"
+      log "* INFO: Starting #{display_name}."
+      @start_at = Kernel.global_tick_count
+  
+      @last_executed_steps = steps
+  
+      steps.each do |m|
+        before_step = "before_#{m}".to_sym
+        after_step = "after_#{m}".to_sym
+        send before_step if respond_to? before_step
+        log_info "Running step ~:#{m}~."
+        if @wizard_status[m][:result] != :success
+          result = (send m)
+          if !result || result.is_a?(Symbol) == false
+            raise "Step ~:#{m}~ returned nil. Expected a symbol (:success if everything went well)."
+          end
+  
+          return result if result != :success
+        end
+        send after_step if respond_to? after_step
+        @wizard_status[m][:result] = result
+        log_info "Running step ~:#{m}~ complete."
+      end
+  
+      return :success
+    rescue Exception => e
+      if e.is_a? WizardException
+        process_wizard_exception e
+      else
+        log_error e.to_s
+        log e.__backtrace_to_org__
+      end
+      return :exception
+    end
+  
+    def display_name
+      self.class.name
     end
   end
   

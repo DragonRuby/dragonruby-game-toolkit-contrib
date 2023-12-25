@@ -30,7 +30,7 @@ module GTK
       @inputs = Inputs.new
       @outputs = Outputs.new args: self
       @cvars = {}
-      @audio = {}
+      @audio = AudioHash.new
       @passes = []
       @state = OpenEntity.new
       @temp_state = OpenEntity.new
@@ -118,6 +118,7 @@ module GTK
       name = name.to_s
       if !@render_targets[name]
         @render_targets[name] = Outputs.new(args: self, target: name, background_color_override: [255, 255, 255, 0])
+        @render_targets[name].transient! if @runtime.platform? :web
         @passes << @render_targets[name]
       end
       @render_targets[name]
@@ -240,5 +241,17 @@ S
 
       super
     end
+  end
+end
+
+class AudioHash < Hash
+  def volume
+    @volume ||= 1.0
+    @volume
+  end
+
+  def volume= value
+    @volume = value
+    @volume = @volume.clamp(0.0, 1.0)
   end
 end

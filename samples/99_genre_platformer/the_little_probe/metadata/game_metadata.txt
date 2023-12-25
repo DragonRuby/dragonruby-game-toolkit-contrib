@@ -13,10 +13,12 @@ icon=metadata/icon.png
 # allscreen=true
 
 # max scale options
-# allscreen_max_scale=100
-# allscreen_max_scale=125
-# allscreen_max_scale=150
-# allscreen_max_scale=200
-# allscreen_max_scale=250
-# allscreen_max_scale=300
-# allscreen_max_scale=400
+# hd_letterbox=false
+# hd_max_scale=0
+# hd_max_scale=100
+# hd_max_scale=125
+# hd_max_scale=150
+# hd_max_scale=200
+# hd_max_scale=250
+# hd_max_scale=300
+# hd_max_scale=400

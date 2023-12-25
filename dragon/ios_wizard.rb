@@ -6,16 +6,44 @@
 # Contributors outside of DragonRuby who also hold Copyright: Michał Dudziński
 
 class IOSWizard < Wizard
+  def help
+    puts <<~S
+         * INFO: Help for #{self.class.name}
+           Here are the available options for this wizard (these options can be invoked through the DragonRuby Console):
+         ** Device
+         *** Deploy app to device connected via USB:
+             #+begin_src
+               $wizards.ios.start env: :dev
+             #+end_src
+         ** Simulator
+         *** Deploy app to simulator
+             The default simulator is iPhone 13 Pro Max and will be automatically installed if it doesn't exist.
+             #+begin_src
+               $wizards.ios.start env: :sim
+             #+end_src
+         *** Deploy app to simulator and specify a device (partial device name allowed):
+             #+begin_src
+               $wizards.ios.start env: :sim, sim_name: "iPad Pro"
+             #+end_src
+         *** Reset simulators
+             Delete all content from simulators and reset them
+             #+begin_src
+               $wizards.ios.reset_simulators
+             #+end_src
+         ** Distribution
+         *** Package app for production release:
+             #+begin_src
+               $wizards.ios.start env: :prod
+             #+end_src
+         S
+  end
+
   def initialize
     @doctor_executed_at = 0
   end
 
   def relative_path
     (File.dirname $gtk.binary_path)
-  end
-
-  def steps
-    @steps ||= []
   end
 
   def prerequisite_steps
@@ -65,6 +93,7 @@ class IOSWizard < Wizard
   def steps_sim_build
     [
       *prerequisite_steps,
+      :install_simulator_if_needed,
 
       :check_for_dev_profile,
 
@@ -152,52 +181,23 @@ class IOSWizard < Wizard
     @opts = opts || {}
 
     if !(@opts.is_a? Hash) || !($gtk.args.fn.eq_any? @opts[:env], :dev, :prod, :hotload, :sim)
-      raise WizardException.new(
-              "* $wizards.ios.start needs to be provided an ~env:~ option.",
-              "** To deploy your app to an iOS device connected to your computer:\n   $wizards.ios.start env: :dev",
-              "** To deploy your app with hotloading to an iOS device connected to your computer:\n   $wizards.ios.start env: :hotload",
-              "** To deploy your app to the iOS Simulator:\n   $wizards.ios.start env: :sim",
-              "** To deploy your app for sale on the AppStore:\n   $wizards.ios.start env: :prod",
-            )
+      process_wizard_exception WizardException.new(
+                                 "* $wizards.ios.start needs to be provided an ~env:~ option.",
+                                 "** To deploy your app to an iOS device connected to your computer:\n   $wizards.ios.start env: :dev",
+                                 "** To deploy your app with hotloading to an iOS device connected to your computer:\n   $wizards.ios.start env: :hotload",
+                                 "** To deploy your app to the iOS Simulator:\n   $wizards.ios.start env: :sim",
+                                 "** To deploy your app for sale on the AppStore:\n   $wizards.ios.start env: :prod",
+                                 "** For more help type:\n   $wizards.ios.help",
+                               )
     end
 
     @build_type = @opts[:env]
-    @steps = steps_dev_build
-    @steps = steps_prod_build if production_build?
-    @steps = steps_sim_build if sim_build?
     @certificate_name = nil
     @app_version = opts[:version]
     @app_version = "1.0" if @opts[:env] == :dev && !@app_version
     init_wizard_status
-    log_info "Starting iOS Wizard so we can deploy to your device."
-    @start_at = Kernel.global_tick_count
-    steps.each do |m|
-      before_step = "before_#{m}".to_sym
-      after_step = "after_#{m}".to_sym
-      send before_step if respond_to? before_step
-      log_info "Running step ~:#{m}~."
-      result = (send m) || :success if @wizard_status[m][:result] != :success
-      send after_step if respond_to? after_step
-      @wizard_status[m][:result] = result
-      log_info "Running step ~:#{m}~ complete."
-    end
+    result = execute_steps get_steps_to_execute
     nil
-  rescue Exception => e
-    if e.is_a? WizardException
-      $console.log.clear
-      $console.archived_log.clear
-      log "=" * $console.console_text_width
-      e.console_primitives.each do |p|
-        $console.add_primitive p
-      end
-      log "=" * $console.console_text_width
-    else
-      log_error e.to_s
-      log e.__backtrace_to_org__
-    end
-
-    init_wizard_status
-    $console.set_command "$wizards.ios.start env: :#{@opts[:env]}"
   end
 
   def always_fail
@@ -206,7 +206,11 @@ class IOSWizard < Wizard
   end
 
   def check_for_xcode
-    if !cli_app_exist?(xcodebuild_cli_app)
+    result = sh "xcrun simctl list devices"
+
+    simctl_missing = result.include? "unable to find utility"
+
+    if !cli_app_exist?(xcodebuild_cli_app) || simctl_missing
       raise WizardException.new(
         "* You need Xcode to use $wizards.ios.start.",
         { w: 75, h: 75, path: get_reserved_sprite("xcode.png") },
@@ -217,6 +221,8 @@ class IOSWizard < Wizard
         "** 3. After installing. Open up Xcode to accept the EULA."
       )
     end
+
+    :success
   end
 
   def check_for_brew
@@ -230,21 +236,23 @@ class IOSWizard < Wizard
         { w: 700, h: 99, path: get_reserved_sprite("terminal.png") },
       )
     end
+
+    :success
   end
 
   def init_wizard_status
     @wizard_status = {}
-    steps.each do |m|
+    get_steps_to_execute.each do |m|
       @wizard_status[m] = { result: :not_started }
     end
 
     previous_step = nil
     next_step = nil
-    steps.each_cons(2) do |current_step, next_step|
+    get_steps_to_execute.each_cons(2) do |current_step, next_step|
       @wizard_status[current_step][:next_step] = next_step
     end
 
-    steps.reverse.each_cons(2) do |current_step, previous_step|
+    get_steps_to_execute.reverse.each_cons(2) do |current_step, previous_step|
       @wizard_status[current_step][:previous_step] = previous_step
     end
   end
@@ -252,6 +260,10 @@ class IOSWizard < Wizard
   def restart
     init_wizard_status
     start
+  end
+
+  def reset
+    init_wizard_status
   end
 
   def check_for_distribution_profile
@@ -274,6 +286,8 @@ class IOSWizard < Wizard
         { w: 200, h: 124, path: get_reserved_sprite("profiles-folder.png") },
       )
     end
+
+    :success
   end
 
   def check_for_dev_profile
@@ -296,6 +310,8 @@ class IOSWizard < Wizard
         { w: 200, h: 124, path: get_reserved_sprite("profiles-folder.png") },
       )
     end
+
+    :success
   end
 
   def provisioning_profile_path environment
@@ -362,12 +378,14 @@ S
     @team_id = (ios_metadata.teamid || "")
     raise_ios_metadata_required if @team_id.strip.length == 0
     log_info "Team Identifer is: #{@team_id}"
+    :success
   end
 
   def determine_app_name
     @app_name = (ios_metadata.appname || "")
     raise_ios_metadata_required if @app_name.strip.length == 0
     log_info "App name is: #{@app_name}."
+    :success
   end
 
   def provisioning_profile_xml environment
@@ -394,18 +412,21 @@ S
     @app_id = ios_metadata.appid
     raise_ios_metadata_required if @app_id.strip.length == 0
     log_info "App Identifier is set to: #{@app_id}"
+    :success
   end
 
   def determine_devcert
     @certificate_name = ios_metadata.devcert
     raise_ios_metadata_required if @certificate_name.strip.length == 0
     log_info "Dev Certificate is set to: #{@certificate_name}"
+    :success
   end
 
   def determine_prodcert
     @certificate_name = ios_metadata.prodcert
     raise_ios_metadata_required if @certificate_name.strip.length == 0
     log_info "Production (Distribution) Certificate is set to: #{@certificate_name}"
+    :success
   end
 
   def set_app_name name
@@ -425,6 +446,7 @@ S
 
   def clear_tmp_directory
     sh "rm -rf #{tmp_directory}"
+    :success
   end
 
   def set_app_id id
@@ -462,6 +484,7 @@ S
 
     @device_id = connected_devices.first
     log_info "I will be using device with UUID #{@device_id}"
+    :success
   end
 
   def check_for_certs
@@ -476,6 +499,8 @@ S
     end
 
     log_info "I will be using certificate: '#{@certificate_name}'."
+
+    :success
   end
 
   def codesign_allocate_path
@@ -550,6 +575,7 @@ XML
     sh "/usr/bin/plutil -convert xml1 \"#{tmp_directory}/Entitlements.plist\""
 
     @entitlement_plist_written = true
+    :success
   end
 
   def code_sign_binary
@@ -562,6 +588,7 @@ XML
     sh "CODESIGN_ALLOCATE=\"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\" /usr/bin/codesign -f -s \"#{@certificate_name}\" --entitlements #{tmp_directory}/Entitlements.plist \"#{tmp_directory}/ipa_root/Payload/#{@app_name}.app/#{@app_name}\""
 
     @code_sign_completed = true
+    :success
   end
 
   def __get_plist_orientation_value__
@@ -698,6 +725,7 @@ XML
     $gtk.write_file_root "tmp/ios/Info.txt", info_plist_string.strip
 
     @info_plist_written = true
+    :success
   end
 
   def production_write_info_plist
@@ -820,6 +848,7 @@ XML
     $gtk.write_file_root "tmp/ios/Info.txt", info_plist_string.strip
 
     @info_plist_written = true
+    :success
   end
 
   def device_orientation_xml
@@ -842,6 +871,7 @@ XML
   def embed_mobileprovision
     sh %Q[cp #{@provisioning_profile_path} "#{app_path}/embedded.mobileprovision"]
     sh %Q[/usr/bin/plutil -convert binary1 "#{app_path}/Info.plist"]
+    :success
   end
 
   def clear_payload_directory
@@ -852,6 +882,7 @@ XML
     sh %Q[rm -rf "#{app_path}/data"]
     sh %Q[rm -rf "#{app_path}/fonts"]
     sh %Q[rm -rf "#{app_path}/metadata"]
+    :success
   end
 
   def stage_ios_app
@@ -865,6 +896,7 @@ XML
     sh %Q[cp -r "#{root_folder}/data/" "#{app_path}/data/"]
     sh %Q[cp -r "#{root_folder}/fonts/" "#{app_path}/fonts/"]
     sh %Q[cp -r "#{root_folder}/metadata/" "#{app_path}/metadata/"]
+    :success
   end
 
   def stage_sim_app
@@ -879,18 +911,21 @@ XML
     sh %Q[cp -r "#{root_folder}/data/" "#{app_path}/data/"]
     sh %Q[cp -r "#{root_folder}/fonts/" "#{app_path}/fonts/"]
     sh %Q[cp -r "#{root_folder}/metadata/" "#{app_path}/metadata/"]
+    :success
   end
 
   def create_payload
     sh %Q[mkdir -p #{tmp_directory}/ipa_root/Payload]
     sh %Q[cp -r "#{app_path}" "#{tmp_directory}/ipa_root/Payload"]
     sh %Q[chmod -R 755 "#{tmp_directory}/ipa_root/Payload"]
+    :success
   end
 
   def write_server_ip_address
     sh %Q[mkdir -p "#{app_path}/metadata/"]
     sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip}]
-    sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip} > "#{app_path}/metadata/DRAGONRUBY_REMOTE_HOTLOAD"]
+    sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip} > "#{app_path}/metadata/dragonruby_remote_hotload"]
+    :success
   end
 
   def create_dev_payload_directory
@@ -902,7 +937,8 @@ XML
 
     # production build marker
     sh %Q[mkdir -p "#{app_path}/metadata/"]
-    sh %Q[touch "#{app_path}/metadata/DRAGONRUBY_PRODUCTION_BUILD"]
+    sh %Q[touch "#{app_path}/metadata/dragonruby_production_build"]
+    :success
   end
 
   def create_prod_payload_directory
@@ -914,7 +950,8 @@ XML
 
     # production build marker
     sh %Q[mkdir -p "#{app_path}/metadata/"]
-    sh %Q[touch "#{app_path}/metadata/DRAGONRUBY_PRODUCTION_BUILD"]
+    sh %Q[touch "#{app_path}/metadata/dragonruby_production_build"]
+    :success
   end
 
   def create_sim_payload_directory
@@ -925,12 +962,14 @@ XML
 
     # production build marker
     sh %Q[mkdir -p "#{app_path}/metadata/"]
-    sh %Q[touch "#{app_path}/metadata/DRAGONRUBY_PRODUCTION_BUILD"]
+    sh %Q[touch "#{app_path}/metadata/dragonruby_production_build"]
+    :success
   end
 
   def create_ipa
     do_zip
     sh "cp \"#{tmp_directory}/ipa_root/archive.zip\" \"#{tmp_directory}/#{@app_name}.ipa\""
+    :success
   end
 
   def do_zip
@@ -940,6 +979,7 @@ zip -q -r archive.zip Payload
 popd
 SCRIPT
 
+    :success
     sh "sh #{tmp_directory}/do_zip.sh"
   end
 
@@ -956,6 +996,7 @@ SCRIPT
     sh "ideviceinstaller --uninstall #{@app_id}"
     sh "ideviceinstaller -i \"#{tmp_directory}/#{@app_name}.ipa\""
     log_info "Check your device!!"
+    :success
   end
 
   def simctl_list_devices
@@ -995,6 +1036,32 @@ SCRIPT
     end
 
     devices
+  end
+
+  def install_simulator_if_needed
+    results = sh "xcrun simctl list devices"
+    results = results.split("== Devices ==").last
+    iphone_13_pro_max_line = results.split("\n").find { |line| line.include? "iPhone 13 Pro Max" }
+    if iphone_13_pro_max_line && iphone_13_pro_max_line.include?("unavailable")
+      iphone_13_pro_max_line = nil
+    end
+
+    if !iphone_13_pro_max_line
+      puts "* INFO: Installing iPhone 13 Pro Max simulator..."
+      install_command =  "xcrun simctl create \"iPhone 13 Pro Max\" com.apple.CoreSimulator.SimDeviceType.iPhone-13-Pro-Max"
+      results = sh install_command
+      if results.include? "Could not find an"
+        raise WizardException.new(
+          "* ERROR: Unable to install simulator a default simulator.",
+          "** Please run the following command in your terminal:",
+          "",
+          "     xcodebuild -downloadPlatform iOS",
+          ""
+        )
+      end
+    end
+
+    :success
   end
 
   def simctl_list_devices_max_version
@@ -1039,6 +1106,7 @@ SCRIPT
     sh "xcrun simctl install #{device_id} \"#{tmp_directory}/#{@app_name}.app\""
     sh "xcrun simctl launch #{device_id} #{@app_id}"
     puts "Check your simulator!!\nYou can use cmd+left/right arrow to rotate the device."
+    :success
   end
 
   def print_publish_help
@@ -1058,6 +1126,8 @@ SCRIPT
       sh "open /Applications/Transporter.app"
       sh "open ./tmp/ios/"
     end
+
+    :success
   end
 
   def compile_icons
@@ -1072,6 +1142,7 @@ SCRIPT
                                                             "#{app_path}/Assets.xcassets"
 S
     sh cmd
+    :success
   end
 
   def stage_native_libs
@@ -1100,10 +1171,33 @@ S
 
   def determine_app_version
     @app_version = app_version
-    return if @app_version
+    return :success if @app_version
   end
 
   def certificate_name
     @certificate_name
+  end
+
+  def display_name
+    "iOS Wizard"
+  end
+
+  def reset_simulators
+    sh "killall \"Simulator\" 2> /dev/null"
+    sh "xcrun simctl delete unavailable"
+    sh "xcrun simctl shutdown all"
+    sh "xcrun simctl erase all"
+  end
+
+  def get_steps_to_execute
+    if sim_build?
+      steps_sim_build
+    elsif dev_build?
+      steps_dev_build
+    elsif production_build?
+      steps_prod_build
+    else
+      []
+    end
   end
 end

@@ -27,12 +27,15 @@ module DocsOrganizer
   def self.class_sort_order
     [
       GTK::ReadMe,
+      GTK::Outputs,
+      GTK::Inputs,
       GTK::Runtime,
       GTK::Geometry,
       GTK::Args,
       GTK::Outputs,
       GTK::Mouse,
       GTK::OpenEntity,
+      GTK::Layout,
       Array,
       Numeric,
       Kernel,
@@ -263,13 +266,13 @@ S
     __export_docs__! opts
   end
 
-  def __docs_append_true_line__ true_lines, true_line, parse_log
+  def self.__docs_append_true_line__ true_lines, true_line, parse_log
     true_line.rstrip!
     parse_log << "*** True Line Result\n#{true_line}"
     true_lines << true_line
   end
 
-  def __docs_generate_link_id__ text
+  def self.__docs_generate_link_id__ text
     text = text.strip.downcase
     text = text.gsub("*", "-")
     text = text.gsub("~", "-")
@@ -285,16 +288,37 @@ S
   end
 
   # may god have mercy on your soul if you try to expand this
-  def __docs_to_html__ string
+  def self.__docs_to_html__ string, warn_long_lines: true
     parse_log = []
+
+    highlight_js_min_content = $gtk.read_file "docs/highlight.min.js"
 
     html_start_to_toc_start = <<-S
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <title>DragonRuby Game Toolkit Documentation</title>
+    <script type="text/javascript">
+#{highlight_js_min_content}
+    </script>
     <link href="docs.css?ver=#{Time.now.to_i}" rel="stylesheet" type="text/css" media="all">
-  </head>
+    <script type="text/javascript">
+var styleElement = document.createElement('style');
+document.getElementsByTagName("head")[0].appendChild(styleElement);
+
+document.addEventListener('load', () => {
+  hljs.getLanguage('ruby').keywords += ' args tick ';
+})
+
+document.addEventListener("animationstart", e => {
+  if (e.animationName == "node-ready") {
+    hljs.highlightBlock(e.target);
+    e.target.classList.add("fade-in");
+    // get the first href within the visible hrefs
+  }
+});
+ </script>
+ </head>
   <body>
     <div id='table-of-contents'>
       <li><a class='header-1' href='index.html'>Docs and Samples</a></li>
@@ -480,18 +504,22 @@ S
       elsif l.strip.length == 0 && !inside_pre
         # do nothing
       elsif l.start_with? "#+begin_src"
+        language_name = l.gsub("#+begin_src", "").strip
+        if language_name == ""
+          language_name = "ruby"
+        end
         parse_log << "- PRE start detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
         inside_ol = false
         inside_ul = false
         inside_pre = true
-        content_html << '<pre>'
+        content_html << "<pre><code class=\"#{language_name}\">"
       elsif l.start_with? "#+end_src"
         parse_log << "- PRE end detected."
         inside_ol = false
         inside_ul = false
         inside_pre = false
-        content_html << "</pre>\n"
+        content_html << "</code></pre>\n"
       elsif l.start_with? "#+begin_quote"
         parse_log << "- BLOCKQUOTE start detected."
         content_html += close_list_if_needed.call inside_ul, inside_ol
@@ -547,6 +575,11 @@ S
 
         content_html << "<li>#{__docs_line_to_html__ l, parse_log}</li>\n"
       else
+        if l.strip == "#end_src"
+          parse_log << "* WARNING: A line exists where the value is ~#end_src~. Did you mean ~#+end_src~?"
+          $gtk.log_warn "* WARNING: A line exists where the value is ~#end_src~. Did you mean ~#+end_src~?"
+        end
+
         if inside_ul
           parse_log << "- UL end detected."
 
@@ -563,6 +596,10 @@ S
 
         if inside_pre
           pre = l.rstrip[2..-1] || ""
+          if warn_long_lines && l.length > 105
+            parse_log << "* WARNING: Long code line: #{pre}"
+            $gtk.log_warn "* WARNING: Long code line:\n#{pre}"
+          end
           escaped_pre = pre.gsub("&", "&amp;")
                            .gsub("<", "&lt;")
                            .gsub(">", "&gt;")
@@ -593,7 +630,7 @@ S
     raise "* ERROR in Docs::__docs_to_html__. #{e}"
   end
 
-  def __docs_line_to_html__ line, parse_log
+  def self.__docs_line_to_html__ line, parse_log
     parse_log << "- Determining if line is a header."
     if line.start_with? "***** "
       line = line.gsub "***** ", ""
@@ -627,6 +664,8 @@ S
                          .gsub("&", "&amp;")
                          .gsub("<", "&lt;")
                          .gsub(">", "&gt;")
+                         .gsub(":b:", "<b>")
+                         .gsub(":/b:", "</b>")
 
     # <code> logic
     if tilde_count.even? && tilde_count != 0
@@ -684,3 +723,8 @@ S
     return line.rstrip
   end
 end
+
+# hotload locally if actively changing this file
+# if $gtk
+#   $gtk.export_docs!; $gtk.open_docs
+# end

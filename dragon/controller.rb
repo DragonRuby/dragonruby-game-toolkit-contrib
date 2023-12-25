@@ -105,5 +105,13 @@ module GTK
     end
 
     include DirectionalInputHelperMethods
+
+    def method_missing m, *args
+      define_singleton_method(m) do
+        self.key_down.send(m) || self.key_held.send(m)
+      end
+
+      return send(m)
+    end
   end
 end

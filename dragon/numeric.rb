@@ -183,22 +183,26 @@ class Numeric
     raise_immediately e, :shift_down, i
   end
 
-  # This provides a way for a numeric value to be randomized based on a combination
-  # of two options: `:sign` and `:ratio`.
   def randomize *definitions
-    result = self
-
-    if definitions.include?(:sign)
+    if definitions.length == 1 && definitions[0] == :ratio
+      return rand * self
+    elsif definitions.length == 1 && definitions[0] == :int
+      return rand self
+    elsif definitions.length == 1 && definitions[0] == :sign
+      return rand_sign
+    elsif definitions[0] == :ratio && definitions[1] == :sign
+      return rand_sign * rand
+    elsif definitions[0] == :sign && definitions[1] == :ratio
+      return rand_sign * rand
+    elsif definitions[0] == :int && definitions[1] == :sign
       result = rand_sign
+      return rand result
+    elsif definitions[0] == :sign && definitions[1] == :int
+      result = rand_sign
+      return rand result
     end
 
-    if definitions.include?(:ratio)
-      result = rand * result
-    elsif definitions.include?(:int)
-      result = (rand result)
-    end
-
-    result
+    self
   end
 
   def rand_sign
@@ -397,11 +401,19 @@ S
   #   #     0*0,  0*1  1*0  1*1  2*0  2*1
   #   # => [  0,    0,   0,   1,   0,   2]
   def map_with_ys ys, &block
-    self.times.flat_map do |x|
-      ys.map_with_index do |y|
-        yield x, y
+    results = []
+    x_i = 0
+    xs = self
+
+    while x_i < xs
+      y_i = 0
+      while y_i < ys
+        results << yield(x_i, y_i)
+        y_i += 1
       end
+      x_i += 1
     end
+    results
   rescue Exception => e
     raise_immediately e, :map_with_ys, [self, ys]
   end
@@ -520,6 +532,20 @@ S
     end
 
     self
+  end
+
+  def flat_map(&blk)
+    return to_enum(:map) if !blk
+
+    i = 0
+    acc = []
+    _self = self.to_i
+    while i < _self
+      acc.concat blk[i]
+      i += 1
+    end
+
+    acc
   end
 
   def __raise_arithmetic_exception__ other, m, e

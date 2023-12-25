@@ -15,7 +15,7 @@ module ArgsDocs
 
   def docs_cvars
     <<-S
-* ~args.cvars~
+* CVars (~args.cvars~)
 
 Hash contains metadata pulled from the files under the ~./metadata~ directory. To get the
 keys that are available type ~$args.cvars.keys~ in the Console. Here is an example of how
@@ -37,7 +37,7 @@ S
 
   def docs_audio
     <<-S
-* ~args.audio~
+* Audio (~args.audio~)
 
 Hash that contains audio sources that are playing.
 
@@ -48,6 +48,20 @@ stop early must be removed manually.
 When you assign a hash to an audio output, a ~:length~ key will be
 added to the hash on the following tick. This will tell you the
 duration of the audio file in seconds (float).
+
+** ~volume~
+
+You can globally control the volume for all audio using ~args.audio.volume~. Example:
+
+#+begin_src
+  def tick args
+    if args.inputs.down
+      args.audio.volume -= 0.01
+    elsif args.inputs.up
+      args.audio.volume += 0.01
+    end
+  end
+#+end_src
 
 ** One-Time Sounds
 
@@ -105,7 +119,7 @@ Here are additional properties that can be set.
 
 IMPORTANT: Please take note that ~gain~ and ~pitch~ must be given ~float~ values (eg ~gain: 1.0~, not ~gain: 1~ or ~game: 0~).
 
-** Advanced Audio Manipulate (Crossfade)
+** Advanced Audio Manipulation (Crossfade)
 
 Take a look at the Audio Mixer sample app for a non-trival example of how to use these properties. The
 sample app is located within the DragonRuby zip file at ~./samples/07_advanced_audio/01_audio_mixer~.
@@ -233,14 +247,16 @@ S
 
   def docs_easing
     <<-S
-* ~args.easing~
+* Easing (~args.easing~)
+A set of functions that allow you to determine the current progression of an easing function.
 
+** ~ease~
 This function will give you a float value between ~0~ and ~1~ that represents a percentage. You need to give the
 funcation a ~start_tick~, ~current_tick~, duration, and easing ~definitions~.
 
 This YouTube video is a fantastic introduction to easing functions: [[https://www.youtube.com/watch?v=mr5xkf6zSzk]]
 
-** Example
+*** Examples
 
 This example shows how to fade in a label at frame 60 over two seconds (120 ticks). The ~:identity~ definition
 implies a linear fade: ~f(x) -> x~.
@@ -262,24 +278,38 @@ implies a linear fade: ~f(x) -> x~.
   end
 #+end_src
 
-** Easing Definitions
+This example will move a box at a linear speed from 0 to 1280.
+
+#+begin_src ruby
+  def tick args
+    start_time = 10
+    duration = 60
+    current_progress = args.easing.ease start_time,
+                                        args.state.tick_count,
+                                        duration,
+                                        :identity
+    args.outputs.solids << { x: 1280 * current_progress, y: 360, w: 10, h: 10 }
+  end
+#+end_src
+
+*** Easing Definitions
 There are a number of easing definitions availble to you:
 
-*** ~:identity~
+**** ~:identity~
 The easing definition for ~:identity~ is ~f(x) = x~. For example, if ~start_tick~ is ~0~, ~current_tick~ is ~50~, and
 ~duration~ is ~100~, then ~args.easing.ease 0, 50, 100, :identity~ will return ~0.5~ (since tick ~50~ is half way between ~0~
 and ~100~).
 
-*** ~:flip~
+**** ~:flip~
 The easing definition for ~:flip~ is ~f(x) = 1 - x~. For example, if ~start_tick~ is ~0~, ~current_tick~ is ~10~, and
 ~duration~ is ~100~, then ~args.easing.ease 0, 10, 100, :flip~ will return ~0.9~ (since tick ~10~ means 100% - 10%).
 
-*** ~:quad~, ~:cube~, ~:quart~, ~:quint~
+**** ~:quad~, ~:cube~, ~:quart~, ~:quint~
 These are the power easing definitions. ~:quad~ is ~f(x) = x * x~ (~x~ squared), ~:cube~ is ~f(x) = x * x * x~  (~x~ cubed), etc.
 
 The power easing definitions represent Smooth Start easing (the percentage changes slow at first and speeds up at the end).
 
-**** Example
+***** Example
 Here is an example of Smooth Start (the percentage changes slow at first and speeds up at the end).
 
 #+begin_src
@@ -308,10 +338,10 @@ Here is an example of Smooth Start (the percentage changes slow at first and spe
   end
 #+end_src
 
-*** Combining Easing Definitions
+**** Combining Easing Definitions
 The base easing definitions can be combined to create common easing functions.
 
-**** Example
+***** Example
 Here is an example of Smooth Stop (the percentage changes fast at first and slows down at the end).
 
 #+begin_src
@@ -342,11 +372,11 @@ Here is an example of Smooth Stop (the percentage changes fast at first and slow
   end
 #+end_src
 
-*** Custom Easing Functions
+**** Custom Easing Functions
 You can define your own easing functions by passing in a ~lambda~ as a ~definition~ or extending
 the ~Easing~ module.
 
-**** Example - Using Lambdas
+***** Example - Using Lambdas
 This easing function goes from ~0~ to ~1~ for the first half of the ease, then ~1~ to ~0~ for
 the second half of the ease.
 
@@ -379,7 +409,7 @@ the second half of the ease.
   end
 #+end_src
 
-**** Example - Extending Easing Definitions
+***** Example - Extending Easing Definitions
 If you don't want to create a lambda, you can register an easing definition like so:
 
 #+begin_src
@@ -415,12 +445,32 @@ If you don't want to create a lambda, you can register an easing definition like
   end
 #+end_src
 
+*** ~easing.ease_spline start_tick, current_tick, duration, spline~
+Given a start, current, duration, and a multiple bezier values, this function returns a number between 0 and 1 that represents the progress of an easing function.
+
+This example will move a box at a linear speed from 0 to 1280 and then back to 0 using two bezier definitions (represented as an array with four values).
+
+#+begin_src ruby
+  def tick args
+    start_time = 10
+    duration = 60
+    spline = [
+      [  0, 0.25, 0.75, 1.0],
+      [1.0, 0.75, 0.25,   0]
+    ]
+    current_progress = args.easing.ease_spline start_time,
+                                               args.state.tick_count,
+                                               duration,
+                                               spline
+    args.outputs.solids << { x: 1280 * current_progress, y: 360, w: 10, h: 10 }
+  end
+#+end_src
 S
   end
 
   def docs_pixel_array
     <<-S
-* Pixel Arrays
+* Pixel Arrays (~args.pixel_arrays~)
 
 A ~PixelArray~ object with a width, height and an Array of pixels which are hexadecimal color values in ABGR format.
 
@@ -436,7 +486,7 @@ You can create a pixel array like this:
 You'll also need to fill the pixels with values, if they are ~nil~, the array will render with the checkerboard texture.  You can use #00000000 to fill with transparent pixels if desired.
 
 #+begin_src
-args.pixel_array(:my_pixel_array).pixels.fill #FF00FF00, 0, w * h
+  args.pixel_array(:my_pixel_array).pixels.fill #FF00FF00, 0, w * h
 #+end_src
 
 Note: To convert from rgb hex (like skyblue #87CEEB) to abgr hex, you split it in pairs pair (eg ~87~ ~CE~ ~EB~) and reverse the order (eg ~EB~ ~CE~ ~87~) add join them again: ~#EBCE87~. Then add the alpha component in front ie: ~FF~ for full opacity: ~#FFEBCE87~.

@@ -22,20 +22,64 @@ module GTK
 
     attr_accessor :left_margin, :bottom_margin
 
-    attr :allscreen_left,
-         :allscreen_right,
-         :allscreen_top,
-         :allscreen_bottom,
-         :allscreen_width,
-         :allscreen_height,
-         :allscreen_offset_x,
-         :allscreen_offset_y,
-         :native_width,
-         :native_height,
-         :native_scale,
-         :native_scale_enum,
-         :window_width,
-         :window_height
+    attr_accessor :hd_left
+    alias_method  :allscreen_left,  :hd_left
+    alias_method  :allscreen_left=, :hd_left=
+
+    attr_accessor :hd_right
+    alias_method  :allscreen_right,  :hd_right
+    alias_method  :allscreen_right=, :hd_right=
+
+    attr_accessor :hd_top
+    alias_method  :allscreen_top,  :hd_top
+    alias_method  :allscreen_top=, :hd_top=
+
+    attr_accessor :hd_bottom
+    alias_method  :allscreen_bottom,  :hd_bottom
+    alias_method  :allscreen_bottom=, :hd_bottom=
+
+    attr_accessor :hd_w
+    alias_method  :hd_width,         :hd_w
+    alias_method  :hd_width=,        :hd_w=
+    alias_method  :allscreen_w,      :hd_w
+    alias_method  :allscreen_w=,     :hd_w=
+    alias_method  :allscreen_width,  :hd_w
+    alias_method  :allscreen_width=, :hd_w=
+
+    attr_accessor :hd_h
+    alias_method  :hd_height,         :hd_h
+    alias_method  :hd_height=,        :hd_h=
+    alias_method  :allscreen_h,       :hd_h
+    alias_method  :allscreen_h=,      :hd_h=
+    alias_method  :allscreen_height,  :hd_h
+    alias_method  :allscreen_height=, :hd_h=
+
+    attr_accessor :hd_offset_x
+    alias_method  :allscreen_offset_x,  :hd_offset_x
+    alias_method  :allscreen_offset_x=, :hd_offset_x=
+
+    attr_accessor :hd_offset_y
+    alias_method  :allscreen_offset_y,  :hd_offset_y
+    alias_method  :allscreen_offset_y=, :hd_offset_y=
+
+    attr_accessor :native_w
+    alias_method  :native_width,  :native_w
+    alias_method  :native_width=, :native_w=
+
+    attr_accessor :native_h
+    alias_method  :native_height,  :native_h
+    alias_method  :native_height=, :native_h=
+
+    attr_accessor :native_scale
+    attr_accessor :native_scale_enum
+
+    attr_accessor :window_w
+    alias_method  :window_width,  :window_w
+    alias_method  :window_width=, :window_w=
+
+    attr_accessor :window_h
+    alias_method  :window_height,  :window_h
+    alias_method  :window_height=, :window_h=
 
     def initialize runtime
       @runtime = runtime

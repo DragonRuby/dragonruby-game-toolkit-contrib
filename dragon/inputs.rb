@@ -179,8 +179,8 @@ module GTK
         127 => [:delete],
         1073742049 => [:shift_left, :shift],
         1073742053 => [:shift_right, :shift],
-        1073742048 => [:control_left, :control],
-        1073742052 => [:control_right, :control],
+        1073742048 => [:control_left, :control, :ctrl],
+        1073742052 => [:control_right, :control, :ctrl],
         1073742050 => [:alt_left, :alt],
         1073742054 => [:alt_right, :alt],
         1073742051 => [:meta_left, :meta],
@@ -295,10 +295,9 @@ module GTK
       end
     end
 
-    def set collection, value = true
+    def set collection, value
       return if collection.length == 0
       @scrubbed_ivars = nil
-      value = Kernel.tick_count if value
 
       collection.each do |m|
         m_to_s = m.to_s
@@ -352,6 +351,14 @@ S
       hash.delete(:scrubbed_ivars)
       hash[:truthy_keys] = self.truthy_keys
       hash
+    end
+
+    def ctrl
+      @control
+    end
+
+    def ctrl= value
+      @control = value
     end
   end
 end
@@ -439,6 +446,7 @@ module GTK
         has_focus: @has_focus
       }
     end
+
     alias_method :inspect, :serialize
 
     # @return [String]
@@ -454,9 +462,48 @@ module GTK
         up: @key_up.truthy_keys,
       }
     end
+
     alias_method :keys, :key
 
     include DirectionalInputHelperMethods
+
+    def method_missing m, *args
+      if m.to_s.start_with?("ctrl_")
+        other_key = m.to_s.split("_").last
+        define_singleton_method(m) do
+          return self.key_down.send(other_key.to_sym) && self.control
+        end
+
+        return send(m)
+      elsif m.to_s.start_with?("shift_")
+        other_key = m.to_s.split("_").last
+        define_singleton_method(m) do
+          return self.key_down.send(other_key.to_sym) && self.shift
+        end
+
+        return send(m)
+      elsif m.to_s.start_with?("alt_")
+        other_key = m.to_s.split("_").last
+        define_singleton_method(m) do
+          return self.key_down.send(other_key.to_sym) && self.alt
+        end
+
+        return send(m)
+      elsif m.to_s.start_with?("meta_")
+        other_key = m.to_s.split("_").last
+        define_singleton_method(m) do
+          return self.key_down.send(other_key.to_sym) && self.meta
+        end
+
+        return send(m)
+      else
+        define_singleton_method(m) do
+          self.key_down.send(m) || self.key_held.send(m)
+        end
+
+        return send(m)
+      end
+    end
   end
 end
 

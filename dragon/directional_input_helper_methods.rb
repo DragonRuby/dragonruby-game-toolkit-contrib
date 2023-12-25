@@ -73,24 +73,5 @@ S
 
       Math.atan2(up_down, left_right).to_degrees
     end
-
-    def method_missing m, *args
-      # combine the key with ctrl_
-      if m.to_s.start_with?("ctrl_")
-        other_key = m.to_s.split("_").last
-        define_singleton_method(m) do
-          return self.key_down.send(other_key.to_sym) && self.control
-        end
-
-        return send(m)
-      else
-      # see if the key is either held or down
-        define_singleton_method(m) do
-          self.key_down.send(m) || self.key_held.send(m)
-        end
-
-        return send(m)
-      end
-    end
   end
 end

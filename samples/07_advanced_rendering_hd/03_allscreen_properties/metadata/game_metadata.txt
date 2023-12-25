@@ -5,5 +5,5 @@ gametitle=All Screen Properties
 version=1.0
 icon=metadata/icon.png
 hd=true
-allscreen=true
-allscreen_max_scale=400
+hd_letterbox=false
+hd_max_scale=400

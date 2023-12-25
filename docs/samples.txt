@@ -10825,7 +10825,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
     results.delete_button_rect = { rect: args.layout.rect(row: 5, col: 0, w: 7, h: 1) }
   
-    results.primitives << results.delete_button_rect.to_solid(r: 180)
+    results.primitives << results.delete_button_rect.rect.to_solid(r: 180)
   
     results.primitives << args.layout.point(row: 5, col: 3.5, row_anchor: 0.5)
                                      .merge(label_style)
@@ -11712,6 +11712,64 @@ Follows is a source code listing for all files that have been open sourced. This
                               angle: args.state.tick_count,
                               path: :scene }
   end
+
+#+end_src
+
+*** Render Targets Clip Area - main.rb
+#+begin_src ruby
+  # ./samples/07_advanced_rendering/01_render_targets_clip_area/app/main.rb
+  def tick args
+    # define your state
+    args.state.player ||= { x: 0, y: 0, w: 300, h: 300, path: "sprites/square/blue.png" }
+  
+    # controller input for player
+    args.state.player.x += args.inputs.left_right * 5
+    args.state.player.y += args.inputs.up_down * 5
+  
+    # create a render target that holds the
+    # full view that you want to render
+  
+    # make the background transparent
+    args.outputs[:clipped_area].background_color = [0, 0, 0, 0]
+  
+    # set the w/h to match the screen
+    args.outputs[:clipped_area].w = 1280
+    args.outputs[:clipped_area].h = 720
+  
+    # mark it as transient so that the render target
+    # isn't cached (since we are going to be changing it every frame)
+    args.outputs[:clipped_area].transient!
+  
+    # render the player in the render target
+    args.outputs[:clipped_area].sprites << args.state.player
+  
+    # render the player and clip area as borders to
+    # keep track of where everything is at regardless of clip mode
+    args.outputs.borders << args.state.player
+    args.outputs.borders << { x: 540, y: 460, w: 200, h: 200 }
+  
+    # render the render target, but only the clipped area
+    args.outputs.sprites << {
+      # where to render the render target
+      x: 540,
+      y: 460,
+      w: 200,
+      h: 200,
+      # what part of the render target to render
+      source_x: 540,
+      source_y: 460,
+      source_w: 200,
+      source_h: 200,
+      # path of render target to render
+      path: :clipped_area
+    }
+  
+    # mini map
+    args.outputs.borders << { x: 1280 - 160, y: 0, w: 160, h: 90 }
+    args.outputs.sprites << { x: 1280 - 160, y: 0, w: 160, h: 90, path: :clipped_area }
+  end
+  
+  $gtk.reset
 
 #+end_src
 
@@ -16398,8 +16456,8 @@ Follows is a source code listing for all files that have been open sourced. This
   
     args.outputs.labels << { x: 10, y:  10.from_top, text: "native_scale:       #{args.grid.native_scale}", **label_style }
     args.outputs.labels << { x: 10, y:  40.from_top, text: "native_scale_enum:  #{args.grid.native_scale_enum}",  **label_style }
-    args.outputs.labels << { x: 10, y:  70.from_top, text: "allscreen_offset_x: #{args.grid.allscreen_offset_x}", **label_style }
-    args.outputs.labels << { x: 10, y: 100.from_top, text: "allscreen_offset_y: #{args.grid.allscreen_offset_y}", **label_style }
+    args.outputs.labels << { x: 10, y:  70.from_top, text: "hd_offset_x:        #{args.grid.hd_offset_x}", **label_style }
+    args.outputs.labels << { x: 10, y: 100.from_top, text: "hd_offset_y:        #{args.grid.hd_offset_y}", **label_style }
   
     if (args.state.tick_count % 500) < 250
       args.outputs.labels << { x: 10, y: 130.from_top, text: "cropped to:         grid", **label_style }
@@ -16416,24 +16474,24 @@ Follows is a source code listing for all files that have been open sourced. This
     else
       args.outputs.labels << { x: 10, y: 130.from_top, text: "cropped to:         allscreen", **label_style }
   
-      args.outputs.sprites << { x:        0    - args.grid.allscreen_offset_x,
-                                y:        0    - args.grid.allscreen_offset_y,
-                                w:        1280 + args.grid.allscreen_offset_x * 2,
-                                h:        720  + args.grid.allscreen_offset_y * 2,
-                                source_x: 2000 - 640 - args.grid.allscreen_offset_x,
-                                source_y: 2000 - 320 - args.grid.allscreen_offset_y,
-                                source_w: 1280 + args.grid.allscreen_offset_x * 2,
-                                source_h: 720  + args.grid.allscreen_offset_y * 2,
+      args.outputs.sprites << { x:        0    - args.grid.hd_offset_x,
+                                y:        0    - args.grid.hd_offset_y,
+                                w:        1280 + args.grid.hd_offset_x * 2,
+                                h:        720  + args.grid.hd_offset_y * 2,
+                                source_x: 2000 - 640 - args.grid.hd_offset_x,
+                                source_y: 2000 - 320 - args.grid.hd_offset_y,
+                                source_w: 1280 + args.grid.hd_offset_x * 2,
+                                source_h: 720  + args.grid.hd_offset_y * 2,
                                 path:     "sprites/world.png" }
   
-      args.outputs.sprites << { x:        0    - args.grid.allscreen_offset_x,
-                                y:        0    - args.grid.allscreen_offset_y,
-                                w:        1280 + args.grid.allscreen_offset_x * 2,
-                                h:        720  + args.grid.allscreen_offset_y * 2,
-                                source_x: 2000 - 640 - args.grid.allscreen_offset_x,
-                                source_y: 2000 - 320 - args.grid.allscreen_offset_y,
-                                source_w: 1280 + args.grid.allscreen_offset_x * 2,
-                                source_h: 720  + args.grid.allscreen_offset_y * 2,
+      args.outputs.sprites << { x:        0    - args.grid.hd_offset_x,
+                                y:        0    - args.grid.hd_offset_y,
+                                w:        1280 + args.grid.hd_offset_x * 2,
+                                h:        720  + args.grid.hd_offset_y * 2,
+                                source_x: 2000 - 640 - args.grid.hd_offset_x,
+                                source_y: 2000 - 320 - args.grid.hd_offset_y,
+                                source_w: 1280 + args.grid.hd_offset_x * 2,
+                                source_h: 720  + args.grid.hd_offset_y * 2,
                                 path:     "sprites/world.png" }
     end
   

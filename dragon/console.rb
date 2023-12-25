@@ -57,6 +57,8 @@ module GTK
       @warn_color = Color.new [255, 255, 0]
       @error_color = Color.new [255, 80, 80]
       @unfiltered_color = Color.new [0, 255, 255]
+      @add_primitive_queue = []
+      @clear_logs_request_queue = []
 
       load_history
     end
@@ -115,12 +117,20 @@ module GTK
       nil
     end
 
-    def add_primitive obj
+    def __add_primitive__ obj
       if obj.is_a? Hash
         add_sprite obj
       else
         add_text obj
       end
+      nil
+    end
+
+    def add_primitive obj, global_at: nil
+      @add_primitive_queue << {
+        global_at: global_at || Kernel.global_tick_count,
+        primitive: obj
+      }
       nil
     end
 
@@ -710,6 +720,8 @@ S
         calc args
         prompt.tick
         menu.tick args
+        process_add_primitive_queue
+        process_clear_logs_request_queue
       rescue Exception => e
         begin
           puts "#{e}"
@@ -719,6 +731,26 @@ S
         @disabled = true
         $stdout.puts e
         $stdout.puts "* FATAL: The GTK::Console console threw an unhandled exception and has been reset. You should report this exception (along with reproduction steps) to DragonRuby."
+      end
+    end
+
+    def process_clear_logs_request_queue
+      if @clear_logs_request_queue.any? { |entry| entry.global_at <= Kernel.global_tick_count }
+        @log.clear
+        @archived_log.clear
+        @clear_logs_request_queue.reject! { |entry| entry.global_at <= Kernel.global_tick_count }
+      end
+    end
+
+    def process_add_primitive_queue
+      @add_primitive_queue.find_all do |entry|
+        entry.global_at <= Kernel.global_tick_count
+      end.each do |entry|
+        __add_primitive__ entry.primitive
+      end
+
+      @add_primitive_queue.reject! do |entry|
+        entry.global_at <= Kernel.global_tick_count
       end
     end
 
@@ -928,6 +960,10 @@ S
         @slide_progress = @toggled_at.global_ease(@animation_duration, :flip, :quint)
       end
       @slide_progress
+    end
+
+    def clear_logs global_at: Kernel.global_tick_count
+      @clear_logs_request_queue << { global_at: global_at }
     end
   end
 end

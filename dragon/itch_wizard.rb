@@ -4,10 +4,19 @@
 # itch_wizard.rb has been released under MIT (*only this file*).
 
 class ItchWizard < Wizard
-  def steps
+  def help
+    puts <<~S
+         * INFO: Help for #{self.class.name}
+         To run this wizard, type the following into the DragonRuby Console:
+
+           $wizards.itch.start
+
+         S
+  end
+
+  def itch_steps
     [
-      :check_metadata,
-      :deploy,
+      :check_metadata
     ]
   end
 
@@ -105,7 +114,9 @@ S
   def set_icon value
     @icon = value
     write_metadata
-    start
+    deploy
+    reset
+    $console.set_command "$wizards.itch.start"
   end
 
   def write_metadata
@@ -178,41 +189,14 @@ S
 
     $gtk.openurl "https://itch.io/dashboard"
 
+    puts "* INFO: Builds for your game are located within the =./builds= directory."
+
     :success
   end
 
   def start
-    log "================"
-    log "* INFO: Starting Itch Wizard."
-    @start_at = Kernel.global_tick_count
-    steps.each do |m|
-      begin
-        log_info "Running Itch Wizard Step: ~$wizards.itch.#{m}~"
-        result = (send m) || :success
-        @wizard_status[m][:result] = result
-        if result != :success
-          log_info "Exiting wizard. :#{result}"
-          break
-        end
-      rescue Exception => e
-        if e.is_a? WizardException
-          $console.log.clear
-          $console.archived_log.clear
-          log "=" * $console.console_text_width
-          e.console_primitives.each do |p|
-            $console.add_primitive p
-          end
-          log "=" * $console.console_text_width
-          $console.set_command (e.console_command || "$wizards.itch.start")
-        else
-          log_error "Step #{m} failed."
-          log_error e.to_s
-          $console.set_command "$wizards.itch.start"
-        end
-
-        break
-      end
-    end
+    execute_steps itch_steps
+    nil
   end
 
   def reset
@@ -237,19 +221,23 @@ S
   def init_wizard_status
     @wizard_status = {}
 
-    steps.each do |m|
+    itch_steps.each do |m|
       @wizard_status[m] = { result: :not_started }
     end
 
     previous_step = nil
     next_step = nil
 
-    steps.each_cons(2) do |current_step, next_step|
+    itch_steps.each_cons(2) do |current_step, next_step|
       @wizard_status[current_step][:next_step] = next_step
     end
 
-    steps.reverse.each_cons(2) do |current_step, previous_step|
+    itch_steps.reverse.each_cons(2) do |current_step, previous_step|
       @wizard_status[current_step][:previous_step] = previous_step
     end
+  end
+
+  def display_name
+    "Itch Wizard"
   end
 end

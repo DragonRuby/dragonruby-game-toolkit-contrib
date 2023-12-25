@@ -222,7 +222,7 @@ def panel_primitives args, audio_entry
 
   results.delete_button_rect = { rect: args.layout.rect(row: 5, col: 0, w: 7, h: 1) }
 
-  results.primitives << results.delete_button_rect.to_solid(r: 180)
+  results.primitives << results.delete_button_rect.rect.to_solid(r: 180)
 
   results.primitives << args.layout.point(row: 5, col: 3.5, row_anchor: 0.5)
                                    .merge(label_style)

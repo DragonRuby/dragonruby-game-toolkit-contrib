@@ -23,6 +23,7 @@ module GTK
 
       def benchmark opts = {}
         iterations = opts.iterations
+        iterations_with_seperator = iterations.to_s.reverse.each_char.each_slice(3).map(&:join).join("_").reverse
         procs = opts.find_all { |k, v| v.respond_to? :call }
 
         times = procs.map do |(name, proc)|
@@ -53,7 +54,7 @@ module GTK
 
 * BENCHMARK RESULT: #{first_place.name} is fastest
 ** Caller: #{(caller || []).first}
-** Iterations: #{iterations}
+** Iterations: #{iterations_with_seperator}
 S
         too_small_to_measure = false
         if (first_place.time + second_place.time) == 0
@@ -63,7 +64,7 @@ S
 
 * BENCHMARK RESULT: inconclusive
 ** Caller: #{(caller || []).first}
-** Iterations: #{iterations}
+** Iterations: #{iterations_with_seperator}
 S
           summary += <<-S
 ** Average time for experiments were too small. Increase the number of iterations.

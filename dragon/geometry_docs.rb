@@ -26,6 +26,18 @@ module GeometryDocs
       :docs_find_intersect_rect_quad_tree,
       :docs_find_all_intersect_rect_quad_tree,
       :docs_quad_tree_create,
+      # added because of bouncing ball sample app
+      :docs_line_angle,
+      :docs_vec2_dot_product,
+      :docs_vec2_normalize,
+      :docs_line_vec2,
+      :docs_vec2_magnitude,
+      :docs_distance_squared,
+      :docs_vec2_normal,
+      :docs_circle_intersect_line?,
+      :docs_line_normal,
+      :docs_point_on_line?,
+      :docs_find_collisions
     ]
   end
 
@@ -34,32 +46,39 @@ module GeometryDocs
 * Geometry (~args.geometry~)
 
 The Geometry ~module~ contains methods for calculations that are
-frequently used in game development. For convenience, this ~module~ is
-mixed into ~Hash~, ~Array~, and DragonRuby's ~Entity~ class. It is
-also available in a functional variant at ~args.geometry~.
+frequently used in game development.
 
-Many of the geometric functions assume the objects have a certain
-shape:
+The following functions of ~Geometry~ are mixed into ~Hash~, ~Array~, and DragonRuby's ~Entity~ class:
 
-- ~Points~ are assumed to respond to ~x, y~.
-- ~Rectangles~ are assumed to respond to ~x, y, w, h~.
-- ~Lines~ are assumed to respond to ~x, y, x2, y2~.
+- ~intersect_rect?~
+- ~inside_rect?~
+- ~scale_rect~
+- ~angle_to~
+- ~angle_from~
+- ~point_inside_circle?~
+- ~center_inside_rect~
+- ~center_inside_rect_x~
+- ~center_inside_rect_y~
+- ~anchor_rect~
+- ~rect_center_point~
+
+You can invoke the functions above using either the mixin variant or the module variant. Example:
 
 #+begin_src
   def tick args
-    # Geometry is mixed into Hash, Array, and Entity
-
     # define to rectangles
     rect_1 = { x: 0, y: 0, w: 100, h: 100 }
     rect_2 = { x: 50, y: 50, w: 100, h: 100 }
 
+    # mixin variant
     # call geometry method function from instance of a Hash class
     puts rect_1.intersect_rect?(rect_2)
 
     # OR
 
-    # use the geometry methods functionally
+    # module variants
     puts args.geometry.intersect_rect?(rect_1, rect_2)
+    puts Geometry.intersect_rect?(rect_1, rect_2)
   end
 #+end_src
 S
@@ -386,6 +405,8 @@ Invocation variants:
 
 - ~point_1.point_inside_circle? circle_center, circle_radius~
 - ~args.geometry.point_inside_circle? point_1, circle_center, circle_radius~
+
+~circle_center~ can also contain the ~radius~ value (instead of passing it as a separate argument).
 
 Returns ~true~ if a point is inside of a circle defined as a center point and radius.
 
@@ -848,6 +869,185 @@ parameters are all named:
                                                             anchor_y: 1.0)
     args.outputs.borders << args.state.rect_1
     args.outputs.borders << args.state.rect_2
+  end
+#+end_src
+S
+  end
+
+  def docs_line_angle
+    <<-S
+** ~line_angle~
+Given a line, this function will return the angle of the line in degrees.
+S
+  end
+
+  def docs_vec2_dot_product
+    <<-S
+** ~vec2_dot_product~
+Given two ~Hashes~ with ~x~ and ~y~ keys (or ~Objects~ that respond to ~x~ and ~y~), this
+function will return the dot product of the two vectors.
+
+Note:
+Take a look at this sample app for a non-trivial example of how to use this function: ~./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/~
+S
+  end
+
+  def docs_vec2_normalize
+    <<-S
+** ~vec2_normalize~
+Given a ~Hash~ with ~x~ and ~y~ keys (or an ~Object~ that responds to ~x~ and ~y~), this
+function will return a ~Hash~ with ~x~ and ~y~ keys that represents the vector normalized.
+
+Note:
+Take a look at this sample app for a non-trivial example of how to use this function: ~./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/~
+S
+  end
+
+  def docs_line_vec2
+    <<-S
+** ~line_vec2~
+Given a line, this function will return a ~Hash~ with ~x~ and ~y~ keys that represents the
+vector of the line.
+
+Note:
+Take a look at this sample app for a non-trivial example of how to use this function: ~./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/~
+S
+  end
+
+  def docs_vec2_magnitude
+    <<-S
+** ~vec2_magnitude~
+Given a ~Hash~ with ~x~ and ~y~ keys (or an ~Object~ that responds to ~x~ and ~y~), this
+function will return the magnitude of the vector.
+
+Note:
+Take a look at this sample app for a non-trivial example of how to use this function: ~./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/~
+S
+  end
+
+  def docs_distance_squared
+    <<-S
+** ~distance_squared~
+Given two ~Hashes~ with ~x~ and ~y~ keys (or ~Objects~ that respond to ~x~ and ~y~), this
+function will return the distance squared between the two points. This is useful when you
+only want to compare distances, and don't need the actual distance.
+
+Note:
+Take a look at this sample app for a non-trivial example of how to use this function: ~./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/~
+S
+  end
+
+  def docs_vec2_normal
+    <<-S
+** ~vec2_normal~
+Given a ~Hash~ with ~x~ and ~y~ keys (or an ~Object~ that responds to ~x~ and ~y~), this
+function will return a ~Hash~ with ~x~ and ~y~ keys that represents the normal of the vector.
+
+Note:
+Take a look at this sample app for a non-trivial example of how to use this function: ~./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/~
+S
+  end
+
+  def docs_circle_intersect_line?
+    <<-S
+** ~circle_intersect_line?~
+The first parameters is a ~Hash~ with ~x~, ~y~, and ~radius~ keys (or an ~Object~ that responds to ~x~, ~y~, and ~radius~).
+
+The second parameter is a ~Hash~ with ~x1~, ~y1~, ~x2~, and ~y2~ keys (or an ~Object~ that responds to ~x1~, ~y1~, ~x2~, and ~y2~).
+
+This function will return ~true~ if the circle intersects the line, and ~false~ if it does not.
+
+Note:
+Take a look at this sample app for a non-trivial example of how to use this function: ~./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/~
+S
+  end
+
+  def docs_line_normal
+    <<-S
+** ~line_normal~
+The first parameter is a line (a ~Hash~ with ~x1~, ~y1~, ~x2~, and ~y2~ keys, or an ~Object~ that responds to ~x1~, ~y1~, ~x2~, and ~y2~).
+
+The second parameter is a ~Hash~ with ~x~ and ~y~ keys (or an ~Object~ that responds to ~x~ and ~y~).
+
+This function will return a ~Hash~ with ~x~ and ~y~ keys that represents the normal of the line relative to the point provided.
+
+Note:
+Take a look at this sample app for a non-trivial example of how to use this function: ~./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/~
+S
+  end
+
+  def docs_point_on_line?
+    <<-S
+** ~point_on_line?~
+The first parameter is a point (a ~Hash~ with ~x~ and ~y~ keys, or an ~Object~ that responds to ~x~ and ~y~).
+
+The second parameter is a line (a ~Hash~ with ~x1~, ~y1~, ~x2~, and ~y2~ keys, or an ~Object~ that responds to ~x1~, ~y1~, ~x2~, and ~y2~).
+
+This function will return ~true~ if the point is on the line, and ~false~ if it is not.
+
+Note:
+Take a look at this sample app for a non-trivial example of how to use this function: ~./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/~
+S
+end
+
+  def docs_find_collisions
+    <<-S
+** ~find_collisions~
+
+Given an ~Array~ of rects, returns a ~Hash~ of collisions. Each entry in
+the return ~Hash~ maps two rects from the input ~Array~ that intersect.
+
+Note that in the event of an intersection of rects ~A~ and ~B~, the returned
+~Hash~ will contain two entries: ~{A=>B,B=>A}~
+
+#+begin_src ruby
+  def tick(args)
+    args.state.squares ||= []
+    args.state.alphabet ||= ('A'..'Z').to_a
+
+    # reset the squares if the user presses 'R'
+    args.state.squares = [] if args.inputs.keyboard.r
+
+    # add a new square every 4 ticks until we get to 26
+    # the last part of the condition is to make sure we always have at least 1 square before
+    # we start checking for collisions, otherwise #find_collisions will throw an error
+    if (args.state.tick_count % 4 == 0 && args.state.squares.size < 26) || args.state.squares.size == 0
+
+      # add a new square to the array with a random position, with some padding
+      # so that the squares don't spawn too close to the edge of the screen
+      # we also set the text to a random letter from the alphabet so we can re-use
+      # the same hash for both the squares and their labels
+      args.state.squares << {
+        x: rand(1280 - 200) + 100, y: rand(720 - 300) + 100,
+        w: 50, h: 50,
+        text: args.state.alphabet[args.state.squares.size],
+        alignment_enum: 1, # center the text
+        r: 0, g: 255, b: 0, a: 128
+      }
+    end
+
+    # check for collisions between the squares. this returns a hash of the
+    # colliding squares, with the key being the first square and the value
+    # being the second square
+    collisions = args.geometry.find_collisions(args.state.squares)
+    collisions.each do |key, value|
+      key.merge!(r: 255, g: 0, b: 0)
+      value.merge!(r: 0, g: 0, b: 255)
+    end
+
+    # render instructions and collision info
+    args.outputs.labels << {x: 30, y: 20.from_top, text: "Press 'R' to reset" }
+    args.outputs.labels << {x: 30, y: 45.from_top, text: "\#{args.state.squares.size} squares, \#{collisions.size} collisions" }
+    args.outputs.labels << {x: 30, y: 70.from_top, text: "\#{collisions.map { |k, v| "{\#{k.text}=>\#{v.text}}" }.join(', ')}" }
+
+    # render the squares and their labels
+    args.outputs.solids << args.state.squares
+    args.outputs.labels << args.state.squares.map_with_index do |square, i|
+      square.merge(
+        x: square.x + 25, y: square.y + 35, # center the text in the square
+        r: 0, g: 0, b: 0                    # make it black
+      )
+    end
   end
 #+end_src
 S
