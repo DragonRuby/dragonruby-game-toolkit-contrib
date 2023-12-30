@@ -21,6 +21,7 @@ class Game
                        gravity: 0.03,
                        entropy: 0.9,
                        angle: 0,
+                       facing: 1,
                        angle_velocity: 0,
                        elasticity: 0.5 }
 
@@ -80,6 +81,14 @@ class Game
       player.dx += 5 * player.angle.vector_x
     end
     player.angle_velocity += inputs.left_right * -1
+    player.facing = if inputs.left_right == -1
+                      -1
+                    elsif inputs.left_right == 1
+                      1
+                    else
+                      player.facing
+                    end
+
     collisions = player_terrain_collisions
     collisions.each do |collision|
       collide! player, collision
@@ -92,7 +101,7 @@ class Game
 
   def reflect_velocity! circle, line
     slope = geometry.line_slope line, replace_infinity: 1000
-    slope_angle = geometry.line_angle line, replace_infinity: 1000
+    slope_angle = geometry.line_angle line
     if slope_angle == 90 || slope_angle == 270
       circle.dx *= -circle.elasticity
     else
@@ -166,41 +175,51 @@ class Game
   end
 
   def roll! circle, line
-    slope_angle = geometry.line_angle line, replace_infinity: 1000
+    slope_angle = geometry.line_angle line
+    return if slope_angle == 90 || slope_angle == 270
+
     ax = -circle.gravity * slope_angle.vector_y
     ay = -circle.gravity * slope_angle.vector_x
-    if slope_angle == -1000 || slope_angle == 1000
+
+    if ax.abs < 0.05 && ay.abs < 0.05
       ax = 0
-      circle.dy += -circle.gravity
+      ay = 0
+    end
+
+    friction_coefficient = 0.0001
+    friction_force = friction_coefficient * circle.gravity * slope_angle.vector_x
+
+    circle.dy += ay
+    circle.dx += ax
+
+    if circle.colliding_from_above
+      circle.dx += circle.angle_velocity * slope_angle.vector_x * 0.1
+      circle.dy += circle.angle_velocity * slope_angle.vector_y * 0.1
     else
-      friction_coefficient = 0.0001
-      friction_force = friction_coefficient * circle.gravity * slope_angle.vector_x
+      circle.dx += circle.angle_velocity * slope_angle.vector_x * -0.1
+      circle.dy += circle.angle_velocity * slope_angle.vector_y * -0.1
+    end
 
-      circle.dy += ay
-      circle.dx += ax
+    if circle.dx != 0
+      circle.dx -= friction_force * (circle.dx / circle.dx.abs)
+    end
 
-      if circle.colliding_from_above
-        circle.dx += circle.angle_velocity * slope_angle.vector_x * 0.1
-        circle.dy += circle.angle_velocity * slope_angle.vector_y * 0.1
-      else
-        circle.dx += circle.angle_velocity * slope_angle.vector_x * -0.1
-        circle.dy += circle.angle_velocity * slope_angle.vector_y * -0.1
-      end
-
-      if circle.dx != 0
-        circle.dx -= friction_force * (circle.dx / circle.dx.abs)
-      end
-
-      if circle.dy != 0
-        circle.dy -= friction_force * (circle.dy / circle.dy.abs)
-      end
+    if circle.dy != 0
+      circle.dy -= friction_force * (circle.dy / circle.dy.abs)
     end
   end
 
   def player_terrain_collisions
     terrain.find_all do |terrain|
-      geometry.circle_intersect_line? player, terrain
-    end
+             geometry.circle_intersect_line? player, terrain
+           end
+           .sort_by do |terrain|
+             if player.facing == -1
+               -terrain.x
+             else
+               terrain.x
+             end
+           end
   end
 
   def render

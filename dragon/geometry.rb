@@ -251,7 +251,7 @@ S
       rescue Exception => e
         raise e, <<-S
 * ERROR:
-Geometry::vec2_dot_product for v1 #{v1} v2: #{v2}.
+Geometry::line_slope for v1 #{line} replace_infinity: #{replace_infinity}.
 #{e}
 S
       end
@@ -480,7 +480,7 @@ S
       end
 
       def rect_center_point rect
-        { x: rect.x + rect.w.half, y: rect.y + rect.h.half }
+        { x: rect.x + rect.w / 2, y: rect.y + rect.h / 2 }
       end
 
       def center rect

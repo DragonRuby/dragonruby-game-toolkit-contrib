@@ -27,19 +27,19 @@ module GTK
   class Log
     def self.write_to_log_and_puts *args
       return if $gtk.production
-      $gtk.append_file_root 'logs/log.txt', args.join("\n") + "\n"
+      $gtk.append_file_root 'logs/all.log', args.join("\n") + "\n"
       args.each { |obj| $gtk.log obj, self }
     end
 
     def self.write_to_log_and_print *args
       return if $gtk.production
-      $gtk.append_file_root 'logs/log.txt', args.join("\n")
+      $gtk.append_file_root 'logs/all.log', args.join("\n")
       Object.print(*args)
     end
 
     def self.puts_important *args, message_code: nil
       return if $gtk.production
-      $gtk.append_file_root 'logs/log.txt', args.join("\n")
+      $gtk.append_file_root 'logs/all.log', args.join("\n")
       if message_code
         $gtk.notify! "An important notification occurred. Open Console to see details. #{message_code}"
       else

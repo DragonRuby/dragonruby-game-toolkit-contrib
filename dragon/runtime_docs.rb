@@ -115,6 +115,7 @@ module RuntimeDocs
       :docs_reload_if_needed,
 
       :docs_api_summary_state,
+      :docs_add_caller_to_puts!
     ]
   end
 
@@ -1309,6 +1310,20 @@ using ~args.state.new_entity_strict~ must define all properties that are allowed
 initialization will result in an exception.
 ** ~args.state.tick_count~
 Returns the current tick of the game. ~args.state.tick_count~ is ~0~ when the game is first started or if the game is reset via ~$gtk.reset~.
+S
+  end
+
+  def docs_add_caller_to_puts!
+    <<-S
+*** ~add_caller_to_puts!~
+If you need to hund down rogue ~puts~ statements in your code do:
+#+begin_src
+  def tick args
+    # adding the following line to the TOP of your tick method
+    # will print ~caller~ along side each ~puts~ statement
+    $gtk.add_caller_to_puts!
+  end
+#+end_src
 S
   end
 

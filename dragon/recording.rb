@@ -316,7 +316,7 @@ S
       @runtime.notify! "Replay started =#{@replay_file_name}= speed: #{@runtime.simulation_speed}."
     end
 
-    def replay_next_tick file_name, speed: 1
+    def start_replay_next_tick file_name, speed: 1
       @replay_next_tick = true
       @replay_next_tick_file_name = file_name
       if speed
@@ -324,6 +324,8 @@ S
         @replay_next_tick_simulation_speed = speed
       end
     end
+
+    alias_method :replay_next_tick, :start_replay_next_tick
 
     def replay_completed_at
       @replay_completed_at

@@ -15,6 +15,10 @@ class IOSWizard < Wizard
              #+begin_src
                $wizards.ios.start env: :dev
              #+end_src
+         *** Deploy app to device connected via USB with remote hotload:
+             #+begin_src
+               $wizards.ios.start env: :hotload
+             #+end_src
          ** Simulator
          *** Deploy app to simulator
              The default simulator is iPhone 13 Pro Max and will be automatically installed if it doesn't exist.
