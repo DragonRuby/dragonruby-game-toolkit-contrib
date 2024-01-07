@@ -18,11 +18,12 @@ module GTK
       end
 
       def letter_size
-        @letter_size ||= $gtk.calcstringbox 'W', size_enum, font
+        w, h = $gtk.calcstringbox 'W', size_enum, font
+        @letter_size ||= { w: w, h: h }
       end
 
       def line_height_px
-        @line_height_px ||= letter_size.y * line_height
+        @line_height_px ||= letter_size.h * line_height
       end
 
       def label(x:, y:, text:, color:, alignment_enum: 0)

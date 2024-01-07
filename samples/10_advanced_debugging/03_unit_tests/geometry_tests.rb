@@ -110,5 +110,3 @@ begin :scale_rect
   end
 end
 
-$gtk.reset 100
-$gtk.log_level = :off

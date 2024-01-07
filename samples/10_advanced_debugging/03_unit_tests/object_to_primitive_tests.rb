@@ -11,6 +11,3 @@ def test_class_to_sprite args, assert
   assert.true! array.first.is_a?(PlayerSprite)
   puts "No exception was thrown. Sweet!"
 end
-
-$gtk.reset 100
-$gtk.log_level = :off

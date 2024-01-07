@@ -9,7 +9,6 @@ module GTK
     module Hotload
       def hotload_init
         @hotload_if_needed = 0
-        @mailbox_if_needed = 0
 
         # schema for file_mtimes
         # { FILE_PATH: { current: (Time as Fixnum),
@@ -18,14 +17,7 @@ module GTK
         #                last:    (Time as Fixnum) } }
         @file_mtimes = { }
 
-        @suppress_mailbox = true
         files_to_reload.each { |f| init_mtimes f }
-        init_mtimes 'app/mailbox.rb'
-      end
-
-      def hotload_on_write_file file_name
-        return unless file_name.include? 'mailbox.rb'
-        @mailbox_if_needed = :force
       end
 
       def files_to_reload
@@ -130,30 +122,9 @@ module GTK
         files_to_reload.each { |f| reload_if_needed f }
       end
 
-      def mailbox_timeout
-        if @suppress_mailbox
-          60
-        else
-          3
-        end
-      end
-
-      def check_mailbox
-        if @mailbox_if_needed == :force # lol
-          reload_if_needed 'app/mailbox.rb', true
-          @mailbox_if_needed = 1
-          return
-        end
-        @mailbox_if_needed += 1
-        return unless @mailbox_if_needed.mod_zero? mailbox_timeout
-        @mailbox_if_needed = 1
-        reload_if_needed 'app/mailbox.rb'
-      end
-
       def tick_hotload
         return if Kernel.tick_count <= 0 && !paused?
         hotload_source_files
-        check_mailbox
       end
 
       def on_load_succeeded file

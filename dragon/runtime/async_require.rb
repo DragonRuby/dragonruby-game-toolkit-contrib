@@ -163,6 +163,16 @@ S
         syntax = (@ffi_file.read file) || ''
         return true if syntax.strip.length == 0
 
+        # this indicates that main.rb contained a syntax error when
+        # first loaded and the dev updated main.rb (in an attempt to fix the syntax error).
+        # set the Kernel.tick_count and global_tick_count to -1 which emulates a first time
+        # start up of DR -> causes load_main_rb to be invoked.
+        if @load_status == :main_rb_load_error_shown
+          Kernel.tick_count = -1
+          Kernel.global_tick_count = -1
+          @load_status = :dragonruby_started
+        end
+
         okay = true
         if ext == ".rb"
           syntax_check_result = @ffi_mrb.parse syntax
@@ -170,34 +180,17 @@ S
         end
 
         if okay
-          if file.include? 'mailbox.rb'
-            mailbox_contents = ((read_file file) || '').strip
-            if mailbox_contents.length != 0
-              new_file_name = "mailbox-processed/mailbox-#{Kernel.global_tick_count}.rb"
-              new_path = file.gsub('mailbox.rb', new_file_name)
-              write_file file, ''
-              write_file new_path, mailbox_contents
-              reload_if_needed new_path, true
-              return true
-            end
-          else
-            mark_ruby_file_for_reload file
-          end
+          mark_ruby_file_for_reload file
           log_debug "Reloaded #{file}. (#{Kernel.global_tick_count})", subsystem="Engine"
           notify_subdued!
           return true
         else
           # handle a special case where a syntax error exists in main.rb on startup
-          if @load_status == :dragonruby_started || @load_status == :main_rb_first_time_load
-            mark_ruby_file_for_reload file
-            @main_rb_load_exception = { file: file, error: syntax_check_result }
-          else
-            raise <<~S
-            ** Failed to load/reload #{file}.
-            #{syntax_check_result}
+          raise <<~S
+                ** Failed to load/reload #{file}.
+                #{syntax_check_result}
 
-            S
-          end
+                S
         end
       rescue Exception => e
         pretty_print_exception_and_export! e
@@ -211,6 +204,10 @@ S
         if @ffi_file.path_exists('app/main.rb') || @ffi_file.path_exists('app/main.rbc')
           require 'app/main.rb'
         end
+      rescue Exception => e
+        # if an exception occurs, it means that there was a syntax error
+        # in main.rb at first launch
+        @load_status = :main_rb_load_failed
       end
     end # GTK::Runtime::AsyncRequire
   end # GTK::Runtime

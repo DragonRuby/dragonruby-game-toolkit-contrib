@@ -22,6 +22,3 @@ S
 
  assert.equal! result, expected, "Parsing xml failed."
 end
-
-$gtk.reset 100
-$gtk.log_level = :off

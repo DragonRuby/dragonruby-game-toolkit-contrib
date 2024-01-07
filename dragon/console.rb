@@ -64,7 +64,7 @@ module GTK
     end
 
     def console_text_width
-      @console_text_width ||= ($gtk.logical_width - 20).idiv(font_style.letter_size.x)
+      @console_text_width ||= ($gtk.logical_width - 20).idiv(font_style.letter_size.w)
     end
 
     def save_history
@@ -546,17 +546,9 @@ S
           self.current_input_str = @command_history[@command_history_index].dup
         end
       elsif args.inputs.keyboard.key_down.left
-        if args.inputs.keyboard.key_down.control
-          prompt.move_cursor_left_word
-        else
-          prompt.move_cursor_left
-        end
+        prompt.move_cursor_left
       elsif args.inputs.keyboard.key_down.right
-        if args.inputs.keyboard.key_down.control
-          prompt.move_cursor_right_word
-        else
-          prompt.move_cursor_right
-        end
+        prompt.move_cursor_right
       elsif inputs_scroll_up_full? args
         scroll_up_full
       elsif inputs_scroll_down_full? args
@@ -616,7 +608,7 @@ S
       return if slide_progress == 0
 
       @bottom = top - (h * slide_progress)
-      args.outputs.reserved << [left, @bottom, w, h, *@background_color.mult_alpha(slide_progress)].solid
+      args.outputs.reserved << { x: left, y: @bottom, w: w, h: h, path: :solid, **@background_color.mult_alpha(slide_progress).to_h }
       args.outputs.reserved << { x: 20,
                                  y: @bottom.shift_up(logo_final_y - 44),
                                  w: 100,
@@ -719,9 +711,9 @@ S
         return unless should_tick?
         calc args
         prompt.tick
-        menu.tick args
         process_add_primitive_queue
         process_clear_logs_request_queue
+        menu.tick args
       rescue Exception => e
         begin
           puts "#{e}"
@@ -834,7 +826,7 @@ S
     end
 
     def line(y:, color:)
-      [left, y, right, y, *color].line
+      { x: left, y: y, x2: right, y2: y, **color.to_h }
     end
 
     def include_row_marker? log_entry

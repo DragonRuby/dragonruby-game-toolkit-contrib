@@ -655,7 +655,7 @@ Follows is a source code listing for all files that have been open sourced. This
         @inputs = Inputs.new
         @outputs = Outputs.new args: self
         @cvars = {}
-        @audio = {}
+        @audio = AudioHash.new
         @passes = []
         @state = OpenEntity.new
         @temp_state = OpenEntity.new
@@ -743,6 +743,7 @@ Follows is a source code listing for all files that have been open sourced. This
         name = name.to_s
         if !@render_targets[name]
           @render_targets[name] = Outputs.new(args: self, target: name, background_color_override: [255, 255, 255, 0])
+          @render_targets[name].transient! if @runtime.platform? :web
           @passes << @render_targets[name]
         end
         @render_targets[name]
@@ -865,6 +866,18 @@ Follows is a source code listing for all files that have been open sourced. This
   
         super
       end
+    end
+  end
+  
+  class AudioHash < Hash
+    def volume
+      @volume ||= 1.0
+      @volume
+    end
+  
+    def volume= value
+      @volume = value
+      @volume = @volume.clamp(0.0, 1.0)
     end
   end
 
@@ -1357,7 +1370,7 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def console_text_width
-        @console_text_width ||= ($gtk.logical_width - 20).idiv(font_style.letter_size.x)
+        @console_text_width ||= ($gtk.logical_width - 20).idiv(font_style.letter_size.w)
       end
   
       def save_history
@@ -1839,17 +1852,9 @@ Follows is a source code listing for all files that have been open sourced. This
             self.current_input_str = @command_history[@command_history_index].dup
           end
         elsif args.inputs.keyboard.key_down.left
-          if args.inputs.keyboard.key_down.control
-            prompt.move_cursor_left_word
-          else
-            prompt.move_cursor_left
-          end
+          prompt.move_cursor_left
         elsif args.inputs.keyboard.key_down.right
-          if args.inputs.keyboard.key_down.control
-            prompt.move_cursor_right_word
-          else
-            prompt.move_cursor_right
-          end
+          prompt.move_cursor_right
         elsif inputs_scroll_up_full? args
           scroll_up_full
         elsif inputs_scroll_down_full? args
@@ -1909,7 +1914,7 @@ Follows is a source code listing for all files that have been open sourced. This
         return if slide_progress == 0
   
         @bottom = top - (h * slide_progress)
-        args.outputs.reserved << [left, @bottom, w, h, *@background_color.mult_alpha(slide_progress)].solid
+        args.outputs.reserved << { x: left, y: @bottom, w: w, h: h, path: :solid, **@background_color.mult_alpha(slide_progress).to_h }
         args.outputs.reserved << { x: 20,
                                    y: @bottom.shift_up(logo_final_y - 44),
                                    w: 100,
@@ -2012,9 +2017,9 @@ Follows is a source code listing for all files that have been open sourced. This
           return unless should_tick?
           calc args
           prompt.tick
-          menu.tick args
           process_add_primitive_queue
           process_clear_logs_request_queue
+          menu.tick args
         rescue Exception => e
           begin
             puts "#{e}"
@@ -2127,7 +2132,7 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def line(y:, color:)
-        [left, y, right, y, *color].line
+        { x: left, y: y, x2: right, y2: y, **color.to_h }
       end
   
       def include_row_marker? log_entry
@@ -2404,11 +2409,12 @@ Follows is a source code listing for all files that have been open sourced. This
         end
   
         def letter_size
-          @letter_size ||= $gtk.calcstringbox 'W', size_enum, font
+          w, h = $gtk.calcstringbox 'W', size_enum, font
+          @letter_size ||= { w: w, h: h }
         end
   
         def line_height_px
-          @line_height_px ||= letter_size.y * line_height
+          @line_height_px ||= letter_size.h * line_height
         end
   
         def label(x:, y:, text:, color:, alignment_enum: 0)
@@ -2513,6 +2519,9 @@ Follows is a source code listing for all files that have been open sourced. This
               (button id: :replay,      row: 0, col: col_max_index - 1, text: "start replay",          method: :replay_clicked),
               (button id: :record,      row: 0, col: col_max_index - 3, text: "record gameplay",       method: :record_clicked),
               (button id: :close,       row: 0, col: col_max_index - 5, text: "close console",         method: :close_clicked),
+              (button id: :scroll_up,   row: 1, col: col_max_index - 1, text: "scroll up",             method: :scroll_up_clicked),
+              (button id: :scroll_down, row: 1, col: col_max_index - 3, text: "scroll down",           method: :scroll_down_clicked),
+              (button id: :scroll_down, row: 1, col: col_max_index - 5, text: "scroll end",            method: :scroll_end_clicked),
               *custom_buttons
             ]
           elsif @menu_shown == :hidden
@@ -2566,16 +2575,19 @@ Follows is a source code listing for all files that have been open sourced. This
             method: method
           }.let do |entity|
             primitives = []
-            primitives << entity[:rect].solid!(a: 164)
+            primitives << { **entity[:rect], path: :solid, r: 0, g: 0, b: 0, a: 255 }
             primitives << entity[:rect].border!(r: 255, g: 255, b: 255)
             primitives << text.wrapped_lines(5)
                               .map_with_index do |l, i|
-                                [
-                                  entity[:rect][:x] + entity[:rect][:w].half,
-                                  entity[:rect][:y] + entity[:rect][:h].half + font_height - (i * (font_height + 2)),
-                                  l, -3, 1, 255, 255, 255
-                                ]
-                              end.labels
+                                {
+                                  x: entity[:rect][:x] + entity[:rect][:w] / 2,
+                                  y: entity[:rect][:y] + entity[:rect][:h] / 2 + font_height - (i * (font_height + 2)),
+                                  text: l,
+                                  size_enum: -3,
+                                  alignment_enum: 1,
+                                  r: 255, g: 255, b: 255
+                                }
+                              end
   
             entity.merge(primitives: primitives)
           end
@@ -2627,7 +2639,8 @@ Follows is a source code listing for all files that have been open sourced. This
         end
   
         def update_cursor_position_px
-          @cursor_position_px = ($gtk.calcstringbox (@prompt + @current_input_str[0...@cursor_position]), @font_style.size_enum, @font_style.font).x
+          w, _ = $gtk.calcstringbox (@prompt + @current_input_str[0...@cursor_position]), @font_style.size_enum, @font_style.font
+          @cursor_position_px = w
         end
   
         def current_input_str=(str)
@@ -2791,18 +2804,12 @@ Follows is a source code listing for all files that have been open sourced. This
           args.outputs.reserved << (@cursor_color.to_h.merge x: x + @cursor_position_px + 0.5,
                                                              y: y + 5,
                                                              x2: x + @cursor_position_px + 0.5,
-                                                             y2: y + @font_style.letter_size.y + 4)
+                                                             y2: y + @font_style.letter_size.h + 4)
   
           args.outputs.reserved << (@cursor_color.to_h.merge x: x + @cursor_position_px + 1,
                                                              y: y + 5,
                                                              x2: x + @cursor_position_px + 1,
-                                                             y2: y + @font_style.letter_size.y + 4)
-  
-          # debugging rectangle for string
-          # args.outputs.reserved << (@cursor_color.to_h.merge x: x,
-          #                                                    y: y + 5,
-          #                                                    w: @cursor_position_px,
-          #                                                    h: @font_style.letter_size.y).border
+                                                             y2: y + @font_style.letter_size.h + 4)
         end
   
         def tick
@@ -2982,6 +2989,14 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       include DirectionalInputHelperMethods
+  
+      def method_missing m, *args
+        define_singleton_method(m) do
+          self.key_down.send(m) || self.key_held.send(m)
+        end
+  
+        return send(m)
+      end
     end
   end
 
@@ -3561,25 +3576,6 @@ Follows is a source code listing for all files that have been open sourced. This
   
         Math.atan2(up_down, left_right).to_degrees
       end
-  
-      def method_missing m, *args
-        # combine the key with ctrl_
-        if m.to_s.start_with?("ctrl_")
-          other_key = m.to_s.split("_").last
-          define_singleton_method(m) do
-            return self.key_down.send(other_key.to_sym) && self.control
-          end
-  
-          return send(m)
-        else
-        # see if the key is either held or down
-          define_singleton_method(m) do
-            self.key_down.send(m) || self.key_held.send(m)
-          end
-  
-          return send(m)
-        end
-      end
     end
   end
 
@@ -3815,42 +3811,6 @@ Follows is a source code listing for all files that have been open sourced. This
   
   module GTK
     module Geometry
-      def self.rotate_point point, angle, around = nil
-        s = Math.sin angle.to_radians
-        c = Math.cos angle.to_radians
-        px = point.x
-        py = point.y
-        cx = 0
-        cy = 0
-        if around
-          cx = around.x
-          cy = around.y
-        end
-  
-        point.merge(x: ((px - cx) * c - (py - cy) * s) + cx,
-                    y: ((px - cx) * s + (py - cy) * c) + cy)
-      end
-  
-      # Returns f(t) for a cubic Bezier curve.
-      def self.cubic_bezier t, a, b, c, d
-        s  = 1 - t
-        s0 = 1
-        s1 = s
-        s2 = s * s
-        s3 = s * s * s
-  
-        t0 = 1
-        t1 = t
-        t2 = t * t
-        t3 = t * t * t
-  
-        1 * s3 * t0 * a +
-        3 * s2 * t1 * b +
-        3 * s1 * t2 * c +
-        1 * s0 * t3 * d
-      end
-  
-      # Returns true if a primitive's rectangle is entirely inside another primitive's rectangle.
       def inside_rect? outer, tolerance = 0.0
         Geometry.inside_rect? self, outer, tolerance
       end
@@ -3871,79 +3831,34 @@ Follows is a source code listing for all files that have been open sourced. This
                                      anchor_y: anchor_y
       end
   
-      # Scales a primitive rect by a percentage.
       def scale_rect percentage, *anchors
         Geometry.scale_rect self, percentage, *anchors
       end
   
-      # Returns the angle from one primitive to another primitive.
       def angle_to other_point
         Geometry.angle_to self, other_point
       end
   
-      # Returns the angle to one primitive from another primitive.
       def angle_from other_point
         Geometry.angle_from self, other_point
       end
   
-      # Returns true if a primitive is within a circle specified by the circle's center and radius.
-      def point_inside_circle? circle_center_point, radius
+      def point_inside_circle? circle_center_point, radius = nil
         Geometry.point_inside_circle? self, circle_center_point, radius
-      end
-  
-      def self.center_inside_rect rect, other_rect
-        offset_x = (other_rect.w - rect.w).half
-        offset_y = (other_rect.h - rect.h).half
-        new_rect = rect.shift_rect(0, 0)
-        new_rect.x = other_rect.x + offset_x
-        new_rect.y = other_rect.y + offset_y
-        new_rect
-      rescue Exception => e
-        raise e, <<-S
-  * ERROR:
-  center_inside_rect for self #{self} and other_rect #{other_rect}.\n#{e}.
-  S
       end
   
       def center_inside_rect other_rect
         Geometry.center_inside_rect self, other_rect
       end
   
-      def self.center_inside_rect_x rect, other_rect
-        offset_x   = (other_rect.w - rect.w).half
-        new_rect   = rect.shift_rect(0, 0)
-        new_rect.x = other_rect.x + offset_x
-        new_rect.y = other_rect.y
-        new_rect
-      rescue Exception => e
-        raise e, <<-S
-  * ERROR:
-  center_inside_rect_x for self #{self} and other_rect #{other_rect}.\n#{e}.
-  S
-      end
-  
       def center_inside_rect_x other_rect
         Geometry.center_inside_rect_x self, other_rect
-      end
-  
-      def self.center_inside_rect_y rect, other_rect
-        offset_y = (other_rect.h - rect.h).half
-        new_rect = rect.shift_rect(0, 0)
-        new_rect.x = other_rect.x
-        new_rect.y = other_rect.y + offset_y
-        new_rect
-      rescue Exception => e
-        raise e, <<-S
-  * ERROR:
-  center_inside_rect_y for self #{self} and other_rect #{other_rect}.\n#{e}.
-  S
       end
   
       def center_inside_rect_y other_rect
         Geometry.center_inside_rect_y self, other_rect
       end
   
-      # Returns a primitive that is anchored/repositioned based off its rectangle.
       def anchor_rect anchor_x, anchor_y
         current_w = self.w
         current_h = self.h
@@ -3956,21 +3871,131 @@ Follows is a source code listing for all files that have been open sourced. This
         raise ":angle_given_point has been deprecated use :angle_from instead."
       end
   
-      def self.shift_line line, x, y
-        if line.is_a?(Array) || line.is_a?(Hash)
-          new_line = line.dup
-          new_line.x  += x
-          new_line.x2 += x
-          new_line.y  += y
-          new_line.y2 += y
-          new_line
-        else
-          raise "shift_line for #{line} is not supported."
-        end
+      def line_to_rect min_w: 0, min_h: 0
+        Geometry.line_to_rect self, min_w: 0, min_h: 0
       end
   
-      def self.intersects_rect? *args
-        raise <<-S
+      def rect_to_line
+        Geometry.rect_to_line self
+      end
+  
+      def rect_center_point
+        Geometry.rect_center_point self
+      end
+  
+      class << self
+        def rotate_point point, angle, around = nil
+          s = Math.sin angle.to_radians
+          c = Math.cos angle.to_radians
+          px = point.x
+          py = point.y
+          cx = 0
+          cy = 0
+          if around
+            cx = around.x
+            cy = around.y
+          end
+  
+          point.merge(x: ((px - cx) * c - (py - cy) * s) + cx,
+                      y: ((px - cx) * s + (py - cy) * c) + cy)
+        end
+  
+        # Returns f(t) for a cubic Bezier curve.
+        def cubic_bezier t, a, b, c, d
+          s  = 1 - t
+          s0 = 1
+          s1 = s
+          s2 = s * s
+          s3 = s * s * s
+  
+          t0 = 1
+          t1 = t
+          t2 = t * t
+          t3 = t * t * t
+  
+          1 * s3 * t0 * a +
+            3 * s2 * t1 * b +
+            3 * s1 * t2 * c +
+            1 * s0 * t3 * d
+        end
+  
+        def scale_rect rect, percentage, *anchors
+          anchor_x, anchor_y = *anchors.flatten
+          anchor_x ||= 0
+          anchor_y ||= anchor_x
+          Geometry.scale_rect_extended rect,
+                                       percentage_x: percentage,
+                                       percentage_y: percentage,
+                                       anchor_x: anchor_x,
+                                       anchor_y: anchor_y
+        rescue Exception => e
+          raise e, ":scale_rect failed for rect: #{rect} percentage: #{percentage} anchors [#{anchor_x} (x), #{anchor_y} (y)].\n#{e}"
+        end
+  
+        def rect_to_line rect
+          {
+            x: rect.x,
+            y: rect.y,
+            x2: rect.x + rect.w - 1,
+            y2: rect.y + rect.h
+          }
+        end
+  
+        def center_inside_rect rect, other_rect
+          offset_x = (other_rect.w - rect.w).half
+          offset_y = (other_rect.h - rect.h).half
+          new_rect = rect.shift_rect(0, 0)
+          new_rect.x = other_rect.x + offset_x
+          new_rect.y = other_rect.y + offset_y
+          new_rect
+        rescue Exception => e
+          raise e, <<-S
+  * ERROR:
+  center_inside_rect for self #{self} and other_rect #{other_rect}.\n#{e}.
+  S
+        end
+  
+        def center_inside_rect_x rect, other_rect
+          offset_x   = (other_rect.w - rect.w).half
+          new_rect   = rect.shift_rect(0, 0)
+          new_rect.x = other_rect.x + offset_x
+          new_rect.y = other_rect.y
+          new_rect
+        rescue Exception => e
+          raise e, <<-S
+  * ERROR:
+  center_inside_rect_x for self #{self} and other_rect #{other_rect}.\n#{e}.
+  S
+        end
+  
+        def center_inside_rect_y rect, other_rect
+          offset_y = (other_rect.h - rect.h).half
+          new_rect = rect.shift_rect(0, 0)
+          new_rect.x = other_rect.x
+          new_rect.y = other_rect.y + offset_y
+          new_rect
+        rescue Exception => e
+          raise e, <<-S
+  * ERROR:
+  center_inside_rect_y for self #{self} and other_rect #{other_rect}.\n#{e}.
+  S
+        end
+  
+        def shift_line line, x, y
+          if line.is_a?(Array) || line.is_a?(Hash)
+            new_line = line.dup
+            new_line.x  += x
+            new_line.x2 += x
+            new_line.y  += y
+            new_line.y2 += y
+            new_line
+          else
+            raise "shift_line for #{line} is not supported."
+          end
+        end
+  
+        def intersects_rect? *args
+          raise <<-S
   intersects_rect? (with an \"s\") has been deprecated.
   Use intersect_rect? instead (remove the \"s\").
   
@@ -3981,320 +4006,451 @@ Follows is a source code listing for all files that have been open sourced. This
   rule for a long time (and why intersects_rect? has been deprecated).
   
   S
-      end
+        end
   
-      def self.line_y_intercept line, replace_infinity: nil
-        line.y - line_slope(line, replace_infinity: replace_infinity) * line.x
-      rescue Exception => e
-  raise <<-S
+        def line_y_intercept line, replace_infinity: nil
+          line.y - line_slope(line, replace_infinity: replace_infinity) * line.x
+        rescue Exception => e
+          raise <<-S
   * ERROR: ~Geometry::line_y_intercept~
   The following exception was thrown for line: #{line}
   #{e}
   
   Consider passing in ~replace_infinity: VALUE~ to handle for vertical lines.
   S
-      end
-  
-      def self.angle_between_lines line_one, line_two, replace_infinity: nil
-        m_line_one = line_slope line_one, replace_infinity: replace_infinity
-        m_line_two = line_slope line_two, replace_infinity: replace_infinity
-        Math.atan((m_line_one - m_line_two) / (1 + m_line_two * m_line_one)).to_degrees
-      end
-  
-      def self.line_slope line, replace_infinity: nil
-        if line.is_a? Hash
-          # check to see if replace_inifinity exists on the hash
-          # handles for if the dev does:
-          #   line_slope(x: 10, y: 10, x2: 100, y2: 100, replace_infinity: 10)
-          # instead of
-          #   line_slope({ x: 10, y: 10, x2: 100, y2: 100 }, replace_infinity: 10)
-          replace_infinity ||= line[:replace_infinity]
         end
   
-        if line.y == line.y2 && line.x == line.x2
-          raise <<-S
+        def angle_between_lines line_one, line_two, replace_infinity: nil
+          m_line_one = line_slope line_one, replace_infinity: replace_infinity
+          m_line_two = line_slope line_two, replace_infinity: replace_infinity
+          Math.atan((m_line_one - m_line_two) / (1 + m_line_two * m_line_one)).to_degrees
+        end
+  
+        def line_slope line, replace_infinity: Float::INFINITY
+          if line.is_a? Hash
+            # check to see if replace_inifinity exists on the hash
+            # handles for if the dev does:
+            #   line_slope(x: 10, y: 10, x2: 100, y2: 100, replace_infinity: 10)
+            # instead of
+            #   line_slope({ x: 10, y: 10, x2: 100, y2: 100 }, replace_infinity: 10)
+            replace_infinity ||= line[:replace_infinity]
+          end
+  
+          if line.y == line.y2 && line.x == line.x2
+            raise <<-S
   * ERROR: ~Geometry::line_slope~
     I was given a line with zero length and can't compute its slope:
     #{line}
   S
-        elsif line.y == line.y2
-          return 0
-        elsif line.x == line.x2
-          return nil if !replace_infinity
-          if line.y2 < line.y
-            return replace_infinity * -1
-          else
-            return replace_infinity
+          elsif line.y == line.y2
+            return 0
+          elsif line.x == line.x2
+            if line.y2 < line.y
+              return replace_infinity * -1
+            else
+              return replace_infinity
+            end
+          end
+  
+          (line.y2 - line.y).fdiv(line.x2 - line.x)
+                            .replace_infinity(replace_infinity)
+        rescue Exception => e
+          raise e, <<-S
+  * ERROR:
+  Geometry::line_slope for v1 #{line} replace_infinity: #{replace_infinity}.
+  #{e}
+  S
+        end
+  
+        def line_rise_run line
+          rise_run = { x: line.x2 - line.x, y: line.y2 - line.y }
+          l = Math.sqrt(rise_run.x**2 + rise_run.y**2)
+  
+          normaized_rise_run_x = 0
+          normaized_rise_run_y = 0
+  
+          if l > 0
+            n_l = 1.fdiv(l)
+            normaized_rise_run_x = rise_run.x * n_l
+            normaized_rise_run_y = rise_run.y * n_l
+          end
+  
+          { x: normaized_rise_run_x, y: normaized_rise_run_y }
+        end
+  
+        def ray_test point, line
+          slope = (line.y2 - line.y).fdiv(line.x2 - line.x)
+  
+          x  = line.x
+          y  = line.y
+          x2 = line.x2
+          y2 = line.y2
+  
+          if x2 < x
+            x, x2 = x2, x
+            y, y2 = y2, y
+          end
+  
+          r = ((x2 - x) * (point.y - y) - (point.x -  x) * (y2 - y))
+  
+          if r == 0
+            return :on
+          elsif r < 0
+            return :right if slope >= 0
+            return :left
+          elsif r > 0
+            return :left if slope >= 0
+            return :right
           end
         end
   
-        (line.y2 - line.y).fdiv(line.x2 - line.x)
-                          .replace_infinity(replace_infinity)
-      end
-  
-      def self.line_rise_run line
-        rise_run = { x: line.x2 - line.x, y: line.y2 - line.y }
-        l = Math.sqrt(rise_run.x**2 + rise_run.y**2)
-  
-        normaized_rise_run_x = 0
-        normaized_rise_run_y = 0
-  
-        if l > 0
-          n_l = 1.fdiv(l)
-          normaized_rise_run_x = rise_run.x * n_l
-          normaized_rise_run_y = rise_run.y * n_l
+        def line_to_rect line, min_w: 0, min_h: 0
+          line_rect line, min_w: 0, min_h: 0
         end
   
-        { x: normaized_rise_run_x, y: normaized_rise_run_y }
-      end
-  
-      def self.ray_test point, line
-        slope = (line.y2 - line.y).fdiv(line.x2 - line.x)
-  
-        x  = line.x
-        y  = line.y
-        x2 = line.x2
-        y2 = line.y2
-  
-        if x2 < x
-          x, x2 = x2, x
-          y, y2 = y2, y
-        end
-  
-        r = ((x2 - x) * (point.y - y) - (point.x -  x) * (y2 - y))
-  
-        if r == 0
-          return :on
-        elsif r < 0
-          return :right if slope >= 0
-          return :left
-        elsif r > 0
-          return :left if slope >= 0
-          return :right
-        end
-      end
-  
-      def self.line_to_rect line, min_w: 0, min_h: 0
-        line_rect line, min_w: 0, min_h: 0
-      end
-  
-      def line_to_rect min_w: 0, min_h: 0
-        Geometry.line_to_rect self, min_w: 0, min_h: 0
-      end
-  
-      def self.line_rect line, min_w: 0, min_h: 0
-        if min_w < 0 || min_h < 0
-        raise <<-S
+        def line_rect line, min_w: 0, min_h: 0
+          if min_w < 0 || min_h < 0
+            raise <<-S
   * ERROR: ~Geometry::line_rect~
     ~min_w~ and ~min_h~ must be greater than min
     line:  #{line}
     min_w: #{min_w}
     min_h: #{min_h}
   S
+          end
+  
+          if line.x > line.x2
+            x  = line.x2
+            x2 = line.x
+          else
+            x  = line.x
+            x2 = line.x2
+          end
+  
+          if line.y > line.y2
+            y  = line.y2
+            y2 = line.y
+          else
+            y  = line.y
+            y2 = line.y2
+          end
+  
+          w = x2 - x
+          h = y2 - y
+  
+          if w < min_w
+            w  = min_w
+            x -= min_w / 2
+          end
+  
+          if h < min_h
+            h  = min_h
+            y -= min_h / 2
+          end
+  
+          { x: x, y: y, w: w, h: h }
         end
   
-        if line.x > line.x2
-          x  = line.x2
-          x2 = line.x
-        else
-          x  = line.x
-          x2 = line.x2
+        def line_intersect line_one, line_two, replace_infinity: nil
+          x1 = line_one.x
+          y1 = line_one.y
+          x2 = line_one.x2
+          y2 = line_one.y2
+  
+          x3 = line_two.x
+          y3 = line_two.y
+          x4 = line_two.x2
+          y4 = line_two.y2
+  
+          x1x2 = x1 - x2
+          y1y2 = y1 - y2
+          x1x3 = x1 - x3
+          y1y3 = y1 - y3
+          x3x4 = x3 - x4
+          y3y4 = y3 - y4
+  
+          d =  x1x2 * y3y4 - y1y2 * x3x4;
+  
+          return nil if d == 0
+  
+          t = (x1x3 * y3y4 - y1y3 * x3x4) / d
+          u = -(x1x2 * y1y3 - y1y2 * x1x3) / d
+  
+          {
+            x: x1 + t * (x2 - x1),
+            y: y1 + t * (y2 - y1)
+          }
         end
   
-        if line.y > line.y2
-          y  = line.y2
-          y2 = line.y
-        else
-          y  = line.y
-          y2 = line.y2
-        end
-  
-        w = x2 - x
-        h = y2 - y
-  
-        if w < min_w
-          w  = min_w
-          x -= min_w / 2
-        end
-  
-        if h < min_h
-          h  = min_h
-          y -= min_h / 2
-        end
-  
-        { x: x, y: y, w: w, h: h }
-      end
-  
-      def self.line_intersect line_one, line_two, replace_infinity: nil
-        x1 = line_one.x
-        y1 = line_one.y
-        x2 = line_one.x2
-        y2 = line_one.y2
-  
-        x3 = line_two.x
-        y3 = line_two.y
-        x4 = line_two.x2
-        y4 = line_two.y2
-  
-        x1x2 = x1 - x2
-        y1y2 = y1 - y2
-        x1x3 = x1 - x3
-        y1y3 = y1 - y3
-        x3x4 = x3 - x4
-        y3y4 = y3 - y4
-  
-        d =  x1x2 * y3y4 - y1y2 * x3x4;
-  
-        return nil if d == 0
-  
-        t = (x1x3 * y3y4 - y1y3 * x3x4) / d
-        u = -(x1x2 * y1y3 - y1y2 * x1x3) / d
-  
-        {
-          x: x1 + t * (x2 - x1),
-          y: y1 + t * (y2 - y1)
-        }
-      end
-  
-      def self.to_square size, x, y, anchor_x = 0.5, anchor_y = nil
-        log_once :to_square, <<-S
+        def to_square size, x, y, anchor_x = 0.5, anchor_y = nil
+          log_once :to_square, <<-S
   * WARNING: Numeric#to_square and Geometry::to_square are deprecated and will not be replaced by another function.
+  
+  An equivalent to this function would be
+  
+  #+begin_src
+    def to_square size, x, y, anchor_x = 0.5, anchor_y = nil
+      { x: x,
+        y: y,
+        w: size,
+        h: size,
+        anchor_x: anchor_x,
+        anchor_y: anchor_y || anchor_x }
+    end
+  #+end_src
   S
-        anchor_y ||= anchor_x
-        x = x.shift_left(size * anchor_x)
-        y = y.shift_down(size * anchor_y)
-        [x, y, size, size]
-      rescue Exception => e
-        raise e, ":to_square failed for size: #{size} x: #{x} y: #{y} anchor_x: #{anchor_x} anchor_y: #{anchor_y}.\n#{e}"
-      end
-  
-      def self.distance point_one, point_two
-        Math.sqrt((point_two.x - point_one.x)**2 + (point_two.y - point_one.y)**2)
-      rescue Exception => e
-        raise e, ":distance failed for point_one: #{point_one} point_two #{point_two}.\n#{e}"
-      end
-  
-      def self.angle_from start_point, end_point
-        d_y = end_point.y - start_point.y
-        d_x = end_point.x - start_point.x
-        Math::PI.+(Math.atan2(d_y, d_x)).to_degrees % 360
-      rescue Exception => e
-        raise e, ":angle_from failed for start_point: #{start_point} end_point: #{end_point}.\n#{e}"
-      end
-  
-      def self.angle_to start_point, end_point
-        angle_from end_point, start_point
-      rescue Exception => e
-        raise e, ":angle_to failed for start_point: #{start_point} end_point: #{end_point}.\n#{e}"
-      end
-  
-      def self.point_inside_circle? point, circle_center_point, radius
-        (point.x - circle_center_point.x) ** 2 + (point.y - circle_center_point.y) ** 2 < radius ** 2
-      rescue Exception => e
-        raise e, ":point_inside_circle? failed for point: #{point} circle_center_point: #{circle_center_point} radius: #{radius}.\n#{e}"
-      end
-  
-      def self.inside_rect? inner_rect, outer_rect, tolerance = 0.0
-        return nil if !inner_rect
-        return nil if !outer_rect
-  
-        inner_rect_anchor_x = 0
-        inner_rect_anchor_x = inner_rect.anchor_x || 0 if inner_rect.respond_to?(:anchor_x)
-  
-        inner_rect_anchor_y = 0
-        inner_rect_anchor_y = inner_rect.anchor_y || 0 if inner_rect.respond_to?(:anchor_y)
-  
-        outer_rect_anchor_x = 0
-        outer_rect_anchor_x = outer_rect.anchor_x || 0 if outer_rect.respond_to?(:anchor_x)
-  
-        outer_rect_anchor_y = 0
-        outer_rect_anchor_y = outer_rect.anchor_y || 0 if outer_rect.respond_to?(:anchor_y)
-  
-        inner_rect_x = inner_rect.x - inner_rect_anchor_x * inner_rect.w
-        inner_rect_y = inner_rect.y - inner_rect_anchor_y * inner_rect.h
-  
-        outer_rect_x = outer_rect.x - outer_rect_anchor_x * outer_rect.w
-        outer_rect_y = outer_rect.y - outer_rect_anchor_y * outer_rect.h
-  
-        inner_rect_x     + tolerance >= outer_rect_x     - tolerance &&
-        (inner_rect_x + inner_rect.w) - tolerance <= (outer_rect_x + outer_rect.w) + tolerance &&
-        inner_rect.y     + tolerance >= outer_rect_y     - tolerance &&
-        (inner_rect.y + inner_rect.h) - tolerance <= (outer_rect_y + outer_rect.h) + tolerance
-      rescue Exception => e
-        raise e, ":inside_rect? failed for inner_rect: #{inner_rect} outer_rect: #{outer_rect}.\n#{e}"
-      end
-  
-      def self.scale_rect_extended rect,
-                                   percentage_x: percentage_x,
-                                   percentage_y: percentage_y,
-                                   anchor_x: anchor_x,
-                                   anchor_y: anchor_y
-        anchor_x ||= 0.0
-        anchor_y ||= 0.0
-        percentage_x ||= 1.0
-        percentage_y ||= 1.0
-        new_w = rect.w * percentage_x
-        new_h = rect.h * percentage_y
-        new_x = rect.x + (rect.w - new_w) * anchor_x
-        new_y = rect.y + (rect.h - new_h) * anchor_y
-        if rect.is_a? Array
-          return [
-            new_x,
-            new_y,
-            new_w,
-            new_h,
-            *rect[4..-1]
-          ]
-        elsif rect.is_a? Hash
-          return rect.merge(x: new_x, y: new_y, w: new_w, h: new_h)
-        else
-          rect.x = new_x
-          rect.y = new_y
-          rect.w = new_w
-          rect.h = new_h
-          return rect
+          anchor_y ||= anchor_x
+          x = x.shift_left(size * anchor_x)
+          y = y.shift_down(size * anchor_y)
+          [x, y, size, size]
+        rescue Exception => e
+          raise e, ":to_square failed for size: #{size} x: #{x} y: #{y} anchor_x: #{anchor_x} anchor_y: #{anchor_y}.\n#{e}"
         end
-      rescue Exception => e
-        raise e, ":scale_rect_extended failed for rect: #{rect} percentage_x: #{percentage_x} percentage_y: #{percentage_y} anchors_x: #{anchor_x} anchor_y: #{anchor_y}.\n#{e}"
-      end
   
-      def self.scale_rect rect, percentage, *anchors
-        anchor_x, anchor_y = *anchors.flatten
-        anchor_x ||= 0
-        anchor_y ||= anchor_x
-        Geometry.scale_rect_extended rect,
-                                     percentage_x: percentage,
-                                     percentage_y: percentage,
-                                     anchor_x: anchor_x,
-                                     anchor_y: anchor_y
-      rescue Exception => e
-        raise e, ":scale_rect failed for rect: #{rect} percentage: #{percentage} anchors [#{anchor_x} (x), #{anchor_y} (y)].\n#{e}"
-      end
+        def distance point_one, point_two
+          Math.sqrt((point_two.x - point_one.x)**2 + (point_two.y - point_one.y)**2)
+        rescue Exception => e
+          raise e, ":distance failed for point_one: #{point_one} point_two #{point_two}.\n#{e}"
+        end
   
-      def self.rect_to_line rect
-        {
-          x: rect.x,
-          y: rect.y,
-          x2: rect.x + rect.w - 1,
-          y2: rect.y + rect.h
-        }
-      end
+        def angle_from start_point, end_point
+          d_y = end_point.y - start_point.y
+          d_x = end_point.x - start_point.x
+          Math::PI.+(Math.atan2(d_y, d_x)).to_degrees % 360
+        rescue Exception => e
+          raise e, ":angle_from failed for start_point: #{start_point} end_point: #{end_point}.\n#{e}"
+        end
   
-      def rect_to_line
-        Geometry.rect_to_line self
-      end
+        def angle_to start_point, end_point
+          angle_from end_point, start_point
+        rescue Exception => e
+          raise e, ":angle_to failed for start_point: #{start_point} end_point: #{end_point}.\n#{e}"
+        end
   
-      def self.rect_center_point rect
-        { x: rect.x + rect.w.half, y: rect.y + rect.h.half }
-      end
+        def point_inside_circle? point, circle_center_point, radius = nil
+          selected_radius = radius || circle_center_point.radius
+          (point.x - circle_center_point.x) ** 2 + (point.y - circle_center_point.y) ** 2 < selected_radius ** 2
+        rescue Exception => e
+          raise e, ":point_inside_circle? failed for point: #{point} circle_center_point: #{circle_center_point} radius: #{selected_radius}.\n#{e}"
+        end
   
-      def self.center rect
-        { x: rect.x + rect.w.half, y: rect.y + rect.h.half }
-      end
+        def inside_rect? inner_rect, outer_rect, tolerance = 0.0
+          return nil if !inner_rect
+          return nil if !outer_rect
   
-      def rect_center_point
-        Geometry.rect_center_point self
-      end
+          inner_rect_anchor_x = 0
+          inner_rect_anchor_x = inner_rect.anchor_x || 0 if inner_rect.respond_to?(:anchor_x)
+  
+          inner_rect_anchor_y = 0
+          inner_rect_anchor_y = inner_rect.anchor_y || 0 if inner_rect.respond_to?(:anchor_y)
+  
+          outer_rect_anchor_x = 0
+          outer_rect_anchor_x = outer_rect.anchor_x || 0 if outer_rect.respond_to?(:anchor_x)
+  
+          outer_rect_anchor_y = 0
+          outer_rect_anchor_y = outer_rect.anchor_y || 0 if outer_rect.respond_to?(:anchor_y)
+  
+          inner_rect_x = inner_rect.x - inner_rect_anchor_x * inner_rect.w
+          inner_rect_y = inner_rect.y - inner_rect_anchor_y * inner_rect.h
+  
+          outer_rect_x = outer_rect.x - outer_rect_anchor_x * outer_rect.w
+          outer_rect_y = outer_rect.y - outer_rect_anchor_y * outer_rect.h
+  
+          inner_rect_x     + tolerance >= outer_rect_x     - tolerance &&
+            (inner_rect_x + inner_rect.w) - tolerance <= (outer_rect_x + outer_rect.w) + tolerance &&
+            inner_rect.y     + tolerance >= outer_rect_y     - tolerance &&
+            (inner_rect.y + inner_rect.h) - tolerance <= (outer_rect_y + outer_rect.h) + tolerance
+        rescue Exception => e
+          raise e, ":inside_rect? failed for inner_rect: #{inner_rect} outer_rect: #{outer_rect}.\n#{e}"
+        end
+  
+        def scale_rect_extended rect,
+                                percentage_x: percentage_x,
+                                percentage_y: percentage_y,
+                                anchor_x: anchor_x,
+                                anchor_y: anchor_y
+          anchor_x ||= 0.0
+          anchor_y ||= 0.0
+          percentage_x ||= 1.0
+          percentage_y ||= 1.0
+          new_w = rect.w * percentage_x
+          new_h = rect.h * percentage_y
+          new_x = rect.x + (rect.w - new_w) * anchor_x
+          new_y = rect.y + (rect.h - new_h) * anchor_y
+          if rect.is_a? Array
+            return [
+              new_x,
+              new_y,
+              new_w,
+              new_h,
+              *rect[4..-1]
+            ]
+          elsif rect.is_a? Hash
+            return rect.merge(x: new_x, y: new_y, w: new_w, h: new_h)
+          else
+            rect.x = new_x
+            rect.y = new_y
+            rect.w = new_w
+            rect.h = new_h
+            return rect
+          end
+        rescue Exception => e
+          raise e, ":scale_rect_extended failed for rect: #{rect} percentage_x: #{percentage_x} percentage_y: #{percentage_y} anchors_x: #{anchor_x} anchor_y: #{anchor_y}.\n#{e}"
+        end
+  
+        def rect_center_point rect
+          { x: rect.x + rect.w / 2, y: rect.y + rect.h / 2 }
+        end
+  
+        def center rect
+          { x: rect.x + rect.w.half, y: rect.y + rect.h.half }
+        end
+  
+        def line_horizontal? line
+          angle = line_angle line
+          angle == 0 || angle == 180
+        rescue Exception => e
+          raise e, <<-S
+  * ERROR:
+  Geometry::line_horizontal? for line #{line}.
+  #{e}
+  S
+        end
+  
+        def line_vertical? line
+          angle = line_angle line
+          angle == 90 || angle == 270
+        rescue Exception => e
+          raise e, <<-S
+  * ERROR:
+  Geometry::line_vertical? for line #{line}.
+  #{e}
+  S
+        end
+  
+        def line_angle line
+          slope = line_slope line
+          return 90 if slope == Float::INFINITY
+          return 270 if slope == -Float::INFINITY
+          Math.atan(slope).to_degrees
+        rescue Exception => e
+          raise e, <<-S
+  * ERROR:
+  Geometry::line_angle for line #{line}.
+  #{e}
+  S
+        end
+  
+        def vec2_dot_product v1, v2
+          v1.x * v2.x + v1.y * v2.y
+        rescue Exception => e
+          raise e, <<-S
+  * ERROR:
+  Geometry::vec2_dot_product for v1 #{v1} v2: #{v2}.
+  #{e}
+  S
+        end
+  
+        def vec2_normalize v
+          magnitude = vec2_magnitude v
+          { x: v.x / magnitude, y: v.y / magnitude }
+        rescue Exception => e
+          raise e, <<-S
+  * ERROR:
+  Geometry::vec2_normalize for v #{v}.
+  #{e}
+  S
+        end
+  
+        def line_vec2 line
+          { x: line.x2 - line.x, y: line.y2 - line.y }
+        rescue Exception => e
+          raise e, <<-S
+  * ERROR:
+  Geometry::line_vec2 for line #{line}.
+  #{e}.
+  S
+        end
+  
+        def vec2_magnitude v
+          (v.x**2 + v.y**2)**0.5
+        rescue Exception => e
+          raise e, <<-S
+  * ERROR:
+  Geometry::vec2_magnitude for v #{v}.
+  #{e}.
+  S
+        end
+  
+        def distance_squared p1, p2
+          (p1.x - p2.x)**2 + (p1.y - p2.y)**2
+        rescue Exception => e
+          raise e, <<-S
+  * ERROR:
+  Geometry::distance_squared for p1 #{p1} and p2 #{p2}.
+  #{e}.
+  S
+        end
+  
+        def vec2_normal v
+          { x: -v.y, y: v.x }
+        rescue Exception => e
+          raise e, <<-S
+  * ERROR:
+  Geometry::vec2_normal for v #{v}.
+  #{e}
+  S
+        end
+  
+        def circle_intersect_line? circle, line
+          center = { x: circle.x, y: circle.y }
+          closest_point = line_normal line, center
+          result = distance_squared(center, closest_point) <= circle.radius**2
+          return false if !result
+          return true if point_on_line? closest_point, line
+          distance_to_start = distance_squared center, { x: line.x, y: line.y }
+          distance_to_end = distance_squared center, { x: line.x2, y: line.y2 }
+          return true if distance_to_start <= circle.radius**2
+          return true if distance_to_end <= circle.radius**2
+          return false
+        rescue Exception => e
+          raise e, <<-S
+  * ERROR:
+  Geometry::circle_intersect_line? for circle #{circle} and line #{line}.
+  #{e}
+  S
+        end
+  
+        def line_normal line, point
+          point ||= { x: line.x, y: line.y }
+          line_vec   = line_vec2 line
+          line_vec_normalized = vec2_normalize line_vec
+          point_vec = { x: point.x - line.x, y: point.y - line.y }
+          dot_product = vec2_dot_product line_vec_normalized, point_vec
+          { x: line.x + line_vec_normalized.x * dot_product,
+            y: line.y + line_vec_normalized.y * dot_product }
+        rescue Exception => e
+          raise e, <<-S
+  * ERROR:
+  Geometry::line_normal for line #{line} and point #{point}.
+  #{e}
+  S
+        end
+  
+        def point_on_line? point, line
+          line_vec   = line_vec2 line
+          line_vec_normalized = vec2_normalize line_vec
+          point_vec = { x: point.x - line.x, y: point.y - line.y }
+          product = vec2_dot_product line_vec_normalized, point_vec
+          product >= 0 && product <= vec2_magnitude(line_vec)
+        rescue Exception => e
+          raise e, <<-S
+  * ERROR:
+  Geometry::point_on_line? for line #{line} and point #{point}.
+  #{e}
+  S
+        end
+      end # end class << self
     end # module Geometry
   end # module GTK
   
@@ -4329,20 +4485,64 @@ Follows is a source code listing for all files that have been open sourced. This
   
       attr_accessor :left_margin, :bottom_margin
   
-      attr :allscreen_left,
-           :allscreen_right,
-           :allscreen_top,
-           :allscreen_bottom,
-           :allscreen_width,
-           :allscreen_height,
-           :allscreen_offset_x,
-           :allscreen_offset_y,
-           :native_width,
-           :native_height,
-           :native_scale,
-           :native_scale_enum,
-           :window_width,
-           :window_height
+      attr_accessor :hd_left
+      alias_method  :allscreen_left,  :hd_left
+      alias_method  :allscreen_left=, :hd_left=
+  
+      attr_accessor :hd_right
+      alias_method  :allscreen_right,  :hd_right
+      alias_method  :allscreen_right=, :hd_right=
+  
+      attr_accessor :hd_top
+      alias_method  :allscreen_top,  :hd_top
+      alias_method  :allscreen_top=, :hd_top=
+  
+      attr_accessor :hd_bottom
+      alias_method  :allscreen_bottom,  :hd_bottom
+      alias_method  :allscreen_bottom=, :hd_bottom=
+  
+      attr_accessor :hd_w
+      alias_method  :hd_width,         :hd_w
+      alias_method  :hd_width=,        :hd_w=
+      alias_method  :allscreen_w,      :hd_w
+      alias_method  :allscreen_w=,     :hd_w=
+      alias_method  :allscreen_width,  :hd_w
+      alias_method  :allscreen_width=, :hd_w=
+  
+      attr_accessor :hd_h
+      alias_method  :hd_height,         :hd_h
+      alias_method  :hd_height=,        :hd_h=
+      alias_method  :allscreen_h,       :hd_h
+      alias_method  :allscreen_h=,      :hd_h=
+      alias_method  :allscreen_height,  :hd_h
+      alias_method  :allscreen_height=, :hd_h=
+  
+      attr_accessor :hd_offset_x
+      alias_method  :allscreen_offset_x,  :hd_offset_x
+      alias_method  :allscreen_offset_x=, :hd_offset_x=
+  
+      attr_accessor :hd_offset_y
+      alias_method  :allscreen_offset_y,  :hd_offset_y
+      alias_method  :allscreen_offset_y=, :hd_offset_y=
+  
+      attr_accessor :native_w
+      alias_method  :native_width,  :native_w
+      alias_method  :native_width=, :native_w=
+  
+      attr_accessor :native_h
+      alias_method  :native_height,  :native_h
+      alias_method  :native_height=, :native_h=
+  
+      attr_accessor :native_scale
+      attr_accessor :native_scale_enum
+  
+      attr_accessor :window_w
+      alias_method  :window_width,  :window_w
+      alias_method  :window_width=, :window_w=
+  
+      attr_accessor :window_h
+      alias_method  :window_height,  :window_h
+      alias_method  :window_height=, :window_h=
   
       def initialize runtime
         @runtime = runtime
@@ -4391,8 +4591,8 @@ Follows is a source code listing for all files that have been open sourced. This
         @bottom_margin = 0.0
         @center_x = @runtime.logical_width.half
         @center_y = @runtime.logical_height.half
-        @rect   = [@left, @bottom, @runtime.logical_width, @runtime.logical_height].rect
-        @center = [@center_x, @center_y].point
+        @rect   = { x: @left, y: @bottom, w: @runtime.logical_width, h: @runtime.logical_height }
+        @center = { x: @center_x, y: @center_y }
         @ffi_draw.set_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
         @device_left       ||= @left
         @device_right      ||= @right
@@ -4417,8 +4617,8 @@ Follows is a source code listing for all files that have been open sourced. This
         @bottom =  -@runtime.logical_height.half
         @center_x = 0.0
         @center_y = 0.0
-        @rect   = [@left, @bottom, @runtime.logical_width, @runtime.logical_height].rect
-        @center = [@center_x, @center_y].point
+        @rect   = { x: @left, y: @bottom, w: @runtime.logical_width, h: @runtime.logical_height }
+        @center = { x: @center_x, y: @center_y, w: 0, h: 0 }
         @ffi_draw.set_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
         @device_left     ||= @left
         @device_right    ||= @right
@@ -4438,7 +4638,7 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def w_half
-        w.half
+        w / 2
       end
   
       def h
@@ -4446,7 +4646,7 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def h_half
-        h.half
+        h / 2
       end
   
       def center
@@ -4463,70 +4663,6 @@ Follows is a source code listing for all files that have been open sourced. This
   
       def y
         0
-      end
-  
-      def hd_left
-        @allscreen_left
-      end
-  
-      def hd_left= value
-        @allscreen_left = value
-      end
-  
-      def hd_right
-        @allscreen_right
-      end
-  
-      def hd_right= value
-        @allscreen_right = value
-      end
-  
-      def hd_top
-        @allscreen_top
-      end
-  
-      def hd_top= value
-        @allscreen_top = value
-      end
-  
-      def hd_bottom
-        @allscreen_bottom
-      end
-  
-      def hd_bottom= value
-        @allscreen_bottom = value
-      end
-  
-      def hd_width
-        @allscreen_width
-      end
-  
-      def hd_width= value
-        @allscreen_width = value
-      end
-  
-      def hd_height
-        @allscreen_height
-      end
-  
-      def hd_height= value
-        @allscreen_height = value
-      end
-  
-      def hd_offset_x
-        @allscreen_offset_x
-      end
-  
-      def hd_offset_x= value
-        @allscreen_offset_x = value
-      end
-  
-      def hd_offset_y
-        @allscreen_offset_y
-      end
-  
-      def hd_offset_y= value
-        @allscreen_offset_y = value
       end
     end
   end
@@ -4545,20 +4681,27 @@ Follows is a source code listing for all files that have been open sourced. This
     class KeyboardKeys
       include Serialize
   
-      attr_accessor :exclamation_point,
-                    :zero, :one, :two, :three, :four,
+      attr_accessor :tilde, :underscore, :double_quotation_mark,
+                    :exclamation_point, :at, :hash, :dollar,
+                    :percent, :caret, :ampersand, :asterisk,
+                    :open_round_brace, :close_round_brace,
+                    :open_curly_brace, :close_curly_brace, :colon,
+                    :plus, :pipe, :question_mark, :less_than,
+                    :greater_than
+  
+      attr_accessor :section, :ordinal_indicator, :superscript_two
+  
+      attr_accessor :raw_key, :char
+  
+      attr_accessor :zero, :one, :two, :three, :four,
                     :five, :six, :seven, :eight, :nine,
                     :backspace, :delete, :escape, :enter, :tab,
-                    :open_round_brace, :close_round_brace,
-                    :open_curly_brace, :close_curly_brace,
                     :open_square_brace, :close_square_brace,
-                    :colon, :semicolon, :equal_sign,
-                    :hyphen, :space, :dollar_sign,
-                    :double_quotation_mark,
+                    :semicolon, :equal,
+                    :hyphen, :space,
                     :single_quotation_mark,
                     :backtick,
-                    :tilde, :period, :comma, :pipe,
-                    :underscore,
+                    :period, :comma,
                     :a, :b, :c, :d, :e, :f, :g, :h,
                     :i, :j, :k, :l, :m, :n, :o, :p,
                     :q, :r, :s, :t, :u, :v, :w, :x,
@@ -4569,12 +4712,186 @@ Follows is a source code listing for all files that have been open sourced. This
                     :alt_left, :alt_right,
                     :meta_left, :meta_right,
                     :home, :end,
-                    :left, :right, :up, :down, :pageup, :pagedown,
-                    :char, :plus, :at, :forward_slash, :back_slash, :asterisk,
-                    :less_than, :greater_than, :carat, :ampersand, :superscript_two,
-                    :circumflex,
-                    :question_mark, :section_sign, :ordinal_indicator,
-                    :raw_key
+                    :left_arrow, :right_arrow, :up_arrow, :down_arrow, :page_up, :page_down,
+                    :forward_slash, :back_slash
+  
+      alias_method :section_sign, :section
+      alias_method :equal_sign, :equal
+      alias_method :dollar_sign, :dollar
+      alias_method :percent_sign, :percent
+      alias_method :circumflex, :caret
+      alias_method :less_than_sign, :less_than
+      alias_method :greater_than_sign, :greater_than
+      alias_method :left_shift, :shift_left
+      alias_method :right_shift, :shift_right
+      alias_method :section_sign=, :section=
+      alias_method :equal_sign=, :equal=
+      alias_method :dollar_sign=, :dollar=
+      alias_method :percent_sign=, :percent=
+      alias_method :circumflex=, :caret=
+      alias_method :less_than_sign=, :less_than=
+      alias_method :greater_than_sign=, :greater_than=
+      alias_method :left_shift=, :shift_left=
+      alias_method :right_shift=, :shift_right=
+  
+      alias_method :option, :alt
+      alias_method :option_left, :alt_left
+      alias_method :option_right, :alt_right
+      alias_method :left_alt, :alt_left
+      alias_method :right_alt, :alt_right
+      alias_method :left_option, :alt_left
+      alias_method :right_option, :alt_right
+      alias_method :option=, :alt=
+      alias_method :option_left=, :alt_left=
+      alias_method :option_right=, :alt_right=
+      alias_method :left_alt=, :alt_left=
+      alias_method :right_alt=, :alt_right=
+      alias_method :left_option=, :alt_left=
+      alias_method :right_option=, :alt_right=
+  
+      alias_method :command, :meta
+      alias_method :command_left, :meta_left
+      alias_method :command_right, :meta_right
+      alias_method :left_meta, :meta_left
+      alias_method :right_meta, :meta_right
+      alias_method :left_command, :meta_left
+      alias_method :right_command, :meta_right
+      alias_method :command=, :meta=
+      alias_method :command_left=, :meta_left=
+      alias_method :command_right=, :meta_right=
+      alias_method :left_meta=, :meta_left=
+      alias_method :right_meta=, :meta_right=
+      alias_method :left_command=, :meta_left=
+      alias_method :right_command=, :meta_right=
+  
+      alias_method :ctrl, :control
+      alias_method :left_control, :control_left
+      alias_method :right_control, :control_right
+      alias_method :left_ctrl, :control_left
+      alias_method :right_ctrl, :control_right
+      alias_method :ctrl=, :control=
+      alias_method :left_control=, :control_left=
+      alias_method :right_control=, :control_right=
+      alias_method :left_ctrl=, :control_left=
+      alias_method :right_ctrl=, :control_right=
+  
+      alias_method :backslash, :back_slash
+      alias_method :forwardslash, :forward_slash
+      alias_method :minus, :hyphen
+      alias_method :dash, :hyphen
+      alias_method :pageup, :page_up
+      alias_method :pagedown, :page_down
+      alias_method :backslash, :back_slash
+      alias_method :forwardslash, :forward_slash
+      alias_method :backslash=, :back_slash=
+      alias_method :forwardslash=, :forward_slash=
+      alias_method :minus=, :hyphen=
+      alias_method :dash=, :hyphen=
+      alias_method :pageup=, :page_up=
+      alias_method :pagedown=, :page_down=
+      alias_method :backslash=, :back_slash=
+      alias_method :forwardslash=, :forward_slash=
+  
+      alias_method :left, :left_arrow
+      alias_method :right, :right_arrow
+      alias_method :up, :up_arrow
+      alias_method :down, :down_arrow
+      alias_method :left=, :left_arrow=
+      alias_method :right=, :right_arrow=
+      alias_method :up=, :up_arrow=
+      alias_method :down=, :down_arrow=
+  
+      def self.sdl_shift_key? raw_key
+        sdl_lshift_key?(raw_key) || sdl_rshift_key?(raw_key)
+      end
+  
+      def self.sdl_lshift_key? raw_key
+        raw_key == 1073742049
+      end
+  
+      def self.sdl_rshift_key? raw_key
+        raw_key == 1073742053
+      end
+  
+      def self.sdl_modifier_key? raw_key
+        (raw_key >= 1073742048 && raw_key <= 1073742055) # Modifier Keys
+      end
+  
+      def self.sdl_modifier_key_methods modifier
+        names = []
+        if (modifier & 1) != 0
+          names << :shift_left
+          names << :shift
+        end
+  
+        if (modifier & 2) != 0
+          names << :shift_right
+          names << :shift
+        end
+  
+        if (modifier & 256) != 0
+          names << :alt_left
+          names << :alt
+        end
+  
+        if (modifier & 512) != 0
+          names << :alt_right
+          names << :alt
+        end
+  
+        if (modifier & 1024) != 0
+          names << :meta_left
+          names << :meta
+        end
+  
+        if (modifier & 2048) != 0
+          names << :meta_right
+          names << :meta
+        end
+  
+        if (modifier & 64) != 0
+          names << :control_left
+          names << :control
+        end
+  
+        if (modifier & 128) != 0
+          names << :control_right
+          names << :control
+        end
+  
+        names.uniq!
+        names
+      end
+  
+      def self.char_to_shift_char_hash
+        @char_to_shift_char ||= shift_char_to_char_hash.invert
+      end
+  
+      def self.shift_char_to_char_hash
+        @shift_char_to_char ||= {
+          tilde: :backtick,
+          underscore: :hyphen,
+          double_quotation_mark: :single_quotation_mark,
+          exclamation_point: :one,
+          at: :two,
+          hash: :three,
+          dollar: :four,
+          percent: :five,
+          caret: :six,
+          ampersand: :seven,
+          asterisk: :eight,
+          open_round_brace: :nine,
+          close_round_brace: :zero,
+          open_curly_brace: :open_square_brace,
+          close_curly_brace: :close_square_brace,
+          colon: :semicolon,
+          plus: :equal,
+          pipe: :back_slash,
+          question_mark: :forward_slash,
+          less_than: :comma,
+          greater_than: :period
+        }
+      end
   
       def self.sdl_to_key raw_key, modifier
         return nil unless (raw_key >= 0 && raw_key <= 255) ||
@@ -4586,7 +4903,7 @@ Follows is a source code listing for all files that have been open sourced. This
                           raw_key == 1073741902 ||
                           raw_key == 1073741898 ||
                           raw_key == 1073741901 ||
-                          (raw_key >= 1073742048 && raw_key <= 1073742055) # Modifier Keys
+                          sdl_modifier_key?(raw_key)
   
         char = KeyboardKeys.char_with_shift raw_key, modifier
         names = KeyboardKeys.char_to_method char, raw_key
@@ -4679,7 +4996,7 @@ Follows is a source code listing for all files that have been open sourced. This
           "]"  => [:close_square_brace],
           ":"  => [:colon],
           ";"  => [:semicolon],
-          "="  => [:equal_sign],
+          "="  => [:equal],
           "-"  => [:hyphen, :minus],
           " "  => [:space],
           "$"  => [:dollar_sign],
@@ -4699,21 +5016,21 @@ Follows is a source code listing for all files that have been open sourced. This
           "*"  => [:asterisk],
           "<"  => [:less_than],
           ">"  => [:greater_than],
-          "^"  => [:circumflex],
+          "^"  => [:caret],
           "&"  => [:ampersand],
           "²"  => [:superscript_two],
-          "§"  => [:section_sign],
+          "§"  => [:section],
           "?"  => [:question_mark],
-          '%'  => [:percent_sign],
+          '%'  => [:percent],
           "º"  => [:ordinal_indicator],
           1073741898 => [:home],
           1073741901 => [:end],
-          1073741903 => [:right],
-          1073741904 => [:left],
-          1073741905 => [:down],
-          1073741906 => [:up],
-          1073741899 => [:pageup],
-          1073741902 => [:pagedown],
+          1073741903 => [:right_arrow],
+          1073741904 => [:left_arrow],
+          1073741905 => [:down_arrow],
+          1073741906 => [:up_arrow],
+          1073741899 => [:page_up],
+          1073741902 => [:page_down],
           127 => [:delete],
           1073742049 => [:shift_left, :shift],
           1073742053 => [:shift_right, :shift],
@@ -4855,11 +5172,13 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def method_missing m, *args
-        if KeyboardKeys.method_to_key_hash[m.without_ending_bang]
+        without_bang = m.without_ending_bang.to_sym
+        without_bang_equal = "#{without_bang}=".to_sym
+        if respond_to? without_bang
           begin
             define_singleton_method(m) do
-              r = self.instance_variable_get("@#{m.without_ending_bang}".to_sym)
-              clear_key m
+              r = send(without_bang)
+              send(without_bang_equal, nil)
               return r
             end
   
@@ -4890,6 +5209,14 @@ Follows is a source code listing for all files that have been open sourced. This
         hash[:truthy_keys] = self.truthy_keys
         hash
       end
+  
+      def ctrl
+        @control
+      end
+  
+      def ctrl= value
+        @control = value
+      end
     end
   end
   
@@ -4918,44 +5245,44 @@ Follows is a source code listing for all files that have been open sourced. This
       #
       # @return [Boolean]
       def left
-        @key_up.left || @key_held.left || a
+        @key_up.left || @key_held.left || a || false
       end
   
       def left_arrow
-        @key_up.left || @key_held.left
+        @key_up.left || @key_held.left || false
       end
   
       # The right arrow or "d" was pressed.
       #
       # @return [Boolean]
       def right
-        @key_up.right || @key_held.right || d
+        @key_up.right || @key_held.right || d || false
       end
   
       def right_arrow
-        @key_up.right || @key_held.right
+        @key_up.right || @key_held.right || false
       end
   
       # The up arrow or "w" was pressed.
       #
       # @return [Boolean]
       def up
-        @key_up.up || @key_held.up || w
+        @key_up.up || @key_held.up || w || false
       end
   
       def up_arrow
-        @key_up.up || @key_held.up
+        @key_up.up || @key_held.up || false
       end
   
       # The down arrow or "s" was pressed.
       #
       # @return [Boolean]
       def down
-        @key_up.down || @key_held.down || s
+        @key_up.down || @key_held.down || s || false
       end
   
       def down_arrow
-        @key_up.down || @key_held.down
+        @key_up.down || @key_held.down || false
       end
   
       # Clear all current key presses.
@@ -4976,6 +5303,7 @@ Follows is a source code listing for all files that have been open sourced. This
           has_focus: @has_focus
         }
       end
+  
       alias_method :inspect, :serialize
   
       # @return [String]
@@ -4991,9 +5319,48 @@ Follows is a source code listing for all files that have been open sourced. This
           up: @key_up.truthy_keys,
         }
       end
+  
       alias_method :keys, :key
   
       include DirectionalInputHelperMethods
+  
+      def method_missing m, *args
+        if m.to_s.start_with?("ctrl_") || m.to_s.start_with?("control_")
+          other_key = m.to_s.split("_").last
+          define_singleton_method(m) do
+            return self.key_down.send(other_key.to_sym) && self.control
+          end
+  
+          return send(m)
+        elsif m.to_s.start_with?("shift_")
+          other_key = m.to_s.split("_").last
+          define_singleton_method(m) do
+            return self.key_down.send(other_key.to_sym) && self.shift
+          end
+  
+          return send(m)
+        elsif m.to_s.start_with?("alt_")
+          other_key = m.to_s.split("_").last
+          define_singleton_method(m) do
+            return self.key_down.send(other_key.to_sym) && self.alt
+          end
+  
+          return send(m)
+        elsif m.to_s.start_with?("meta_")
+          other_key = m.to_s.split("_").last
+          define_singleton_method(m) do
+            return self.key_down.send(other_key.to_sym) && self.meta
+          end
+  
+          return send(m)
+        else
+          define_singleton_method(m) do
+            self.key_down.send(m) || self.key_held.send(m)
+          end
+  
+          return send(m)
+        end
+      end
     end
   end
   
@@ -5391,6 +5758,10 @@ Follows is a source code listing for all files that have been open sourced. This
            *** Deploy app to device connected via USB:
                #+begin_src
                  $wizards.ios.start env: :dev
+               #+end_src
+           *** Deploy app to device connected via USB with remote hotload:
+               #+begin_src
+                 $wizards.ios.start env: :hotload
                #+end_src
            ** Simulator
            *** Deploy app to simulator
@@ -6301,7 +6672,7 @@ Follows is a source code listing for all files that have been open sourced. This
     def write_server_ip_address
       sh %Q[mkdir -p "#{app_path}/metadata/"]
       sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip}]
-      sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip} > "#{app_path}/metadata/DRAGONRUBY_REMOTE_HOTLOAD"]
+      sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip} > "#{app_path}/metadata/dragonruby_remote_hotload"]
       :success
     end
   
@@ -6314,7 +6685,6 @@ Follows is a source code listing for all files that have been open sourced. This
   
       # production build marker
       sh %Q[mkdir -p "#{app_path}/metadata/"]
-      sh %Q[touch "#{app_path}/metadata/DRAGONRUBY_PRODUCTION_BUILD"]
       :success
     end
   
@@ -6327,7 +6697,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
       # production build marker
       sh %Q[mkdir -p "#{app_path}/metadata/"]
-      sh %Q[touch "#{app_path}/metadata/DRAGONRUBY_PRODUCTION_BUILD"]
+      sh %Q[touch "#{app_path}/metadata/dragonruby_production_build"]
       :success
     end
   
@@ -6339,7 +6709,6 @@ Follows is a source code listing for all files that have been open sourced. This
   
       # production build marker
       sh %Q[mkdir -p "#{app_path}/metadata/"]
-      sh %Q[touch "#{app_path}/metadata/DRAGONRUBY_PRODUCTION_BUILD"]
       :success
     end
   
@@ -7177,14 +7546,14 @@ Follows is a source code listing for all files that have been open sourced. This
           ]
   
           single_cell_label = { x: safe_area.center.x,
-                                y: safe_area.y + safe_area.h - 12,
+                                y: safe_area.y + safe_area.h - 6,
                                 text: values.join(" "),
                                 anchor_x: 0.5,
-                                anchor_y: 1.0,
+                                anchor_y: 0.5,
                                 r: 255, g: 255, b: 255, a: 255,
                                 size_px: 12 }
   
-          single_cell_bg = { x: bg_rect.x, y: safe_area.y + safe_area.h - 12, h: 12, w: bg_rect.w, path: :pixel, r: 0, g: 0, b: 0, a: 255 }
+          single_cell_bg = { x: safe_area.center.x, y: safe_area.y + safe_area.h - 6, anchor_x: 0.5, anchor_y: 0.5, h: 12, w: bg_rect.w, path: :pixel, r: 0, g: 0, b: 0, a: 255 }
   
           single_cell_border = { **safe_area, primitive_marker: :border }
   
@@ -7288,19 +7657,19 @@ Follows is a source code listing for all files that have been open sourced. This
     class Log
       def self.write_to_log_and_puts *args
         return if $gtk.production
-        $gtk.append_file_root 'logs/log.txt', args.join("\n") + "\n"
+        $gtk.append_file_root 'logs/all.log', args.join("\n") + "\n"
         args.each { |obj| $gtk.log obj, self }
       end
   
       def self.write_to_log_and_print *args
         return if $gtk.production
-        $gtk.append_file_root 'logs/log.txt', args.join("\n")
+        $gtk.append_file_root 'logs/all.log', args.join("\n")
         Object.print(*args)
       end
   
       def self.puts_important *args, message_code: nil
         return if $gtk.production
-        $gtk.append_file_root 'logs/log.txt', args.join("\n")
+        $gtk.append_file_root 'logs/all.log', args.join("\n")
         if message_code
           $gtk.notify! "An important notification occurred. Open Console to see details. #{message_code}"
         else
@@ -7686,9 +8055,7 @@ Follows is a source code listing for all files that have been open sourced. This
       clamp(0, 255).to_i
     end
   
-    def clamp *opts
-      min = (opts.at 0)
-      max = (opts.at 1)
+    def clamp min, max = nil
       return min if min && self < min
       return max if max && self > max
       return self
@@ -7810,22 +8177,26 @@ Follows is a source code listing for all files that have been open sourced. This
       raise_immediately e, :shift_down, i
     end
   
-    # This provides a way for a numeric value to be randomized based on a combination
-    # of two options: `:sign` and `:ratio`.
     def randomize *definitions
-      result = self
-  
-      if definitions.include?(:sign)
+      if definitions.length == 1 && definitions[0] == :ratio
+        return rand * self
+      elsif definitions.length == 1 && definitions[0] == :int
+        return rand self
+      elsif definitions.length == 1 && definitions[0] == :sign
+        return rand_sign
+      elsif definitions[0] == :ratio && definitions[1] == :sign
+        return rand_sign * rand
+      elsif definitions[0] == :sign && definitions[1] == :ratio
+        return rand_sign * rand
+      elsif definitions[0] == :int && definitions[1] == :sign
         result = rand_sign
+        return rand result
+      elsif definitions[0] == :sign && definitions[1] == :int
+        result = rand_sign
+        return rand result
       end
   
-      if definitions.include?(:ratio)
-        result = rand * result
-      elsif definitions.include?(:int)
-        result = (rand result)
-      end
-  
-      result
+      self
     end
   
     def rand_sign
@@ -8155,6 +8526,20 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       self
+    end
+  
+    def flat_map(&blk)
+      return to_enum(:map) if !blk
+  
+      i = 0
+      acc = []
+      _self = self.to_i
+      while i < _self
+        acc.concat blk[i]
+        i += 1
+      end
+  
+      acc
     end
   
     def __raise_arithmetic_exception__ other, m, e
@@ -8697,7 +9082,7 @@ Follows is a source code listing for all files that have been open sourced. This
         @runtime.notify! "Replay started =#{@replay_file_name}= speed: #{@runtime.simulation_speed}."
       end
   
-      def replay_next_tick file_name, speed: 1
+      def start_replay_next_tick file_name, speed: 1
         @replay_next_tick = true
         @replay_next_tick_file_name = file_name
         if speed
@@ -8705,6 +9090,8 @@ Follows is a source code listing for all files that have been open sourced. This
           @replay_next_tick_simulation_speed = speed
         end
       end
+  
+      alias_method :replay_next_tick, :start_replay_next_tick
   
       def replay_completed_at
         @replay_completed_at
@@ -8883,7 +9270,7 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       def should_tick?
-        (game_state.tick_count.mod_zero? 60) && game_state.tick_count > 5.seconds
+        (Kernel.global_tick_count.mod_zero? 60) && Kernel.global_tick_count > 5.seconds
       end
   
       def game_state
@@ -9220,6 +9607,16 @@ Follows is a source code listing for all files that have been open sourced. This
           syntax = (@ffi_file.read file) || ''
           return true if syntax.strip.length == 0
   
+          # this indicates that main.rb contained a syntax error when
+          # first loaded and the dev updated main.rb (in an attempt to fix the syntax error).
+          # set the Kernel.tick_count and global_tick_count to -1 which emulates a first time
+          # start up of DR -> causes load_main_rb to be invoked.
+          if @load_status == :main_rb_load_error_shown
+            Kernel.tick_count = -1
+            Kernel.global_tick_count = -1
+            @load_status = :dragonruby_started
+          end
+  
           okay = true
           if ext == ".rb"
             syntax_check_result = @ffi_mrb.parse syntax
@@ -9227,34 +9624,17 @@ Follows is a source code listing for all files that have been open sourced. This
           end
   
           if okay
-            if file.include? 'mailbox.rb'
-              mailbox_contents = ((read_file file) || '').strip
-              if mailbox_contents.length != 0
-                new_file_name = "mailbox-processed/mailbox-#{Kernel.global_tick_count}.rb"
-                new_path = file.gsub('mailbox.rb', new_file_name)
-                write_file file, ''
-                write_file new_path, mailbox_contents
-                reload_if_needed new_path, true
-                return true
-              end
-            else
-              mark_ruby_file_for_reload file
-            end
+            mark_ruby_file_for_reload file
             log_debug "Reloaded #{file}. (#{Kernel.global_tick_count})", subsystem="Engine"
             notify_subdued!
             return true
           else
             # handle a special case where a syntax error exists in main.rb on startup
-            if @load_status == :dragonruby_started || @load_status == :main_rb_first_time_load
-              mark_ruby_file_for_reload file
-              @main_rb_load_exception = { file: file, error: syntax_check_result }
-            else
-              raise <<~S
-              ** Failed to load/reload #{file}.
-              #{syntax_check_result}
+            raise <<~S
+                  ** Failed to load/reload #{file}.
+                  #{syntax_check_result}
   
-              S
-            end
+                  S
           end
         rescue Exception => e
           pretty_print_exception_and_export! e
@@ -9268,6 +9648,10 @@ Follows is a source code listing for all files that have been open sourced. This
           if @ffi_file.path_exists('app/main.rb') || @ffi_file.path_exists('app/main.rbc')
             require 'app/main.rb'
           end
+        rescue Exception => e
+          # if an exception occurs, it means that there was a syntax error
+          # in main.rb at first launch
+          @load_status = :main_rb_load_failed
         end
       end # GTK::Runtime::AsyncRequire
     end # GTK::Runtime
@@ -9543,8 +9927,7 @@ Follows is a source code listing for all files that have been open sourced. This
           text.gsub!(":", "")
           text.gsub!(".", " ")
           text.gsub!("=", " ")
-          return (autocomplete_filter_methods (text.split " "),
-                                              :gtk, :false, :true, :args, :suppress_mailbox, :end)
+          return (autocomplete_filter_methods (text.split " "), :gtk, :false, :true, :args, :end)
         end
       end # end Autocomplete
     end # end Runtime
@@ -9580,6 +9963,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
         def benchmark opts = {}
           iterations = opts.iterations
+          iterations_with_seperator = iterations.to_s.reverse.each_char.each_slice(3).map(&:join).join("_").reverse
           procs = opts.find_all { |k, v| v.respond_to? :call }
   
           times = procs.map do |(name, proc)|
@@ -9610,7 +9994,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
   * BENCHMARK RESULT: #{first_place.name} is fastest
   ** Caller: #{(caller || []).first}
-  ** Iterations: #{iterations}
+  ** Iterations: #{iterations_with_seperator}
   S
           too_small_to_measure = false
           if (first_place.time + second_place.time) == 0
@@ -9620,7 +10004,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
   * BENCHMARK RESULT: inconclusive
   ** Caller: #{(caller || []).first}
-  ** Iterations: #{iterations}
+  ** Iterations: #{iterations_with_seperator}
   S
             summary += <<-S
   ** Average time for experiments were too small. Increase the number of iterations.
@@ -10360,7 +10744,6 @@ Follows is a source code listing for all files that have been open sourced. This
       module Hotload
         def hotload_init
           @hotload_if_needed = 0
-          @mailbox_if_needed = 0
   
           # schema for file_mtimes
           # { FILE_PATH: { current: (Time as Fixnum),
@@ -10369,14 +10752,7 @@ Follows is a source code listing for all files that have been open sourced. This
           #                last:    (Time as Fixnum) } }
           @file_mtimes = { }
   
-          @suppress_mailbox = true
           files_to_reload.each { |f| init_mtimes f }
-          init_mtimes 'app/mailbox.rb'
-        end
-  
-        def hotload_on_write_file file_name
-          return unless file_name.include? 'mailbox.rb'
-          @mailbox_if_needed = :force
         end
   
         def files_to_reload
@@ -10413,7 +10789,9 @@ Follows is a source code listing for all files that have been open sourced. This
               'dragon/array_docs.rb',
               'dragon/array.rb',
               'dragon/outputs.rb',
+              'dragon/outputs_docs.rb',
               'dragon/inputs.rb',
+              'dragon/inputs_docs.rb',
               'dragon/mouse_docs.rb',
               'dragon/recording.rb',
               'dragon/grid.rb',
@@ -10479,30 +10857,9 @@ Follows is a source code listing for all files that have been open sourced. This
           files_to_reload.each { |f| reload_if_needed f }
         end
   
-        def mailbox_timeout
-          if @suppress_mailbox
-            60
-          else
-            3
-          end
-        end
-  
-        def check_mailbox
-          if @mailbox_if_needed == :force # lol
-            reload_if_needed 'app/mailbox.rb', true
-            @mailbox_if_needed = 1
-            return
-          end
-          @mailbox_if_needed += 1
-          return unless @mailbox_if_needed.mod_zero? mailbox_timeout
-          @mailbox_if_needed = 1
-          reload_if_needed 'app/mailbox.rb'
-        end
-  
         def tick_hotload
           return if Kernel.tick_count <= 0 && !paused?
           hotload_source_files
-          check_mailbox
         end
   
         def on_load_succeeded file
@@ -10548,6 +10905,40 @@ Follows is a source code listing for all files that have been open sourced. This
   module GTK
     class Runtime
       module Messages
+        def messages_check_thermal_state
+          <<-S
+  * WARNING: Your game (or some other process on the device) is causing the device to have high temps.
+  You can manually get the current thermal state of the device by calling ~gtk.get_thermal_state~
+  
+  #+begin_src
+    def tick args
+      args.outputs.labels << { x: 30, y: 30.from_top, text: "thermal state: \#{$gtk.current_thermal_state}" }
+    end
+  #+end_src
+  
+  NOTE: ~$gtk.disable_console~ will also disable the CTRL+R reset behavior.
+  S
+        end
+  
+        def messages_reset_via_ctrl_r
+          <<-S
+  * INFO: You pressed CTRL+R which is a key combo reserved by DragonRuby.
+  Pressing CTRL+R invokes ~$gtk.reset_next_tick~ (safely resetting your game with a convenient key combo).
+  
+  If you want to disable this behavior, add the following to the top of =main.rb=:
+  
+  #+begin_src
+    $gtk.disable_reset_via_ctrl_r
+  
+    def tick args
+      ...
+    end
+  #+end_src
+  
+  NOTE: ~$gtk.disable_console~ will also disable the CTRL+R reset behavior.
+  S
+        end
+  
         def messages_stop_music_is_deprecated
           <<-S
   * WARNING: ~Runtime#stop_music~ is deprecated and will be removed in future versions.

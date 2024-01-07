@@ -14,6 +14,3 @@ def test_exception_in_newing_object args, assert
     assert.equal! e.class, TypeError, "Exceptions within constructor should be retained."
   end
 end
-
-$gtk.reset 100
-$gtk.log_level = :off

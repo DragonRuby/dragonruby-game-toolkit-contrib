@@ -101,6 +101,3 @@ def test_save_and_load_big_nested args, assert
   string = state_to_string args.state
   state = state_from_string string
 end
-
-$gtk.reset 100
-$gtk.log_level = :off

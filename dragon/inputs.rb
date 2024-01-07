@@ -7,20 +7,27 @@ module GTK
   class KeyboardKeys
     include Serialize
 
-    attr_accessor :exclamation_point,
-                  :zero, :one, :two, :three, :four,
+    attr_accessor :tilde, :underscore, :double_quotation_mark,
+                  :exclamation_point, :at, :hash, :dollar,
+                  :percent, :caret, :ampersand, :asterisk,
+                  :open_round_brace, :close_round_brace,
+                  :open_curly_brace, :close_curly_brace, :colon,
+                  :plus, :pipe, :question_mark, :less_than,
+                  :greater_than
+
+    attr_accessor :section, :ordinal_indicator, :superscript_two
+
+    attr_accessor :raw_key, :char
+
+    attr_accessor :zero, :one, :two, :three, :four,
                   :five, :six, :seven, :eight, :nine,
                   :backspace, :delete, :escape, :enter, :tab,
-                  :open_round_brace, :close_round_brace,
-                  :open_curly_brace, :close_curly_brace,
                   :open_square_brace, :close_square_brace,
-                  :colon, :semicolon, :equal_sign,
-                  :hyphen, :space, :dollar_sign,
-                  :double_quotation_mark,
+                  :semicolon, :equal,
+                  :hyphen, :space,
                   :single_quotation_mark,
                   :backtick,
-                  :tilde, :period, :comma, :pipe,
-                  :underscore,
+                  :period, :comma,
                   :a, :b, :c, :d, :e, :f, :g, :h,
                   :i, :j, :k, :l, :m, :n, :o, :p,
                   :q, :r, :s, :t, :u, :v, :w, :x,
@@ -31,12 +38,186 @@ module GTK
                   :alt_left, :alt_right,
                   :meta_left, :meta_right,
                   :home, :end,
-                  :left, :right, :up, :down, :pageup, :pagedown,
-                  :char, :plus, :at, :forward_slash, :back_slash, :asterisk,
-                  :less_than, :greater_than, :carat, :ampersand, :superscript_two,
-                  :circumflex,
-                  :question_mark, :section_sign, :ordinal_indicator,
-                  :raw_key
+                  :left_arrow, :right_arrow, :up_arrow, :down_arrow, :page_up, :page_down,
+                  :forward_slash, :back_slash
+
+    alias_method :section_sign, :section
+    alias_method :equal_sign, :equal
+    alias_method :dollar_sign, :dollar
+    alias_method :percent_sign, :percent
+    alias_method :circumflex, :caret
+    alias_method :less_than_sign, :less_than
+    alias_method :greater_than_sign, :greater_than
+    alias_method :left_shift, :shift_left
+    alias_method :right_shift, :shift_right
+    alias_method :section_sign=, :section=
+    alias_method :equal_sign=, :equal=
+    alias_method :dollar_sign=, :dollar=
+    alias_method :percent_sign=, :percent=
+    alias_method :circumflex=, :caret=
+    alias_method :less_than_sign=, :less_than=
+    alias_method :greater_than_sign=, :greater_than=
+    alias_method :left_shift=, :shift_left=
+    alias_method :right_shift=, :shift_right=
+
+    alias_method :option, :alt
+    alias_method :option_left, :alt_left
+    alias_method :option_right, :alt_right
+    alias_method :left_alt, :alt_left
+    alias_method :right_alt, :alt_right
+    alias_method :left_option, :alt_left
+    alias_method :right_option, :alt_right
+    alias_method :option=, :alt=
+    alias_method :option_left=, :alt_left=
+    alias_method :option_right=, :alt_right=
+    alias_method :left_alt=, :alt_left=
+    alias_method :right_alt=, :alt_right=
+    alias_method :left_option=, :alt_left=
+    alias_method :right_option=, :alt_right=
+
+    alias_method :command, :meta
+    alias_method :command_left, :meta_left
+    alias_method :command_right, :meta_right
+    alias_method :left_meta, :meta_left
+    alias_method :right_meta, :meta_right
+    alias_method :left_command, :meta_left
+    alias_method :right_command, :meta_right
+    alias_method :command=, :meta=
+    alias_method :command_left=, :meta_left=
+    alias_method :command_right=, :meta_right=
+    alias_method :left_meta=, :meta_left=
+    alias_method :right_meta=, :meta_right=
+    alias_method :left_command=, :meta_left=
+    alias_method :right_command=, :meta_right=
+
+    alias_method :ctrl, :control
+    alias_method :left_control, :control_left
+    alias_method :right_control, :control_right
+    alias_method :left_ctrl, :control_left
+    alias_method :right_ctrl, :control_right
+    alias_method :ctrl=, :control=
+    alias_method :left_control=, :control_left=
+    alias_method :right_control=, :control_right=
+    alias_method :left_ctrl=, :control_left=
+    alias_method :right_ctrl=, :control_right=
+
+    alias_method :backslash, :back_slash
+    alias_method :forwardslash, :forward_slash
+    alias_method :minus, :hyphen
+    alias_method :dash, :hyphen
+    alias_method :pageup, :page_up
+    alias_method :pagedown, :page_down
+    alias_method :backslash, :back_slash
+    alias_method :forwardslash, :forward_slash
+    alias_method :backslash=, :back_slash=
+    alias_method :forwardslash=, :forward_slash=
+    alias_method :minus=, :hyphen=
+    alias_method :dash=, :hyphen=
+    alias_method :pageup=, :page_up=
+    alias_method :pagedown=, :page_down=
+    alias_method :backslash=, :back_slash=
+    alias_method :forwardslash=, :forward_slash=
+
+    alias_method :left, :left_arrow
+    alias_method :right, :right_arrow
+    alias_method :up, :up_arrow
+    alias_method :down, :down_arrow
+    alias_method :left=, :left_arrow=
+    alias_method :right=, :right_arrow=
+    alias_method :up=, :up_arrow=
+    alias_method :down=, :down_arrow=
+
+    def self.sdl_shift_key? raw_key
+      sdl_lshift_key?(raw_key) || sdl_rshift_key?(raw_key)
+    end
+
+    def self.sdl_lshift_key? raw_key
+      raw_key == 1073742049
+    end
+
+    def self.sdl_rshift_key? raw_key
+      raw_key == 1073742053
+    end
+
+    def self.sdl_modifier_key? raw_key
+      (raw_key >= 1073742048 && raw_key <= 1073742055) # Modifier Keys
+    end
+
+    def self.sdl_modifier_key_methods modifier
+      names = []
+      if (modifier & 1) != 0
+        names << :shift_left
+        names << :shift
+      end
+
+      if (modifier & 2) != 0
+        names << :shift_right
+        names << :shift
+      end
+
+      if (modifier & 256) != 0
+        names << :alt_left
+        names << :alt
+      end
+
+      if (modifier & 512) != 0
+        names << :alt_right
+        names << :alt
+      end
+
+      if (modifier & 1024) != 0
+        names << :meta_left
+        names << :meta
+      end
+
+      if (modifier & 2048) != 0
+        names << :meta_right
+        names << :meta
+      end
+
+      if (modifier & 64) != 0
+        names << :control_left
+        names << :control
+      end
+
+      if (modifier & 128) != 0
+        names << :control_right
+        names << :control
+      end
+
+      names.uniq!
+      names
+    end
+
+    def self.char_to_shift_char_hash
+      @char_to_shift_char ||= shift_char_to_char_hash.invert
+    end
+
+    def self.shift_char_to_char_hash
+      @shift_char_to_char ||= {
+        tilde: :backtick,
+        underscore: :hyphen,
+        double_quotation_mark: :single_quotation_mark,
+        exclamation_point: :one,
+        at: :two,
+        hash: :three,
+        dollar: :four,
+        percent: :five,
+        caret: :six,
+        ampersand: :seven,
+        asterisk: :eight,
+        open_round_brace: :nine,
+        close_round_brace: :zero,
+        open_curly_brace: :open_square_brace,
+        close_curly_brace: :close_square_brace,
+        colon: :semicolon,
+        plus: :equal,
+        pipe: :back_slash,
+        question_mark: :forward_slash,
+        less_than: :comma,
+        greater_than: :period
+      }
+    end
 
     def self.sdl_to_key raw_key, modifier
       return nil unless (raw_key >= 0 && raw_key <= 255) ||
@@ -48,7 +229,7 @@ module GTK
                         raw_key == 1073741902 ||
                         raw_key == 1073741898 ||
                         raw_key == 1073741901 ||
-                        (raw_key >= 1073742048 && raw_key <= 1073742055) # Modifier Keys
+                        sdl_modifier_key?(raw_key)
 
       char = KeyboardKeys.char_with_shift raw_key, modifier
       names = KeyboardKeys.char_to_method char, raw_key
@@ -141,7 +322,7 @@ module GTK
         "]"  => [:close_square_brace],
         ":"  => [:colon],
         ";"  => [:semicolon],
-        "="  => [:equal_sign],
+        "="  => [:equal],
         "-"  => [:hyphen, :minus],
         " "  => [:space],
         "$"  => [:dollar_sign],
@@ -161,26 +342,26 @@ module GTK
         "*"  => [:asterisk],
         "<"  => [:less_than],
         ">"  => [:greater_than],
-        "^"  => [:circumflex],
+        "^"  => [:caret],
         "&"  => [:ampersand],
         "²"  => [:superscript_two],
-        "§"  => [:section_sign],
+        "§"  => [:section],
         "?"  => [:question_mark],
-        '%'  => [:percent_sign],
+        '%'  => [:percent],
         "º"  => [:ordinal_indicator],
         1073741898 => [:home],
         1073741901 => [:end],
-        1073741903 => [:right],
-        1073741904 => [:left],
-        1073741905 => [:down],
-        1073741906 => [:up],
-        1073741899 => [:pageup],
-        1073741902 => [:pagedown],
+        1073741903 => [:right_arrow],
+        1073741904 => [:left_arrow],
+        1073741905 => [:down_arrow],
+        1073741906 => [:up_arrow],
+        1073741899 => [:page_up],
+        1073741902 => [:page_down],
         127 => [:delete],
         1073742049 => [:shift_left, :shift],
         1073742053 => [:shift_right, :shift],
-        1073742048 => [:control_left, :control, :ctrl],
-        1073742052 => [:control_right, :control, :ctrl],
+        1073742048 => [:control_left, :control],
+        1073742052 => [:control_right, :control],
         1073742050 => [:alt_left, :alt],
         1073742054 => [:alt_right, :alt],
         1073742051 => [:meta_left, :meta],
@@ -317,11 +498,13 @@ S
     end
 
     def method_missing m, *args
-      if KeyboardKeys.method_to_key_hash[m.without_ending_bang]
+      without_bang = m.without_ending_bang.to_sym
+      without_bang_equal = "#{without_bang}=".to_sym
+      if respond_to? without_bang
         begin
           define_singleton_method(m) do
-            r = self.instance_variable_get("@#{m.without_ending_bang}".to_sym)
-            clear_key m
+            r = send(without_bang)
+            send(without_bang_equal, nil)
             return r
           end
 
@@ -388,44 +571,44 @@ module GTK
     #
     # @return [Boolean]
     def left
-      @key_up.left || @key_held.left || a
+      @key_up.left || @key_held.left || a || false
     end
 
     def left_arrow
-      @key_up.left || @key_held.left
+      @key_up.left || @key_held.left || false
     end
 
     # The right arrow or "d" was pressed.
     #
     # @return [Boolean]
     def right
-      @key_up.right || @key_held.right || d
+      @key_up.right || @key_held.right || d || false
     end
 
     def right_arrow
-      @key_up.right || @key_held.right
+      @key_up.right || @key_held.right || false
     end
 
     # The up arrow or "w" was pressed.
     #
     # @return [Boolean]
     def up
-      @key_up.up || @key_held.up || w
+      @key_up.up || @key_held.up || w || false
     end
 
     def up_arrow
-      @key_up.up || @key_held.up
+      @key_up.up || @key_held.up || false
     end
 
     # The down arrow or "s" was pressed.
     #
     # @return [Boolean]
     def down
-      @key_up.down || @key_held.down || s
+      @key_up.down || @key_held.down || s || false
     end
 
     def down_arrow
-      @key_up.down || @key_held.down
+      @key_up.down || @key_held.down || false
     end
 
     # Clear all current key presses.
@@ -468,7 +651,7 @@ module GTK
     include DirectionalInputHelperMethods
 
     def method_missing m, *args
-      if m.to_s.start_with?("ctrl_")
+      if m.to_s.start_with?("ctrl_") || m.to_s.start_with?("control_")
         other_key = m.to_s.split("_").last
         define_singleton_method(m) do
           return self.key_down.send(other_key.to_sym) && self.control

@@ -17,6 +17,3 @@ def test_http args, assert
   $result = $gtk.http_get 'http://dragonruby.org'
   try_assert_or_schedule args, assert
 end
-
-$gtk.reset 100
-$gtk.log_level = :off

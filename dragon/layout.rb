@@ -342,14 +342,14 @@ module GTK
         ]
 
         single_cell_label = { x: safe_area.center.x,
-                              y: safe_area.y + safe_area.h - 12,
+                              y: safe_area.y + safe_area.h - 6,
                               text: values.join(" "),
                               anchor_x: 0.5,
-                              anchor_y: 1.0,
+                              anchor_y: 0.5,
                               r: 255, g: 255, b: 255, a: 255,
                               size_px: 12 }
 
-        single_cell_bg = { x: bg_rect.x, y: safe_area.y + safe_area.h - 12, h: 12, w: bg_rect.w, path: :pixel, r: 0, g: 0, b: 0, a: 255 }
+        single_cell_bg = { x: safe_area.center.x, y: safe_area.y + safe_area.h - 6, anchor_x: 0.5, anchor_y: 0.5, h: 12, w: bg_rect.w, path: :pixel, r: 0, g: 0, b: 0, a: 255 }
 
         single_cell_border = { **safe_area, primitive_marker: :border }
 

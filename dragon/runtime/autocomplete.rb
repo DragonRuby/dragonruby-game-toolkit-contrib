@@ -165,8 +165,7 @@ module GTK
         text.gsub!(":", "")
         text.gsub!(".", " ")
         text.gsub!("=", " ")
-        return (autocomplete_filter_methods (text.split " "),
-                                            :gtk, :false, :true, :args, :suppress_mailbox, :end)
+        return (autocomplete_filter_methods (text.split " "), :gtk, :false, :true, :args, :end)
       end
     end # end Autocomplete
   end # end Runtime

@@ -1,6 +1,9 @@
-# fswatch ./samples/10_advanced_debugging/03_unit_tests/input_emulation_tests.rb | xargs -n1 -I{} sh ./samples/10_advanced_debugging/03_unit_tests/run-tests.sh
-# set -e
-# rake
+: <<'COMMENT'
+fswatch ./samples/10_advanced_debugging/03_unit_tests/input_emulation_tests.rb | xargs -n1 -I{} sh ./samples/10_advanced_debugging/03_unit_tests/run-tests.sh
+set -e
+rake
+COMMENT
+
 # ./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/input_emulation_tests.rb
 # ./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/gen_docs.rb
 # ./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/geometry_tests.rb

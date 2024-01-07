@@ -60,81 +60,16 @@ end
 
 # Outputs sprite onto screen
 def render grid, outputs, state
-  outputs.solids  <<  [grid.rect, 70, 70, 70] # outputs gray background
-  outputs.sprites <<  [destination_rect(state), # sets first four parameters of car sprite
-  'sprites/86.png', # image path of car
-  state.angle,
-  opacity, # transparency
-  saturation,
-  source_rect(state), # sprite sub division/tile (tile x, y, w, h)
-  false, false,  # don't flip sprites
-  rotation_anchor]
-
-  # also look at the create_sprite helper method
-  #
-  # For example:
-  #
-  # dest   = destination_rect(state)
-  # source = source_rect(state),
-  # outputs.sprites << create_sprite(
-  #   'sprites/86.png',
-  #   x: dest.x,
-  #   y: dest.y,
-  #   w: dest.w,
-  #   h: dest.h,
-  #   angle: state.angle,
-  #   source_x: source.x,
-  #   source_y: source.y,
-  #   source_w: source.w,
-  #   source_h: source.h,
-  #   flip_h: false,
-  #   flip_v: false,
-  #   rotation_anchor_x: 0.7,
-  #   rotation_anchor_y: 0.5
-  # )
-end
-
-# Creates sprite by setting values inside of a hash
-def create_sprite path, options = {}
-  options = {
-
-    # dest x, y, w, h
-    x: 0,
-    y: 0,
-    w: 100,
-    h: 100,
-
-    # angle, rotation
-    angle: 0,
-    rotation_anchor_x: 0.5,
-    rotation_anchor_y: 0.5,
-
-    # color saturation (red, green, blue), transparency
-    r: 255,
-    g: 255,
-    b: 255,
-    a: 255,
-
-    # source x, y, width, height
-    source_x: 0,
-    source_y: 0,
-    source_w: -1,
-    source_h: -1,
-
-    # flip horiztonally, flip vertically
-    flip_h: false,
-    flip_v: false,
-
-  }.merge options
-
-  [
-    options[:x], options[:y], options[:w], options[:h], # dest rect keys
-    path,
-    options[:angle], options[:a], options[:r], options[:g], options[:b], # angle, color, alpha
-    options[:source_x], options[:source_y], options[:source_w], options[:source_h], # source rect keys
-    options[:flip_h], options[:flip_v], # flip
-    options[:rotation_anchor_x], options[:rotation_anchor_y], # rotation anchor
-  ] # hash keys contain corresponding values
+  outputs.background_color = [70, 70, 70]
+  outputs.sprites <<  { **destination_rect(state), # sets first four parameters of car sprite
+                        path: 'sprites/86.png',    # image path of car
+                        angle: state.angle,
+                        a: opacity,                # alpha
+                        **saturation,
+                        **source_rect(state),      # sprite sub division/tile (source x, y, w, h)
+                        flip_horizontally: false,
+                        flip_vertically: false,    # don't flip sprites
+                        **rotation_anchor }
 end
 
 # Calls the calc_pos and calc_wrap methods.
@@ -197,7 +132,7 @@ end
 # Increasing either of these numbers would dramatically increase the
 # car's drift when it turns!
 def rotation_anchor
-  [0.7, 0.5]
+  { angle_anchor_x: 0.7, angle_anchor_y: 0.5 }
 end
 
 # Sets opacity value of sprite to 255 so that it is not transparent at all
@@ -208,19 +143,23 @@ end
 
 # Sets the color of the sprite to white.
 def saturation
-  [255, 255, 255]
+  { r: 255, g: 255, b: 255 }
 end
 
 # Sets definition of destination_rect (used to define the car sprite)
 def destination_rect state
-  [state.x, state.y,
-  state.sprite.width  * state.sprite.scale, # multiplies by 4 to set size
-  state.sprite.height * state.sprite.scale]
+  { x: state.x,
+    y: state.y,
+    w: state.sprite.width  * state.sprite.scale, # multiplies by 4 to set size
+    h: state.sprite.height * state.sprite.scale }
 end
 
 # Portion of a sprite (a tile)
 # Sub division of sprite is denoted as a rectangle directly related to original size of .png
 # Tile is located at bottom left corner within a 19x10 pixel rectangle (based on sprite.width, sprite.height)
 def source_rect state
-  [0, 0, state.sprite.width, state.sprite.height]
+  { source_x: 0,
+    source_y: 0,
+    source_w: state.sprite.width,
+    source_h: state.sprite.height }
 end

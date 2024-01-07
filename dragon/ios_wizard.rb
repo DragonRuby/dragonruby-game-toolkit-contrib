@@ -941,7 +941,6 @@ XML
 
     # production build marker
     sh %Q[mkdir -p "#{app_path}/metadata/"]
-    sh %Q[touch "#{app_path}/metadata/dragonruby_production_build"]
     :success
   end
 
@@ -966,7 +965,6 @@ XML
 
     # production build marker
     sh %Q[mkdir -p "#{app_path}/metadata/"]
-    sh %Q[touch "#{app_path}/metadata/dragonruby_production_build"]
     :success
   end
 

@@ -136,16 +136,19 @@ module GTK
           method: method
         }.let do |entity|
           primitives = []
-          primitives << entity[:rect].solid!(a: 164)
+          primitives << { **entity[:rect], path: :solid, r: 0, g: 0, b: 0, a: 255 }
           primitives << entity[:rect].border!(r: 255, g: 255, b: 255)
           primitives << text.wrapped_lines(5)
                             .map_with_index do |l, i|
-                              [
-                                entity[:rect][:x] + entity[:rect][:w].half,
-                                entity[:rect][:y] + entity[:rect][:h].half + font_height - (i * (font_height + 2)),
-                                l, -3, 1, 255, 255, 255
-                              ]
-                            end.labels
+                              {
+                                x: entity[:rect][:x] + entity[:rect][:w] / 2,
+                                y: entity[:rect][:y] + entity[:rect][:h] / 2 + font_height - (i * (font_height + 2)),
+                                text: l,
+                                size_enum: -3,
+                                alignment_enum: 1,
+                                r: 255, g: 255, b: 255
+                              }
+                            end
 
           entity.merge(primitives: primitives)
         end

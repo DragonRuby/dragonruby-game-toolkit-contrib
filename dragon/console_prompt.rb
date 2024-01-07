@@ -30,7 +30,8 @@ module GTK
       end
 
       def update_cursor_position_px
-        @cursor_position_px = ($gtk.calcstringbox (@prompt + @current_input_str[0...@cursor_position]), @font_style.size_enum, @font_style.font).x
+        w, _ = $gtk.calcstringbox (@prompt + @current_input_str[0...@cursor_position]), @font_style.size_enum, @font_style.font
+        @cursor_position_px = w
       end
 
       def current_input_str=(str)
@@ -194,18 +195,12 @@ S
         args.outputs.reserved << (@cursor_color.to_h.merge x: x + @cursor_position_px + 0.5,
                                                            y: y + 5,
                                                            x2: x + @cursor_position_px + 0.5,
-                                                           y2: y + @font_style.letter_size.y + 4)
+                                                           y2: y + @font_style.letter_size.h + 4)
 
         args.outputs.reserved << (@cursor_color.to_h.merge x: x + @cursor_position_px + 1,
                                                            y: y + 5,
                                                            x2: x + @cursor_position_px + 1,
-                                                           y2: y + @font_style.letter_size.y + 4)
-
-        # debugging rectangle for string
-        # args.outputs.reserved << (@cursor_color.to_h.merge x: x,
-        #                                                    y: y + 5,
-        #                                                    w: @cursor_position_px,
-        #                                                    h: @font_style.letter_size.y).border
+                                                           y2: y + @font_style.letter_size.h + 4)
       end
 
       def tick

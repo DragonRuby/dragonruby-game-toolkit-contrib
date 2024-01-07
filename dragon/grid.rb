@@ -128,8 +128,8 @@ module GTK
       @bottom_margin = 0.0
       @center_x = @runtime.logical_width.half
       @center_y = @runtime.logical_height.half
-      @rect   = [@left, @bottom, @runtime.logical_width, @runtime.logical_height].rect
-      @center = [@center_x, @center_y].point
+      @rect   = { x: @left, y: @bottom, w: @runtime.logical_width, h: @runtime.logical_height }
+      @center = { x: @center_x, y: @center_y }
       @ffi_draw.set_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
       @device_left       ||= @left
       @device_right      ||= @right
@@ -154,8 +154,8 @@ module GTK
       @bottom =  -@runtime.logical_height.half
       @center_x = 0.0
       @center_y = 0.0
-      @rect   = [@left, @bottom, @runtime.logical_width, @runtime.logical_height].rect
-      @center = [@center_x, @center_y].point
+      @rect   = { x: @left, y: @bottom, w: @runtime.logical_width, h: @runtime.logical_height }
+      @center = { x: @center_x, y: @center_y, w: 0, h: 0 }
       @ffi_draw.set_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
       @device_left     ||= @left
       @device_right    ||= @right
@@ -175,7 +175,7 @@ module GTK
     end
 
     def w_half
-      w.half
+      w / 2
     end
 
     def h
@@ -183,7 +183,7 @@ module GTK
     end
 
     def h_half
-      h.half
+      h / 2
     end
 
     def center

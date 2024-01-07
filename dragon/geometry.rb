@@ -379,6 +379,19 @@ S
       def to_square size, x, y, anchor_x = 0.5, anchor_y = nil
         log_once :to_square, <<-S
 * WARNING: Numeric#to_square and Geometry::to_square are deprecated and will not be replaced by another function.
+
+An equivalent to this function would be
+
+#+begin_src
+  def to_square size, x, y, anchor_x = 0.5, anchor_y = nil
+    { x: x,
+      y: y,
+      w: size,
+      h: size,
+      anchor_x: anchor_x,
+      anchor_y: anchor_y || anchor_x }
+  end
+#+end_src
 S
         anchor_y ||= anchor_x
         x = x.shift_left(size * anchor_x)
@@ -545,6 +558,12 @@ S
 
       def line_vec2 line
         { x: line.x2 - line.x, y: line.y2 - line.y }
+      rescue Exception => e
+        raise e, <<-S
+* ERROR:
+Geometry::line_vec2 for line #{line}.
+#{e}.
+S
       end
 
       def vec2_magnitude v

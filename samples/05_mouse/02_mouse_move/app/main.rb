@@ -2,12 +2,6 @@
 
  Reminders:
 
- - num1.greater(num2): Returns the greater value.
-   For example, if we have the command
-   puts 4.greater(3)
-   the number 4 would be printed to the console since it has a greater value than 3.
-   Similar to lesser, which returns the lesser value.
-
  - find_all: Finds all elements of a collection that meet certain requirements.
    For example, in this sample app, we're using find_all to find all zombies that have intersected
    or hit the player's sprite since these zombies have been killed.
@@ -65,17 +59,20 @@ class ProtectThePuppiesFromTheZombies
 
     # Declares player as a new entity and sets its properties.
     # The player begins the game in the center of the screen, not moving in any direction.
-    state.player ||= state.new_entity(:player, { x: 640,
-                                               y: 360,
-                                               attack_angle: 0,
-                                               dx: 0,
-                                               dy: 0 })
+    state.player ||= { x: 640,
+                       y: 360,
+                       w: 4 * 3,
+                       h: 8 * 3,
+                       attack_angle: 0,
+                       dx: 0,
+                       dy: 0,
+                       created_at: state.tick_count }
   end
 
   # Outputs a gray background.
   # Calls the methods needed to output the player, zombies, etc onto the screen.
   def render
-    outputs.solids << [grid.rect, 100, 100, 100]
+    outputs.background_color = [100, 100, 100]
     render_zombies
     render_killed_zombies
     render_player
@@ -85,52 +82,56 @@ class ProtectThePuppiesFromTheZombies
   # Outputs the zombies on the screen and sets values for the sprites, such as the position, width, height, and animation.
   def render_zombies
     outputs.sprites << state.zombies.map do |z| # performs action on all zombies in the collection
-      z.sprite = [z.x, z.y, 4 * 3, 8 * 3, animation_sprite(z)].sprite # sets definition for sprite, calls animation_sprite method
-      z.sprite
+      z.merge path: animation_sprite(z)  # sets definition for sprite, calls animation_sprite method
     end
   end
 
   # Outputs sprites of killed zombies, and displays a slash image to show that a zombie has been killed.
   def render_killed_zombies
     outputs.sprites << state.killed_zombies.map do |z| # performs action on all killed zombies in collection
-      z.sprite = [z.x,
-                  z.y,
-                  4 * 3,
-                  8 * 3,
-                  animation_sprite(z, z.death_at), # calls animation_sprite method
-                  0, # angle
-                  255 * z.death_at.ease(30, :flip)].sprite # transparency of a zombie changes when they die
-                  # change the value of 30 and see what happens when a zombie is killed
+      zombie = { x: z.x,
+                 y: z.y,
+                 w: 4 * 3,
+                 h: 8 * 3,
+                 path: animation_sprite(z, z.death_at), # calls animation_sprite method
+                 a: 255 * z.death_at.ease(30, :flip) }  # transparency of a zombie changes when they die
 
       # Sets values to output the slash over the zombie's sprite when a zombie is killed.
       # The slash is tilted 45 degrees from the angle of the player's attack.
       # Change the 3 inside scale_rect to 30 and the slash will be HUGE! Scale_rect positions
       # the slash over the killed zombie's sprite.
-      [z.sprite, [z.sprite.rect, 'sprites/slash.png', 45 + state.player.attack_angle_on_click, z.sprite.a].scale_rect(3, 0.5, 0.5)]
+      [zombie,
+       zombie.merge(path: 'sprites/slash.png',
+                    angle: 45 + (state.player.attack_angle_on_click || 0)).scale_rect(3, 0.5, 0.5)]
     end
   end
 
   # Outputs the player sprite using the images in the sprites folder.
   def render_player
-    state.player_sprite = [state.player.x,
-                           state.player.y,
-                          4 * 3,
-                          8 * 3, "sprites/player-#{animation_index(state.player.created_at_elapsed)}.png"] # string interpolation
-    outputs.sprites << state.player_sprite
-
     # Outputs a small red square that previews the angles that the player can attack in.
     # It can be moved in a perfect circle around the player to show possible movements.
     # Change the 60 in the parenthesis and see what happens to the movement of the red square.
-    outputs.solids <<  [state.player.x + state.player.attack_angle.vector_x(60),
-                        state.player.y + state.player.attack_angle.vector_y(60),
-                        3, 3, 255, 0, 0]
+    outputs.sprites << { x: state.player.x + state.player.attack_angle.vector_x(60),
+                         y: state.player.y + state.player.attack_angle.vector_y(60),
+                         w: 3,
+                         h: 3,
+                         r: 255,
+                         g: 0,
+                         b: 0,
+                         path: :solid }
+
+    outputs.sprites << { x: state.player.x,
+                         y: state.player.y,
+                         w: 4 * 3,
+                         h: 8 * 3,
+                         path: "sprites/player-#{animation_index(state.player.created_at.elapsed_time)}.png" } # string interpolation
   end
 
   # Renders flash as a solid. The screen turns white for 10 frames when a zombie is killed.
   def render_flash
     return if state.flash_at.elapsed_time > 10 # return if more than 10 frames have passed since flash.
     # Transparency gradually changes (or eases) during the 10 frames of flash.
-    outputs.primitives << [grid.rect, 255, 255, 255, 255 * state.flash_at.ease(10, :flip)].solid
+    outputs.primitives << { **grid.rect, r: 255, g: 255, b: 255, a: 255 * state.flash_at.ease(10, :flip), path: :solid }
   end
 
   # Calls all methods necessary for performing calculations.
@@ -149,22 +150,27 @@ class ProtectThePuppiesFromTheZombies
     end
 
     # New zombies are created, positioned on the screen, and added to the zombies collection.
-    state.zombies << state.new_entity(:zombie) do |z| # each zombie is declared a new entity
-      if rand > 0.5
-        z.x = grid.rect.w.randomize(:ratio) # random x position on screen (within grid scope)
-        z.y = [-10, 730].sample # y position is set to either -10 or 730 (randomly chosen)
-        # the possible values exceed the screen's scope so zombies appear to be coming from far away
-      else
-        z.x = [-10, 1290].sample # x position is set to either -10 or 1290 (randomly chosen)
-        z.y = grid.rect.w.randomize(:ratio) # random y position on screen
-      end
-    end
+    state.zombies << (if rand > 0.5
+                       {
+                         x: grid.rect.w.randomize(:ratio), # random x position on screen (within grid scope)
+                         y: [-10, 730].sample, # y position is set to either -10 or 730 (randomly chosen)
+                         w: 4 * 3, h: 8 * 3,
+                         created_at: state.tick_count
+                       }
+                      else
+                       {
+                         x: [-10, 1290].sample, # x position is set to either -10 or 1290 (randomly chosen)
+                         y: grid.rect.w.randomize(:ratio), # random y position on screen
+                         w: 4 * 3, h: 8 * 3,
+                         created_at: state.tick_count
+                       }
+                      end)
 
     # Calls random_spawn_countdown method (determines how fast new zombies appear)
     state.zombie_spawn_countdown = random_spawn_countdown state.zombie_min_spawn_rate
     state.zombie_min_spawn_rate -= 1
     # set to either the current zombie_min_spawn_rate or 0, depending on which value is greater
-    state.zombie_min_spawn_rate  = state.zombie_min_spawn_rate.greater(0)
+    state.zombie_min_spawn_rate  = state.zombie_min_spawn_rate.clamp(0)
   end
 
   # Moves all zombies towards the center of the screen.
@@ -187,8 +193,8 @@ class ProtectThePuppiesFromTheZombies
 
     # Compares player's x to 1280 to find lesser value, then compares result to 0 to find greater value.
     # This ensures that the player remains within the screen's scope.
-    state.player.x = state.player.x.lesser(1280).greater(0)
-    state.player.y = state.player.y.lesser(720).greater(0) # same with player's y
+    state.player.x = state.player.x.clamp(0, 1280)
+    state.player.y = state.player.y.clamp(0, 720) # same with player's y
   end
 
   # Finds all zombies that intersect with the player's sprite. These zombies are removed from the zombies collection
@@ -196,7 +202,7 @@ class ProtectThePuppiesFromTheZombies
   def calc_kill_zombie
 
     # Find all zombies that intersect with the player. They are considered killed.
-    killed_this_frame = state.zombies.find_all { |z| z.sprite && (z.sprite.intersect_rect? state.player_sprite) }
+    killed_this_frame = state.zombies.find_all { |z| (z.intersect_rect? state.player) }
     state.zombies = state.zombies - killed_this_frame # remove newly killed zombies from zombies collection
     state.killed_zombies += killed_this_frame # add newly killed zombies to killed zombies
 
@@ -264,7 +270,7 @@ class ProtectThePuppiesFromTheZombies
 
   # Animates the zombies by using the animation index to go through the images in the sprites folder.
   def animation_sprite zombie, at = nil
-    at ||= zombie.created_at_elapsed # how long it is has been since a zombie was created
+    at ||= zombie.created_at.elapsed_time # how long it is has been since a zombie was created
     index = animation_index at
     "sprites/zombie-#{index}.png" # string interpolation to iterate through images
   end

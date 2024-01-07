@@ -59,9 +59,7 @@ class Numeric
     clamp(0, 255).to_i
   end
 
-  def clamp *opts
-    min = (opts.at 0)
-    max = (opts.at 1)
+  def clamp min, max = nil
     return min if min && self < min
     return max if max && self > max
     return self
