@@ -7,6 +7,16 @@ module GTK
   class KeyboardKeys
     include Serialize
 
+    def self.alias_method from, to
+      @aliases ||= {}
+      @aliases[from] = to
+      super from, to
+    end
+
+    def self.aliases
+      @aliases
+    end
+
     attr_accessor :tilde, :underscore, :double_quotation_mark,
                   :exclamation_point, :at, :hash, :dollar,
                   :percent, :caret, :ampersand, :asterisk,
@@ -40,6 +50,8 @@ module GTK
                   :home, :end,
                   :left_arrow, :right_arrow, :up_arrow, :down_arrow, :page_up, :page_down,
                   :forward_slash, :back_slash
+
+    attr_accessor :w_scancode, :a_scancode, :s_scancode, :d_scancode
 
     alias_method :section_sign, :section
     alias_method :equal_sign, :equal
@@ -216,6 +228,15 @@ module GTK
         question_mark: :forward_slash,
         less_than: :comma,
         greater_than: :period
+      }
+    end
+
+    def self.scancode_to_method_hash
+      @scancode_to_method ||= {
+        26 => :w_scancode,
+        4  => :a_scancode,
+        22 => :s_scancode,
+        7  => :d_scancode
       }
     end
 
@@ -466,12 +487,13 @@ module GTK
     def get collection
       return [] if collection.length == 0
       collection.map do |m|
-        if m.end_with_bang?
+        resolved_m = KeyboardKeys.aliases[m] || m
+        if resolved_m.end_with_bang?
           clear_after_return = true
         end
 
-        value = self.instance_variable_get("@#{m.without_ending_bang}".to_sym)
-        clear_key m if clear_after_return
+        value = self.instance_variable_get("@#{resolved_m.without_ending_bang}".to_sym)
+        clear_key resolved_m if clear_after_return
         [m.without_ending_bang, value]
       end
     end
@@ -481,7 +503,8 @@ module GTK
       @scrubbed_ivars = nil
 
       collection.each do |m|
-        m_to_s = m.to_s
+        resolved_m = KeyboardKeys.aliases[m] || m
+        m_to_s = resolved_m.to_s
         self.instance_variable_set("@#{m_to_s}".to_sym, value) if m_to_s.strip.length > 0
       rescue Exception => e
         raise e, <<-S
@@ -571,7 +594,7 @@ module GTK
     #
     # @return [Boolean]
     def left
-      @key_up.left || @key_held.left || a || false
+      @key_up.left || @key_held.left || a_scancode || false
     end
 
     def left_arrow
@@ -582,7 +605,7 @@ module GTK
     #
     # @return [Boolean]
     def right
-      @key_up.right || @key_held.right || d || false
+      @key_up.right || @key_held.right || d_scancode || false
     end
 
     def right_arrow
@@ -593,7 +616,7 @@ module GTK
     #
     # @return [Boolean]
     def up
-      @key_up.up || @key_held.up || w || false
+      @key_up.up || @key_held.up || w_scancode || false
     end
 
     def up_arrow
@@ -604,7 +627,7 @@ module GTK
     #
     # @return [Boolean]
     def down
-      @key_up.down || @key_held.down || s || false
+      @key_up.down || @key_held.down || s_scancode || false
     end
 
     def down_arrow
@@ -965,17 +988,25 @@ module GTK
       keyboard.up || (controller_one && controller_one.up)
     end
 
+    alias_method :up_with_wasd, :up
+
     def down
       keyboard.down || (controller_one && controller_one.down)
     end
+
+    alias_method :down_with_wasd, :down
 
     def left
       keyboard.left || (controller_one && controller_one.left)
     end
 
+    alias_method :left_with_wasd, :left
+
     def right
       keyboard.right || (controller_one && controller_one.right)
     end
+
+    alias_method :right_with_wasd, :right
 
     def directional_vector
       keyboard.directional_vector ||
@@ -992,6 +1023,8 @@ module GTK
       return  0
     end
 
+    alias_method :left_right_with_wasd, :left_right
+
     def left_right_arrow
       return -1 if keyboard.left_arrow || (controller_one && controller_one.directional_left)
       return  1 if keyboard.right_arrow || (controller_one && controller_one.directional_right)
@@ -1000,11 +1033,31 @@ module GTK
 
     alias_method :left_right_directional, :left_right_arrow
 
+    def left_right_perc
+      if controller_one && controller_one.left_analog_x_perc != 0
+        controller_one.left_analog_x_perc
+      else
+        left_right
+      end
+    end
+
+    alias_method :left_right_perc_with_wasd, :left_right_perc
+
+    def left_right_directional_perc
+      if controller_one && controller_one.left_analog_x_perc != 0
+        controller_one.left_analog_x_perc
+      else
+        left_right_directional
+      end
+    end
+
     def up_down
       return  1 if self.up
       return -1 if self.down
       return  0
     end
+
+    alias_method :up_down_with_wasd, :up_down
 
     def up_down_arrow
       return  1 if keyboard.up_arrow || (controller_one && controller_one.directional_up)
@@ -1013,6 +1066,14 @@ module GTK
     end
 
     alias_method :up_down_directional, :up_down_arrow
+
+    def up_down_perc
+      if controller_one && controller_one.left_analog_y_perc != 0
+        controller_one.left_analog_y_perc
+      else
+        up_down_directional
+      end
+    end
 
     def click
       return nil unless @mouse.click

@@ -37,7 +37,11 @@ Reminder:
 # Saving the click in args.state can be quite useful
 
 def tick args
-  tick_instructions args, "Sample app shows how mouse events are registered and how to measure elapsed time."
+  args.outputs.labels << { x: 640,
+                           y: 700,
+                           anchor_x: 0.5,
+                           anchor_y: 0.5,
+                           text: "Sample app shows how mouse events are registered and how to measure elapsed time." }
   x = 460
 
   args.outputs.labels << small_label(args, x, 11, "Mouse input: args.inputs.mouse")
@@ -58,26 +62,7 @@ def tick args
 end
 
 def small_label args, x, row, message
-  # This method effectively combines the row_to_px
-  # It changes the given row value to a DragonRuby pixel value
-  # and adds the customization parameters
-  { x: x, y: row_to_px(args, row), text: message, alignment_enum: -2 }
-end
-
-def row_to_px args, row_number
-  args.grid.top.shift_down(5).shift_down(20 * row_number)
-end
-
-def tick_instructions args, text, y = 715
-  return if args.state.key_event_occurred
-  if args.inputs.mouse.click ||
-     args.inputs.keyboard.directional_vector ||
-     args.inputs.keyboard.key_down.enter ||
-     args.inputs.keyboard.key_down.escape
-    args.state.key_event_occurred = true
-  end
-
-  args.outputs.debug << { x: 0,   y: y - 50, w: 1280, h: 60 }.solid!
-  args.outputs.debug << { x: 640, y: y, text: text, size_enum: 1, alignment_enum: 1, r: 255, g: 255, b: 255 }.label!
-  args.outputs.debug << { x: 640, y: y - 25, text: "(click to dismiss instructions)", size_enum: -2, alignment_enum: 1, r: 255, g: 255, b: 255 }.label!
+  { x: x,
+    y: 720 - 5 - 20 * row,
+    text: message }
 end

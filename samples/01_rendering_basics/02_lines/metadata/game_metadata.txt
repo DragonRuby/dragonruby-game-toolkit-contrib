@@ -1,6 +1,9 @@
 devid=dragonruby
 devtitle=DragonRuby LLC
 gameid=sample-app
-gametitle=Sample App
+gametitle=Basics - Lines
 version=1.0
 icon=metadata/icon.png
+# Available in Pro License
+hd=true
+highdpi=true

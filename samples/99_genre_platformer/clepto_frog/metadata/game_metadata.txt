@@ -1,9 +1,12 @@
 devid=dragonruby
 devtitle=DragonRuby LLC
-gameid=cleptofrog
+gameid=sample-app
 gametitle=Clepto Frog
 version=1.0
 icon=metadata/icon.png
+# HD and High DPI available via the Pro License
+hd=true
+highdpi=true
 
 # Below configurations requires a Pro license.
 

@@ -1,11 +1,10 @@
 def tick args
-  args.state.player.x ||= 100
-  args.state.player.y ||= 100
-  args.state.player.w ||= 64
-  args.state.player.h ||= 64
-  args.state.player.direction ||= 1
-
-  args.state.player.is_moving = false
+  args.state.player ||= { x: 100,
+                          y: 100,
+                          w: 64,
+                          h: 64,
+                          direction: 1,
+                          is_moving: false }
 
   # get the keyboard input and set player properties
   if args.inputs.keyboard.right
@@ -93,6 +92,6 @@ def running_sprite args
     tile_y: 0,
     tile_w: args.state.player.w,
     tile_h: args.state.player.h,
-    flip_horizontally: args.state.player.direction > 0,
+    flip_horizontally: args.state.player.direction > 0
   }
 end

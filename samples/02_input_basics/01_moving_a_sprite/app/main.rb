@@ -1,19 +1,15 @@
 def tick args
-  # create a player and set default values
-  # for the player's x, y, w (width), and h (height)
-  args.state.player.x ||= 100
-  args.state.player.y ||= 100
-  args.state.player.w ||=  50
-  args.state.player.h ||=  50
+  # Create a player and set default values
+  # NOTE: args.state is a construct that lets you define properties on the fly
+  args.state.player ||= { x: 100,
+                          y: 100,
+                          w: 50,
+                          h: 50,
+                          path: 'sprites/square/green.png' }
 
-  # render the player to the screen
-  args.outputs.sprites << { x: args.state.player.x,
-                            y: args.state.player.y,
-                            w: args.state.player.w,
-                            h: args.state.player.h,
-                            path: 'sprites/square/green.png' }
-
-  # move the player around using the keyboard
+  # move the player around by consulting args.inputs
+  # the top level args.inputs checks the keyboard's arrow keys, WASD,
+  # and controller one
   if args.inputs.up
     args.state.player.y += 10
   elsif args.inputs.down
@@ -25,6 +21,7 @@ def tick args
   elsif args.inputs.right
     args.state.player.x += 10
   end
-end
 
-$gtk.reset
+  # Render the player to the screen
+  args.outputs.sprites << args.state.player
+end

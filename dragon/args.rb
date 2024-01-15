@@ -247,7 +247,15 @@ end
 class AudioHash < Hash
   def volume
     @volume ||= 1.0
-    @volume
+    if $args.gtk.production &&
+       $args.state.tick_count != 0 &&
+       $args.inputs.keyboard.has_focus
+      @volume
+    elsif !$args.gtk.production
+      @volume
+    else
+      0.0
+    end
   end
 
   def volume= value

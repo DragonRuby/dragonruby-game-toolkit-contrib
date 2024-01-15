@@ -25,6 +25,7 @@ module GTK
           core_files_to_reload + @required_files
         else
           [
+            'dragon/cvar.rb',
             'dragon/docs.rb',
             'dragon/help.rb',
             'dragon/kernel_docs.rb',

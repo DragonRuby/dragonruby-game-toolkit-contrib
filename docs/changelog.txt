@@ -1,3 +1,16 @@
+* 5.16
+** [Support] Increased precision of the percentage and raw values returned by controller left/right analog sticks.
+** [Support] ~args.inputs.left_right~ consults WASD scancodes as opposed to keycodes.
+   More scancode values will be supported in the future. Docs have been updated to enumerate new scancode properties
+   and behavior.
+** [Support] Web builds will automatically mute if the game doesn't have focus.
+** [Samples] Added sample app that shows how to create a repeating texture.
+   Sample app location: =samples/07_advanced_rendering/02_render_targets_repeating_texture=
+** [Samples] Sample apps will include preview videos over time to mirror https://samples.dragonruby.org (be sure to check out the website).
+   The preview videos are fairly small (trying to keep them to less than 500KB each).
+** [Bugfix] Fixed the letter "S" glyph in lowrez.ttf.
+** [Bugfix] Added polyfill for renamed/normalized keyboard properties for backwards compatability with keyboard libraries.
+** [Bugfix] ~$gtk.set_window_scale~ invalidates font textures so they can be redrawn at the new window size.
 * 5.15
 ** [Pro] [iOS] [Bugfix] Fixed issue where game would crash after tomb-stoned for an extended period of time.
 ** [Pro] [iOS] [Bugfix] Fixed remote hotloading to device when app is signed with developer provisioning profile.

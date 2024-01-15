@@ -1,6 +1,9 @@
 devid=dragonruby
 devtitle=DragonRuby LLC
-gameid=managing-scenes
-gametitle=Managing Scenes
+gameid=sample-app
+gametitle=Basics - Managing Scenes
 version=1.0
 icon=metadata/icon.png
+# HD and High DPI available via the Pro License
+hd=true
+highdpi=true

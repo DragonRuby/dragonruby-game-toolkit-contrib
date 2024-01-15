@@ -1,5 +1,4 @@
 =begin
-
  Reminders:
 
  - String interpolation: Uses #{} syntax; everything between the #{ and the } is evaluated
@@ -65,10 +64,18 @@ def looping_animation args
                                               does_sprite_loop
 
   # Now that we have `sprite_index, we can present the correct file.
-  args.outputs.sprites << { x: 100, y: 100, w: 100, h: 100, path: "sprites/dragon_fly_#{sprite_index}.png" }
+  args.outputs.sprites << { x: 100,
+                            y: 100,
+                            w: 100,
+                            h: 100,
+                            path: "sprites/dragon_fly_#{sprite_index}.png" }
 
   # Try changing the numbers below to see how the animation changes:
-  args.outputs.sprites << { x: 100, y: 200, w: 100, h: 100, path: "sprites/dragon_fly_#{0.frame_index 6, 4, true}.png" }
+  args.outputs.sprites << { x: 100,
+                            y: 200,
+                            w: 100,
+                            h: 100,
+                            path: "sprites/dragon_fly_#{0.frame_index 6, 4, true}.png" }
 end
 
 # This function shows how to animate a sprite that executes
@@ -115,21 +122,15 @@ def one_time_animation args
   sprite_index ||= 0
 
   # Present the sprite.
-  args.outputs.sprites << { x: 100, y: 300, w: 100, h: 100, path: "sprites/dragon_fly_#{sprite_index}.png" }
+  args.outputs.sprites << { x: 100,
+                            y: 300,
+                            w: 100,
+                            h: 100,
+                            path: "sprites/dragon_fly_#{sprite_index}.png" }
 
-  tick_instructions args, "Sample app shows how to use Numeric#frame_index and string interpolation to animate a sprite over time."
-end
-
-def tick_instructions args, text, y = 715
-  return if args.state.key_event_occurred
-  if args.inputs.mouse.click ||
-     args.inputs.keyboard.directional_vector ||
-     args.inputs.keyboard.key_down.enter ||
-     args.inputs.keyboard.key_down.escape
-    args.state.key_event_occurred = true
-  end
-
-  args.outputs.debug << [0, y - 50, 1280, 60].solid
-  args.outputs.debug << [640, y, text, 1, 1, 255, 255, 255].label
-  args.outputs.debug << [640, y - 25, "(click to dismiss instructions)" , -2, 1, 255, 255, 255].label
+  args.outputs.labels << { x: 640,
+                           y: 700,
+                           text: "Sample app shows how to use Numeric#frame_index to animate a sprite over time.",
+                           anchor_x: 0.5,
+                           anchor_y: 0.5 }
 end
