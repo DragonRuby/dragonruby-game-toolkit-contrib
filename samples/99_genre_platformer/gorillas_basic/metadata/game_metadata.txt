@@ -1,6 +1,6 @@
 devid=dragonruby
 devtitle=DragonRuby LLC
 gameid=sample-app
-gametitle=Sample App
+gametitle=Gorillas BASIC
 version=1.0
 icon=metadata/icon.png

@@ -19,7 +19,7 @@
 
  Reminders:
 
- - ARRAY#inside_rect?: Returns true or false depending on if the point is inside the rect.
+ - Hash#inside_rect?: Returns true or false depending on if the point is inside the rect.
 
  - String interpolation: Uses #{} syntax; everything between the #{ and the } is evaluated
    as Ruby code, and the placeholder is replaced with its corresponding value or result.
@@ -42,12 +42,9 @@
 =end
 
 # This sample app is a classic game of Tic Tac Toe.
-
 class TicTacToe
-  attr_accessor :_, :state, :outputs, :inputs, :grid, :gtk
+  attr_gtk # class macro that adds outputs, inputs, state, etc to class
 
-  # Starts the game with player x's turn and creates an array (to_a) for space combinations.
-  # Calls methods necessary for the game to run properly.
   def tick
     init_new_game
     render_board
@@ -57,55 +54,69 @@ class TicTacToe
   def init_new_game
     state.current_turn       ||= :x
     state.space_combinations ||= [-1, 0, 1].product([-1, 0, 1]).to_a
-
-    state.spaces             ||= {}
-
-    state.space_combinations.each do |x, y|
-      state.spaces[x]    ||= {}
-      state.spaces[x][y] ||= state.new_entity(:space)
+    if !state.spaces
+      state.square_size ||= 80
+      state.board_left  ||= grid.w_half - state.square_size * 1.5
+      state.board_top   ||= grid.h_half - state.square_size * 1.5
+      state.spaces = {}
+      state.space_combinations.each do |x, y|
+        state.spaces[x]    ||= {}
+        state.spaces[x][y] ||= {}
+        state.spaces[x][y].hitbox ||= {
+          x: state.board_left + (x + 1) * state.square_size,
+          y: state.board_top  + (y + 1) * state.square_size,
+          w: state.square_size,
+          h: state.square_size
+        }
+      end
     end
   end
 
   # Uses borders to create grid squares for the game's board. Also outputs the game pieces using labels.
   def render_board
-    square_size = 80
-
-    # Positions the game's board in the center of the screen.
-    # Try removing what follows grid.w_half or grid.h_half and see how the position changes!
-    board_left = grid.w_half - square_size * 1.5
-    board_top  = grid.h_half - square_size * 1.5
-
     # At first glance, the add(1) looks pretty trivial. But if you remove it,
     # you'll see that the positioning of the board would be skewed without it!
     # Or if you put 2 in the parenthesis, the pieces will be placed in the wrong squares
     # due to the change in board placement.
-    outputs.borders << all_spaces do |x, y, space| # outputs borders for all board spaces
-      space.border ||= [
-        board_left + x.add(1) * square_size, # space.border is initialized using this definition
-        board_top  + y.add(1) * square_size,
-        square_size,
-        square_size
-      ]
+    outputs.borders << all_spaces.map do |space| # outputs borders for all board spaces
+                         space.hitbox
+                       end
+
+    hovered_box = all_spaces.find do |space|
+      inputs.mouse.inside_rect?(space.hitbox) && !space.piece
     end
 
-    # Again, the calculations ensure that the piece is placed in the center of the grid square.
-    # Remove the '- 20' and the piece will be placed at the top of the grid square instead of the center.
-    outputs.labels << filled_spaces do |x, y, space| # put label in each filled space of board
-          label board_left + x.add(1) * square_size + square_size.fdiv(2),
-          board_top  + y.add(1) * square_size + square_size - 20,
-          space.piece # text of label, either "x" or "o"
+    if hovered_box && !state.game_over
+      args.outputs.solids << { x: hovered_box.hitbox.x,
+                               y: hovered_box.hitbox.y,
+                               w: hovered_box.hitbox.w,
+                               h: hovered_box.hitbox.h,
+                               r: 0,
+                               g: 100,
+                               b: 200,
+                               a: 80 }
+    end
+
+    # put label in each filled space of board
+    outputs.labels << filled_spaces.map do |space|
+      { x: space.hitbox.x + space.hitbox.w / 2,
+        y: space.hitbox.y + space.hitbox.h / 2,
+        anchor_x: 0.5,
+        anchor_y: 0.5,
+        size_px: 40,
+        text: space.piece }
     end
 
     # Uses a label to output whether x or o won, or if a draw occurred.
     # If the game is ongoing, a label shows whose turn it currently is.
     outputs.labels << if state.x_won
-                        label grid.w_half, grid.top - 80, "x won" # the '-80' positions the label 80 pixels lower than top
+                        { x: 640, y: 600, text: "x won", size_px: 40, anchor_x: 0.5, anchor_y: 0.5 }
                       elsif state.o_won
-                        label grid.w_half, grid.top - 80, "o won" # grid.w_half positions the label in the center horizontally
+                        { x: 640, y: 600, text: "o won", size_px: 40, anchor_x: 0.5, anchor_y: 0.5 }
                       elsif state.draw
-                        label grid.w_half, grid.top - 80, "a draw"
-                      else # if no one won and the game is ongoing
-                        label grid.w_half, grid.top - 80, "turn: #{state.current_turn}"
+                        { x: 640, y: 600, text: "draw", size_px: 40, anchor_x: 0.5, anchor_y: 0.5 }
+                      else
+                        { x: 640, y: 600, text: "turn: #{state.current_turn}", size_px: 40, anchor_x: 0.5, anchor_y: 0.5 }
                       end
   end
 
@@ -124,12 +135,13 @@ class TicTacToe
 
     # Checks to find the space that the mouse was clicked inside of, and makes sure the space does not already
     # have a piece in it.
-    __, __, space = all_spaces.find do |__, __, space|
-      inputs.mouse.click.point.inside_rect?(space.border) && !space.piece
+    space = all_spaces.find do |space|
+      inputs.mouse.click.point.inside_rect?(space.hitbox) && !space.piece
     end
 
     # The piece that goes into the space belongs to the player whose turn it currently is.
     return unless space
+
     space.piece = state.current_turn
 
     # This ternary operator statement allows us to change the current player's turn.
@@ -159,7 +171,6 @@ class TicTacToe
   def won? piece
     # performs action on all space combinations
     won = [[-1, 0, 1]].product([-1, 0, 1]).map do |xs, y|
-
       # Checks if the 3 grid spaces with the same y value (or same row) and
       # x values that are next to each other have pieces that belong to the same player.
       # Remember, the value of piece is equal to the current turn (which is the player).
@@ -198,59 +209,26 @@ class TicTacToe
   # The ! before a statement means "not". For example, we are rejecting any space combinations that do
   # NOT have pieces in them.
   def filled_spaces
-    state.space_combinations
-      .reject { |x, y| !state.spaces[x][y].piece } # reject spaces with no pieces in them
-      .map do |x, y|
-        if block_given?
-          yield x, y, state.spaces[x][y]
-        else
-          [x, y, state.spaces[x][y]] # sets definition of space
-        end
-    end
+    all_spaces.reject { |space| !space.piece } # reject spaces with no pieces in them
   end
 
   # Defines all spaces on the board.
   def all_spaces
-    if !block_given?
-      state.space_combinations.map do |x, y|
-        [x, y, state.spaces[x][y]] # sets definition of space
-      end
-    else # if a block is given (block_given? is true)
-      state.space_combinations.map do |x, y|
-        yield x, y, state.spaces[x][y] # yield if a block is given
-      end
+    state.space_combinations.map do |x, y|
+      state.spaces[x][y] # yield if a block is given
     end
   end
-
-  # Sets values for a label, such as the position, value, size, alignment, and color.
-  def label x, y, value
-    [x, y + 10, value, 20, 1, 0, 0, 0]
-  end
 end
 
-$tic_tac_toe = TicTacToe.new
+$tic_tac_toe = nil
 
 def tick args
-  $tic_tac_toe._       = args
-  $tic_tac_toe.state   = args.state
-  $tic_tac_toe.outputs = args.outputs
-  $tic_tac_toe.inputs  = args.inputs
-  $tic_tac_toe.grid    = args.grid
-  $tic_tac_toe.gtk     = args.gtk
+  args.outputs.labels << { x: 640,
+                           y: 700,
+                           anchor_x: 0.5,
+                           anchor_y: 0.5,
+                           text: "Sample app shows how to work with mouse clicks and hitboxes." }
+  $tic_tac_toe ||= TicTacToe.new
+  $tic_tac_toe.args = args
   $tic_tac_toe.tick
-  tick_instructions args, "Sample app shows how to work with mouse clicks."
-end
-
-def tick_instructions args, text, y = 715
-  return if args.state.key_event_occurred
-  if args.inputs.mouse.click ||
-     args.inputs.keyboard.directional_vector ||
-     args.inputs.keyboard.key_down.enter ||
-     args.inputs.keyboard.key_down.escape
-    args.state.key_event_occurred = true
-  end
-
-  args.outputs.debug << [0, y - 50, 1280, 60].solid
-  args.outputs.debug << [640, y, text, 1, 1, 255, 255, 255].label
-  args.outputs.debug << [640, y - 25, "(click to dismiss instructions)" , -2, 1, 255, 255, 255].label
 end

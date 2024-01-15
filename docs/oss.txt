@@ -872,7 +872,15 @@ Follows is a source code listing for all files that have been open sourced. This
   class AudioHash < Hash
     def volume
       @volume ||= 1.0
-      @volume
+      if $args.gtk.production &&
+         $args.state.tick_count != 0 &&
+         $args.inputs.keyboard.has_focus
+        @volume
+      elsif !$args.gtk.production
+        @volume
+      else
+        0.0
+      end
     end
   
     def volume= value
@@ -1731,7 +1739,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
       def inputs_scroll_up_half? args
         return false if @disabled
-        args.inputs.keyboard.ctrl_u
+        args.inputs.keyboard.ctrl_u || args.inputs.keyboard.ctrl_b
       end
   
       def scroll_up_half
@@ -1752,7 +1760,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
       def inputs_scroll_down_half? args
         return false if @disabled
-        args.inputs.keyboard.ctrl_d
+        args.inputs.keyboard.ctrl_d || args.inputs.keyboard.ctrl_f
       end
   
       def inputs_clear_command? args
@@ -3452,6 +3460,11 @@ Follows is a source code listing for all files that have been open sourced. This
           attr label
         end
   
+        alias_method :dpad_up, :directional_up
+        alias_method :dpad_down, :directional_down
+        alias_method :dpad_left, :directional_left
+        alias_method :dpad_right, :directional_right
+  
         def back
           @select
         end
@@ -4681,6 +4694,16 @@ Follows is a source code listing for all files that have been open sourced. This
     class KeyboardKeys
       include Serialize
   
+      def self.alias_method from, to
+        @aliases ||= {}
+        @aliases[from] = to
+        super from, to
+      end
+  
+      def self.aliases
+        @aliases
+      end
+  
       attr_accessor :tilde, :underscore, :double_quotation_mark,
                     :exclamation_point, :at, :hash, :dollar,
                     :percent, :caret, :ampersand, :asterisk,
@@ -4714,6 +4737,8 @@ Follows is a source code listing for all files that have been open sourced. This
                     :home, :end,
                     :left_arrow, :right_arrow, :up_arrow, :down_arrow, :page_up, :page_down,
                     :forward_slash, :back_slash
+  
+      attr_accessor :w_scancode, :a_scancode, :s_scancode, :d_scancode
   
       alias_method :section_sign, :section
       alias_method :equal_sign, :equal
@@ -4890,6 +4915,15 @@ Follows is a source code listing for all files that have been open sourced. This
           question_mark: :forward_slash,
           less_than: :comma,
           greater_than: :period
+        }
+      end
+  
+      def self.scancode_to_method_hash
+        @scancode_to_method ||= {
+          26 => :w_scancode,
+          4  => :a_scancode,
+          22 => :s_scancode,
+          7  => :d_scancode
         }
       end
   
@@ -5140,12 +5174,13 @@ Follows is a source code listing for all files that have been open sourced. This
       def get collection
         return [] if collection.length == 0
         collection.map do |m|
-          if m.end_with_bang?
+          resolved_m = KeyboardKeys.aliases[m] || m
+          if resolved_m.end_with_bang?
             clear_after_return = true
           end
   
-          value = self.instance_variable_get("@#{m.without_ending_bang}".to_sym)
-          clear_key m if clear_after_return
+          value = self.instance_variable_get("@#{resolved_m.without_ending_bang}".to_sym)
+          clear_key resolved_m if clear_after_return
           [m.without_ending_bang, value]
         end
       end
@@ -5155,7 +5190,8 @@ Follows is a source code listing for all files that have been open sourced. This
         @scrubbed_ivars = nil
   
         collection.each do |m|
-          m_to_s = m.to_s
+          resolved_m = KeyboardKeys.aliases[m] || m
+          m_to_s = resolved_m.to_s
           self.instance_variable_set("@#{m_to_s}".to_sym, value) if m_to_s.strip.length > 0
         rescue Exception => e
           raise e, <<-S
@@ -5245,7 +5281,7 @@ Follows is a source code listing for all files that have been open sourced. This
       #
       # @return [Boolean]
       def left
-        @key_up.left || @key_held.left || a || false
+        @key_up.left || @key_held.left || a_scancode || false
       end
   
       def left_arrow
@@ -5256,7 +5292,7 @@ Follows is a source code listing for all files that have been open sourced. This
       #
       # @return [Boolean]
       def right
-        @key_up.right || @key_held.right || d || false
+        @key_up.right || @key_held.right || d_scancode || false
       end
   
       def right_arrow
@@ -5267,7 +5303,7 @@ Follows is a source code listing for all files that have been open sourced. This
       #
       # @return [Boolean]
       def up
-        @key_up.up || @key_held.up || w || false
+        @key_up.up || @key_held.up || w_scancode || false
       end
   
       def up_arrow
@@ -5278,7 +5314,7 @@ Follows is a source code listing for all files that have been open sourced. This
       #
       # @return [Boolean]
       def down
-        @key_up.down || @key_held.down || s || false
+        @key_up.down || @key_held.down || s_scancode || false
       end
   
       def down_arrow
@@ -5639,17 +5675,25 @@ Follows is a source code listing for all files that have been open sourced. This
         keyboard.up || (controller_one && controller_one.up)
       end
   
+      alias_method :up_with_wasd, :up
+  
       def down
         keyboard.down || (controller_one && controller_one.down)
       end
+  
+      alias_method :down_with_wasd, :down
   
       def left
         keyboard.left || (controller_one && controller_one.left)
       end
   
+      alias_method :left_with_wasd, :left
+  
       def right
         keyboard.right || (controller_one && controller_one.right)
       end
+  
+      alias_method :right_with_wasd, :right
   
       def directional_vector
         keyboard.directional_vector ||
@@ -5666,6 +5710,8 @@ Follows is a source code listing for all files that have been open sourced. This
         return  0
       end
   
+      alias_method :left_right_with_wasd, :left_right
+  
       def left_right_arrow
         return -1 if keyboard.left_arrow || (controller_one && controller_one.directional_left)
         return  1 if keyboard.right_arrow || (controller_one && controller_one.directional_right)
@@ -5674,11 +5720,31 @@ Follows is a source code listing for all files that have been open sourced. This
   
       alias_method :left_right_directional, :left_right_arrow
   
+      def left_right_perc
+        if controller_one && controller_one.left_analog_x_perc != 0
+          controller_one.left_analog_x_perc
+        else
+          left_right
+        end
+      end
+  
+      alias_method :left_right_perc_with_wasd, :left_right_perc
+  
+      def left_right_directional_perc
+        if controller_one && controller_one.left_analog_x_perc != 0
+          controller_one.left_analog_x_perc
+        else
+          left_right_directional
+        end
+      end
+  
       def up_down
         return  1 if self.up
         return -1 if self.down
         return  0
       end
+  
+      alias_method :up_down_with_wasd, :up_down
   
       def up_down_arrow
         return  1 if keyboard.up_arrow || (controller_one && controller_one.directional_up)
@@ -5687,6 +5753,14 @@ Follows is a source code listing for all files that have been open sourced. This
       end
   
       alias_method :up_down_directional, :up_down_arrow
+  
+      def up_down_perc
+        if controller_one && controller_one.left_analog_y_perc != 0
+          controller_one.left_analog_y_perc
+        else
+          up_down_directional
+        end
+      end
   
       def click
         return nil unless @mouse.click
@@ -8907,7 +8981,7 @@ Follows is a source code listing for all files that have been open sourced. This
           if @last_recorded_input_was_ignored
             stopped_at -= stopped_at - @last_recorded_input_was_ignored_at
           end
-          text = "replay_version 2.0\n"
+          text = "replay_version 2.1\n"
           text << "stopped_at #{stopped_at}\n"
           text << "seed #{@seed_number}\n"
           text << "recorded_at #{Time.now.to_s}\n"
@@ -8969,7 +9043,9 @@ Follows is a source code listing for all files that have been open sourced. This
         text = @runtime.read_file file_name
         return false unless text
   
-        if text.each_line.first.strip != "replay_version 2.0"
+        replay_version = text.each_line.first.strip.gsub("replay_version ", "")
+  
+        if replay_version != "2.0" && replay_version != "2.1"
           raise "The replay file #{file_name} is not compatible with this version of DragonRuby Game Toolkit. Please recreate the replay (sorry)."
         end
   
@@ -9052,6 +9128,7 @@ Follows is a source code listing for all files that have been open sourced. This
             value_2 = __parse_replay_value__ value_2
             value_3 = __parse_replay_value__ value_3
   
+  
             # create a dictionary entry for the input
             $replay_data[:input_history][tick_count.to_i] ||= []
             $replay_data[:input_history][tick_count.to_i] << {
@@ -9062,6 +9139,42 @@ Follows is a source code listing for all files that have been open sourced. This
               value_3: value_3,
               value_count: value_count.to_i
             }
+  
+            # added scancodes and changed args.inputs.left_right's implementation to look for
+            # (w|a|s|d)_scancode instead of (w|a|s|d). because of this replay versions 2.0 need to insert
+            # a scancode entry for key_(down|up)_raw wasd
+            if replay_version == "2.0"
+              if name == :key_down_raw || name == :key_up_raw
+                scancode_name = if name == :key_down_raw
+                                  :scancode_down_raw
+                                else
+                                  :scancode_up_raw
+                                end
+  
+                scancode_value_1 = if value_1 == 119 # ascii w
+                                     26
+                                   elsif value_1 == 97 # ascii a
+                                     4
+                                   elsif value_1 == 115 # ascii s
+                                     22
+                                   elsif value_1 == 100 # ascii d
+                                     7
+                                   else
+                                     nil
+                                   end
+  
+                if scancode_value_1
+                  $replay_data[:input_history][tick_count.to_i] << {
+                    id: id.to_i,
+                    name: scancode_name,
+                    value_1: scancode_value_1,
+                    value_2: value_2,
+                    value_3: value_3,
+                    value_count: value_count.to_i
+                  }
+                end
+              end
+            end
           else
             raise "Replay data seems corrupt. I don't know how to parse #{l}."
           end
@@ -10760,6 +10873,7 @@ Follows is a source code listing for all files that have been open sourced. This
             core_files_to_reload + @required_files
           else
             [
+              'dragon/cvar.rb',
               'dragon/docs.rb',
               'dragon/help.rb',
               'dragon/kernel_docs.rb',
@@ -11108,6 +11222,10 @@ Follows is a source code listing for all files that have been open sourced. This
           @simulation_speed = (cli_arguments[:speed] || "1").to_i
           @simulation_speed = @simulation_speed.abs
           @simulation_speed = 1 if @simulation_speed == 0
+  
+          if cli_arguments.keys.include? :scale
+            set_window_scale cli_arguments[:scale].to_f
+          end
   
           if cli_arguments.keys.include? :record
             @argsv_processed = true

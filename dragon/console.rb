@@ -425,7 +425,7 @@ S
 
     def inputs_scroll_up_half? args
       return false if @disabled
-      args.inputs.keyboard.ctrl_u
+      args.inputs.keyboard.ctrl_u || args.inputs.keyboard.ctrl_b
     end
 
     def scroll_up_half
@@ -446,7 +446,7 @@ S
 
     def inputs_scroll_down_half? args
       return false if @disabled
-      args.inputs.keyboard.ctrl_d
+      args.inputs.keyboard.ctrl_d || args.inputs.keyboard.ctrl_f
     end
 
     def inputs_clear_command? args

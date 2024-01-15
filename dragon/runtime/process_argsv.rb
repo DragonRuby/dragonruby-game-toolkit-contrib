@@ -13,6 +13,10 @@ module GTK
         @simulation_speed = @simulation_speed.abs
         @simulation_speed = 1 if @simulation_speed == 0
 
+        if cli_arguments.keys.include? :scale
+          set_window_scale cli_arguments[:scale].to_f
+        end
+
         if cli_arguments.keys.include? :record
           @argsv_processed = true
           seed = cli_arguments[:seed] || 100

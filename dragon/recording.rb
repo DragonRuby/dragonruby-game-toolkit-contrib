@@ -141,7 +141,7 @@ S
         if @last_recorded_input_was_ignored
           stopped_at -= stopped_at - @last_recorded_input_was_ignored_at
         end
-        text = "replay_version 2.0\n"
+        text = "replay_version 2.1\n"
         text << "stopped_at #{stopped_at}\n"
         text << "seed #{@seed_number}\n"
         text << "recorded_at #{Time.now.to_s}\n"
@@ -203,7 +203,9 @@ S
       text = @runtime.read_file file_name
       return false unless text
 
-      if text.each_line.first.strip != "replay_version 2.0"
+      replay_version = text.each_line.first.strip.gsub("replay_version ", "")
+
+      if replay_version != "2.0" && replay_version != "2.1"
         raise "The replay file #{file_name} is not compatible with this version of DragonRuby Game Toolkit. Please recreate the replay (sorry)."
       end
 
@@ -286,6 +288,7 @@ S
           value_2 = __parse_replay_value__ value_2
           value_3 = __parse_replay_value__ value_3
 
+
           # create a dictionary entry for the input
           $replay_data[:input_history][tick_count.to_i] ||= []
           $replay_data[:input_history][tick_count.to_i] << {
@@ -296,6 +299,42 @@ S
             value_3: value_3,
             value_count: value_count.to_i
           }
+
+          # added scancodes and changed args.inputs.left_right's implementation to look for
+          # (w|a|s|d)_scancode instead of (w|a|s|d). because of this replay versions 2.0 need to insert
+          # a scancode entry for key_(down|up)_raw wasd
+          if replay_version == "2.0"
+            if name == :key_down_raw || name == :key_up_raw
+              scancode_name = if name == :key_down_raw
+                                :scancode_down_raw
+                              else
+                                :scancode_up_raw
+                              end
+
+              scancode_value_1 = if value_1 == 119 # ascii w
+                                   26
+                                 elsif value_1 == 97 # ascii a
+                                   4
+                                 elsif value_1 == 115 # ascii s
+                                   22
+                                 elsif value_1 == 100 # ascii d
+                                   7
+                                 else
+                                   nil
+                                 end
+
+              if scancode_value_1
+                $replay_data[:input_history][tick_count.to_i] << {
+                  id: id.to_i,
+                  name: scancode_name,
+                  value_1: scancode_value_1,
+                  value_2: value_2,
+                  value_3: value_3,
+                  value_count: value_count.to_i
+                }
+              end
+            end
+          end
         else
           raise "Replay data seems corrupt. I don't know how to parse #{l}."
         end
