@@ -22,7 +22,7 @@ module GTK
                   :font_style, :menu,
                   :background_color, :spam_color, :text_color, :warn_color,
                   :error_color, :header_color, :code_color, :comment_color,
-                  :debug_color, :unfiltered_color
+                  :debug_color, :unfiltered_color, :toggled_at
 
     def initialize
       @font_style = FontStyle.new(font: 'font.ttf', size_enum: -2, line_height: 1.1)

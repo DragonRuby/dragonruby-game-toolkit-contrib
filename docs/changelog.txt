@@ -1,108 +1,3 @@
-* 5.16
-** [Support] Increased precision of the percentage and raw values returned by controller left/right analog sticks.
-** [Support] ~args.inputs.left_right~ consults WASD scancodes as opposed to keycodes.
-   More scancode values will be supported in the future. Docs have been updated to enumerate new scancode properties
-   and behavior.
-** [Support] Web builds will automatically mute if the game doesn't have focus.
-** [Samples] Added sample app that shows how to create a repeating texture.
-   Sample app location: =samples/07_advanced_rendering/02_render_targets_repeating_texture=
-** [Samples] Sample apps will include preview videos over time to mirror https://samples.dragonruby.org (be sure to check out the website).
-   The preview videos are fairly small (trying to keep them to less than 500KB each).
-** [Bugfix] Fixed the letter "S" glyph in lowrez.ttf.
-** [Bugfix] Added polyfill for renamed/normalized keyboard properties for backwards compatability with keyboard libraries.
-** [Bugfix] ~$gtk.set_window_scale~ invalidates font textures so they can be redrawn at the new window size.
-* 5.15
-** [Pro] [iOS] [Bugfix] Fixed issue where game would crash after tomb-stoned for an extended period of time.
-** [Pro] [iOS] [Bugfix] Fixed remote hotloading to device when app is signed with developer provisioning profile.
-** [Bugfix] Keyboard input changes are reported correctly when modifier keys are exclusively pressed, held, or released.
-* 5.14
-** [Pro] [iOS] Warnings added if thermal state of the device increases above "fair".
-   This will be expanded to support more platforms.
-** [Bugfix] DR starts up correctly even if =app/main.rb= contains syntax errors.
-   Syntax errors will be shown in the console on startup.
-** [Bugfix] Fixed placement of summary information for ~args.layout.debug_primitives~.
-** [Samples] Dueling Starships sample app cleaned up.
-   Sample app location: =./samples/99_genre_arcade/dueling_starships=
-** [Support] Warning of file names containing capital letter/spaces will not show up in production.
-** [Support] Adding warnings related to Array based primitives containing nested arrays/hashes.
-   While DR allows for this (is helpful for quick debugging), it's expensive to flatten
-   these jagged data structures.
-
-   NOTE: To audit your codebase of array based primitives usage, add ~$gtk.warn_array_primitives!~
-   to the bottom of =app/main.rb= (outside of your ~tick~ method).
-* 5.13
-** [Pro] [iOS] [Bugfix] iOS remote hotload continues to query for new code updates regardless of current exceptions.
-** [Pro] [Android] minSDKVersion has been dropped to API 26 with targetSDKVersion set to 31.
-   This change is in compliance with Google and expands the devices that can run DR games.
-** [Bugfix] dragonruby-publish updated to write marker files that aren't screaming caps.
-** [Bugfix] Removed unnecessary parameter from ~Geometry::line_angle~.
-** [Bugfix] Intermittent re-rendering of an already rendered frame no longer occurs.
-   You should see a reduction of checker box render_targets (that have been defined)
-   and a reduction in "studders" on high refresh rate monitors.
-** [Bugfix] Hash methods that have been deprecated now get reported in logs.
-   This also fixes an issue with using these deprecated methods with compile_ruby=true.
-** [Bugfix] ~$gtk.reset_and_replay~ starts replay on the correct frame.
-   Replays invoked via this fucntion are no longer shifted by one frame.
-** [Bugfix] Mouse grab configuration is reinitialized if a game enters or leaves fullscreen mode.
-   Setting mouse grab and then entering/leving fullscreen mode no longer restricts mouse
-   movement to the previous window size.
-* 5.12
-** [Pro] [Android] minSdk for Android APK exports lowered to API 30.
-   Lowering the minSdk for APK export ensures compatibility with
-   Retroid Pocket (which is a great test device).
-
-   NOTE: The Google Play export remains unchanged (minSDK 31) to ensure
-   compliance with game submission requirements.
-** [Pro] [Bugfix] ~args.grid.offset_(x|y)~ reports correct values when your game metadata has ~hd_letterbox~ set to ~false~.
-** [Samples] Bouncing ball sample app reworked/simplified.
-   Sample app location: =samples/04_physics_and_collisions/11_bouncing_ball_with_gravity=
-** [Support] New geometry functions + docs added (extracted from bouncing ball sample app).
-   - Geometry::line_angle
-   - Geometry::vec2_dot_product
-   - Geometry::vec2_normalize
-   - Geometry::line_vec2
-   - Geometry::vec2_magnitude
-   - Geometry::distance_squared
-   - Geometry::vec2_normal
-   - Geometry::circle_intersect_line?
-   - Geometry::line_normal
-   - Geometry::point_on_line?
-** [Support] args.audio.volume added.
-   All sounds for your game can be globally controlled via the ~args.outputs.volume~
-   property (float value between 0.0 and 1.0).
-** [Support] CTRL+R resets game.
-   Pressing CTRL+R will invoke ~$gtk.reset_next_tick~ and is now baked-in (so you don't
-   have to code this functionality in every game).
-** [Support] "Quick Watch" via ~args.outputs.debug~.
-   ~args.outputs.debug~ allows you to pass in a ~String~ as a primitive. This is helpful for quickly showing the
-   value of a variable on the screen. A label with black text and a white background will be created
-   for each ~String~ sent in. The labels will be automatically stacked vertically for you.
-
-   Example:
-
-   #+begin_src
-     def tick args
-       args.state.player ||= { x: 100, y: 100 }
-       args.state.player.x += 1
-       args.state.player.x = 0 if args.state.player.x > 1280
-
-       # the following string values will generate labels with backgrounds
-       # and will auto stack vertically
-       args.outputs.debug << "current tick: \#{args.state.tick_count}"
-       args.outputs.debug << "player x: \#{args.state.player.x}"
-     end
-   #+end_src
-
-   If you want something more fully-featured, check out Palantir: https://kfischer-okarin.itch.io/palantir
-** [Support] T-Pose placeholders sprites added to zip.
-** [Support] Warnings added if file paths contain spaces or capital letters (xplat compatibility guarantees).
-** [Support] Nintendo Switch Pro Controller mappings added/are now built-in.
-** [Docs] Syntax highlighting added to code examples.
-** [Bugfix] Setting your sprite path to ~:solid~ (an alias for ~:pixel~) no longer warns that it must be marked as ~transient!~.
-** [Bugfix] Web builds automatically mark all render targets as ~transient!~.
-   Non-transient render targets causes durable caching of the texture and is needed if the
-   game is resized while running under DirectX. This is not needed for web builds (and may not be
-   needed for Mac/Linux builds, but further testing needs to be done).
 * 5.11
 ** [Samples] Added sample app that shows how to implement a clipping of a sprite.
    Sample app location: =samples/07_advanced_rendering/01_render_targets_clip_area=
@@ -130,27 +25,27 @@
 
         args.outputs.labels << { x: 30,
                                  y: 720 - 30,
-                                 text: "key_down.char: #{keyboard.key_down.char.inspect}" }
+                                 text: "key_down.char: \#{keyboard.key_down.char.inspect}" }
 
         args.outputs.labels << { x: 30,
                                  y: 720 - 60,
-                                 text: "key_down.j:    #{keyboard.key_down.j}" }
+                                 text: "key_down.j:    \#{keyboard.key_down.j}" }
 
         args.outputs.labels << { x: 30,
                                  y: 720 - 30,
-                                 text: "key_held.char: #{keyboard.key_held.char.inspect}" }
+                                 text: "key_held.char: \#{keyboard.key_held.char.inspect}" }
 
         args.outputs.labels << { x: 30,
                                  y: 720 - 60,
-                                 text: "key_held.j:    #{keyboard.key_held.j}" }
+                                 text: "key_held.j:    \#{keyboard.key_held.j}" }
 
         args.outputs.labels << { x: 30,
                                  y: 720 - 30,
-                                 text: "key_up.char:   #{keyboard.key_up.char.inspect}" }
+                                 text: "key_up.char:   \#{keyboard.key_up.char.inspect}" }
 
         args.outputs.labels << { x: 30,
                                  y: 720 - 60,
-                                 text: "key_up.j:      #{keyboard.key_up.j}" }
+                                 text: "key_up.j:      \#{keyboard.key_up.j}" }
       end
     #+end_src
 * 5.10

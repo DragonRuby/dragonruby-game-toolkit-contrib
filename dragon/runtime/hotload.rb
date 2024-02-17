@@ -8,7 +8,7 @@ module GTK
     # @visibility private
     module Hotload
       def hotload_init
-        @hotload_if_needed = 0
+        @hotload_debounce = 0
 
         # schema for file_mtimes
         # { FILE_PATH: { current: (Time as Fixnum),
@@ -117,9 +117,17 @@ module GTK
       end
 
       def hotload_source_files
-        @hotload_if_needed += 1
-        return unless @hotload_if_needed == 60
-        @hotload_if_needed = 0
+        fps_diff = if current_framerate != 0
+                     60.idiv(current_framerate)
+                   else
+                     1
+                   end
+
+        fps_diff = 1 if fps_diff < 1
+
+        @hotload_debounce += fps_diff
+        return unless @hotload_debounce >= 60
+        @hotload_debounce = 0
         files_to_reload.each { |f| reload_if_needed f }
       end
 

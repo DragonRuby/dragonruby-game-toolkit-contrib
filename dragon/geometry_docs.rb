@@ -12,8 +12,10 @@ module GeometryDocs
       :docs_scale_rect,
       :docs_scale_rect_extended,
       :docs_anchor_rect,
+      :docs_angle,
       :docs_angle_from,
       :docs_angle_to,
+      :docs_angle_turn_direction,
       :docs_distance,
       :docs_point_inside_circle?,
       :docs_center_inside_rect,
@@ -287,6 +289,19 @@ determining the anchor position:
 S
   end
 
+  def docs_angle
+    <<-S
+** ~angle_from~
+
+Invocation variants:
+- ~args.geometry.angle start_point, end_point~
+
+Returns an angle in degrees from the ~start_point~ to the ~end_point~ (if you
+want the value in radians call ~.to_radians~ on the value returned).
+S
+
+  end
+
   def docs_angle_from
     <<-S
 ** ~angle_from~
@@ -324,13 +339,29 @@ call ~.to_radians~ on the value returned):
 S
   end
 
+  def docs_angle_turn_direction
+    <<-S
+** ~angle_turn_direction~
+
+Invocation variants:
+
+- ~args.geometry.angle_turn_direction angle, target_angle~
+
+Returns ~1~ or -1 depending on which direction the ~angle~ needs to
+turn to reach the ~target_angle~ most efficiently. The angles are
+assumed to be in degrees. ~1~ means turn clockwise, and ~-1~ means
+turn counter-clockwise.
+S
+  end
+
   def docs_angle_to
     <<-S
-** ~angle_to~
+** ~angle_to~, ~angle~
 
 Invocation variants:
 
 - ~args.geometry.angle_to start_point, end_point~
+- ~args.geometry.angle start_point, end_point~ (alias)
 - ~start_point.angle_to end_point~
 
 Returns an angle in degrees to the ~end_point~ from the
@@ -953,7 +984,7 @@ S
 ** ~circle_intersect_line?~
 The first parameters is a ~Hash~ with ~x~, ~y~, and ~radius~ keys (or an ~Object~ that responds to ~x~, ~y~, and ~radius~).
 
-The second parameter is a ~Hash~ with ~x1~, ~y1~, ~x2~, and ~y2~ keys (or an ~Object~ that responds to ~x1~, ~y1~, ~x2~, and ~y2~).
+The second parameter is a ~Hash~ with ~x~, ~y~, ~x2~, and ~y2~ keys (or an ~Object~ that responds to ~x~, ~y~, ~x2~, and ~y2~).
 
 This function will return ~true~ if the circle intersects the line, and ~false~ if it does not.
 
@@ -965,7 +996,7 @@ S
   def docs_line_normal
     <<-S
 ** ~line_normal~
-The first parameter is a line (a ~Hash~ with ~x1~, ~y1~, ~x2~, and ~y2~ keys, or an ~Object~ that responds to ~x1~, ~y1~, ~x2~, and ~y2~).
+The first parameter is a line (a ~Hash~ with ~x~, ~y~, ~x2~, and ~y2~ keys, or an ~Object~ that responds to ~x~, ~y~, ~x2~, and ~y2~).
 
 The second parameter is a ~Hash~ with ~x~ and ~y~ keys (or an ~Object~ that responds to ~x~ and ~y~).
 
@@ -981,7 +1012,7 @@ S
 ** ~point_on_line?~
 The first parameter is a point (a ~Hash~ with ~x~ and ~y~ keys, or an ~Object~ that responds to ~x~ and ~y~).
 
-The second parameter is a line (a ~Hash~ with ~x1~, ~y1~, ~x2~, and ~y2~ keys, or an ~Object~ that responds to ~x1~, ~y1~, ~x2~, and ~y2~).
+The second parameter is a line (a ~Hash~ with ~x~, ~y~, ~x2~, and ~y2~ keys, or an ~Object~ that responds to ~x~, ~y~, ~x2~, and ~y2~).
 
 This function will return ~true~ if the point is on the line, and ~false~ if it is not.
 

@@ -100,7 +100,7 @@ The named parameter variant of ~frame_index~ is also available on ~Numeric~:
   def tick args
     sprite_index =
       Numeric.frame_index start_at: 0,
-                          count: 6,
+                          count: 6, # or frame_count: 6 (if both are provided frame_count will be used)
                           hold_for: 4,
                           repeat: true,
                           repeat_index: 0,
@@ -115,6 +115,27 @@ The named parameter variant of ~frame_index~ is also available on ~Numeric~:
       100,
       "sprites/dragon-\#{sprite_index}.png"
     ]
+  end
+#+end_src
+
+Another example where ~frame_index~ is applied to a sprite sheet.
+
+#+begin_src ruby
+  def tick args
+    index = Numeric.frame_index start_at: 0,
+                                frame_count: 7,
+                                repeat: true
+    args.outputs.sprites << {
+      x: 0,
+      y: 0,
+      w: 32,
+      h: 32,
+      source_x: 32 * index,
+      source_y: 0,
+      source_w: 32,
+      source_h: 32,
+      path: "sprites/misc/explosion-sheet.png"
+    }
   end
 #+end_src
 

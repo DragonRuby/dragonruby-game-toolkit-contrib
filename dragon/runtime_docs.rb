@@ -255,12 +255,56 @@ S
   def docs_get_pixels
     <<-S
 *** ~get_pixels~
-Given a ~file_path~ to a sprite, this function returns a one dimensional
-array of hexadecimal values representing the ARGB of each pixel in
-a sprite.
+Given a ~file_path~ to a sprite, this function returns a ~Hash~ with ~w~, ~h~, and
+~pixels~. The ~pixels~ key contains an array of hexadecimal values representing the
+ABGR of each pixel in a sprite with item ~0~ representing the top left corner of the
+~png~.
 
-See the following sample app for a full demonstration of how to use
-this function: ~./samples/07_advanced_rendering/06_pixel_arrays_from_file~
+Here's an example of how to get the color data for a pixel:
+
+#+begin_src
+  def tick args
+    # load the pixels from the image
+    args.state.image ||= args.gtk.get_pixels "sprites/square/blue.png"
+
+    # initialize state variables for the pixel coordinates
+    args.state.x_px ||= 0
+    args.state.y_px ||= 0
+
+    sprite_pixels = args.state.image.pixels
+    sprite_h = args.state.image.h
+    sprite_w = args.state.image.w
+
+    # move the pixel coordinates using keyboard
+    args.state.x_px += args.inputs.left_right
+    args.state.y_px += args.inputs.up_down
+
+    # get pixel at the current coordinates
+    args.state.x_px = args.state.x_px.clamp(0, sprite_w - 1)
+    args.state.y_px = args.state.y_px.clamp(0, sprite_h - 1)
+    row = sprite_h - args.state.y_px - 1
+    col = args.state.x_px
+    abgr = sprite_pixels[sprite_h * row + col]
+    a = (abgr >> 24) & 0xff
+    b = (abgr >> 16) & 0xff
+    g = (abgr >> 8) & 0xff
+    r = (abgr >> 0) & 0xff
+
+    # render debug information
+    args.outputs.debug << "row: \#{row} col: \#{col}"
+    args.outputs.debug << "pixel entry 0: rgba \#{r} \#{g} \#{b} \#{a}"
+
+    # render the sprite plus crosshairs
+    args.outputs.sprites << { x: 0, y: 0, w: 80, h: 80, path: "sprites/square/blue.png" }
+    args.outputs.lines << { x: args.state.x_px, y: 0, h: 720 }
+    args.outputs.lines << { x: 0, y: args.state.y_px, w: 1280 }
+  end
+#+end_src
+
+See the following sample apps for how to use pixel arrays:
+
+- ~./samples/07_advanced_rendering/06_pixel_arrays~
+- ~./samples/07_advanced_rendering/06_pixel_arrays_from_file~
 S
   end
 

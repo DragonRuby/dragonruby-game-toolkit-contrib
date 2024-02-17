@@ -1315,6 +1315,7 @@ S
 <<-S
 ** Troubleshoot Performance
 
+- Avoid deep recursive calls.
 - If you're using ~Array~s for your primitives (~args.outputs.sprites << []~), use ~Hash~ instead (~args.outputs.sprites << { x: ... }~).
 - If you're using ~Entity~ for your primitives (~args.outputs.sprites << args.state.new_entity~), use ~StrictEntity~ instead (~args.outputs.sprites << args.state.new_entity_strict~).
 - Use ~.each~ instead of ~.map~ if you don't care about the return value.

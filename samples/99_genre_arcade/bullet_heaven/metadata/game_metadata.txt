@@ -1,0 +1,9 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=sample-app
+gametitle=Games - Bullet Heaven
+version=1.0
+icon=metadata/icon.png
+# HD and High DPI available via the Pro License
+hd=true
+highdpi=true

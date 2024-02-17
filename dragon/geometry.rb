@@ -407,22 +407,30 @@ S
         raise e, ":distance failed for point_one: #{point_one} point_two #{point_two}.\n#{e}"
       end
 
+      def angle_turn_direction angle, target_angle
+        turn_direction = (target_angle % 360) - (angle % 360)
+        if turn_direction.abs > 180
+          turn_direction = turn_direction - 360
+        end
+        turn_direction.sign
+      end
+
       def angle start_point, end_point
-        d_y = end_point.y - start_point.y
-        d_x = end_point.x - start_point.x
+        d_y = start_point.y - end_point.y
+        d_x = start_point.x - end_point.x
         Math::PI.+(Math.atan2(d_y, d_x)).to_degrees % 360
       rescue Exception => e
         raise e, ":angle failed for start_point: #{start_point} end_point: #{end_point}.\n#{e}"
       end
 
       def angle_from start_point, end_point
-        angle start_point, end_point
+        angle end_point, start_point
       rescue Exception => e
         raise e, ":angle_from failed for start_point: #{start_point} end_point: #{end_point}.\n#{e}"
       end
 
       def angle_to start_point, end_point
-        angle end_point, start_point
+        angle start_point, end_point
       rescue Exception => e
         raise e, ":angle_to failed for start_point: #{start_point} end_point: #{end_point}.\n#{e}"
       end

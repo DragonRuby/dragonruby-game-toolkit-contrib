@@ -91,31 +91,92 @@ class Numeric
     (self + offset) < tick_count_override
   end
 
-  def Numeric.frame_index start_at: 0, count:, hold_for:, repeat: false,  repeat_index: 0, tick_count_override: Kernel.tick_count
+  def Numeric.frame_index_no_repeat start_at: 0, count: nil, frame_count: nil, hold_for: 1, tick_count_override: Kernel.tick_count, **ignored
+    hold_for ||= 1
+    frame_count ||= count
+
+    if !frame_count
+      raise <<-S
+* ERROR:
+Numeric::frame_index_no_repeat must be given either ~count~ or ~frame_count~.
+
+Example:
+#+begin_src
+  Numeric.frame_index_no_repeat start_at: 0, count: 5, hold_for: 5
+  # OR
+  Numeric.frame_index_no_repeat start_at: 0, frame_count: 5, hold_for: 5
+#+end_src
+S
+    end
+
     return nil if tick_count_override < start_at
-    animation_length = hold_for * count
+    animation_length = hold_for * frame_count
+    current_elapsed_time = start_at.elapsed_time tick_count_override
+
+    if (start_at + animation_length) <= (tick_count_override)
+      return nil
+    end
+
+    current_elapsed_time.idiv(hold_for) % frame_count
+  end
+
+  def Numeric.frame_index start_at: 0, count: nil, frame_count: nil, hold_for: 1, repeat: false,  repeat_index: 0, tick_count_override: Kernel.tick_count, **ignored
+    hold_for ||= 1
+    frame_count ||= count
+    if !frame_count
+      raise <<-S
+* ERROR:
+Numeric::frame_index must be given either ~count~ or ~frame_count~.
+
+Example:
+#+begin_src
+  Numeric.frame_index start_at: 0, count: 5, hold_for: 5
+  # OR
+  Numeric.frame_index start_at: 0, frame_count: 5, hold_for: 5
+#+end_src
+S
+    end
+
+    return nil if tick_count_override < start_at
+    frame_count ||= count
+
+    animation_length = hold_for * frame_count
 
     if !repeat && (start_at + animation_length) <= (tick_count_override)
-      return nil
+      return frame_index_no_repeat start_at: start_at,
+                                   frame_count: frame_count,
+                                   hold_for: hold_for,
+                                   tick_count_override: tick_count_override
     else
-      et = start_at.elapsed_time tick_count_override
-      afc = count
+      current_elapsed_time = start_at.elapsed_time tick_count_override
+      first_run = current_elapsed_time < animation_length
 
-      if et >= animation_length
-        afc = count - repeat_index
-        et += repeat_index * hold_for
-        i = et.idiv(hold_for) % afc
-        return i + repeat_index
+      if first_run
+        return frame_index_no_repeat start_at: start_at,
+                                     frame_count: frame_count,
+                                     hold_for: hold_for,
+                                     tick_count_override: tick_count_override
+      else
+        repeat_elapsed_time = current_elapsed_time - animation_length
+        repeat_frame_count = frame_count - repeat_index
+        repeat_animation_length = hold_for * repeat_frame_count
+
+        repeat_iteration = repeat_elapsed_time.idiv repeat_animation_length
+        repeat_start_at = repeat_iteration * repeat_animation_length
+
+        repeat_frame_index = frame_index_no_repeat start_at: repeat_start_at,
+                                                   frame_count: repeat_frame_count,
+                                                   hold_for: hold_for,
+                                                   tick_count_override: repeat_elapsed_time
+        repeat_frame_index + repeat_index
       end
-
-      return et.idiv(hold_for) % afc
     end
   end
 
   def frame_index *opts
     frame_count_or_hash, hold_for, repeat, tick_count_override = opts
     if frame_count_or_hash.is_a? Hash
-      frame_count         = frame_count_or_hash[:count]
+      frame_count         = frame_count_or_hash[:frame_count] || frame_count_or_hash[:count]
       hold_for            = frame_count_or_hash[:hold_for]
       repeat              = frame_count_or_hash[:repeat]
       tick_count_override = frame_count_or_hash[:tick_count_override]
@@ -128,7 +189,7 @@ class Numeric
     tick_count_override ||= Kernel.tick_count
 
     Numeric.frame_index start_at: self,
-                        count: frame_count,
+                        frame_count: frame_count,
                         hold_for: hold_for,
                         repeat: repeat,
                         tick_count_override: tick_count_override,

@@ -106,7 +106,7 @@ module GTK
         @new_methods ||= important_instance_methods
         new_methods = important_instance_methods - @new_methods
 
-        if new_methods.length > 0
+        if new_methods.length > 0 && Kernel.global_tick_count > 60
           log <<-S
 * INFO: New methods discovered.
 #{new_methods.map { |m| "** #{m.inspect}" }.join("\n")}
@@ -182,6 +182,7 @@ S
         if okay
           mark_ruby_file_for_reload file
           log_debug "Reloaded #{file}. (#{Kernel.global_tick_count})", subsystem="Engine"
+          $gtk.reset_framerate_calculation
           notify_subdued!
           return true
         else

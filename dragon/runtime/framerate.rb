@@ -26,7 +26,7 @@ module GTK
 
       def reset_framerate_calculation
         @tick_speed_sum = 0
-        @tick_speed_count = 0
+        @tick_speed_count = 10
         @framerate_warning_message_shown_at = -1
       end
 
