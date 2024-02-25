@@ -3,6 +3,9 @@
 # MIT License
 # inputs.rb has been released under MIT (*only this file*).
 
+# Contributors outside of DragonRuby who also hold Copyright:
+# RicardoTrindade: https://github.com/RicardoTrindade
+
 module GTK
   class KeyboardKeys
     include Serialize
@@ -478,9 +481,9 @@ module GTK
 
     def all
       @scrubbed_ivars ||= self.instance_variables
-                              .reject { |i| i == :@all || i == :@scrubbed_ivars }
-                              .map { |i| i.to_s.gsub("@", "") }
-
+                              .filter_map do |i|
+                                i.to_s.gsub("@", "") unless i == :@all || i == :@scrubbed_ivars
+                              end
       get(@scrubbed_ivars).map { |k, _| k }
     end
 
