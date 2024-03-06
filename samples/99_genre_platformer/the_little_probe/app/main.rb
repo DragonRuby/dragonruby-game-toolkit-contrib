@@ -24,7 +24,7 @@ class FallingCircle
 
   def defaults
     if state.tick_count == 0
-      outputs.sounds << "sounds/bg.ogg"
+      args.audio[:bg] = { input: "sounds/bg.ogg", looping: true }
     end
 
     state.storyline ||= [
@@ -454,19 +454,19 @@ class FallingCircle
     results[:rect] = { x: x - radius, y: y - radius, w: radius * 2, h: radius * 2 }
     results[:trajectory] = trajectory(results)
     results[:impacts] = terrain.find_all { |t| t && (line_near_rect? results[:rect], t) }.map do |t|
-      intersection = geometry.line_intersect(results[:trajectory], t)
+      intersection = geometry.ray_intersect(results[:trajectory], t)
       {
         terrain: t,
-        point: geometry.line_intersect(results[:trajectory], t),
+        point: geometry.ray_intersect(results[:trajectory], t),
         type: :terrain
       }
     end
 
     results[:impacts] += lava.find_all { |t| line_near_rect? results[:rect], t }.map do |t|
-      intersection = geometry.line_intersect(results[:trajectory], t)
+      intersection = geometry.ray_intersect(results[:trajectory], t)
       {
         terrain: t,
-        point: geometry.line_intersect(results[:trajectory], t),
+        point: geometry.ray_intersect(results[:trajectory], t),
         type: :lava
       }
     end

@@ -28,7 +28,7 @@ module GTK
 
     def initialize runtime, recording
       @inputs = Inputs.new
-      @outputs = Outputs.new args: self
+      @outputs = TopLevelOutputs.new args: self
       @cvars = {}
       @audio = AudioHash.new
       @passes = []
@@ -51,11 +51,12 @@ module GTK
         ratio_w = 9
         ratio_h = 16
       end
-      @layout = GTK::Layout.new @grid.w, @grid.h, ratio_w, ratio_h, runtime.orientation
+      @layout = GTK::LayoutDefinition.new @grid.w, @grid.h, ratio_w, ratio_h, runtime.orientation
       @easing = GTK::Easing
       @string = String
       @events = {
-        resize_occurred: false
+        resize_occurred: false,
+        raw: []
       }
     end
 
@@ -117,8 +118,7 @@ module GTK
     def render_target name
       name = name.to_s
       if !@render_targets[name]
-        @render_targets[name] = Outputs.new(args: self, target: name, background_color_override: [255, 255, 255, 0])
-        @render_targets[name].transient! if @runtime.platform? :web
+        @render_targets[name] = RenderTargetOutputs.new(args: self, target: name, background_color_override: [255, 255, 255, 0])
         @passes << @render_targets[name]
       end
       @render_targets[name]
@@ -216,10 +216,50 @@ module GTK
       [:inputs, :outputs, :gtk, :state, :geometry, :audio, :grid, :layout, :fn]
     end
 
+    def tick_before
+      @current_audio_object_ids = @audio.values.map { |v| v.object_id }
+    end
+
+    def tick_after
+      @inputs.touch.each { |k, v| v.first_tick_down = false }
+      @temp_state.clear!
+      @events[:resize_occurred] = false
+      @events[:raw].clear
+
+      new_audio_data = {}
+
+      new_audio_object_ids = @audio.find_all do |k, v|
+        !@current_audio_object_ids.include?(v.object_id)
+      end.map { |k, v| v.object_id }
+
+      new_audio_object_ids.each do |id|
+        _, audio_v = @audio.find { |k, v| v.object_id == id }
+        new_audio_data[id] = {
+          gain: audio_v[:gain] || 1.0,
+          playtime: audio_v[:playtime] || 0.0,
+          original_source: audio_v
+        }
+        audio_v[:gain] = 0
+      end
+
+      if new_audio_data.length > 0
+        new_audio_data.each do |k, v|
+          @runtime.update_simulation_audio_state
+        end
+
+        new_audio_data.each do |k, v|
+          v[:original_source][:playtime] = 0
+          v[:original_source][:gain] = v[:gain]
+          @runtime.update_simulation_audio_state
+        end
+      end
+    end
+
     def reset
       @state.tick_count = Kernel.tick_count
       @outputs.clear
       @audio.clear
+      @events[:raw].clear
       # on reset of the game, we want to clear out render target's historical events
       # this hash is used to control whether a render target will be marked as transient or not
       @render_targets_render_at.clear
@@ -247,15 +287,21 @@ end
 class AudioHash < Hash
   def volume
     @volume ||= 1.0
-    if $args.gtk.production &&
-       $args.state.tick_count != 0 &&
-       $args.inputs.keyboard.has_focus
-      @volume
-    elsif !$args.gtk.production
-      @volume
-    else
-      0.0
-    end
+    # do not mute if tick_count is 0
+    return @volume if Kernel.tick_count == 0
+
+    # do not mute if in dev mode
+    return @volume if !$args.gtk.production
+
+    # do not mute if platform is anything other than web
+    return @volume if !$args.gtk.platform? :web
+
+    # do not mute if game has focus
+    return @volume if $args.inputs.keyboard.has_focus
+
+    # mute volume if the platform is web in a production environment,
+    # and the game doesn't have focus
+    return 0.0
   end
 
   def volume= value

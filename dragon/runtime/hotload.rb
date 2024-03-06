@@ -56,6 +56,8 @@ module GTK
             'dragon/array.rb',
             'dragon/outputs.rb',
             'dragon/outputs_docs.rb',
+            'dragon/keyboard.rb',
+            'dragon/mouse.rb',
             'dragon/inputs.rb',
             'dragon/inputs_docs.rb',
             'dragon/mouse_docs.rb',

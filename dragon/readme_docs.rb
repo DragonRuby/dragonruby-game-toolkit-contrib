@@ -46,9 +46,6 @@ are also on this server if you have any feedback or bug reports.
 
 The Link to Our Discord Server is: [[http://discord.dragonruby.org]].
 
-The News Letter will keep you in the loop with regards to current
-DragonRuby Events: [[http://dragonrubydispatch.com]].
-
 ** Tip #2: Read the Book
 
 Brett Chalupa (one of our community members) has written a book to help you get started: [[https://book.dragonriders.community/]]
@@ -1335,7 +1332,7 @@ do
 - Consider using a ~render_target~ if you're doing some form of a camera that moves a lot of primitives (take a look at the Render Target sample apps for more info).
 - Avoid deleting or adding to an array during iteration. Instead of:
 #+begin_src ruby
-  args.state.fx_queue |fx|
+  args.state.fx_queue.each |fx|
     fx.count_down ||= 255
     fx.countdown -= 5
     if fx.countdown < 0
@@ -1345,8 +1342,8 @@ do
 #+end_src
 Do:
 #+begin_src ruby
-  args.state.fx_queue |fx|
-    fx.count_down ||= 255
+  args.state.fx_queue.each |fx|
+    fx.countdown ||= 255
     fx.countdown -= 5
   end
 

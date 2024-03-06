@@ -169,7 +169,8 @@ Returns a ~Hash~ with ~x~ and ~y~ denoting a touch point that is on the left sid
 *** ~args.inputs.finger_right~
 Returns a ~Hash~ with ~x~ and ~y~ denoting a touch point that is on the right side of the screen.
 ** Controller (~args.inputs.controller_(one-four)~)
-Represents controllers connected to the usb ports.
+Represents controllers connected to the usb ports. There is also ~args.inputs.controllers~ which returns controllers
+one through four as an array (~args.inputs.controllers[0]~ points to ~args.inputs.controller_one~).
 *** ~active~
 Returns true if any of the controller's buttons were used.
 *** ~up~
@@ -261,6 +262,12 @@ The following properties represent keys on the keyboard and are available on ~ar
 - ~comma~
 - ~pipe~
 - ~underscore~
+- ~ac_back~ (~ac~ stands for Application Control, with ~ac_back~ representing Back button on a device (eg Android back button)
+- ~ac_home~
+- ~ac_forward~
+- ~ac_stop~
+- ~ac_refresh~
+- ~ac_bookmarks~
 - ~a~ - ~z~
 - ~w_scancode~ (key location for w in WASD layout across regions)
 - ~a_scancode~ (key location for a in WASD layout across regions)
@@ -307,6 +314,10 @@ The following properties represent keys on the keyboard and are available on ~ar
 - ~up_down~
 - ~directional_vector~
 - ~truthy_keys~ (array of ~Symbols~)
+*** ~keycodes~
+If the explicit named key isn't in the list above, you can still get the raw keycode via
+~args.inputs.keyboard.key_(down|held|up).keycodes[KEYCODE_NUMBER]~. The ~KEYCODE_NUMBER~ represents
+the keycode provided by SDL: https://wiki.libsdl.org/SDL2/SDLKeycodeLookup
 *** ~char~
 Method is available under ~inputs.key_down~, ~inputs.key_held~, and ~inputs.key_up~.  Take note that
 

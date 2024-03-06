@@ -345,7 +345,7 @@ S
         { x: x, y: y, w: w, h: h }
       end
 
-      def line_intersect line_one, line_two, replace_infinity: nil
+      def ray_intersect line_one, line_two
         x1 = line_one.x
         y1 = line_one.y
         x2 = line_one.x2
@@ -370,10 +370,37 @@ S
         t = (x1x3 * y3y4 - y1y3 * x3x4) / d
         u = -(x1x2 * y1y3 - y1y2 * x1x3) / d
 
-        {
+        r = {
           x: x1 + t * (x2 - x1),
           y: y1 + t * (y2 - y1)
         }
+
+      rescue Exception => e
+        raise e, <<-S
+* ERROR:
+Geometry::ray_intersect for line_one #{line_one}, line_two #{line_two}.
+#{e}
+S
+      end
+
+      def line_intersect line_one, line_two
+        r = ray_intersect line_one, line_two
+
+        if r && point_on_line?(r, line_one) && point_on_line?(r, line_two)
+          return r
+        else
+          return nil
+        end
+      rescue Exception => e
+        raise e, <<-S
+* ERROR:
+Geometry::line_intersect for line_one #{line_one}, line_two #{line_two}.
+
+** NOTE:
+As of DragonRuby version 5.17, Geometry::line_intersect treats lines as line
+segments. If you want to treat lines as rays (infinite lines), use Geometry::ray_intersect.
+#{e}
+S
       end
 
       def to_square size, x, y, anchor_x = 0.5, anchor_y = nil
@@ -511,7 +538,26 @@ S
       end
 
       def center rect
-        { x: rect.x + rect.w.half, y: rect.y + rect.h.half }
+        { x: rect.x + rect.w / 2, y: rect.y + rect.h / 2 }
+      end
+
+      def rect_normalize r
+        anchor_x = r.anchor_x || 0
+        anchor_y = r.anchor_y || 0
+        normalized_rect = {
+          x: r.x - r.w * anchor_x,
+          y: r.y - r.h * anchor_y,
+          w: r.w,
+          h: r.h
+        }
+        normalized_rect.center = center(normalized_rect)
+        normalized_rect
+      rescue Exception => e
+        raise e, <<-S
+* ERROR:
+Geometry::rect_normalize for r #{r}
+#{e}
+S
       end
 
       def line_horizontal? line

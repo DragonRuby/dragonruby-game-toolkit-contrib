@@ -1,0 +1,14 @@
+# Information about the contents of `dragonruby-mruby.patch`
+
+The file `dragonruby-mruby.patch` contains the patches we've made to
+mruby core. You can create these same changes to mRuby by doing the following:
+
+```sh
+# assuming that you are inside of your dragonruby directory
+cd ./docs
+git clone git@github.com:mruby/mruby.git
+cd ./mruby
+git checkout 3.0.0
+git apply ../dragonruby-mruby.patch
+rake
+```

@@ -27,7 +27,7 @@ module GTK
         return @reload_list_history[path][:history].last
       end
 
-      def mark_ruby_file_for_reload path
+      def add_to_require_queue path
         @reload_list_history[path] ||= { current: {}, history: [] }
         info = @reload_list_history[path]
         recent = (most_recent_reload_history path)
@@ -50,7 +50,7 @@ module GTK
           @reload_list.uniq!
         end
       rescue Exception => e
-        raise e, "* EXCEPTION: ~Runtime#mark_ruby_file_for_reload~ failed for =#{path}=.\n#{e}"
+        raise e, "* EXCEPTION: ~Runtime#add_to_require_queue~ failed for =#{path}=.\n#{e}"
       end
 
       def get_ruby_reload_list
@@ -180,7 +180,7 @@ S
         end
 
         if okay
-          mark_ruby_file_for_reload file
+          add_to_require_queue file
           log_debug "Reloaded #{file}. (#{Kernel.global_tick_count})", subsystem="Engine"
           $gtk.reset_framerate_calculation
           notify_subdued!
@@ -201,14 +201,47 @@ S
       end
 
       def load_main_rb
+        # @load_status flow is:
+        # +-> :dragonruby_started
+        # |     success -> :ready (if main.rb has no syntax errors and isn't missing)
+        # |     failed  -> :main_rb_load_failed (main.rb has syntax errors or *is* missing)
+        # |                :main_rb_load_error_shown (after exception is show which occurs internally in the Runtime)
+        # +--------------- :dragonruby_started (load_status is reset to if a file is saved)
         return if @load_status != :dragonruby_started
-        if @ffi_file.path_exists('app/main.rb') || @ffi_file.path_exists('app/main.rbc')
-          require 'app/main.rb'
+
+        # the first load/boot is a little tricky
+        # exceptions thrown in this phase need to be stored
+        # and presented after Kernel.tick_count >= 0
+
+        # if app/main.rb exists, check it's syntax
+        # (if invalid then store the exception to be presented when
+        #  Kernel.tick_count > 0)
+        if @ffi_file.path_exists('app/main.rb')
+          syntax = (@ffi_file.read 'app/main.rb') || ''
+          syntax_check_result = @ffi_mrb.parse syntax
+          syntax_passed = (syntax_check_result == "Syntax OK")
+
+          if !syntax_passed
+            @load_status = :main_rb_load_failed
+            @load_status_exception = syntax_check_result
+          end
         end
-      rescue Exception => e
-        # if an exception occurs, it means that there was a syntax error
-        # in main.rb at first launch
-        @load_status = :main_rb_load_failed
+
+        # if either app/main.rb exists (with no syntax errors) or app/main.rbc exists,
+        # then load it
+        if @ffi_file.path_exists('app/main.rb') || @ffi_file.path_exists('app/main.rbc')
+          begin
+            require 'app/main.rb'
+          rescue Exception => e
+            @load_status = :main_rb_load_failed
+            @load_status_exception = "#{e}"
+          end
+        else
+          # if app/main.rb isn't found, then record that exception
+          # so that it's presented when Kernel.tick_count > 0
+          @load_status = :main_rb_load_failed
+          @load_status_exception = "app/main.rb not found."
+        end
       end
     end # GTK::Runtime::AsyncRequire
   end # GTK::Runtime

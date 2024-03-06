@@ -21,6 +21,8 @@ module GeometryDocs
       :docs_center_inside_rect,
       :docs_ray_test,
       :docs_line_rise_run,
+      :docs_line_intersect,
+      :docs_ray_intersect,
       #:docs_cubic_bezier
       :docs_rotate_point,
       :docs_find_intersect_rect,
@@ -32,6 +34,7 @@ module GeometryDocs
       :docs_line_angle,
       :docs_vec2_dot_product,
       :docs_vec2_normalize,
+      :docs_rect_normalize,
       :docs_line_vec2,
       :docs_vec2_magnitude,
       :docs_distance_squared,
@@ -80,7 +83,7 @@ You can invoke the functions above using either the mixin variant or the module 
 
     # module variants
     puts args.geometry.intersect_rect?(rect_1, rect_2)
-    puts Geometry.intersect_rect?(rect_1, rect_2)
+    puts Geometry::intersect_rect?(rect_1, rect_2)
   end
 #+end_src
 S
@@ -295,6 +298,7 @@ S
 
 Invocation variants:
 - ~args.geometry.angle start_point, end_point~
+- ~Geometry::angle start_point, end_point~
 
 Returns an angle in degrees from the ~start_point~ to the ~end_point~ (if you
 want the value in radians call ~.to_radians~ on the value returned).
@@ -309,6 +313,7 @@ S
 Invocation variants:
 
 - ~args.geometry.angle_from start_point, end_point~
+- ~Geometry::angle_from start_point, end_point~
 - ~start_point.angle_from end_point~
 
 Returns an angle in degrees from the ~end_point~ to the
@@ -346,6 +351,7 @@ S
 Invocation variants:
 
 - ~args.geometry.angle_turn_direction angle, target_angle~
+- ~Geometry::angle_turn_direction angle, target_angle~
 
 Returns ~1~ or -1 depending on which direction the ~angle~ needs to
 turn to reach the ~target_angle~ most efficiently. The angles are
@@ -362,6 +368,8 @@ Invocation variants:
 
 - ~args.geometry.angle_to start_point, end_point~
 - ~args.geometry.angle start_point, end_point~ (alias)
+- ~Geometry::angle_to start_point, end_point~
+- ~Geometry::angle start_point, end_point~ (alias)
 - ~start_point.angle_to end_point~
 
 Returns an angle in degrees to the ~end_point~ from the
@@ -436,6 +444,7 @@ Invocation variants:
 
 - ~point_1.point_inside_circle? circle_center, circle_radius~
 - ~args.geometry.point_inside_circle? point_1, circle_center, circle_radius~
+- ~Geometry::point_inside_circle? point_1, circle_center, circle_radius~
 
 ~circle_center~ can also contain the ~radius~ value (instead of passing it as a separate argument).
 
@@ -509,6 +518,7 @@ S
 Invocation variants:
 - ~target_rect.center_inside_rect reference_rect~
 - ~args.geometry.center_inside_rect target_rect, reference_rect~
+- ~Geometry::center_inside_rect target_rect, reference_rect~
 
 Given a target rect and a reference rect, the target rect is
 centered inside the reference rect (a new rect is returned).
@@ -590,6 +600,98 @@ point relative to the line: ~:left~, ~:right~, ~:on~
     }
   end
 #+end_src
+S
+  end
+
+  def docs_line_intersect
+    <<-S
+** ~line_intersect~
+
+Given two lines (~:x~, ~:y~, ~:x2~, ~:y2~), this function returns point of intersection
+if the line segments intersect. If the line segments do not intersect, ~nil~ is returned. If
+you want the lines to be treated as infinite lines, use ~ray_intersect~.
+
+Invocation variants:
+
+- ~args.geometry.line_intersect line_1, line_2~
+- ~Geometry::line_intersect line_1, line_2~
+
+def tick args
+  # define line_one to go from the bottom left to the top right
+  args.state.line_one ||= { x: 0, y: 0, x2: 1280, y2: 720 }
+
+  # have the mouse control the x2 and y2 of line_two
+  line_two = { x: 0, y: 720, x2: args.inputs.mouse.x, y2: args.inputs.mouse.y }
+
+  # calc if line_one and line_two intersect and if so, the point of intersection
+  args.state.intersect_point = args.geometry.line_intersect args.state.line_one, line_two
+
+  # draw line_one
+  args.outputs.lines << { x: 0, y: 0, x2: 1280, y2: 720 }
+
+  # draw line_two
+  args.outputs.lines << line_two
+
+  # draw a rect at the intersection point
+  if args.state.intersect_point
+    args.outputs.solids << {
+      x: args.state.intersect_point.x,
+      y: args.state.intersect_point.y,
+      w: 10,
+      h: 10,
+      anchor_x: 0.5,
+      anchor_y: 0.5,
+      r: 255,
+      g: 0,
+      b: 0 }
+  end
+end
+S
+  end
+
+  def docs_ray_intersect
+    <<-S
+** ~ray_intersect~
+
+Given two lines (~:x~, ~:y~, ~:x2~, ~:y2~), this function returns point of intersection
+if the ray (infinite line) intersect. If the lines are parallel, ~nil~ is returned. If you
+do not want the lines to be treated as infinite lines, use ~line_intersect~.
+
+Invocation variants:
+
+- ~args.geometry.ray_intersect line_1, line_2~
+- ~Geometry::ray_intersect line_1, line_2~
+
+def tick args
+  # define line_one to go from the bottom left to the top right
+  args.state.line_one ||= { x: 0, y: 0, x2: 1280, y2: 720 }
+
+  # have the mouse control the x2 and y2 of line_two
+  line_two = { x: 0, y: 720, x2: args.inputs.mouse.x, y2: args.inputs.mouse.y }
+
+  # calc if line_one and line_two intersect and if so, the point of intersection
+  args.state.intersect_point = args.geometry.ray_intersect args.state.line_one, line_two
+
+  # draw line_one
+  args.outputs.lines << { x: 0, y: 0, x2: 1280, y2: 720 }
+
+  # draw line_two
+  args.outputs.lines << line_two
+
+  # draw a rect at the intersection point
+  if args.state.intersect_point
+    args.outputs.solids << {
+      x: args.state.intersect_point.x,
+      y: args.state.intersect_point.y,
+      w: 10,
+      h: 10,
+      anchor_x: 0.5,
+      anchor_y: 0.5,
+      r: 255,
+      g: 0,
+      b: 0 }
+  end
+end
 S
   end
 
@@ -686,7 +788,6 @@ around a point other than the origin.
 S
   end
 
-
   def docs_intersect_rect?
     <<-S
 ** ~intersect_rect?~
@@ -695,6 +796,7 @@ Invocation variants:
 
 - ~instance.intersect_rect?(other, tolerance)~
 - ~args.geometry.intersect_rect?(rect_1, rect_2, tolerance)~
+- ~Geometry::intersect_rect?(rect_1, rect_2, tolerance)~
 - ~args.inputs.mouse.intersect_rect?(other, tolerance)~
 
 Given two rectangle primitives this function will return ~true~ or
@@ -778,6 +880,7 @@ Invocation variants:
 
 - ~instance.inside_rect?(other)~
 - ~args.geometry.inside_rect?(rect_1, rect_2)~
+- ~Geometry::inside_rect?(rect_1, rect_2)~
 
 Given two rectangle primitives this function will return ~true~ or
 ~false~ depending on if the first rectangle (or ~self~) is inside of the
@@ -920,6 +1023,37 @@ function will return the dot product of the two vectors.
 
 Note:
 Take a look at this sample app for a non-trivial example of how to use this function: ~./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/~
+S
+  end
+
+  def docs_rect_normalize
+    <<-S
+** ~rect_normalize~
+
+Invocation variants:
+- ~args.geometry.angle start_point, end_point~
+- ~Geometry::angle start_point, end_point~
+
+Given a ~Hash~ with ~x~, ~y~, ~w~, ~h~, (and optionally ~anchor_x~, ~anchor_y~), this function
+returns a ~Hash~ in the following form.
+
+#+begin_src
+  {
+    x: ...,
+    y: ...,
+    w: ...,
+    h: ...,
+    center: {
+      x: ...,
+      y: ...,
+    }
+  }
+#+end_src
+
+Notes:
+
+- Any object that responds to ~x~, ~y~, ~w~, ~h~, ~anchor_x~, ~anchor_y~ can leverage this function.
+- The returned ~Hash~ will not include ~anchor_(x|y)~ (recomputes ~x~, ~y~ to take the anchors into consideration).
 S
   end
 

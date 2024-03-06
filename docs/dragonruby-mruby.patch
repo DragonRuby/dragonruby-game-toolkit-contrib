@@ -1,0 +1,4898 @@
+commit d387b42b5c0be25883a933160e9f8f636f13b4dd
+Author: Amir Rajan <ar@amirrajan.net>
+Date:   Sun Mar 3 21:54:41 2024 -0600
+
+    patches DragonRuby has made to mRuby 3.0.0
+
+diff --git a/codespell.txt b/codespell.txt
+new file mode 100644
+index 000000000..dcc0ddb43
+--- /dev/null
++++ b/codespell.txt
+@@ -0,0 +1,17 @@
++ans
++ba
++creat
++delet
++disabl
++filetest
++fo
++hel
++hist
++ist
++methid
++nd
++quitt
++remore
++runn
++sting
++upto
+diff --git a/include/mruby.h b/include/mruby.h
+index d421dc58c..e5bb5d591 100644
+--- a/include/mruby.h
++++ b/include/mruby.h
+@@ -268,6 +268,10 @@ typedef struct mrb_state {
+   struct symbol_name *symtbl;   /* symbol table */
+   mrb_sym symhash[256];
+   size_t symcapa;
++
++  mrb_sym sym_default;  /* the `:default` symbol, precached. */
++  mrb_sym sym_initialize;  /* the `:initialize` symbol, precached. */
++
+ #ifndef MRB_USE_ALL_SYMBOLS
+   char symbuf[8];               /* buffer for small symbol names */
+ #endif
+diff --git a/include/mruby/numeric.h b/include/mruby/numeric.h
+index fc6cacfda..8eee26a47 100644
+--- a/include/mruby/numeric.h
++++ b/include/mruby/numeric.h
+@@ -62,11 +62,15 @@ MRB_API mrb_value mrb_num_mul(mrb_state *mrb, mrb_value x, mrb_value y);
+ // implementation for them.
+ */
+ #ifdef MRB_HAVE_TYPE_GENERIC_CHECKED_ARITHMETIC_BUILTINS
++#if defined(__arm__) && !defined(__LP64__)  /* ryan changed this: it seems to kill arm32 builds, research more. */
++#undef MRB_HAVE_TYPE_GENERIC_CHECKED_ARITHMETIC_BUILTINS
++#else
+ #if defined(__clang__) && (__clang_major__ == 3) && (__clang_minor__ >= 8) && \
+     defined(MRB_32BIT) && defined(MRB_INT64)
+ #undef MRB_HAVE_TYPE_GENERIC_CHECKED_ARITHMETIC_BUILTINS
+ #endif
+ #endif
++#endif
+ 
+ #ifdef MRB_HAVE_TYPE_GENERIC_CHECKED_ARITHMETIC_BUILTINS
+ 
+diff --git a/include/mruby/presym/id.h b/include/mruby/presym/id.h
+new file mode 100644
+index 000000000..6eb92264a
+--- /dev/null
++++ b/include/mruby/presym/id.h
+@@ -0,0 +1,1189 @@
++enum mruby_presym {
++  MRB_OPSYM__not = 1,
++  MRB_OPSYM__mod = 2,
++  MRB_OPSYM__and = 3,
++  MRB_OPSYM__mul = 4,
++  MRB_OPSYM__add = 5,
++  MRB_OPSYM__sub = 6,
++  MRB_OPSYM__div = 7,
++  MRB_OPSYM__lt = 8,
++  MRB_OPSYM__gt = 9,
++  MRB_SYM__E = 10,
++  MRB_OPSYM__xor = 11,
++  MRB_OPSYM__tick = 12,
++  MRB_SYM__a = 13,
++  MRB_SYM__b = 14,
++  MRB_SYM__c = 15,
++  MRB_SYM__e = 16,
++  MRB_SYM__f = 17,
++  MRB_SYM__h = 18,
++  MRB_SYM__i = 19,
++  MRB_SYM__j = 20,
++  MRB_SYM__k = 21,
++  MRB_SYM__l = 22,
++  MRB_SYM__m = 23,
++  MRB_SYM__n = 24,
++  MRB_SYM__o = 25,
++  MRB_SYM__p = 26,
++  MRB_SYM__r = 27,
++  MRB_SYM__s = 28,
++  MRB_SYM__t = 29,
++  MRB_SYM__v = 30,
++  MRB_SYM__w = 31,
++  MRB_SYM__x = 32,
++  MRB_SYM__y = 33,
++  MRB_SYM__z = 34,
++  MRB_OPSYM__or = 35,
++  MRB_OPSYM__neg = 36,
++  MRB_OPSYM__neq = 37,
++  MRB_OPSYM__nmatch = 38,
++  MRB_OPSYM__andand = 41,
++  MRB_OPSYM__pow = 42,
++  MRB_OPSYM__plus = 43,
++  MRB_OPSYM__minus = 44,
++  MRB_OPSYM__lshift = 45,
++  MRB_OPSYM__le = 46,
++  MRB_OPSYM__eq = 47,
++  MRB_OPSYM__match = 48,
++  MRB_OPSYM__ge = 49,
++  MRB_OPSYM__rshift = 50,
++  MRB_SYM__GC = 51,
++  MRB_SYM__IO = 52,
++  MRB_SYM__PI = 53,
++  MRB_OPSYM__aref = 54,
++  MRB_SYM__af = 55,
++  MRB_SYM__ai = 56,
++  MRB_SYM__ar = 57,
++  MRB_SYM__at = 58,
++  MRB_SYM__bi = 59,
++  MRB_SYM__bs = 60,
++  MRB_SYM__e0 = 61,
++  MRB_SYM__e2 = 62,
++  MRB_SYM__e3 = 63,
++  MRB_SYM__ed = 64,
++  MRB_SYM__ei = 65,
++  MRB_SYM__fd = 66,
++  MRB_SYM__gm = 67,
++  MRB_SYM__in = 68,
++  MRB_SYM__io = 69,
++  MRB_SYM__ip = 70,
++  MRB_SYM__lz = 71,
++  MRB_SYM__nk = 72,
++  MRB_SYM__nv = 73,
++  MRB_SYM__op = 74,
++  MRB_SYM__rs = 75,
++  MRB_SYM__sa = 76,
++  MRB_SYM__sc = 77,
++  MRB_SYM__sv = 78,
++  MRB_SYM__tr = 79,
++  MRB_SYM__vs = 80,
++  MRB_OPSYM__oror = 81,
++  MRB_OPSYM__cmp = 82,
++  MRB_OPSYM__eqq = 83,
++  MRB_IVSYM__af = 84,
++  MRB_SYM__DIG = 85,
++  MRB_SYM__MAX = 86,
++  MRB_SYM__MIN = 87,
++  MRB_SYM__NAN = 88,
++  MRB_OPSYM__aset = 89,
++  MRB_SYM__abs = 90,
++  MRB_SYM__arg = 91,
++  MRB_SYM__ary = 92,
++  MRB_SYM__beg = 93,
++  MRB_SYM__blk = 94,
++  MRB_SYM__buf = 95,
++  MRB_SYM__chr = 96,
++  MRB_SYM__cls = 97,
++  MRB_SYM__cmd = 98,
++  MRB_SYM__cmp = 99,
++  MRB_SYM__cos = 100,
++  MRB_SYM__day = 101,
++  MRB_SYM__dig = 102,
++  MRB_SYM__dir = 103,
++  MRB_SYM__div = 104,
++  MRB_SYM__dup = 105,
++  MRB_SYM__end = 106,
++  MRB_SYM__eof = 107,
++  MRB_SYM__erf = 108,
++  MRB_SYM__err = 109,
++  MRB_SYM__exp = 110,
++  MRB_SYM__fib = 111,
++  MRB_SYM__hex = 112,
++  MRB_SYM__idx = 113,
++  MRB_SYM__int = 114,
++  MRB_SYM_Q__ip = 115,
++  MRB_SYM__key = 116,
++  MRB_SYM__len = 117,
++  MRB_SYM__lhs = 118,
++  MRB_SYM__lim = 119,
++  MRB_SYM__log = 120,
++  MRB_SYM__low = 121,
++  MRB_SYM__map = 122,
++  MRB_SYM__max = 123,
++  MRB_SYM__mid = 124,
++  MRB_SYM__min = 125,
++  MRB_SYM__mon = 126,
++  MRB_SYM__msg = 127,
++  MRB_SYM__new = 128,
++  MRB_SYM__now = 129,
++  MRB_SYM__num = 130,
++  MRB_SYM__obj = 131,
++  MRB_SYM__oct = 132,
++  MRB_SYM__opt = 133,
++  MRB_SYM__ord = 134,
++  MRB_SYM__out = 135,
++  MRB_SYM__pat = 136,
++  MRB_SYM__pid = 137,
++  MRB_SYM__pop = 138,
++  MRB_SYM__pos = 139,
++  MRB_SYM__pre = 140,
++  MRB_SYM__quo = 141,
++  MRB_SYM__req = 142,
++  MRB_SYM__res = 143,
++  MRB_SYM__ret = 144,
++  MRB_SYM__rhs = 145,
++  MRB_SYM__row = 146,
++  MRB_SYM__sec = 147,
++  MRB_SYM__sep = 148,
++  MRB_SYM__sin = 149,
++  MRB_SYM__str = 150,
++  MRB_SYM__sub = 151,
++  MRB_SYM__sym = 152,
++  MRB_SYM__tan = 153,
++  MRB_SYM__tap = 154,
++  MRB_SYM__tcp = 155,
++  MRB_SYM__tmp = 156,
++  MRB_SYM_B__tr = 157,
++  MRB_SYM__udp = 158,
++  MRB_SYM__utc = 159,
++  MRB_SYM__val = 160,
++  MRB_SYM__zip = 161,
++  MRB_IVSYM__buf = 162,
++  MRB_IVSYM__dst = 163,
++  MRB_IVSYM__fib = 164,
++  MRB_IVSYM__obj = 165,
++  MRB_SYM__ARGV = 166,
++  MRB_SYM__EXCL = 167,
++  MRB_SYM__FREE = 168,
++  MRB_SYM__File = 169,
++  MRB_SYM__Hash = 170,
++  MRB_SYM__Lazy = 171,
++  MRB_SYM__Math = 172,
++  MRB_SYM__NONE = 173,
++  MRB_SYM__NULL = 174,
++  MRB_SYM__Proc = 175,
++  MRB_SYM__RDWR = 176,
++  MRB_SYM__SYNC = 177,
++  MRB_SYM__Time = 178,
++  MRB_SYM___new = 179,
++  MRB_SYM__abs2 = 180,
++  MRB_SYM__acos = 181,
++  MRB_SYM__addr = 182,
++  MRB_SYM_Q__all = 183,
++  MRB_SYM_Q__any = 184,
++  MRB_SYM__arg0 = 185,
++  MRB_SYM__arg1 = 186,
++  MRB_SYM__arg2 = 187,
++  MRB_SYM__args = 188,
++  MRB_SYM__argv = 189,
++  MRB_SYM__asin = 190,
++  MRB_SYM__atan = 191,
++  MRB_SYM__attr = 192,
++  MRB_SYM__bind = 193,
++  MRB_SYM__bool = 194,
++  MRB_SYM__call = 195,
++  MRB_SYM__cbrt = 196,
++  MRB_SYM__ceil = 197,
++  MRB_SYM__char = 198,
++  MRB_SYM__chop = 199,
++  MRB_SYM__conj = 200,
++  MRB_SYM__cosh = 201,
++  MRB_SYM__curr = 202,
++  MRB_SYM__data = 203,
++  MRB_SYM__drop = 204,
++  MRB_SYM_Q__dst = 205,
++  MRB_SYM__dump = 206,
++  MRB_SYM__each = 207,
++  MRB_SYM__elem = 208,
++  MRB_SYM_Q__eof = 209,
++  MRB_SYM__epos = 210,
++  MRB_SYM_Q__eql = 211,
++  MRB_SYM__erfc = 212,
++  MRB_SYM__eval = 213,
++  MRB_SYM__fail = 214,
++  MRB_SYM__fdiv = 215,
++  MRB_SYM__feed = 216,
++  MRB_SYM__file = 217,
++  MRB_SYM__fill = 218,
++  MRB_SYM__find = 219,
++  MRB_SYM__flag = 220,
++  MRB_SYM__getc = 221,
++  MRB_SYM__gets = 222,
++  MRB_SYM_Q__gmt = 223,
++  MRB_SYM__grep = 224,
++  MRB_SYM__gsub = 225,
++  MRB_SYM__hash = 226,
++  MRB_SYM__high = 227,
++  MRB_SYM__host = 228,
++  MRB_SYM__hour = 229,
++  MRB_SYM__idx2 = 230,
++  MRB_SYM__imag = 231,
++  MRB_SYM__init = 232,
++  MRB_SYM__join = 233,
++  MRB_SYM_Q__key = 234,
++  MRB_SYM__keys = 235,
++  MRB_SYM__lary = 236,
++  MRB_SYM__last = 237,
++  MRB_SYM__lazy = 238,
++  MRB_SYM__left = 239,
++  MRB_SYM__lidx = 240,
++  MRB_SYM__line = 241,
++  MRB_SYM__log2 = 242,
++  MRB_SYM__loop = 243,
++  MRB_SYM__lval = 244,
++  MRB_SYM_B__map = 245,
++  MRB_SYM__mday = 246,
++  MRB_SYM__mesg = 247,
++  MRB_SYM__meth = 248,
++  MRB_SYM__mode = 249,
++  MRB_SYM__name = 250,
++  MRB_SYM_Q__nan = 251,
++  MRB_SYM__next = 252,
++  MRB_SYM_Q__nil = 253,
++  MRB_SYM__none = 254,
++  MRB_SYM__ntop = 255,
++  MRB_SYM_E__obj = 256,
++  MRB_SYM_Q__one = 257,
++  MRB_SYM__open = 258,
++  MRB_SYM__opts = 259,
++  MRB_SYM__orig = 260,
++  MRB_SYM__pack = 261,
++  MRB_SYM__pair = 262,
++  MRB_SYM__path = 263,
++  MRB_SYM__peek = 264,
++  MRB_SYM__perm = 265,
++  MRB_SYM__pipe = 266,
++  MRB_SYM__plen = 267,
++  MRB_SYM__port = 268,
++  MRB_SYM_E__pos = 269,
++  MRB_SYM__post = 270,
++  MRB_SYM__proc = 271,
++  MRB_SYM__pton = 272,
++  MRB_SYM__push = 273,
++  MRB_SYM__puts = 274,
++  MRB_SYM__rand = 275,
++  MRB_SYM__read = 276,
++  MRB_SYM__real = 277,
++  MRB_SYM__rect = 278,
++  MRB_SYM__recv = 279,
++  MRB_SYM__rest = 280,
++  MRB_SYM__ridx = 281,
++  MRB_SYM__rval = 282,
++  MRB_SYM__sary = 283,
++  MRB_SYM__seek = 284,
++  MRB_SYM__send = 285,
++  MRB_SYM__sinh = 286,
++  MRB_SYM__size = 287,
++  MRB_SYM__sock = 288,
++  MRB_SYM__sort = 289,
++  MRB_SYM__sqrt = 290,
++  MRB_SYM__step = 291,
++  MRB_SYM__str2 = 292,
++  MRB_SYM_B__sub = 293,
++  MRB_SYM__succ = 294,
++  MRB_SYM__sync = 295,
++  MRB_SYM__take = 296,
++  MRB_SYM__tanh = 297,
++  MRB_SYM__tell = 298,
++  MRB_SYM__then = 299,
++  MRB_SYM__this = 300,
++  MRB_SYM__to_a = 301,
++  MRB_SYM__to_c = 302,
++  MRB_SYM__to_f = 303,
++  MRB_SYM__to_h = 304,
++  MRB_SYM__to_i = 305,
++  MRB_SYM__to_r = 306,
++  MRB_SYM__to_s = 307,
++  MRB_SYM__tr_s = 308,
++  MRB_SYM_Q__tty = 309,
++  MRB_SYM__type = 310,
++  MRB_SYM__uniq = 311,
++  MRB_SYM__unix = 312,
++  MRB_SYM__upto = 313,
++  MRB_SYM__usec = 314,
++  MRB_SYM__user = 315,
++  MRB_SYM_Q__utc = 316,
++  MRB_SYM__vals = 317,
++  MRB_SYM__warn = 318,
++  MRB_SYM__wday = 319,
++  MRB_SYM__yday = 320,
++  MRB_SYM__year = 321,
++  MRB_SYM__zone = 322,
++  MRB_IVSYM__args = 323,
++  MRB_IVSYM__data = 324,
++  MRB_IVSYM__meth = 325,
++  MRB_IVSYM__name = 326,
++  MRB_IVSYM__path = 327,
++  MRB_IVSYM__proc = 328,
++  MRB_SYM__Array = 329,
++  MRB_SYM__CREAT = 330,
++  MRB_SYM__Class = 331,
++  MRB_SYM__DSYNC = 332,
++  MRB_SYM__Fiber = 333,
++  MRB_SYM__Float = 334,
++  MRB_SYM__RADIX = 335,
++  MRB_SYM__RSYNC = 336,
++  MRB_SYM__Range = 337,
++  MRB_SYM__STDIN = 338,
++  MRB_SYM__TOTAL = 339,
++  MRB_SYM__TRUNC = 340,
++  MRB_SYM__T_ENV = 341,
++  MRB_SYM___bind = 342,
++  MRB_SYM___name = 343,
++  MRB_SYM___pipe = 344,
++  MRB_SYM___proc = 345,
++  MRB_SYM___recv = 346,
++  MRB_SYM__acosh = 347,
++  MRB_SYM__angle = 348,
++  MRB_SYM_E__args = 349,
++  MRB_SYM__arity = 350,
++  MRB_SYM__array = 351,
++  MRB_SYM__ary_F = 352,
++  MRB_SYM__ary_T = 353,
++  MRB_SYM__asinh = 354,
++  MRB_SYM__assoc = 355,
++  MRB_SYM__atan2 = 356,
++  MRB_SYM__atanh = 357,
++  MRB_SYM__begin = 358,
++  MRB_SYM__block = 359,
++  MRB_SYM__bytes = 360,
++  MRB_SYM__chars = 361,
++  MRB_SYM__chmod = 362,
++  MRB_SYM__chomp = 363,
++  MRB_SYM_B__chop = 364,
++  MRB_SYM__clamp = 365,
++  MRB_SYM__class = 366,
++  MRB_SYM__clear = 367,
++  MRB_SYM__clone = 368,
++  MRB_SYM__close = 369,
++  MRB_SYM__count = 370,
++  MRB_SYM__ctime = 371,
++  MRB_SYM__curry = 372,
++  MRB_SYM__cycle = 373,
++  MRB_SYM__depth = 374,
++  MRB_SYM__enums = 375,
++  MRB_SYM__fetch = 376,
++  MRB_SYM__field = 377,
++  MRB_SYM_Q__file = 378,
++  MRB_SYM__first = 379,
++  MRB_SYM__flags = 380,
++  MRB_SYM__flock = 381,
++  MRB_SYM__floor = 382,
++  MRB_SYM__flush = 383,
++  MRB_SYM__fname = 384,
++  MRB_SYM__force = 385,
++  MRB_SYM__found = 386,
++  MRB_SYM__frexp = 387,
++  MRB_SYM__getgm = 388,
++  MRB_SYM_B__gsub = 389,
++  MRB_SYM__hypot = 390,
++  MRB_SYM__index = 391,
++  MRB_SYM_Q__ipv4 = 392,
++  MRB_SYM_Q__ipv6 = 393,
++  MRB_SYM_Q__is_a = 394,
++  MRB_SYM__ldexp = 395,
++  MRB_SYM__level = 396,
++  MRB_SYM__limit = 397,
++  MRB_SYM__lines = 398,
++  MRB_SYM__ljust = 399,
++  MRB_SYM__local = 400,
++  MRB_SYM__log10 = 401,
++  MRB_SYM__lsize = 402,
++  MRB_SYM__merge = 403,
++  MRB_SYM_E__meth = 404,
++  MRB_SYM__month = 405,
++  MRB_SYM__mtime = 406,
++  MRB_SYM__names = 407,
++  MRB_SYM_B__next = 408,
++  MRB_SYM_Q__none = 409,
++  MRB_SYM__other = 410,
++  MRB_SYM__owner = 411,
++  MRB_SYM__phase = 412,
++  MRB_SYM_Q__pipe = 413,
++  MRB_SYM__polar = 414,
++  MRB_SYM__popen = 415,
++  MRB_SYM__pproc = 416,
++  MRB_SYM__pread = 417,
++  MRB_SYM__print = 418,
++  MRB_SYM__proto = 419,
++  MRB_SYM__raise = 420,
++  MRB_SYM_Q__real = 421,
++  MRB_SYM__right = 422,
++  MRB_SYM__rjust = 423,
++  MRB_SYM__round = 424,
++  MRB_SYM__shift = 425,
++  MRB_SYM_Q__size = 426,
++  MRB_SYM__slice = 427,
++  MRB_SYM_B__sort = 428,
++  MRB_SYM__split = 429,
++  MRB_SYM__srand = 430,
++  MRB_SYM__stack = 431,
++  MRB_SYM__start = 432,
++  MRB_SYM__state = 433,
++  MRB_SYM__store = 434,
++  MRB_SYM__strip = 435,
++  MRB_SYM_B__succ = 436,
++  MRB_SYM_E__sync = 437,
++  MRB_SYM__taken = 438,
++  MRB_SYM__tally = 439,
++  MRB_SYM__times = 440,
++  MRB_SYM_B__tr_s = 441,
++  MRB_SYM__umask = 442,
++  MRB_SYM__union = 443,
++  MRB_SYM_B__uniq = 444,
++  MRB_SYM_Q__unix = 445,
++  MRB_SYM__value = 446,
++  MRB_SYM__write = 447,
++  MRB_SYM__yield = 448,
++  MRB_SYM_Q__zero = 449,
++  MRB_IVSYM__level = 452,
++  MRB_SYM__AF_MAX = 453,
++  MRB_SYM__APPEND = 454,
++  MRB_SYM__BINARY = 455,
++  MRB_SYM__DIRECT = 456,
++  MRB_SYM__Fixnum = 457,
++  MRB_SYM__IP_TOS = 458,
++  MRB_SYM__IP_TTL = 459,
++  MRB_SYM__Kernel = 460,
++  MRB_SYM__Method = 461,
++  MRB_SYM__Module = 462,
++  MRB_SYM__NOCTTY = 463,
++  MRB_SYM__Object = 464,
++  MRB_SYM__Option = 465,
++  MRB_SYM__RDONLY = 466,
++  MRB_SYM__Random = 467,
++  MRB_SYM__Regexp = 468,
++  MRB_SYM__STDERR = 469,
++  MRB_SYM__STDOUT = 470,
++  MRB_SYM__Socket = 471,
++  MRB_SYM__Status = 472,
++  MRB_SYM__String = 473,
++  MRB_SYM__Struct = 474,
++  MRB_SYM__Symbol = 475,
++  MRB_SYM__T_CPTR = 476,
++  MRB_SYM__T_DATA = 477,
++  MRB_SYM__T_FREE = 478,
++  MRB_SYM__T_HASH = 479,
++  MRB_SYM__T_PROC = 480,
++  MRB_SYM__T_TRUE = 481,
++  MRB_SYM__WRONLY = 482,
++  MRB_SYM____id__ = 483,
++  MRB_SYM___getwd = 484,
++  MRB_SYM___klass = 485,
++  MRB_SYM___mtime = 486,
++  MRB_SYM___owner = 487,
++  MRB_SYM___popen = 488,
++  MRB_SYM__accept = 489,
++  MRB_SYM_Q__alive = 490,
++  MRB_SYM__append = 491,
++  MRB_SYM__caller = 492,
++  MRB_SYM_B__chomp = 493,
++  MRB_SYM__concat = 494,
++  MRB_SYM_Q__cover = 495,
++  MRB_SYM__delete = 496,
++  MRB_SYM__detect = 497,
++  MRB_SYM__divmod = 498,
++  MRB_SYM__domain = 499,
++  MRB_SYM__downto = 500,
++  MRB_SYM_Q__empty = 501,
++  MRB_SYM__enable = 502,
++  MRB_SYM_Q__equal = 503,
++  MRB_SYM__except = 504,
++  MRB_SYM_Q__exist = 505,
++  MRB_SYM__extend = 506,
++  MRB_SYM__family = 507,
++  MRB_SYM__fileno = 508,
++  MRB_SYM__filter = 509,
++  MRB_SYM__for_fd = 510,
++  MRB_SYM__format = 511,
++  MRB_SYM__freeze = 512,
++  MRB_SYM__getutc = 513,
++  MRB_SYM__gmtime = 514,
++  MRB_SYM__ifnone = 515,
++  MRB_SYM__inject = 516,
++  MRB_SYM__insert = 517,
++  MRB_SYM__intern = 518,
++  MRB_SYM__invert = 519,
++  MRB_SYM__isatty = 520,
++  MRB_SYM__itself = 521,
++  MRB_SYM__lambda = 522,
++  MRB_SYM__length = 523,
++  MRB_SYM__linger = 524,
++  MRB_SYM__listen = 525,
++  MRB_SYM__lstrip = 526,
++  MRB_SYM__max_by = 527,
++  MRB_SYM__maxlen = 528,
++  MRB_SYM_B__merge = 529,
++  MRB_SYM__method = 530,
++  MRB_SYM__min_by = 531,
++  MRB_SYM__minmax = 532,
++  MRB_SYM__mktime = 533,
++  MRB_SYM__object = 534,
++  MRB_SYM__offset = 535,
++  MRB_SYM__outbuf = 536,
++  MRB_SYM__padstr = 537,
++  MRB_SYM__printf = 538,
++  MRB_SYM__public = 539,
++  MRB_SYM__pwrite = 540,
++  MRB_SYM__rassoc = 541,
++  MRB_SYM__reduce = 542,
++  MRB_SYM__rehash = 543,
++  MRB_SYM__reject = 544,
++  MRB_SYM__rename = 545,
++  MRB_SYM__result = 546,
++  MRB_SYM__resume = 547,
++  MRB_SYM__rewind = 548,
++  MRB_SYM__rindex = 549,
++  MRB_SYM__rotate = 550,
++  MRB_SYM__rstrip = 551,
++  MRB_SYM__sample = 552,
++  MRB_SYM__select = 553,
++  MRB_SYM_B__slice = 554,
++  MRB_SYM__string = 555,
++  MRB_SYM_B__strip = 556,
++  MRB_SYM__substr = 557,
++  MRB_SYM__to_int = 558,
++  MRB_SYM__to_str = 559,
++  MRB_SYM__to_sym = 560,
++  MRB_SYM__unbind = 561,
++  MRB_SYM__ungetc = 562,
++  MRB_SYM__unlink = 563,
++  MRB_SYM__unpack = 564,
++  MRB_SYM__upcase = 565,
++  MRB_SYM__update = 566,
++  MRB_SYM_Q__value = 567,
++  MRB_SYM__values = 568,
++  MRB_SYM__whence = 569,
++  MRB_IVSYM__family = 572,
++  MRB_SYM__AF_INET = 573,
++  MRB_SYM__AF_LINK = 574,
++  MRB_SYM__AF_UNIX = 575,
++  MRB_SYM__Complex = 576,
++  MRB_SYM__DEFAULT = 577,
++  MRB_SYM__EPSILON = 578,
++  MRB_SYM__IOError = 579,
++  MRB_SYM__Integer = 580,
++  MRB_SYM__LOCK_EX = 581,
++  MRB_SYM__LOCK_NB = 582,
++  MRB_SYM__LOCK_SH = 583,
++  MRB_SYM__LOCK_UN = 584,
++  MRB_SYM__MAX_EXP = 585,
++  MRB_SYM__MIN_EXP = 586,
++  MRB_SYM__MSG_EOR = 587,
++  MRB_SYM__MSG_OOB = 588,
++  MRB_SYM__NOATIME = 589,
++  MRB_SYM__Numeric = 590,
++  MRB_SYM__PF_INET = 591,
++  MRB_SYM__PF_LINK = 592,
++  MRB_SYM__PF_UNIX = 593,
++  MRB_SYM__Process = 594,
++  MRB_SYM__SHUT_RD = 595,
++  MRB_SYM__SHUT_WR = 596,
++  MRB_SYM__SO_TYPE = 597,
++  MRB_SYM__TMPFILE = 598,
++  MRB_SYM__T_ARRAY = 599,
++  MRB_SYM__T_CLASS = 600,
++  MRB_SYM__T_FALSE = 601,
++  MRB_SYM__T_FIBER = 602,
++  MRB_SYM__T_FLOAT = 603,
++  MRB_SYM__T_RANGE = 604,
++  MRB_SYM__T_UNDEF = 605,
++  MRB_SYM__Yielder = 606,
++  MRB_SYM____div__ = 607,
++  MRB_SYM____lines = 608,
++  MRB_SYM___accept = 609,
++  MRB_SYM___lastai = 610,
++  MRB_SYM___listen = 611,
++  MRB_SYM___socket = 612,
++  MRB_SYM__afamily = 613,
++  MRB_SYM__asctime = 614,
++  MRB_SYM__backlog = 615,
++  MRB_SYM__bsearch = 616,
++  MRB_SYM__casecmp = 617,
++  MRB_SYM_Q__closed = 618,
++  MRB_SYM__collect = 619,
++  MRB_SYM__command = 620,
++  MRB_SYM__compact = 621,
++  MRB_SYM__compile = 622,
++  MRB_SYM__connect = 623,
++  MRB_SYM__consume = 624,
++  MRB_SYM__current = 625,
++  MRB_SYM__default = 626,
++  MRB_SYM_B__delete = 627,
++  MRB_SYM__dirname = 628,
++  MRB_SYM__disable = 629,
++  MRB_SYM__dropped = 630,
++  MRB_SYM__entries = 631,
++  MRB_SYM_Q__exists = 632,
++  MRB_SYM__extname = 633,
++  MRB_SYM_B__filter = 634,
++  MRB_SYM_Q__finite = 635,
++  MRB_SYM__flatten = 636,
++  MRB_SYM__foreach = 637,
++  MRB_SYM_Q__friday = 638,
++  MRB_SYM_Q__frozen = 639,
++  MRB_SYM__getbyte = 640,
++  MRB_SYM__id2name = 641,
++  MRB_SYM__include = 642,
++  MRB_SYM__inspect = 643,
++  MRB_SYM__integer = 644,
++  MRB_SYM__ip_port = 645,
++  MRB_SYM__keep_if = 646,
++  MRB_SYM__keyrest = 647,
++  MRB_SYM_Q__lambda = 648,
++  MRB_SYM_B__lstrip = 649,
++  MRB_SYM__max_cmp = 650,
++  MRB_SYM_Q__member = 651,
++  MRB_SYM__members = 652,
++  MRB_SYM__message = 653,
++  MRB_SYM__methods = 654,
++  MRB_SYM__min_cmp = 655,
++  MRB_SYM__modules = 656,
++  MRB_SYM_Q__monday = 657,
++  MRB_SYM__nesting = 658,
++  MRB_SYM__new_key = 659,
++  MRB_SYM_Q__nobits = 660,
++  MRB_SYM__numeric = 661,
++  MRB_SYM__optname = 662,
++  MRB_SYM__padding = 663,
++  MRB_SYM__pattern = 664,
++  MRB_SYM__pfamily = 665,
++  MRB_SYM__pointer = 666,
++  MRB_SYM__prepend = 667,
++  MRB_SYM__private = 668,
++  MRB_SYM__produce = 669,
++  MRB_SYM_B__reject = 670,
++  MRB_SYM__replace = 671,
++  MRB_SYM_E__result = 672,
++  MRB_SYM__reverse = 673,
++  MRB_SYM_B__rotate = 674,
++  MRB_SYM_B__rstrip = 675,
++  MRB_SYM_B__select = 676,
++  MRB_SYM__sep_len = 677,
++  MRB_SYM__service = 678,
++  MRB_SYM__setbyte = 679,
++  MRB_SYM__shuffle = 680,
++  MRB_SYM_Q__socket = 681,
++  MRB_SYM__sort_by = 682,
++  MRB_SYM__sprintf = 683,
++  MRB_SYM__squeeze = 684,
++  MRB_SYM_Q__sunday = 685,
++  MRB_SYM__symlink = 686,
++  MRB_SYM__sysopen = 687,
++  MRB_SYM__sysread = 688,
++  MRB_SYM__sysseek = 689,
++  MRB_SYM__to_enum = 690,
++  MRB_SYM__to_path = 691,
++  MRB_SYM__to_proc = 692,
++  MRB_SYM__unpack1 = 693,
++  MRB_SYM__unshift = 694,
++  MRB_SYM_B__upcase = 695,
++  MRB_SYM__yielder = 696,
++  MRB_IVSYM__optname = 697,
++  MRB_SYM__AF_INET6 = 698,
++  MRB_SYM__AF_LOCAL = 699,
++  MRB_SYM__AF_ROUTE = 700,
++  MRB_SYM__Addrinfo = 701,
++  MRB_SYM__BUF_SIZE = 702,
++  MRB_SYM__EOFError = 703,
++  MRB_SYM__FileTest = 704,
++  MRB_SYM__INFINITY = 705,
++  MRB_SYM__IPSocket = 706,
++  MRB_SYM__KeyError = 707,
++  MRB_SYM__MANT_DIG = 708,
++  MRB_SYM__MSG_PEEK = 709,
++  MRB_SYM__NI_DGRAM = 710,
++  MRB_SYM__NOFOLLOW = 711,
++  MRB_SYM__NONBLOCK = 712,
++  MRB_SYM__NilClass = 713,
++  MRB_SYM__PF_INET6 = 714,
++  MRB_SYM__PF_LOCAL = 715,
++  MRB_SYM__PF_ROUTE = 716,
++  MRB_SYM__Rational = 717,
++  MRB_SYM__SEEK_CUR = 718,
++  MRB_SYM__SEEK_END = 719,
++  MRB_SYM__SEEK_SET = 720,
++  MRB_SYM__SOCK_RAW = 721,
++  MRB_SYM__SO_DEBUG = 722,
++  MRB_SYM__SO_ERROR = 723,
++  MRB_SYM__T_ICLASS = 724,
++  MRB_SYM__T_MODULE = 725,
++  MRB_SYM__T_OBJECT = 726,
++  MRB_SYM__T_SCLASS = 727,
++  MRB_SYM__T_STRING = 728,
++  MRB_SYM__T_SYMBOL = 729,
++  MRB_SYM____ary_eq = 730,
++  MRB_SYM____delete = 731,
++  MRB_SYM____send__ = 732,
++  MRB_SYM____svalue = 733,
++  MRB_SYM____to_int = 734,
++  MRB_SYM____to_str = 735,
++  MRB_SYM___accept2 = 736,
++  MRB_SYM___bufread = 737,
++  MRB_SYM___connect = 738,
++  MRB_SYM___gethome = 739,
++  MRB_SYM___inspect = 740,
++  MRB_SYM_Q__allbits = 741,
++  MRB_SYM__allocate = 742,
++  MRB_SYM_Q__anybits = 743,
++  MRB_SYM__basename = 744,
++  MRB_SYM_Q__between = 745,
++  MRB_SYM__bytesize = 746,
++  MRB_SYM_Q__casecmp = 747,
++  MRB_SYM_B__collect = 748,
++  MRB_SYM_B__compact = 749,
++  MRB_SYM_E__default = 750,
++  MRB_SYM__downcase = 751,
++  MRB_SYM__dropping = 752,
++  MRB_SYM__each_key = 753,
++  MRB_SYM__enum_for = 754,
++  MRB_SYM__extended = 755,
++  MRB_SYM__filename = 756,
++  MRB_SYM__find_all = 757,
++  MRB_SYM__flat_map = 758,
++  MRB_SYM_B__flatten = 759,
++  MRB_SYM__getlocal = 760,
++  MRB_SYM__group_by = 761,
++  MRB_SYM_Q__has_key = 762,
++  MRB_SYM__home_dir = 763,
++  MRB_SYM_Q__include = 764,
++  MRB_SYM__included = 765,
++  MRB_SYM_Q__kind_of = 766,
++  MRB_SYM__modified = 767,
++  MRB_SYM__new_args = 768,
++  MRB_SYM__nodename = 769,
++  MRB_SYM_Q__nonzero = 770,
++  MRB_SYM__peeraddr = 771,
++  MRB_SYM__protocol = 772,
++  MRB_SYM__readchar = 773,
++  MRB_SYM__readline = 774,
++  MRB_SYM__readlink = 775,
++  MRB_SYM__realpath = 776,
++  MRB_SYM__receiver = 777,
++  MRB_SYM__recvfrom = 778,
++  MRB_SYM_B__reverse = 779,
++  MRB_SYM__self_len = 780,
++  MRB_SYM__servname = 781,
++  MRB_SYM_B__shuffle = 782,
++  MRB_SYM__shutdown = 783,
++  MRB_SYM__sockaddr = 784,
++  MRB_SYM__socktype = 785,
++  MRB_SYM_B__squeeze = 786,
++  MRB_SYM__str_each = 787,
++  MRB_SYM__swapcase = 788,
++  MRB_SYM_Q__symlink = 789,
++  MRB_SYM__syswrite = 790,
++  MRB_SYM__template = 791,
++  MRB_SYM__transfer = 792,
++  MRB_SYM__truncate = 793,
++  MRB_SYM_Q__tuesday = 794,
++  MRB_IVSYM__hostname = 795,
++  MRB_IVSYM__protocol = 796,
++  MRB_IVSYM__sockaddr = 797,
++  MRB_IVSYM__socktype = 798,
++  MRB_IVSYM__stop_exc = 799,
++  MRB_SYM__AF_UNSPEC = 800,
++  MRB_SYM__Constants = 801,
++  MRB_SYM__Exception = 802,
++  MRB_SYM__Generator = 803,
++  MRB_SYM__MSG_TRUNC = 804,
++  MRB_SYM__NI_NOFQDN = 805,
++  MRB_SYM__NameError = 806,
++  MRB_SYM__PF_UNSPEC = 807,
++  MRB_SYM__SEPARATOR = 808,
++  MRB_SYM__SHUT_RDWR = 809,
++  MRB_SYM__SO_LINGER = 810,
++  MRB_SYM__SO_RCVBUF = 811,
++  MRB_SYM__SO_SNDBUF = 812,
++  MRB_SYM__TCPServer = 813,
++  MRB_SYM__TCPSocket = 814,
++  MRB_SYM__T_INTEGER = 815,
++  MRB_SYM__T_ISTRUCT = 816,
++  MRB_SYM__TrueClass = 817,
++  MRB_SYM__TypeError = 818,
++  MRB_SYM__UDPSocket = 819,
++  MRB_SYM____ary_cmp = 820,
++  MRB_SYM____outer__ = 821,
++  MRB_SYM___allocate = 822,
++  MRB_SYM___gc_root_ = 823,
++  MRB_SYM___read_buf = 824,
++  MRB_SYM___readchar = 825,
++  MRB_SYM___recvfrom = 826,
++  MRB_SYM___sysclose = 827,
++  MRB_SYM___to_array = 828,
++  MRB_SYM__ancestors = 829,
++  MRB_SYM__backtrace = 830,
++  MRB_SYM__base_path = 831,
++  MRB_SYM__bind_call = 832,
++  MRB_SYM__byteslice = 833,
++  MRB_SYM__canonname = 834,
++  MRB_SYM__conjugate = 835,
++  MRB_SYM__const_get = 836,
++  MRB_SYM__const_set = 837,
++  MRB_SYM__constants = 838,
++  MRB_SYM__delete_at = 839,
++  MRB_SYM__delete_if = 840,
++  MRB_SYM_B__downcase = 841,
++  MRB_SYM__each_byte = 842,
++  MRB_SYM__each_char = 843,
++  MRB_SYM__each_cons = 844,
++  MRB_SYM__each_line = 845,
++  MRB_SYM__each_pair = 846,
++  MRB_SYM_Q__end_with = 847,
++  MRB_SYM__exception = 848,
++  MRB_SYM__exclusive = 849,
++  MRB_SYM__feedvalue = 850,
++  MRB_SYM__imaginary = 851,
++  MRB_SYM_Q__infinite = 852,
++  MRB_SYM__inherited = 853,
++  MRB_SYM__ip_unpack = 854,
++  MRB_SYM_Q__iterator = 855,
++  MRB_SYM__localtime = 856,
++  MRB_SYM__magnitude = 857,
++  MRB_SYM__minmax_by = 858,
++  MRB_SYM_Q__negative = 859,
++  MRB_SYM__numerator = 860,
++  MRB_SYM__object_id = 861,
++  MRB_SYM__partition = 862,
++  MRB_SYM_Q__positive = 863,
++  MRB_SYM__prepended = 864,
++  MRB_SYM__protected = 865,
++  MRB_SYM__readlines = 866,
++  MRB_SYM__satisfied = 867,
++  MRB_SYM_Q__saturday = 868,
++  MRB_SYM__separator = 869,
++  MRB_SYM_B__swapcase = 870,
++  MRB_SYM__sysaccept = 871,
++  MRB_SYM_Q__thursday = 872,
++  MRB_SYM__transpose = 873,
++  MRB_SYM__unix_path = 874,
++  MRB_SYM__validated = 875,
++  MRB_SYM__values_at = 876,
++  MRB_IVSYM__canonname = 877,
++  MRB_IVSYM__feedvalue = 878,
++  MRB_IVSYM__lookahead = 879,
++  MRB_SYM__AI_PASSIVE = 880,
++  MRB_SYM__Comparable = 881,
++  MRB_SYM__Enumerable = 882,
++  MRB_SYM__Enumerator = 883,
++  MRB_SYM__FalseClass = 884,
++  MRB_SYM__FiberError = 885,
++  MRB_SYM__IPPROTO_AH = 886,
++  MRB_SYM__IPPROTO_IP = 887,
++  MRB_SYM__IP_HDRINCL = 888,
++  MRB_SYM__IP_OPTIONS = 889,
++  MRB_SYM__IP_PKTINFO = 890,
++  MRB_SYM__IP_RECVTOS = 891,
++  MRB_SYM__IP_RECVTTL = 892,
++  MRB_SYM__IP_RETOPTS = 893,
++  MRB_SYM__IndexError = 894,
++  MRB_SYM__MAX_10_EXP = 895,
++  MRB_SYM__MIN_10_EXP = 896,
++  MRB_SYM__MSG_CTRUNC = 897,
++  MRB_SYM__NI_MAXHOST = 898,
++  MRB_SYM__NI_MAXSERV = 899,
++  MRB_SYM__RangeError = 900,
++  MRB_SYM__SOCK_DGRAM = 901,
++  MRB_SYM__SOL_SOCKET = 902,
++  MRB_SYM__TCP_MAXSEG = 903,
++  MRB_SYM__UNIXServer = 904,
++  MRB_SYM__UNIXSocket = 905,
++  MRB_SYM____case_eqq = 906,
++  MRB_SYM____method__ = 907,
++  MRB_SYM__capitalize = 908,
++  MRB_SYM__class_eval = 909,
++  MRB_SYM__class_exec = 910,
++  MRB_SYM__codepoints = 911,
++  MRB_SYM__difference = 912,
++  MRB_SYM_Q__directory = 913,
++  MRB_SYM__drop_while = 914,
++  MRB_SYM__each_index = 915,
++  MRB_SYM__each_slice = 916,
++  MRB_SYM__each_value = 917,
++  MRB_SYM__fd_or_path = 918,
++  MRB_SYM__filter_map = 919,
++  MRB_SYM__find_index = 920,
++  MRB_SYM__getaddress = 921,
++  MRB_SYM__getpeereid = 922,
++  MRB_SYM__getsockopt = 923,
++  MRB_SYM__given_args = 924,
++  MRB_SYM_Q__has_value = 925,
++  MRB_SYM__initialize = 926,
++  MRB_SYM__ip_address = 927,
++  MRB_SYM__local_host = 928,
++  MRB_SYM__make_curry = 929,
++  MRB_SYM__parameters = 930,
++  MRB_SYM__path_token = 931,
++  MRB_SYM__recur_list = 932,
++  MRB_SYM__rpartition = 933,
++  MRB_SYM__self_arity = 934,
++  MRB_SYM__setsockopt = 935,
++  MRB_SYM__socketpair = 936,
++  MRB_SYM__step_ratio = 937,
++  MRB_SYM__superclass = 938,
++  MRB_SYM__take_while = 939,
++  MRB_SYM_Q__wednesday = 940,
++  MRB_SYM__with_index = 941,
++  MRB_SYM__yield_self = 942,
++  MRB_SYM__BasicObject = 943,
++  MRB_SYM__BasicSocket = 944,
++  MRB_SYM__DomainError = 945,
++  MRB_SYM__FNM_SYSCASE = 946,
++  MRB_SYM__FrozenError = 947,
++  MRB_SYM__IPPROTO_ESP = 948,
++  MRB_SYM__IPPROTO_RAW = 949,
++  MRB_SYM__IPPROTO_TCP = 950,
++  MRB_SYM__IPPROTO_UDP = 951,
++  MRB_SYM__IPV6_V6ONLY = 952,
++  MRB_SYM__IP_MSFILTER = 953,
++  MRB_SYM__IP_RECVOPTS = 954,
++  MRB_SYM__MSG_WAITALL = 955,
++  MRB_SYM__NI_NAMEREQD = 956,
++  MRB_SYM__ObjectSpace = 957,
++  MRB_SYM__RUBY_ENGINE = 958,
++  MRB_SYM__RegexpError = 959,
++  MRB_SYM__SOCK_STREAM = 960,
++  MRB_SYM__SO_RCVLOWAT = 961,
++  MRB_SYM__SO_RCVTIMEO = 962,
++  MRB_SYM__SO_SNDLOWAT = 963,
++  MRB_SYM__SO_SNDTIMEO = 964,
++  MRB_SYM__ScriptError = 965,
++  MRB_SYM__SocketError = 966,
++  MRB_SYM__SyntaxError = 967,
++  MRB_SYM__TCP_KEEPCNT = 968,
++  MRB_SYM__TCP_NODELAY = 969,
++  MRB_SYM__T_EXCEPTION = 970,
++  MRB_SYM____ary_index = 971,
++  MRB_SYM____members__ = 972,
++  MRB_SYM_E___is_socket = 973,
++  MRB_SYM___recur_list = 974,
++  MRB_SYM__attr_reader = 975,
++  MRB_SYM__attr_writer = 976,
++  MRB_SYM_B__capitalize = 977,
++  MRB_SYM__close_write = 978,
++  MRB_SYM__combination = 979,
++  MRB_SYM__default_dir = 980,
++  MRB_SYM__denominator = 981,
++  MRB_SYM__each_object = 982,
++  MRB_SYM__expand_path = 983,
++  MRB_SYM__getaddrinfo = 984,
++  MRB_SYM__gethostname = 985,
++  MRB_SYM__getnameinfo = 986,
++  MRB_SYM__getpeername = 987,
++  MRB_SYM__getsockname = 988,
++  MRB_SYM__module_eval = 989,
++  MRB_SYM__module_exec = 990,
++  MRB_SYM__next_values = 991,
++  MRB_SYM__peek_values = 992,
++  MRB_SYM__permutation = 993,
++  MRB_SYM__rectangular = 994,
++  MRB_SYM_Q__respond_to = 995,
++  MRB_SYM__sockaddr_in = 996,
++  MRB_SYM__sockaddr_un = 997,
++  MRB_SYM_Q__start_with = 998,
++  MRB_SYM_E__step_ratio = 999,
++  MRB_SYM__to_sockaddr = 1000,
++  MRB_SYM__with_object = 1001,
++  MRB_SYM__AI_CANONNAME = 1002,
++  MRB_SYM__FNM_CASEFOLD = 1003,
++  MRB_SYM__FNM_DOTMATCH = 1004,
++  MRB_SYM__FNM_NOESCAPE = 1005,
++  MRB_SYM__FNM_PATHNAME = 1006,
++  MRB_SYM__IPPROTO_ICMP = 1007,
++  MRB_SYM__IPPROTO_IPV6 = 1008,
++  MRB_SYM__IPPROTO_NONE = 1009,
++  MRB_SYM__MSG_DONTWAIT = 1010,
++  MRB_SYM__MSG_NOSIGNAL = 1011,
++  MRB_SYM__RUBY_VERSION = 1012,
++  MRB_SYM__RuntimeError = 1013,
++  MRB_SYM__SHARE_DELETE = 1014,
++  MRB_SYM__SO_BROADCAST = 1015,
++  MRB_SYM__SO_DONTROUTE = 1016,
++  MRB_SYM__SO_KEEPALIVE = 1017,
++  MRB_SYM__SO_NOSIGPIPE = 1018,
++  MRB_SYM__SO_OOBINLINE = 1019,
++  MRB_SYM__SO_REUSEADDR = 1020,
++  MRB_SYM__SO_REUSEPORT = 1021,
++  MRB_SYM__SO_TIMESTAMP = 1022,
++  MRB_SYM____attached__ = 1023,
++  MRB_SYM____printstr__ = 1024,
++  MRB_SYM___concat_path = 1025,
++  MRB_SYM___setnonblock = 1026,
++  MRB_SYM___sockaddr_in = 1027,
++  MRB_SYM__alias_method = 1028,
++  MRB_SYM_Q__block_given = 1029,
++  MRB_SYM__column_count = 1030,
++  MRB_SYM__column_index = 1031,
++  MRB_SYM__default_proc = 1032,
++  MRB_SYM__drive_prefix = 1033,
++  MRB_SYM_Q__exclude_end = 1034,
++  MRB_SYM__fetch_values = 1035,
++  MRB_SYM_Q__instance_of = 1036,
++  MRB_SYM__intersection = 1037,
++  MRB_SYM__remove_const = 1038,
++  MRB_SYM__reverse_each = 1039,
++  MRB_SYM__super_method = 1040,
++  MRB_SYM__undef_method = 1041,
++  MRB_IVSYM__init_with_fd = 1042,
++  MRB_SYM__ALT_SEPARATOR = 1043,
++  MRB_SYM__ArgumentError = 1044,
++  MRB_SYM__MRUBY_VERSION = 1045,
++  MRB_SYM__MSG_DONTROUTE = 1046,
++  MRB_SYM__NoMemoryError = 1047,
++  MRB_SYM__NoMethodError = 1048,
++  MRB_SYM__StandardError = 1049,
++  MRB_SYM__StopIteration = 1050,
++  MRB_SYM__TCP_KEEPINTVL = 1051,
++  MRB_SYM__UnboundMethod = 1052,
++  MRB_SYM____classname__ = 1053,
++  MRB_SYM____sub_replace = 1054,
++  MRB_SYM____update_hash = 1055,
++  MRB_SYM__attr_accessor = 1056,
++  MRB_SYM__bsearch_index = 1057,
++  MRB_SYM__const_missing = 1058,
++  MRB_SYM__count_objects = 1059,
++  MRB_SYM_E__default_proc = 1060,
++  MRB_SYM__define_method = 1061,
++  MRB_SYM__delete_prefix = 1062,
++  MRB_SYM__delete_suffix = 1063,
++  MRB_SYM__expanded_path = 1064,
++  MRB_SYM__extend_object = 1065,
++  MRB_SYM__in_lower_half = 1066,
++  MRB_SYM__instance_eval = 1067,
++  MRB_SYM__instance_exec = 1068,
++  MRB_SYM__local_address = 1069,
++  MRB_SYM__local_service = 1070,
++  MRB_SYM__recv_nonblock = 1071,
++  MRB_SYM__remove_method = 1072,
++  MRB_SYM__set_backtrace = 1073,
++  MRB_SYM__splitted_path = 1074,
++  MRB_SYM__AI_NUMERICHOST = 1075,
++  MRB_SYM__AI_NUMERICSERV = 1076,
++  MRB_SYM__IPPROTO_ICMPV6 = 1077,
++  MRB_SYM__IP_RECVDSTADDR = 1078,
++  MRB_SYM__IP_RECVRETOPTS = 1079,
++  MRB_SYM__LocalJumpError = 1080,
++  MRB_SYM__NI_NUMERICHOST = 1081,
++  MRB_SYM__NI_NUMERICSERV = 1082,
++  MRB_SYM__PATH_SEPARATOR = 1083,
++  MRB_SYM__SOCK_SEQPACKET = 1084,
++  MRB_SYM____upto_endless = 1085,
++  MRB_SYM_E__close_on_exec = 1086,
++  MRB_SYM_Q__close_on_exec = 1087,
++  MRB_SYM__collect_concat = 1088,
++  MRB_SYM_Q__const_defined = 1089,
++  MRB_SYM_B__delete_prefix = 1090,
++  MRB_SYM_B__delete_suffix = 1091,
++  MRB_SYM__each_codepoint = 1092,
++  MRB_SYM__interval_ratio = 1093,
++  MRB_SYM__method_missing = 1094,
++  MRB_SYM__method_removed = 1095,
++  MRB_SYM__paragraph_mode = 1096,
++  MRB_SYM__public_methods = 1097,
++  MRB_SYM__remote_address = 1098,
++  MRB_SYM__transform_keys = 1099,
++  MRB_SYM__IPPROTO_DSTOPTS = 1100,
++  MRB_SYM__IPPROTO_ROUTING = 1101,
++  MRB_SYM__IPV6_JOIN_GROUP = 1102,
++  MRB_SYM__IP_BLOCK_SOURCE = 1103,
++  MRB_SYM__IP_IPSEC_POLICY = 1104,
++  MRB_SYM__IP_MULTICAST_IF = 1105,
++  MRB_SYM__MRUBY_COPYRIGHT = 1106,
++  MRB_SYM___check_readable = 1107,
++  MRB_SYM__accept_nonblock = 1108,
++  MRB_SYM__append_features = 1109,
++  MRB_SYM__class_variables = 1110,
++  MRB_SYM__each_with_index = 1111,
++  MRB_SYM__initialize_copy = 1112,
++  MRB_SYM__instance_method = 1113,
++  MRB_SYM_E__interval_ratio = 1114,
++  MRB_SYM__local_variables = 1115,
++  MRB_SYM_Q__method_defined = 1116,
++  MRB_SYM__module_function = 1117,
++  MRB_SYM__pad_repetitions = 1118,
++  MRB_SYM__private_methods = 1119,
++  MRB_SYM__singleton_class = 1120,
++  MRB_SYM__source_location = 1121,
++  MRB_SYM_B__transform_keys = 1122,
++  MRB_SYM__FloatDomainError = 1123,
++  MRB_SYM__IPPROTO_FRAGMENT = 1124,
++  MRB_SYM__IPV6_LEAVE_GROUP = 1125,
++  MRB_SYM__IP_MULTICAST_TTL = 1126,
++  MRB_SYM__MCAST_JOIN_GROUP = 1127,
++  MRB_SYM__MRUBY_RELEASE_NO = 1128,
++  MRB_SYM__SystemStackError = 1129,
++  MRB_SYM___sockaddr_family = 1130,
++  MRB_SYM__connect_nonblock = 1131,
++  MRB_SYM__each_with_object = 1132,
++  MRB_SYM__global_variables = 1133,
++  MRB_SYM__included_modules = 1134,
++  MRB_SYM__inspect_sockaddr = 1135,
++  MRB_SYM__instance_methods = 1136,
++  MRB_SYM__new_with_prelude = 1137,
++  MRB_SYM__pack_sockaddr_in = 1138,
++  MRB_SYM__pack_sockaddr_un = 1139,
++  MRB_SYM__prepend_features = 1140,
++  MRB_SYM_Q__singleton_class = 1141,
++  MRB_SYM__singleton_method = 1142,
++  MRB_SYM__transform_values = 1143,
++  MRB_SYM__IPV6_MULTICAST_IF = 1144,
++  MRB_SYM__IPV6_UNICAST_HOPS = 1145,
++  MRB_SYM__IP_ADD_MEMBERSHIP = 1146,
++  MRB_SYM__IP_MULTICAST_LOOP = 1147,
++  MRB_SYM__IP_UNBLOCK_SOURCE = 1148,
++  MRB_SYM__MCAST_LEAVE_GROUP = 1149,
++  MRB_SYM__MRUBY_DESCRIPTION = 1150,
++  MRB_SYM__ZeroDivisionError = 1151,
++  MRB_SYM__expand_path_array = 1152,
++  MRB_SYM__generational_mode = 1153,
++  MRB_SYM__protected_methods = 1154,
++  MRB_SYM__recvfrom_nonblock = 1155,
++  MRB_SYM__singleton_methods = 1156,
++  MRB_SYM_B__transform_values = 1157,
++  MRB_SYM__IP_DROP_MEMBERSHIP = 1158,
++  MRB_SYM__MCAST_BLOCK_SOURCE = 1159,
++  MRB_SYM__MRUBY_RELEASE_DATE = 1160,
++  MRB_SYM__class_variable_get = 1161,
++  MRB_SYM__class_variable_set = 1162,
++  MRB_SYM_E__generational_mode = 1163,
++  MRB_SYM__instance_variables = 1164,
++  MRB_SYM__unpack_sockaddr_in = 1165,
++  MRB_SYM__unpack_sockaddr_un = 1166,
++  MRB_SYM__IPV6_MULTICAST_HOPS = 1167,
++  MRB_SYM__IPV6_MULTICAST_LOOP = 1168,
++  MRB_SYM__NotImplementedError = 1169,
++  MRB_SYM__RUBY_ENGINE_VERSION = 1170,
++  MRB_SYM_Q__respond_to_missing = 1171,
++  MRB_SYM__MCAST_UNBLOCK_SOURCE = 1172,
++  MRB_SYM____coerce_step_counter = 1173,
++  MRB_SYM__do_not_reverse_lookup = 1174,
++  MRB_SYM__enumerator_block_call = 1175,
++  MRB_SYM__instance_variable_get = 1176,
++  MRB_SYM__instance_variable_set = 1177,
++  MRB_SYM__remove_class_variable = 1178,
++  MRB_IVSYM__do_not_reverse_lookup = 1179,
++  MRB_SYM_E__do_not_reverse_lookup = 1180,
++  MRB_SYM__original_operator_name = 1181,
++  MRB_CVSYM__do_not_reverse_lookup = 1182,
++  MRB_SYM__MCAST_JOIN_SOURCE_GROUP = 1183,
++  MRB_SYM_Q__class_variable_defined = 1184,
++  MRB_SYM__define_singleton_method = 1185,
++  MRB_SYM__IP_ADD_SOURCE_MEMBERSHIP = 1186,
++  MRB_SYM__MCAST_LEAVE_SOURCE_GROUP = 1187,
++  MRB_SYM__remove_instance_variable = 1188,
++  MRB_SYM__IP_DROP_SOURCE_MEMBERSHIP = 1189,
++  MRB_SYM_Q__instance_variable_defined = 1190,
++  MRB_SYM__should_yield_subclass_instances = 1191,
++};
++
++#define MRB_PRESYM_MAX 1191
+diff --git a/include/mruby/presym/table.h b/include/mruby/presym/table.h
+new file mode 100644
+index 000000000..c8f5a60f9
+--- /dev/null
++++ b/include/mruby/presym/table.h
+@@ -0,0 +1,2387 @@
++static const uint16_t presym_length_table[] = {
++  1,	/* ! */
++  1,	/* % */
++  1,	/* & */
++  1,	/* * */
++  1,	/* + */
++  1,	/* - */
++  1,	/* / */
++  1,	/* < */
++  1,	/* > */
++  1,	/* E */
++  1,	/* ^ */
++  1,	/* ` */
++  1,	/* a */
++  1,	/* b */
++  1,	/* c */
++  1,	/* e */
++  1,	/* f */
++  1,	/* h */
++  1,	/* i */
++  1,	/* j */
++  1,	/* k */
++  1,	/* l */
++  1,	/* m */
++  1,	/* n */
++  1,	/* o */
++  1,	/* p */
++  1,	/* r */
++  1,	/* s */
++  1,	/* t */
++  1,	/* v */
++  1,	/* w */
++  1,	/* x */
++  1,	/* y */
++  1,	/* z */
++  1,	/* | */
++  1,	/* ~ */
++  2,	/* != */
++  2,	/* !~ */
++  2,	/* $0 */
++  2,	/* $? */
++  2,	/* && */
++  2,	/* ** */
++  2,	/* +@ */
++  2,	/* -@ */
++  2,	/* << */
++  2,	/* <= */
++  2,	/* == */
++  2,	/* =~ */
++  2,	/* >= */
++  2,	/* >> */
++  2,	/* GC */
++  2,	/* IO */
++  2,	/* PI */
++  2,	/* [] */
++  2,	/* af */
++  2,	/* ai */
++  2,	/* ar */
++  2,	/* at */
++  2,	/* bi */
++  2,	/* bs */
++  2,	/* e0 */
++  2,	/* e2 */
++  2,	/* e3 */
++  2,	/* ed */
++  2,	/* ei */
++  2,	/* fd */
++  2,	/* gm */
++  2,	/* in */
++  2,	/* io */
++  2,	/* ip */
++  2,	/* lz */
++  2,	/* nk */
++  2,	/* nv */
++  2,	/* op */
++  2,	/* rs */
++  2,	/* sa */
++  2,	/* sc */
++  2,	/* sv */
++  2,	/* tr */
++  2,	/* vs */
++  2,	/* || */
++  3,	/* <=> */
++  3,	/* === */
++  3,	/* @af */
++  3,	/* DIG */
++  3,	/* MAX */
++  3,	/* MIN */
++  3,	/* NAN */
++  3,	/* []= */
++  3,	/* abs */
++  3,	/* arg */
++  3,	/* ary */
++  3,	/* beg */
++  3,	/* blk */
++  3,	/* buf */
++  3,	/* chr */
++  3,	/* cls */
++  3,	/* cmd */
++  3,	/* cmp */
++  3,	/* cos */
++  3,	/* day */
++  3,	/* dig */
++  3,	/* dir */
++  3,	/* div */
++  3,	/* dup */
++  3,	/* end */
++  3,	/* eof */
++  3,	/* erf */
++  3,	/* err */
++  3,	/* exp */
++  3,	/* fib */
++  3,	/* hex */
++  3,	/* idx */
++  3,	/* int */
++  3,	/* ip? */
++  3,	/* key */
++  3,	/* len */
++  3,	/* lhs */
++  3,	/* lim */
++  3,	/* log */
++  3,	/* low */
++  3,	/* map */
++  3,	/* max */
++  3,	/* mid */
++  3,	/* min */
++  3,	/* mon */
++  3,	/* msg */
++  3,	/* new */
++  3,	/* now */
++  3,	/* num */
++  3,	/* obj */
++  3,	/* oct */
++  3,	/* opt */
++  3,	/* ord */
++  3,	/* out */
++  3,	/* pat */
++  3,	/* pid */
++  3,	/* pop */
++  3,	/* pos */
++  3,	/* pre */
++  3,	/* quo */
++  3,	/* req */
++  3,	/* res */
++  3,	/* ret */
++  3,	/* rhs */
++  3,	/* row */
++  3,	/* sec */
++  3,	/* sep */
++  3,	/* sin */
++  3,	/* str */
++  3,	/* sub */
++  3,	/* sym */
++  3,	/* tan */
++  3,	/* tap */
++  3,	/* tcp */
++  3,	/* tmp */
++  3,	/* tr! */
++  3,	/* udp */
++  3,	/* utc */
++  3,	/* val */
++  3,	/* zip */
++  4,	/* @buf */
++  4,	/* @dst */
++  4,	/* @fib */
++  4,	/* @obj */
++  4,	/* ARGV */
++  4,	/* EXCL */
++  4,	/* FREE */
++  4,	/* File */
++  4,	/* Hash */
++  4,	/* Lazy */
++  4,	/* Math */
++  4,	/* NONE */
++  4,	/* NULL */
++  4,	/* Proc */
++  4,	/* RDWR */
++  4,	/* SYNC */
++  4,	/* Time */
++  4,	/* _new */
++  4,	/* abs2 */
++  4,	/* acos */
++  4,	/* addr */
++  4,	/* all? */
++  4,	/* any? */
++  4,	/* arg0 */
++  4,	/* arg1 */
++  4,	/* arg2 */
++  4,	/* args */
++  4,	/* argv */
++  4,	/* asin */
++  4,	/* atan */
++  4,	/* attr */
++  4,	/* bind */
++  4,	/* bool */
++  4,	/* call */
++  4,	/* cbrt */
++  4,	/* ceil */
++  4,	/* char */
++  4,	/* chop */
++  4,	/* conj */
++  4,	/* cosh */
++  4,	/* curr */
++  4,	/* data */
++  4,	/* drop */
++  4,	/* dst? */
++  4,	/* dump */
++  4,	/* each */
++  4,	/* elem */
++  4,	/* eof? */
++  4,	/* epos */
++  4,	/* eql? */
++  4,	/* erfc */
++  4,	/* eval */
++  4,	/* fail */
++  4,	/* fdiv */
++  4,	/* feed */
++  4,	/* file */
++  4,	/* fill */
++  4,	/* find */
++  4,	/* flag */
++  4,	/* getc */
++  4,	/* gets */
++  4,	/* gmt? */
++  4,	/* grep */
++  4,	/* gsub */
++  4,	/* hash */
++  4,	/* high */
++  4,	/* host */
++  4,	/* hour */
++  4,	/* idx2 */
++  4,	/* imag */
++  4,	/* init */
++  4,	/* join */
++  4,	/* key? */
++  4,	/* keys */
++  4,	/* lary */
++  4,	/* last */
++  4,	/* lazy */
++  4,	/* left */
++  4,	/* lidx */
++  4,	/* line */
++  4,	/* log2 */
++  4,	/* loop */
++  4,	/* lval */
++  4,	/* map! */
++  4,	/* mday */
++  4,	/* mesg */
++  4,	/* meth */
++  4,	/* mode */
++  4,	/* name */
++  4,	/* nan? */
++  4,	/* next */
++  4,	/* nil? */
++  4,	/* none */
++  4,	/* ntop */
++  4,	/* obj= */
++  4,	/* one? */
++  4,	/* open */
++  4,	/* opts */
++  4,	/* orig */
++  4,	/* pack */
++  4,	/* pair */
++  4,	/* path */
++  4,	/* peek */
++  4,	/* perm */
++  4,	/* pipe */
++  4,	/* plen */
++  4,	/* port */
++  4,	/* pos= */
++  4,	/* post */
++  4,	/* proc */
++  4,	/* pton */
++  4,	/* push */
++  4,	/* puts */
++  4,	/* rand */
++  4,	/* read */
++  4,	/* real */
++  4,	/* rect */
++  4,	/* recv */
++  4,	/* rest */
++  4,	/* ridx */
++  4,	/* rval */
++  4,	/* sary */
++  4,	/* seek */
++  4,	/* send */
++  4,	/* sinh */
++  4,	/* size */
++  4,	/* sock */
++  4,	/* sort */
++  4,	/* sqrt */
++  4,	/* step */
++  4,	/* str2 */
++  4,	/* sub! */
++  4,	/* succ */
++  4,	/* sync */
++  4,	/* take */
++  4,	/* tanh */
++  4,	/* tell */
++  4,	/* then */
++  4,	/* this */
++  4,	/* to_a */
++  4,	/* to_c */
++  4,	/* to_f */
++  4,	/* to_h */
++  4,	/* to_i */
++  4,	/* to_r */
++  4,	/* to_s */
++  4,	/* tr_s */
++  4,	/* tty? */
++  4,	/* type */
++  4,	/* uniq */
++  4,	/* unix */
++  4,	/* upto */
++  4,	/* usec */
++  4,	/* user */
++  4,	/* utc? */
++  4,	/* vals */
++  4,	/* warn */
++  4,	/* wday */
++  4,	/* yday */
++  4,	/* year */
++  4,	/* zone */
++  5,	/* @args */
++  5,	/* @data */
++  5,	/* @meth */
++  5,	/* @name */
++  5,	/* @path */
++  5,	/* @proc */
++  5,	/* Array */
++  5,	/* CREAT */
++  5,	/* Class */
++  5,	/* DSYNC */
++  5,	/* Fiber */
++  5,	/* Float */
++  5,	/* RADIX */
++  5,	/* RSYNC */
++  5,	/* Range */
++  5,	/* STDIN */
++  5,	/* TOTAL */
++  5,	/* TRUNC */
++  5,	/* T_ENV */
++  5,	/* _bind */
++  5,	/* _name */
++  5,	/* _pipe */
++  5,	/* _proc */
++  5,	/* _recv */
++  5,	/* acosh */
++  5,	/* angle */
++  5,	/* args= */
++  5,	/* arity */
++  5,	/* array */
++  5,	/* ary_F */
++  5,	/* ary_T */
++  5,	/* asinh */
++  5,	/* assoc */
++  5,	/* atan2 */
++  5,	/* atanh */
++  5,	/* begin */
++  5,	/* block */
++  5,	/* bytes */
++  5,	/* chars */
++  5,	/* chmod */
++  5,	/* chomp */
++  5,	/* chop! */
++  5,	/* clamp */
++  5,	/* class */
++  5,	/* clear */
++  5,	/* clone */
++  5,	/* close */
++  5,	/* count */
++  5,	/* ctime */
++  5,	/* curry */
++  5,	/* cycle */
++  5,	/* depth */
++  5,	/* enums */
++  5,	/* fetch */
++  5,	/* field */
++  5,	/* file? */
++  5,	/* first */
++  5,	/* flags */
++  5,	/* flock */
++  5,	/* floor */
++  5,	/* flush */
++  5,	/* fname */
++  5,	/* force */
++  5,	/* found */
++  5,	/* frexp */
++  5,	/* getgm */
++  5,	/* gsub! */
++  5,	/* hypot */
++  5,	/* index */
++  5,	/* ipv4? */
++  5,	/* ipv6? */
++  5,	/* is_a? */
++  5,	/* ldexp */
++  5,	/* level */
++  5,	/* limit */
++  5,	/* lines */
++  5,	/* ljust */
++  5,	/* local */
++  5,	/* log10 */
++  5,	/* lsize */
++  5,	/* merge */
++  5,	/* meth= */
++  5,	/* month */
++  5,	/* mtime */
++  5,	/* names */
++  5,	/* next! */
++  5,	/* none? */
++  5,	/* other */
++  5,	/* owner */
++  5,	/* phase */
++  5,	/* pipe? */
++  5,	/* polar */
++  5,	/* popen */
++  5,	/* pproc */
++  5,	/* pread */
++  5,	/* print */
++  5,	/* proto */
++  5,	/* raise */
++  5,	/* real? */
++  5,	/* right */
++  5,	/* rjust */
++  5,	/* round */
++  5,	/* shift */
++  5,	/* size? */
++  5,	/* slice */
++  5,	/* sort! */
++  5,	/* split */
++  5,	/* srand */
++  5,	/* stack */
++  5,	/* start */
++  5,	/* state */
++  5,	/* store */
++  5,	/* strip */
++  5,	/* succ! */
++  5,	/* sync= */
++  5,	/* taken */
++  5,	/* tally */
++  5,	/* times */
++  5,	/* tr_s! */
++  5,	/* umask */
++  5,	/* union */
++  5,	/* uniq! */
++  5,	/* unix? */
++  5,	/* value */
++  5,	/* write */
++  5,	/* yield */
++  5,	/* zero? */
++  6,	/* $DEBUG */
++  6,	/* $stdin */
++  6,	/* @level */
++  6,	/* AF_MAX */
++  6,	/* APPEND */
++  6,	/* BINARY */
++  6,	/* DIRECT */
++  6,	/* Fixnum */
++  6,	/* IP_TOS */
++  6,	/* IP_TTL */
++  6,	/* Kernel */
++  6,	/* Method */
++  6,	/* Module */
++  6,	/* NOCTTY */
++  6,	/* Object */
++  6,	/* Option */
++  6,	/* RDONLY */
++  6,	/* Random */
++  6,	/* Regexp */
++  6,	/* STDERR */
++  6,	/* STDOUT */
++  6,	/* Socket */
++  6,	/* Status */
++  6,	/* String */
++  6,	/* Struct */
++  6,	/* Symbol */
++  6,	/* T_CPTR */
++  6,	/* T_DATA */
++  6,	/* T_FREE */
++  6,	/* T_HASH */
++  6,	/* T_PROC */
++  6,	/* T_TRUE */
++  6,	/* WRONLY */
++  6,	/* __id__ */
++  6,	/* _getwd */
++  6,	/* _klass */
++  6,	/* _mtime */
++  6,	/* _owner */
++  6,	/* _popen */
++  6,	/* accept */
++  6,	/* alive? */
++  6,	/* append */
++  6,	/* caller */
++  6,	/* chomp! */
++  6,	/* concat */
++  6,	/* cover? */
++  6,	/* delete */
++  6,	/* detect */
++  6,	/* divmod */
++  6,	/* domain */
++  6,	/* downto */
++  6,	/* empty? */
++  6,	/* enable */
++  6,	/* equal? */
++  6,	/* except */
++  6,	/* exist? */
++  6,	/* extend */
++  6,	/* family */
++  6,	/* fileno */
++  6,	/* filter */
++  6,	/* for_fd */
++  6,	/* format */
++  6,	/* freeze */
++  6,	/* getutc */
++  6,	/* gmtime */
++  6,	/* ifnone */
++  6,	/* inject */
++  6,	/* insert */
++  6,	/* intern */
++  6,	/* invert */
++  6,	/* isatty */
++  6,	/* itself */
++  6,	/* lambda */
++  6,	/* length */
++  6,	/* linger */
++  6,	/* listen */
++  6,	/* lstrip */
++  6,	/* max_by */
++  6,	/* maxlen */
++  6,	/* merge! */
++  6,	/* method */
++  6,	/* min_by */
++  6,	/* minmax */
++  6,	/* mktime */
++  6,	/* object */
++  6,	/* offset */
++  6,	/* outbuf */
++  6,	/* padstr */
++  6,	/* printf */
++  6,	/* public */
++  6,	/* pwrite */
++  6,	/* rassoc */
++  6,	/* reduce */
++  6,	/* rehash */
++  6,	/* reject */
++  6,	/* rename */
++  6,	/* result */
++  6,	/* resume */
++  6,	/* rewind */
++  6,	/* rindex */
++  6,	/* rotate */
++  6,	/* rstrip */
++  6,	/* sample */
++  6,	/* select */
++  6,	/* slice! */
++  6,	/* string */
++  6,	/* strip! */
++  6,	/* substr */
++  6,	/* to_int */
++  6,	/* to_str */
++  6,	/* to_sym */
++  6,	/* unbind */
++  6,	/* ungetc */
++  6,	/* unlink */
++  6,	/* unpack */
++  6,	/* upcase */
++  6,	/* update */
++  6,	/* value? */
++  6,	/* values */
++  6,	/* whence */
++  7,	/* $stderr */
++  7,	/* $stdout */
++  7,	/* @family */
++  7,	/* AF_INET */
++  7,	/* AF_LINK */
++  7,	/* AF_UNIX */
++  7,	/* Complex */
++  7,	/* DEFAULT */
++  7,	/* EPSILON */
++  7,	/* IOError */
++  7,	/* Integer */
++  7,	/* LOCK_EX */
++  7,	/* LOCK_NB */
++  7,	/* LOCK_SH */
++  7,	/* LOCK_UN */
++  7,	/* MAX_EXP */
++  7,	/* MIN_EXP */
++  7,	/* MSG_EOR */
++  7,	/* MSG_OOB */
++  7,	/* NOATIME */
++  7,	/* Numeric */
++  7,	/* PF_INET */
++  7,	/* PF_LINK */
++  7,	/* PF_UNIX */
++  7,	/* Process */
++  7,	/* SHUT_RD */
++  7,	/* SHUT_WR */
++  7,	/* SO_TYPE */
++  7,	/* TMPFILE */
++  7,	/* T_ARRAY */
++  7,	/* T_CLASS */
++  7,	/* T_FALSE */
++  7,	/* T_FIBER */
++  7,	/* T_FLOAT */
++  7,	/* T_RANGE */
++  7,	/* T_UNDEF */
++  7,	/* Yielder */
++  7,	/* __div__ */
++  7,	/* __lines */
++  7,	/* _accept */
++  7,	/* _lastai */
++  7,	/* _listen */
++  7,	/* _socket */
++  7,	/* afamily */
++  7,	/* asctime */
++  7,	/* backlog */
++  7,	/* bsearch */
++  7,	/* casecmp */
++  7,	/* closed? */
++  7,	/* collect */
++  7,	/* command */
++  7,	/* compact */
++  7,	/* compile */
++  7,	/* connect */
++  7,	/* consume */
++  7,	/* current */
++  7,	/* default */
++  7,	/* delete! */
++  7,	/* dirname */
++  7,	/* disable */
++  7,	/* dropped */
++  7,	/* entries */
++  7,	/* exists? */
++  7,	/* extname */
++  7,	/* filter! */
++  7,	/* finite? */
++  7,	/* flatten */
++  7,	/* foreach */
++  7,	/* friday? */
++  7,	/* frozen? */
++  7,	/* getbyte */
++  7,	/* id2name */
++  7,	/* include */
++  7,	/* inspect */
++  7,	/* integer */
++  7,	/* ip_port */
++  7,	/* keep_if */
++  7,	/* keyrest */
++  7,	/* lambda? */
++  7,	/* lstrip! */
++  7,	/* max_cmp */
++  7,	/* member? */
++  7,	/* members */
++  7,	/* message */
++  7,	/* methods */
++  7,	/* min_cmp */
++  7,	/* modules */
++  7,	/* monday? */
++  7,	/* nesting */
++  7,	/* new_key */
++  7,	/* nobits? */
++  7,	/* numeric */
++  7,	/* optname */
++  7,	/* padding */
++  7,	/* pattern */
++  7,	/* pfamily */
++  7,	/* pointer */
++  7,	/* prepend */
++  7,	/* private */
++  7,	/* produce */
++  7,	/* reject! */
++  7,	/* replace */
++  7,	/* result= */
++  7,	/* reverse */
++  7,	/* rotate! */
++  7,	/* rstrip! */
++  7,	/* select! */
++  7,	/* sep_len */
++  7,	/* service */
++  7,	/* setbyte */
++  7,	/* shuffle */
++  7,	/* socket? */
++  7,	/* sort_by */
++  7,	/* sprintf */
++  7,	/* squeeze */
++  7,	/* sunday? */
++  7,	/* symlink */
++  7,	/* sysopen */
++  7,	/* sysread */
++  7,	/* sysseek */
++  7,	/* to_enum */
++  7,	/* to_path */
++  7,	/* to_proc */
++  7,	/* unpack1 */
++  7,	/* unshift */
++  7,	/* upcase! */
++  7,	/* yielder */
++  8,	/* @optname */
++  8,	/* AF_INET6 */
++  8,	/* AF_LOCAL */
++  8,	/* AF_ROUTE */
++  8,	/* Addrinfo */
++  8,	/* BUF_SIZE */
++  8,	/* EOFError */
++  8,	/* FileTest */
++  8,	/* INFINITY */
++  8,	/* IPSocket */
++  8,	/* KeyError */
++  8,	/* MANT_DIG */
++  8,	/* MSG_PEEK */
++  8,	/* NI_DGRAM */
++  8,	/* NOFOLLOW */
++  8,	/* NONBLOCK */
++  8,	/* NilClass */
++  8,	/* PF_INET6 */
++  8,	/* PF_LOCAL */
++  8,	/* PF_ROUTE */
++  8,	/* Rational */
++  8,	/* SEEK_CUR */
++  8,	/* SEEK_END */
++  8,	/* SEEK_SET */
++  8,	/* SOCK_RAW */
++  8,	/* SO_DEBUG */
++  8,	/* SO_ERROR */
++  8,	/* T_ICLASS */
++  8,	/* T_MODULE */
++  8,	/* T_OBJECT */
++  8,	/* T_SCLASS */
++  8,	/* T_STRING */
++  8,	/* T_SYMBOL */
++  8,	/* __ary_eq */
++  8,	/* __delete */
++  8,	/* __send__ */
++  8,	/* __svalue */
++  8,	/* __to_int */
++  8,	/* __to_str */
++  8,	/* _accept2 */
++  8,	/* _bufread */
++  8,	/* _connect */
++  8,	/* _gethome */
++  8,	/* _inspect */
++  8,	/* allbits? */
++  8,	/* allocate */
++  8,	/* anybits? */
++  8,	/* basename */
++  8,	/* between? */
++  8,	/* bytesize */
++  8,	/* casecmp? */
++  8,	/* collect! */
++  8,	/* compact! */
++  8,	/* default= */
++  8,	/* downcase */
++  8,	/* dropping */
++  8,	/* each_key */
++  8,	/* enum_for */
++  8,	/* extended */
++  8,	/* filename */
++  8,	/* find_all */
++  8,	/* flat_map */
++  8,	/* flatten! */
++  8,	/* getlocal */
++  8,	/* group_by */
++  8,	/* has_key? */
++  8,	/* home_dir */
++  8,	/* include? */
++  8,	/* included */
++  8,	/* kind_of? */
++  8,	/* modified */
++  8,	/* new_args */
++  8,	/* nodename */
++  8,	/* nonzero? */
++  8,	/* peeraddr */
++  8,	/* protocol */
++  8,	/* readchar */
++  8,	/* readline */
++  8,	/* readlink */
++  8,	/* realpath */
++  8,	/* receiver */
++  8,	/* recvfrom */
++  8,	/* reverse! */
++  8,	/* self_len */
++  8,	/* servname */
++  8,	/* shuffle! */
++  8,	/* shutdown */
++  8,	/* sockaddr */
++  8,	/* socktype */
++  8,	/* squeeze! */
++  8,	/* str_each */
++  8,	/* swapcase */
++  8,	/* symlink? */
++  8,	/* syswrite */
++  8,	/* template */
++  8,	/* transfer */
++  8,	/* truncate */
++  8,	/* tuesday? */
++  9,	/* @hostname */
++  9,	/* @protocol */
++  9,	/* @sockaddr */
++  9,	/* @socktype */
++  9,	/* @stop_exc */
++  9,	/* AF_UNSPEC */
++  9,	/* Constants */
++  9,	/* Exception */
++  9,	/* Generator */
++  9,	/* MSG_TRUNC */
++  9,	/* NI_NOFQDN */
++  9,	/* NameError */
++  9,	/* PF_UNSPEC */
++  9,	/* SEPARATOR */
++  9,	/* SHUT_RDWR */
++  9,	/* SO_LINGER */
++  9,	/* SO_RCVBUF */
++  9,	/* SO_SNDBUF */
++  9,	/* TCPServer */
++  9,	/* TCPSocket */
++  9,	/* T_INTEGER */
++  9,	/* T_ISTRUCT */
++  9,	/* TrueClass */
++  9,	/* TypeError */
++  9,	/* UDPSocket */
++  9,	/* __ary_cmp */
++  9,	/* __outer__ */
++  9,	/* _allocate */
++  9,	/* _gc_root_ */
++  9,	/* _read_buf */
++  9,	/* _readchar */
++  9,	/* _recvfrom */
++  9,	/* _sysclose */
++  9,	/* _to_array */
++  9,	/* ancestors */
++  9,	/* backtrace */
++  9,	/* base_path */
++  9,	/* bind_call */
++  9,	/* byteslice */
++  9,	/* canonname */
++  9,	/* conjugate */
++  9,	/* const_get */
++  9,	/* const_set */
++  9,	/* constants */
++  9,	/* delete_at */
++  9,	/* delete_if */
++  9,	/* downcase! */
++  9,	/* each_byte */
++  9,	/* each_char */
++  9,	/* each_cons */
++  9,	/* each_line */
++  9,	/* each_pair */
++  9,	/* end_with? */
++  9,	/* exception */
++  9,	/* exclusive */
++  9,	/* feedvalue */
++  9,	/* imaginary */
++  9,	/* infinite? */
++  9,	/* inherited */
++  9,	/* ip_unpack */
++  9,	/* iterator? */
++  9,	/* localtime */
++  9,	/* magnitude */
++  9,	/* minmax_by */
++  9,	/* negative? */
++  9,	/* numerator */
++  9,	/* object_id */
++  9,	/* partition */
++  9,	/* positive? */
++  9,	/* prepended */
++  9,	/* protected */
++  9,	/* readlines */
++  9,	/* satisfied */
++  9,	/* saturday? */
++  9,	/* separator */
++  9,	/* swapcase! */
++  9,	/* sysaccept */
++  9,	/* thursday? */
++  9,	/* transpose */
++  9,	/* unix_path */
++  9,	/* validated */
++  9,	/* values_at */
++  10,	/* @canonname */
++  10,	/* @feedvalue */
++  10,	/* @lookahead */
++  10,	/* AI_PASSIVE */
++  10,	/* Comparable */
++  10,	/* Enumerable */
++  10,	/* Enumerator */
++  10,	/* FalseClass */
++  10,	/* FiberError */
++  10,	/* IPPROTO_AH */
++  10,	/* IPPROTO_IP */
++  10,	/* IP_HDRINCL */
++  10,	/* IP_OPTIONS */
++  10,	/* IP_PKTINFO */
++  10,	/* IP_RECVTOS */
++  10,	/* IP_RECVTTL */
++  10,	/* IP_RETOPTS */
++  10,	/* IndexError */
++  10,	/* MAX_10_EXP */
++  10,	/* MIN_10_EXP */
++  10,	/* MSG_CTRUNC */
++  10,	/* NI_MAXHOST */
++  10,	/* NI_MAXSERV */
++  10,	/* RangeError */
++  10,	/* SOCK_DGRAM */
++  10,	/* SOL_SOCKET */
++  10,	/* TCP_MAXSEG */
++  10,	/* UNIXServer */
++  10,	/* UNIXSocket */
++  10,	/* __case_eqq */
++  10,	/* __method__ */
++  10,	/* capitalize */
++  10,	/* class_eval */
++  10,	/* class_exec */
++  10,	/* codepoints */
++  10,	/* difference */
++  10,	/* directory? */
++  10,	/* drop_while */
++  10,	/* each_index */
++  10,	/* each_slice */
++  10,	/* each_value */
++  10,	/* fd_or_path */
++  10,	/* filter_map */
++  10,	/* find_index */
++  10,	/* getaddress */
++  10,	/* getpeereid */
++  10,	/* getsockopt */
++  10,	/* given_args */
++  10,	/* has_value? */
++  10,	/* initialize */
++  10,	/* ip_address */
++  10,	/* local_host */
++  10,	/* make_curry */
++  10,	/* parameters */
++  10,	/* path_token */
++  10,	/* recur_list */
++  10,	/* rpartition */
++  10,	/* self_arity */
++  10,	/* setsockopt */
++  10,	/* socketpair */
++  10,	/* step_ratio */
++  10,	/* superclass */
++  10,	/* take_while */
++  10,	/* wednesday? */
++  10,	/* with_index */
++  10,	/* yield_self */
++  11,	/* BasicObject */
++  11,	/* BasicSocket */
++  11,	/* DomainError */
++  11,	/* FNM_SYSCASE */
++  11,	/* FrozenError */
++  11,	/* IPPROTO_ESP */
++  11,	/* IPPROTO_RAW */
++  11,	/* IPPROTO_TCP */
++  11,	/* IPPROTO_UDP */
++  11,	/* IPV6_V6ONLY */
++  11,	/* IP_MSFILTER */
++  11,	/* IP_RECVOPTS */
++  11,	/* MSG_WAITALL */
++  11,	/* NI_NAMEREQD */
++  11,	/* ObjectSpace */
++  11,	/* RUBY_ENGINE */
++  11,	/* RegexpError */
++  11,	/* SOCK_STREAM */
++  11,	/* SO_RCVLOWAT */
++  11,	/* SO_RCVTIMEO */
++  11,	/* SO_SNDLOWAT */
++  11,	/* SO_SNDTIMEO */
++  11,	/* ScriptError */
++  11,	/* SocketError */
++  11,	/* SyntaxError */
++  11,	/* TCP_KEEPCNT */
++  11,	/* TCP_NODELAY */
++  11,	/* T_EXCEPTION */
++  11,	/* __ary_index */
++  11,	/* __members__ */
++  11,	/* _is_socket= */
++  11,	/* _recur_list */
++  11,	/* attr_reader */
++  11,	/* attr_writer */
++  11,	/* capitalize! */
++  11,	/* close_write */
++  11,	/* combination */
++  11,	/* default_dir */
++  11,	/* denominator */
++  11,	/* each_object */
++  11,	/* expand_path */
++  11,	/* getaddrinfo */
++  11,	/* gethostname */
++  11,	/* getnameinfo */
++  11,	/* getpeername */
++  11,	/* getsockname */
++  11,	/* module_eval */
++  11,	/* module_exec */
++  11,	/* next_values */
++  11,	/* peek_values */
++  11,	/* permutation */
++  11,	/* rectangular */
++  11,	/* respond_to? */
++  11,	/* sockaddr_in */
++  11,	/* sockaddr_un */
++  11,	/* start_with? */
++  11,	/* step_ratio= */
++  11,	/* to_sockaddr */
++  11,	/* with_object */
++  12,	/* AI_CANONNAME */
++  12,	/* FNM_CASEFOLD */
++  12,	/* FNM_DOTMATCH */
++  12,	/* FNM_NOESCAPE */
++  12,	/* FNM_PATHNAME */
++  12,	/* IPPROTO_ICMP */
++  12,	/* IPPROTO_IPV6 */
++  12,	/* IPPROTO_NONE */
++  12,	/* MSG_DONTWAIT */
++  12,	/* MSG_NOSIGNAL */
++  12,	/* RUBY_VERSION */
++  12,	/* RuntimeError */
++  12,	/* SHARE_DELETE */
++  12,	/* SO_BROADCAST */
++  12,	/* SO_DONTROUTE */
++  12,	/* SO_KEEPALIVE */
++  12,	/* SO_NOSIGPIPE */
++  12,	/* SO_OOBINLINE */
++  12,	/* SO_REUSEADDR */
++  12,	/* SO_REUSEPORT */
++  12,	/* SO_TIMESTAMP */
++  12,	/* __attached__ */
++  12,	/* __printstr__ */
++  12,	/* _concat_path */
++  12,	/* _setnonblock */
++  12,	/* _sockaddr_in */
++  12,	/* alias_method */
++  12,	/* block_given? */
++  12,	/* column_count */
++  12,	/* column_index */
++  12,	/* default_proc */
++  12,	/* drive_prefix */
++  12,	/* exclude_end? */
++  12,	/* fetch_values */
++  12,	/* instance_of? */
++  12,	/* intersection */
++  12,	/* remove_const */
++  12,	/* reverse_each */
++  12,	/* super_method */
++  12,	/* undef_method */
++  13,	/* @init_with_fd */
++  13,	/* ALT_SEPARATOR */
++  13,	/* ArgumentError */
++  13,	/* MRUBY_VERSION */
++  13,	/* MSG_DONTROUTE */
++  13,	/* NoMemoryError */
++  13,	/* NoMethodError */
++  13,	/* StandardError */
++  13,	/* StopIteration */
++  13,	/* TCP_KEEPINTVL */
++  13,	/* UnboundMethod */
++  13,	/* __classname__ */
++  13,	/* __sub_replace */
++  13,	/* __update_hash */
++  13,	/* attr_accessor */
++  13,	/* bsearch_index */
++  13,	/* const_missing */
++  13,	/* count_objects */
++  13,	/* default_proc= */
++  13,	/* define_method */
++  13,	/* delete_prefix */
++  13,	/* delete_suffix */
++  13,	/* expanded_path */
++  13,	/* extend_object */
++  13,	/* in_lower_half */
++  13,	/* instance_eval */
++  13,	/* instance_exec */
++  13,	/* local_address */
++  13,	/* local_service */
++  13,	/* recv_nonblock */
++  13,	/* remove_method */
++  13,	/* set_backtrace */
++  13,	/* splitted_path */
++  14,	/* AI_NUMERICHOST */
++  14,	/* AI_NUMERICSERV */
++  14,	/* IPPROTO_ICMPV6 */
++  14,	/* IP_RECVDSTADDR */
++  14,	/* IP_RECVRETOPTS */
++  14,	/* LocalJumpError */
++  14,	/* NI_NUMERICHOST */
++  14,	/* NI_NUMERICSERV */
++  14,	/* PATH_SEPARATOR */
++  14,	/* SOCK_SEQPACKET */
++  14,	/* __upto_endless */
++  14,	/* close_on_exec= */
++  14,	/* close_on_exec? */
++  14,	/* collect_concat */
++  14,	/* const_defined? */
++  14,	/* delete_prefix! */
++  14,	/* delete_suffix! */
++  14,	/* each_codepoint */
++  14,	/* interval_ratio */
++  14,	/* method_missing */
++  14,	/* method_removed */
++  14,	/* paragraph_mode */
++  14,	/* public_methods */
++  14,	/* remote_address */
++  14,	/* transform_keys */
++  15,	/* IPPROTO_DSTOPTS */
++  15,	/* IPPROTO_ROUTING */
++  15,	/* IPV6_JOIN_GROUP */
++  15,	/* IP_BLOCK_SOURCE */
++  15,	/* IP_IPSEC_POLICY */
++  15,	/* IP_MULTICAST_IF */
++  15,	/* MRUBY_COPYRIGHT */
++  15,	/* _check_readable */
++  15,	/* accept_nonblock */
++  15,	/* append_features */
++  15,	/* class_variables */
++  15,	/* each_with_index */
++  15,	/* initialize_copy */
++  15,	/* instance_method */
++  15,	/* interval_ratio= */
++  15,	/* local_variables */
++  15,	/* method_defined? */
++  15,	/* module_function */
++  15,	/* pad_repetitions */
++  15,	/* private_methods */
++  15,	/* singleton_class */
++  15,	/* source_location */
++  15,	/* transform_keys! */
++  16,	/* FloatDomainError */
++  16,	/* IPPROTO_FRAGMENT */
++  16,	/* IPV6_LEAVE_GROUP */
++  16,	/* IP_MULTICAST_TTL */
++  16,	/* MCAST_JOIN_GROUP */
++  16,	/* MRUBY_RELEASE_NO */
++  16,	/* SystemStackError */
++  16,	/* _sockaddr_family */
++  16,	/* connect_nonblock */
++  16,	/* each_with_object */
++  16,	/* global_variables */
++  16,	/* included_modules */
++  16,	/* inspect_sockaddr */
++  16,	/* instance_methods */
++  16,	/* new_with_prelude */
++  16,	/* pack_sockaddr_in */
++  16,	/* pack_sockaddr_un */
++  16,	/* prepend_features */
++  16,	/* singleton_class? */
++  16,	/* singleton_method */
++  16,	/* transform_values */
++  17,	/* IPV6_MULTICAST_IF */
++  17,	/* IPV6_UNICAST_HOPS */
++  17,	/* IP_ADD_MEMBERSHIP */
++  17,	/* IP_MULTICAST_LOOP */
++  17,	/* IP_UNBLOCK_SOURCE */
++  17,	/* MCAST_LEAVE_GROUP */
++  17,	/* MRUBY_DESCRIPTION */
++  17,	/* ZeroDivisionError */
++  17,	/* expand_path_array */
++  17,	/* generational_mode */
++  17,	/* protected_methods */
++  17,	/* recvfrom_nonblock */
++  17,	/* singleton_methods */
++  17,	/* transform_values! */
++  18,	/* IP_DROP_MEMBERSHIP */
++  18,	/* MCAST_BLOCK_SOURCE */
++  18,	/* MRUBY_RELEASE_DATE */
++  18,	/* class_variable_get */
++  18,	/* class_variable_set */
++  18,	/* generational_mode= */
++  18,	/* instance_variables */
++  18,	/* unpack_sockaddr_in */
++  18,	/* unpack_sockaddr_un */
++  19,	/* IPV6_MULTICAST_HOPS */
++  19,	/* IPV6_MULTICAST_LOOP */
++  19,	/* NotImplementedError */
++  19,	/* RUBY_ENGINE_VERSION */
++  19,	/* respond_to_missing? */
++  20,	/* MCAST_UNBLOCK_SOURCE */
++  21,	/* __coerce_step_counter */
++  21,	/* do_not_reverse_lookup */
++  21,	/* enumerator_block_call */
++  21,	/* instance_variable_get */
++  21,	/* instance_variable_set */
++  21,	/* remove_class_variable */
++  22,	/* @do_not_reverse_lookup */
++  22,	/* do_not_reverse_lookup= */
++  22,	/* original_operator_name */
++  23,	/* @@do_not_reverse_lookup */
++  23,	/* MCAST_JOIN_SOURCE_GROUP */
++  23,	/* class_variable_defined? */
++  23,	/* define_singleton_method */
++  24,	/* IP_ADD_SOURCE_MEMBERSHIP */
++  24,	/* MCAST_LEAVE_SOURCE_GROUP */
++  24,	/* remove_instance_variable */
++  25,	/* IP_DROP_SOURCE_MEMBERSHIP */
++  26,	/* instance_variable_defined? */
++  31,	/* should_yield_subclass_instances */
++};
++
++static const char * const presym_name_table[] = {
++  "!",
++  "%",
++  "&",
++  "*",
++  "+",
++  "-",
++  "/",
++  "<",
++  ">",
++  "E",
++  "^",
++  "`",
++  "a",
++  "b",
++  "c",
++  "e",
++  "f",
++  "h",
++  "i",
++  "j",
++  "k",
++  "l",
++  "m",
++  "n",
++  "o",
++  "p",
++  "r",
++  "s",
++  "t",
++  "v",
++  "w",
++  "x",
++  "y",
++  "z",
++  "|",
++  "~",
++  "!=",
++  "!~",
++  "$0",
++  "$?",
++  "&&",
++  "**",
++  "+@",
++  "-@",
++  "<<",
++  "<=",
++  "==",
++  "=~",
++  ">=",
++  ">>",
++  "GC",
++  "IO",
++  "PI",
++  "[]",
++  "af",
++  "ai",
++  "ar",
++  "at",
++  "bi",
++  "bs",
++  "e0",
++  "e2",
++  "e3",
++  "ed",
++  "ei",
++  "fd",
++  "gm",
++  "in",
++  "io",
++  "ip",
++  "lz",
++  "nk",
++  "nv",
++  "op",
++  "rs",
++  "sa",
++  "sc",
++  "sv",
++  "tr",
++  "vs",
++  "||",
++  "<=>",
++  "===",
++  "@af",
++  "DIG",
++  "MAX",
++  "MIN",
++  "NAN",
++  "[]=",
++  "abs",
++  "arg",
++  "ary",
++  "beg",
++  "blk",
++  "buf",
++  "chr",
++  "cls",
++  "cmd",
++  "cmp",
++  "cos",
++  "day",
++  "dig",
++  "dir",
++  "div",
++  "dup",
++  "end",
++  "eof",
++  "erf",
++  "err",
++  "exp",
++  "fib",
++  "hex",
++  "idx",
++  "int",
++  "ip?",
++  "key",
++  "len",
++  "lhs",
++  "lim",
++  "log",
++  "low",
++  "map",
++  "max",
++  "mid",
++  "min",
++  "mon",
++  "msg",
++  "new",
++  "now",
++  "num",
++  "obj",
++  "oct",
++  "opt",
++  "ord",
++  "out",
++  "pat",
++  "pid",
++  "pop",
++  "pos",
++  "pre",
++  "quo",
++  "req",
++  "res",
++  "ret",
++  "rhs",
++  "row",
++  "sec",
++  "sep",
++  "sin",
++  "str",
++  "sub",
++  "sym",
++  "tan",
++  "tap",
++  "tcp",
++  "tmp",
++  "tr!",
++  "udp",
++  "utc",
++  "val",
++  "zip",
++  "@buf",
++  "@dst",
++  "@fib",
++  "@obj",
++  "ARGV",
++  "EXCL",
++  "FREE",
++  "File",
++  "Hash",
++  "Lazy",
++  "Math",
++  "NONE",
++  "NULL",
++  "Proc",
++  "RDWR",
++  "SYNC",
++  "Time",
++  "_new",
++  "abs2",
++  "acos",
++  "addr",
++  "all?",
++  "any?",
++  "arg0",
++  "arg1",
++  "arg2",
++  "args",
++  "argv",
++  "asin",
++  "atan",
++  "attr",
++  "bind",
++  "bool",
++  "call",
++  "cbrt",
++  "ceil",
++  "char",
++  "chop",
++  "conj",
++  "cosh",
++  "curr",
++  "data",
++  "drop",
++  "dst?",
++  "dump",
++  "each",
++  "elem",
++  "eof?",
++  "epos",
++  "eql?",
++  "erfc",
++  "eval",
++  "fail",
++  "fdiv",
++  "feed",
++  "file",
++  "fill",
++  "find",
++  "flag",
++  "getc",
++  "gets",
++  "gmt?",
++  "grep",
++  "gsub",
++  "hash",
++  "high",
++  "host",
++  "hour",
++  "idx2",
++  "imag",
++  "init",
++  "join",
++  "key?",
++  "keys",
++  "lary",
++  "last",
++  "lazy",
++  "left",
++  "lidx",
++  "line",
++  "log2",
++  "loop",
++  "lval",
++  "map!",
++  "mday",
++  "mesg",
++  "meth",
++  "mode",
++  "name",
++  "nan?",
++  "next",
++  "nil?",
++  "none",
++  "ntop",
++  "obj=",
++  "one?",
++  "open",
++  "opts",
++  "orig",
++  "pack",
++  "pair",
++  "path",
++  "peek",
++  "perm",
++  "pipe",
++  "plen",
++  "port",
++  "pos=",
++  "post",
++  "proc",
++  "pton",
++  "push",
++  "puts",
++  "rand",
++  "read",
++  "real",
++  "rect",
++  "recv",
++  "rest",
++  "ridx",
++  "rval",
++  "sary",
++  "seek",
++  "send",
++  "sinh",
++  "size",
++  "sock",
++  "sort",
++  "sqrt",
++  "step",
++  "str2",
++  "sub!",
++  "succ",
++  "sync",
++  "take",
++  "tanh",
++  "tell",
++  "then",
++  "this",
++  "to_a",
++  "to_c",
++  "to_f",
++  "to_h",
++  "to_i",
++  "to_r",
++  "to_s",
++  "tr_s",
++  "tty?",
++  "type",
++  "uniq",
++  "unix",
++  "upto",
++  "usec",
++  "user",
++  "utc?",
++  "vals",
++  "warn",
++  "wday",
++  "yday",
++  "year",
++  "zone",
++  "@args",
++  "@data",
++  "@meth",
++  "@name",
++  "@path",
++  "@proc",
++  "Array",
++  "CREAT",
++  "Class",
++  "DSYNC",
++  "Fiber",
++  "Float",
++  "RADIX",
++  "RSYNC",
++  "Range",
++  "STDIN",
++  "TOTAL",
++  "TRUNC",
++  "T_ENV",
++  "_bind",
++  "_name",
++  "_pipe",
++  "_proc",
++  "_recv",
++  "acosh",
++  "angle",
++  "args=",
++  "arity",
++  "array",
++  "ary_F",
++  "ary_T",
++  "asinh",
++  "assoc",
++  "atan2",
++  "atanh",
++  "begin",
++  "block",
++  "bytes",
++  "chars",
++  "chmod",
++  "chomp",
++  "chop!",
++  "clamp",
++  "class",
++  "clear",
++  "clone",
++  "close",
++  "count",
++  "ctime",
++  "curry",
++  "cycle",
++  "depth",
++  "enums",
++  "fetch",
++  "field",
++  "file?",
++  "first",
++  "flags",
++  "flock",
++  "floor",
++  "flush",
++  "fname",
++  "force",
++  "found",
++  "frexp",
++  "getgm",
++  "gsub!",
++  "hypot",
++  "index",
++  "ipv4?",
++  "ipv6?",
++  "is_a?",
++  "ldexp",
++  "level",
++  "limit",
++  "lines",
++  "ljust",
++  "local",
++  "log10",
++  "lsize",
++  "merge",
++  "meth=",
++  "month",
++  "mtime",
++  "names",
++  "next!",
++  "none?",
++  "other",
++  "owner",
++  "phase",
++  "pipe?",
++  "polar",
++  "popen",
++  "pproc",
++  "pread",
++  "print",
++  "proto",
++  "raise",
++  "real?",
++  "right",
++  "rjust",
++  "round",
++  "shift",
++  "size?",
++  "slice",
++  "sort!",
++  "split",
++  "srand",
++  "stack",
++  "start",
++  "state",
++  "store",
++  "strip",
++  "succ!",
++  "sync=",
++  "taken",
++  "tally",
++  "times",
++  "tr_s!",
++  "umask",
++  "union",
++  "uniq!",
++  "unix?",
++  "value",
++  "write",
++  "yield",
++  "zero?",
++  "$DEBUG",
++  "$stdin",
++  "@level",
++  "AF_MAX",
++  "APPEND",
++  "BINARY",
++  "DIRECT",
++  "Fixnum",
++  "IP_TOS",
++  "IP_TTL",
++  "Kernel",
++  "Method",
++  "Module",
++  "NOCTTY",
++  "Object",
++  "Option",
++  "RDONLY",
++  "Random",
++  "Regexp",
++  "STDERR",
++  "STDOUT",
++  "Socket",
++  "Status",
++  "String",
++  "Struct",
++  "Symbol",
++  "T_CPTR",
++  "T_DATA",
++  "T_FREE",
++  "T_HASH",
++  "T_PROC",
++  "T_TRUE",
++  "WRONLY",
++  "__id__",
++  "_getwd",
++  "_klass",
++  "_mtime",
++  "_owner",
++  "_popen",
++  "accept",
++  "alive?",
++  "append",
++  "caller",
++  "chomp!",
++  "concat",
++  "cover?",
++  "delete",
++  "detect",
++  "divmod",
++  "domain",
++  "downto",
++  "empty?",
++  "enable",
++  "equal?",
++  "except",
++  "exist?",
++  "extend",
++  "family",
++  "fileno",
++  "filter",
++  "for_fd",
++  "format",
++  "freeze",
++  "getutc",
++  "gmtime",
++  "ifnone",
++  "inject",
++  "insert",
++  "intern",
++  "invert",
++  "isatty",
++  "itself",
++  "lambda",
++  "length",
++  "linger",
++  "listen",
++  "lstrip",
++  "max_by",
++  "maxlen",
++  "merge!",
++  "method",
++  "min_by",
++  "minmax",
++  "mktime",
++  "object",
++  "offset",
++  "outbuf",
++  "padstr",
++  "printf",
++  "public",
++  "pwrite",
++  "rassoc",
++  "reduce",
++  "rehash",
++  "reject",
++  "rename",
++  "result",
++  "resume",
++  "rewind",
++  "rindex",
++  "rotate",
++  "rstrip",
++  "sample",
++  "select",
++  "slice!",
++  "string",
++  "strip!",
++  "substr",
++  "to_int",
++  "to_str",
++  "to_sym",
++  "unbind",
++  "ungetc",
++  "unlink",
++  "unpack",
++  "upcase",
++  "update",
++  "value?",
++  "values",
++  "whence",
++  "$stderr",
++  "$stdout",
++  "@family",
++  "AF_INET",
++  "AF_LINK",
++  "AF_UNIX",
++  "Complex",
++  "DEFAULT",
++  "EPSILON",
++  "IOError",
++  "Integer",
++  "LOCK_EX",
++  "LOCK_NB",
++  "LOCK_SH",
++  "LOCK_UN",
++  "MAX_EXP",
++  "MIN_EXP",
++  "MSG_EOR",
++  "MSG_OOB",
++  "NOATIME",
++  "Numeric",
++  "PF_INET",
++  "PF_LINK",
++  "PF_UNIX",
++  "Process",
++  "SHUT_RD",
++  "SHUT_WR",
++  "SO_TYPE",
++  "TMPFILE",
++  "T_ARRAY",
++  "T_CLASS",
++  "T_FALSE",
++  "T_FIBER",
++  "T_FLOAT",
++  "T_RANGE",
++  "T_UNDEF",
++  "Yielder",
++  "__div__",
++  "__lines",
++  "_accept",
++  "_lastai",
++  "_listen",
++  "_socket",
++  "afamily",
++  "asctime",
++  "backlog",
++  "bsearch",
++  "casecmp",
++  "closed?",
++  "collect",
++  "command",
++  "compact",
++  "compile",
++  "connect",
++  "consume",
++  "current",
++  "default",
++  "delete!",
++  "dirname",
++  "disable",
++  "dropped",
++  "entries",
++  "exists?",
++  "extname",
++  "filter!",
++  "finite?",
++  "flatten",
++  "foreach",
++  "friday?",
++  "frozen?",
++  "getbyte",
++  "id2name",
++  "include",
++  "inspect",
++  "integer",
++  "ip_port",
++  "keep_if",
++  "keyrest",
++  "lambda?",
++  "lstrip!",
++  "max_cmp",
++  "member?",
++  "members",
++  "message",
++  "methods",
++  "min_cmp",
++  "modules",
++  "monday?",
++  "nesting",
++  "new_key",
++  "nobits?",
++  "numeric",
++  "optname",
++  "padding",
++  "pattern",
++  "pfamily",
++  "pointer",
++  "prepend",
++  "private",
++  "produce",
++  "reject!",
++  "replace",
++  "result=",
++  "reverse",
++  "rotate!",
++  "rstrip!",
++  "select!",
++  "sep_len",
++  "service",
++  "setbyte",
++  "shuffle",
++  "socket?",
++  "sort_by",
++  "sprintf",
++  "squeeze",
++  "sunday?",
++  "symlink",
++  "sysopen",
++  "sysread",
++  "sysseek",
++  "to_enum",
++  "to_path",
++  "to_proc",
++  "unpack1",
++  "unshift",
++  "upcase!",
++  "yielder",
++  "@optname",
++  "AF_INET6",
++  "AF_LOCAL",
++  "AF_ROUTE",
++  "Addrinfo",
++  "BUF_SIZE",
++  "EOFError",
++  "FileTest",
++  "INFINITY",
++  "IPSocket",
++  "KeyError",
++  "MANT_DIG",
++  "MSG_PEEK",
++  "NI_DGRAM",
++  "NOFOLLOW",
++  "NONBLOCK",
++  "NilClass",
++  "PF_INET6",
++  "PF_LOCAL",
++  "PF_ROUTE",
++  "Rational",
++  "SEEK_CUR",
++  "SEEK_END",
++  "SEEK_SET",
++  "SOCK_RAW",
++  "SO_DEBUG",
++  "SO_ERROR",
++  "T_ICLASS",
++  "T_MODULE",
++  "T_OBJECT",
++  "T_SCLASS",
++  "T_STRING",
++  "T_SYMBOL",
++  "__ary_eq",
++  "__delete",
++  "__send__",
++  "__svalue",
++  "__to_int",
++  "__to_str",
++  "_accept2",
++  "_bufread",
++  "_connect",
++  "_gethome",
++  "_inspect",
++  "allbits?",
++  "allocate",
++  "anybits?",
++  "basename",
++  "between?",
++  "bytesize",
++  "casecmp?",
++  "collect!",
++  "compact!",
++  "default=",
++  "downcase",
++  "dropping",
++  "each_key",
++  "enum_for",
++  "extended",
++  "filename",
++  "find_all",
++  "flat_map",
++  "flatten!",
++  "getlocal",
++  "group_by",
++  "has_key?",
++  "home_dir",
++  "include?",
++  "included",
++  "kind_of?",
++  "modified",
++  "new_args",
++  "nodename",
++  "nonzero?",
++  "peeraddr",
++  "protocol",
++  "readchar",
++  "readline",
++  "readlink",
++  "realpath",
++  "receiver",
++  "recvfrom",
++  "reverse!",
++  "self_len",
++  "servname",
++  "shuffle!",
++  "shutdown",
++  "sockaddr",
++  "socktype",
++  "squeeze!",
++  "str_each",
++  "swapcase",
++  "symlink?",
++  "syswrite",
++  "template",
++  "transfer",
++  "truncate",
++  "tuesday?",
++  "@hostname",
++  "@protocol",
++  "@sockaddr",
++  "@socktype",
++  "@stop_exc",
++  "AF_UNSPEC",
++  "Constants",
++  "Exception",
++  "Generator",
++  "MSG_TRUNC",
++  "NI_NOFQDN",
++  "NameError",
++  "PF_UNSPEC",
++  "SEPARATOR",
++  "SHUT_RDWR",
++  "SO_LINGER",
++  "SO_RCVBUF",
++  "SO_SNDBUF",
++  "TCPServer",
++  "TCPSocket",
++  "T_INTEGER",
++  "T_ISTRUCT",
++  "TrueClass",
++  "TypeError",
++  "UDPSocket",
++  "__ary_cmp",
++  "__outer__",
++  "_allocate",
++  "_gc_root_",
++  "_read_buf",
++  "_readchar",
++  "_recvfrom",
++  "_sysclose",
++  "_to_array",
++  "ancestors",
++  "backtrace",
++  "base_path",
++  "bind_call",
++  "byteslice",
++  "canonname",
++  "conjugate",
++  "const_get",
++  "const_set",
++  "constants",
++  "delete_at",
++  "delete_if",
++  "downcase!",
++  "each_byte",
++  "each_char",
++  "each_cons",
++  "each_line",
++  "each_pair",
++  "end_with?",
++  "exception",
++  "exclusive",
++  "feedvalue",
++  "imaginary",
++  "infinite?",
++  "inherited",
++  "ip_unpack",
++  "iterator?",
++  "localtime",
++  "magnitude",
++  "minmax_by",
++  "negative?",
++  "numerator",
++  "object_id",
++  "partition",
++  "positive?",
++  "prepended",
++  "protected",
++  "readlines",
++  "satisfied",
++  "saturday?",
++  "separator",
++  "swapcase!",
++  "sysaccept",
++  "thursday?",
++  "transpose",
++  "unix_path",
++  "validated",
++  "values_at",
++  "@canonname",
++  "@feedvalue",
++  "@lookahead",
++  "AI_PASSIVE",
++  "Comparable",
++  "Enumerable",
++  "Enumerator",
++  "FalseClass",
++  "FiberError",
++  "IPPROTO_AH",
++  "IPPROTO_IP",
++  "IP_HDRINCL",
++  "IP_OPTIONS",
++  "IP_PKTINFO",
++  "IP_RECVTOS",
++  "IP_RECVTTL",
++  "IP_RETOPTS",
++  "IndexError",
++  "MAX_10_EXP",
++  "MIN_10_EXP",
++  "MSG_CTRUNC",
++  "NI_MAXHOST",
++  "NI_MAXSERV",
++  "RangeError",
++  "SOCK_DGRAM",
++  "SOL_SOCKET",
++  "TCP_MAXSEG",
++  "UNIXServer",
++  "UNIXSocket",
++  "__case_eqq",
++  "__method__",
++  "capitalize",
++  "class_eval",
++  "class_exec",
++  "codepoints",
++  "difference",
++  "directory?",
++  "drop_while",
++  "each_index",
++  "each_slice",
++  "each_value",
++  "fd_or_path",
++  "filter_map",
++  "find_index",
++  "getaddress",
++  "getpeereid",
++  "getsockopt",
++  "given_args",
++  "has_value?",
++  "initialize",
++  "ip_address",
++  "local_host",
++  "make_curry",
++  "parameters",
++  "path_token",
++  "recur_list",
++  "rpartition",
++  "self_arity",
++  "setsockopt",
++  "socketpair",
++  "step_ratio",
++  "superclass",
++  "take_while",
++  "wednesday?",
++  "with_index",
++  "yield_self",
++  "BasicObject",
++  "BasicSocket",
++  "DomainError",
++  "FNM_SYSCASE",
++  "FrozenError",
++  "IPPROTO_ESP",
++  "IPPROTO_RAW",
++  "IPPROTO_TCP",
++  "IPPROTO_UDP",
++  "IPV6_V6ONLY",
++  "IP_MSFILTER",
++  "IP_RECVOPTS",
++  "MSG_WAITALL",
++  "NI_NAMEREQD",
++  "ObjectSpace",
++  "RUBY_ENGINE",
++  "RegexpError",
++  "SOCK_STREAM",
++  "SO_RCVLOWAT",
++  "SO_RCVTIMEO",
++  "SO_SNDLOWAT",
++  "SO_SNDTIMEO",
++  "ScriptError",
++  "SocketError",
++  "SyntaxError",
++  "TCP_KEEPCNT",
++  "TCP_NODELAY",
++  "T_EXCEPTION",
++  "__ary_index",
++  "__members__",
++  "_is_socket=",
++  "_recur_list",
++  "attr_reader",
++  "attr_writer",
++  "capitalize!",
++  "close_write",
++  "combination",
++  "default_dir",
++  "denominator",
++  "each_object",
++  "expand_path",
++  "getaddrinfo",
++  "gethostname",
++  "getnameinfo",
++  "getpeername",
++  "getsockname",
++  "module_eval",
++  "module_exec",
++  "next_values",
++  "peek_values",
++  "permutation",
++  "rectangular",
++  "respond_to?",
++  "sockaddr_in",
++  "sockaddr_un",
++  "start_with?",
++  "step_ratio=",
++  "to_sockaddr",
++  "with_object",
++  "AI_CANONNAME",
++  "FNM_CASEFOLD",
++  "FNM_DOTMATCH",
++  "FNM_NOESCAPE",
++  "FNM_PATHNAME",
++  "IPPROTO_ICMP",
++  "IPPROTO_IPV6",
++  "IPPROTO_NONE",
++  "MSG_DONTWAIT",
++  "MSG_NOSIGNAL",
++  "RUBY_VERSION",
++  "RuntimeError",
++  "SHARE_DELETE",
++  "SO_BROADCAST",
++  "SO_DONTROUTE",
++  "SO_KEEPALIVE",
++  "SO_NOSIGPIPE",
++  "SO_OOBINLINE",
++  "SO_REUSEADDR",
++  "SO_REUSEPORT",
++  "SO_TIMESTAMP",
++  "__attached__",
++  "__printstr__",
++  "_concat_path",
++  "_setnonblock",
++  "_sockaddr_in",
++  "alias_method",
++  "block_given?",
++  "column_count",
++  "column_index",
++  "default_proc",
++  "drive_prefix",
++  "exclude_end?",
++  "fetch_values",
++  "instance_of?",
++  "intersection",
++  "remove_const",
++  "reverse_each",
++  "super_method",
++  "undef_method",
++  "@init_with_fd",
++  "ALT_SEPARATOR",
++  "ArgumentError",
++  "MRUBY_VERSION",
++  "MSG_DONTROUTE",
++  "NoMemoryError",
++  "NoMethodError",
++  "StandardError",
++  "StopIteration",
++  "TCP_KEEPINTVL",
++  "UnboundMethod",
++  "__classname__",
++  "__sub_replace",
++  "__update_hash",
++  "attr_accessor",
++  "bsearch_index",
++  "const_missing",
++  "count_objects",
++  "default_proc=",
++  "define_method",
++  "delete_prefix",
++  "delete_suffix",
++  "expanded_path",
++  "extend_object",
++  "in_lower_half",
++  "instance_eval",
++  "instance_exec",
++  "local_address",
++  "local_service",
++  "recv_nonblock",
++  "remove_method",
++  "set_backtrace",
++  "splitted_path",
++  "AI_NUMERICHOST",
++  "AI_NUMERICSERV",
++  "IPPROTO_ICMPV6",
++  "IP_RECVDSTADDR",
++  "IP_RECVRETOPTS",
++  "LocalJumpError",
++  "NI_NUMERICHOST",
++  "NI_NUMERICSERV",
++  "PATH_SEPARATOR",
++  "SOCK_SEQPACKET",
++  "__upto_endless",
++  "close_on_exec=",
++  "close_on_exec?",
++  "collect_concat",
++  "const_defined?",
++  "delete_prefix!",
++  "delete_suffix!",
++  "each_codepoint",
++  "interval_ratio",
++  "method_missing",
++  "method_removed",
++  "paragraph_mode",
++  "public_methods",
++  "remote_address",
++  "transform_keys",
++  "IPPROTO_DSTOPTS",
++  "IPPROTO_ROUTING",
++  "IPV6_JOIN_GROUP",
++  "IP_BLOCK_SOURCE",
++  "IP_IPSEC_POLICY",
++  "IP_MULTICAST_IF",
++  "MRUBY_COPYRIGHT",
++  "_check_readable",
++  "accept_nonblock",
++  "append_features",
++  "class_variables",
++  "each_with_index",
++  "initialize_copy",
++  "instance_method",
++  "interval_ratio=",
++  "local_variables",
++  "method_defined?",
++  "module_function",
++  "pad_repetitions",
++  "private_methods",
++  "singleton_class",
++  "source_location",
++  "transform_keys!",
++  "FloatDomainError",
++  "IPPROTO_FRAGMENT",
++  "IPV6_LEAVE_GROUP",
++  "IP_MULTICAST_TTL",
++  "MCAST_JOIN_GROUP",
++  "MRUBY_RELEASE_NO",
++  "SystemStackError",
++  "_sockaddr_family",
++  "connect_nonblock",
++  "each_with_object",
++  "global_variables",
++  "included_modules",
++  "inspect_sockaddr",
++  "instance_methods",
++  "new_with_prelude",
++  "pack_sockaddr_in",
++  "pack_sockaddr_un",
++  "prepend_features",
++  "singleton_class?",
++  "singleton_method",
++  "transform_values",
++  "IPV6_MULTICAST_IF",
++  "IPV6_UNICAST_HOPS",
++  "IP_ADD_MEMBERSHIP",
++  "IP_MULTICAST_LOOP",
++  "IP_UNBLOCK_SOURCE",
++  "MCAST_LEAVE_GROUP",
++  "MRUBY_DESCRIPTION",
++  "ZeroDivisionError",
++  "expand_path_array",
++  "generational_mode",
++  "protected_methods",
++  "recvfrom_nonblock",
++  "singleton_methods",
++  "transform_values!",
++  "IP_DROP_MEMBERSHIP",
++  "MCAST_BLOCK_SOURCE",
++  "MRUBY_RELEASE_DATE",
++  "class_variable_get",
++  "class_variable_set",
++  "generational_mode=",
++  "instance_variables",
++  "unpack_sockaddr_in",
++  "unpack_sockaddr_un",
++  "IPV6_MULTICAST_HOPS",
++  "IPV6_MULTICAST_LOOP",
++  "NotImplementedError",
++  "RUBY_ENGINE_VERSION",
++  "respond_to_missing?",
++  "MCAST_UNBLOCK_SOURCE",
++  "__coerce_step_counter",
++  "do_not_reverse_lookup",
++  "enumerator_block_call",
++  "instance_variable_get",
++  "instance_variable_set",
++  "remove_class_variable",
++  "@do_not_reverse_lookup",
++  "do_not_reverse_lookup=",
++  "original_operator_name",
++  "@@do_not_reverse_lookup",
++  "MCAST_JOIN_SOURCE_GROUP",
++  "class_variable_defined?",
++  "define_singleton_method",
++  "IP_ADD_SOURCE_MEMBERSHIP",
++  "MCAST_LEAVE_SOURCE_GROUP",
++  "remove_instance_variable",
++  "IP_DROP_SOURCE_MEMBERSHIP",
++  "instance_variable_defined?",
++  "should_yield_subclass_instances",
++};
+diff --git a/include/mruby/throw.h b/include/mruby/throw.h
+index 52171e9b0..8931ee1a7 100644
+--- a/include/mruby/throw.h
++++ b/include/mruby/throw.h
+@@ -35,7 +35,8 @@ typedef mrb_int mrb_jmpbuf_impl;
+ #if defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+ #define MRB_SETJMP _setjmp
+ #define MRB_LONGJMP _longjmp
+-#elif defined(__MINGW64__) && defined(__GNUC__) && __GNUC__ >= 4
++// disabled __MINGW64__ section because it's either simply wrong or it's wrong with our build-tools. The #else section is correct here.  --ryan.
++#elif 0 //defined(__MINGW64__) && defined(__GNUC__) && __GNUC__ >= 4
+ #define MRB_SETJMP __builtin_setjmp
+ #define MRB_LONGJMP __builtin_longjmp
+ #else
+diff --git a/include/mruby/value.h b/include/mruby/value.h
+index 293ef90a7..45c5b06b0 100644
+--- a/include/mruby/value.h
++++ b/include/mruby/value.h
+@@ -318,8 +318,6 @@ mrb_obj_value(void *p)
+ {
+   mrb_value v;
+   SET_OBJ_VALUE(v, (struct RBasic*)p);
+-  mrb_assert(p == mrb_ptr(v));
+-  mrb_assert(((struct RBasic*)p)->tt == mrb_type(v));
+   return v;
+ }
+ 
+diff --git a/mrbgems/mruby-compiler/core/codegen.c b/mrbgems/mruby-compiler/core/codegen.c
+index 555479a7e..5384725c7 100644
+--- a/mrbgems/mruby-compiler/core/codegen.c
++++ b/mrbgems/mruby-compiler/core/codegen.c
+@@ -1050,6 +1050,8 @@ attrsym(codegen_scope *s, mrb_sym a)
+ }
+ 
+ #define CALL_MAXARGS 127
++#define GEN_LIT_ARY_MAX 64
++#define GEN_VAL_STACK_MAX 99
+ 
+ static int
+ gen_values(codegen_scope *s, node *t, int val, int extra)
+@@ -1464,6 +1466,80 @@ gen_retval(codegen_scope *s, node *tree)
+   }
+ }
+ 
++static int
++gen_hash(codegen_scope *s, node *tree, int val, int limit)
++{
++  int slimit = GEN_VAL_STACK_MAX;
++  if (cursp() >= GEN_LIT_ARY_MAX) slimit = INT16_MAX;
++  int len = 0;
++  mrb_bool update = FALSE;
++  mrb_bool first = TRUE;
++
++  while (tree) {
++    if (nint(tree->car->car->car) == NODE_KW_REST_ARGS) {
++      if (val && first) {
++        genop_2(s, OP_HASH, cursp(), 0);
++        push();
++        update = TRUE;
++      }
++      else if (val && len > 0) {
++        pop_n(len*2);
++        if (!update) {
++          genop_2(s, OP_HASH, cursp(), len);
++        }
++        else {
++          pop();
++          genop_2(s, OP_HASHADD, cursp(), len);
++        }
++        push();
++      }
++      codegen(s, tree->car->cdr, val);
++      if (val && (len > 0 || update)) {
++        pop(); pop();
++        genop_1(s, OP_HASHCAT, cursp());
++        push();
++      }
++      update = TRUE;
++      len = 0;
++    }
++    else {
++      codegen(s, tree->car->car, val);
++      codegen(s, tree->car->cdr, val);
++      len++;
++    }
++    tree = tree->cdr;
++    if (val && cursp() >= slimit) {
++      pop_n(len*2);
++      if (!update) {
++        genop_2(s, OP_HASH, cursp(), len);
++      }
++      else {
++        pop();
++        genop_2(s, OP_HASHADD, cursp(), len);
++      }
++      push();
++      update = TRUE;
++      len = 0;
++    }
++    first = FALSE;
++  }
++  if (val && len > limit) {
++    pop_n(len*2);
++    genop_2(s, OP_HASH, cursp(), len);
++    push();
++    return -1;
++  }
++  if (update) {
++    if (val && len > 0) {
++      pop_n(len*2+1);
++      genop_2(s, OP_HASHADD, cursp(), len);
++      push();
++    }
++    return -1;                  /* variable length */
++  }
++  return len;
++}
++
+ static void
+ codegen(codegen_scope *s, node *tree, int val)
+ {
+@@ -1923,67 +1999,17 @@ codegen(codegen_scope *s, node *tree, int val)
+   case NODE_HASH:
+   case NODE_KW_HASH:
+     {
+-      int len = 0;
+-      mrb_bool update = FALSE;
+-
+-      while (tree) {
+-        if (nint(tree->car->car->car) == NODE_KW_REST_ARGS) {
+-          if (len > 0) {
+-            pop_n(len*2);
+-            if (!update) {
+-              genop_2(s, OP_HASH, cursp(), len);
+-            }
+-            else {
+-              pop();
+-              genop_2(s, OP_HASHADD, cursp(), len);
+-            }
+-            push();
+-          }
+-          codegen(s, tree->car->cdr, VAL);
+-          if (len > 0 || update) {
+-            pop(); pop();
+-            genop_1(s, OP_HASHCAT, cursp());
+-            push();
+-          }
+-          update = TRUE;
+-          len = 0;
+-        }
+-        else {
+-          codegen(s, tree->car->car, val);
+-          codegen(s, tree->car->cdr, val);
+-          len++;
+-        }
+-        tree = tree->cdr;
+-        if (val && cursp() > 127) {
+-          pop_n(len*2);
+-          if (!update) {
+-            genop_2(s, OP_HASH, cursp(), len);
+-          }
+-          else {
+-            pop();
+-            genop_2(s, OP_HASHADD, cursp(), len);
+-          }
+-          push();
+-          update = TRUE;
+-          len = 0;
+-        }
+-      }
+-      if (val) {
+-        pop_n(len*2);
+-        if (!update) {
+-          genop_2(s, OP_HASH, cursp(), len);
+-        }
+-        else {
+-          pop();
+-          if (len > 0) {
+-            genop_2(s, OP_HASHADD, cursp(), len);
+-          }
+-        }
++      int nk = gen_hash(s, tree, val, GEN_LIT_ARY_MAX);
++      if (val && nk >= 0) {
++        pop_n(nk*2);
++        genop_2(s, OP_HASH, cursp(), nk);
+         push();
+       }
+     }
+     break;
+ 
++    break;
++
+   case NODE_SPLAT:
+     codegen(s, tree, val);
+     break;
+diff --git a/mrbgems/mruby-io/mrblib/file.rb b/mrbgems/mruby-io/mrblib/file.rb
+index 9398acef6..cada4d805 100644
+--- a/mrbgems/mruby-io/mrblib/file.rb
++++ b/mrbgems/mruby-io/mrblib/file.rb
+@@ -1,7 +1,7 @@
+ class File < IO
+   attr_accessor :path
+ 
+-  def initialize(fd_or_path, mode = "r", perm = 0666)
++  def initialize(fd_or_path, mode = "r", perm = 0o666)
+     if fd_or_path.kind_of? Integer
+       super(fd_or_path, mode)
+     else
+diff --git a/mrbgems/mruby-random/src/mt19937ar.c b/mrbgems/mruby-random/src/mt19937ar.c
+new file mode 100644
+index 000000000..405bd5c20
+--- /dev/null
++++ b/mrbgems/mruby-random/src/mt19937ar.c
+@@ -0,0 +1,224 @@
++/*
++** mt19937ar.c - MT Random functions
++**
++** Copyright (C) 1997 - 2016, Makoto Matsumoto and Takuji Nishimura,
++** All rights reserved.
++**
++** Permission is hereby granted, free of charge, to any person obtaining
++** a copy of this software and associated documentation files (the
++** "Software"), to deal in the Software without restriction, including
++** without limitation the rights to use, copy, modify, merge, publish,
++** distribute, sublicense, and/or sell copies of the Software, and to
++** permit persons to whom the Software is furnished to do so, subject to
++** the following conditions:
++**
++** The above copyright notice and this permission notice shall be
++** included in all copies or substantial portions of the Software.
++**
++** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++** EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++** MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++** IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
++** CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
++** TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
++** SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++**
++** [ MIT license: http://www.opensource.org/licenses/mit-license.php ]
++**
++** Any feedback is very welcome.
++** http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html
++** email: m-mat @ math.sci.hiroshima-u.ac.jp (remove space)
++**
++** This version is modified by mruby developers. If you see any problem,
++** contact us first at https://github.com/mruby/mruby/issues
++*/
++
++#include <mruby.h>
++#include "mt19937ar.h"
++
++/* Period parameters */
++/* #define N 624 */
++#define M 397
++#define MATRIX_A 0x9908b0dfUL   /* constant vector a */
++#define UPPER_MASK 0x80000000UL /* most significant w-r bits */
++#define LOWER_MASK 0x7fffffffUL /* least significant r bits */
++
++#if 0 /* dead_code */
++static unsigned long mt[N]; /* the array for the state vector  */
++static int mti=N+1; /* mti==N+1 means mt[N] is not initialized */
++#endif /* dead_code */
++
++void mrb_random_init_genrand(mt_state *t, unsigned long s)
++{
++    t->mt[0]= s & 0xffffffffUL;
++    for (t->mti=1; t->mti<N; t->mti++) {
++        t->mt[t->mti] = (1812433253UL * (t->mt[t->mti-1] ^ (t->mt[t->mti-1] >> 30)) + t->mti);
++        t->mt[t->mti] &= 0xffffffffUL;
++    }
++}
++
++unsigned long mrb_random_genrand_int32(mt_state *t)
++{
++    unsigned long y;
++    static const unsigned long mag01[2]={0x0UL, MATRIX_A};
++    /* mag01[x] = x * MATRIX_A  for x=0,1 */
++
++    if (t->mti >= N) { /* generate N words at one time */
++        int kk;
++
++        if (t->mti == N+1)   /* if init_genrand() has not been called, */
++            mrb_random_init_genrand(t, 5489UL); /* a default initial seed is used */
++
++        for (kk=0;kk<N-M;kk++) {
++            y = (t->mt[kk]&UPPER_MASK)|(t->mt[kk+1]&LOWER_MASK);
++            t->mt[kk] = t->mt[kk+M] ^ (y >> 1) ^ mag01[y & 0x1UL];
++        }
++        for (;kk<N-1;kk++) {
++            y = (t->mt[kk]&UPPER_MASK)|(t->mt[kk+1]&LOWER_MASK);
++            t->mt[kk] = t->mt[kk+(M-N)] ^ (y >> 1) ^ mag01[y & 0x1UL];
++        }
++        y = (t->mt[N-1]&UPPER_MASK)|(t->mt[0]&LOWER_MASK);
++        t->mt[N-1] = t->mt[M-1] ^ (y >> 1) ^ mag01[y & 0x1UL];
++
++        t->mti = 0;
++    }
++
++    y = t->mt[t->mti++];
++
++    /* Tempering */
++    y ^= (y >> 11);
++    y ^= (y << 7) & 0x9d2c5680UL;
++    y ^= (y << 15) & 0xefc60000UL;
++    y ^= (y >> 18);
++
++    t->gen.int_ = y;
++
++    return y;
++}
++
++double mrb_random_genrand_real1(mt_state *t)
++{
++    mrb_random_genrand_int32(t);
++    t->gen.double_ =  t->gen.int_*(1.0/4294967295.0);
++    return t->gen.double_;
++    /* divided by 2^32-1 */
++}
++
++#if 0 /* dead_code */
++/* initializes mt[N] with a seed */
++void init_genrand(unsigned long s)
++{
++    mt[0]= s & 0xffffffffUL;
++    for (mti=1; mti<N; mti++) {
++        mt[mti] = (1812433253UL * (mt[mti-1] ^ (mt[mti-1] >> 30)) + mti);
++        /* See Knuth TAOCP Vol2. 3rd Ed. P.106 for multiplier. */
++        /* In the previous versions, MSBs of the seed affect   */
++        /* only MSBs of the array mt[].                        */
++        /* 2002/01/09 modified by Makoto Matsumoto             */
++        mt[mti] &= 0xffffffffUL;
++        /* for >32 bit machines */
++    }
++}
++
++/* initialize by an array with array-length */
++/* init_key is the array for initializing keys */
++/* key_length is its length */
++/* slight change for C++, 2004/2/26 */
++void init_by_array(unsigned long init_key[], int key_length)
++{
++    int i, j, k;
++    init_genrand(19650218UL);
++    i=1; j=0;
++    k = (N>key_length ? N : key_length);
++    for (; k; k--) {
++        mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1664525UL))
++          + init_key[j] + j; /* non linear */
++        mt[i] &= 0xffffffffUL; /* for WORDSIZE > 32 machines */
++        i++; j++;
++        if (i>=N) { mt[0] = mt[N-1]; i=1; }
++        if (j>=key_length) j=0;
++    }
++    for (k=N-1; k; k--) {
++        mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >> 30)) * 1566083941UL))
++          - i; /* non linear */
++        mt[i] &= 0xffffffffUL; /* for WORDSIZE > 32 machines */
++        i++;
++        if (i>=N) { mt[0] = mt[N-1]; i=1; }
++    }
++
++    mt[0] = 0x80000000UL; /* MSB is 1; assuring non-zero initial array */
++}
++
++/* generates a random number on [0,0xffffffff]-interval */
++unsigned long genrand_int32(void)
++{
++    unsigned long y;
++    static const unsigned long mag01[2]={0x0UL, MATRIX_A};
++    /* mag01[x] = x * MATRIX_A  for x=0,1 */
++
++    if (mti >= N) { /* generate N words at one time */
++        int kk;
++
++        if (mti == N+1)   /* if init_genrand() has not been called, */
++            init_genrand(5489UL); /* a default initial seed is used */
++
++        for (kk=0;kk<N-M;kk++) {
++            y = (mt[kk]&UPPER_MASK)|(mt[kk+1]&LOWER_MASK);
++            mt[kk] = mt[kk+M] ^ (y >> 1) ^ mag01[y & 0x1UL];
++        }
++        for (;kk<N-1;kk++) {
++            y = (mt[kk]&UPPER_MASK)|(mt[kk+1]&LOWER_MASK);
++            mt[kk] = mt[kk+(M-N)] ^ (y >> 1) ^ mag01[y & 0x1UL];
++        }
++        y = (mt[N-1]&UPPER_MASK)|(mt[0]&LOWER_MASK);
++        mt[N-1] = mt[M-1] ^ (y >> 1) ^ mag01[y & 0x1UL];
++
++        mti = 0;
++    }
++
++    y = mt[mti++];
++
++    /* Tempering */
++    y ^= (y >> 11);
++    y ^= (y << 7) & 0x9d2c5680UL;
++    y ^= (y << 15) & 0xefc60000UL;
++    y ^= (y >> 18);
++
++    return y;
++}
++
++/* generates a random number on [0,0x7fffffff]-interval */
++long genrand_int31(void)
++{
++    return (long)(genrand_int32()>>1);
++}
++
++/* generates a random number on [0,1]-real-interval */
++double genrand_real1(void)
++{
++    return genrand_int32()*(1.0/4294967295.0);
++    /* divided by 2^32-1 */
++}
++
++/* generates a random number on [0,1)-real-interval */
++double genrand_real2(void)
++{
++    return genrand_int32()*(1.0/4294967296.0);
++    /* divided by 2^32 */
++}
++
++/* generates a random number on (0,1)-real-interval */
++double genrand_real3(void)
++{
++    return (((double)genrand_int32()) + 0.5)*(1.0/4294967296.0);
++    /* divided by 2^32 */
++}
++
++/* generates a random number on [0,1) with 53-bit resolution*/
++double genrand_res53(void)
++{
++    unsigned long a=genrand_int32()>>5, b=genrand_int32()>>6;
++    return(a*67108864.0+b)*(1.0/9007199254740992.0);
++}
++/* These real versions are due to Isaku Wada, 2002/01/09 added */
++#endif /* dead_code */
+diff --git a/mrbgems/mruby-random/src/mt19937ar.h b/mrbgems/mruby-random/src/mt19937ar.h
+new file mode 100644
+index 000000000..7d382320d
+--- /dev/null
++++ b/mrbgems/mruby-random/src/mt19937ar.h
+@@ -0,0 +1,80 @@
++/*
++** mt19937ar.h - MT Random functions
++**
++** Copyright (C) 1997 - 2016, Makoto Matsumoto and Takuji Nishimura,
++** All rights reserved.
++**
++** Permission is hereby granted, free of charge, to any person obtaining
++** a copy of this software and associated documentation files (the
++** "Software"), to deal in the Software without restriction, including
++** without limitation the rights to use, copy, modify, merge, publish,
++** distribute, sublicense, and/or sell copies of the Software, and to
++** permit persons to whom the Software is furnished to do so, subject to
++** the following conditions:
++**
++** The above copyright notice and this permission notice shall be
++** included in all copies or substantial portions of the Software.
++**
++** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
++** EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
++** MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
++** IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
++** CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
++** TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
++** SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
++**
++** [ MIT license: http://www.opensource.org/licenses/mit-license.php ]
++**
++** Any feedback is very welcome.
++** http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html
++** email: m-mat @ math.sci.hiroshima-u.ac.jp (remove space)
++**
++** This version is modified by mruby developers. If you see any problem,
++** contact us first at https://github.com/mruby/mruby/issues
++*/
++
++#define N 624
++
++typedef struct {
++  unsigned long mt[N];
++  int mti;
++  union {
++    unsigned long int_;
++    double double_;
++  } gen;
++
++  mrb_int seed;
++  mrb_bool has_seed : 1;
++} mt_state;
++
++void mrb_random_init_genrand(mt_state *, unsigned long);
++unsigned long mrb_random_genrand_int32(mt_state *);
++double mrb_random_genrand_real1(mt_state *t);
++
++/* initializes mt[N] with a seed */
++void init_genrand(unsigned long s);
++
++/* initialize by an array with array-length */
++/* init_key is the array for initializing keys */
++/* key_length is its length */
++/* slight change for C++, 2004/2/26 */
++void init_by_array(unsigned long init_key[], int key_length);
++
++/* generates a random number on [0,0xffffffff]-interval */
++unsigned long genrand_int32(void);
++
++/* generates a random number on [0,0x7fffffff]-interval */
++long genrand_int31(void);
++
++/* These real versions are due to Isaku Wada, 2002/01/09 added */
++/* generates a random number on [0,1]-real-interval */
++double genrand_real1(void);
++
++/* generates a random number on [0,1)-real-interval */
++double genrand_real2(void);
++
++/* generates a random number on (0,1)-real-interval */
++double genrand_real3(void);
++
++/* generates a random number on [0,1) with 53-bit resolution*/
++double genrand_res53(void);
+diff --git a/mrbgems/mruby-random/src/random.c b/mrbgems/mruby-random/src/random.c
+index 0cefb9ed0..934af452c 100644
+--- a/mrbgems/mruby-random/src/random.c
++++ b/mrbgems/mruby-random/src/random.c
+@@ -9,130 +9,62 @@
+ #include <mruby/class.h>
+ #include <mruby/data.h>
+ #include <mruby/array.h>
+-#include <mruby/istruct.h>
+-#include <mruby/presym.h>
++#include "mt19937ar.h"
+ 
+ #include <time.h>
+ 
+-/*  Written in 2019 by David Blackman and Sebastiano Vigna (vigna@acm.org)
++static char const MT_STATE_KEY[] = "$mrb_i_mt_state";
+ 
+-To the extent possible under law, the author has dedicated all copyright
+-and related and neighboring rights to this software to the public domain
+-worldwide. This software is distributed without any warranty.
++static const struct mrb_data_type mt_state_type = {
++  MT_STATE_KEY, mrb_free,
++};
+ 
+-See <https://creativecommons.org/publicdomain/zero/1.0/>. */
+-
+-#include <stdint.h>
+-
+-/* This is xoshiro128++ 1.0, one of our 32-bit all-purpose, rock-solid
+-   generators. It has excellent speed, a state size (128 bits) that is
+-   large enough for mild parallelism, and it passes all tests we are aware
+-   of.
+-
+-   For generating just single-precision (i.e., 32-bit) floating-point
+-   numbers, xoshiro128+ is even faster.
+-
+-   The state must be seeded so that it is not everywhere zero. */
+-
+-
+-#ifdef MRB_32BIT
+-# define XORSHIFT96
+-# define NSEEDS 3
+-# define SEEDPOS 2
+-#else
+-# define NSEEDS 4
+-# define SEEDPOS 0
+-#endif
+-#define LASTSEED (NSEEDS-1)
+-
+-typedef struct rand_state {
+-  uint32_t seed[NSEEDS];
+-} rand_state;
++static mrb_value mrb_random_rand(mrb_state *mrb, mrb_value self);
++static mrb_value mrb_random_srand(mrb_state *mrb, mrb_value self);
+ 
+ static void
+-rand_init(rand_state *t)
++mt_srand(mt_state *t, unsigned long seed)
+ {
+-  t->seed[0] = 123456789;
+-  t->seed[1] = 362436069;
+-  t->seed[2] = 521288629;
+-#ifndef XORSHIFT96
+-  t->seed[3] = 88675123;
+-#endif
++  mrb_random_init_genrand(t, seed);
+ }
+ 
+-static uint32_t
+-rand_seed(rand_state *t, uint32_t seed)
++static unsigned long
++mt_rand(mt_state *t)
+ {
+-  uint32_t old_seed = t->seed[SEEDPOS];
+-  rand_init(t);
+-  t->seed[SEEDPOS] = seed;
+-  return old_seed;
++  return mrb_random_genrand_int32(t);
+ }
+ 
+-#ifndef XORSHIFT96
+-static inline uint32_t
+-rotl(const uint32_t x, int k) {
+-  return (x << k) | (x >> (32 - k));
+-}
+-#endif
+-
+-static uint32_t
+-rand_uint32(rand_state *state)
+-{
+-#ifdef XORSHIFT96
+-  uint32_t *seed = state->seed;
+-  uint32_t x = seed[0];
+-  uint32_t y = seed[1];
+-  uint32_t z = seed[2];
+-  uint32_t t;
+-
+-  t = (x ^ (x << 3)) ^ (y ^ (y >> 19)) ^ (z ^ (z << 6));
+-  x = y; y = z; z = t;
+-  seed[0] = x;
+-  seed[1] = y;
+-  seed[2] = z;
+-
+-  return z;
+-#else
+-  uint32_t *s = state->seed;
+-  const uint32_t result = rotl(s[0] + s[3], 7) + s[0];
+-  const uint32_t t = s[1] << 9;
+-
+-  s[2] ^= s[0];
+-  s[3] ^= s[1];
+-  s[1] ^= s[2];
+-  s[0] ^= s[3];
+-
+-  s[2] ^= t;
+-  s[3] = rotl(s[3], 11);
+-
+-  return result;
+-#endif  /* XORSHIFT96 */
+-  }
+-
+-#ifndef MRB_NO_FLOAT
+ static double
+-rand_real(rand_state *t)
++mt_rand_real(mt_state *t)
+ {
+-  uint32_t x = rand_uint32(t);
+-  return x*(1.0/4294967296.0);
++  return mrb_random_genrand_real1(t);
+ }
+-#endif
+ 
+ static mrb_value
+-random_rand(mrb_state *mrb, rand_state *t, mrb_value max)
++mrb_random_mt_srand(mrb_state *mrb, mt_state *t, mrb_value seed)
++{
++  if (mrb_nil_p(seed)) {
++    seed = mrb_int_value(mrb, (mrb_int)(time(NULL) + mt_rand(t)));
++    if (mrb_integer(seed) < 0) {
++      seed = mrb_int_value(mrb, 0 - mrb_integer(seed));
++    }
++  }
++
++  mt_srand(t, (unsigned) mrb_integer(seed));
++
++  return seed;
++}
++
++static mrb_value
++mrb_random_mt_rand(mrb_state *mrb, mt_state *t, mrb_value max)
+ {
+   mrb_value value;
+ 
+   if (mrb_integer(max) == 0) {
+-#ifndef MRB_NO_FLOAT
+-    value = mrb_float_value(mrb, rand_real(t));
+-#else
+-    mrb_raise(mrb, E_ARGUMENT_ERROR, "Float not supported");
+-#endif
++    value = mrb_float_value(mrb, mt_rand_real(t));
+   }
+   else {
+-    value = mrb_int_value(mrb, rand_uint32(t) % mrb_integer(max));
++    value = mrb_int_value(mrb, mt_rand(t) % mrb_integer(max));
+   }
+ 
+   return value;
+@@ -152,80 +84,112 @@ get_opt(mrb_state* mrb)
+     arg = mrb_to_int(mrb, arg);
+     i = mrb_integer(arg);
+     if (i < 0) {
+-      arg = mrb_fixnum_value(0 - i);
++      arg = mrb_int_value(mrb, 0 - i);
+     }
+   }
+   return arg;
+ }
+ 
+-static void
+-random_check(mrb_state *mrb, mrb_value random) {
+-  struct RClass *c = mrb_class_get_id(mrb, MRB_SYM(Random));
+-  if (!mrb_obj_is_kind_of(mrb, random, c) || !mrb_istruct_p(random)) {
+-    mrb_raise(mrb, E_TYPE_ERROR, "Random instance required");
+-  }
++static mrb_value
++get_random(mrb_state *mrb) {
++  return mrb_const_get(mrb,
++             mrb_obj_value(mrb_class_get(mrb, "Random")),
++             mrb_intern_lit(mrb, "DEFAULT"));
++}
++
++static mt_state *
++get_random_state(mrb_state *mrb)
++{
++  mrb_value random_val = get_random(mrb);
++  return DATA_GET_PTR(mrb, random_val, &mt_state_type, mt_state);
+ }
+ 
+ static mrb_value
+-random_default(mrb_state *mrb) {
+-  struct RClass *c = mrb_class_get(mrb, "Random");
+-  mrb_value d = mrb_const_get(mrb, mrb_obj_value(c), MRB_SYM(DEFAULT));
+-  if (!mrb_obj_is_kind_of(mrb, d, c)) {
+-    mrb_raise(mrb, E_TYPE_ERROR, "Random::DEFAULT replaced");
+-  }
+-  return d;
++mrb_random_g_rand(mrb_state *mrb, mrb_value self)
++{
++  mrb_value random = get_random(mrb);
++  return mrb_random_rand(mrb, random);
+ }
+ 
+-#define random_ptr(v) (rand_state*)mrb_istruct_ptr(v)
+-#define random_default_state(mrb) random_ptr(random_default(mrb))
++static mrb_value
++mrb_random_g_srand(mrb_state *mrb, mrb_value self)
++{
++  mrb_value random = get_random(mrb);
++  return mrb_random_srand(mrb, random);
++}
+ 
+ static mrb_value
+-random_m_init(mrb_state *mrb, mrb_value self)
++mrb_random_init(mrb_state *mrb, mrb_value self)
+ {
+   mrb_value seed;
+-  rand_state *t;
++  mt_state *t;
+ 
+   seed = get_opt(mrb);
++
+   /* avoid memory leaks */
+-  t = random_ptr(self);
++  t = (mt_state*)DATA_PTR(self);
++  if (t) {
++    mrb_free(mrb, t);
++  }
++  mrb_data_init(self, NULL, &mt_state_type);
++
++  t = (mt_state *)mrb_malloc(mrb, sizeof(mt_state));
++  t->mti = N + 1;
++
++  seed = mrb_random_mt_srand(mrb, t, seed);
+   if (mrb_nil_p(seed)) {
+-    rand_init(t);
++    t->has_seed = FALSE;
+   }
+   else {
+-    rand_seed(t, (uint32_t)mrb_integer(seed));
++    mrb_assert(mrb_integer_p(seed));
++    t->has_seed = TRUE;
++    t->seed = mrb_integer(seed);
+   }
+ 
++  mrb_data_init(self, t, &mt_state_type);
++
+   return self;
+ }
+ 
++static void
++mrb_random_rand_seed(mrb_state *mrb, mt_state *t)
++{
++  if (!t->has_seed) {
++    mrb_random_mt_srand(mrb, t, mrb_nil_value());
++  }
++}
++
+ static mrb_value
+-random_m_rand(mrb_state *mrb, mrb_value self)
++mrb_random_rand(mrb_state *mrb, mrb_value self)
+ {
+   mrb_value max;
+-  rand_state *t = random_ptr(self);
++  mt_state *t = DATA_GET_PTR(mrb, self, &mt_state_type, mt_state);
+ 
+   max = get_opt(mrb);
+-  return random_rand(mrb, t, max);
++  mrb_random_rand_seed(mrb, t);
++  return mrb_random_mt_rand(mrb, t, max);
+ }
+ 
+ static mrb_value
+-random_m_srand(mrb_state *mrb, mrb_value self)
++mrb_random_srand(mrb_state *mrb, mrb_value self)
+ {
+-  uint32_t seed;
+-  uint32_t old_seed;
+-  mrb_value sv;
+-  rand_state *t = random_ptr(self);
++  mrb_value seed;
++  mrb_value old_seed;
++  mt_state *t = DATA_GET_PTR(mrb, self, &mt_state_type, mt_state);
+ 
+-  sv = get_opt(mrb);
+-  if (mrb_nil_p(sv)) {
+-    seed = (uint32_t)time(NULL) + rand_uint32(t);
++  seed = get_opt(mrb);
++  seed = mrb_random_mt_srand(mrb, t, seed);
++  old_seed = t->has_seed? mrb_int_value(mrb, t->seed) : mrb_nil_value();
++  if (mrb_nil_p(seed)) {
++    t->has_seed = FALSE;
+   }
+   else {
+-    seed = (uint32_t)mrb_integer(sv);
++    mrb_assert(mrb_integer_p(seed));
++    t->has_seed = TRUE;
++    t->seed = mrb_integer(seed);
+   }
+-  old_seed = rand_seed(t, seed);
+ 
+-  return mrb_int_value(mrb, (mrb_int)old_seed);
++  return old_seed;
+ }
+ 
+ /*
+@@ -239,56 +203,25 @@ static mrb_value
+ mrb_ary_shuffle_bang(mrb_state *mrb, mrb_value ary)
+ {
+   mrb_int i;
+-  mrb_value max;
+-  mrb_value r = mrb_nil_value();
+-  rand_state *random;
+-
+- /*
+- * MSC compiler bug generating invalid instructions with optimization
+- * enabled. MSC errantly uses a hardcoded value with optimizations on
+- * when using a fixed value from a union.
+- * Creating a temp volatile variable and reassigning back to the original
+- * value tricks the compiler to not perform this optimization;
+- */
+-#if defined _MSC_VER && _MSC_VER >= 1923
+-  /* C++ will not cast away volatile easily, so we cannot do something like
+-   * volatile mrb_value rr = r; r = (mrb_value)rr; with C++.
+-   * That cast does work with C.
+-   * We also have to trick the compiler to not optimize away the const_cast entirely
+-   * by creating and manipulating an intermediate volatile pointer.
+-   */
+-  volatile mrb_value *v_r;
+-  volatile mrb_int ii;
+-  mrb_value *p_r;
+-  v_r = &r;
+-  ii = 2;
+-  v_r = v_r + 2;
+-#if defined __cplusplus
+-  p_r = const_cast<mrb_value*>(v_r - ii);
+-#else
+-  p_r = (mrb_value*)v_r - ii;
+-#endif
+-  r = *p_r;
+-#endif
++  mt_state *random = NULL;
+ 
+   if (RARRAY_LEN(ary) > 1) {
+-    mrb_get_args(mrb, "|o", &r);
++    mrb_get_args(mrb, "|d", &random, &mt_state_type);
+ 
+-    if (mrb_nil_p(r)) {
+-      random = random_default_state(mrb);
+-    }
+-    else {
+-      random_check(mrb, r);
+-      random = random_ptr(r);
++    if (random == NULL) {
++      random = get_random_state(mrb);
+     }
++    mrb_random_rand_seed(mrb, random);
++
+     mrb_ary_modify(mrb, mrb_ary_ptr(ary));
+-    max = mrb_fixnum_value(RARRAY_LEN(ary));
++
+     for (i = RARRAY_LEN(ary) - 1; i > 0; i--)  {
+       mrb_int j;
+       mrb_value *ptr = RARRAY_PTR(ary);
+       mrb_value tmp;
+ 
+-      j = mrb_integer(random_rand(mrb, random, max));
++
++      j = mrb_integer(mrb_random_mt_rand(mrb, random, mrb_int_value(mrb, RARRAY_LEN(ary))));
+ 
+       tmp = ptr[i];
+       ptr[i] = ptr[j];
+@@ -335,18 +268,15 @@ mrb_ary_sample(mrb_state *mrb, mrb_value ary)
+ {
+   mrb_int n = 0;
+   mrb_bool given;
+-  mrb_value r = mrb_nil_value();
+-  rand_state *random;
++  mt_state *random = NULL;
+   mrb_int len;
+ 
+-  mrb_get_args(mrb, "|i?o", &n, &given, &r);
+-  if (mrb_nil_p(r)) {
+-    random = random_default_state(mrb);
+-  }
+-  else {
+-    random_check(mrb, r);
+-    random = random_ptr(r);
++  mrb_get_args(mrb, "|i?d", &n, &given, &random, &mt_state_type);
++  if (random == NULL) {
++    random = get_random_state(mrb);
+   }
++  mrb_random_rand_seed(mrb, random);
++  mt_rand(random);
+   len = RARRAY_LEN(ary);
+   if (!given) {                 /* pick one element */
+     switch (len) {
+@@ -355,7 +285,7 @@ mrb_ary_sample(mrb_state *mrb, mrb_value ary)
+     case 1:
+       return RARRAY_PTR(ary)[0];
+     default:
+-      return RARRAY_PTR(ary)[rand_uint32(random) % len];
++      return RARRAY_PTR(ary)[mt_rand(random) % len];
+     }
+   }
+   else {
+@@ -370,7 +300,7 @@ mrb_ary_sample(mrb_state *mrb, mrb_value ary)
+ 
+       for (;;) {
+       retry:
+-        r = (mrb_int)(rand_uint32(random) % len);
++        r = mt_rand(random) % len;
+ 
+         for (j=0; j<i; j++) {
+           if (mrb_integer(RARRAY_PTR(result)[j]) == r) {
+@@ -382,53 +312,35 @@ mrb_ary_sample(mrb_state *mrb, mrb_value ary)
+       mrb_ary_push(mrb, result, mrb_int_value(mrb, r));
+     }
+     for (i=0; i<n; i++) {
+-      mrb_int idx = mrb_integer(RARRAY_PTR(result)[i]);
+-      mrb_value elem = RARRAY_PTR(ary)[idx];
+-      mrb_ary_set(mrb, result, i, elem);
++      mrb_ary_set(mrb, result, i, RARRAY_PTR(ary)[mrb_integer(RARRAY_PTR(result)[i])]);
+     }
+     return result;
+   }
+ }
+ 
+-static mrb_value
+-random_f_rand(mrb_state *mrb, mrb_value self)
+-{
+-  rand_state *t = random_default_state(mrb);
+-  return random_rand(mrb, t, get_opt(mrb));
+-}
+-
+-static mrb_value
+-random_f_srand(mrb_state *mrb, mrb_value self)
+-{
+-  mrb_value random = random_default(mrb);
+-  return random_m_srand(mrb, random);
+-}
+-
+ 
+ void mrb_mruby_random_gem_init(mrb_state *mrb)
+ {
+   struct RClass *random;
+   struct RClass *array = mrb->array_class;
+ 
+-  mrb_static_assert1(sizeof(rand_state) <= ISTRUCT_DATA_SIZE);
+-
+-  mrb_define_method(mrb, mrb->kernel_module, "rand", random_f_rand, MRB_ARGS_OPT(1));
+-  mrb_define_method(mrb, mrb->kernel_module, "srand", random_f_srand, MRB_ARGS_OPT(1));
++  mrb_define_method(mrb, mrb->kernel_module, "rand", mrb_random_g_rand, MRB_ARGS_OPT(1));
++  mrb_define_method(mrb, mrb->kernel_module, "srand", mrb_random_g_srand, MRB_ARGS_OPT(1));
+ 
+   random = mrb_define_class(mrb, "Random", mrb->object_class);
+-  MRB_SET_INSTANCE_TT(random, MRB_TT_ISTRUCT);
+-  mrb_define_class_method(mrb, random, "rand", random_f_rand, MRB_ARGS_OPT(1));
+-  mrb_define_class_method(mrb, random, "srand", random_f_srand, MRB_ARGS_OPT(1));
++  MRB_SET_INSTANCE_TT(random, MRB_TT_DATA);
++  mrb_define_class_method(mrb, random, "rand", mrb_random_g_rand, MRB_ARGS_OPT(1));
++  mrb_define_class_method(mrb, random, "srand", mrb_random_g_srand, MRB_ARGS_OPT(1));
+ 
+-  mrb_define_method(mrb, random, "initialize", random_m_init, MRB_ARGS_OPT(1));
+-  mrb_define_method(mrb, random, "rand", random_m_rand, MRB_ARGS_OPT(1));
+-  mrb_define_method(mrb, random, "srand", random_m_srand, MRB_ARGS_OPT(1));
++  mrb_define_method(mrb, random, "initialize", mrb_random_init, MRB_ARGS_OPT(1));
++  mrb_define_method(mrb, random, "rand", mrb_random_rand, MRB_ARGS_OPT(1));
++  mrb_define_method(mrb, random, "srand", mrb_random_srand, MRB_ARGS_OPT(1));
+ 
+   mrb_define_method(mrb, array, "shuffle", mrb_ary_shuffle, MRB_ARGS_OPT(1));
+   mrb_define_method(mrb, array, "shuffle!", mrb_ary_shuffle_bang, MRB_ARGS_OPT(1));
+   mrb_define_method(mrb, array, "sample", mrb_ary_sample, MRB_ARGS_OPT(2));
+ 
+-  mrb_const_set(mrb, mrb_obj_value(random), MRB_SYM(DEFAULT),
++  mrb_const_set(mrb, mrb_obj_value(random), mrb_intern_lit(mrb, "DEFAULT"),
+           mrb_obj_new(mrb, random, 0, NULL));
+ }
+ 
+diff --git a/mrbgems/mruby-random/src/random.h b/mrbgems/mruby-random/src/random.h
+new file mode 100644
+index 000000000..a4785ae5a
+--- /dev/null
++++ b/mrbgems/mruby-random/src/random.h
+@@ -0,0 +1,12 @@
++/*
++** random.h - Random module
++**
++** See Copyright Notice in mruby.h
++*/
++
++#ifndef MRUBY_RANDOM_H
++#define MRUBY_RANDOM_H
++
++void mrb_mruby_random_gem_init(mrb_state *mrb);
++
++#endif
+diff --git a/mrbgems/mruby-time/src/time.c b/mrbgems/mruby-time/src/time.c
+index 702cf2e29..b9b09bf91 100644
+--- a/mrbgems/mruby-time/src/time.c
++++ b/mrbgems/mruby-time/src/time.c
+@@ -373,7 +373,7 @@ current_mrb_time(mrb_state *mrb)
+   struct mrb_time *tm;
+   time_t sec, usec;
+ 
+-#if defined(TIME_UTC) && !defined(__ANDROID__)
++#if defined(TIME_UTC) && !defined(__ANDROID__) && !defined(__APPLE__)
+   {
+     struct timespec ts;
+     if (timespec_get(&ts, TIME_UTC) == 0) {
+diff --git a/mrblib/init_mrblib.c b/mrblib/init_mrblib.c
+index e69de29bb..137d96330 100644
+--- a/mrblib/init_mrblib.c
++++ b/mrblib/init_mrblib.c
+@@ -0,0 +1,10 @@
++#include <mruby.h>
++#include <mruby/irep.h>
++
++extern const uint8_t mrblib_irep[];
++
++void
++mrb_init_mrblib(mrb_state *mrb)
++{
++  mrb_load_irep(mrb, mrblib_irep);
++}
+diff --git a/src/class.c b/src/class.c
+index 09e52d24a..99e172fd6 100644
+--- a/src/class.c
++++ b/src/class.c
+@@ -1943,7 +1943,7 @@ mrb_obj_new(mrb_state *mrb, struct RClass *c, mrb_int argc, const mrb_value *arg
+   mrb_sym mid;
+ 
+   obj = mrb_instance_alloc(mrb, mrb_obj_value(c));
+-  mid = MRB_SYM(initialize);
++  mid = mrb->sym_initialize;
+   if (!mrb_func_basic_p(mrb, obj, mid, mrb_bob_init)) {
+     mrb_funcall_argv(mrb, obj, mid, argc, argv);
+   }
+@@ -2819,6 +2819,8 @@ init_class_new(mrb_state *mrb, struct RClass *cls)
+   mrb_method_t m;
+ 
+   MRB_PRESYM_INIT_SYMBOLS(mrb, new_syms);
++  mrb->sym_default = MRB_SYM(default);  /* cache for mrb_hash_get's use */
++  mrb->sym_initialize = MRB_SYM(initialize);  /* cache for mrb_obj_new's use */
+   p = mrb_proc_new(mrb, &new_irep);
+   MRB_METHOD_FROM_PROC(m, p);
+   mrb_define_method_raw(mrb, cls, MRB_SYM(new), m);
+diff --git a/src/hash.c b/src/hash.c
+index 289f02a91..f1d5abc1e 100644
+--- a/src/hash.c
++++ b/src/hash.c
+@@ -328,13 +328,15 @@ obj_eql(mrb_state *mrb, mrb_value a, mrb_value b, struct RHash *h)
+     return mrb_symbol(a) == mrb_symbol(b);
+ 
+   case MRB_TT_INTEGER:
+-    if (!mrb_integer_p(b)) return FALSE;
+-    return mrb_integer(a) == mrb_integer(b);
++    if (!mrb_integer_p(b) && !mrb_float_p(b)) return FALSE;
++    if (mrb_integer_p(b)) return mrb_integer(a) == mrb_integer(b);
++    return ((mrb_float)mrb_integer(a)) == mrb_float(b);
+ 
+ #ifndef MRB_NO_FLOAT
+   case MRB_TT_FLOAT:
+-    if (!mrb_float_p(b)) return FALSE;
+-    return mrb_float(a) == mrb_float(b);
++    if (!mrb_integer_p(b) && !mrb_float_p(b)) return FALSE;
++    if (mrb_float_p(b)) return mrb_float(a) == mrb_float(b);
++    return mrb_float(a) == ((mrb_float)mrb_integer(b));
+ #endif
+ 
+   default:
+@@ -1181,7 +1183,8 @@ mrb_hash_get(mrb_state *mrb, mrb_value hash, mrb_value key)
+     return val;
+   }
+ 
+-  mid = MRB_SYM(default);
++  mid = mrb->sym_default;
++
+   if (mrb_func_basic_p(mrb, hash, mid, mrb_hash_default)) {
+     return hash_default(mrb, hash, key);
+   }
+diff --git a/src/numeric.c b/src/numeric.c
+index cef6fac96..fb667f3fe 100644
+--- a/src/numeric.c
++++ b/src/numeric.c
+@@ -1724,3 +1724,68 @@ mrb_init_numeric(mrb_state *mrb)
+ #endif
+ #endif
+ }
++
++
++
++
++// building mRuby with -DMRB_INT64 with our build-tools' LLVM on 32-bit Raspberry Pi
++//  links against this function, which our sysroot doesn't have.  --ryan.
++#if defined(MRB_INT64) && defined(__linux__) && defined(__arm__) && !defined(__LP64__)
++typedef int di_int;
++
++/*===-- mulodi4.c - Implement __mulodi4 -----------------------------------===
++ *
++ *                     The LLVM Compiler Infrastructure
++ *
++ * This file is dual licensed under the MIT and the University of Illinois Open
++ * Source Licenses. See LICENSE.TXT for details.
++ *
++ * ===----------------------------------------------------------------------===
++ *
++ * This file implements __mulodi4 for the compiler_rt library.
++ *
++ * ===----------------------------------------------------------------------===
++ */
++//#include "int_lib.h"
++/* Returns: a * b */
++/* Effects: sets *overflow to 1  if a * b overflows */
++/*COMPILER_RT_ABI*/ di_int
++__mulodi4(di_int a, di_int b, int* overflow)
++{
++    const int N = (int)(sizeof(di_int) * CHAR_BIT);
++    const di_int MIN = (di_int)1 << (N-1);
++    const di_int MAX = ~MIN;
++    *overflow = 0; 
++    di_int result = a * b;
++    if (a == MIN)
++    {
++        if (b != 0 && b != 1)
++	    *overflow = 1;
++	return result;
++    }
++    if (b == MIN)
++    {
++        if (a != 0 && a != 1)
++	    *overflow = 1;
++        return result;
++    }
++    di_int sa = a >> (N - 1);
++    di_int abs_a = (a ^ sa) - sa;
++    di_int sb = b >> (N - 1);
++    di_int abs_b = (b ^ sb) - sb;
++    if (abs_a < 2 || abs_b < 2)
++        return result;
++    if (sa == sb)
++    {
++        if (abs_a > MAX / abs_b)
++            *overflow = 1;
++    }
++    else
++    {
++        if (abs_a > MIN / -abs_b)
++            *overflow = 1;
++    }
++    return result;
++}
++#endif
++
+diff --git a/src/state.c b/src/state.c
+index 83cbf1629..f99292d90 100644
+--- a/src/state.c
++++ b/src/state.c
+@@ -176,9 +176,9 @@ mrb_free_context(mrb_state *mrb, struct mrb_context *c)
+   mrb_free(mrb, c);
+ }
+ 
+-int mrb_protect_atexit(mrb_state *mrb);
++void mrb_protect_atexit(mrb_state *mrb);
+ 
+-  MRB_API void
++MRB_API void
+ mrb_close(mrb_state *mrb)
+ {
+   if (!mrb) return;
+diff --git a/src/vm.c b/src/vm.c
+index f8b74034e..fdc297631 100644
+--- a/src/vm.c
++++ b/src/vm.c
+@@ -2297,10 +2297,10 @@ RETRY_TRY_BLOCK:
+       switch (TYPES2(mrb_type(regs[a]),mrb_type(regs[a+1]))) {
+       case TYPES2(MRB_TT_INTEGER,MRB_TT_INTEGER):
+         {
+-          mrb_int x = mrb_integer(regs[a]);
+-          mrb_int y = mrb_integer(regs[a+1]);
+-          mrb_int div = mrb_num_div_int(mrb, x, y);
+-          SET_INT_VALUE(mrb, regs[a], div);
++          x = (mrb_float)mrb_integer(regs[a]);
++          y = (mrb_float)mrb_integer(regs[a+1]);
++          f = mrb_num_div_flo(mrb, x, y);
++          SET_FLOAT_VALUE(mrb, regs[a], f);
+         }
+         NEXT;
+ #ifndef MRB_NO_FLOAT
+@@ -2400,16 +2400,16 @@ RETRY_TRY_BLOCK:
+   /* need to check if - is overridden */\
+   switch (TYPES2(mrb_type(regs[a]),mrb_type(regs[a+1]))) {\
+   case TYPES2(MRB_TT_INTEGER,MRB_TT_INTEGER):\
+-    result = OP_CMP_BODY(op,mrb_fixnum,mrb_fixnum);\
++    result = mrb_to_flo(mrb, regs[a]) op (mrb_float)mrb_integer(regs[a+1]); \
+     break;\
+   case TYPES2(MRB_TT_INTEGER,MRB_TT_FLOAT):\
+-    result = OP_CMP_BODY(op,mrb_fixnum,mrb_float);\
++    result = mrb_to_flo(mrb, regs[a]) op mrb_float(regs[a+1]); \
+     break;\
+   case TYPES2(MRB_TT_FLOAT,MRB_TT_INTEGER):\
+-    result = OP_CMP_BODY(op,mrb_float,mrb_fixnum);\
++    result = mrb_float(regs[a]) op mrb_to_flo(mrb, regs[a+1]); \
+     break;\
+   case TYPES2(MRB_TT_FLOAT,MRB_TT_FLOAT):\
+-    result = OP_CMP_BODY(op,mrb_float,mrb_float);\
++    result = mrb_float(regs[a]) op mrb_float(regs[a+1]); \
+     break;\
+   default:\
+     c = 1;\
+diff --git a/super-linter.report/.keep b/super-linter.report/.keep
+new file mode 100644
+index 000000000..e69de29bb

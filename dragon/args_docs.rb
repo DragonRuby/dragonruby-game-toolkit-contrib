@@ -196,7 +196,7 @@ If audio doesn't seem to be working, try re-encoding it via ~ffmpeg~:
   ffmpeg -i ./mygame/sounds/SOUND.wav -ac 2 -b:a 160k -ar 44100 -acodec libvorbis ./mygame/sounds/SOUND-converted.ogg
 #+end_src
 
-** Audio synthesis
+** Sound Synthesis
 
 Instead of a path to an audio file you can specify an array ~[channels, sample_rate, sound_source]~ for ~input~
 to procedurally generate sound. You do this by providing an array of float values between -1.0 and 1.0 that
@@ -206,7 +206,7 @@ describe the waveform you want to play.
 - ~sample_rate~ is the number of values per seconds you will provide to describe the audio wave
 - ~sound_source~ The source of your sound. See below
 
-*** Sound source
+*** Sound Source
 
 A sound source can be one of two things:
 
@@ -221,24 +221,37 @@ When you specify 2 for ~channels~, then the generated sample array will be playe
 The first element is the first sample for the left channel, the second element is the first sample for the right
 channel, the third element is the second sample for the left channel etc.
 
+For sound synthesis, ~gain~ can be initially set, but changing the value while the sound is playing will produce
+clicking/popping sounds. The attack and release of the sound should be baked into the array.
+
 *** Example:
 
 #+begin_src
-  def tick args
-    sample_rate = 48000
-
-    generate_sine_wave = lambda do
-      frequency = 440.0 # A5
-      samples_per_period = (sample_rate / frequency).ceil
-      one_period = samples_per_period.map_with_index { |i|
-        Math.sin((2 * Math::PI) * (i / samples_per_period))
-      }
-      one_period * frequency # Generate 1 second worth of sound
+  def generate_sine_wave frequency:, duration:, fade_out: true
+    samples_per_period = (48000 / frequency).ceil
+    count = (samples_per_period * duration.fdiv(60)).floor * frequency
+    count.map_with_index do |i|
+      attack_perc = (i / samples_per_period).clamp(0, 1)
+      release_perc = if fade_out
+                        1 - (i / count)
+                     elsif i > count - samples_per_period
+                       (count - i) / samples_per_period
+                     else
+                       1
+                     end
+      Math.sin((2 * Math::PI) * (i / samples_per_period)) * attack_perc * release_perc
     end
+  end
 
-    args.audio[:my_audio] ||= {
-      input: [1, sample_rate, generate_sine_wave]
-    }
+  def tick args
+    if args.state.tick_count == 0
+      wave_data = generate_sine_wave frequency: 440.0,
+                                     duration: 60 * 1.5,
+                                     fade_out: true
+      args.audio[:my_audio] = {
+        input: [1, 48000, wave_data],
+      }
+    end
   end
 #+end_src
 

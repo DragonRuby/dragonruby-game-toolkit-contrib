@@ -4,7 +4,7 @@
 # layout.rb has been released under MIT (*only this file*).
 
 module GTK
-  class Layout
+  class LayoutDefinition
     attr :w, :h, :ratio_w, :ratio_h, :orientation,
          :gutter_left, :gutter_right, :gutter_top, :gutter_bottom,
          :cell_size, :gutter

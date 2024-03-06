@@ -66,6 +66,39 @@ S
                   { 'Content-Type' => 'text/html' }
     end
 
+    def get_api_lsp_pulse args, req
+      puts "get_api_lsp_pulse"
+      json_response = <<~S
+          {
+            "result": "ok"
+          }
+        S
+      req.respond 200, json_response, { 'Content-Type' => 'application/json', 'Content-Length' => json_response.length }
+    end
+
+    def post_api_lsp_completion args, req
+      puts "* post_api_lsp_completion"
+      if !json? req
+        puts "NOT JSON"
+        req.respond 400
+      else
+        json  = ($gtk.parse_json req.body)
+        puts "#{json}"
+        json_response = <<~S
+          {
+            "result": [
+              { "label": "state", "kind": "method" },
+              { "label": "inputs", "kind": "method" },
+              { "label": "outputs", "kind": "method" },
+              { "label": "gtk", "kind": "method" },
+              { "label": "pixel_array", "kind": "method" }
+            ]
+          }
+        S
+        req.respond 200, json_response, { 'Content-Type' => 'application/json', 'Content-Length' => json_response.length }
+      end
+    end
+
     def post_api_autocomplete args, req
       json  = ($gtk.parse_json req.body)
       index = json["index"].to_i
@@ -343,7 +376,7 @@ S
     end
 
     def json? req
-      req.headers.find { |k, v| k == "Content-Type" && (v.strip == "application/json") }
+      req.headers.find { |k, v| k.downcase == "content-type" && (v.strip.downcase == "application/json") }
     end
 
     def post_api_reset args, req
@@ -484,6 +517,10 @@ S
          handler:        :get_api_autocomplete },
        { match_criteria: { method: :post, uri: "/dragon/autocomplete/" },
          handler:        :post_api_autocomplete },
+       { match_criteria: { method: :get, uri: "/dragon/lsp/pulse/" },
+         handler:        :get_api_lsp_pulse },
+       { match_criteria: { method: :post, uri: "/dragon/lsp/completion/" },
+         handler:        :post_api_lsp_completion },
        { match_criteria: { method: :get, uri: "/dragon/code/edit/", has_query_string: true },
          handler:        :get_api_code_edit },
        { match_criteria: { method: :post, uri: "/dragon/code/update/", has_query_string: true },

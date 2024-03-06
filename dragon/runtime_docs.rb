@@ -25,6 +25,7 @@ module RuntimeDocs
       :docs_set_window_fullscreen,
       :docs_window_fullscreen?,
       :docs_set_window_scale,
+      :docs_set_window_title,
 
       :docs_platform?,
       :docs_production?,
@@ -90,6 +91,8 @@ module RuntimeDocs
       :docs_enable_console,
       :docs_disable_console,
       :docs_disable_reset_via_ctrl_r,
+      :docs_disable_controller_config,
+      :docs_enable_controller_config,
 
       :docs_start_recording,
       :docs_stop_recording,
@@ -407,6 +410,15 @@ This function takes in a float value and uses that to resize the game window
 to a percentage of 1280x720 (or 720x1280 in portrait mode). The valid scale options
 are 0.1, 0.25, 0.5, 0.75, 1.25, 1.5, 2.0, 2.5, 3.0, and 4.0. The float value you
 pass in will be floored to the nearest valid scale option.
+S
+  end
+
+  def docs_set_window_title
+    <<-S
+*** ~set_window_scale~
+This function takes in a string updates the title of the game in the Menu Bar.
+
+Note: The default title for your game is specified in via the ~gametitle~ property in ~mygame/metadata/game_metadata.txt~.
 S
   end
 
@@ -930,6 +942,8 @@ S
 *** ~reset_sprite~
 Sprites when loaded are cached. Given a string parameter, this method invalidates the cache
 record of a sprite so that updates on from the disk can be loaded.
+
+This function can also be used to delete/garbage collect render targets you are no longer using.
 S
   end
 
@@ -1099,6 +1113,20 @@ S
 *** ~enable_console~
 Enables the DragonRuby Console so that it can be presented by pressing
 the tilde key (the key next to the number 1 key).
+S
+  end
+
+  def docs_disable_controller_config
+    <<-S
+*** ~disable_controller_config~
+DragonRuby has a built-in controller configuration/mapping wizard. You can disable this wizard by adding ~$gtk.disable_controller_config~ at the top of main.rb.
+S
+  end
+
+  def docs_enable_controller_config
+    <<-S
+*** ~disable_controller_config~
+DragonRuby has a built-in controller configuration/mapping wizard. You can re-enable this wizard by adding ~$gtk.enable_controller_config~ at the top of main.rb (this is enabled by default).
 S
   end
 
