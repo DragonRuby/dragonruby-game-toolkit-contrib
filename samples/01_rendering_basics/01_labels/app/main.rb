@@ -38,7 +38,7 @@ def tick args
   # render the current frame to the screen using a simple array
   # this is useful for quick and dirty output and is recommended to use
   # a Hash to render long term.
-  args.outputs.labels << [580.5, 650, "frame: #{args.state.tick_count}"]
+  args.outputs.labels << [640, 650, "frame: #{args.state.tick_count}"]
 
   # render the current frame to the screen centered vertically and horizontally at 640, 620
   args.outputs.labels << { x: 640, y: 620, anchor_x: 0.5, anchor_y: 0.5, text: "frame: #{args.state.tick_count}" }
@@ -53,10 +53,12 @@ def tick args
   # Demonstration of the Size Enum Parameter
 
   # size_enum of -2 is equivalent to using size_px: 18
-  args.outputs.labels << { x: 175 + 150, y: 610 - 50, text: "Smaller label.",  size_enum: -2 }
+  args.outputs.labels << { x: 175 + 150, y: 635 - 50, text: "Smaller label.",  size_enum: -2 }
+  args.outputs.labels << { x: 175 + 150, y: 620 - 50, text: "Smaller label.",  size_px: 18 }
 
   # size_enum of -1 is equivalent to using size_px: 20
-  args.outputs.labels << { x: 175 + 150, y: 580 - 50, text: "Small label.",    size_enum: -1 }
+  args.outputs.labels << { x: 175 + 150, y: 595 - 50, text: "Small label.",    size_enum: -1 }
+  args.outputs.labels << { x: 175 + 150, y: 580 - 50, text: "Small label.",    size_px: 20 }
 
   # size_enum of  0 is equivalent to using size_px: 22
   args.outputs.labels << { x: 175 + 150, y: 550 - 50, text: "Medium label.",   size_enum:  0 }
@@ -71,10 +73,12 @@ def tick args
   args.outputs.lines  << { x: 175 + 150, y: 0, h: 720 }
 
   # alignment_enum: 0 is equivalent to anchor_x: 0
-  args.outputs.labels << { x: 175 + 150, y: 345 - 50, text: "Left aligned.",   alignment_enum: 0 }
+  # vertical_alignment_enum: 1 is equivalent to anchor_y: 0.5
+  args.outputs.labels << { x: 175 + 150, y: 360 - 50, text: "Left aligned.",   alignment_enum: 0, vertical_alignment_enum: 1 }
+  args.outputs.labels << { x: 175 + 150, y: 342 - 50, text: "Left aligned.",   anchor_x: 0, anchor_y: 0.5 }
 
   # alignment_enum: 1 is equivalent to anchor_x: 0.5
-  args.outputs.labels << { x: 175 + 150, y: 325 - 50, text: "Center aligned.", alignment_enum: 1 }
+  args.outputs.labels << { x: 175 + 150, y: 325 - 50, text: "Center aligned.", alignment_enum: 1, vertical_alignment_enum: 1  }
 
   # alignment_enum: 2 is equivalent to anchor_x: 1
   args.outputs.labels << { x: 175 + 150, y: 305 - 50, text: "Right aligned.",  alignment_enum: 2 }
@@ -109,4 +113,10 @@ def tick args
                                b: 200,
                                a: 255,
                                font: "manaspc.ttf" }
+
+  args.outputs.labels << { x: 640,
+                           y: 100,
+                           anchor_x: 0.5,
+                           anchor_y: 0.5,
+                           text: "Ніколи не здам тебе. Ніколи не підведу тебе. Ніколи не буду бігати навколо і залишати тебе." }
 end

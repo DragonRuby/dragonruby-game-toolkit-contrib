@@ -10,7 +10,8 @@ module NumericDocs
       :docs_frame_index,
       :docs_elapsed_time,
       :docs_elapsed?,
-      :docs_new?
+      :docs_to_sf,
+      :docs_to_si
     ]
   end
 
@@ -239,6 +240,20 @@ Example usage (with optional parameter):
   end
 #+end_src
 
+S
+  end
+
+  def docs_to_sf
+    <<-S
+** ~to_sf~
+Returns a "string float" representation of a number with two decimal places. eg: ~5.8778~ will be shown as ~5.88~.
+S
+  end
+
+  def docs_to_si
+    <<-S
+** ~to_sf~
+Returns a "string int" representation of a number with underscores for thousands seperator. eg: ~50000.8778~ will be shown as ~50_000~.
 S
   end
 

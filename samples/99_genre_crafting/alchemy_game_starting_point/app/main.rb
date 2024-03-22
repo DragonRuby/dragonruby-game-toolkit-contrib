@@ -233,9 +233,9 @@ class Game
                                                       anchor_x: 0.5,
                                                       anchor_y: 0.5)
         end
-
-        state.selected_element = nil
       end
+
+      state.selected_element = nil
     end
   end
 

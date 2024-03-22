@@ -331,7 +331,7 @@ class GameScene
   end
 
   def scene_state
-    state[:game_scene] ||= {}
+    state.game_scene ||= {}
   end
 
   def scene_outputs

@@ -595,17 +595,21 @@ S
         source: 'tmp/src_backup/boot.txt',
         content_type: 'text/plain'
       },
+      '/samples.html' => {
+        source: 'docs/static/samples.html',
+        content_type: 'text/html'
+      },
       '/docs.html' => {
-        source: 'docs/docs.html',
+        source: 'docs/static/docs.html',
         content_type: 'text/html'
       },
       '/docs.css' => {
-        source: 'docs/docs.css',
+        source: 'docs/static/docs.css',
         content_type: 'text/css',
         cached: true
       },
       '/docs_search.gif' => {
-        source: 'docs/docs_search.gif',
+        source: 'docs/static/docs_search.gif',
         content_type: 'image/gif',
         cached: true
       },

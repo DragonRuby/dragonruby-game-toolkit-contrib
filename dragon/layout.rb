@@ -4,7 +4,7 @@
 # layout.rb has been released under MIT (*only this file*).
 
 module GTK
-  class LayoutDefinition
+  class Layout
     attr :w, :h, :ratio_w, :ratio_h, :orientation,
          :gutter_left, :gutter_right, :gutter_top, :gutter_bottom,
          :cell_size, :gutter
@@ -416,5 +416,25 @@ module GTK
       @debug_primitives = nil
       initialize_gutters
     end
+
+    class << self
+      def method_missing(m, *args, &block)
+        if $layout.respond_to? m
+          define_singleton_method(m) do |*args, &block|
+            $layout.send m, *args, &block
+          end
+          send m, *args, &block
+        elsif $layout.class.respond_to? m
+          define_singleton_method(m) do |*args, &block|
+            $layout.class.send m, *args, &block
+          end
+          send m, *args, &block
+        else
+          super
+        end
+      end
+    end
   end
 end
+
+Layout = GTK::Layout

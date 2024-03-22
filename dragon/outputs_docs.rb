@@ -16,7 +16,7 @@ module OutputsDocs
   end
 
   def docs_class
-    <<-S
+    <<-'S'
 * Outputs (~args.outputs~)
 
 Outputs is how you render primitives to the screen. The minimal setup for
@@ -80,15 +80,15 @@ Example:
 
     # the following string values will generate labels with backgrounds
     # and will auto stack vertically
-    args.outputs.debug << "current tick: \#{args.state.tick_count}"
-    args.outputs.debug << "player x: \#{args.state.player.x}"
+    args.outputs.debug << "current tick: #{args.state.tick_count}"
+    args.outputs.debug << "player x: #{args.state.player.x}"
   end
 #+end_src
 S
   end
 
   def docs_borders
-    <<-S
+    <<-'S'
 ** ~borders~
 
 Add primitives to this collection to render an unfilled solid to the screen. Take a look at the
@@ -118,7 +118,7 @@ S
   end
 
   def docs_solids
-    <<-S
+    <<-'S'
 ** ~solids~
 
 Add primitives to this collection to render a solid to the screen.
@@ -212,7 +212,7 @@ S
   end
 
   def docs_sprites
-    <<-S
+    <<-'S'
 ** ~sprites~
 
 Add primitives to this collection to render a sprite to the screen.
@@ -418,7 +418,7 @@ Instead of manually defining the properties, you can represent a sprite using th
     # anything you want to represent as a sprite
     attr_sprite
 
-    def initialize(x: 0, y: 0, w: 0, h: 0k
+    def initialize(x: 0, y: 0, w: 0, h: 0)
       @x = x
       @y = y
       @w = w
@@ -438,7 +438,7 @@ S
   end
 
   def docs_labels
-    <<-S
+    <<-'S'
 ** ~labels~
 
 Add primitives to this collection to render a label.
@@ -499,7 +499,7 @@ S
   end
 
   def docs_screenshots
-    <<-S
+    <<-'S'
 ** ~Screenshots~
 
 Add a hash to this collection to take a screenshot and save as png file.

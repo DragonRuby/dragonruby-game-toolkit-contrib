@@ -1,3 +1,57 @@
+* 5.22
+** [Support] [Pro] ~$wizards.ios.start~ sends build output immediately to standard out.
+** [Support] Added ~Geometry::rect_navigate~ to support the navigation of menus using the keyboard/dpad.
+   Sample app demonstrating menu navigation added at =./samples/09_ui_controls/02_menu_navigation=.
+** [Support] ~Geometry::center~ supports rects and lines.
+   ~Geometry.center~ check to for w/h properties to determine if center point
+   computation should occur for a rect or a line.
+** [Support] Added ~args.inputs.keyboard.key_(up|down|held).directional_vector.
+** [Support] SDL_SetHint(SDL_HINT_GAMECONTROLLER_USE_BUTTON_LABELS, "1") enabled.
+** [Support] Warnings added for render targets and sprites above 1600x1600 pixels.
+   Android has a hard limit 4096x4096 for textures. A warning has been added to let you know
+   if you are exceeding this limit. Androids max hd scaling is also capped at 1800p (scale 2.5x).
+   Browser games opened on Android's mobile browser are also capped at 1800p with HighDPI disabled
+   to prevent skewing of aspect ratios.
+** [Support] Warning is presented if ~:[]~ is invoked on an Entity, use ~.~ accessor instead.
+** [Support] ~$gtk.delete_file~ checks to see if file exists before attempting to delete it.
+** [Support] Docs migrated to use Docsify.
+   =./docs= directory contains markdown files. One page version of docs moved to =./docs/static=.
+
+   Special thanks to Redspark@discord and f_3r@discord for providing a Docsify proof of concept.
+** [Bugfix] [mRuby] Fixed bug in Enumerable gems.
+   Exception would be raised for some functions on classes that override ~==~. Patch information
+   is located at =./docs/oss/mruby/dragonruby-mruby-2.patch=
+
+   Special thanks to jujule@discord, kfischer_okarin@discord, and levi@discord for troubleshooting
+   and finding a fix to mRuby gems.
+** [Bugfix] ~Ctrl+R~ to reset game works even if Console is open.
+** [Bugfix] ~args.inputs.last_active~ set to ~:mouse~ if touch event occurs.
+** [Bugfix] ~args.inputs.(left_right|up_down) checks key_down states instead of key_up states.
+** [Bugfix] Added ~args.inputs.up_down_directional_perc~ to compliment ~left_down_directional_perc~.
+   ~left_down_directional_perc~ was flattered by the compliment.
+* 5.21
+** [Support] ~args.grid~ and ~args.layout~ can be accessed as a singleton via class functions.
+   Instead of calling ~$args.layout.rect~ or ~$args.grid.w~, you can now do ~Layout::rect~ or
+   ~Grid::w~. Top level class functions forward to ~$args~. This is an initial cut and
+   all functions may not be forwarded.
+** [Support] ~args.gtk~ functions can be accessed as a singleton via class functions.
+   Instead of calling ~$gtk.reset~, you can now do ~GTK::reset~. Top level class
+   functions forward to ~$gtk~. This is an initial cut and all functions may not be forwarded.
+** [Support] Initial work for ~args.events.raw~
+   Property is an array of hashes ray representing all events from SDL occurred during a tick.
+   Mapping of all event types is pending. This is primarily used for debugging/observing what
+   could potential be codified into args.inputs.
+** [Bugfix] Fixed exception when hotloading a file which includes a call ~$gtk.reset~.
+   Thanks to akzidenz@discord for reporting this issue.
+** [Support] Better descriptions in ~$gtk.benchmark~ plus ~duration~ override.
+   ~$gtk.benchmark~ now supports either passing in ~interations:~ or
+   ~durations:~ in seconds. If ~iterations~ is passed in then the
+   winner is decided based on time to complete target iterations. If
+   ~duration~ is passed in then winner is determined based on number
+   of iterations completed within the ~duration~ provided.
+* 5.20
+** [Bugfix] Fixed scenario where audio synchronization could throw an unhandled exception.
+** [Support] DragonRuby version is logged to the console on startup.
 * 5.19
 ** [Pro] [Bugfix] [iOS] [Android] Remote hotload fixed.
 ** [Support] Added ~args.inputs.keyboard.key_(down|held|up).keycodes~.
@@ -26,7 +80,7 @@
      puts (1_073_741_824 < 1_000_000_000) # returned true in web builds, wtf?
    #+end_src
 
-   The mRuby virtual machine's  was patched to fix this error.
+   The mRuby virtual machine was patched to fix this error.
 ** [OSS] Open Sourced parts of the engine are now packaged within the zip as seperate ruby files under ~./docs/oss~.
    Given the number of files that have been open sourced, having a single ~./docs/oss.txt~ file was getting a bit too large.
 ** [OSS] Custom patches made to mRuby are now packaged within the zip under ~./docs/dragonruby-mruby.patch~.

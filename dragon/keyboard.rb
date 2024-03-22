@@ -572,6 +572,37 @@ S
     def ctrl= value
       @control = value
     end
+
+    def directional_vector
+      l = left_arrow  || a_scancode || false
+      r = right_arrow || d_scancode || false
+      u = up_arrow    || w_scancode || false
+      d = down_arrow  || d_scancode || false
+
+      lr = if l
+             -1
+           elsif r
+             1
+           else
+             0
+           end
+
+      ud = if u
+             -1
+           elsif d
+             1
+           else
+             0
+           end
+
+      if lr == 0 && ud == 0
+        return nil
+      elsif lr.abs == ud.abs
+        return { x: 45.vector_x * lr.sign, y: 45.vector_y * ud.sign }
+      else
+        return { x: lr, y: ud }
+      end
+    end
   end
 end
 
@@ -600,44 +631,44 @@ module GTK
     #
     # @return [Boolean]
     def left
-      @key_up.left || @key_held.left || a_scancode || false
+      @key_down.left || @key_held.left || a_scancode || false
     end
 
     def left_arrow
-      @key_up.left || @key_held.left || false
+      @key_down.left || @key_held.left || false
     end
 
     # The right arrow or "d" was pressed.
     #
     # @return [Boolean]
     def right
-      @key_up.right || @key_held.right || d_scancode || false
+      @key_down.right || @key_held.right || d_scancode || false
     end
 
     def right_arrow
-      @key_up.right || @key_held.right || false
+      @key_down.right || @key_held.right || false
     end
 
     # The up arrow or "w" was pressed.
     #
     # @return [Boolean]
     def up
-      @key_up.up || @key_held.up || w_scancode || false
+      @key_down.up || @key_held.up || w_scancode || false
     end
 
     def up_arrow
-      @key_up.up || @key_held.up || false
+      @key_down.up || @key_held.up || false
     end
 
     # The down arrow or "s" was pressed.
     #
     # @return [Boolean]
     def down
-      @key_up.down || @key_held.down || s_scancode || false
+      @key_down.down || @key_held.down || s_scancode || false
     end
 
     def down_arrow
-      @key_up.down || @key_held.down || false
+      @key_down.down || @key_held.down || false
     end
 
     # Clear all current key presses.

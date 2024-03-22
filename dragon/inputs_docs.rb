@@ -5,7 +5,7 @@
 
 module InputsDocs
   def docs_api_summary_inputs
-    <<-S
+    <<-'S'
 * Inputs (~args.inputs~)
 Access using input using ~args.inputs~.
 ** ~last_active~
@@ -72,19 +72,19 @@ Here is some sample code to help visualize the ~left_right~ functions.
 #+begin_src
   def tick args
     args.outputs.debug << "* Variations of args.inputs.left_right"
-    args.outputs.debug << "  args.inputs.left_right(_with_wasd) \#{args.inputs.left_right}"
-    args.outputs.debug << "  args.inputs.left_right_perc(_with_wasd) \#{args.inputs.left_right_perc}"
-    args.outputs.debug << "  args.inputs.left_right_directional \#{args.inputs.left_right_directional}"
-    args.outputs.debug << "  args.inputs.left_right_directional_perc \#{args.inputs.left_right_directional_perc}"
+    args.outputs.debug << "  args.inputs.left_right(_with_wasd) #{args.inputs.left_right}"
+    args.outputs.debug << "  args.inputs.left_right_perc(_with_wasd) #{args.inputs.left_right_perc}"
+    args.outputs.debug << "  args.inputs.left_right_directional #{args.inputs.left_right_directional}"
+    args.outputs.debug << "  args.inputs.left_right_directional_perc #{args.inputs.left_right_directional_perc}"
     args.outputs.debug << "** Keyboard"
-    args.outputs.debug << "   args.inputs.keyboard.a \#{args.inputs.keyboard.a}"
-    args.outputs.debug << "   args.inputs.keyboard.d \#{args.inputs.keyboard.d}"
-    args.outputs.debug << "   args.inputs.keyboard.left_arrow \#{args.inputs.keyboard.left_arrow}"
-    args.outputs.debug << "   args.inputs.keyboard.right_arrow \#{args.inputs.keyboard.right_arrow}"
+    args.outputs.debug << "   args.inputs.keyboard.a #{args.inputs.keyboard.a}"
+    args.outputs.debug << "   args.inputs.keyboard.d #{args.inputs.keyboard.d}"
+    args.outputs.debug << "   args.inputs.keyboard.left_arrow #{args.inputs.keyboard.left_arrow}"
+    args.outputs.debug << "   args.inputs.keyboard.right_arrow #{args.inputs.keyboard.right_arrow}"
     args.outputs.debug << "** Controller"
-    args.outputs.debug << "   args.inputs.controller_one.dpad_left \#{args.inputs.controller_one.dpad_left}"
-    args.outputs.debug << "   args.inputs.controller_one.dpad_right \#{args.inputs.controller_one.dpad_right}"
-    args.outputs.debug << "   args.inputs.controller_one.left_analog_x_perc \#{args.inputs.controller_one.left_analog_x_perc}"
+    args.outputs.debug << "   args.inputs.controller_one.dpad_left #{args.inputs.controller_one.dpad_left}"
+    args.outputs.debug << "   args.inputs.controller_one.dpad_right #{args.inputs.controller_one.dpad_right}"
+    args.outputs.debug << "   args.inputs.controller_one.left_analog_x_perc #{args.inputs.controller_one.left_analog_x_perc}"
   end
 #+end_src
 ** ~up_down~
@@ -115,18 +115,19 @@ Here is some sample code to help visualize the ~up_down~ functions.
 #+begin_src
   def tick args
     args.outputs.debug << "* Variations of args.inputs.up_down"
-    args.outputs.debug << "  args.inputs.up_down \#{args.inputs.up_down}"
-    args.outputs.debug << "  args.inputs.up_down_directional \#{args.inputs.up_down_directional}"
-    args.outputs.debug << "  args.inputs.up_down_perc \#{args.inputs.up_down_perc}"
+    args.outputs.debug << "  args.inputs.up_down(_with_wasd) #{args.inputs.up_down}"
+    args.outputs.debug << "  args.inputs.up_down_perc(_with_wasd) #{args.inputs.up_down_perc}"
+    args.outputs.debug << "  args.inputs.up_down_directional #{args.inputs.up_down_directional}"
+    args.outputs.debug << "  args.inputs.up_down_directional_perc #{args.inputs.up_down_directional_perc}"
     args.outputs.debug << "** Keyboard"
-    args.outputs.debug << "   args.inputs.keyboard.a \#{args.inputs.keyboard.a}"
-    args.outputs.debug << "   args.inputs.keyboard.d \#{args.inputs.keyboard.d}"
-    args.outputs.debug << "   args.inputs.keyboard.up_arrow \#{args.inputs.keyboard.up_arrow}"
-    args.outputs.debug << "   args.inputs.keyboard.down_arrow \#{args.inputs.keyboard.down_arrow}"
+    args.outputs.debug << "   args.inputs.keyboard.w #{args.inputs.keyboard.w}"
+    args.outputs.debug << "   args.inputs.keyboard.s #{args.inputs.keyboard.s}"
+    args.outputs.debug << "   args.inputs.keyboard.up_arrow #{args.inputs.keyboard.up_arrow}"
+    args.outputs.debug << "   args.inputs.keyboard.down_arrow #{args.inputs.keyboard.down_arrow}"
     args.outputs.debug << "** Controller"
-    args.outputs.debug << "   args.inputs.controller_one.dpad_up \#{args.inputs.controller_one.dpad_up}"
-    args.outputs.debug << "   args.inputs.controller_one.dpad_down \#{args.inputs.controller_one.dpad_down}"
-    args.outputs.debug << "   args.inputs.controller_one.up_analog_x_perc \#{args.inputs.controller_one.up_analog_x_perc}"
+    args.outputs.debug << "   args.inputs.controller_one.dpad_up #{args.inputs.controller_one.dpad_up}"
+    args.outputs.debug << "   args.inputs.controller_one.dpad_down #{args.inputs.controller_one.dpad_down}"
+    args.outputs.debug << "   args.inputs.controller_one.left_analog_y_perc #{args.inputs.controller_one.left_analog_y_perc}"
   end
 #+end_src
 ** ~text~
@@ -317,7 +318,9 @@ The following properties represent keys on the keyboard and are available on ~ar
 *** ~keycodes~
 If the explicit named key isn't in the list above, you can still get the raw keycode via
 ~args.inputs.keyboard.key_(down|held|up).keycodes[KEYCODE_NUMBER]~. The ~KEYCODE_NUMBER~ represents
-the keycode provided by SDL: https://wiki.libsdl.org/SDL2/SDLKeycodeLookup
+the keycode provided by SDL.
+
+Here is a list SDL Keycodes: [[https://wiki.libsdl.org/SDL2/SDLKeycodeLookup]]
 *** ~char~
 Method is available under ~inputs.key_down~, ~inputs.key_held~, and ~inputs.key_up~.  Take note that
 
@@ -345,27 +348,27 @@ This is a demonstration of the behavior (see ~./samples/02_input_basics/01_keybo
 
     args.outputs.labels << { x: 30,
                              y: 720 - 30,
-                             text: "key_down.char: \#{keyboard.key_down.char.inspect}" }
+                             text: "key_down.char: #{keyboard.key_down.char.inspect}" }
 
     args.outputs.labels << { x: 30,
                              y: 720 - 60,
-                             text: "key_down.j:    \#{keyboard.key_down.j}" }
+                             text: "key_down.j:    #{keyboard.key_down.j}" }
 
     args.outputs.labels << { x: 30,
                              y: 720 - 30,
-                             text: "key_held.char: \#{keyboard.key_held.char.inspect}" }
+                             text: "key_held.char: #{keyboard.key_held.char.inspect}" }
 
     args.outputs.labels << { x: 30,
                              y: 720 - 60,
-                             text: "key_held.j:    \#{keyboard.key_held.j}" }
+                             text: "key_held.j:    #{keyboard.key_held.j}" }
 
     args.outputs.labels << { x: 30,
                              y: 720 - 30,
-                             text: "key_up.char:   \#{keyboard.key_up.char.inspect}" }
+                             text: "key_up.char:   #{keyboard.key_up.char.inspect}" }
 
     args.outputs.labels << { x: 30,
                              y: 720 - 60,
-                             text: "key_up.j:      \#{keyboard.key_up.j}" }
+                             text: "key_up.j:      #{keyboard.key_up.j}" }
   end
 #+end_src
 

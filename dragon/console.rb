@@ -387,7 +387,7 @@ S
             elsif results == :console_silent_eval
               # do nothing since the console is silent
             else
-              if cmd.include?("docs") && (results.is_a? String) && (results.start_with? "* ")
+              if cmd.include?("docs") && (results.is_a? String) && (results.start_with? "*")
                 puts "=>\n#{results}"
               else
                 puts "=> #{results}"

@@ -201,5 +201,25 @@ module GTK
     def y
       0
     end
+
+    class << self
+      def method_missing(m, *args, &block)
+        if $grid.respond_to? m
+          define_singleton_method(m) do |*args, &block|
+            $grid.send m, *args, &block
+          end
+          send m, *args, &block
+        elsif $grid.class.respond_to? m
+          define_singleton_method(m) do |*args, &block|
+            $grid.class.send m, *args, &block
+          end
+          send m, *args, &block
+        else
+          super
+        end
+      end
+    end
   end
 end
+
+Grid = GTK::Grid

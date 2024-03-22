@@ -80,8 +80,8 @@ class Numeric
     elapsed_time.percentage_of duration
   end
 
-  def new?
-    elapsed_time == 0
+  def new? tick_count_override
+    elapsed_time(tick_count_override) == 0
   end
 
   # Returns `true` if the numeric value has passed a duration/offset number.
@@ -738,6 +738,16 @@ class Fixnum
 
   def to_sf
     "%.2f" % self
+  end
+
+  def to_si
+    to_i.to_s
+        .reverse
+        .each_char
+        .each_slice(3)
+        .map(&:join)
+        .join("_")
+        .reverse
   end
 
   def ifloor int

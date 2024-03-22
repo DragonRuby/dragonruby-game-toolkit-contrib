@@ -125,6 +125,14 @@ module GTK
       end
     end
 
+    def up_down_directional_perc
+      if controller_one && controller_one.left_analog_y_perc != 0
+        controller_one.left_analog_y_perc
+      else
+        up_down_directional
+      end
+    end
+
     def click
       return nil unless @mouse.click
       return @mouse.click.point

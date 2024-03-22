@@ -51,7 +51,8 @@ module GTK
         ratio_w = 9
         ratio_h = 16
       end
-      @layout = GTK::LayoutDefinition.new @grid.w, @grid.h, ratio_w, ratio_h, runtime.orientation
+      @layout = GTK::Layout.new @grid.w, @grid.h, ratio_w, ratio_h, runtime.orientation
+      $layout = @layout
       @easing = GTK::Easing
       @string = String
       @events = {
@@ -234,12 +235,14 @@ module GTK
 
       new_audio_object_ids.each do |id|
         _, audio_v = @audio.find { |k, v| v.object_id == id }
-        new_audio_data[id] = {
-          gain: audio_v[:gain] || 1.0,
-          playtime: audio_v[:playtime] || 0.0,
-          original_source: audio_v
-        }
-        audio_v[:gain] = 0
+        if audio_v
+          new_audio_data[id] = {
+            gain: audio_v[:gain] || 1.0,
+            playtime: audio_v[:playtime] || 0.0,
+            original_source: audio_v
+          }
+          audio_v[:gain] = 0
+        end
       end
 
       if new_audio_data.length > 0

@@ -32,10 +32,8 @@ module DocsOrganizer
       GTK::Runtime,
       GTK::Geometry,
       GTK::Args,
-      GTK::Outputs,
-      GTK::Mouse,
-      GTK::OpenEntity,
       GTK::Layout,
+      GTK::Grid,
       Array,
       Numeric,
       Kernel,
@@ -78,6 +76,69 @@ S
                  .sort do |l, r|
                    sort_method_delegate l, r, klass_method_sort_order
                  end
+  end
+
+  def self.get_docsify_content path:, heading_level:, heading_include:, max_depth: 100
+    header_found = false
+    header_found_index = -1
+    inside_code_block = false
+    results = []
+    content = GTK.read_file path
+    current_heading_depth = 0
+    content.each_line.with_index do |_l, i|
+      l = _l.rstrip
+      current_is_heading = l.start_with? "#"
+
+      if current_is_heading
+        current_heading_depth = (l.split(" ").first || "").length
+      end
+
+      if !header_found && current_is_heading && current_heading_depth == heading_level && l.include?(heading_include)
+        header_found = true
+        header_found_index = i
+      end
+
+      if !header_found
+        next
+      end
+
+      if l.start_with? "```"
+        inside_code_block = !inside_code_block
+      end
+
+      if current_is_heading && i > header_found_index && !inside_code_block
+        if heading_level >= current_heading_depth
+          break
+        elsif current_heading_depth >= (heading_level + max_depth)
+          break
+        end
+      end
+
+      if l.start_with?("#") && !inside_code_block
+        tokens = l.split(" ")
+        beginning = tokens[0]
+        rest = tokens[1..-1].join(" ")
+                            .gsub("`", "~")
+                            .gsub("*", "-")
+
+        l = "#{beginning.gsub "#", "*"} #{rest}"
+      elsif l.start_with?("```")
+        if inside_code_block
+          l = l.gsub "```", "#+begin_src "
+        else
+          l = l.gsub "```", "#+end_src"
+        end
+      elsif inside_code_block
+        l = "  #{l}"
+      else
+        l = l.gsub("`", "~")
+             .gsub("*", "-")
+      end
+
+      results << l
+    end
+
+    results.join("\n")
   end
 end
 
@@ -255,7 +316,7 @@ S
       puts "* INFO: Getting docs for #{m}."
       (send m).ltrim + "\n"
     end.join "\n"
-    file_path = "docs/#{self.name}.txt"
+    file_path = "docs/static/#{self.name}.txt"
     $gtk.write_file_root "#{file_path}", content
     puts "* INFO: Documentation for #{self.name} has been exported to #{file_path}."
     $gtk.console.set_system_command file_path
@@ -273,25 +334,29 @@ S
   end
 
   def self.__docs_generate_link_id__ text
-    text = text.strip.downcase
-    text = text.gsub("*", "-")
-    text = text.gsub("~", "-")
-    text = text.gsub("[", "-")
-    text = text.gsub("]", "-")
-    text = text.gsub(":", "-")
-    text = text.gsub(" ", "-")
-    text = text.gsub(".", "-")
-    text = text.gsub(",", "-")
-    text = text.gsub("'", "-")
-    text = text.gsub("?", "-")
-    text
+    text.strip
+        .downcase
+        .gsub("*", "-")
+        .gsub("~", "-")
+        .gsub("|", "-")
+        .gsub("[", "-")
+        .gsub("]", "-")
+        .gsub("(", "-")
+        .gsub(")", "-")
+        .gsub(":", "-")
+        .gsub(" ", "-")
+        .gsub(".", "-")
+        .gsub(",", "-")
+        .gsub("'", "-")
+        .gsub("?", "-")
+        .gsub("!", "-")
   end
 
   # may god have mercy on your soul if you try to expand this
   def self.__docs_to_html__ string, warn_long_lines: true
     parse_log = []
 
-    highlight_js_min_content = $gtk.read_file "docs/highlight.min.js"
+    highlight_js_min_content = $gtk.read_file "docs/static/highlight.min.js"
 
     html_start_to_toc_start = <<-S
 <html lang="en">
@@ -321,7 +386,6 @@ document.addEventListener("animationstart", e => {
  </head>
   <body>
     <div id='table-of-contents'>
-      <li><a class='header-1' href='index.html'>Docs and Samples</a></li>
       <li><a class='header-1' href='docs.html'>Docs</a></li>
       <li><a class='header-1' href='samples.html'>Samples</a></li>
 S
@@ -596,10 +660,10 @@ S
 
         if inside_pre
           pre = l.rstrip[2..-1] || ""
-          if warn_long_lines && l.length > 105
-            parse_log << "* WARNING: Long code line: #{pre}"
-            $gtk.log_warn "* WARNING: Long code line:\n#{pre}"
-          end
+          # if warn_long_lines && l.length > 105
+          #   parse_log << "* WARNING: Long code line: #{pre}"
+          #   $gtk.log_warn "* WARNING: Long code line:\n#{pre}"
+          # end
           escaped_pre = pre.gsub("&", "&amp;")
                            .gsub("<", "&lt;")
                            .gsub(">", "&gt;")
@@ -626,11 +690,14 @@ S
       parse_log: parse_log
     }
   rescue Exception => e
-    $gtk.write_file_root 'docs/parse_log.txt', (parse_log.join "\n")
+    $gtk.write_file_root 'docs/static/parse_log.txt', (parse_log.join "\n")
     raise "* ERROR in Docs::__docs_to_html__. #{e}"
   end
 
   def self.__docs_line_to_html__ line, parse_log
+    # !!! FIXME: Edge case that isn't handled correctly
+    #            ~args.inputs.keyboard[KEYCODE]~: [[https://wiki.libsdl.org/SDL2/SDLKeycodeLookup]]
+
     parse_log << "- Determining if line is a header."
     if line.start_with? "***** "
       line = line.gsub "***** ", ""

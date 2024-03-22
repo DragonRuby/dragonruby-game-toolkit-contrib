@@ -55,19 +55,19 @@ module GTK
     end
 
     def up
-      @key_up.up || @key_held.up
+      @key_down.up || @key_held.up
     end
 
     def down
-      @key_up.down || @key_held.down
+      @key_down.down || @key_held.down
     end
 
     def left
-      @key_up.left || @key_held.left
+      @key_down.left || @key_held.left
     end
 
     def right
-      @key_up.right || @key_held.right
+      @key_down.right || @key_held.right
     end
 
     # Activates a key into the down position.

@@ -537,8 +537,22 @@ S
         { x: rect.x + rect.w / 2, y: rect.y + rect.h / 2 }
       end
 
+      def line_center_point line
+        center_x = (line.x1 + line.x2) / 2
+        center_y = (line.y1 + line.y2) / 2
+        { x: center_x, y: center_y }
+      end
+
+      def line_length line
+        Math.sqrt((line.x2 - line.x)**2 + (line.y2 - line.y)**2)
+      end
+
       def center rect
-        { x: rect.x + rect.w / 2, y: rect.y + rect.h / 2 }
+        if rect.w && rect.h
+          { x: rect.x + rect.w / 2, y: rect.y + rect.h / 2 }
+        else
+          line_center_point rect
+        end
       end
 
       def rect_normalize r
@@ -626,6 +640,8 @@ Geometry::line_vec2 for line #{line}.
 S
       end
 
+      alias_method :line_to_vec2, :line_vec2
+
       def vec2_magnitude v
         (v.x**2 + v.y**2)**0.5
       rescue Exception => e
@@ -703,6 +719,194 @@ S
 Geometry::point_on_line? for line #{line} and point #{point}.
 #{e}
 S
+      end
+
+      def rect_navigate_left_right rect:, rects:, left_right: 0, using: nil, wrap: true
+        return rect if !rect
+        return rect if !rects
+        return rect if rects.length == 0
+        left_right ||= 0
+        return rect if left_right == 0
+
+        using      ||= ->(r) { r }
+        subject_normalized_r = Geometry::rect_normalize(using.call(rect))
+        subject = {
+          item: rect,
+          center: subject_normalized_r.center,
+          rect: subject_normalized_r
+        }
+        rect_entries = rects.map do |r|
+          normalized_r = Geometry::rect_normalize(using.call(r))
+          {
+            item: r,
+            center: normalized_r.center,
+            rect: normalized_r,
+            dx: subject.center.x - normalized_r.center.x,
+            dy: subject.center.y - normalized_r.center.y,
+            distance: Geometry::distance(subject.center, normalized_r.center)
+          }
+        end
+
+        closest_entry = nil
+
+        if left_right > 0
+          closest_entry = rect_entries.find_all do |r|
+            r.center.x > subject.center.x && r.center.y == subject.center.y
+          end.sort_by do |r|
+            r.distance
+          end.first
+
+          if wrap
+            closest_entry ||= begin
+                                all_above = rect_entries.find_all do |r|
+                                  r.center.y < subject.center.y
+                                end.sort_by do |r|
+                                  r.distance
+                                end
+
+                                closest_below = all_above.first
+
+                                if closest_below
+                                  all_on_same_row = rect_entries.find_all do |r|
+                                    r.center.y == closest_below.center.y
+                                  end.sort_by do |r|
+                                    r.center.x
+                                  end
+
+                                  all_on_same_row.first
+                                end
+                              end
+
+            closest_entry ||= rect_entries.find_all do |r|
+              r.center.y < subject.center.y
+            end.sort_by do |r|
+              r.distance
+            end.first
+
+            closest_entry ||= rect_entries.find_all do |r|
+              r.center.y < subject.center.y
+            end.sort_by do |r|
+              r.distance
+            end.first
+
+            closest_entry ||= rect_entries.sort_by do |r|
+              [-r.center.y, r.center.x]
+            end.first
+          end
+        elsif left_right < 0
+          closest_entry = rect_entries.find_all do |r|
+            r.center.x < subject.center.x && r.center.y == subject.center.y
+          end.sort_by do |r|
+            r.distance
+          end.first
+
+          if wrap
+            closest_entry ||= begin
+                                all_above = rect_entries.find_all do |r|
+                                  r.center.y > subject.center.y
+                                end.sort_by do |r|
+                                  r.distance
+                                end
+
+                                closest_above = all_above.first
+
+                                if closest_above
+                                  all_on_same_row = rect_entries.find_all do |r|
+                                    r.center.y == closest_above.center.y
+                                  end.sort_by do |r|
+                                    r.center.x
+                                  end
+
+                                  all_on_same_row.last
+                                end
+                              end
+
+            closest_entry ||= rect_entries.find_all do |r|
+              r.center.y > subject.center.y
+            end.sort_by do |r|
+              r.distance
+            end.first
+
+            closest_entry ||= rect_entries.find_all do |r|
+              r.center.y > subject.center.y
+            end.sort_by do |r|
+              r.distance
+            end.first
+
+            closest_entry ||= rect_entries.sort_by do |r|
+              [r.center.y, -r.center.x]
+            end.first
+          end
+        end
+
+        closest_entry ||= subject
+
+        closest_entry.item
+      end
+
+      def rect_navigate_up_down rect:, rects:, up_down: 0, using: nil, wrap: true
+        return rect if !rect
+        return rect if !rects
+        return rect if rects.length == 0
+        return rect if up_down == 0
+
+        using      ||= ->(r) { r }
+        subject = { item: rect, center: Geometry::rect_normalize(using.call(rect)).center }
+        rect_entries = rects.map do |r|
+          { item: r, center: Geometry::rect_normalize(using.call(r)).center }
+        end
+
+        closest_entry = nil
+
+        if up_down > 0
+          closest_entry = rect_entries.find_all do |r|
+            r.center.y > subject.center.y
+          end.sort_by do |r|
+            [r.center.y, (subject.center.x - r.center.x).abs]
+          end.first
+
+          if wrap
+            closest_entry ||= rect_entries.sort_by do |r|
+              [r.center.y, (subject.center.x - r.center.x).abs]
+            end.first
+          end
+        elsif up_down < 0
+          closest_entry = rect_entries.find_all do |r|
+            r.center.y < subject.center.y
+          end.sort_by do |r|
+            [-r.center.y, (subject.center.x - r.center.x).abs]
+          end.first
+
+          if wrap
+            closest_entry ||= rect_entries.sort_by do |r|
+              [-r.center.y, (subject.center.x - r.center.x).abs]
+            end.first
+          end
+        end
+
+        closest_entry ||= subject
+
+        closest_entry.item
+      end
+
+      def rect_navigate rect:, rects:, left_right: nil, up_down: nil, directional_vector: nil, wrap_x: true, wrap_y: true, using: nil
+        directional_vector ||= { x: 0, y: 0 }
+        left_right ||= directional_vector.x.sign
+        up_down ||= directional_vector.y.sign
+        current_rect = rect
+        current_rect = rect_navigate_left_right rect: current_rect,
+                                                rects: rects,
+                                                left_right: left_right,
+                                                wrap: wrap_x,
+                                                using: using
+
+        current_rect = rect_navigate_up_down rect: current_rect,
+                                             rects: rects,
+                                             up_down: up_down,
+                                             wrap: wrap_y,
+                                             using: using
+
+        current_rect
       end
     end # end class << self
   end # module Geometry

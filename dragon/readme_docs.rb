@@ -14,902 +14,48 @@ module GTK
         docs_deployment_steam
         docs_dragonruby_philosophy
         docs_faq
-        docs_ticks_and_frames
-        docs_sprites
-        docs_labels
-        docs_sounds
-        docs_game_state
-        docs_accessing_files
         docs_troubleshooting_performance
       ]
     end
 
     def docs_hello_world
-<<-S
-* Welcome
-
-Welcome to DragonRuby Game Toolkit!
-
-The information contained here is all available in your the
-zip file at ~./docs/docs.html~. You can browse the docs in a local website
-by starting up DragonRuby and going to ~http://localhost:9001~.
-
-* Tips for Learning DragonRuby Game Toolkit
-
-The following tips will help you learn the DragonRuby quickly.
-
-** Tip #1: Join the Community
-
-Our Discord server is extremely supportive and helpful. It's the best
-place to get answers to your questions. The developers of DragonRuby
-are also on this server if you have any feedback or bug reports.
-
-The Link to Our Discord Server is: [[http://discord.dragonruby.org]].
-
-** Tip #2: Read the Book
-
-Brett Chalupa (one of our community members) has written a book to help you get started: [[https://book.dragonriders.community/]]
-
-** Tip #3: Watch the Tutorial Video
-
-Here are some videos to help you get the lay of the land.
-
-1. Building Tetris - Part 1: [[https://youtu.be/xZMwRSbC4rY]]
-2. Building Tetris - Part 2: [[https://youtu.be/C3LLzDUDgz4]]
-
-** Tip #4: Go Through the Sample Apps in Order
-
-The sample apps are located in the ~./samples~ directory. The samples are ordered by increasing
-difficulty and cover all aspects of the game engine.
-
-* Getting Started Tutorial
-
-This is a tutorial written by Ryan C Gordon (a Juggernaut in the
-industry who has contracted to Valve, Epic, Activision, and
-EA... check out his Wikipedia page: [[https://en.wikipedia.org/wiki/Ryan_C._Gordon]]).
-
-** Introduction
-
-Welcome!
-
-Here's just a little push to get you started if you're new to
-programming or game development.
-
-If you want to write a game, it's no different than writing any other
-program for any other framework: there are a few simple rules that
-might be new to you, but more or less programming is programming no
-matter what you are building.
-
-Did you not know that? Did you think you couldn't write a game because
-you're a "web guy" or you're writing Java at a desk job? Stop letting
-people tell you that you can't, because you already have everything
-you need.
-
-Here, we're going to be programming in a language called "Ruby." In
-the interest of full disclosure, I (Ryan Gordon) wrote the C parts of
-this toolkit and Ruby looks a little strange to me (Amir Rajan wrote
-the Ruby parts, discounting the parts I mangled), but I'm going to
-walk you through the basics because we're all learning together, and
-if you mostly think of yourself as someone that writes C (or C++, C#,
-Objective-C), PHP, or Java, then you're only a step behind me right
-now.
-
-** Prerequisites
-
-Here's the most important thing you should know: Ruby lets you do some
-complicated things really easily, and you can learn that stuff
-later. I'm going to show you one or two cool tricks, but that's all.
-
-Do you know what an if statement is? A for-loop? An array? That's all
-you'll need to start.
-
-** The Game Loop
-
-Ok, here are few rules with regards to game development with GTK:
-
-- Your game is all going to happen under one function ...
-- that runs 60 times a second ...
-- and has to tell the computer what to draw each time.
-
-That's an entire video game in one run-on sentence.
-
-Here's that function. You're going to want to put this in
-mygame/app/main.rb, because that's where we'll look for it by
-default. Load it up in your favorite text editor.
-
-#+begin_src ruby
-  def tick args
-    args.outputs.labels << [580, 400, 'Hello World!']
-  end
-#+end_src
-
-Now run ~dragonruby~ ...did you get a window with "Hello World!"
-written in it? Good, you're officially a game developer!
-
-** Breakdown Of The ~tick~ Method
-
-~mygame/app/main.rb~, is where the Ruby source code is located. This
-looks a little strange, so I'll break it down line by line. In Ruby, a
-'#' character starts a single-line comment, so I'll talk about this
-inline.
-
-#+begin_src ruby
-  # This "def"ines a function, named "tick," which takes a single argument
-  # named "args". DragonRuby looks for this function and calls it every
-  # frame, 60 times a second. "args" is a magic structure with lots of
-  # information in it. You can set variables in there for your own game state,
-  # and every frame it will updated if keys are pressed, joysticks moved,
-  # mice clicked, etc.
-  def tick args
-
-    # One of the things in "args" is the "outputs" object that your game uses
-    # to draw things. Afraid of rendering APIs? No problem. In DragonRuby,
-    # you use arrays to draw things and we figure out the details.
-    # If you want to draw text on the screen, you give it an array (the thing
-    # in the [ brackets ]), with an X and Y coordinate and the text to draw.
-    # The "<<" thing says "append this hash onto the list of them at
-    # args.outputs.labels)
-    args.outputs.labels << { x: 580, y: 400, text: 'Hello World!' }
-  end
-#+end_src
-
-Once your ~tick~ function finishes, we look at all the arrays you made
-and figure out how to draw it. You don't need to know about graphics
-APIs. You're just setting up some arrays! DragonRuby clears out these
-arrays every frame, so you just need to add what you need _right now_
-each time.
-
-** Rendering A Sprite
-
-Now let's spice this up a little.
-
-We're going to add some graphics. Each 2D image in DragonRuby is
-called a "sprite," and to use them, you just make sure they exist in a
-reasonable file format (png, jpg, gif, bmp, etc) and specify them by
-filename. The first time you use one, DragonRuby will load it and keep
-it in video memory for fast access in the future. If you use a
-filename that doesn't exist, you get a fun checkerboard pattern!
-
-There's a "dragonruby.png" file included, just to get you
-started. Let's have it draw every frame with our text:
-
-#+begin_src ruby
-  def tick args
-    args.outputs.labels  << { x: 580, y: 400, text: 'Hello World!' }
-    args.outputs.sprites << { x: 576, y: 100, w: 128, h: 101, path: 'dragonruby.png' }
-  end
-#+end_src
-
-(Pro Tip: you don't have to restart DragonRuby to test your changes;
-when you save main.rb, DragonRuby will notice and reload your
-program.)
-
-That ~.sprites~ line says "add a sprite to the list of sprites we're
-drawing, and draw it at position (576, 100) at a size of 128x101
-pixels". You can find the image to draw at dragonruby.png.
-
-** Coordinate System and Virtual Canvas
-
-Quick note about coordinates: (0, 0) is the bottom left corner of the
-screen, and positive numbers go up and to the right. This is more
-"geometrically correct," even if it's not how you remember doing 2D
-graphics, but we chose this for a simpler reason: when you're making
-Super Mario Brothers and you want Mario to jump, you should be able to
-add to Mario's y position as he goes up and subtract as he falls. It
-makes things easier to understand.
-
-Also: your game screen is _always_ 1280x720 pixels. If you resize the
-window, we will scale and letterbox everything appropriately, so you
-never have to worry about different resolutions.
-
-Ok, now we have an image on the screen, let's animate it:
-
-#+begin_src ruby
-  def tick args
-    args.state.rotation  ||= 0
-
-    args.state.rotation  -= 1
-
-    args.outputs.labels  << { x: 580, y: 400, text: 'Hello World!' }
-    args.outputs.sprites << { x: 576,
-                              y: 100,
-                              w: 128,
-                              h: 101,
-                              path: 'dragonruby.png',
-                              angle: args.state.rotation }
-  end
-#+end_src
-
-Now you can see that this function is getting called a lot!
-
-** Game State
-
-Here's a fun Ruby thing: ~args.state.rotation ||= 0~ is shorthand for
-"if args.state.rotation isn't initialized, set it to zero." It's a
-nice way to embed your initialization code right next to where you
-need the variable.
-
-
-~args.state~ is a place you can hang your own data. It's an open data
-structure that allows you to define properties that are arbitrarily
-nested. You don't need to define any kind of class.
-
-In this case, the current rotation of our sprite, which is happily
-spinning at 60 frames per second. If you don't specify rotation (or
-alpha, or color modulation, or a source rectangle, etc), DragonRuby
-picks a reasonable default, and the array is ordered by the most
-likely things you need to tell us: position, size, name.
-
-** There Is No Delta Time
-
-One thing we decided to do in DragonRuby is not make you worry about
-delta time: your function runs at 60 frames per second (about 16
-milliseconds) and that's that. Having to worry about framerate is
-something massive triple-AAA games do, but for fun little 2D games?
-You'd have to work really hard to not hit 60fps. All your drawing is
-happening on a GPU designed to run Fortnite quickly; it can definitely
-handle this.
-
-Since we didn't make you worry about delta time, you can just move the
-rotation by 1 every time and it works without you having to keep track
-of time and math. Want it to move faster? Subtract 2.
-
-** Handling User Input
-
-Now, let's move that image around.
-
-#+begin_src ruby
-  def tick args
-    args.state.rotation ||= 0
-    args.state.x ||= 576
-    args.state.y ||= 100
-
-    if args.inputs.mouse.click
-      args.state.x = args.inputs.mouse.x - 64
-      args.state.y = args.inputs.mouse.y - 50
-    end
-
-    args.outputs.labels  << { x: 580, y: 400, text: 'Hello World!' }
-    args.outputs.sprites << { x: args.state.x,
-                              y: args.state.y,
-                              w: 128,
-                              h: 101,
-                              path: 'dragonruby.png',
-                              angle: args.state.rotation }
-
-    args.state.rotation -= 1
-  end
-#+end_src
-
-Everywhere you click your mouse, the image moves there. We set a
-default location for it with ~args.state.x ||= 576~, and then we
-change those variables when we see the mouse button in action. You can
-get at the keyboard and game controllers in similar ways.
-
-** Coding On A Raspberry Pi
-
-We have only tested DragonRuby on a Raspberry Pi 3, Models B and B+, but we
-believe it _should_ work on any model with comparable specs.
-
-If you're running DragonRuby Game Toolkit on a Raspberry Pi, or trying to run
-a game made with the Toolkit on a Raspberry Pi, and it's really really slow--
-like one frame every few seconds--then there's likely a simple fix.
-
-You're probably running a desktop environment: menus, apps, web browsers,
-etc. This is okay! Launch the terminal app and type:
-
-#+begin_src bash
-  sudo raspi-config
-#+end_src
-
-It'll ask you for your password (if you don't know, try "raspberry"), and then
-give you a menu of options. Find your way to "Advanced Options", then "GL
-Driver", and change this to "GL (Full KMS)"  ... not "fake KMS," which is
-also listed there. Save and reboot. In theory, this should fix the problem.
-
-If you're _still_ having problems and have a Raspberry Pi 2 or better, go back
-to raspi-config and head over to "Advanced Options", "Memory split," and give
-the GPU 256 megabytes. You might be able to avoid this for simple games, as
-this takes RAM away from the system and reserves it for graphics. You can
-also try 128 megabytes as a gentler option.
-
-Note that you can also run DragonRuby without X11 at all: if you run it from
-a virtual terminal it will render fullscreen and won't need the "Full KMS"
-option. This might be attractive if you want to use it as a game console
-sort of thing, or develop over ssh, or launch it from RetroPie, etc.
-
-** Conclusion
-
-There is a lot more you can do with DragonRuby, but now you've already
-got just about everything you need to make a simple game. After all,
-even the most fancy games are just creating objects and moving them
-around. Experiment a little. Add a few more things and have them
-interact in small ways. Want something to go away? Just don't add it
-to ~args.output~ anymore.
-S
+      DocsOrganizer.get_docsify_content path: "docs/guides/getting-started.md",
+                                        heading_level: 1,
+                                        heading_include: "Getting Started"
     end
 
     def docs_new_project
-<<-S
-
-* Starting a New DragonRuby Project
-
-The DragonRuby zip that contains the engine is a complete, self contained project
-structure. To create a new project, unzip the zip file again in its entirety
-and use that as a starting point for another game. This is the recommended
-approach to starting a new project.
-
-The DragonRuby binary/package is designed to be committed in its entirety
-with your source code (it’s why we keep it small). This protects the “shelf life”
-for commercial games. 3 years from now, we might be on a vastly different version
-of the engine. But you know that the code you’ve written will definitely work with the
-version that was committed to source control.
-
-It's strongly recommended that you :b:do NOT keep DragonRuby Game Toolkit in a shared location:/b: and
-instead unzip a clean copy for every game (and commit everything to source control).
-
-File access functions are sandoxed and assume that the ~dragonruby~ binary lives alongside
-the game you are building. Do not expect file access functions to return correct values if you are attempting
-to run the ~dragonruby~ binary from a shared location. It's recommended that the directory
-structure contained in the zip is not altered and games are built using that starting directory structure.
-
-** Considerations For Public Git Repositories
-
-You can open source your game's code given the following options.
-
-*** Option 1 (Recommended)
-
-Your public repository needs only to contain the contents of ~./mygame~. This approach
-is the cleanest and doesn't require your ~.gitignore~ to be polluted with DragonRuby
-specific files.
-
-*** Option 2 (Restrictions Apply)
-
-IMPORTANT: Do NOT commit ~dragonruby-publish(.exe)~, or ~dragonruby-bind(.exe)~.
-
-#+begin_src plaintext
-  dragonruby
-  dragonruby.exe
-  dragonruby-publish
-  dragonruby-publish.exe
-  dragonruby-bind
-  dragonruby-bind.exe
-  /tmp/
-  /builds/
-  /logs/
-  /samples/
-  /docs/
-  /.dragonruby/
-#+end_src
-
-If you'd like people who do not own a DragonRuby license to run your game, you may include
-the ~dragonruby(.exe)~ binary within the repo. This permission is granted in good-faith
-and can be revoked if abused.
-
-** Considerations For Private Git Repos
-
-The following ~.gitignore~ should be used for private repositories (commercial games).
-
-#+begin_src plaintext
-  /tmp/
-  /logs/
-#+end_src
-
-You'll notice that everything else is committed to source control (even the ~./samples~, ~./docs~, and ~./builds~ directory).
-
-S
+      DocsOrganizer.get_docsify_content path: "docs/guides/starting-a-new-project.md",
+                                        heading_level: 1,
+                                        heading_include: "Starting a New DragonRuby Project"
     end
 
     def docs_deployment
-<<-S
-
-* Deploying To Itch.io
-
-Once you've built your game, you're all set to deploy! Good luck in
-your game dev journey and if you get stuck, come to the Discord
-channel!
-
-** Creating Your Game Landing Page
-
-Log into Itch.io and go to [[https://itch.io/game/new]].
-
-- Title: Give your game a Title. This value represents your `gametitle`.
-- Project URL: Set your project url. This value represents your `gameid`.
-- Classification: Keep this as Game.
-- Kind of Project: Select HTML from the drop down list. Don't worry,
-  the HTML project type _also supports binary downloads_.
-- Uploads: Skip this section for now.
-
-You can fill out all the other options later.
-
-** Update Your Game's Metadata
-
-Point your text editor at mygame/metadata/game_metadata.txt and
-make it look like this:
-
-NOTE: Remove the ~#~ at the beginning of each line.
-
-#+begin_src
-  devid=bob
-  devtitle=Bob The Game Developer
-  gameid=mygame
-  gametitle=My Game
-  version=0.1
-#+end_src
-
-The ~devid~ property is the username you use to log into Itch.io.
-The ~devtitle~ is your name or company name (it can contain spaces).
-The ~gameid~ is the Project URL value.
-The ~gametitle~ is the name of your game (it can contain spaces).
-The ~version~ can be any ~major.minor~ number format.
-
-** Building Your Game For Distribution
-
-Open up the terminal and run this from the command line:
-
-#+begin_src
-  ./dragonruby-publish --only-package mygame
-#+end_src
-
-(if you're on Windows, don't put the "./" on the front. That's a Mac and
-Linux thing.)
-
-A directory called ~./build~ will be created that contains your
-binaries. You can upload this to Itch.io manually.
-
-*** Browser Game Settings
-For the HTML version of your game, the following configuration is required for your game to run correctly:
-
-- Check the checkbox labeled ~This file will be played in the browser~ for the html version of your game (it's one of the zip files you'll upload).
-- Ensure that ~Embed options -> SharedArrayBuffer support~ is checked.
-- Be sure to set the ~Viewport dimensions~ to ~1280x720~ for landscape games or your game will not be positioned correctly on your Itch.io page.
-- Be sure to set the ~Viewport dimensions~ to ~540x960~ for portrait games or your game will not be positioned correctly on your Itch.io page.
-
-For subsequent updates you can use an automated deployment to Itch.io:
-
-#+begin_src
-  ./dragonruby-publish mygame
-#+end_src
-
-DragonRuby will package _and publish_ your game to itch.io! Tell your
-friends to go to your game's very own webpage and buy it!
-
-If you make changes to your game, just re-run dragonruby-publish and it'll
-update the downloads for you.
-
-*** Consider Adding Pause When Game is In Background
-
-It's a good idea to pause the game if it doesn't have focus. Here's an example of how to do that
-
-#+begin_src
-  def tick args
-    # if the keyboard doesn't have focus, and the game is in production mode, and it isn't the first tick
-    if !args.inputs.keyboard.has_focus && args.gtk.production && args.state.tick_count != 0
-      args.outputs.background_color = [0, 0, 0]
-      args.outputs.labels << { x: 640,
-                               y: 360,
-                               text: "Game Paused (click to resume).",
-                               alignment_enum: 1,
-                               r: 255, g: 255, b: 255 }
-      # consider setting all audio volume to 0.0
-    else
-      # perform your regular tick function
-    end
-  end
-#+end_src
-
-If you want your game to run at full speed even when it's in the background, add the following line to ~mygame/metadata/cvars.txt~:
-
-#+begin_src
-  renderer.background_sleep=0
-#+end_src
-
-*** Consider Adding a Request to Review Your Game In-Game
-
-Getting reviews of your game are extremely important and it's recommended that you put an option to review
-within the game itself. You can use ~args.gtk.open_url~ plus a review URL. Here's an example:
-
-#+begin_src
-  def tick args
-    # render the review button
-    args.state.review_button ||= { x: 640 - 50,
-                                   y: 360 - 25,
-                                   w: 100,
-                                   h: 50,
-                                   path: :pixel,
-                                   r: 0,
-                                   g: 0,
-                                   b: 0 }
-    args.outputs.sprites << args.state.review_button
-    args.outputs.labels << { x: 640, y: 360, anchor_x: 0.5, anchor_y: 0.5, text: "Review" }
-
-    # check to see if the review button was clicked
-    if args.inputs.mouse.intersect_rect? args.state.review_button
-      # open platform specific review urls
-      if args.gtk.platform? :ios
-        # your app id is provided at Apple's Developer Portal (numeric value)
-        args.gtk.openurl "itms-apps://itunes.apple.com/app/idYOURGAMEID?action=write-review"
-      elsif args.gtk.platform? :android
-        # your app id is the name of your android package
-        args.gtk.openurl "https://play.google.com/store/apps/details?id=YOURGAMEID"
-      elsif args.gtk.platform? :web
-        # if they are playing the web version of the game, take them to the purchase page on itch
-        args.gtk.openurl "https://amirrajan.itch.io/YOURGAMEID/purchase"
-      else
-        # if they are playing the desktop version of the game, take them to itch's rating page
-        args.gtk.openurl "https://amirrajan.itch.io/YOURGAMEID/rate?source=game"
-      end
-    end
-  end
-#+end_src
-S
+      DocsOrganizer.get_docsify_content path: "docs/guides/deploying-to-itch.md",
+                                        heading_level: 1,
+                                        heading_include: "Deploying To Itch.io"
     end
 
     def docs_deployment_mobile
-<<-S
-
-* Deploying To Mobile Devices
-
-If you have a Pro subscription, you also have the capability to deploy
-to mobile devices.
-
-** Deploying to iOS
-
-To deploy to iOS, you need to have a Mac running MacOS Catalina, an
-iOS device, and an active/paid Developer Account with Apple. From the
-Console type: ~$wizards.ios.start~ and you will be guided through the
-deployment process.
-
-- ~$wizards.ios.start env: :dev~ will deploy to an iOS device connected via USB.
-- ~$wizards.ios.start env: :hotload~ will deploy to an iOS device connected via USB with hotload enabled.
-- ~$wizards.ios.start env: :sim~ will deploy to the iOS simulator.
-- ~$wizards.ios.start env: :prod~ will package your game for distribution via Apple's AppStore.
-
-** Deploying to Android
-
-To deploy to Android, you need to have an Android emulator/device, and
-an environment that is able to run Android SDK. ~dragonruby-publish~
-will create an APK for you. From there, you can sign the APK and
-install it to your device. The signing and installation procedure
-varies from OS to OS. Here's an example of what the command might look
-like:
-
-#+begin_src
-  # generating a keystore
-  keytool -genkey -v -keystore APP.keystore -alias mygame -keyalg RSA -keysize 2048 -validity 10000
-
-  # deploying to a local device/emulator
-  apksigner sign --min-sdk-version 21 --ks ./profiles/mygame.keystore ./builds/APP-android.apk
-  adb install ./builds/APP-android.apk
-  # read logs of device
-  adb logcat -e mygame
-
-  # signing for Google Play
-  apksigner sign --min-sdk-version 33 --ks ./profiles/APP.keystore ./builds/APP-googleplay.aab
-#+end_src
-S
+      DocsOrganizer.get_docsify_content path: "docs/guides/deploying-to-mobile.md",
+                                        heading_level: 1,
+                                        heading_include: "Deploying To Mobile Devices"
     end
 
     def docs_deployment_steam
-<<-S
-
-* Deploying To Steam
-
-If you have a Indie or Pro subscription, you also get streamlined deployment
-to Steam via ~dragonruby-publish~. Please note that games developed using the
-Standard license can deploy to Steam using the Steamworks toolchain [[https://partner.steamgames.com/doc/store/releasing]].
-
-** Testing on Your Steam Deck
-
-*** Easy Setup
-
-1. Run ~dragonruby-publish --only-package~.
-2. Find the Linux build of your game under the ~./builds~ directory and load it onto an SD Card.
-3. Restart the Steam Deck in Desktop Mode.
-4. Copy your game binary onto an SD card.
-5. Find the game on the SD card and double click binary.
-
-*** Advanced Setup
-
-1. Restart the Steam Deck in Desktop Mode.
-2. Open up Konsole and set an admin password via ~passwd~.
-3. Disable readonly mode: ~sudo steamos-readonly disable~.
-4. Update pacman ~sudo pacman-key --populate archlinux~.
-5. Update sshd_config ~sudo vim /etc/ssh/sshd_config~ and uncomment the ~PubkeyAuthentication yes~ line.
-6. Enable ssh: ~sudo systemctl enable sshd~.
-7. Start ssh: ~sudo systemctl start sshd~.
-8. Run ~dragonruby-publish --only-package~.
-9. Use ~scp~ to copy the game over from your dev machine without needing an SD Card: ~scp -R ./builds/SOURCE.bin deck@IP_ADDRESS:/home/deck/Downloads~
-
-Note: Steps 2 through 7 need only be done once.
-
-Note: ~scp~ comes pre-installed on Mac and Linux. You can download the tool for Windows from [[https://winscp.net/eng/index.php]]
-
-** Setting up the game on the Partner Site
-
-*** Getting your App ID
-
-You'll need to create a product on Steam. This is unfortunately manual and requires identity verification for taxation purposes.
-Valve offers pretty robust documentation on all this, though. Eventually, you'll have an
-App ID for your game.
-
-Go to https://partner.steamgames.com/apps/view/$APPID, where $APPID
-is your game's App ID.
-
-*** Specifing Supported Operating Systems for your game
-
-Find the "Supported Operating Systems" section and make sure these things
-are checked:
-
-- Windows: 64 Bit Only
-- macOS: 64 Bit (Intel) and Apple Silicon
-- Linux: Including SteamOS
-
-Click the "Save" button below it.
-
-*** Setting up SteamPipe Depots
-
-Click the "SteamPipe" tab at the top of the page, click on "depots"
-
-Click the "Add a new depot" button. Give it a name like "My Game Name
-Linux Depot" and take whatever depot ID it offers you.
-
-You'll see this new depot is listed on the page now. Fix its settings:
-
-- Language: All Languages
-- For DLC: Base App
-- Operating System: Linux + SteamOS
-- Architecture: 64-bit OS only
-- Platform: All
-
-Do this again, make a "My Game Name Windows Depot", set it to the same
-things, except "Operating System," which should be "Windows," of course.
-
-Do this again, make a "My Game Name Mac Depot", set it to the same
-things, except "Operating System," which should be "macOS," of course.
-
-Push the big green "Save" button on the page. Now we have a place to
-upload platform-specific builds of your game.
-
-*** Setting up Launch Options
-
-Click on the "Installation" tab near the top of the page, then "General Installation".
-
-Under "Launch Options," click the "Add new launch option" button, edit the new section
-that just popped up, and set it like this:
-
-(Whenever you see "mygamename" in here, this should be whatever your
-game_metadata's "gameid" value is set to. If you see "My Game Name", it's
-whatever your game_metadata's "gametitle" value is set to, but you'll have
-to check in case we mangled it to work as a filename.)
-
-- Executable: mygamename.exe
-- Launch Type: Launch (Default)
-- Operating System: Windows
-- CPU Architecture: 64-bit only
-- Everything else can be default/blank.
-
-Click the "Update" button on that section.
-
-Add another launch option, as before:
-
-- Executable: My Game Name.app
-- Launch Type: Launch (Default)
-- Operating System: macOS
-
-Add another launch option, as before:
-
-- Executable: mygamename
-- Launch Type: Launch (Default)
-- Operating System: Linux + SteamOS
-- CPU Architecture: 64-bit only
-
-*** Publish Changes
-
-Go to the "Publish" tab at near the top of the page. Click the "View Diffs"
-button and make sure it looks sane (it should just be the things we've
-changed in here), then click "Prepare for Publishing", then
-"Publish to Steam" and follow the instructions to publish these changes.
-
-Go to https://partner.steamgames.com/apps/associated/$APPID For each package,
-make sure all three depots are included.
-
-** Configuring ~dragonruby-publish~
-
-You only have to do this part once when first setting up your game. Note that this
-capability is only available for Indie and Pro license tiers. If you have a Standard
-DragonRuby License, you'll need to use the Steamworks toolchains directly.
-
-Go add a text file to your game's ~metadata~ directory called
-~steam_metadata.txt~ ... note that this file will be filtered out
-~dragonruby-publish~ packages the game and will not be distributed with
-the published game.
-
-#+begin_src
-  steam.publish=true
-  steam.branch=public
-  steam.username=AAA
-  steam.appid=BBB
-  steam.linux_depotid=CCC
-  steam.windows_depotid=DDD
-  steam.mac_depotid=EEE
-#+end_src
-
-If steam.publish is set to ~false~ then dragonruby-publish will not
-attempt to upload to Steam. ~false~ is the default if this file, or
-this setting, is missing.
-
-Where "AAA" is the login name on the Steamworks Partner Site to use for
-publishing builds, "BBB" is your game-specific AppID provided by Steam,
-"CCC", "DDD", and "EEE" are the DepotIDs you created for Linux, Windows,
-and macOS builds, respectively.
-
-*** Setting a branch live
-
-Once your build is uploaded, you can assign it to a specific branch through
-the interface on the Partner site. You can make arbitrary branches here, like
-"beta" or "nightly" or "fixing-weird-bug" or whatever. The one that goes to
-the end users without them switching branches, is "default" and you should
-assume this is where paying customers live, so be careful before you set a
-build live there.
-
-You can have dragonruby-publish set the builds it publishes live on a branch
-immediately, if you prefer. Simply add...
-
-#+begin_src
-  steam.branch=XXX
-#+end_src
-
-...to steam_metadata.txt, where "XXX" is the branch name from the partner
-website. If this is blank or unspecified, it will _not_ set the build live on
-_any_ branch. Setting the value to ~public~ will push to production.
-
-A reasonable strategy is to create a (possibly passworded) branch called
-"staging" and have dragonruby-publish always push to there automatically.
-Then you can test from a Steam install, pushing as often as you like, and
-when you are satisfied, manually set the latest build live on default for
-the general public to download.
-
-If you are feeling brave, you can always just set all published builds live
-on default, too. After all, if you break it, you can always just push a fix
-right away. :) (or use the Partner Site to roll back to a known-good build,
-you know.)
-
-** Publishing Build
-
-Run dragonuby-publish as you normally would. When it is time to publish
-to Steam, it will set up any tools it needs, attempt to log you into Steam,
-and upload the latest version of your game.
-
-Steam login is handled by Valve's ~steamcmd~ command line program, not
-~dragonruby-publish~. DragonRuby does not ever have access to your login
-credentials. You may need to take steps to get an authorization token in
-place if necessary, so you don't have to deal with Steam Guard in automated
-build processes (documentation on how to do this is forthcoming, or read
-Valve's SteamCMD manual for details).
-
-You (currently) have to set the new build live on the partner site before
-users will receive it. Optionally automating this step is coming soon!
-
-** Questions/Need Help?
-
-You probably have several. Please come visit the Discord and ask questions,
-and we'll do our best to help, and update this document.
-S
+      DocsOrganizer.get_docsify_content path: "docs/guides/deploying-to-mobile.md",
+                                        heading_level: 1,
+                                        heading_include: "Deploying To Steam"
     end
 
     def docs_dragonruby_philosophy
-      <<-S
-* DragonRuby's Philosophy
-
-The following tenants of DragonRuby are what set us apart from other
-game engines. Given that Game Toolkit is a relatively new engine,
-there are definitely features that are missing. So having a big check
-list of "all the cool things" is not this engine's forte. This is
-compensated with a strong commitment to the following principles.
-
-** Challenge The Status Quo
-
-Game engines of today are in a local maximum and don't take into
-consideration the challenges of this day and age. Unity and GameMaker
-specifically rot your brain. It's not sufficient to say:
-
-#+begin_quote
-But that's how we've always done it.
-#+end_quote
-
-It's a hard pill to swallow, but forget blindly accepted best
-practices and try to figure out the underlying motivation for a
-specific approach to game development. Collaborate with us.
-
-** Continuity of Design
-
-There is a programming idiom in software called "The Pit of
-Success". The term normalizes upfront pain as a necessity/requirement in the
-hopes that the investment will yield dividends "when you become
-successful" or "when the code becomes more complicated". This approach to
-development is strongly discouraged by us. It leads to over-architected
-and unnecessary code; creates barriers to rapid prototyping and shipping a game; and
-overwhelms beginners who are new to the engine or programming in general.
-
-DragonRuby's philosophy is to provide multiple options across the "make it
-fast" vs "make it right" spectrum, with incremental/intuitive
-transitions between the options provided. A concrete example of this philosophy
-would be render primitives: the spectrum of options allows renderable constructs that
-take the form of tuples/arrays (easy to pickup, simple, and fast to code/prototype with),
-hashes (a little more work, but gives you the ability to add additional properties),
-open and strict entities (more work than hashes, but yields cleaner apis),
-and finally - if you really need full power/flexibility in rendering - classes
-(which take the most amount of code and programming knowledge to create).
-
-** Release Early and Often
-
-The biggest mistake game devs make is spending too much time in
-isolation building their game. Release something, however small, and
-release it soon.
-
-Stop worrying about everything being pixel perfect. Don't wait until
-your game is 100% complete. Build your game publicly and
-iterate. Post in the #show-and-tell channel in the community Discord.
-You'll find a lot of support and encouragement there.
-
-Real artists ship. Remember that.
-
-** Sustainable And Ethical Monetization
-
-We all aspire to put food on the table doing what we love. Whether it
-is building games, writing tools to support game development, or
-anything in between.
-
-Charge a fair amount of money for the things you create. It's expected
-and encouraged within the community. Give what you create away for
-free to those that can't afford it.
-
-If you are gainfully employed, pay full price for the things you use. If you
-do end up getting something at a discount, pay the difference "forward" to
-someone else.
-
-** Sustainable And Ethical Open Source
-
-This goes hand in hand with sustainable and ethical monetization. The
-current state of open source is not sustainable. There is an immense
-amount of contributor burnout. Users of open source expect everything
-to be free, and few give back. This is a problem we want to fix (we're
-still trying to figure out the best solution).
-
-So, don't be "that guy" in the Discord that says "DragonRuby should be
-free and open source!" You will be personally flogged by Amir.
-
-** People Over Entities
-
-We prioritize the endorsement of real people over faceless
-entities. This game engine, and other products we create, are not
-insignificant line items of a large company. And you aren't a generic
-"commodity" or "corporate resource". So be active in the community
-Discord and you'll reap the benefits as more devs use DragonRuby.
-
-** Building A Game Should Be Fun And Bring Happiness
-
-We will prioritize the removal of pain. The aesthetics of Ruby make it
-such a joy to work with, and we want to capture that within the
-engine.
-
-** Real World Application Drives Features
-
-We are bombarded by marketing speak day in and day out. We don't do
-that here. There are things that are really great in the engine, and
-things that need a lot of work. Collaborate with us so we can help you
-reach your goals. Ask for features you actually need as opposed to
-anything speculative.
-
-We want DragonRuby to *actually* help you build the game you
-want to build (as opposed to sell you something piece of demoware that
-doesn't work).
-S
+      DocsOrganizer.get_docsify_content path: "docs/misc/philosophy.md",
+                                        heading_level: 1,
+                                        heading_include: "DragonRuby's Philosophy"
     end
 
     def docs_ticks_and_frames
-      <<-S
+      <<-'S'
 * RECIPIES:
 ** How To Determine What Frame You Are On
 
@@ -919,7 +65,7 @@ code renders a label that displays the current ~tick_count~.
 
 #+begin_src ruby
   def tick args
-    args.outputs.labels << [10, 670, "\#{args.state.tick_count}"]
+    args.outputs.labels << [10, 670, "#{args.state.tick_count}"]
   end
 #+end_src
 
@@ -930,14 +76,14 @@ and is accessible via ~args.gtk.current_framerate~.
 
 #+begin_src ruby
   def tick args
-    args.outputs.labels << [10, 710, "framerate: \#{args.gtk.current_framerate.round}"]
+    args.outputs.labels << [10, 710, "framerate: #{args.gtk.current_framerate.round}"]
   end
 #+end_src
 S
     end
 
     def docs_sprites
-      <<-S
+      <<-'S'
 ** How To Render A Sprite Using An Array
 
 All file paths should use the forward slash ~/~ *not* backslash
@@ -1020,7 +166,7 @@ S
     end
 
     def docs_labels
-      <<-S
+      <<-'S'
 ** How To Render A Label
 
 ~args.outputs.labels~ is used to render labels.
@@ -1129,8 +275,8 @@ You can get the render size of any string using ~args.gtk.calcstringbox~.
     args.outputs.labels << [
       10,
       710,
-      # This string uses Ruby's string interpolation literal: \#{}
-      "'some string' has width: \#{w}, and height: \#{h}."
+      # This string uses Ruby's string interpolation literal: #{}
+      "'some string' has width: #{w}, and height: #{h}."
     ]
   end
 #+end_src
@@ -1153,7 +299,7 @@ S
     end
 
     def docs_sounds
-      <<-S
+      <<-'S'
 ** How To Play A Sound
 
 Sounds that end ~.wav~ will play once:
@@ -1192,7 +338,7 @@ S
     end
 
     def docs_game_state
-      <<-S
+      <<-'S'
 ** Using ~args.state~ To Store Your Game State
 
 ~args.state~ is a open data structure that allows you to define
@@ -1234,7 +380,7 @@ S
     end
 
     def docs_accessing_files
-      <<-S
+      <<-'S'
 ** Accessing files
 
 DragonRuby uses a sandboxed filesystem which will automatically read from and
@@ -1245,7 +391,7 @@ will take care of the rest.
 
 The data directories that will be written to in a production build are:
 
-- Windows: ~C:\\Users\\[username]\\AppData\\Roaming\\[devtitle]\\[gametitle]~
+- Windows: ~C:\Users\[username]\AppData\Roaming\[devtitle]\[gametitle]~
 - MacOS: ~$HOME/Library/Application Support/[gametitle]~
 - Linux: ~$HOME/.local/share/[gametitle]~
 - HTML5: The data will be written to the browser's IndexedDB.
@@ -1275,7 +421,7 @@ S
     end
 
     def animate_a_sprite
-      <<-S
+      <<-'S'
 ** How To Animate A Sprite Using Separate PNGs
 
 DragonRuby has a property on ~Numeric~ called ~frame_index~ that can
@@ -1301,7 +447,7 @@ example of how to cycle through 6 sprites every 4 frames.
       360 - 50,
       100,
       100,
-      "sprites/dragon-\#{sprite_index}.png"
+      "sprites/dragon-#{sprite_index}.png"
     ]
   end
 #+end_src
@@ -1309,7 +455,7 @@ S
     end
 
     def docs_troubleshooting_performance
-<<-S
+<<-'S'
 ** Troubleshoot Performance
 
 - Avoid deep recursive calls.
@@ -1353,7 +499,7 @@ S
     end
 
     def scale_sprites
-      <<-S
+      <<-'S'
 ** How to Scale a Sprite
 
 The ~scale_rect~ method can be used to change the scale of a sprite by a given ~ratio~.
@@ -1380,296 +526,9 @@ S
     end
 
     def docs_faq
-<<-S
-* Frequently Asked Questions, Comments, and Concerns
-
-Here are questions, comments, and concerns that frequently come
-up.
-
-** Frequently Asked Questions
-
-*** What is DragonRuby LLP?
-
-DragonRuby LLP is a partnership of four devs who came together
-with the goal of bringing the aesthetics and joy of Ruby, everywhere possible.
-
-Under DragonRuby LLP, we offer a number of products (with more on the
-way):
-
-- Game Toolkit (GTK): A 2D game engine that is compatible with modern
-  gaming platforms.
-- RubyMotion (RM): A compiler toolchain that allows you to build native, cross-platform mobile
-  apps. [[http://rubymotion.com]]
-
-All of the products above leverage a shared core called DragonRuby.
-
-NOTE: From an official branding standpoint each one of the products is
-suffixed with "A DragonRuby LLP Product" tagline. Also, DragonRuby is
-_one word, title cased_.
-
-NOTE: We leave the "A DragonRuby LLP Product" off of this one because
-that just sounds really weird.
-
-NOTE: Devs who use DragonRuby are "Dragon Riders/Riders of Dragons". That's a bad ass
-identifier huh?
-
-*** What is DragonRuby?
-
-The response to this question requires a few subparts. First we need
-to clarify some terms. Specifically _language specification_ vs _runtime_.
-
-**** Okay... so what is the difference between a language specification and a runtime?
-
-A runtime is an _implementation_ of a language specification. When
-people say "Ruby," they are usually referring to "the Ruby 3.0+ language
-specification implemented via the CRuby/MRI Runtime."
-
-But, there are many Ruby Runtimes: CRuby/MRI, JRuby, Truffle, Rubinius, Artichoke,
-and (last but certainly not least) DragonRuby.
-
-**** Okay... what language specification does DragonRuby use then?
-
-DragonRuby's goal is to be compliant with the ISO/IEC 30170:2012 standard. It's
-syntax is Ruby 2.x compatible, but also contains semantic changes that help
-it natively interface with platform specific libraries.
-
-**** So... why another runtime?
-
-The elevator pitch is:
-
-DragonRuby is a Multilevel Cross-platform Runtime. The "multiple levels"
-within the runtime allows us to target platforms no other Ruby can
-target: PC, Mac, Linux, Raspberry Pi, WASM, iOS, Android, Nintendo
-Switch, PS4, Xbox, and Stadia.
-
-**** What does Multilevel Cross-platform mean?
-
-There are complexities associated with targeting all the platforms we
-support. Because of this, the runtime had to be architected in such a
-way that new platforms could be easily added (which lead to us partitioning the
-runtime internally):
-
-- Level 1 we leverage a good portion of mRuby.
-- Level 2 consists of optimizations to mRuby we've made given that our
-  target platforms are well known.
-- Level 3 consists of portable C libraries and their Ruby
-  C-Extensions.
-
-Levels 1 through 3 are fairly commonplace in many runtime
-implementations (with level 1 being the most portable, and level 3
-being the fastest). But the DragonRuby Runtime has taken things a
-bit further:
-
-- Level 4 consists of shared abstractions around hardware I/O and operating
-  system resources. This level leverages open source and proprietary
-  components within Simple DirectMedia Layer (a low level multimedia
-  component library that has been in active development for 22 years
-  and counting).
-
-- Level 5 is a code generation layer which creates metadata that allows
-  for native interoperability with host runtime libraries. It also
-  includes OS specific message pump orchestrations.
-
-- Level 6 is a Ahead of Time/Just in Time Ruby compiler built with LLVM. This
-  compiler outputs _very_ fast platform specific bitcode, but only
-  supports a subset of the Ruby language specification.
-
-These levels allow us to stay up to date with open source
-implementations of Ruby; provide fast, native code execution
-on proprietary platforms; ensure good separation between these two
-worlds; and provides a means to add new platforms without going insane.
-
-**** Cool cool. So given that I understand everything to this point, can we answer the original question? What is DragonRuby?
-
-DragonRuby is a Ruby runtime implementation that takes all the lessons
-we've learned from MRI/CRuby, and merges it with the latest and greatest
-compiler and OSS technologies.
-
-*** How is DragonRuby different than MRI?
-
-DragonRuby supports a subset of MRI apis. Our target is to support all
-of mRuby's standard lib. There are challenges to this given the number
-of platforms we are trying to support (specifically console).
-
-**** Does DragonRuby support Gems?
-
-DragonRuby does not support gems because that requires the
-installation of MRI Ruby on the developer's machine (which is a
-non-starter given that we want DragonRuby to be a zero dependency
-runtime). While this seems easy for Mac and Linux, it is much harder
-on Windows and Raspberry Pi. mRuby has taken the approach of having a
-git repository for compatible gems and we will most likely follow
-suite: [[https://github.com/mruby/mgem-list]].
-
-**** Does DragonRuby have a REPL/IRB?
-
-You can use DragonRuby's Console within the game to inspect object and
-execute small pieces of code. For more complex pieces of code create a
-file called ~repl.rb~ and put it in ~mygame/app/repl.rb~:
-
-- Any code you write in there will be executed when you change the file. You can organize different pieces of code using the ~repl~ method:
-
-#+begin_src ruby
-  repl do
-    puts "hello world"
-    puts 1 + 1
-  end
-#+end_src
-
-- If you use the `repl` method, the code will be executed and the DragonRuby Console will automatically open so you can see the results (on Mac and Linux, the results will also be printed to the terminal).
-
-- All ~puts~ statements will also be saved to ~logs/puts.txt~. So if you want to stay in your editor and not look at the terminal, or the DragonRuby Console, you can ~tail~ this file.
-
-4. To ignore code in ~repl.rb~, instead of commenting it out, prefix ~repl~ with the letter ~x~ and it'll be ignored.
-
-#+begin_src ruby
-  xrepl do # <------- line is prefixed with an "x"
-    puts "hello world"
-    puts 1 + 1
-  end
-
-  # This code will be executed when you save the file.
-  repl do
-    puts "Hello"
-  end
-
-  repl do
-    puts "This code will also be executed."
-  end
-
-  # use xrepl to "comment out" code
-  xrepl do
-    puts "This code will not be executed because of the x in front of repl".
-  end
-#+end_src
-
-**** Does DragonRuby support ~pry~ or have any other debugging facilities?
-
-~pry~ is a gem that assumes you are using the MRI Runtime (which is
-incompatible with DragonRuby). Eventually DragonRuby will have a pry
-based experience that is compatible with a debugging infrastructure
-called LLDB. Take the time to read about LLDB as it shows the
-challenges in creating something that is compatible.
-
-You can use DragonRuby's replay capabilities to troubleshoot:
-
-1. DragonRuby is hot loaded which gives you a very fast feedback loop (if the game throws an exception, it's because of the code you just added).
-2. Use ~./dragonruby mygame --record~ to create a game play recording that you can use to find the exception (you can replay a recording by executing ~./dragonruby mygame --replay last_replay.txt~ or through the DragonRuby Console using ~$gtk.recording.start_replay "last_replay.txt"~.
-3. DragonRuby also ships with a unit testing facility. You can invoke the following command to run a test: ~./dragonruby mygame --test tests/some_ruby_file.rb~.
-4. Get into the habit of adding debugging facilities within the game itself. You can add drawing primitives to ~args.outputs.debug~ that will render on top of your game but will be ignored in a production release.
-5. Debugging something that runs at 60fps is (imo) not that helpful. The exception you are seeing could have been because of a change that occurred many frames ago.
-
-** Frequent Comments About Ruby as a Language Choice
-
-*** But Ruby is dead.
-
-Let's check the official source for the answer to this question:
-isrubydead.com: [[https://isrubydead.com/]].
-
-On a more serious note, Ruby's _quantity_ levels aren't what they used
-to be. And that's totally fine. Everyone chases the new and shiny.
-
-What really matters is _quality/maturity_. Here's a StackOverflow Survey sorted by highest paid developers: [[https://insights.stackoverflow.com/survey/2021#section-top-paying-technologies-top-paying-technologies]].
-
-Let's stop making this comment shall we?
-
-*** But Ruby is slow.
-
-That doesn't make any sense. A language specification can't be slow... it's a language spec.
-Sure, an _implementation/runtime_ can be slow though, but then we'd have to talk about
-which runtime.
-
-Here's a some quick demonstrations of how well DragonRuby Game Toolkit Performs:
-- DragonRuby vs Unity: [[https://youtu.be/MFR-dvsllA4]]
-- DragonRuby vs PyGame: [[https://youtu.be/fuRGs6j6fPQ]]
-
-*** Dynamic languages are slow.
-
-They are certainly slower than statically compiled languages. With the
-processing power and compiler optimizations we have today,
-dynamic languages like Ruby are _fast enough_.
-
-Unless you are writing in some form of intermediate representation by hand,
-your language of choice also suffers this same fallacy of slow. Like, nothing is
-faster than a low level assembly-like language. So unless you're
-writing in that, let's stop making this comment.
-
-NOTE: If you _are_ hand writing LLVM IR, we are always open to
-bringing on new partners with such a skill set. Email us ^_^.
-
-** Frequent Concerns
-
-*** DragonRuby is not open source. That's not right.
-
-The current state of open source is unsustainable. Contributors work
-for free, most all open source repositories are severely under-staffed,
-and burnout from core members is rampant.
-
-We believe in open source very strongly. Parts of DragonRuby are
-in fact, open source. Just not all of it (for legal reasons, and
-because the IP we've created has value). And we promise that we are
-looking for (or creating) ways to _sustainably_ open source everything we do.
-
-If you have ideas on how we can do this, email us!
-
-If the reason above isn't sufficient, then definitely use something else.
-
-All this being said, we do have parts of the engine open sourced on GitHub: [[https://github.com/dragonruby/dragonruby-game-toolkit-contrib/]]
-
-*** DragonRuby is for pay. You should offer a free version.
-
-If you can afford to pay for DragonRuby, you should (and will). We don't tell authors
-that they should give us their books for free, and only require payment if we read the
-entire thing. It's time we stop asking that of software products.
-
-That being said, we will _never_ put someone out financially. We have
-income assistance for anyone that can't afford a license to any one of
-our products.
-
-You qualify for a free, unrestricted license to DragonRuby products if
-any of the following items pertain to you:
-
-- Your income is below $2,000.00 (USD) per month.
-- You are under 18 years of age.
-- You are a student of any type: traditional public school, home
-  schooling, college, bootcamp, or online.
-- You are a teacher, mentor, or parent who wants to teach a kid how to code.
-- You work/worked in public service or at a charitable organization:
-  for example public office, army, or any 501(c)(3) organization.
-
-Just contact Amir at amir.rajan@dragonruby.org with a short
-explanation of your current situation and he'll set you up. No
-questions asked.
-
-*** But still, you should offer a free version. So I can try it out and see if I like it.
-
-You can try our web-based sandbox environment at [[http://fiddle.dragonruby.org]]. But it won't do the
-runtime justice. Or just come to our Discord Channel at [[http://discord.dragonruby.org]] and ask questions.
-We'd be happy to have a one on one video chat with you and show off all the cool stuff we're doing.
-
-Seriously just buy it. Get a refund if you don't like it. We make it stupid easy to do so.
-
-*** I still think you should do a free version. Think of all people who would give it a shot.
-
-Free isn't a sustainable financial model. We don't want to spam your
-email. We don't want to collect usage data off of you either. We just
-want to provide quality toolchains to quality developers (as opposed
-to a large quantity of developers).
-
-The people that pay for DragonRuby and make an effort to understand it are the
-ones we want to build a community around, partner with, and collaborate
-with. So having that small monetary wall deters entitled individuals
-that don't value the same things we do.
-
-*** What if I build something with DragonRuby, but DragonRuby LLP becomes insolvent.
-
-We want to be able to work on the stuff we love, every day of our lives. And we'll go
-to great lengths to make that continues.
-
-But, in the event that sad day comes, our partnership bylaws state that
-_all_ DragonRuby IP that can be legally open sourced, will be released
-under a permissive license.
-S
+      DocsOrganizer.get_docsify_content path: "docs/misc/faq.md",
+                                        heading_level: 1,
+                                        heading_include: "Frequently Asked Questions, Comments, and Concerns"
     end
   end
 

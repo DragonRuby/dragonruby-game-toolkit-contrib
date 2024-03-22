@@ -53,21 +53,18 @@ S
       docs_string += k.docs_all
     end
 
-    samples_string = (($gtk.read_file "docs/samples.txt") || "")
+    samples_string = (($gtk.read_file "docs/static/samples.txt") || "")
     index_string = docs_string + "\n" + samples_string
 
     index_parse_result = Docs.__docs_to_html__ index_string
     docs_parse_result = Docs.__docs_to_html__ docs_string, warn_long_lines: true
     samples_parse_result = Docs.__docs_to_html__ samples_string, warn_long_lines: false
 
-    $gtk.write_file_root 'docs/index.txt', "#{index_string}"
-    $gtk.write_file_root 'docs/index.html', index_parse_result[:html]
+    $gtk.write_file_root 'docs/static/docs.txt', "#{docs_string}"
+    $gtk.write_file_root 'docs/static/docs.html', docs_parse_result[:html]
 
-    $gtk.write_file_root 'docs/docs.txt', "#{docs_string}"
-    $gtk.write_file_root 'docs/docs.html', docs_parse_result[:html]
-
-    $gtk.write_file_root 'docs/samples.txt', "#{samples_string}"
-    $gtk.write_file_root 'docs/samples.html', samples_parse_result[:html]
+    $gtk.write_file_root 'docs/static/samples.txt', "#{samples_string}"
+    $gtk.write_file_root 'docs/static/samples.html', samples_parse_result[:html]
 
     $gtk.write_file_root "docs/version.txt", "#{GTK_VERSION}"
 
