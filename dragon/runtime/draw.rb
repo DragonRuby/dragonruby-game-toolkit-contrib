@@ -211,16 +211,16 @@ module GTK
         elsif p.primitive_marker == :border
           return draw_border p
         else
-          raise <<-S
-* ERROR:
-#{p}
+          raise <<~S
+            * ERROR:
+            #{p}
+            
+            I don't know how to use the above #{p.class} with SDL's FFI. Please
+            add a method on the object called ~primitive_marker~ that
+            returns :solid, :sprite, :label, :line, or :border. If the object
+            is a Hash, please add { primitive_marker: :PRIMITIVE_SYMBOL } to the Hash.
 
-I don't know how to use the above #{p.class} with SDL's FFI. Please
-add a method on the object called ~primitive_marker~ that
-returns :solid, :sprite, :label, :line, or :border. If the object
-is a Hash, please add { primitive_marker: :PRIMITIVE_SYMBOL } to the Hash.
-
-S
+          S
         end
       rescue Exception => e
         pause!
