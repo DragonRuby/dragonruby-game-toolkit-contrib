@@ -24,20 +24,29 @@ module GTK
       @should_reset_after_replay_completed = true
     end
 
-    def tick
+    def replay_callbacks_do_tick
+      return if !is_replaying?
+      if @on_replay_tick
+        @on_replay_tick.calls @runtime.args
+      end
+
+      if @on_replay_tick_only_this_run
+        @on_replay_tick_only_this_run.call @runtime.args
+      end
+    end
+
+    def tick_before
       if @replay_next_tick && !is_replaying?
         @replay_next_tick = nil
         start_replay @replay_next_tick_file_name, speed: @replay_next_tick_simulation_speed
         @replay_next_tick_simulation_speed = nil
       end
 
-      if is_replaying? && @on_replay_tick
-        @on_replay_tick.call $gtk.args
-      end
+      stage_replay_values
+    end
 
-      if is_recording? && @on_recording_tick
-        @on_recording_tick.call $gtk.args
-      end
+    def tick_after
+      replay_callbacks_do_tick
     end
 
     def on_replay_tick &block
@@ -181,8 +190,9 @@ S
       @replay_completed_successfully
     end
 
-    def __parse_replay_value__ value
+    def __deserialize_replay_value__ value
       return value if !value
+      return value.gsub('"', '') if value.start_with? '"'
       return value.gsub(':', '').to_sym if value.start_with? ':'
       return value == 'true' if value == 'true' || value == 'false'
       return value.to_f
@@ -245,10 +255,10 @@ S
           $replay_data[:recorded_at] = l.split(' ')[1..-1].join(' ')
         elsif l.start_with? '['
           # this is the logic to parse the array of inputs
-          items = l.strip.gsub('[', '').gsub(']', '').split(',')
+          items = l.strip.gsub('[', '').gsub(']', '').split(',').map(&:strip)
 
           # item 0 is the function name
-          name        = __parse_replay_value__ items[0]
+          name        = __deserialize_replay_value__ items[0]
           value_1     = nil
           value_2     = nil
           value_3     = nil
@@ -284,10 +294,9 @@ S
           end
 
           # deserialize the string value into the correct type
-          value_1 = __parse_replay_value__ value_1
-          value_2 = __parse_replay_value__ value_2
-          value_3 = __parse_replay_value__ value_3
-
+          value_1 = __deserialize_replay_value__ value_1
+          value_2 = __deserialize_replay_value__ value_2
+          value_3 = __deserialize_replay_value__ value_3
 
           # create a dictionary entry for the input
           $replay_data[:input_history][tick_count.to_i] ||= []
@@ -355,9 +364,10 @@ S
       @runtime.notify! "Replay started =#{@replay_file_name}= speed: #{@runtime.simulation_speed}."
     end
 
-    def start_replay_next_tick file_name, speed: 1
+    def start_replay_next_tick file_name, speed: 1, &block
       @replay_next_tick = true
       @replay_next_tick_file_name = file_name
+      @on_replay_tick_only_this_run = block
       if speed
         speed = speed.clamp(1, 60)
         @replay_next_tick_simulation_speed = speed
@@ -410,6 +420,7 @@ S
       @replay_stopped_at = Kernel.global_tick_count
       $console.set_command_silent "$replay.start '#{@replay_file_name}', speed: 1"
       @is_replaying = false
+      @on_replay_tick_only_this_run = nil
       @runtime.__reset__ if @should_reset_after_replay_completed
       @runtime.notify! notification_message
     end
@@ -452,13 +463,6 @@ S
       return if !record_input? name, value_1, value_2
       @input_history << [name, value_1, value_2, value_3, 3, @global_input_order, Kernel.tick_count]
       @global_input_order += 1
-    end
-
-    def tick_replay
-      if @on_replay_tick
-        @on_replay_tick.call @runtime.args
-      end
-      stage_replay_values
     end
 
     def stage_replay_values

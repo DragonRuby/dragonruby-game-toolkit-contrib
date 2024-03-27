@@ -1,6 +1,8 @@
 devid=dragonruby
 devtitle=DragonRuby LLC
 gameid=sample-app
-gametitle=Sample App
+gametitle=Physics - Ramp Collision
 version=1.0
 icon=metadata/icon.png
+hd=true
+highdpi=true

@@ -79,6 +79,14 @@ module AttrGTK
   def new_entity_strict entity_type, init_hash = nil, &block
     self.state.new_entity_strict entity_type, init_hash, &block
   end
+
+  def tick_count
+    Kernel.tick_count
+  end
+
+  def global_tick_count
+    Kernel.global_tick_count
+  end
 end
 
 class Module

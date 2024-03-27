@@ -82,7 +82,9 @@ There's a "dragonruby.png" file included, just to get you started. Let's have it
   end
 #+end_src
 
-!> Pro Tip: you don't have to restart DragonRuby to test your changes; when you save main.rb, DragonRuby will notice and reload your program.
+NOTE:
+
+ Pro Tip: you don't have to restart DragonRuby to test your changes; when you save main.rb, DragonRuby will notice and reload your program.
 
 That ~.sprites~ line says "add a sprite to the list of sprites we're drawing, and draw it at position (576, 100) at a size of 128x101 pixels". You can find the image to draw at dragonruby.png.
 
@@ -176,8 +178,12 @@ structure. To create a new project, unzip the zip file again in its entirety
 and use that as a starting point for another game. This is the recommended
 approach to starting a new project.
 
-!> It's strongly recommended that you do NOT keep DragonRuby Game Toolkit in a shared location and
-instead unzip a clean copy for every game (and commit everything to source control). <br/> <br/>
+NOTE:
+
+ It's strongly recommended that you do NOT keep DragonRuby Game Toolkit in a shared location and
+instead unzip a clean copy for every game (and commit everything to source control). 
+ 
+
 File access functions are sandoxed and assume that the ~dragonruby~ binary lives alongside
 the game you are building. Do not expect file access functions to return correct values if you are attempting
 to run the ~dragonruby~ binary from a shared location. It's recommended that the directory
@@ -193,7 +199,9 @@ specific files.
 
 *** Option 2 (Restrictions Apply)
 
-!> Do NOT commit ~dragonruby-publish(.exe)~, or ~dragonruby-bind(.exe)~.
+NOTE:
+
+ Do NOT commit ~dragonruby-publish(.exe)~, or ~dragonruby-bind(.exe)~.
 
 #+begin_src 
   dragonruby
@@ -224,7 +232,9 @@ The following ~.gitignore~ should be used for private repositories (commercial g
 #+end_src
 You'll notice that everything else is committed to source control (even the ~./samples~, ~./docs~, and ~./builds~ directory).
 
-!> The DragonRuby binary/package is designed to be committed in its entirety
+NOTE:
+
+ The DragonRuby binary/package is designed to be committed in its entirety
 with your source code (it’s why we keep it small). This protects the “shelf life”
 for commercial games. 3 years from now, we might be on a vastly different version
 of the engine. But you know that the code you’ve written will definitely work with the
@@ -277,7 +287,9 @@ Open up the terminal and run this from the command line:
   ./dragonruby-publish --package mygame
 #+end_src
 
-!> If you're on Windows, don't put the "./" on the front. That's a Mac and
+NOTE:
+
+ If you're on Windows, don't put the "./" on the front. That's a Mac and
 Linux thing.
 
 A directory called ~./build~ will be created that contains your
@@ -479,11 +491,17 @@ Under DragonRuby LLP, we offer a number of products (with more on the way):
 
 All of the products above leverage a shared core called DragonRuby.
 
-!> NOTE: From an official branding standpoint each one of the products is suffixed with "A DragonRuby LLP Product" tagline. Also, DragonRuby is _one word, title cased_.
+NOTE:
 
-!> NOTE: We leave the "A DragonRuby LLP Product" off of this one because that just sounds really weird.
+ NOTE: From an official branding standpoint each one of the products is suffixed with "A DragonRuby LLP Product" tagline. Also, DragonRuby is _one word, title cased_.
 
-!> NOTE: Devs who use DragonRuby are "Dragon Riders/Riders of Dragons". That's a bad ass identifier huh?
+NOTE:
+
+ NOTE: We leave the "A DragonRuby LLP Product" off of this one because that just sounds really weird.
+
+NOTE:
+
+ NOTE: Devs who use DragonRuby are "Dragon Riders/Riders of Dragons". That's a bad ass identifier huh?
 
 *** What is DragonRuby?
 
@@ -613,7 +631,9 @@ They are certainly slower than statically compiled languages. With the processin
 
 Unless you are writing in some form of intermediate representation by hand, your language of choice also suffers this same fallacy of slow. Like, nothing is faster than a low level assembly-like language. So unless you're writing in that, let's stop making this comment.
 
-!> NOTE: If you _are_ hand writing LLVM IR, we are always open to bringing on new partners with such a skill set. Email us ^_^.
+NOTE:
+
+ NOTE: If you _are_ hand writing LLVM IR, we are always open to bringing on new partners with such a skill set. Email us ^_^.
 
 ** Frequent Concerns
 
@@ -703,41 +723,6 @@ Do:
   args.state.fx_queue.reject! { |fx| fx.countdown < 0 }
 #+end_src
 
-** How To Play A Sound
-
-Sounds that end ~.wav~ will play once:
-
-#+begin_src ruby
-  def tick args
-    # Play a sound every second
-    if (args.state.tick_count % 60) == 0
-      args.outputs.sounds << 'something.wav'
-    end
-  end
-#+end_src
-
-Sounds that end ~.ogg~ is considered background music and will loop:
-
-#+begin_src ruby
-  def tick args
-    # Start a sound loop at the beginning of the game
-    if args.state.tick_count == 0
-      args.outputs.sounds << 'background_music.ogg'
-    end
-  end
-#+end_src
-
-If you want to play a ~.ogg~ once as if it were a sound effect, you can do:
-
-#+begin_src ruby
-  def tick args
-    # Play a sound every second
-    if (args.state.tick_count % 60) == 0
-      args.gtk.queue_sound 'some-ogg.ogg'
-    end
-  end
-#+end_src
-
 * RECIPIES:
 ** How To Determine What Frame You Are On
 
@@ -761,81 +746,6 @@ and is accessible via ~args.gtk.current_framerate~.
     args.outputs.labels << [10, 710, "framerate: #{args.gtk.current_framerate.round}"]
   end
 #+end_src
-
-** Using ~args.state~ To Store Your Game State
-
-~args.state~ is a open data structure that allows you to define
-properties that are arbitrarily nested. You don't need to define any kind of
-~class~.
-
-To initialize your game state, use the ~||=~ operator. Any value on
-the right side of ~||=~ will only be assigned _once_.
-
-To assign a value every frame, just use the ~=~ operator, but _make
-sure_ you've initialized a default value.
-
-#+begin_src
-  def tick args
-    # initialize your game state ONCE
-    args.state.player.x  ||= 0
-    args.state.player.y  ||= 0
-    args.state.player.hp ||= 100
-
-    # increment the x position of the character by one every frame
-    args.state.player.x += 1
-
-    # Render a sprite with a label above the sprite
-    args.outputs.sprites << [
-      args.state.player.x,
-      args.state.player.y,
-      32, 32,
-      "player.png"
-    ]
-
-    args.outputs.labels << [
-      args.state.player.x,
-      args.state.player.y - 50,
-      args.state.player.hp
-    ]
-  end
-#+end_src
-
-** Accessing files
-
-DragonRuby uses a sandboxed filesystem which will automatically read from and
-write to a location appropriate for your platform so you don't have to worry
-about theses details in your code. You can just use ~gtk.read_file~,
-~gtk.write_file~, and ~gtk.append_file~ with a relative path and the engine
-will take care of the rest.
-
-The data directories that will be written to in a production build are:
-
-- Windows: ~C:\Users\[username]\AppData\Roaming\[devtitle]\[gametitle]~
-- MacOS: ~$HOME/Library/Application Support/[gametitle]~
-- Linux: ~$HOME/.local/share/[gametitle]~
-- HTML5: The data will be written to the browser's IndexedDB.
-
-The values in square brackets are the values you set in your
-~app/metadata/game_metadata.txt~ file.
-
-When reading files, the engine will first look in the game's data directory
-and then in the game directory itself. This means that if you write a file
-to the data directory that already exists in your game directory, the file
-in the data directory will be used instead of the one that is in your game.
-
-When running a development build you will directly write to your game
-directory (and thus overwrite existing files). This can be useful for built-in
-development tools like level editors.
-
-For more details on the implementation of the sandboxed filesystem, see Ryan
-C. Gordon's PhysicsFS documentation: [[https://icculus.org/physfs/]]
-
-IMPORTANT: File access functions are sandoxed and assume that the
-~dragonruby~ binary lives alongside the game you are building. Do not
-expect file access functions to return correct values if you are attempting
-to run the ~dragonruby~ binary from a shared location. It's
-recommended that the directory structure contained in the zip is not
-altered and games are built using that starter template.
 
 ** How To Render A Sprite Using An Array
 
@@ -915,6 +825,41 @@ You can represent a sprite as a ~Hash~:
 
 The ~blendmode_enum~ value can be set to ~0~ (no blending), ~1~ (alpha blending),
 ~2~ (additive blending), ~3~ (modulo blending), ~4~ (multiply blending).
+
+** How To Play A Sound
+
+Sounds that end ~.wav~ will play once:
+
+#+begin_src ruby
+  def tick args
+    # Play a sound every second
+    if (args.state.tick_count % 60) == 0
+      args.outputs.sounds << 'something.wav'
+    end
+  end
+#+end_src
+
+Sounds that end ~.ogg~ is considered background music and will loop:
+
+#+begin_src ruby
+  def tick args
+    # Start a sound loop at the beginning of the game
+    if args.state.tick_count == 0
+      args.outputs.sounds << 'background_music.ogg'
+    end
+  end
+#+end_src
+
+If you want to play a ~.ogg~ once as if it were a sound effect, you can do:
+
+#+begin_src ruby
+  def tick args
+    # Play a sound every second
+    if (args.state.tick_count % 60) == 0
+      args.gtk.queue_sound 'some-ogg.ogg'
+    end
+  end
+#+end_src
 
 ** How To Render A Label
 
@@ -1045,13 +990,88 @@ You can use a strategy like the following to create multiple labels from a Strin
   end
 #+end_src
 
+** Accessing files
+
+DragonRuby uses a sandboxed filesystem which will automatically read from and
+write to a location appropriate for your platform so you don't have to worry
+about theses details in your code. You can just use ~gtk.read_file~,
+~gtk.write_file~, and ~gtk.append_file~ with a relative path and the engine
+will take care of the rest.
+
+The data directories that will be written to in a production build are:
+
+- Windows: ~C:\Users\[username]\AppData\Roaming\[devtitle]\[gametitle]~
+- MacOS: ~$HOME/Library/Application Support/[gametitle]~
+- Linux: ~$HOME/.local/share/[gametitle]~
+- HTML5: The data will be written to the browser's IndexedDB.
+
+The values in square brackets are the values you set in your
+~app/metadata/game_metadata.txt~ file.
+
+When reading files, the engine will first look in the game's data directory
+and then in the game directory itself. This means that if you write a file
+to the data directory that already exists in your game directory, the file
+in the data directory will be used instead of the one that is in your game.
+
+When running a development build you will directly write to your game
+directory (and thus overwrite existing files). This can be useful for built-in
+development tools like level editors.
+
+For more details on the implementation of the sandboxed filesystem, see Ryan
+C. Gordon's PhysicsFS documentation: [[https://icculus.org/physfs/]]
+
+IMPORTANT: File access functions are sandoxed and assume that the
+~dragonruby~ binary lives alongside the game you are building. Do not
+expect file access functions to return correct values if you are attempting
+to run the ~dragonruby~ binary from a shared location. It's
+recommended that the directory structure contained in the zip is not
+altered and games are built using that starter template.
+
+** Using ~args.state~ To Store Your Game State
+
+~args.state~ is a open data structure that allows you to define
+properties that are arbitrarily nested. You don't need to define any kind of
+~class~.
+
+To initialize your game state, use the ~||=~ operator. Any value on
+the right side of ~||=~ will only be assigned _once_.
+
+To assign a value every frame, just use the ~=~ operator, but _make
+sure_ you've initialized a default value.
+
+#+begin_src
+  def tick args
+    # initialize your game state ONCE
+    args.state.player.x  ||= 0
+    args.state.player.y  ||= 0
+    args.state.player.hp ||= 100
+
+    # increment the x position of the character by one every frame
+    args.state.player.x += 1
+
+    # Render a sprite with a label above the sprite
+    args.outputs.sprites << [
+      args.state.player.x,
+      args.state.player.y,
+      32, 32,
+      "player.png"
+    ]
+
+    args.outputs.labels << [
+      args.state.player.x,
+      args.state.player.y - 50,
+      args.state.player.hp
+    ]
+  end
+#+end_src
+
 * Outputs (~args.outputs~)
 
 Outputs is how you render primitives to the screen. The minimal setup for
 rendering something to the screen is via a ~tick~ method defined in
 mygame/app/main.rb
 
-#+begin_src
+#+begin_src ruby
   def tick args
     args.outputs.solids     << { x: 0, y: 0, w: 100, h: 100 }
     args.outputs.sprites    << { x: 100, y: 100, w: 100, h: 100, path: "sprites/square/blue.png" }
@@ -1073,43 +1093,86 @@ Primitives are rendered first-in, first-out. The rendering order (sorted by bott
 - ~borders~
 - ~debug~: Accepts all render primitives. Use this to render primitives for debugging (production builds of your game will not render this layer).
 
-** Primitives Collection (~args.outputs.primitives~)
+** ~primitives~
 
 ~args.outputs.primitives~ can take in any primitive and will render first in, first out.
 
 For example, you can render a ~solid~ above a ~sprite~:
 
-#+begin_src
+#+begin_src ruby
   def tick args
     args.outputs.primitives << { x: 100, y: 100,
                                  w: 100, h: 100,
                                  path: "sprites/square/blue.png" }
-    args.outputs.primitives << { x: 0, y: 0, w: 100, h: 100, primitive_marker: :solid }
-    args.outputs.primitives << { x: 0, y: 0, w: 100, h: 100, primitive_marker: :border }
+    args.outputs.primitives << { x: 0,
+                                 y: 0,
+                                 w: 100,
+                                 h: 100,
+                                 primitive_marker: :solid }
+    args.outputs.primitives << { x: 0,
+                                 y: 0,
+                                 w: 100,
+                                 h: 100,
+                                 primitive_marker: :border }
   end
 #+end_src
 
-** Debug Collection (~args.outputs.debug~)
+** ~debug~
 
 ~args.outputs.debug~ will not render in production mode and behaves like ~args.outputs.primitives~. Objects in this collection
 are rendered above everything.
 
+*** String Primitives
+
 Additionally, ~args.outputs.debug~ allows you to pass in a ~String~ as a primitive type. This is helpful for quickly showing the
 value of a variable on the screen. A label with black text and a white background will be created for each ~String~ sent in. The
-labels will be automatically stacked vertically for you.
+labels will be automatically stacked vertically for you. New lines in the string will be respected.
 
 Example:
 
-#+begin_src
+#+begin_src ruby
   def tick args
     args.state.player ||= { x: 100, y: 100 }
     args.state.player.x += 1
     args.state.player.x = 0 if args.state.player.x > 1280
-
+  
     # the following string values will generate labels with backgrounds
     # and will auto stack vertically
     args.outputs.debug << "current tick: #{args.state.tick_count}"
     args.outputs.debug << "player x: #{args.state.player.x}"
+    args.outputs.debug << "hello\nworld"
+  end
+#+end_src
+
+*** ~watch~
+
+If you need additional control over a string value, you can use the ~args.outputs.debug.watch~ function.
+
+The functions takes in the following parameters:
+
+- Object to watch. This object will be converted to a string.
+- The ~label_style~: optional, named argument can be passed in with a ~Hash~ to override the default label style for watch variables.
+- The ~background_style~: optional named argument can be passed in with a ~Hash~ to override the default background style for the watch variables.
+
+Example:
+
+#+begin_src ruby
+  def tick args
+    args.state.player ||= { x: 100, y: 100 }
+    args.state.player.x += 1
+    args.state.player.x = 0 if args.state.player.x > 1280
+  
+    args.outputs.debug.watch args.state.player
+    args.outputs.debug.watch pretty_format(args.state.player),
+                             label_style: { r: 0,
+                                            g: 0,
+                                            b: 255,
+                                            size_px: 10 },
+                             background_style: { r: 0,
+                                                 g: 255,
+                                                 b: 0,
+                                                 a: 128,
+                                                 path: :solid }
   end
 #+end_src
 
@@ -1122,7 +1185,7 @@ Add primitives to this collection to render a solid to the screen.
 Creates a solid black rectangle located at 100, 100. 160 pixels
 wide and 90 pixels tall.
 
-#+begin_src
+#+begin_src ruby
   def tick args
     #                         X    Y  WIDTH  HEIGHT
     args.outputs.solids << [100, 100,   160,     90]
@@ -1136,7 +1199,7 @@ alpha property is optional and will be set to ~255~ if not specified.
 
 Creates a green solid rectangle with an opacity of 50%.
 
-#+begin_src
+#+begin_src ruby
   def tick args
     #                         X    Y  WIDTH  HEIGHT  RED  GREEN  BLUE  ALPHA
     args.outputs.solids << [100, 100,   160,     90,   0,   255,    0,   128]
@@ -1149,7 +1212,7 @@ If you want a more readable invocation. You can use the following hash to create
 Any parameters that are not specified will be given a default value. The keys of the hash can
 be provided in any order.
 
-#+begin_src
+#+begin_src ruby
   def tick args
     args.outputs.solids << {
       x:    0,
@@ -1170,21 +1233,21 @@ be provided in any order.
 *** Rendering a solid using a Class
 
 You can also create a class with solid properties and render it as a primitive.
-ALL properties must be on the class. *Additionally*, a method called ~primitive_marker~
+ALL properties must be on the class. --Additionally--, a method called ~primitive_marker~
 must be defined on the class.
 
 Here is an example:
 
-#+begin_src
+#+begin_src ruby
   # Create type with ALL solid properties AND primitive_marker
   class Solid
     attr_accessor :x, :y, :w, :h, :r, :g, :b, :a, :anchor_x, :anchor_y, :blendmode_enum
-
+  
     def primitive_marker
       :solid # or :border
     end
   end
-
+  
   # Inherit from type
   class Square < Solid
     # constructor
@@ -1195,13 +1258,12 @@ Here is an example:
       self.h = size
     end
   end
-
+  
   def tick args
     # render solid/border
     args.outputs.solids  << Square.new(10, 10, 32)
   end
 #+end_src
-
 
 ** ~borders~
 
@@ -1212,7 +1274,7 @@ The only difference between the two primitives is where they are added.
 
 Instead of using ~args.outputs.solids~:
 
-#+begin_src
+#+begin_src ruby
   def tick args
     #                         X    Y  WIDTH  HEIGHT
     args.outputs.solids << [100, 100,   160,     90]
@@ -1221,56 +1283,23 @@ Instead of using ~args.outputs.solids~:
 
 You have to use ~args.outputs.borders~:
 
-#+begin_src
+#+begin_src ruby
   def tick args
     #                           X    Y  WIDTH  HEIGHT
     args.outputs.borders << [100, 100,   160,     90]
   end
 #+end_src
 
-
 ** ~sprites~
 
 Add primitives to this collection to render a sprite to the screen.
 
-*** Rendering a sprite using an Array
-
-Creates a sprite of a white circle located at 100, 100. 160 pixels
-wide and 90 pixels tall.
-
-#+begin_src
-  def tick args
-    #                         X    Y   WIDTH   HEIGHT                      PATH
-    args.outputs.sprites << [100, 100,   160,     90, "sprites/circle/white.png"]
-  end
-#+end_src
-
-*** Rendering a sprite using a Hash
-
-If you want a more readable (and faster) invocation, you can use the following hash to create a sprite.
-Any parameters that are not specified will be given a default value. The keys of the hash can
-be provided in any order.
-
-#+begin_src
-  def tick args
-    args.outputs.sprites << {
-      x:                             0,
-      y:                             0,
-      w:                           100,
-      h:                           100,
-      path: "sprites/circle/white.png",
-      angle:                         0,
-      a:                           255,
-      r:                             0,
-      g:                           255,
-      b:                             0
-    }
-  end
-#+end_src
+*** Properties
 
 Here are all the properties that you can set on a sprite. The only required ones are ~x~, ~y~, ~w~, ~h~, and ~path~.
 
-**** Required properties
+**** Required
+
 - ~x~: X position of the sprite. Note: the botton left corner of the sprite is used for positioning (this can be changed using ~anchor_x~, and ~anchor_y~).
 - ~y~: Y position of the sprite. Note: The origin 0,0 is at the bottom left corner. Setting ~y~ to a higher value will move the sprite upwards.
 - ~w~: The render width.
@@ -1278,6 +1307,7 @@ Here are all the properties that you can set on a sprite. The only required ones
 - ~path~: The path of the sprite relative to the game folder.
 
 **** Anchors and Rotations
+
 - ~flip_horizonally~: This value can be either ~true~ or ~false~ and controls if the sprite will be flipped horizontally (default value is false).
 - ~flip_vertically~: This value can be either ~true~ or ~false~ and controls if the sprite will be flipped horizontally (default value is false).
 - ~anchor_x~: Used to determine anchor point of the sprite's X position (relative to the render width).
@@ -1288,7 +1318,7 @@ Here are all the properties that you can set on a sprite. The only required ones
 
 Here's an example of rendering a 80x80 pixel sprite in the center of the screen:
 
-#+begin_src
+#+begin_src ruby
   def tick args
     args.outputs.sprites << {
       x: 640 - 40, # the logical center of the screen horizontally is 640, minus half the width of the sprite
@@ -1302,7 +1332,7 @@ Here's an example of rendering a 80x80 pixel sprite in the center of the screen:
 
 Instead of computing the offset, you can use ~anchor_x~, and ~anchor_y~ to center the sprite. The following is equivalent to the code above:
 
-#+begin_src
+#+begin_src ruby
   def tick args
     args.outputs.sprites << {
       x: 640,
@@ -1316,13 +1346,15 @@ Instead of computing the offset, you can use ~anchor_x~, and ~anchor_y~ to cente
   end
 #+end_src
 
-**** Cropping Properties
+**** Cropping
+
 - ~tile_(x|y|w|h)~: Defines the crop area to use for a sprite. The origin for ~tile_~ properties uses the TOP LEFT as its origin (useful for cropping tiles from a sprite sheet).
 - ~source_(x|y|w|h)~: Defines the crop area to use for a sprite. The origin for ~tile_~ properties uses the BOTTOM LEFT as its origin.
 
 See the sample apps under ~./samples/03_rendering_sprites~ for examples of how to use this properties non-trivially.
 
-**** Blending Options
+**** Blending
+
 - ~a~: Alpha/transparency of the sprite from 0 to 255 (default value is 255).
 - ~r~: Level of red saturation for the sprite (default value is 255). Example: Setting the value to zero will remove all red coloration from the sprite.
 - ~g~: Level of green saturation for the sprite (default value is 255).
@@ -1334,13 +1366,14 @@ The following sample apps show how ~blendmode_enum~ can be leveraged to create c
 - ~./samples/07_advanced_rendering/11_blend_modes~
 - ~./samples/07_advanced_rendering/13_lighting~
 
-**** Triagles (Indie, Pro Feature)
+**** Triangles (Indie, Pro Feature)
+
 Sprites can be rendered as triangles at the Indie and Pro License Tiers. To rendering using triangles,
 instead of providing a ~w~, ~h~ property, provide ~x2~, ~y2~, ~x3~, ~y3~. This applies for positioning and cropping.
 
 Here is an example:
 
-#+begin_src
+#+begin_src ruby
   def tick args
     args.outputs.sprites << {
       x: 0,
@@ -1368,15 +1401,54 @@ For more example of rendering using triangles see:
 - ~./samples/07_advanced_rendering/16_matrix_and_triangles_3d~
 - ~./samples/07_advanced_rendering/16_matrix_cubeworld~
 
+*** Rendering a sprite using an Array
+
+Creates a sprite of a white circle located at 100, 100. 160 pixels
+wide and 90 pixels tall.
+
+#+begin_src ruby
+  def tick args
+    #                         X    Y   WIDTH   HEIGHT                      PATH
+    args.outputs.sprites << [100, 100,   160,     90, "sprites/circle/white.png"]
+  end
+#+end_src
+
+NOTE:
+
+ Array-based sprites have limited access to sprite propertie, but
+nice for quick prototyping. Use a ~Hash~ or ~Class~ to
+gain access to all properties, gain long term maintainability of code,
+and a boost in rendering performance.
+
+*** Rendering a sprite using a Hash
+
+If you want a more readable (and faster) invocation, you can use the following hash to create a sprite.
+Any parameters that are not specified will be given a default value. The keys of the hash can
+be provided in any order.
+
+#+begin_src ruby
+  def tick args
+    args.outputs.sprites << {
+      x: 0,
+      y: 0,
+      w: 100,
+      h: 100,
+      path: "sprites/circle/white.png",
+      angle: 0,
+      a: 255
+    }
+  end
+#+end_src
+
 *** Rendering a sprite using a Class
 
 You can also create a class with solid/border properties and render it as a primitive.
-ALL properties must be on the class. *Additionally*, a method called ~primitive_marker~
+ALL properties must be on the class. --Additionally--, a method called ~primitive_marker~
 must be defined on the class.
 
 Here is an example:
 
-#+begin_src
+#+begin_src ruby
   # Create type with ALL sprite properties AND primitive_marker
   class Sprite
     attr_accessor :x, :y, :w, :h, :path, :angle, :a, :r, :g, :b, :tile_x,
@@ -1386,12 +1458,12 @@ Here is an example:
                   :source_x, :source_y, :source_w, :source_h, :blendmode_enum,
                   :source_x2, :source_y2, :source_x3, :source_y3, :x2, :y2, :x3, :y3,
                   :anchor_x, :anchor_y
-
+  
     def primitive_marker
       :sprite
     end
   end
-
+  
   # Inherit from type
   class Circle < Sprite
     # constructor
@@ -1402,20 +1474,20 @@ Here is an example:
       self.h = size
       self.path = path
     end
-
+  
     def serialize
       {x:self.x, y:self.y, w:self.w, h:self.h, path:self.path}
     end
-
+  
     def inspect
       serialize.to_s
     end
-
+  
     def to_s
       serialize.to_s
     end
   end
-
+  
   def tick args
     # render circle sprite
     args.outputs.sprites  << Circle.new(10, 10, 32,"sprites/circle/white.png")
@@ -1423,18 +1495,19 @@ Here is an example:
 #+end_src
 
 *** ~attr_sprite~
+
 The ~attr_sprite~ class macro adds all properties needed to render a sprite to a class. This removes
 the need to manually define all sprites properties that DragonRuby offers for rendering.
 
 Instead of manually defining the properties, you can represent a sprite using the ~attr_sprite~ class macro:
 
-#+begin_src
+#+begin_src ruby
   class BlueSquare
     # invoke the helper function at the class level for
     # anything you want to represent as a sprite
     attr_sprite
-
-    def initialize(x: 0, y: 0, w: 0, h: 0)
+  
+    def initialize(x: 0, y: 0, w: 0, h: 0k
       @x = x
       @y = y
       @w = w
@@ -1442,7 +1515,7 @@ Instead of manually defining the properties, you can represent a sprite using th
       @path = 'sprites/square-blue.png'
     end
   end
-
+  
   def tick args
     args.outputs.sprites << BlueSquare.new(x: 640 - 50,
                                            y: 360 - 50,
@@ -1459,7 +1532,7 @@ Add primitives to this collection to render a label.
 
 Labels represented as Arrays/Tuples:
 
-#+begin_src
+#+begin_src ruby
   def tick args
                            #        X         Y              TEXT   SIZE_ENUM
     args.outputs.labels << [175 + 150, 610 - 50, "Smaller label.",         0]
@@ -1470,7 +1543,7 @@ Here are all the properties that you can set with a
 label represented as an Array. It's recommended to move over to
 using Hashes once you've specified a lot of properties.
 
-#+begin_src
+#+begin_src ruby
   def tick args
     args.outputs.labels << [
       640,                   # X
@@ -1485,12 +1558,11 @@ using Hashes once you've specified a lot of properties.
       "fonts/coolfont.ttf"   # FONT
     ]
   end
-end
 #+end_src
 
 *** Rendering a label using a Hash
 
-#+begin_src
+#+begin_src ruby
   def tick args
     args.outputs.labels << {
         x:                       200,
@@ -1508,12 +1580,12 @@ end
   end
 #+end_src
 
-** ~Screenshots~
+** ~screenshots~
 
 Add a hash to this collection to take a screenshot and save as png file.
 The keys of the hash can be provided in any order.
 
-#+begin_src
+#+begin_src ruby
   def tick args
     args.outputs.screenshots << {
       x: 0, y: 0, w: 100, h: 100,    # Which portion of the screen should be captured
@@ -1531,14 +1603,165 @@ The transparency of the color specified by ~r~, ~g~, ~b~ will be set to the tran
 
 The example above sets the color white (255, 255, 255) as transparent.
 
-* Inputs (~args.inputs~)
-Access using input using ~args.inputs~.
-** ~last_active~
-This function returns the last active input which will be set to either ~:keyboard~,
-~:mouse~, or ~:controller~. The function is helpful when you need to present on screen
-instructions based on the input the player chose to play with.
+** Shaders
 
-#+begin_src
+Shaders are available to Indie and Pro license holders via
+~dragonruby-shadersim~. Download DragonRuby ShaderSim at [dragonruby.org](https://dragonruby.org).
+
+NOTE:
+
+ Shaders are currently in Beta.
+
+
+
+
+Shaders must be GLSL ES2 compatible.
+
+
+
+
+The long term goal is for DR Shaders to baseline to GLSL
+version 300 and cross-compile to Vulkan, WebGL 2, Metal, and HLSL.
+
+Here is a minimal example of using shaders:
+
+#+begin_src ruby
+  # mygame/app/main.rb
+  def tick args
+    args.outputs.shader_path ||= "shaders/example.glsl"
+  end
+#+end_src
+
+#+begin_src glsl
+  // mygame/shaders/example.glsl
+  uniform sampler2D tex0;
+  
+  varying vec2 v_texCoord;
+  
+  void main() {
+    gl_FragColor = texture2D(tex0, v_texCoord);
+  }
+#+end_src
+
+*** ~shader_path~
+
+Setting ~shader_path~ on ~outputs~ signifies to DragonRuby that a
+shader should be compiled and loaded.
+
+*** ~shader_uniforms~
+
+You can bind uniforms to a shader by providing an ~Array~ of ~Hashes~
+to ~shader_uniforms~ with keys ~name:~, ~value:~, and ~type:~ which
+currently supports ~:int~ and ~:float~.
+
+#+begin_src ruby
+  def tick args
+    args.outputs.shader_path ||= "shaders/example.glsl"
+  
+    args.outputs.shader_uniforms = [
+      {
+        name: :mouse_coord_x,
+        value: args.inputs.mouse.x.fdiv(1280),
+        type: :float
+      },
+      {
+        name: :mouse_coord_y,
+        value: 1.0 - args.inputs.mouse.y.fdiv(720),
+        type: :float
+      },
+      { name: :tick_count,
+        value: args.state.tick_count,
+        type: :int
+      }
+    ]
+  end
+#+end_src
+
+#+begin_src glsl
+  // mygame/shaders/example.glsl
+  uniform sampler2D tex0;
+  
+  uniform float mouse_coord_x;
+  uniform float mouse_coord_y;
+  uniform int tick_count;
+  
+  varying vec2 v_texCoord;
+  
+  void main() {
+    gl_FragColor = texture2D(tex0, v_texCoord);
+  }
+#+end_src
+
+*** ~shader_tex(1-15)~
+
+You can bind up to 15 additional render targets via ~shaders_tex1~,
+~shaders_tex2~, ~shaders_tex3~, etc. ~tex0~ is reserved for what has
+been rendered to the screen and cannot be set.
+
+#+begin_src ruby
+  def tick args
+    args.outputs.shader_path = "shaders/example.glsl"
+    args.outputs.shader_tex1 = :single_blue_square
+  
+    args.outputs[:single_blue_square].background_color = { r: 255, g: 255, b: 255, a: 255 }
+    args.outputs[:single_blue_square].w = 1280;
+    args.outputs[:single_blue_square].h = 720;
+    args.outputs[:single_blue_square].sprites << {
+      x: 0,
+      y: 0,
+      w: 100,
+      h: 100,
+      path:
+      "sprites/square/blue.png"
+    }
+  
+    args.outputs.background_color = { r: 0, g: 0, b: 0 }
+    args.outputs.sprites << {
+      x: 0,
+      y: 0,
+      w: 200,
+      h: 200,
+      path:
+      "sprites/square/red.png"
+    }
+  end
+#+end_src
+
+#+begin_src glsl
+  uniform sampler2D tex0;
+  uniform sampler2D tex1; // :single_blue_square render target
+  
+  varying vec2 v_texCoord;
+  
+  void noop() {
+    vec4 pixel_from_rt = texture2D(tex1, v_texCoord);
+  
+    // if the pixel from the render target isn't white
+    // then render the pixel from the RT
+    // otherwise render the pixel from the screen
+    if (pixel_from_rt.r < 1.0 ||
+        pixel_from_rt.g < 1.0 ||
+        pixel_from_rt.b < 1.0) {
+      gl_FragColor.r = pixel_from_rt.r;
+      gl_FragColor.g = pixel_from_rt.g;
+      gl_FragColor.b = pixel_from_rt.b;
+    } else {
+      gl_FragColor = texture2D(tex0, v_texCoord);
+    }
+  }
+#+end_src
+* Inputs (~args.inputs~)
+
+Access using input using ~args.inputs~.
+
+** ~last_active~
+
+This function returns the last active input which will be set to
+either ~:keyboard~, ~:mouse~, or ~:controller~. The function is
+helpful when you need to present on screen instructions based on the
+input the player chose to play with.
+
+#+begin_src ruby
   def tick args
     if args.inputs.last_active == :controller
       args.outputs.labels << { x: 60, y: 60, text: "Use the D-Pad to move around." }
@@ -1547,54 +1770,84 @@ instructions based on the input the player chose to play with.
     end
   end
 #+end_src
-~:mouse~, or ~:controller~. The function is helpful when you need to present on screen
-instructions based on the input the player chose to play with.
+
+The function is helpful when you need to present on screen instructions based on the input the player chose to play with.
+
+** ~last_active_at~
+
+Returns the ~args.state.tick_count~ (~Kernel.tick_count~) of which the
+specific input was last active.
+
+** ~last_active_global_at~
+
+Returns the ~Kernel.global_tick_count~ of which the specific input was last active.
+
 ** ~locale~
-Returns the ISO 639-1 two-letter langauge code based on OS preferences. Refer to the following link for locale strings: [[https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes]]).
+
+Returns the ISO 639-1 two-letter langauge code based on OS preferences. Refer to the following link for locale strings: <https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes>).
 
 Defaults to "en" if locale can't be retrieved (~args.inputs.locale_raw~ will be nil in this case).
+
 ** ~up~
+
 Returns ~true~ if: the ~up~ arrow or ~w~ key is pressed or held on the ~keyboard~; or if ~up~ is pressed or held on ~controller_one~; or if the ~left_analog~ on ~controller_one~ is tilted upwards.
+
 ** ~down~
+
 Returns ~true~ if: the ~down~ arrow or ~s~ key is pressed or held on the ~keyboard~; or if ~down~ is pressed or held on ~controller_one~; or if the ~left_analog~ on ~controller_one~ is tilted downwards.
+
 ** ~left~
+
 Returns ~true~ if: the ~left~ arrow or ~a~ key is pressed or held on the ~keyboard~; or if ~left~ is pressed or held on ~controller_one~; or if the ~left_analog~ on ~controller_one~ is tilted to the left.
+
 ** ~right~
+
 Returns ~true~ if: the ~right~ arrow or ~d~ key is pressed or held on the ~keyboard~; or if ~right~ is pressed or held on ~controller_one~; or if the ~left_analog~ on ~controller_one~ is tilted to the right.
+
 ** ~left_right~
+
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right). This method is aliased to ~args.inputs.left_right_with_wasd~.
 
 The following inputs are inspected to determine the result:
-- Keyboard's left, right arrow keys: ~args.inputs.keyboard.(left|right)_arrow~
-- Keyboard's a, d keys (WASD): ~args.inputs.keyboard.(a|d)~
-- Controller One's DPAD (if a controller is connected): ~args.inputs.controller_one.dpad_left~, ~args.inputs.controller_one.dpad_right~
-- Controller One's Left Analog (if a controller is connected): ~args.inputs.controller_one.left_analog_x_perc.abs >= 0.6~
+
+-   Keyboard's left, right arrow keys: ~args.inputs.keyboard.(left|right)_arrow~
+-   Keyboard's a, d keys (WASD): ~args.inputs.keyboard.(a|d)~
+-   Controller One's DPAD (if a controller is connected): ~args.inputs.controller_one.dpad_left~, ~args.inputs.controller_one.dpad_right~
+-   Controller One's Left Analog (if a controller is connected): ~args.inputs.controller_one.left_analog_x_perc.abs >= 0.6~
+
 ** ~left_right_perc~
+
 Returns a floating point value between ~-1~ and ~1~. This method is aliased to ~args.inputs.left_right_perc_with_wasd~
 
 The following inputs are inspected to dermine the result:
-- Controller One's Left Analog (if a controller is connected and the value is not 0.0): ~args.inputs.controller_one.left_analog_x_perc~
-- If the left analog isn't being used, then Controller One's DPAD is consulted: ~args.inputs.controller_one.dpad_left~, ~args.inputs.controller_one.dpad_right~
-- Keyboard's a, d keys (WASD): ~args.inputs.keyboard.(a|d)~
-- Keyboard's left/right arrow keys: ~args.inputs.keyboard.(left|right)_arrow~
+
+-   Controller One's Left Analog (if a controller is connected and the value is not 0.0): ~args.inputs.controller_one.left_analog_x_perc~
+-   If the left analog isn't being used, then Controller One's DPAD is consulted: ~args.inputs.controller_one.dpad_left~, ~args.inputs.controller_one.dpad_right~
+-   Keyboard's a, d keys (WASD): ~args.inputs.keyboard.(a|d)~
+-   Keyboard's left/right arrow keys: ~args.inputs.keyboard.(left|right)_arrow~
+
 ** ~left_right_directional~
+
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right). This method is aliased to ~args.inputs.left_right_arrow~.
 
 The following inputs are inspected to determine the result:
-- Keyboard's left/right arrow keys: ~args.inputs.keyboard.(left|right)_arrow~
-- Controller One's DPAD (if a controller is connected): ~args.inputs.controller_one.dpad_left~, ~args.inputs.controller_one.dpad_right~
-- WASD and Controller One's Left Analog Stick are NOT consulted.
+
+-   Keyboard's left/right arrow keys: ~args.inputs.keyboard.(left|right)_arrow~
+-   Controller One's DPAD (if a controller is connected): ~args.inputs.controller_one.dpad_left~, ~args.inputs.controller_one.dpad_right~
+-   WASD and Controller One's Left Analog Stick are NOT consulted.
+
 ** ~left_right_directional_perc~
-Returns a floating point value between ~-1~ and ~1~.
-The following inputs are inspected to dermine the result:
-- Controller One's Left Analog (if a controller is connected and the value is not 0.0): ~args.inputs.controller_one.left_analog_x_perc~
-- If the left analog isn't being used, then Controller One's DPAD is consulted: ~args.inputs.controller_one.dpad_left~, ~args.inputs.controller_one.dpad_right~
-- Keyboard's left/right arrow keys: ~args.inputs.keyboard.(left|right)_arrow~
-- WASD is NOT consulted.
+
+Returns a floating point value between ~-1~ and ~1~. The following inputs are inspected to dermine the result:
+
+-   Controller One's Left Analog (if a controller is connected and the value is not 0.0): ~args.inputs.controller_one.left_analog_x_perc~
+-   If the left analog isn't being used, then Controller One's DPAD is consulted: ~args.inputs.controller_one.dpad_left~, ~args.inputs.controller_one.dpad_right~
+-   Keyboard's left/right arrow keys: ~args.inputs.keyboard.(left|right)_arrow~
+-   WASD is NOT consulted.
 
 Here is some sample code to help visualize the ~left_right~ functions.
 
-#+begin_src
+#+begin_src ruby
   def tick args
     args.outputs.debug << "* Variations of args.inputs.left_right"
     args.outputs.debug << "  args.inputs.left_right(_with_wasd) #{args.inputs.left_right}"
@@ -1612,32 +1865,40 @@ Here is some sample code to help visualize the ~left_right~ functions.
     args.outputs.debug << "   args.inputs.controller_one.left_analog_x_perc #{args.inputs.controller_one.left_analog_x_perc}"
   end
 #+end_src
+
 ** ~up_down~
+
 Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up). This method is aliased to ~args.inputs.up_down_with_wasd~.
 
 The following inputs are inspected to determine the result:
-- Keyboard's up/down arrow keys: ~args.inputs.keyboard.(up|down)_arrow~
-- Keyboard's w, s keys (WASD): ~args.inputs.keyboard.(w|s)~
-- Controller One's DPAD (if a controller is connected): ~args.inputs.controller_one.dpad_up~, ~args.inputs.controller_one.dpad_down~
-- Controller One's Up Analog (if a controller is connected): ~args.inputs.controller_one.up_analog_y_perc.abs >= 0.6~
+
+-   Keyboard's up/down arrow keys: ~args.inputs.keyboard.(up|down)_arrow~
+-   Keyboard's w, s keys (WASD): ~args.inputs.keyboard.(w|s)~
+-   Controller One's DPAD (if a controller is connected): ~args.inputs.controller_one.dpad_up~, ~args.inputs.controller_one.dpad_down~
+-   Controller One's Up Analog (if a controller is connected): ~args.inputs.controller_one.up_analog_y_perc.abs >= 0.6~
+
 ** ~up_down_directional~
+
 Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up). This method is aliased to ~args.inputs.up_down_arrow~.
 
 The following inputs are inspected to determine the result:
-- Keyboard's up/down arrow keys: ~args.inputs.keyboard.(up|down)_arrow~
-- Controller One's DPAD (if a controller is connected): ~args.inputs.controller_one.dpad_up~, ~args.inputs.controller_one.dpad_down~
-- WASD and Controller One's Left Analog Stick are NOT consulted.
+
+-   Keyboard's up/down arrow keys: ~args.inputs.keyboard.(up|down)_arrow~
+-   Controller One's DPAD (if a controller is connected): ~args.inputs.controller_one.dpad_up~, ~args.inputs.controller_one.dpad_down~
+-   WASD and Controller One's Left Analog Stick are NOT consulted.
+
 ** ~up_down_perc~
-Returns a floating point value between ~-1~ and ~1~.
-The following inputs are inspected to dermine the result:
-- Controller One's Left Analog (if a controller is connected and the value is not 0.0): ~args.inputs.controller_one.up_analog_y_perc~
-- If the left analog isn't being used, then Controller One's DPAD is consulted: ~args.inputs.controller_one.dpad_up~, ~args.inputs.controller_one.dpad_down~
-- Keyboard's up/down arrow keys: ~args.inputs.keyboard.(up|down)_arrow~
-- WASD is NOT consulted.
+
+Returns a floating point value between ~-1~ and ~1~. The following inputs are inspected to dermine the result:
+
+-   Controller One's Left Analog (if a controller is connected and the value is not 0.0): ~args.inputs.controller_one.up_analog_y_perc~
+-   If the left analog isn't being used, then Controller One's DPAD is consulted: ~args.inputs.controller_one.dpad_up~, ~args.inputs.controller_one.dpad_down~
+-   Keyboard's up/down arrow keys: ~args.inputs.keyboard.(up|down)_arrow~
+-   WASD is NOT consulted.
 
 Here is some sample code to help visualize the ~up_down~ functions.
 
-#+begin_src
+#+begin_src ruby
   def tick args
     args.outputs.debug << "* Variations of args.inputs.up_down"
     args.outputs.debug << "  args.inputs.up_down(_with_wasd) #{args.inputs.up_down}"
@@ -1655,242 +1916,335 @@ Here is some sample code to help visualize the ~up_down~ functions.
     args.outputs.debug << "   args.inputs.controller_one.left_analog_y_perc #{args.inputs.controller_one.left_analog_y_perc}"
   end
 #+end_src
+
 ** ~text~
+
 Returns a string that represents the last key that was pressed on the keyboard.
+
 ** Mouse (~args.inputs.mouse~)
+
 Represents the user's mouse.
+
 *** ~has_focus~
+
 Return's true if the game has mouse focus.
+
 *** ~x~
+
 Returns the current ~x~ location of the mouse.
+
 *** ~y~
+
 Returns the current ~y~ location of the mouse.
+
 *** ~inside_rect? rect~
+
 Return. ~args.inputs.mouse.inside_rect?~ takes in any primitive that responds to ~x, y, w, h~:
+
 *** ~inside_circle? center_point, radius~
+
 Returns ~true~ if the mouse is inside of a specified circle. ~args.inputs.mouse.inside_circle?~ takes in any primitive that responds to ~x, y~ (which represents the circle's center), and takes in a ~radius~:
+
 *** ~moved~
+
 Returns ~true~ if the mouse has moved on the current frame.
+
 *** ~button_left~
+
 Returns ~true~ if the left mouse button is down.
+
 *** ~button_middle~
+
 Returns ~true~ if the middle mouse button is down.
+
 *** ~button_right~
+
 Returns ~true~ if the right mouse button is down.
+
 *** ~button_bits~
+
 Returns a bitmask for all buttons on the mouse: ~1~ for a button in the ~down~ state, ~0~ for a button in the ~up~ state.
+
 *** ~wheel~
-Represents the mouse wheel. Returns ~nil~ if no mouse wheel actions occurred. Otherwise ~args.inputs.mouse.wheel~ will
-return a ~Hash~ with ~x~, and ~y~ (representing movement on each axis).
+
+Represents the mouse wheel. Returns ~nil~ if no mouse wheel actions occurred. Otherwise ~args.inputs.mouse.wheel~ will return a ~Hash~ with ~x~, and ~y~ (representing movement on each axis).
+
 *** ~click~ OR ~down~, ~previous_click~, ~up~
-The properties ~args.inputs.mouse.(click|down|previous_click|up)~ each return ~nil~ if the mouse button event didn't occur. And return an Entity
-that has an ~x~, ~y~ properties along with helper functions to determine collision: ~inside_rect?~, ~inside_circle~. This value will be true if any
-of the mouse's buttons caused these events. To scope to a specific button use ~.button_left~, ~.button_middle~, ~.button_right~, or ~.button_bits~.
+
+The properties ~args.inputs.mouse.(click|down|previous_click|up)~ each return ~nil~ if the mouse button event didn't occur. And return an Entity that has an ~x~, ~y~ properties along with helper functions to determine collision: ~inside_rect?~, ~inside_circle~. This value will be true if any of the mouse's buttons caused these events. To scope to a specific button use ~.button_left~, ~.button_middle~, ~.button_right~, or ~.button_bits~.
+
 ** Touch
+
 The following touch apis are available on touch devices (iOS, Android, Mobile Web, Surface).
+
 *** ~args.inputs.touch~
+
 Returns a ~Hash~ representing all touch points on a touch device.
+
 *** ~args.inputs.finger_left~
+
 Returns a ~Hash~ with ~x~ and ~y~ denoting a touch point that is on the left side of the screen.
+
 *** ~args.inputs.finger_right~
+
 Returns a ~Hash~ with ~x~ and ~y~ denoting a touch point that is on the right side of the screen.
+
 ** Controller (~args.inputs.controller_(one-four)~)
-Represents controllers connected to the usb ports. There is also ~args.inputs.controllers~ which returns controllers
-one through four as an array (~args.inputs.controllers[0]~ points to ~args.inputs.controller_one~).
+
+Represents controllers connected to the usb ports. There is also ~args.inputs.controllers~ which returns controllers one through four as an array (~args.inputs.controllers[0]~ points to ~args.inputs.controller_one~).
+
 *** ~active~
+
 Returns true if any of the controller's buttons were used.
+
 *** ~up~
+
 Returns ~true~ if ~up~ is pressed or held on the directional or left analog.
+
 *** ~down~
+
 Returns ~true~ if ~down~ is pressed or held on the directional or left analog.
+
 *** ~left~
+
 Returns ~true~ if ~left~ is pressed or held on the directional or left analog.
+
 *** ~right~
+
 Returns ~true~ if ~right~ is pressed or held on the directional or left analog.
+
 *** ~left_right~
+
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.controller_(one-four).left~ and ~args.inputs.controller_(one-four).right~.
+
 *** ~up_down~
+
 Returns ~-1~ (down), ~0~ (neutral), or ~+1~ (up) depending on results of ~args.inputs.controller_(one-four).up~ and ~args.inputs.controller_(one-four).down~.
+
 *** ~(left|right)_analog_x_raw~
+
 Returns the raw integer value for the analog's horizontal movement (~-32,767 to +32,767~).
+
 *** ~(left|right)_analog_y_raw~
+
 Returns the raw integer value for the analog's vertical movement (~-32,767 to +32,767~).
+
 *** ~(left|right)_analog_x_perc~
+
 Returns a number between ~-1~ and ~1~ which represents the percentage the analog is moved horizontally as a ratio of the maximum horizontal movement.
+
 *** ~(left|right)_analog_y_perc~
+
 Returns a number between ~-1~ and ~1~ which represents the percentage the analog is moved vertically as a ratio of the maximum vertical movement.
+
 *** ~dpad_up~, ~directional_up~
+
 Returns ~true~ if ~up~ is pressed or held on the dpad.
+
 *** ~dpad_down~, ~directional_down~
+
 Returns ~true~ if ~down~ is pressed or held on the dpad.
+
 *** ~dpad_left~, ~directional_left~
+
 Returns ~true~ if ~left~ is pressed or held on the dpad.
+
 *** ~dpad_right~, ~directional_right~
+
 Returns ~true~ if ~right~ is pressed or held on the dpad.
+
 *** ~(a|b|x|y|l1|r1|l2|r2|l3|r3|start|select)~
-Returns ~true~ if the specific button is pressed or held.
-Note: For PS4 and PS5 controllers ~a~ maps to Cross, ~b~ maps to Circle, ~x~ maps to Square, and ~y~ maps to Triangle.
+
+Returns ~true~ if the specific button is pressed or held. Note: For PS4 and PS5 controllers ~a~ maps to Cross, ~b~ maps to Circle, ~x~ maps to Square, and ~y~ maps to Triangle.
+
 *** ~truthy_keys~
+
 Returns a collection of ~Symbol~s that represent all keys that are in the pressed or held state.
+
 *** ~key_down~
+
 Returns ~true~ if the specific button was pressed on this frame. ~args.inputs.controller_(one-four).key_down.BUTTON~ will only be true on the frame it was pressed.
+
 *** ~key_held~
+
 Returns ~true~ if the specific button is being held. ~args.inputs.controller_(one-four).key_held.BUTTON~ will be true for all frames after ~key_down~ (until released).
+
 *** ~key_up~
+
 Returns ~true~ if the specific button was released. ~args.inputs.controller_(one-four).key_up.BUTTON~ will be true only on the frame the button was released.
+
 ** Keyboard (~args.inputs.keyboard~)
+
 Represents the user's keyboard.
+
 *** ~active~
+
 Returns ~Kernel.tick_count~ (~args.state.tick_count~) if any keys on the keyboard were pressed.
+
 *** ~has_focus~
+
 Returns ~true~ if the game has keyboard focus.
+
 *** ~up~
+
 Returns ~true~ if ~up~ or ~w~ is pressed or held on the keyboard.
+
 *** ~down~
+
 Returns ~true~ if ~down~ or ~s~ is pressed or held on the keyboard.
+
 *** ~left~
+
 Returns ~true~ if ~left~ or ~a~ is pressed or held on the keyboard.
+
 *** ~right~
+
 Returns ~true~ if ~right~ or ~d~ is pressed or held on the keyboard.
+
 *** ~left_right~
+
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.keyboard.left~ and ~args.inputs.keyboard.right~.
+
 *** ~up_down~
+
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.keyboard.up~ and ~args.inputs.keyboard.up~.
+
 *** keyboard properties
+
 The following properties represent keys on the keyboard and are available on ~args.inputs.keyboard.KEY~, ~args.inputs.keyboard.key_down.KEY~, ~args.inputs.keyboard.key_held.KEY~, and ~args.inputs.keyboard.key_up.KEY~:
-- ~alt~
-- ~meta~
-- ~control~, ~ctrl~
-- ~shift~
-- ~control_KEY~, ~ctrl_KEY~ (dynamic method, eg ~args.inputs.keyboard.ctrl_a~)
-- ~exclamation_point~
-- ~zero~ - ~nine~
-- ~backspace~
-- ~delete~
-- ~escape~
-- ~enter~
-- ~tab~
-- ~(open|close)_round_brace~
-- ~(open|close)_curly_brace~
-- ~(open|close)_square_brace~
-- ~colon~
-- ~semicolon~
-- ~equal~
-- ~hyphen~
-- ~space~
-- ~dollar~
-- ~percent~
-- ~double_quotation_mark~
-- ~single_quotation_mark~
-- ~backtick~
-- ~tilde~
-- ~period~
-- ~comma~
-- ~pipe~
-- ~underscore~
-- ~ac_back~ (~ac~ stands for Application Control, with ~ac_back~ representing Back button on a device (eg Android back button)
-- ~ac_home~
-- ~ac_forward~
-- ~ac_stop~
-- ~ac_refresh~
-- ~ac_bookmarks~
-- ~a~ - ~z~
-- ~w_scancode~ (key location for w in WASD layout across regions)
-- ~a_scancode~ (key location for a in WASD layout across regions)
-- ~s_scancode~ (key location for s in WASD layout across regions)
-- ~d_scancode~ (key location for d in WASD layout across regions)
-- ~shift~
-- ~shift_left~
-- ~shift_right~
-- ~control~, ~ctrl~
-- ~contro_left~, ~ctrl_left~
-- ~contro_right~, ~ctrl_right~
-- ~alt~, ~option~
-- ~alt_left~, ~option_left~
-- ~alt_right~, ~option_right~
-- ~meta~, ~command~
-- ~meta_left~, ~command_left~
-- ~meta_right~, ~command_right~
-- ~left_arrow~
-- ~right_arrow~
-- ~up_arrow~
-- ~down_arrow~
-- ~left_arrow~, ~left~
-- ~right_arrow~, ~right~
-- ~up_arrow~, ~up~
-- ~down_arrow~ ~down~
-- ~pageup~
-- ~pagedown~
-- ~plus~
-- ~at~
-- ~hash~
-- ~forward_slash~
-- ~back_slash~
-- ~asterisk~
-- ~less_than~
-- ~greater_than~
-- ~ampersand~
-- ~superscript_two~
-- ~caret~
-- ~question_mark~
-- ~section~
-- ~ordinal_indicator~
-- ~raw_key~ (unique numeric identifier for key)
-- ~left_right~
-- ~up_down~
-- ~directional_vector~
-- ~truthy_keys~ (array of ~Symbols~)
+
+-   ~alt~
+-   ~meta~
+-   ~control~, ~ctrl~
+-   ~shift~
+-   ~control_KEY~, ~ctrl_KEY~ (dynamic method, eg ~args.inputs.keyboard.ctrl_a~)
+-   ~exclamation_point~
+-   ~zero~ - ~nine~
+-   ~backspace~
+-   ~delete~
+-   ~escape~
+-   ~enter~
+-   ~tab~
+-   ~(open|close)_round_brace~
+-   ~(open|close)_curly_brace~
+-   ~(open|close)_square_brace~
+-   ~colon~
+-   ~semicolon~
+-   ~equal~
+-   ~hyphen~
+-   ~space~
+-   ~dollar~
+-   ~percent~
+-   ~double_quotation_mark~
+-   ~single_quotation_mark~
+-   ~backtick~
+-   ~tilde~
+-   ~period~
+-   ~comma~
+-   ~pipe~
+-   ~underscore~
+-   ~ac_back~ (~ac~ stands for Application Control, with ~ac_back~ representing Back button on a device (eg Android back button)
+-   ~ac_home~
+-   ~ac_forward~
+-   ~ac_stop~
+-   ~ac_refresh~
+-   ~ac_bookmarks~
+-   ~a~ - ~z~
+-   ~w_scancode~ (key location for w in WASD layout across regions)
+-   ~a_scancode~ (key location for a in WASD layout across regions)
+-   ~s_scancode~ (key location for s in WASD layout across regions)
+-   ~d_scancode~ (key location for d in WASD layout across regions)
+-   ~shift~
+-   ~shift_left~
+-   ~shift_right~
+-   ~control~, ~ctrl~
+-   ~contro_left~, ~ctrl_left~
+-   ~contro_right~, ~ctrl_right~
+-   ~alt~, ~option~
+-   ~alt_left~, ~option_left~
+-   ~alt_right~, ~option_right~
+-   ~meta~, ~command~
+-   ~meta_left~, ~command_left~
+-   ~meta_right~, ~command_right~
+-   ~left_arrow~
+-   ~right_arrow~
+-   ~up_arrow~
+-   ~down_arrow~
+-   ~left_arrow~, ~left~
+-   ~right_arrow~, ~right~
+-   ~up_arrow~, ~up~
+-   ~down_arrow~ ~down~
+-   ~pageup~
+-   ~pagedown~
+-   ~plus~
+-   ~at~
+-   ~hash~
+-   ~forward_slash~
+-   ~back_slash~
+-   ~asterisk~
+-   ~less_than~
+-   ~greater_than~
+-   ~ampersand~
+-   ~superscript_two~
+-   ~caret~
+-   ~question_mark~
+-   ~section~
+-   ~ordinal_indicator~
+-   ~raw_key~ (unique numeric identifier for key)
+-   ~left_right~
+-   ~up_down~
+-   ~directional_vector~
+-   ~truthy_keys~ (array of ~Symbols~)
+
 *** ~keycodes~
-If the explicit named key isn't in the list above, you can still get the raw keycode via
-~args.inputs.keyboard.key_(down|held|up).keycodes[KEYCODE_NUMBER]~. The ~KEYCODE_NUMBER~ represents
-the keycode provided by SDL.
 
-Here is a list SDL Keycodes: [[https://wiki.libsdl.org/SDL2/SDLKeycodeLookup]]
+If the explicit named key isn't in the list above, you can still get the raw keycode via ~args.inputs.keyboard.key_(down|held|up).keycodes[KEYCODE_NUMBER]~. The ~KEYCODE_NUMBER~ represents the keycode provided by SDL.
+
+Here is a list SDL Keycodes: <https://wiki.libsdl.org/SDL2/SDLKeycodeLookup>
+
 *** ~char~
-Method is available under ~inputs.key_down~, ~inputs.key_held~, and ~inputs.key_up~.  Take note that
 
-~args.inputs.keyboard.key_held.char~ will only return the ascii value
-of the last key that was held. Use ~args.inputs.keyboard.key_held.truthy_keys~
-to get an ~Array~ of ~Symbols~ representing all keys being held.
+Method is available under ~inputs.key_down~, ~inputs.key_held~, and ~inputs.key_up~. Take note that
 
-To get a picture of all key states ~args.inputs.keyboard.keys~ returns a ~Hash~
-with the following keys: ~:down~, ~:held~, ~:down_or_held~, ~:up~.
+~args.inputs.keyboard.key_held.char~ will only return the ascii value of the last key that was held. Use ~args.inputs.keyboard.key_held.truthy_keys~ to get an ~Array~ of ~Symbols~ representing all keys being held.
+
+To get a picture of all key states ~args.inputs.keyboard.keys~ returns a ~Hash~ with the following keys: ~:down~, ~:held~, ~:down_or_held~, ~:up~.
 
 NOTE: ~args.inputs.keyboard.key_down.char~ will be set in line with key repeat behavior of your OS.
 
 This is a demonstration of the behavior (see ~./samples/02_input_basics/01_keyboard~ for a more detailed example):
 
-#+begin_src
+#+begin_src ruby
   def tick args
     # uncomment the line below to see the value changes at a slower rate
     # $gtk.slowmo! 30
-
+  
     keyboard = args.inputs.keyboard
-
+  
     args.outputs.labels << { x: 30,
                              y: 720,
                              text: "use the J key to test" }
-
+  
     args.outputs.labels << { x: 30,
                              y: 720 - 30,
                              text: "key_down.char: #{keyboard.key_down.char.inspect}" }
-
+  
     args.outputs.labels << { x: 30,
                              y: 720 - 60,
                              text: "key_down.j:    #{keyboard.key_down.j}" }
-
+  
     args.outputs.labels << { x: 30,
                              y: 720 - 30,
                              text: "key_held.char: #{keyboard.key_held.char.inspect}" }
-
+  
     args.outputs.labels << { x: 30,
                              y: 720 - 60,
                              text: "key_held.j:    #{keyboard.key_held.j}" }
-
+  
     args.outputs.labels << { x: 30,
                              y: 720 - 30,
                              text: "key_up.char:   #{keyboard.key_up.char.inspect}" }
-
+  
     args.outputs.labels << { x: 30,
                              y: 720 - 60,
                              text: "key_up.j:      #{keyboard.key_up.j}" }
@@ -1898,12 +2252,13 @@ This is a demonstration of the behavior (see ~./samples/02_input_basics/01_keybo
 #+end_src
 
 *** ~keys~
-Returns a ~Hash~ with all keys on the keyboard in their respective state. The ~Hash~ contains the following ~keys~
-- ~:down~
-- ~:held~
-- ~:down_or_held~
-- ~:up~
 
+Returns a ~Hash~ with all keys on the keyboard in their respective state. The ~Hash~ contains the following ~keys~
+
+-   ~:down~
+-   ~:held~
+-   ~:down_or_held~
+-   ~:up~
 * Runtime (~args.gtk~)
 
 The ~GTK::Runtime~ class is the core of DragonRuby. It is globally accessible via ~$gtk~ or inside of the ~tick~ method through ~args~.
@@ -3785,19 +4140,28 @@ Invocation variants:
 - ~args.geometry.line_intersect line_1, line_2~
 - ~Geometry::line_intersect line_1, line_2~
 
-def tick args
-
-args.state.line_one ||= { x: 0, y: 0, x2: 1280, y2: 720 }
-
-line_two = { x: 0, y: 720, x2: args.inputs.mouse.x, y2: args.inputs.mouse.y }
-
-args.state.intersect_point = args.geometry.line_intersect args.state.line_one, line_two
-
-args.outputs.lines << { x: 0, y: 0, x2: 1280, y2: 720 }
-
-args.outputs.lines << line_two
-
-if args.state.intersect_point args.outputs.solids << { x: args.state.intersect_point.x, y: args.state.intersect_point.y, w: 10, h: 10, anchor_x: 0.5, anchor_y: 0.5, r: 255, g: 0, b: 0 } end end
+#+begin_src ruby
+  def tick args
+    args.state.line_one ||= { x: 0, y: 0, x2: 1280, y2: 720 }
+    line_two = { x: 0, y: 720, x2: args.inputs.mouse.x, y2: args.inputs.mouse.y }
+    args.state.intersect_point = args.geometry.line_intersect args.state.line_one, line_two
+    args.outputs.lines << { x: 0, y: 0, x2: 1280, y2: 720 }
+    args.outputs.lines << line_two
+    if args.state.intersect_point
+      args.outputs.solids << {
+        x: args.state.intersect_point.x,
+        y: args.state.intersect_point.y,
+        w: 10,
+        h: 10,
+        anchor_x: 0.5,
+        anchor_y: 0.5,
+        r: 255,
+        g: 0,
+        b: 0
+      }
+    end
+  end
+#+end_src
 
 ** ~ray_intersect~
 
@@ -4357,8 +4721,272 @@ Example:
     args.outputs.primitives << args.layout.debug_primitives
   end
 #+end_src
-meow
+* Grid (~args.grid~)
 
+Provides information about the screen and game canvas.
+
+** ~orientation~
+
+Returns either ~:landscape~ (default) or ~:portrait~. The orientation of your game is set within ~./mygame/metadata/game_metadata.txt~.
+
+** ~origin_name~
+
+Returns either ~:bottom_left~ (default) or ~:center~.
+
+** ~origin_bottom_left!~
+
+Change the grids coordinate system where ~0, 0~ is at the bottom left
+corner. ~origin_name~ will be set to ~:bottom_left~.
+
+** ~origin_center!~
+
+Change the grids coordinate system where ~0, 0~ is at the center of the
+screen. ~origin_name~ will be set to ~:center~.
+
+** Grid Property Categorizations
+
+There are two categories of Grid properties that you should be aware of:
+
+- Logical: Values are represented at the logical scale of ~720p~
+  (1280x720 for landscape orientation or 720x1280 portrait mode).
+- Pixels: Values are represented in the context of Pixels for a given display.
+
+NOTE:
+
+ You will almost always use the Logical Category's properties.
+
+
+
+
+The Pixel is helpful for sanity checking of Texture Atlases, creating
+C Extensions, and Shaders (Indie and Pro License features).
+
+
+
+
+For the Standard License, the Pixel Category
+properties will all return values from the Logical Category.
+
+Here's an example of what the property conventions look like:
+
+#+begin_src ruby
+  def tick args
+    # Logical width
+    args.grid.w
+  
+    # Width in pixels
+    args.grid.w_px
+  end
+#+end_src
+
+Note: ~Grid~ properties are globally accessible via ~$grid~.
+
+NOTE:
+
+ All Grid properties that follow take ~origin_name~, and ~orientation~ into consideration.
+
+** ~bottom~
+
+Returns value that represents the bottom of the grid.
+
+Given that the logical canvas is ~720p~, these are the values that
+~bottom~ may return:
+
+- origin: ~:bottom_left~, orientation: ~:landscape~: ~0~
+- origin: ~:bottom_left~, orientation: ~:portrait~: ~0~
+- origin: ~:center~, orientation: ~:landscape~: ~-360~
+- origin: ~:center~, orientation: ~:portrait~: ~-640~
+
+** ~top~
+
+Returns value that represents the top of the grid.
+
+** ~left~
+
+Returns value that represents the left of the grid.
+
+** ~right~
+
+Returns the ~x~ value that represents the right of the grid.
+
+** ~rect~
+
+Returns a rectangle Primitive that represents the grid.
+
+** ~w~
+
+Returns the grid's width.
+
+** ~h~
+
+Returns the grid's width.
+
+** HD, HighDPI, and All Screen Modes
+
+The following properties are available to Pro License holders. These
+features are enabled via ~./mygame/metadata/game_metadata.txt~:
+
+- ~hd=true~: Enable Texture Atlases and HD label/font rendering. Grid
+  properties in the Pixel Category will reflect true values instead of values
+  from the Logical Category.
+- ~highdpi=true~: HD must be enabled before this property will be
+   respected. Texture Atlas selection and label/font rendering
+   takes into consideration the hardware's resolution/rendering
+   capabilities.
+- ~hd_letterbox=false~: Removes the game's 16:9 letterbox, allowing
+  you to render edge to edge (All Screen). Game content will be
+  centered within the 16:9 safe area.
+
+NOTE:
+
+ For a demonstration of these configurations/property usages, see: ~./samples/07_advanced_rendering/03_allscreen_properties~.
+
+When All Screen mode is enabled (~hd_letterbox=false~), you can render
+outside of the 1280x720 safe area. The 1280x720 logical canvas will be
+centered within the screen and scaled to one of the following
+closest/best-fit resolutions.
+
+-   720p: 1280x720
+-   HD+: 1600x900
+-   1080p: 1920x1080
+-   1440p: 2560x1440
+-   1880p: 3200x1800
+-   4k: 3840x2160
+-   5k: 6400x2880
+
+*** All Screen Properties
+
+These properties provide dimensions of the screen outside of the 16:9
+safe area as logical ~720p~ values.
+
+- ~allscreen_left~
+- ~allscreen_right~
+- ~allscreen_top~
+- ~allscreen_bottom~
+- ~allscreen_w~
+- ~allscreen_h~
+- ~allscreen_offset_x~
+- ~allscreen_offset_y~
+
+NOTE:
+
+ With the main canvas being centered in the screen, ~allscreen_left~
+and ~allscreen_bottom~ may return negative numbers for origin
+~:bottom_left~ since ~x: 0, y: 0~ might not align with the bottom left border of the game window.
+
+NOTE:
+
+ It is strongly recommended that you don't use All Screen properties
+for any elements the player would interact with (eg buttons in an
+options menu) as they could get rendered underneath a "notch" on a
+mobile device or at the far edge of an ultrawide display.
+
+**** Logical, Point, Pixel Category Value Comparisons
+
+NOTE:
+
+ Reminder: it's unlikely that you'll use any of the
+~_px~ variants. The explanation that follows if for those
+that want the nitty gritty details.
+
+Here are the values that a 16-inch MacBook Pro would return for
+~allscreen_~ properties.
+
+Device Specs:
+
+#+begin_src text
+| Spec               | Value       |
+| ------------------ | ----------- |
+| Aspect Ratio       | 16:10       |
+| Points Resolution  | 1728x1080   |
+| Screen Resolution  | 3456x2160   |
+#+end_src
+
+Game Settings:
+
+- HD: Enabled
+- HighDPI: Enabled
+
+The property breakdown is:
+
+#+begin_src text
+| Property              | Value      |
+| --------------------- | ---------- |
+| Left/Right            |            |
+| left                  | 0          |
+| left_px               | 0          |
+| right                 | 1280       |
+| right_px              | 3456       |
+| All Screen Left/Right |            |
+| allscreen_left        | 0          |
+| allscreen_left_px     | 0          |
+| allscreen_right       | 1280      |
+| allscreen_right_px    | 1728      |
+| allscreen_offset_x    | 0         |
+| allscreen_offset_x_px | 0         |
+|Top/Bottom             |           |
+| bottom                | 0         |
+| bottom_px             | 0         |
+| top                   | 720       |
+| top_px                | 1944      |
+| All Screen Top/Bottom |           |
+| allscreen_bottom      | -40       |
+| allscreen_bottom_px   | -108      |
+| allscreen_top         | 780       |
+| allscreen_top_px      | 2052      |
+| allscreen_offset_y    | 40        |
+| allscreen_offset_y_px | 108       |
+#+end_src
+
+*** Texture Atlases
+
+*** ~texture_scale~
+
+Returns a decimal value representing the rendering scale of the game.
+
+-   720p: 1.0
+-   HD+: 1.25
+-   1080p, Full HD: 1.5
+-   Full HD+: 1.75
+-   1440p: 2.0
+-   1880p: 2.5
+-   4k: 3.0
+-   5k: 4.0
+
+*** ~texture_scale_enum~
+
+Returns an integer value representing the rendering scale of the game
+at a best-fit value. For example, given a render scale of 2.7, the
+textures atlas that will be selected will be 1880p (enum_value ~250~).
+
+-   720p: 100
+-   HD+: 125
+-   1080p, Full HD: 150
+-   Full HD+: 175
+-   1440p: 200
+-   1880p: 250
+-   4k: 300
+-   5k: 400
+
+Given the following code:
+
+#+begin_src ruby
+  def tick args
+    args.outputs.sprites << { x: 0, y: 0, w: 100, h: 100, path: "sprites/player.png" }
+  end
+#+end_src
+
+The sprite path of ~sprites/player.png~ will be replaced according to
+the following naming conventions (fallback to a lower resolution is
+automatically handled if a sprite with naming convention isn't found):
+
+-   720p: ~sprites/player.png~ (100x100)
+-   HD+: ~sprites/player@125.png~ (125x125)
+-   1080p: ~sprites/player@150.png~ (150x150)
+-   1440p: ~sprites/player@200.png~ (200x200)
+-   1880p: ~sprites/player@250.png~ (250x250)
+-   4k: ~sprites/player@300.png~ (300x300)
+-   5k: ~sprites/player@400.png~ (400x400)
 * Array
 
 The Array class has been extend to provide methods that will help in common game development tasks. Array is one of the most powerful classes in Ruby and a very fundamental component of Game Toolkit.

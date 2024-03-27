@@ -114,7 +114,15 @@ S
         end
       end
 
-      if l.start_with?("#") && !inside_code_block
+      l = l.gsub("<br/>", "\n")
+           .gsub("!>", "NOTE:\n\n")
+
+      if l.strip.start_with?("<!-- org: ")
+        l = l.gsub("<!-- org: ", "")
+             .gsub(" -->", "")
+      elsif l.strip.start_with?("<!--")
+        next
+      elsif l.start_with?("#") && !inside_code_block
         tokens = l.split(" ")
         beginning = tokens[0]
         rest = tokens[1..-1].join(" ")

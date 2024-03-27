@@ -1,22 +1,78 @@
 # Grid (`args.grid`)
 
-Returns the virtual grid for the game.
+Provides information about the screen and game canvas.
 
-## `name`
+## `orientation`
 
-Returns either `:origin_bottom_left` or `:origin_center`.
+Returns either `:landscape` (default) or `:portrait`. The orientation of your game is set within `./mygame/metadata/game_metadata.txt`.
+
+## `origin_name`
+
+Returns either `:bottom_left` (default) or `:center`.
+
+## `origin_bottom_left!`
+
+Change the grids coordinate system where `0, 0` is at the bottom left
+corner. `origin_name` will be set to `:bottom_left`.
+
+## `origin_center!`
+
+Change the grids coordinate system where `0, 0` is at the center of the
+screen. `origin_name` will be set to `:center`.
+
+## Grid Property Categorizations
+
+There are two categories of Grid properties that you should be aware of:
+
+- Logical: Values are represented at the logical scale of `720p`
+  (1280x720 for landscape orientation or 720x1280 portrait mode).
+- Pixels: Values are represented in the context of Pixels for a given display.
+
+!> You will almost always use the Logical Category's properties.
+<br/>
+<br/>
+The Pixel is helpful for sanity checking of Texture Atlases, creating
+C Extensions, and Shaders (Indie and Pro License features).  
+<br/>
+<br/>
+For the Standard License, the Pixel Category
+properties will all return values from the Logical Category.
+
+Here's an example of what the property conventions look like:
+
+```ruby
+def tick args
+  # Logical width
+  args.grid.w
+
+  # Width in pixels
+  args.grid.w_px
+end
+```
+
+Note: `Grid` properties are globally accessible via `$grid`.
+
+!> All Grid properties that follow take `origin_name`, and `orientation` into consideration.
 
 ## `bottom`
 
-Returns the `y` value that represents the bottom of the grid.
+Returns value that represents the bottom of the grid. 
+
+Given that the logical canvas is `720p`, these are the values that
+`bottom` may return:
+
+- origin: `:bottom_left`, orientation: `:landscape`: `0`
+- origin: `:bottom_left`, orientation: `:portrait`: `0`
+- origin: `:center`, orientation: `:landscape`: `-360`
+- origin: `:center`, orientation: `:portrait`: `-640`
 
 ## `top`
 
-Returns the `y` value that represents the top of the grid.
+Returns value that represents the top of the grid.
 
 ## `left`
 
-Returns the `x` value that represents the left of the grid.
+Returns value that represents the left of the grid.
 
 ## `right`
 
@@ -26,33 +82,36 @@ Returns the `x` value that represents the right of the grid.
 
 Returns a rectangle Primitive that represents the grid.
 
-## `origin_bottom_left!`
-
-Change the grids coordinate system to 0, 0 at the bottom left corner.
-
-## `origin_center!`
-
-Change the grids coordinate system to 0, 0 at the center of the screen.
-
-## `orientation`
-
-Returns either `:portrait` or `:landscape`. The orientation of your game is set within `./mygame/metadata/game_metadata.txt`.
-
 ## `w`
 
-Returns the grid's width (value is 1280 if orientation `:landscape`, and 720 if orientation is `:portrait`).
+Returns the grid's width.
 
 ## `h`
 
-Returns the grid's width (value is 720 if orientation `:landscape`, and 1280 if orientation is `:portrait`).
+Returns the grid's width.
 
-## Grid HD Properties
+## HD, HighDPI, and All Screen Modes
 
-The following properties are available to Pro license holders. Setting `hd=true` and `hd=true` in `./mygame/metadata/game_metadata.txt` will enable All Screen Mode.
+The following properties are available to Pro License holders. These
+features are enabled via `./mygame/metadata/game_metadata.txt`:
 
-Please review the sample app located at `./samples/07_advanced_rendering_hd/03_allscreen_properties`.
+- `hd=true`: Enable Texture Atlases and HD label/font rendering. Grid
+  properties in the Pixel Category will reflect true values instead of values
+  from the Logical Category.
+- `highdpi=true`: HD must be enabled before this property will be
+   respected. Texture Atlas selection and label/font rendering
+   takes into consideration the hardware's resolution/rendering
+   capabilities.
+- `hd_letterbox=false`: Removes the game's 16:9 letterbox, allowing
+  you to render edge to edge (All Screen). Game content will be
+  centered within the 16:9 safe area.
 
-When All Screen mode is enabled, you can render outside of the 1280x720 safe area. The 1280x720 logical canvas will be centered within the screen and scaled to one of the following closest/bess-fit resolutions.
+!> For a demonstration of these configurations/property usages, see: `./samples/07_advanced_rendering/03_allscreen_properties`.
+
+When All Screen mode is enabled (`hd_letterbox=false`), you can render
+outside of the 1280x720 safe area. The 1280x720 logical canvas will be
+centered within the screen and scaled to one of the following
+closest/best-fit resolutions.
 
 -   720p: 1280x720
 -   HD+: 1600x900
@@ -62,49 +121,87 @@ When All Screen mode is enabled, you can render outside of the 1280x720 safe are
 -   4k: 3840x2160
 -   5k: 6400x2880
 
-Regardless of the rendering resolution, your logical canvas will always be 1280x720 and all `hd_*` values will be at this same logical scale.
+### All Screen Properties
 
-### `hd_left`
+These properties provide dimensions of the screen outside of the 16:9
+safe area as logical `720p` values.
 
-Returns the position of the left edge of the screen at the logical scale of 1280x720. For example, if the window's width is 1290x720, then `hd_left` will be -5.
+- `allscreen_left`
+- `allscreen_right`
+- `allscreen_top`
+- `allscreen_bottom`
+- `allscreen_w`
+- `allscreen_h`
+- `allscreen_offset_x`
+- `allscreen_offset_y`
 
-### `hd_right`
+!> With the main canvas being centered in the screen, `allscreen_left`
+and `allscreen_bottom` may return negative numbers for origin
+`:bottom_left` since `x: 0, y: 0` might not align with the bottom left border of the game window.
 
-Returns the position of the right edge of the screen at the logical scale of 1280x720. For example, if the window's width is 1290x720, then `hd_right` will be 1285.
+!> It is strongly recommended that you don't use All Screen properties
+for any elements the player would interact with (eg buttons in an
+options menu) as they could get rendered underneath a "notch" on a
+mobile device or at the far edge of an ultrawide display.
 
-### `hd_bottom`
+#### Logical, Point, Pixel Category Value Comparisons
 
-Returns the position of the bottom edge of the screen at the logical scale of 1280x720. For example, if the window's width is 1280x730, then `hd_bottom` will be -5.
+!> Reminder: it's unlikely that you'll use any of the
+`_px` variants. The explanation that follows if for those
+that want the nitty gritty details.
 
-### `hd_top`
+Here are the values that a 16-inch MacBook Pro would return for
+`allscreen_` properties.
 
-Returns the position of the top edge of the screen at the logical scale of 1280x720. For example, if the window's width is 1280x730, then `hd_top` will be 725.
+Device Specs:
 
-### `hd_offset_x`
+<!-- org: #+begin_src text -->
+| Spec               | Value       |
+| ------------------ | ----------- |
+| Aspect Ratio       | 16:10       |
+| Points Resolution  | 1728x1080   |
+| Screen Resolution  | 3456x2160   |
+<!-- org: #+end_src -->
 
-Returns the number of pixels that the 1280x720 canvas is offset from the left so that it's centered in the screen.
+Game Settings:
 
-### `hd_offset_y`
+- HD: Enabled
+- HighDPI: Enabled
 
-Returns the number of pixels that the 1280x720 canvas is offset from the bottom so that it's centered in the screen.
+The property breakdown is:
 
-### `window_width`
+<!-- org: #+begin_src text -->
+| Property              | Value      |
+| --------------------- | ---------- |
+| Left/Right            |            |
+| left                  | 0          |
+| left_px               | 0          |
+| right                 | 1280       |
+| right_px              | 3456       |
+| All Screen Left/Right |            |
+| allscreen_left        | 0          |
+| allscreen_left_px     | 0          |
+| allscreen_right       | 1280      |
+| allscreen_right_px    | 1728      |
+| allscreen_offset_x    | 0         |
+| allscreen_offset_x_px | 0         |
+|Top/Bottom             |           |
+| bottom                | 0         |
+| bottom_px             | 0         |
+| top                   | 720       |
+| top_px                | 1944      |
+| All Screen Top/Bottom |           |
+| allscreen_bottom      | -40       |
+| allscreen_bottom_px   | -108      |
+| allscreen_top         | 780       |
+| allscreen_top_px      | 2052      |
+| allscreen_offset_y    | 40        |
+| allscreen_offset_y_px | 108       |
+<!-- org: #+end_src -->
 
-Returns the true width of the window. High DPI settings are not taken into consideration.
+### Texture Atlases
 
-### `window_height`
-
-Returns the true height of the window. High DPI settings are not taken into consideration.
-
-### `native_width`
-
-Returns the true width of the window. High DPI settings (macOS, iOS, Android) are taken into consideration.
-
-### `native_height`
-
-Returns the true height of the window. High DPI settings (macOS, iOS, Android) are taken into consideration.
-
-### `native_scale`
+### `texture_scale`
 
 Returns a decimal value representing the rendering scale of the game.
 
@@ -117,9 +214,11 @@ Returns a decimal value representing the rendering scale of the game.
 -   4k: 3.0
 -   5k: 4.0
 
-### `native_scale_enum`
+### `texture_scale_enum`
 
-Returns an integer value representing the rendering scale of the game.
+Returns an integer value representing the rendering scale of the game
+at a best-fit value. For example, given a render scale of 2.7, the
+textures atlas that will be selected will be 1880p (enum_value `250`).
 
 -   720p: 100
 -   HD+: 125
@@ -130,8 +229,6 @@ Returns an integer value representing the rendering scale of the game.
 -   4k: 300
 -   5k: 400
 
-The enum value is taken into consideration when rendering a sprite through texture atlases.
-
 Given the following code:
 
 ```ruby
@@ -140,7 +237,9 @@ def tick args
 end
 ```
 
-The sprite path of `sprites/player.png` will be replaced according to the following naming conventions (fallback to a lower resolution is automatically handled if a sprite with naming convention isn't found):
+The sprite path of `sprites/player.png` will be replaced according to
+the following naming conventions (fallback to a lower resolution is
+automatically handled if a sprite with naming convention isn't found):
 
 -   720p: `sprites/player.png` (100x100)
 -   HD+: `sprites/player@125.png` (125x125)

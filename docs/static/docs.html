@@ -49,7 +49,7 @@ hljs.registerLanguage("typescript",function(){"use strict";return function(e){va
 hljs.registerLanguage("yaml",function(){"use strict";return function(e){var n={className:"string",relevance:0,variants:[{begin:/'/,end:/'/},{begin:/"/,end:/"/},{begin:/\S+/}],contains:[e.BACKSLASH_ESCAPE,{className:"template-variable",variants:[{begin:"{{",end:"}}"},{begin:"%{",end:"}"}]}]};return{name:"YAML",case_insensitive:!0,aliases:["yml","YAML"],contains:[{className:"attr",variants:[{begin:"\\w[\\w :\\/.-]*:(?=[ \t]|$)"},{begin:'"\\w[\\w :\\/.-]*":(?=[ \t]|$)'},{begin:"'\\w[\\w :\\/.-]*':(?=[ \t]|$)"}]},{className:"meta",begin:"^---s*$",relevance:10},{className:"string",begin:"[\\|>]([0-9]?[+-])?[ ]*\\n( *)[\\S ]+\\n(\\2[\\S ]+\\n?)*"},{begin:"<%[%=-]?",end:"[%-]?%>",subLanguage:"ruby",excludeBegin:!0,excludeEnd:!0,relevance:0},{className:"type",begin:"!"+e.UNDERSCORE_IDENT_RE},{className:"type",begin:"!!"+e.UNDERSCORE_IDENT_RE},{className:"meta",begin:"&"+e.UNDERSCORE_IDENT_RE+"$"},{className:"meta",begin:"\\*"+e.UNDERSCORE_IDENT_RE+"$"},{className:"bullet",begin:"\\-(?=[ ]|$)",relevance:0},e.HASH_COMMENT_MODE,{beginKeywords:"true false yes no null",keywords:{literal:"true false yes no null"}},{className:"number",begin:"\\b[0-9]{4}(-[0-9][0-9]){0,2}([Tt \\t][0-9][0-9]?(:[0-9][0-9]){2})?(\\.[0-9]*)?([ \\t])*(Z|[-+][0-9][0-9]?(:[0-9][0-9])?)?\\b"},{className:"number",begin:e.C_NUMBER_RE+"\\b"},n]}}}());
 
     </script>
-    <link href="docs.css?ver=1711105307" rel="stylesheet" type="text/css" media="all">
+    <link href="docs.css?ver=1711506864" rel="stylesheet" type="text/css" media="all">
     <script type="text/javascript">
 var styleElement = document.createElement('style');
 document.getElementsByTagName("head")[0].appendChild(styleElement);
@@ -79,15 +79,16 @@ document.addEventListener("animationstart", e => {
 <ul><li><a class='header-2' href='#---creating-your-game-landing-page'>Creating Your Game Landing Page</a></li></ul><ul><li><a class='header-2' href='#---update-your-game-s-metadata'>Update Your Game's Metadata</a></li></ul><ul><li><a class='header-2' href='#---building-your-game-for-distribution'>Building Your Game For Distribution</a></li></ul><ul><ul><li><a class='header-3' href='#----browser-game-settings'>Browser Game Settings</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----consider-adding-pause-when-game-is-in-background'>Consider Adding Pause When Game is In Background</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----consider-adding-a-request-to-review-your-game-in-game'>Consider Adding a Request to Review Your Game In-Game</a></li></ul></ul><li><a class='header-1' href='#--deploying-to-mobile-devices'>Deploying To Mobile Devices</a></li>
 <ul><li><a class='header-2' href='#---deploying-to-ios'>Deploying to iOS</a></li></ul><ul><li><a class='header-2' href='#---deploying-to-android'>Deploying to Android</a></li></ul><li><a class='header-1' href='#--dragonruby-s-philosophy'>DragonRuby's Philosophy</a></li>
 <ul><li><a class='header-2' href='#---challenge-the-status-quo'>Challenge The Status Quo</a></li></ul><ul><li><a class='header-2' href='#---continuity-of-design'>Continuity of Design</a></li></ul><ul><li><a class='header-2' href='#---release-early-and-often'>Release Early and Often</a></li></ul><ul><li><a class='header-2' href='#---sustainable-and-ethical-monetization'>Sustainable And Ethical Monetization</a></li></ul><ul><li><a class='header-2' href='#---sustainable-and-ethical-open-source'>Sustainable And Ethical Open Source</a></li></ul><ul><li><a class='header-2' href='#---people-over-entities'>People Over Entities</a></li></ul><ul><li><a class='header-2' href='#---building-a-game-should-be-fun-and-bring-happiness'>Building A Game Should Be Fun And Bring Happiness</a></li></ul><ul><li><a class='header-2' href='#---real-world-application-drives-features'>Real World Application Drives Features</a></li></ul><li><a class='header-1' href='#--frequently-asked-questions--comments--and-concerns'>Frequently Asked Questions, Comments, and Concerns</a></li>
-<ul><li><a class='header-2' href='#---frequently-asked-questions'>Frequently Asked Questions</a></li></ul><ul><ul><li><a class='header-3' href='#----what-is-dragonruby-llp-'>What is DragonRuby LLP?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----what-is-dragonruby-'>What is DragonRuby?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----what-does-multilevel-cross-platform-mean-'>What does Multilevel Cross-platform mean?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----how-is-dragonruby-different-than-mri-'>How is DragonRuby different than MRI?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----does-dragonruby-support-gems-'>Does DragonRuby support Gems?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----does-dragonruby-have-a-repl/irb-'>Does DragonRuby have a REPL/IRB?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----does-dragonruby-support-pry-or-have-any-other-debugging-facilities-'>Does DragonRuby support pry or have any other debugging facilities?</a></li></ul></ul><ul><li><a class='header-2' href='#---frequent-comments-about-ruby-as-a-language-choice'>Frequent Comments About Ruby as a Language Choice</a></li></ul><ul><ul><li><a class='header-3' href='#----but-ruby-is-dead-'>But Ruby is dead.</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----but-ruby-is-slow-'>But Ruby is slow.</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dynamic-languages-are-slow-'>Dynamic languages are slow.</a></li></ul></ul><ul><li><a class='header-2' href='#---frequent-concerns'>Frequent Concerns</a></li></ul><ul><ul><li><a class='header-3' href='#----dragonruby-is-not-open-source--that-s-not-right-'>DragonRuby is not open source. That's not right.</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dragonruby-is-for-pay--you-should-offer-a-free-version-'>DragonRuby is for pay. You should offer a free version.</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----what-if-i-build-something-with-dragonruby--but-dragonruby-llp-becomes-insolvent-'>What if I build something with DragonRuby, but DragonRuby LLP becomes insolvent.</a></li></ul></ul><ul><li><a class='header-2' href='#---troubleshoot-performance'>Troubleshoot Performance</a></li></ul><ul><li><a class='header-2' href='#---how-to-play-a-sound'>How To Play A Sound</a></li></ul><li><a class='header-1' href='#--recipies-'>RECIPIES:</a></li>
-<ul><li><a class='header-2' href='#---how-to-determine-what-frame-you-are-on'>How To Determine What Frame You Are On</a></li></ul><ul><li><a class='header-2' href='#---how-to-get-current-framerate'>How To Get Current Framerate</a></li></ul><ul><li><a class='header-2' href='#---using--args-state--to-store-your-game-state'>Using <code>args.state</code> To Store Your Game State</a></li></ul><ul><li><a class='header-2' href='#---accessing-files'>Accessing files</a></li></ul><ul><li><a class='header-2' href='#---how-to-render-a-sprite-using-an-array'>How To Render A Sprite Using An Array</a></li></ul><ul><li><a class='header-2' href='#---rendering-a-sprite-using-a--hash-'>Rendering a Sprite Using a <code>Hash</code></a></li></ul><ul><li><a class='header-2' href='#---how-to-render-a-label'>How To Render A Label</a></li></ul><ul><li><a class='header-2' href='#---a-colored-label'>A Colored Label</a></li></ul><ul><li><a class='header-2' href='#---extended-label-properties'>Extended Label Properties</a></li></ul><ul><li><a class='header-2' href='#---rendering-a-label-as-a--hash-'>Rendering A Label As A <code>Hash</code></a></li></ul><ul><li><a class='header-2' href='#---getting-the-size-of-a-piece-of-text'>Getting The Size Of A Piece Of Text</a></li></ul><ul><li><a class='header-2' href='#---rendering-labels-with-new-line-characters-and-wrapping'>Rendering Labels With New Line Characters And Wrapping</a></li></ul><li><a class='header-1' href='#--outputs---args-outputs--'>Outputs (<code>args.outputs</code>)</a></li>
-<ul><li><a class='header-2' href='#---collection-render-orders'>Collection Render Orders</a></li></ul><ul><li><a class='header-2' href='#---primitives-collection---args-outputs-primitives--'>Primitives Collection (<code>args.outputs.primitives</code>)</a></li></ul><ul><li><a class='header-2' href='#---debug-collection---args-outputs-debug--'>Debug Collection (<code>args.outputs.debug</code>)</a></li></ul><ul><li><a class='header-2' href='#----solids-'><code>solids</code></a></li></ul><ul><ul><li><a class='header-3' href='#----rendering-a-solid-using-an-array'>Rendering a solid using an Array</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-a-solid-using-an-array-with-colors-and-alpha'>Rendering a solid using an Array with colors and alpha</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-a-solid-using-a-hash'>Rendering a solid using a Hash</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-a-solid-using-a-class'>Rendering a solid using a Class</a></li></ul></ul><ul><li><a class='header-2' href='#----borders-'><code>borders</code></a></li></ul><ul><li><a class='header-2' href='#----sprites-'><code>sprites</code></a></li></ul><ul><ul><li><a class='header-3' href='#----rendering-a-sprite-using-an-array'>Rendering a sprite using an Array</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-a-sprite-using-a-hash'>Rendering a sprite using a Hash</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-a-sprite-using-a-class'>Rendering a sprite using a Class</a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----attr_sprite-'><code>attr_sprite</code></a></li></ul></ul><ul><li><a class='header-2' href='#----labels-'><code>labels</code></a></li></ul><ul><ul><li><a class='header-3' href='#----rendering-a-label-using-an-array'>Rendering a label using an Array</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-a-label-using-a-hash'>Rendering a label using a Hash</a></li></ul></ul><ul><li><a class='header-2' href='#----screenshots-'><code>Screenshots</code></a></li></ul><ul><ul><li><a class='header-3' href='#----chroma-key--making-a-color-transparent-'>Chroma key (Making a color transparent)</a></li></ul></ul><li><a class='header-1' href='#--inputs---args-inputs--'>Inputs (<code>args.inputs</code>)</a></li>
-<ul><li><a class='header-2' href='#----last_active-'><code>last_active</code></a></li></ul><ul><li><a class='header-2' href='#----locale-'><code>locale</code></a></li></ul><ul><li><a class='header-2' href='#----up-'><code>up</code></a></li></ul><ul><li><a class='header-2' href='#----down-'><code>down</code></a></li></ul><ul><li><a class='header-2' href='#----left-'><code>left</code></a></li></ul><ul><li><a class='header-2' href='#----right-'><code>right</code></a></li></ul><ul><li><a class='header-2' href='#----left_right-'><code>left_right</code></a></li></ul><ul><li><a class='header-2' href='#----left_right_perc-'><code>left_right_perc</code></a></li></ul><ul><li><a class='header-2' href='#----left_right_directional-'><code>left_right_directional</code></a></li></ul><ul><li><a class='header-2' href='#----left_right_directional_perc-'><code>left_right_directional_perc</code></a></li></ul><ul><li><a class='header-2' href='#----up_down-'><code>up_down</code></a></li></ul><ul><li><a class='header-2' href='#----up_down_directional-'><code>up_down_directional</code></a></li></ul><ul><li><a class='header-2' href='#----up_down_perc-'><code>up_down_perc</code></a></li></ul><ul><li><a class='header-2' href='#----text-'><code>text</code></a></li></ul><ul><li><a class='header-2' href='#---mouse---args-inputs-mouse--'>Mouse (<code>args.inputs.mouse</code>)</a></li></ul><ul><ul><li><a class='header-3' href='#-----has_focus-'><code>has_focus</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----x-'><code>x</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----y-'><code>y</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----inside_rect--rect-'><code>inside_rect? rect</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----inside_circle--center_point--radius-'><code>inside_circle? center_point, radius</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----moved-'><code>moved</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----button_left-'><code>button_left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----button_middle-'><code>button_middle</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----button_right-'><code>button_right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----button_bits-'><code>button_bits</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----wheel-'><code>wheel</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----click--or--down----previous_click----up-'><code>click</code> OR <code>down</code>, <code>previous_click</code>, <code>up</code></a></li></ul></ul><ul><li><a class='header-2' href='#---touch'>Touch</a></li></ul><ul><ul><li><a class='header-3' href='#-----args-inputs-touch-'><code>args.inputs.touch</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----args-inputs-finger_left-'><code>args.inputs.finger_left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----args-inputs-finger_right-'><code>args.inputs.finger_right</code></a></li></ul></ul><ul><li><a class='header-2' href='#---controller---args-inputs-controller_-one-four---'>Controller (<code>args.inputs.controller_(one-four)</code>)</a></li></ul><ul><ul><li><a class='header-3' href='#-----active-'><code>active</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----up-'><code>up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----down-'><code>down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left-'><code>left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----right-'><code>right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left_right-'><code>left_right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----up_down-'><code>up_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_x_raw-'><code>(left|right)_analog_x_raw</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_y_raw-'><code>(left|right)_analog_y_raw</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_x_perc-'><code>(left|right)_analog_x_perc</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_y_perc-'><code>(left|right)_analog_y_perc</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dpad_up----directional_up-'><code>dpad_up</code>, <code>directional_up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dpad_down----directional_down-'><code>dpad_down</code>, <code>directional_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dpad_left----directional_left-'><code>dpad_left</code>, <code>directional_left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dpad_right----directional_right-'><code>dpad_right</code>, <code>directional_right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------a-b-x-y-l1-r1-l2-r2-l3-r3-start-select--'><code>(a|b|x|y|l1|r1|l2|r2|l3|r3|start|select)</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----truthy_keys-'><code>truthy_keys</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_down-'><code>key_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_held-'><code>key_held</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_up-'><code>key_up</code></a></li></ul></ul><ul><li><a class='header-2' href='#---keyboard---args-inputs-keyboard--'>Keyboard (<code>args.inputs.keyboard</code>)</a></li></ul><ul><ul><li><a class='header-3' href='#-----active-'><code>active</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----has_focus-'><code>has_focus</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----up-'><code>up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----down-'><code>down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left-'><code>left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----right-'><code>right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left_right-'><code>left_right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----up_down-'><code>up_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#----keyboard-properties'>keyboard properties</a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----keycodes-'><code>keycodes</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----char-'><code>char</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----keys-'><code>keys</code></a></li></ul></ul><li><a class='header-1' href='#--runtime---args-gtk--'>Runtime (<code>args.gtk</code>)</a></li>
+<ul><li><a class='header-2' href='#---frequently-asked-questions'>Frequently Asked Questions</a></li></ul><ul><ul><li><a class='header-3' href='#----what-is-dragonruby-llp-'>What is DragonRuby LLP?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----what-is-dragonruby-'>What is DragonRuby?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----what-does-multilevel-cross-platform-mean-'>What does Multilevel Cross-platform mean?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----how-is-dragonruby-different-than-mri-'>How is DragonRuby different than MRI?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----does-dragonruby-support-gems-'>Does DragonRuby support Gems?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----does-dragonruby-have-a-repl/irb-'>Does DragonRuby have a REPL/IRB?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----does-dragonruby-support-pry-or-have-any-other-debugging-facilities-'>Does DragonRuby support pry or have any other debugging facilities?</a></li></ul></ul><ul><li><a class='header-2' href='#---frequent-comments-about-ruby-as-a-language-choice'>Frequent Comments About Ruby as a Language Choice</a></li></ul><ul><ul><li><a class='header-3' href='#----but-ruby-is-dead-'>But Ruby is dead.</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----but-ruby-is-slow-'>But Ruby is slow.</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dynamic-languages-are-slow-'>Dynamic languages are slow.</a></li></ul></ul><ul><li><a class='header-2' href='#---frequent-concerns'>Frequent Concerns</a></li></ul><ul><ul><li><a class='header-3' href='#----dragonruby-is-not-open-source--that-s-not-right-'>DragonRuby is not open source. That's not right.</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dragonruby-is-for-pay--you-should-offer-a-free-version-'>DragonRuby is for pay. You should offer a free version.</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----what-if-i-build-something-with-dragonruby--but-dragonruby-llp-becomes-insolvent-'>What if I build something with DragonRuby, but DragonRuby LLP becomes insolvent.</a></li></ul></ul><ul><li><a class='header-2' href='#---troubleshoot-performance'>Troubleshoot Performance</a></li></ul><li><a class='header-1' href='#--recipies-'>RECIPIES:</a></li>
+<ul><li><a class='header-2' href='#---how-to-determine-what-frame-you-are-on'>How To Determine What Frame You Are On</a></li></ul><ul><li><a class='header-2' href='#---how-to-get-current-framerate'>How To Get Current Framerate</a></li></ul><ul><li><a class='header-2' href='#---how-to-render-a-sprite-using-an-array'>How To Render A Sprite Using An Array</a></li></ul><ul><li><a class='header-2' href='#---rendering-a-sprite-using-a--hash-'>Rendering a Sprite Using a <code>Hash</code></a></li></ul><ul><li><a class='header-2' href='#---how-to-play-a-sound'>How To Play A Sound</a></li></ul><ul><li><a class='header-2' href='#---how-to-render-a-label'>How To Render A Label</a></li></ul><ul><li><a class='header-2' href='#---a-colored-label'>A Colored Label</a></li></ul><ul><li><a class='header-2' href='#---extended-label-properties'>Extended Label Properties</a></li></ul><ul><li><a class='header-2' href='#---rendering-a-label-as-a--hash-'>Rendering A Label As A <code>Hash</code></a></li></ul><ul><li><a class='header-2' href='#---getting-the-size-of-a-piece-of-text'>Getting The Size Of A Piece Of Text</a></li></ul><ul><li><a class='header-2' href='#---rendering-labels-with-new-line-characters-and-wrapping'>Rendering Labels With New Line Characters And Wrapping</a></li></ul><ul><li><a class='header-2' href='#---accessing-files'>Accessing files</a></li></ul><ul><li><a class='header-2' href='#---using--args-state--to-store-your-game-state'>Using <code>args.state</code> To Store Your Game State</a></li></ul><li><a class='header-1' href='#--outputs---args-outputs--'>Outputs (<code>args.outputs</code>)</a></li>
+<ul><li><a class='header-2' href='#---collection-render-orders'>Collection Render Orders</a></li></ul><ul><li><a class='header-2' href='#----primitives-'><code>primitives</code></a></li></ul><ul><li><a class='header-2' href='#----debug-'><code>debug</code></a></li></ul><ul><ul><li><a class='header-3' href='#----string-primitives'>String Primitives</a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----watch-'><code>watch</code></a></li></ul></ul><ul><li><a class='header-2' href='#----solids-'><code>solids</code></a></li></ul><ul><ul><li><a class='header-3' href='#----rendering-a-solid-using-an-array'>Rendering a solid using an Array</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-a-solid-using-an-array-with-colors-and-alpha'>Rendering a solid using an Array with colors and alpha</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-a-solid-using-a-hash'>Rendering a solid using a Hash</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-a-solid-using-a-class'>Rendering a solid using a Class</a></li></ul></ul><ul><li><a class='header-2' href='#----borders-'><code>borders</code></a></li></ul><ul><li><a class='header-2' href='#----sprites-'><code>sprites</code></a></li></ul><ul><ul><li><a class='header-3' href='#----properties'>Properties</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-a-sprite-using-an-array'>Rendering a sprite using an Array</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-a-sprite-using-a-hash'>Rendering a sprite using a Hash</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-a-sprite-using-a-class'>Rendering a sprite using a Class</a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----attr_sprite-'><code>attr_sprite</code></a></li></ul></ul><ul><li><a class='header-2' href='#----labels-'><code>labels</code></a></li></ul><ul><ul><li><a class='header-3' href='#----rendering-a-label-using-an-array'>Rendering a label using an Array</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rendering-a-label-using-a-hash'>Rendering a label using a Hash</a></li></ul></ul><ul><li><a class='header-2' href='#----screenshots-'><code>screenshots</code></a></li></ul><ul><ul><li><a class='header-3' href='#----chroma-key--making-a-color-transparent-'>Chroma key (Making a color transparent)</a></li></ul></ul><ul><li><a class='header-2' href='#---shaders'>Shaders</a></li></ul><ul><ul><li><a class='header-3' href='#-----shader_path-'><code>shader_path</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----shader_uniforms-'><code>shader_uniforms</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----shader_tex-1-15--'><code>shader_tex(1-15)</code></a></li></ul></ul><li><a class='header-1' href='#--inputs---args-inputs--'>Inputs (<code>args.inputs</code>)</a></li>
+<ul><li><a class='header-2' href='#----last_active-'><code>last_active</code></a></li></ul><ul><li><a class='header-2' href='#----last_active_at-'><code>last_active_at</code></a></li></ul><ul><li><a class='header-2' href='#----last_active_global_at-'><code>last_active_global_at</code></a></li></ul><ul><li><a class='header-2' href='#----locale-'><code>locale</code></a></li></ul><ul><li><a class='header-2' href='#----up-'><code>up</code></a></li></ul><ul><li><a class='header-2' href='#----down-'><code>down</code></a></li></ul><ul><li><a class='header-2' href='#----left-'><code>left</code></a></li></ul><ul><li><a class='header-2' href='#----right-'><code>right</code></a></li></ul><ul><li><a class='header-2' href='#----left_right-'><code>left_right</code></a></li></ul><ul><li><a class='header-2' href='#----left_right_perc-'><code>left_right_perc</code></a></li></ul><ul><li><a class='header-2' href='#----left_right_directional-'><code>left_right_directional</code></a></li></ul><ul><li><a class='header-2' href='#----left_right_directional_perc-'><code>left_right_directional_perc</code></a></li></ul><ul><li><a class='header-2' href='#----up_down-'><code>up_down</code></a></li></ul><ul><li><a class='header-2' href='#----up_down_directional-'><code>up_down_directional</code></a></li></ul><ul><li><a class='header-2' href='#----up_down_perc-'><code>up_down_perc</code></a></li></ul><ul><li><a class='header-2' href='#----text-'><code>text</code></a></li></ul><ul><li><a class='header-2' href='#---mouse---args-inputs-mouse--'>Mouse (<code>args.inputs.mouse</code>)</a></li></ul><ul><ul><li><a class='header-3' href='#-----has_focus-'><code>has_focus</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----x-'><code>x</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----y-'><code>y</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----inside_rect--rect-'><code>inside_rect? rect</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----inside_circle--center_point--radius-'><code>inside_circle? center_point, radius</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----moved-'><code>moved</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----button_left-'><code>button_left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----button_middle-'><code>button_middle</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----button_right-'><code>button_right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----button_bits-'><code>button_bits</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----wheel-'><code>wheel</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----click--or--down----previous_click----up-'><code>click</code> OR <code>down</code>, <code>previous_click</code>, <code>up</code></a></li></ul></ul><ul><li><a class='header-2' href='#---touch'>Touch</a></li></ul><ul><ul><li><a class='header-3' href='#-----args-inputs-touch-'><code>args.inputs.touch</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----args-inputs-finger_left-'><code>args.inputs.finger_left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----args-inputs-finger_right-'><code>args.inputs.finger_right</code></a></li></ul></ul><ul><li><a class='header-2' href='#---controller---args-inputs-controller_-one-four---'>Controller (<code>args.inputs.controller_(one-four)</code>)</a></li></ul><ul><ul><li><a class='header-3' href='#-----active-'><code>active</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----up-'><code>up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----down-'><code>down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left-'><code>left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----right-'><code>right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left_right-'><code>left_right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----up_down-'><code>up_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_x_raw-'><code>(left|right)_analog_x_raw</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_y_raw-'><code>(left|right)_analog_y_raw</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_x_perc-'><code>(left|right)_analog_x_perc</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_y_perc-'><code>(left|right)_analog_y_perc</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dpad_up----directional_up-'><code>dpad_up</code>, <code>directional_up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dpad_down----directional_down-'><code>dpad_down</code>, <code>directional_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dpad_left----directional_left-'><code>dpad_left</code>, <code>directional_left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dpad_right----directional_right-'><code>dpad_right</code>, <code>directional_right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------a-b-x-y-l1-r1-l2-r2-l3-r3-start-select--'><code>(a|b|x|y|l1|r1|l2|r2|l3|r3|start|select)</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----truthy_keys-'><code>truthy_keys</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_down-'><code>key_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_held-'><code>key_held</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_up-'><code>key_up</code></a></li></ul></ul><ul><li><a class='header-2' href='#---keyboard---args-inputs-keyboard--'>Keyboard (<code>args.inputs.keyboard</code>)</a></li></ul><ul><ul><li><a class='header-3' href='#-----active-'><code>active</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----has_focus-'><code>has_focus</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----up-'><code>up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----down-'><code>down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left-'><code>left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----right-'><code>right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left_right-'><code>left_right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----up_down-'><code>up_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#----keyboard-properties'>keyboard properties</a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----keycodes-'><code>keycodes</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----char-'><code>char</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----keys-'><code>keys</code></a></li></ul></ul><li><a class='header-1' href='#--runtime---args-gtk--'>Runtime (<code>args.gtk</code>)</a></li>
 <ul><li><a class='header-2' href='#---class-macros'>Class Macros</a></li></ul><ul><ul><li><a class='header-3' href='#-----attr-'><code>attr</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----attr_gtk-'><code>attr_gtk</code></a></li></ul></ul><ul><li><a class='header-2' href='#---indie-and-pro-functions'>Indie and Pro Functions</a></li></ul><ul><ul><li><a class='header-3' href='#-----get_pixels-'><code>get_pixels</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dlopen-'><code>dlopen</code></a></li></ul></ul><ul><li><a class='header-2' href='#---environment-and-utility-functions'>Environment and Utility Functions</a></li></ul><ul><ul><li><a class='header-3' href='#-----calcstringbox-'><code>calcstringbox</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----request_quit-'><code>request_quit</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----quit_requested--'><code>quit_requested?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_window_fullscreen-'><code>set_window_fullscreen</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----window_fullscreen--'><code>window_fullscreen?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_window_scale-'><code>set_window_scale</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----platform--'><code>platform?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----production--'><code>production?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----platform_mappings-'><code>platform_mappings</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----open_url-'><code>open_url</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----system-'><code>system</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----exec-'><code>exec</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----show_cursor-'><code>show_cursor</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----hide_cursor-'><code>hide_cursor</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----cursor_shown--'><code>cursor_shown?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_mouse_grab-'><code>set_mouse_grab</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_system_cursor-'><code>set_system_cursor</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_cursor-'><code>set_cursor</code></a></li></ul></ul><ul><li><a class='header-2' href='#---file-io-functions'>File IO Functions</a></li></ul><ul><ul><li><a class='header-3' href='#-----list_files-'><code>list_files</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----stat_file-'><code>stat_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----read_file-'><code>read_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----write_file-'><code>write_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----append_file-'><code>append_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----delete_file-'><code>delete_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----parse_json-'><code>parse_json</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----parse_json_file-'><code>parse_json_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----parse_xml-'><code>parse_xml</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----parse_xml_file-'><code>parse_xml_file</code></a></li></ul></ul><ul><li><a class='header-2' href='#---network-io-functions'>Network IO Functions</a></li></ul><ul><ul><li><a class='header-3' href='#-----http_get-'><code>http_get</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----http_post-'><code>http_post</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----http_post_body-'><code>http_post_body</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----start_server--'><code>start_server!</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----http_get-'><code>http_get</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----http_post-'><code>http_post</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----http_post_body-'><code>http_post_body</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----start_server--'><code>start_server!</code></a></li></ul></ul><ul><li><a class='header-2' href='#---developer-support-functions'>Developer Support Functions</a></li></ul><ul><ul><li><a class='header-3' href='#-----version-'><code>version</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----version_pro--'><code>version_pro?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----game_version-'><code>game_version</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reset-'><code>reset</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reset_next_tick-'><code>reset_next_tick</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reset_sprite-'><code>reset_sprite</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reset_sprites-'><code>reset_sprites</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----calcspritebox-'><code>calcspritebox</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----current_framerate-'><code>current_framerate</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----framerate_diagnostics_primitives-'><code>framerate_diagnostics_primitives</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----warn_array_primitives--'><code>warn_array_primitives!</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----benchmark-'><code>benchmark</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----notify--'><code>notify!</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----notify_extended--'><code>notify_extended!</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----slowmo--'><code>slowmo!</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----show_console-'><code>show_console</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----hide_console-'><code>hide_console</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----enable_console-'><code>enable_console</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----disable_console-'><code>disable_console</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----disable_reset_via_ctrl_r-'><code>disable_reset_via_ctrl_r</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----disable_controller_config-'><code>disable_controller_config</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----enable_controller_config-'><code>enable_controller_config</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----start_recording-'><code>start_recording</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----stop_recording-'><code>stop_recording</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----cancel_recording-'><code>cancel_recording</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----start_replay-'><code>start_replay</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----stop_replay-'><code>stop_replay</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----get_base_dir-'><code>get_base_dir</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----get_game_dir-'><code>get_game_dir</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----get_game_dir_url-'><code>get_game_dir_url</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----open_game_dir-'><code>open_game_dir</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----write_file_root-'><code>write_file_root</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----append_file_root-'><code>append_file_root</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----argv-'><code>argv</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----cli_arguments-'><code>cli_arguments</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----download_stb_rb-_raw--'><code>download_stb_rb(_raw)</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reload_history-'><code>reload_history</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reload_history_pending-'><code>reload_history_pending</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reload_if_needed-'><code>reload_if_needed</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----add_caller_to_puts--'><code>add_caller_to_puts!</code></a></li></ul></ul><li><a class='header-1' href='#--state---args-state--'>State (<code>args.state</code>)</a></li>
 <ul><li><a class='header-2' href='#----entity_id-'><code>entity_id</code></a></li></ul><ul><li><a class='header-2' href='#----entity_type-'><code>entity_type</code></a></li></ul><ul><li><a class='header-2' href='#----created_at-'><code>created_at</code></a></li></ul><ul><li><a class='header-2' href='#----created_at_elapsed-'><code>created_at_elapsed</code></a></li></ul><ul><li><a class='header-2' href='#----global_created_at-'><code>global_created_at</code></a></li></ul><ul><li><a class='header-2' href='#----global_created_at_elapsed-'><code>global_created_at_elapsed</code></a></li></ul><ul><li><a class='header-2' href='#----as_hash-'><code>as_hash</code></a></li></ul><ul><li><a class='header-2' href='#----new_entity-'><code>new_entity</code></a></li></ul><ul><li><a class='header-2' href='#----new_entity_strict-'><code>new_entity_strict</code></a></li></ul><ul><li><a class='header-2' href='#----tick_count-'><code>tick_count</code></a></li></ul><li><a class='header-1' href='#--geometry---args-geometry--'>Geometry (<code>args.geometry</code>)</a></li>
 <ul><li><a class='header-2' href='#----intersect_rect--'><code>intersect_rect?</code></a></li></ul><ul><li><a class='header-2' href='#----inside_rect--'><code>inside_rect?</code></a></li></ul><ul><li><a class='header-2' href='#----scale_rect-'><code>scale_rect</code></a></li></ul><ul><li><a class='header-2' href='#----scale_rect_extended-'><code>scale_rect_extended</code></a></li></ul><ul><li><a class='header-2' href='#----anchor_rect-'><code>anchor_rect</code></a></li></ul><ul><li><a class='header-2' href='#----angle-'><code>angle</code></a></li></ul><ul><li><a class='header-2' href='#----angle_from-'><code>angle_from</code></a></li></ul><ul><li><a class='header-2' href='#----angle_to----angle-'><code>angle_to</code>, <code>angle</code></a></li></ul><ul><li><a class='header-2' href='#----angle_turn_direction-'><code>angle_turn_direction</code></a></li></ul><ul><li><a class='header-2' href='#----distance-'><code>distance</code></a></li></ul><ul><li><a class='header-2' href='#----point_inside_circle--'><code>point_inside_circle?</code></a></li></ul><ul><li><a class='header-2' href='#----center_inside_rect-'><code>center_inside_rect</code></a></li></ul><ul><li><a class='header-2' href='#----ray_test-'><code>ray_test</code></a></li></ul><ul><li><a class='header-2' href='#----line_rise_run-'><code>line_rise_run</code></a></li></ul><ul><li><a class='header-2' href='#----line_intersect-'><code>line_intersect</code></a></li></ul><ul><li><a class='header-2' href='#----ray_intersect-'><code>ray_intersect</code></a></li></ul><ul><li><a class='header-2' href='#----rotate_point-'><code>rotate_point</code></a></li></ul><ul><li><a class='header-2' href='#----find_intersect_rect-'><code>find_intersect_rect</code></a></li></ul><ul><li><a class='header-2' href='#----find_all_intersect_rect-'><code>find_all_intersect_rect</code></a></li></ul><ul><li><a class='header-2' href='#----find_intersect_rect_quad_tree-'><code>find_intersect_rect_quad_tree</code></a></li></ul><ul><li><a class='header-2' href='#----find_all_intersect_rect_quad_tree-'><code>find_all_intersect_rect_quad_tree</code></a></li></ul><ul><li><a class='header-2' href='#----line_angle-'><code>line_angle</code></a></li></ul><ul><li><a class='header-2' href='#----vec2_dot_product-'><code>vec2_dot_product</code></a></li></ul><ul><li><a class='header-2' href='#----vec2_normalize-'><code>vec2_normalize</code></a></li></ul><ul><li><a class='header-2' href='#----rect_normalize-'><code>rect_normalize</code></a></li></ul><ul><li><a class='header-2' href='#----line_vec2-'><code>line_vec2</code></a></li></ul><ul><li><a class='header-2' href='#----vec2_magnitude-'><code>vec2_magnitude</code></a></li></ul><ul><li><a class='header-2' href='#----distance_squared-'><code>distance_squared</code></a></li></ul><ul><li><a class='header-2' href='#----vec2_normalize-'><code>vec2_normalize</code></a></li></ul><ul><li><a class='header-2' href='#----circle_intersect_line--'><code>circle_intersect_line?</code></a></li></ul><ul><li><a class='header-2' href='#----line_normal-'><code>line_normal</code></a></li></ul><ul><li><a class='header-2' href='#----point_on_line--'><code>point_on_line?</code></a></li></ul><ul><li><a class='header-2' href='#----find_collisions-'><code>find_collisions</code></a></li></ul><ul><li><a class='header-2' href='#----rect_navigate-'><code>rect_navigate</code></a></li></ul><ul><li><a class='header-2' href='#----create_quad_tree-'><code>create_quad_tree</code></a></li></ul><li><a class='header-1' href='#--cvars---args-cvars--'>CVars (<code>args.cvars</code>)</a></li>
 <li><a class='header-1' href='#--layout---args-layout--'>Layout (<code>args.layout</code>)</a></li>
-<ul><li><a class='header-2' href='#----rect-'><code>rect</code></a></li></ul><ul><li><a class='header-2' href='#----debug_primitives-'><code>debug_primitives</code></a></li></ul><li><a class='header-1' href='#--array'>Array</a></li>
+<ul><li><a class='header-2' href='#----rect-'><code>rect</code></a></li></ul><ul><li><a class='header-2' href='#----debug_primitives-'><code>debug_primitives</code></a></li></ul><li><a class='header-1' href='#--grid---args-grid--'>Grid (<code>args.grid</code>)</a></li>
+<ul><li><a class='header-2' href='#----orientation-'><code>orientation</code></a></li></ul><ul><li><a class='header-2' href='#----origin_name-'><code>origin_name</code></a></li></ul><ul><li><a class='header-2' href='#----origin_bottom_left--'><code>origin_bottom_left!</code></a></li></ul><ul><li><a class='header-2' href='#----origin_center--'><code>origin_center!</code></a></li></ul><ul><li><a class='header-2' href='#---grid-property-categorizations'>Grid Property Categorizations</a></li></ul><ul><li><a class='header-2' href='#----bottom-'><code>bottom</code></a></li></ul><ul><li><a class='header-2' href='#----top-'><code>top</code></a></li></ul><ul><li><a class='header-2' href='#----left-'><code>left</code></a></li></ul><ul><li><a class='header-2' href='#----right-'><code>right</code></a></li></ul><ul><li><a class='header-2' href='#----rect-'><code>rect</code></a></li></ul><ul><li><a class='header-2' href='#----w-'><code>w</code></a></li></ul><ul><li><a class='header-2' href='#----h-'><code>h</code></a></li></ul><ul><li><a class='header-2' href='#---hd--highdpi--and-all-screen-modes'>HD, HighDPI, and All Screen Modes</a></li></ul><ul><ul><li><a class='header-3' href='#----all-screen-properties'>All Screen Properties</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----texture-atlases'>Texture Atlases</a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----texture_scale-'><code>texture_scale</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----texture_scale_enum-'><code>texture_scale_enum</code></a></li></ul></ul><li><a class='header-1' href='#--array'>Array</a></li>
 <ul><li><a class='header-2' href='#----map_2d-'><code>map_2d</code></a></li></ul><ul><li><a class='header-2' href='#----include_any--'><code>include_any?</code></a></li></ul><ul><li><a class='header-2' href='#----any_intersect_rect--'><code>any_intersect_rect?</code></a></li></ul><ul><li><a class='header-2' href='#----map_2d-'><code>map_2d</code></a></li></ul><ul><li><a class='header-2' href='#----each-'><code>each</code></a></li></ul><ul><li><a class='header-2' href='#----reject_nil-'><code>reject_nil</code></a></li></ul><ul><li><a class='header-2' href='#----reject_false-'><code>reject_false</code></a></li></ul><ul><li><a class='header-2' href='#----product-'><code>product</code></a></li></ul><li><a class='header-1' href='#---numeric-'><code>Numeric</code></a></li>
 <ul><li><a class='header-2' href='#----frame_index-'><code>frame_index</code></a></li></ul><ul><li><a class='header-2' href='#----elapsed_time-'><code>elapsed_time</code></a></li></ul><ul><li><a class='header-2' href='#----elapsed--'><code>elapsed?</code></a></li></ul><ul><li><a class='header-2' href='#----to_sf-'><code>to_sf</code></a></li></ul><ul><li><a class='header-2' href='#----to_sf-'><code>to_sf</code></a></li></ul><ul><li><a class='header-2' href='#----new--'><code>new?</code></a></li></ul><li><a class='header-1' href='#---kernel-'><code>Kernel</code></a></li>
 <ul><li><a class='header-2' href='#----tick_count-'><code>tick_count</code></a></li></ul><ul><li><a class='header-2' href='#----global_tick_count-'><code>global_tick_count</code></a></li></ul></ul>    </div>
@@ -182,7 +183,10 @@ There's a "dragonruby.png" file included, just to get you started. Let's have it
 end
 </code></pre>
 <p>
-!&gt; Pro Tip: you don't have to restart DragonRuby to test your changes; when you save main.rb, DragonRuby will notice and reload your program.
+NOTE:
+</p>
+<p>
+ Pro Tip: you don't have to restart DragonRuby to test your changes; when you save main.rb, DragonRuby will notice and reload your program.
 </p>
 <p>
 That <code>.sprites</code> line says "add a sprite to the list of sprites we're drawing, and draw it at position (576, 100) at a size of 128x101 pixels". You can find the image to draw at dragonruby.png.
@@ -282,7 +286,13 @@ There is a lot more you can do with DragonRuby, but now you've already got just 
 The DragonRuby zip that contains the engine is a complete, self contained project structure. To create a new project, unzip the zip file again in its entirety and use that as a starting point for another game. This is the recommended approach to starting a new project.
 </p>
 <p>
-!&gt; It's strongly recommended that you do NOT keep DragonRuby Game Toolkit in a shared location and instead unzip a clean copy for every game (and commit everything to source control). &lt;br/&gt; &lt;br/&gt; File access functions are sandoxed and assume that the <code>dragonruby</code> binary lives alongside the game you are building. Do not expect file access functions to return correct values if you are attempting to run the <code>dragonruby</code> binary from a shared location. It's recommended that the directory structure contained in the zip is not altered and games are built using that starting directory structure.
+NOTE:
+</p>
+<p>
+ It's strongly recommended that you do NOT keep DragonRuby Game Toolkit in a shared location and instead unzip a clean copy for every game (and commit everything to source control).
+</p>
+<p>
+File access functions are sandoxed and assume that the <code>dragonruby</code> binary lives alongside the game you are building. Do not expect file access functions to return correct values if you are attempting to run the <code>dragonruby</code> binary from a shared location. It's recommended that the directory structure contained in the zip is not altered and games are built using that starting directory structure.
 </p>
 <h2 id='---public-repos'>Public Repos <a style='font-size: small; float: right;' href='#---public-repos'>link</a></h2> 
 <h3 id='----option-1--recommended-'>Option 1 (Recommended) <a style='font-size: small; float: right;' href='#----option-1--recommended-'>link</a></h3> 
@@ -291,7 +301,10 @@ Your public repository needs only to contain the contents of <code>./mygame</cod
 </p>
 <h3 id='----option-2--restrictions-apply-'>Option 2 (Restrictions Apply) <a style='font-size: small; float: right;' href='#----option-2--restrictions-apply-'>link</a></h3> 
 <p>
-!&gt; Do NOT commit <code>dragonruby-publish(.exe)</code>, or <code>dragonruby-bind(.exe)</code>.
+NOTE:
+</p>
+<p>
+ Do NOT commit <code>dragonruby-publish(.exe)</code>, or <code>dragonruby-bind(.exe)</code>.
 </p>
 <pre><code class="ruby">dragonruby
 dragonruby.exe
@@ -320,7 +333,10 @@ The following <code>.gitignore</code> should be used for private repositories (c
 You'll notice that everything else is committed to source control (even the <code>./samples</code>, <code>./docs</code>, and <code>./builds</code> directory).
 </p>
 <p>
-!&gt; The DragonRuby binary/package is designed to be committed in its entirety with your source code (it’s why we keep it small). This protects the “shelf life” for commercial games. 3 years from now, we might be on a vastly different version of the engine. But you know that the code you’ve written will definitely work with the version that was committed to source control.
+NOTE:
+</p>
+<p>
+ The DragonRuby binary/package is designed to be committed in its entirety with your source code (it’s why we keep it small). This protects the “shelf life” for commercial games. 3 years from now, we might be on a vastly different version of the engine. But you know that the code you’ve written will definitely work with the version that was committed to source control.
 </p>
 <h1 id='--deploying-to-itch-io'>Deploying To Itch.io <a style='font-size: small; float: right;' href='#--deploying-to-itch-io'>link</a></h1> 
 <p>
@@ -364,7 +380,10 @@ Open up the terminal and run this from the command line:
 <pre><code class="sh">./dragonruby-publish --package mygame
 </code></pre>
 <p>
-!&gt; If you're on Windows, don't put the "./" on the front. That's a Mac and Linux thing.
+NOTE:
+</p>
+<p>
+ If you're on Windows, don't put the "./" on the front. That's a Mac and Linux thing.
 </p>
 <p>
 A directory called <code>./build</code> will be created that contains your binaries. You can upload this to Itch.io manually.
@@ -570,13 +589,22 @@ Under DragonRuby LLP, we offer a number of products (with more on the way):
 All of the products above leverage a shared core called DragonRuby.
 </p>
 <p>
-!&gt; NOTE: From an official branding standpoint each one of the products is suffixed with "A DragonRuby LLP Product" tagline. Also, DragonRuby is _one word, title cased_.
+NOTE:
 </p>
 <p>
-!&gt; NOTE: We leave the "A DragonRuby LLP Product" off of this one because that just sounds really weird.
+ NOTE: From an official branding standpoint each one of the products is suffixed with "A DragonRuby LLP Product" tagline. Also, DragonRuby is _one word, title cased_.
 </p>
 <p>
-!&gt; NOTE: Devs who use DragonRuby are "Dragon Riders/Riders of Dragons". That's a bad ass identifier huh?
+NOTE:
+</p>
+<p>
+ NOTE: We leave the "A DragonRuby LLP Product" off of this one because that just sounds really weird.
+</p>
+<p>
+NOTE:
+</p>
+<p>
+ NOTE: Devs who use DragonRuby are "Dragon Riders/Riders of Dragons". That's a bad ass identifier huh?
 </p>
 <h3 id='----what-is-dragonruby-'>What is DragonRuby? <a style='font-size: small; float: right;' href='#----what-is-dragonruby-'>link</a></h3> 
 <p>
@@ -722,7 +750,10 @@ They are certainly slower than statically compiled languages. With the processin
 Unless you are writing in some form of intermediate representation by hand, your language of choice also suffers this same fallacy of slow. Like, nothing is faster than a low level assembly-like language. So unless you're writing in that, let's stop making this comment.
 </p>
 <p>
-!&gt; NOTE: If you _are_ hand writing LLVM IR, we are always open to bringing on new partners with such a skill set. Email us ^_^.
+NOTE:
+</p>
+<p>
+ NOTE: If you _are_ hand writing LLVM IR, we are always open to bringing on new partners with such a skill set. Email us ^_^.
 </p>
 <h2 id='---frequent-concerns'>Frequent Concerns <a style='font-size: small; float: right;' href='#---frequent-concerns'>link</a></h2> 
 <h3 id='----dragonruby-is-not-open-source--that-s-not-right-'>DragonRuby is not open source. That's not right. <a style='font-size: small; float: right;' href='#----dragonruby-is-not-open-source--that-s-not-right-'>link</a></h3> 
@@ -828,37 +859,6 @@ end
 
 args.state.fx_queue.reject! { |fx| fx.countdown &lt; 0 }
 </code></pre>
-<h2 id='---how-to-play-a-sound'>How To Play A Sound <a style='font-size: small; float: right;' href='#---how-to-play-a-sound'>link</a></h2> 
-<p>
-Sounds that end <code>.wav</code> will play once:
-</p>
-<pre><code class="ruby">def tick args
-  # Play a sound every second
-  if (args.state.tick_count % 60) == 0
-    args.outputs.sounds &lt;&lt; 'something.wav'
-  end
-end
-</code></pre>
-<p>
-Sounds that end <code>.ogg</code> is considered background music and will loop:
-</p>
-<pre><code class="ruby">def tick args
-  # Start a sound loop at the beginning of the game
-  if args.state.tick_count == 0
-    args.outputs.sounds &lt;&lt; 'background_music.ogg'
-  end
-end
-</code></pre>
-<p>
-If you want to play a <code>.ogg</code> once as if it were a sound effect, you can do:
-</p>
-<pre><code class="ruby">def tick args
-  # Play a sound every second
-  if (args.state.tick_count % 60) == 0
-    args.gtk.queue_sound 'some-ogg.ogg'
-  end
-end
-</code></pre>
 <h1 id='--recipies-'>RECIPIES: <a style='font-size: small; float: right;' href='#--recipies-'>link</a></h1> 
 <h2 id='---how-to-determine-what-frame-you-are-on'>How To Determine What Frame You Are On <a style='font-size: small; float: right;' href='#---how-to-determine-what-frame-you-are-on'>link</a></h2> 
 <p>
@@ -876,68 +876,6 @@ Current framerate is a top level property on the Game Toolkit Runtime and is acc
   args.outputs.labels &lt;&lt; [10, 710, "framerate: #{args.gtk.current_framerate.round}"]
 end
 </code></pre>
-<h2 id='---using--args-state--to-store-your-game-state'>Using <code>args.state</code> To Store Your Game State <a style='font-size: small; float: right;' href='#---using--args-state--to-store-your-game-state'>link</a></h2> 
-<p>
-<code>args.state</code> is a open data structure that allows you to define properties that are arbitrarily nested. You don't need to define any kind of <code>class</code>.
-</p>
-<p>
-To initialize your game state, use the <code>||=</code> operator. Any value on the right side of <code>||=</code> will only be assigned _once_.
-</p>
-<p>
-To assign a value every frame, just use the <code>=</code> operator, but _make sure_ you've initialized a default value.
-</p>
-<pre><code class="ruby">def tick args
-  # initialize your game state ONCE
-  args.state.player.x  ||= 0
-  args.state.player.y  ||= 0
-  args.state.player.hp ||= 100
-
-  # increment the x position of the character by one every frame
-  args.state.player.x += 1
-
-  # Render a sprite with a label above the sprite
-  args.outputs.sprites &lt;&lt; [
-    args.state.player.x,
-    args.state.player.y,
-    32, 32,
-    "player.png"
-  ]
-
-  args.outputs.labels &lt;&lt; [
-    args.state.player.x,
-    args.state.player.y - 50,
-    args.state.player.hp
-  ]
-end
-</code></pre>
-<h2 id='---accessing-files'>Accessing files <a style='font-size: small; float: right;' href='#---accessing-files'>link</a></h2> 
-<p>
-DragonRuby uses a sandboxed filesystem which will automatically read from and write to a location appropriate for your platform so you don't have to worry about theses details in your code. You can just use <code>gtk.read_file</code>, <code>gtk.write_file</code>, and <code>gtk.append_file</code> with a relative path and the engine will take care of the rest.
-</p>
-<p>
-The data directories that will be written to in a production build are:
-</p>
-<ul>
-<li>Windows: <code>C:\Users\[username]\AppData\Roaming\[devtitle]\[gametitle]</code></li>
-<li>MacOS: <code>$HOME/Library/Application Support/[gametitle]</code></li>
-<li>Linux: <code>$HOME/.local/share/[gametitle]</code></li>
-<li>HTML5: The data will be written to the browser's IndexedDB.</li>
-</ul>
-<p>
-The values in square brackets are the values you set in your <code>app/metadata/game_metadata.txt</code> file.
-</p>
-<p>
-When reading files, the engine will first look in the game's data directory and then in the game directory itself. This means that if you write a file to the data directory that already exists in your game directory, the file in the data directory will be used instead of the one that is in your game.
-</p>
-<p>
-When running a development build you will directly write to your game directory (and thus overwrite existing files). This can be useful for built-in development tools like level editors.
-</p>
-<p>
-For more details on the implementation of the sandboxed filesystem, see Ryan C. Gordon's PhysicsFS documentation: <a href='https://icculus.org/physfs/'>https://icculus.org/physfs/</a>
-</p>
-<p>
-IMPORTANT: File access functions are sandoxed and assume that the <code>dragonruby</code> binary lives alongside the game you are building. Do not expect file access functions to return correct values if you are attempting to run the <code>dragonruby</code> binary from a shared location. It's recommended that the directory structure contained in the zip is not altered and games are built using that starter template.
-</p>
 <h2 id='---how-to-render-a-sprite-using-an-array'>How To Render A Sprite Using An Array <a style='font-size: small; float: right;' href='#---how-to-render-a-sprite-using-an-array'>link</a></h2> 
 <p>
 All file paths should use the forward slash <code>/</code> *not* backslash <code>\</code>. Game Toolkit includes a number of sprites in the <code>sprites</code> folder (everything about your game is located in the <code>mygame</code> directory).
@@ -1012,6 +950,37 @@ end
 <p>
 The <code>blendmode_enum</code> value can be set to <code>0</code> (no blending), <code>1</code> (alpha blending), <code>2</code> (additive blending), <code>3</code> (modulo blending), <code>4</code> (multiply blending).
 </p>
+<h2 id='---how-to-play-a-sound'>How To Play A Sound <a style='font-size: small; float: right;' href='#---how-to-play-a-sound'>link</a></h2> 
+<p>
+Sounds that end <code>.wav</code> will play once:
+</p>
+<pre><code class="ruby">def tick args
+  # Play a sound every second
+  if (args.state.tick_count % 60) == 0
+    args.outputs.sounds &lt;&lt; 'something.wav'
+  end
+end
+</code></pre>
+<p>
+Sounds that end <code>.ogg</code> is considered background music and will loop:
+</p>
+<pre><code class="ruby">def tick args
+  # Start a sound loop at the beginning of the game
+  if args.state.tick_count == 0
+    args.outputs.sounds &lt;&lt; 'background_music.ogg'
+  end
+end
+</code></pre>
+<p>
+If you want to play a <code>.ogg</code> once as if it were a sound effect, you can do:
+</p>
+<pre><code class="ruby">def tick args
+  # Play a sound every second
+  if (args.state.tick_count % 60) == 0
+    args.gtk.queue_sound 'some-ogg.ogg'
+  end
+end
+</code></pre>
 <h2 id='---how-to-render-a-label'>How To Render A Label <a style='font-size: small; float: right;' href='#---how-to-render-a-label'>link</a></h2> 
 <p>
 <code>args.outputs.labels</code> is used to render labels.
@@ -1127,6 +1096,68 @@ You can use a strategy like the following to create multiple labels from a Strin
   end
 end
 </code></pre>
+<h2 id='---accessing-files'>Accessing files <a style='font-size: small; float: right;' href='#---accessing-files'>link</a></h2> 
+<p>
+DragonRuby uses a sandboxed filesystem which will automatically read from and write to a location appropriate for your platform so you don't have to worry about theses details in your code. You can just use <code>gtk.read_file</code>, <code>gtk.write_file</code>, and <code>gtk.append_file</code> with a relative path and the engine will take care of the rest.
+</p>
+<p>
+The data directories that will be written to in a production build are:
+</p>
+<ul>
+<li>Windows: <code>C:\Users\[username]\AppData\Roaming\[devtitle]\[gametitle]</code></li>
+<li>MacOS: <code>$HOME/Library/Application Support/[gametitle]</code></li>
+<li>Linux: <code>$HOME/.local/share/[gametitle]</code></li>
+<li>HTML5: The data will be written to the browser's IndexedDB.</li>
+</ul>
+<p>
+The values in square brackets are the values you set in your <code>app/metadata/game_metadata.txt</code> file.
+</p>
+<p>
+When reading files, the engine will first look in the game's data directory and then in the game directory itself. This means that if you write a file to the data directory that already exists in your game directory, the file in the data directory will be used instead of the one that is in your game.
+</p>
+<p>
+When running a development build you will directly write to your game directory (and thus overwrite existing files). This can be useful for built-in development tools like level editors.
+</p>
+<p>
+For more details on the implementation of the sandboxed filesystem, see Ryan C. Gordon's PhysicsFS documentation: <a href='https://icculus.org/physfs/'>https://icculus.org/physfs/</a>
+</p>
+<p>
+IMPORTANT: File access functions are sandoxed and assume that the <code>dragonruby</code> binary lives alongside the game you are building. Do not expect file access functions to return correct values if you are attempting to run the <code>dragonruby</code> binary from a shared location. It's recommended that the directory structure contained in the zip is not altered and games are built using that starter template.
+</p>
+<h2 id='---using--args-state--to-store-your-game-state'>Using <code>args.state</code> To Store Your Game State <a style='font-size: small; float: right;' href='#---using--args-state--to-store-your-game-state'>link</a></h2> 
+<p>
+<code>args.state</code> is a open data structure that allows you to define properties that are arbitrarily nested. You don't need to define any kind of <code>class</code>.
+</p>
+<p>
+To initialize your game state, use the <code>||=</code> operator. Any value on the right side of <code>||=</code> will only be assigned _once_.
+</p>
+<p>
+To assign a value every frame, just use the <code>=</code> operator, but _make sure_ you've initialized a default value.
+</p>
+<pre><code class="ruby">def tick args
+  # initialize your game state ONCE
+  args.state.player.x  ||= 0
+  args.state.player.y  ||= 0
+  args.state.player.hp ||= 100
+
+  # increment the x position of the character by one every frame
+  args.state.player.x += 1
+
+  # Render a sprite with a label above the sprite
+  args.outputs.sprites &lt;&lt; [
+    args.state.player.x,
+    args.state.player.y,
+    32, 32,
+    "player.png"
+  ]
+
+  args.outputs.labels &lt;&lt; [
+    args.state.player.x,
+    args.state.player.y - 50,
+    args.state.player.hp
+  ]
+end
+</code></pre>
 <h1 id='--outputs---args-outputs--'>Outputs (<code>args.outputs</code>) <a style='font-size: small; float: right;' href='#--outputs---args-outputs--'>link</a></h1> 
 <p>
 Outputs is how you render primitives to the screen. The minimal setup for rendering something to the screen is via a <code>tick</code> method defined in mygame/app/main.rb
@@ -1152,7 +1183,7 @@ Primitives are rendered first-in, first-out. The rendering order (sorted by bott
 <li><code>borders</code></li>
 <li><code>debug</code>: Accepts all render primitives. Use this to render primitives for debugging (production builds of your game will not render this layer).</li>
 </ul>
-<h2 id='---primitives-collection---args-outputs-primitives--'>Primitives Collection (<code>args.outputs.primitives</code>) <a style='font-size: small; float: right;' href='#---primitives-collection---args-outputs-primitives--'>link</a></h2> 
+<h2 id='----primitives-'><code>primitives</code> <a style='font-size: small; float: right;' href='#----primitives-'>link</a></h2> 
 <p>
 <code>args.outputs.primitives</code> can take in any primitive and will render first in, first out.
 </p>
@@ -1163,16 +1194,25 @@ For example, you can render a <code>solid</code> above a <code>sprite</code>:
   args.outputs.primitives &lt;&lt; { x: 100, y: 100,
                                w: 100, h: 100,
                                path: "sprites/square/blue.png" }
-  args.outputs.primitives &lt;&lt; { x: 0, y: 0, w: 100, h: 100, primitive_marker: :solid }
-  args.outputs.primitives &lt;&lt; { x: 0, y: 0, w: 100, h: 100, primitive_marker: :border }
+  args.outputs.primitives &lt;&lt; { x: 0,
+                               y: 0,
+                               w: 100,
+                               h: 100,
+                               primitive_marker: :solid }
+  args.outputs.primitives &lt;&lt; { x: 0,
+                               y: 0,
+                               w: 100,
+                               h: 100,
+                               primitive_marker: :border }
 end
 </code></pre>
-<h2 id='---debug-collection---args-outputs-debug--'>Debug Collection (<code>args.outputs.debug</code>) <a style='font-size: small; float: right;' href='#---debug-collection---args-outputs-debug--'>link</a></h2> 
+<h2 id='----debug-'><code>debug</code> <a style='font-size: small; float: right;' href='#----debug-'>link</a></h2> 
 <p>
 <code>args.outputs.debug</code> will not render in production mode and behaves like <code>args.outputs.primitives</code>. Objects in this collection are rendered above everything.
 </p>
+<h3 id='----string-primitives'>String Primitives <a style='font-size: small; float: right;' href='#----string-primitives'>link</a></h3> 
 <p>
-Additionally, <code>args.outputs.debug</code> allows you to pass in a <code>String</code> as a primitive type. This is helpful for quickly showing the value of a variable on the screen. A label with black text and a white background will be created for each <code>String</code> sent in. The labels will be automatically stacked vertically for you.
+Additionally, <code>args.outputs.debug</code> allows you to pass in a <code>String</code> as a primitive type. This is helpful for quickly showing the value of a variable on the screen. A label with black text and a white background will be created for each <code>String</code> sent in. The labels will be automatically stacked vertically for you. New lines in the string will be respected.
 </p>
 <p>
 Example:
@@ -1186,6 +1226,40 @@ Example:
   # and will auto stack vertically
   args.outputs.debug &lt;&lt; "current tick: #{args.state.tick_count}"
   args.outputs.debug &lt;&lt; "player x: #{args.state.player.x}"
+  args.outputs.debug &lt;&lt; "hello\nworld"
+end
+</code></pre>
+<h3 id='-----watch-'><code>watch</code> <a style='font-size: small; float: right;' href='#-----watch-'>link</a></h3> 
+<p>
+If you need additional control over a string value, you can use the <code>args.outputs.debug.watch</code> function.
+</p>
+<p>
+The functions takes in the following parameters:
+</p>
+<ul>
+<li>Object to watch. This object will be converted to a string.</li>
+<li>The <code>label_style</code>: optional, named argument can be passed in with a <code>Hash</code> to override the default label style for watch variables.</li>
+<li>The <code>background_style</code>: optional named argument can be passed in with a <code>Hash</code> to override the default background style for the watch variables.</li>
+</ul>
+<p>
+Example:
+</p>
+<pre><code class="ruby">def tick args
+  args.state.player ||= { x: 100, y: 100 }
+  args.state.player.x += 1
+  args.state.player.x = 0 if args.state.player.x &gt; 1280
+
+  args.outputs.debug.watch args.state.player
+  args.outputs.debug.watch pretty_format(args.state.player),
+                           label_style: { r: 0,
+                                          g: 0,
+                                          b: 255,
+                                          size_px: 10 },
+                           background_style: { r: 0,
+                                               g: 255,
+                                               b: 0,
+                                               a: 128,
+                                               path: :solid }
 end
 </code></pre>
 <h2 id='----solids-'><code>solids</code> <a style='font-size: small; float: right;' href='#----solids-'>link</a></h2> 
@@ -1235,7 +1309,7 @@ end
 </code></pre>
 <h3 id='----rendering-a-solid-using-a-class'>Rendering a solid using a Class <a style='font-size: small; float: right;' href='#----rendering-a-solid-using-a-class'>link</a></h3> 
 <p>
-You can also create a class with solid properties and render it as a primitive. ALL properties must be on the class. *Additionally*, a method called <code>primitive_marker</code> must be defined on the class.
+You can also create a class with solid properties and render it as a primitive. ALL properties must be on the class. --Additionally--, a method called <code>primitive_marker</code> must be defined on the class.
 </p>
 <p>
 Here is an example:
@@ -1292,38 +1366,11 @@ end
 <p>
 Add primitives to this collection to render a sprite to the screen.
 </p>
-<h3 id='----rendering-a-sprite-using-an-array'>Rendering a sprite using an Array <a style='font-size: small; float: right;' href='#----rendering-a-sprite-using-an-array'>link</a></h3> 
-<p>
-Creates a sprite of a white circle located at 100, 100. 160 pixels wide and 90 pixels tall.
-</p>
-<pre><code class="ruby">def tick args
-  #                         X    Y   WIDTH   HEIGHT                      PATH
-  args.outputs.sprites &lt;&lt; [100, 100,   160,     90, "sprites/circle/white.png"]
-end
-</code></pre>
-<h3 id='----rendering-a-sprite-using-a-hash'>Rendering a sprite using a Hash <a style='font-size: small; float: right;' href='#----rendering-a-sprite-using-a-hash'>link</a></h3> 
-<p>
-If you want a more readable (and faster) invocation, you can use the following hash to create a sprite. Any parameters that are not specified will be given a default value. The keys of the hash can be provided in any order.
-</p>
-<pre><code class="ruby">def tick args
-  args.outputs.sprites &lt;&lt; {
-    x:                             0,
-    y:                             0,
-    w:                           100,
-    h:                           100,
-    path: "sprites/circle/white.png",
-    angle:                         0,
-    a:                           255,
-    r:                             0,
-    g:                           255,
-    b:                             0
-  }
-end
-</code></pre>
+<h3 id='----properties'>Properties <a style='font-size: small; float: right;' href='#----properties'>link</a></h3> 
 <p>
 Here are all the properties that you can set on a sprite. The only required ones are <code>x</code>, <code>y</code>, <code>w</code>, <code>h</code>, and <code>path</code>.
 </p>
-<h4>Required properties</h4>
+<h4>Required</h4>
 <ul>
 <li><code>x</code>: X position of the sprite. Note: the botton left corner of the sprite is used for positioning (this can be changed using <code>anchor_x</code>, and <code>anchor_y</code>).</li>
 <li><code>y</code>: Y position of the sprite. Note: The origin 0,0 is at the bottom left corner. Setting <code>y</code> to a higher value will move the sprite upwards.</li>
@@ -1369,7 +1416,7 @@ Instead of computing the offset, you can use <code>anchor_x</code>, and <code>an
  }
 end
 </code></pre>
-<h4>Cropping Properties</h4>
+<h4>Cropping</h4>
 <ul>
 <li><code>tile_(x|y|w|h)</code>: Defines the crop area to use for a sprite. The origin for <code>tile_</code> properties uses the TOP LEFT as its origin (useful for cropping tiles from a sprite sheet).</li>
 <li><code>source_(x|y|w|h)</code>: Defines the crop area to use for a sprite. The origin for <code>tile_</code> properties uses the BOTTOM LEFT as its origin.</li>
@@ -1377,7 +1424,7 @@ end
 <p>
 See the sample apps under <code>./samples/03_rendering_sprites</code> for examples of how to use this properties non-trivially.
 </p>
-<h4>Blending Options</h4>
+<h4>Blending</h4>
 <ul>
 <li><code>a</code>: Alpha/transparency of the sprite from 0 to 255 (default value is 255).</li>
 <li><code>r</code>: Level of red saturation for the sprite (default value is 255). Example: Setting the value to zero will remove all red coloration from the sprite.</li>
@@ -1392,7 +1439,7 @@ The following sample apps show how <code>blendmode_enum</code> can be leveraged 
 <li><code>./samples/07_advanced_rendering/11_blend_modes</code></li>
 <li><code>./samples/07_advanced_rendering/13_lighting</code></li>
 </ul>
-<h4>Triagles (Indie, Pro Feature)</h4>
+<h4>Triangles (Indie, Pro Feature)</h4>
 <p>
 Sprites can be rendered as triangles at the Indie and Pro License Tiers. To rendering using triangles, instead of providing a <code>w</code>, <code>h</code> property, provide <code>x2</code>, <code>y2</code>, <code>x3</code>, <code>y3</code>. This applies for positioning and cropping.
 </p>
@@ -1427,9 +1474,40 @@ For more example of rendering using triangles see:
 <li><code>./samples/07_advanced_rendering/16_matrix_and_triangles_3d</code></li>
 <li><code>./samples/07_advanced_rendering/16_matrix_cubeworld</code></li>
 </ul>
+<h3 id='----rendering-a-sprite-using-an-array'>Rendering a sprite using an Array <a style='font-size: small; float: right;' href='#----rendering-a-sprite-using-an-array'>link</a></h3> 
+<p>
+Creates a sprite of a white circle located at 100, 100. 160 pixels wide and 90 pixels tall.
+</p>
+<pre><code class="ruby">def tick args
+  #                         X    Y   WIDTH   HEIGHT                      PATH
+  args.outputs.sprites &lt;&lt; [100, 100,   160,     90, "sprites/circle/white.png"]
+end
+</code></pre>
+<p>
+NOTE:
+</p>
+<p>
+ Array-based sprites have limited access to sprite propertie, but nice for quick prototyping. Use a <code>Hash</code> or <code>Class</code> to gain access to all properties, gain long term maintainability of code, and a boost in rendering performance.
+</p>
+<h3 id='----rendering-a-sprite-using-a-hash'>Rendering a sprite using a Hash <a style='font-size: small; float: right;' href='#----rendering-a-sprite-using-a-hash'>link</a></h3> 
+<p>
+If you want a more readable (and faster) invocation, you can use the following hash to create a sprite. Any parameters that are not specified will be given a default value. The keys of the hash can be provided in any order.
+</p>
+<pre><code class="ruby">def tick args
+  args.outputs.sprites &lt;&lt; {
+    x: 0,
+    y: 0,
+    w: 100,
+    h: 100,
+    path: "sprites/circle/white.png",
+    angle: 0,
+    a: 255
+  }
+end
+</code></pre>
 <h3 id='----rendering-a-sprite-using-a-class'>Rendering a sprite using a Class <a style='font-size: small; float: right;' href='#----rendering-a-sprite-using-a-class'>link</a></h3> 
 <p>
-You can also create a class with solid/border properties and render it as a primitive. ALL properties must be on the class. *Additionally*, a method called <code>primitive_marker</code> must be defined on the class.
+You can also create a class with solid/border properties and render it as a primitive. ALL properties must be on the class. --Additionally--, a method called <code>primitive_marker</code> must be defined on the class.
 </p>
 <p>
 Here is an example:
@@ -1490,7 +1568,7 @@ Instead of manually defining the properties, you can represent a sprite using th
   # anything you want to represent as a sprite
   attr_sprite
 
-  def initialize(x: 0, y: 0, w: 0, h: 0)
+  def initialize(x: 0, y: 0, w: 0, h: 0k
     @x = x
     @y = y
     @w = w
@@ -1536,7 +1614,6 @@ Here are all the properties that you can set with a label represented as an Arra
     "fonts/coolfont.ttf"   # FONT
   ]
 end
-d
 </code></pre>
 <h3 id='----rendering-a-label-using-a-hash'>Rendering a label using a Hash <a style='font-size: small; float: right;' href='#----rendering-a-label-using-a-hash'>link</a></h3> 
 <pre><code class="ruby">def tick args
@@ -1555,7 +1632,7 @@ d
   }
 end
 </code></pre>
-<h2 id='----screenshots-'><code>Screenshots</code> <a style='font-size: small; float: right;' href='#----screenshots-'>link</a></h2> 
+<h2 id='----screenshots-'><code>screenshots</code> <a style='font-size: small; float: right;' href='#----screenshots-'>link</a></h2> 
 <p>
 Add a hash to this collection to take a screenshot and save as png file. The keys of the hash can be provided in any order.
 </p>
@@ -1574,6 +1651,134 @@ By specifying the r, g, b and a keys of the hash you change the transparency of 
 <p>
 The example above sets the color white (255, 255, 255) as transparent.
 </p>
+<h2 id='---shaders'>Shaders <a style='font-size: small; float: right;' href='#---shaders'>link</a></h2> 
+<p>
+Shaders are available to Indie and Pro license holders via <code>dragonruby-shadersim</code>. Download DragonRuby ShaderSim at [dragonruby.org](https://dragonruby.org).
+</p>
+<p>
+NOTE:
+</p>
+<p>
+ Shaders are currently in Beta.
+</p>
+<p>
+Shaders must be GLSL ES2 compatible.
+</p>
+<p>
+The long term goal is for DR Shaders to baseline to GLSL version 300 and cross-compile to Vulkan, WebGL 2, Metal, and HLSL.
+</p>
+<p>
+Here is a minimal example of using shaders:
+</p>
+<pre><code class="ruby"># mygame/app/main.rb
+def tick args
+  args.outputs.shader_path ||= "shaders/example.glsl"
+end
+</code></pre>
+<pre><code class="glsl">// mygame/shaders/example.glsl
+uniform sampler2D tex0;
+
+varying vec2 v_texCoord;
+
+void main() {
+  gl_FragColor = texture2D(tex0, v_texCoord);
+}
+</code></pre>
+<h3 id='-----shader_path-'><code>shader_path</code> <a style='font-size: small; float: right;' href='#-----shader_path-'>link</a></h3> 
+<p>
+Setting <code>shader_path</code> on <code>outputs</code> signifies to DragonRuby that a shader should be compiled and loaded.
+</p>
+<h3 id='-----shader_uniforms-'><code>shader_uniforms</code> <a style='font-size: small; float: right;' href='#-----shader_uniforms-'>link</a></h3> 
+<p>
+You can bind uniforms to a shader by providing an <code>Array</code> of <code>Hashes</code> to <code>shader_uniforms</code> with keys <code>name:</code>, <code>value:</code>, and <code>type:</code> which currently supports <code>:int</code> and <code>:float</code>.
+</p>
+<pre><code class="ruby">def tick args
+  args.outputs.shader_path ||= "shaders/example.glsl"
+
+  args.outputs.shader_uniforms = [
+    {
+      name: :mouse_coord_x,
+      value: args.inputs.mouse.x.fdiv(1280),
+      type: :float
+    },
+    {
+      name: :mouse_coord_y,
+      value: 1.0 - args.inputs.mouse.y.fdiv(720),
+      type: :float
+    },
+    { name: :tick_count,
+      value: args.state.tick_count,
+      type: :int
+    }
+  ]
+end
+</code></pre>
+<pre><code class="glsl">// mygame/shaders/example.glsl
+uniform sampler2D tex0;
+
+uniform float mouse_coord_x;
+uniform float mouse_coord_y;
+uniform int tick_count;
+
+varying vec2 v_texCoord;
+
+void main() {
+  gl_FragColor = texture2D(tex0, v_texCoord);
+}
+</code></pre>
+<h3 id='-----shader_tex-1-15--'><code>shader_tex(1-15)</code> <a style='font-size: small; float: right;' href='#-----shader_tex-1-15--'>link</a></h3> 
+<p>
+You can bind up to 15 additional render targets via <code>shaders_tex1</code>, <code>shaders_tex2</code>, <code>shaders_tex3</code>, etc. <code>tex0</code> is reserved for what has been rendered to the screen and cannot be set.
+</p>
+<pre><code class="ruby">def tick args
+  args.outputs.shader_path = "shaders/example.glsl"
+  args.outputs.shader_tex1 = :single_blue_square
+
+  args.outputs[:single_blue_square].background_color = { r: 255, g: 255, b: 255, a: 255 }
+  args.outputs[:single_blue_square].w = 1280;
+  args.outputs[:single_blue_square].h = 720;
+  args.outputs[:single_blue_square].sprites &lt;&lt; {
+    x: 0,
+    y: 0,
+    w: 100,
+    h: 100,
+    path:
+    "sprites/square/blue.png"
+  }
+
+  args.outputs.background_color = { r: 0, g: 0, b: 0 }
+  args.outputs.sprites &lt;&lt; {
+    x: 0,
+    y: 0,
+    w: 200,
+    h: 200,
+    path:
+    "sprites/square/red.png"
+  }
+end
+</code></pre>
+<pre><code class="glsl">uniform sampler2D tex0;
+uniform sampler2D tex1; // :single_blue_square render target
+
+varying vec2 v_texCoord;
+
+void noop() {
+  vec4 pixel_from_rt = texture2D(tex1, v_texCoord);
+
+  // if the pixel from the render target isn't white
+  // then render the pixel from the RT
+  // otherwise render the pixel from the screen
+  if (pixel_from_rt.r &lt; 1.0 ||
+      pixel_from_rt.g &lt; 1.0 ||
+      pixel_from_rt.b &lt; 1.0) {
+    gl_FragColor.r = pixel_from_rt.r;
+    gl_FragColor.g = pixel_from_rt.g;
+    gl_FragColor.b = pixel_from_rt.b;
+  } else {
+    gl_FragColor = texture2D(tex0, v_texCoord);
+  }
+}
+</code></pre>
 <h1 id='--inputs---args-inputs--'>Inputs (<code>args.inputs</code>) <a style='font-size: small; float: right;' href='#--inputs---args-inputs--'>link</a></h1> 
 <p>
 Access using input using <code>args.inputs</code>.
@@ -1591,11 +1796,19 @@ This function returns the last active input which will be set to either <code>:k
 end
 </code></pre>
 <p>
-<code>:mouse</code>, or <code>:controller</code>. The function is helpful when you need to present on screen instructions based on the input the player chose to play with.
+The function is helpful when you need to present on screen instructions based on the input the player chose to play with.
+</p>
+<h2 id='----last_active_at-'><code>last_active_at</code> <a style='font-size: small; float: right;' href='#----last_active_at-'>link</a></h2> 
+<p>
+Returns the <code>args.state.tick_count</code> (<code>Kernel.tick_count</code>) of which the specific input was last active.
+</p>
+<h2 id='----last_active_global_at-'><code>last_active_global_at</code> <a style='font-size: small; float: right;' href='#----last_active_global_at-'>link</a></h2> 
+<p>
+Returns the <code>Kernel.global_tick_count</code> of which the specific input was last active.
 </p>
 <h2 id='----locale-'><code>locale</code> <a style='font-size: small; float: right;' href='#----locale-'>link</a></h2> 
 <p>
-Returns the ISO 639-1 two-letter langauge code based on OS preferences. Refer to the following link for locale strings: <a href='https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes'>https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes</a>).
+Returns the ISO 639-1 two-letter langauge code based on OS preferences. Refer to the following link for locale strings: &lt;https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes&gt;).
 </p>
 <p>
 Defaults to "en" if locale can't be retrieved (<code>args.inputs.locale_raw</code> will be nil in this case).
@@ -1624,10 +1837,10 @@ Returns <code>-1</code> (left), <code>0</code> (neutral), or <code>+1</code> (ri
 The following inputs are inspected to determine the result:
 </p>
 <ul>
-<li>Keyboard's left, right arrow keys: <code>args.inputs.keyboard.(left|right)_arrow</code></li>
-<li>Keyboard's a, d keys (WASD): <code>args.inputs.keyboard.(a|d)</code></li>
-<li>Controller One's DPAD (if a controller is connected): <code>args.inputs.controller_one.dpad_left</code>, <code>args.inputs.controller_one.dpad_right</code></li>
-<li>Controller One's Left Analog (if a controller is connected): <code>args.inputs.controller_one.left_analog_x_perc.abs &gt;= 0.6</code></li>
+<li>  Keyboard's left, right arrow keys: <code>args.inputs.keyboard.(left|right)_arrow</code></li>
+<li>  Keyboard's a, d keys (WASD): <code>args.inputs.keyboard.(a|d)</code></li>
+<li>  Controller One's DPAD (if a controller is connected): <code>args.inputs.controller_one.dpad_left</code>, <code>args.inputs.controller_one.dpad_right</code></li>
+<li>  Controller One's Left Analog (if a controller is connected): <code>args.inputs.controller_one.left_analog_x_perc.abs &gt;= 0.6</code></li>
 </ul>
 <h2 id='----left_right_perc-'><code>left_right_perc</code> <a style='font-size: small; float: right;' href='#----left_right_perc-'>link</a></h2> 
 <p>
@@ -1637,10 +1850,10 @@ Returns a floating point value between <code>-1</code> and <code>1</code>. This 
 The following inputs are inspected to dermine the result:
 </p>
 <ul>
-<li>Controller One's Left Analog (if a controller is connected and the value is not 0.0): <code>args.inputs.controller_one.left_analog_x_perc</code></li>
-<li>If the left analog isn't being used, then Controller One's DPAD is consulted: <code>args.inputs.controller_one.dpad_left</code>, <code>args.inputs.controller_one.dpad_right</code></li>
-<li>Keyboard's a, d keys (WASD): <code>args.inputs.keyboard.(a|d)</code></li>
-<li>Keyboard's left/right arrow keys: <code>args.inputs.keyboard.(left|right)_arrow</code></li>
+<li>  Controller One's Left Analog (if a controller is connected and the value is not 0.0): <code>args.inputs.controller_one.left_analog_x_perc</code></li>
+<li>  If the left analog isn't being used, then Controller One's DPAD is consulted: <code>args.inputs.controller_one.dpad_left</code>, <code>args.inputs.controller_one.dpad_right</code></li>
+<li>  Keyboard's a, d keys (WASD): <code>args.inputs.keyboard.(a|d)</code></li>
+<li>  Keyboard's left/right arrow keys: <code>args.inputs.keyboard.(left|right)_arrow</code></li>
 </ul>
 <h2 id='----left_right_directional-'><code>left_right_directional</code> <a style='font-size: small; float: right;' href='#----left_right_directional-'>link</a></h2> 
 <p>
@@ -1650,19 +1863,19 @@ Returns <code>-1</code> (left), <code>0</code> (neutral), or <code>+1</code> (ri
 The following inputs are inspected to determine the result:
 </p>
 <ul>
-<li>Keyboard's left/right arrow keys: <code>args.inputs.keyboard.(left|right)_arrow</code></li>
-<li>Controller One's DPAD (if a controller is connected): <code>args.inputs.controller_one.dpad_left</code>, <code>args.inputs.controller_one.dpad_right</code></li>
-<li>WASD and Controller One's Left Analog Stick are NOT consulted.</li>
+<li>  Keyboard's left/right arrow keys: <code>args.inputs.keyboard.(left|right)_arrow</code></li>
+<li>  Controller One's DPAD (if a controller is connected): <code>args.inputs.controller_one.dpad_left</code>, <code>args.inputs.controller_one.dpad_right</code></li>
+<li>  WASD and Controller One's Left Analog Stick are NOT consulted.</li>
 </ul>
 <h2 id='----left_right_directional_perc-'><code>left_right_directional_perc</code> <a style='font-size: small; float: right;' href='#----left_right_directional_perc-'>link</a></h2> 
 <p>
 Returns a floating point value between <code>-1</code> and <code>1</code>. The following inputs are inspected to dermine the result:
 </p>
 <ul>
-<li>Controller One's Left Analog (if a controller is connected and the value is not 0.0): <code>args.inputs.controller_one.left_analog_x_perc</code></li>
-<li>If the left analog isn't being used, then Controller One's DPAD is consulted: <code>args.inputs.controller_one.dpad_left</code>, <code>args.inputs.controller_one.dpad_right</code></li>
-<li>Keyboard's left/right arrow keys: <code>args.inputs.keyboard.(left|right)_arrow</code></li>
-<li>WASD is NOT consulted.</li>
+<li>  Controller One's Left Analog (if a controller is connected and the value is not 0.0): <code>args.inputs.controller_one.left_analog_x_perc</code></li>
+<li>  If the left analog isn't being used, then Controller One's DPAD is consulted: <code>args.inputs.controller_one.dpad_left</code>, <code>args.inputs.controller_one.dpad_right</code></li>
+<li>  Keyboard's left/right arrow keys: <code>args.inputs.keyboard.(left|right)_arrow</code></li>
+<li>  WASD is NOT consulted.</li>
 </ul>
 <p>
 Here is some sample code to help visualize the <code>left_right</code> functions.
@@ -1692,10 +1905,10 @@ Returns <code>-1</code> (down), <code>0</code> (neutral), or <code>+1</code> (up
 The following inputs are inspected to determine the result:
 </p>
 <ul>
-<li>Keyboard's up/down arrow keys: <code>args.inputs.keyboard.(up|down)_arrow</code></li>
-<li>Keyboard's w, s keys (WASD): <code>args.inputs.keyboard.(w|s)</code></li>
-<li>Controller One's DPAD (if a controller is connected): <code>args.inputs.controller_one.dpad_up</code>, <code>args.inputs.controller_one.dpad_down</code></li>
-<li>Controller One's Up Analog (if a controller is connected): <code>args.inputs.controller_one.up_analog_y_perc.abs &gt;= 0.6</code></li>
+<li>  Keyboard's up/down arrow keys: <code>args.inputs.keyboard.(up|down)_arrow</code></li>
+<li>  Keyboard's w, s keys (WASD): <code>args.inputs.keyboard.(w|s)</code></li>
+<li>  Controller One's DPAD (if a controller is connected): <code>args.inputs.controller_one.dpad_up</code>, <code>args.inputs.controller_one.dpad_down</code></li>
+<li>  Controller One's Up Analog (if a controller is connected): <code>args.inputs.controller_one.up_analog_y_perc.abs &gt;= 0.6</code></li>
 </ul>
 <h2 id='----up_down_directional-'><code>up_down_directional</code> <a style='font-size: small; float: right;' href='#----up_down_directional-'>link</a></h2> 
 <p>
@@ -1705,19 +1918,19 @@ Returns <code>-1</code> (down), <code>0</code> (neutral), or <code>+1</code> (up
 The following inputs are inspected to determine the result:
 </p>
 <ul>
-<li>Keyboard's up/down arrow keys: <code>args.inputs.keyboard.(up|down)_arrow</code></li>
-<li>Controller One's DPAD (if a controller is connected): <code>args.inputs.controller_one.dpad_up</code>, <code>args.inputs.controller_one.dpad_down</code></li>
-<li>WASD and Controller One's Left Analog Stick are NOT consulted.</li>
+<li>  Keyboard's up/down arrow keys: <code>args.inputs.keyboard.(up|down)_arrow</code></li>
+<li>  Controller One's DPAD (if a controller is connected): <code>args.inputs.controller_one.dpad_up</code>, <code>args.inputs.controller_one.dpad_down</code></li>
+<li>  WASD and Controller One's Left Analog Stick are NOT consulted.</li>
 </ul>
 <h2 id='----up_down_perc-'><code>up_down_perc</code> <a style='font-size: small; float: right;' href='#----up_down_perc-'>link</a></h2> 
 <p>
 Returns a floating point value between <code>-1</code> and <code>1</code>. The following inputs are inspected to dermine the result:
 </p>
 <ul>
-<li>Controller One's Left Analog (if a controller is connected and the value is not 0.0): <code>args.inputs.controller_one.up_analog_y_perc</code></li>
-<li>If the left analog isn't being used, then Controller One's DPAD is consulted: <code>args.inputs.controller_one.dpad_up</code>, <code>args.inputs.controller_one.dpad_down</code></li>
-<li>Keyboard's up/down arrow keys: <code>args.inputs.keyboard.(up|down)_arrow</code></li>
-<li>WASD is NOT consulted.</li>
+<li>  Controller One's Left Analog (if a controller is connected and the value is not 0.0): <code>args.inputs.controller_one.up_analog_y_perc</code></li>
+<li>  If the left analog isn't being used, then Controller One's DPAD is consulted: <code>args.inputs.controller_one.dpad_up</code>, <code>args.inputs.controller_one.dpad_down</code></li>
+<li>  Keyboard's up/down arrow keys: <code>args.inputs.keyboard.(up|down)_arrow</code></li>
+<li>  WASD is NOT consulted.</li>
 </ul>
 <p>
 Here is some sample code to help visualize the <code>up_down</code> functions.
@@ -1936,99 +2149,99 @@ Returns <code>-1</code> (left), <code>0</code> (neutral), or <code>+1</code> (ri
 The following properties represent keys on the keyboard and are available on <code>args.inputs.keyboard.KEY</code>, <code>args.inputs.keyboard.key_down.KEY</code>, <code>args.inputs.keyboard.key_held.KEY</code>, and <code>args.inputs.keyboard.key_up.KEY</code>:
 </p>
 <ul>
-<li><code>alt</code></li>
-<li><code>meta</code></li>
-<li><code>control</code>, <code>ctrl</code></li>
-<li><code>shift</code></li>
-<li><code>control_KEY</code>, <code>ctrl_KEY</code> (dynamic method, eg <code>args.inputs.keyboard.ctrl_a</code>)</li>
-<li><code>exclamation_point</code></li>
-<li><code>zero</code> - <code>nine</code></li>
-<li><code>backspace</code></li>
-<li><code>delete</code></li>
-<li><code>escape</code></li>
-<li><code>enter</code></li>
-<li><code>tab</code></li>
-<li><code>(open|close)_round_brace</code></li>
-<li><code>(open|close)_curly_brace</code></li>
-<li><code>(open|close)_square_brace</code></li>
-<li><code>colon</code></li>
-<li><code>semicolon</code></li>
-<li><code>equal</code></li>
-<li><code>hyphen</code></li>
-<li><code>space</code></li>
-<li><code>dollar</code></li>
-<li><code>percent</code></li>
-<li><code>double_quotation_mark</code></li>
-<li><code>single_quotation_mark</code></li>
-<li><code>backtick</code></li>
-<li><code>tilde</code></li>
-<li><code>period</code></li>
-<li><code>comma</code></li>
-<li><code>pipe</code></li>
-<li><code>underscore</code></li>
-<li><code>ac_back</code> (<code>ac</code> stands for Application Control, with <code>ac_back</code> representing Back button on a device (eg Android back button)</li>
-<li><code>ac_home</code></li>
-<li><code>ac_forward</code></li>
-<li><code>ac_stop</code></li>
-<li><code>ac_refresh</code></li>
-<li><code>ac_bookmarks</code></li>
-<li><code>a</code> - <code>z</code></li>
-<li><code>w_scancode</code> (key location for w in WASD layout across regions)</li>
-<li><code>a_scancode</code> (key location for a in WASD layout across regions)</li>
-<li><code>s_scancode</code> (key location for s in WASD layout across regions)</li>
-<li><code>d_scancode</code> (key location for d in WASD layout across regions)</li>
-<li><code>shift</code></li>
-<li><code>shift_left</code></li>
-<li><code>shift_right</code></li>
-<li><code>control</code>, <code>ctrl</code></li>
-<li><code>contro_left</code>, <code>ctrl_left</code></li>
-<li><code>contro_right</code>, <code>ctrl_right</code></li>
-<li><code>alt</code>, <code>option</code></li>
-<li><code>alt_left</code>, <code>option_left</code></li>
-<li><code>alt_right</code>, <code>option_right</code></li>
-<li><code>meta</code>, <code>command</code></li>
-<li><code>meta_left</code>, <code>command_left</code></li>
-<li><code>meta_right</code>, <code>command_right</code></li>
-<li><code>left_arrow</code></li>
-<li><code>right_arrow</code></li>
-<li><code>up_arrow</code></li>
-<li><code>down_arrow</code></li>
-<li><code>left_arrow</code>, <code>left</code></li>
-<li><code>right_arrow</code>, <code>right</code></li>
-<li><code>up_arrow</code>, <code>up</code></li>
-<li><code>down_arrow</code> <code>down</code></li>
-<li><code>pageup</code></li>
-<li><code>pagedown</code></li>
-<li><code>plus</code></li>
-<li><code>at</code></li>
-<li><code>hash</code></li>
-<li><code>forward_slash</code></li>
-<li><code>back_slash</code></li>
-<li><code>asterisk</code></li>
-<li><code>less_than</code></li>
-<li><code>greater_than</code></li>
-<li><code>ampersand</code></li>
-<li><code>superscript_two</code></li>
-<li><code>caret</code></li>
-<li><code>question_mark</code></li>
-<li><code>section</code></li>
-<li><code>ordinal_indicator</code></li>
-<li><code>raw_key</code> (unique numeric identifier for key)</li>
-<li><code>left_right</code></li>
-<li><code>up_down</code></li>
-<li><code>directional_vector</code></li>
-<li><code>truthy_keys</code> (array of <code>Symbols</code>)</li>
+<li>  <code>alt</code></li>
+<li>  <code>meta</code></li>
+<li>  <code>control</code>, <code>ctrl</code></li>
+<li>  <code>shift</code></li>
+<li>  <code>control_KEY</code>, <code>ctrl_KEY</code> (dynamic method, eg <code>args.inputs.keyboard.ctrl_a</code>)</li>
+<li>  <code>exclamation_point</code></li>
+<li>  <code>zero</code> - <code>nine</code></li>
+<li>  <code>backspace</code></li>
+<li>  <code>delete</code></li>
+<li>  <code>escape</code></li>
+<li>  <code>enter</code></li>
+<li>  <code>tab</code></li>
+<li>  <code>(open|close)_round_brace</code></li>
+<li>  <code>(open|close)_curly_brace</code></li>
+<li>  <code>(open|close)_square_brace</code></li>
+<li>  <code>colon</code></li>
+<li>  <code>semicolon</code></li>
+<li>  <code>equal</code></li>
+<li>  <code>hyphen</code></li>
+<li>  <code>space</code></li>
+<li>  <code>dollar</code></li>
+<li>  <code>percent</code></li>
+<li>  <code>double_quotation_mark</code></li>
+<li>  <code>single_quotation_mark</code></li>
+<li>  <code>backtick</code></li>
+<li>  <code>tilde</code></li>
+<li>  <code>period</code></li>
+<li>  <code>comma</code></li>
+<li>  <code>pipe</code></li>
+<li>  <code>underscore</code></li>
+<li>  <code>ac_back</code> (<code>ac</code> stands for Application Control, with <code>ac_back</code> representing Back button on a device (eg Android back button)</li>
+<li>  <code>ac_home</code></li>
+<li>  <code>ac_forward</code></li>
+<li>  <code>ac_stop</code></li>
+<li>  <code>ac_refresh</code></li>
+<li>  <code>ac_bookmarks</code></li>
+<li>  <code>a</code> - <code>z</code></li>
+<li>  <code>w_scancode</code> (key location for w in WASD layout across regions)</li>
+<li>  <code>a_scancode</code> (key location for a in WASD layout across regions)</li>
+<li>  <code>s_scancode</code> (key location for s in WASD layout across regions)</li>
+<li>  <code>d_scancode</code> (key location for d in WASD layout across regions)</li>
+<li>  <code>shift</code></li>
+<li>  <code>shift_left</code></li>
+<li>  <code>shift_right</code></li>
+<li>  <code>control</code>, <code>ctrl</code></li>
+<li>  <code>contro_left</code>, <code>ctrl_left</code></li>
+<li>  <code>contro_right</code>, <code>ctrl_right</code></li>
+<li>  <code>alt</code>, <code>option</code></li>
+<li>  <code>alt_left</code>, <code>option_left</code></li>
+<li>  <code>alt_right</code>, <code>option_right</code></li>
+<li>  <code>meta</code>, <code>command</code></li>
+<li>  <code>meta_left</code>, <code>command_left</code></li>
+<li>  <code>meta_right</code>, <code>command_right</code></li>
+<li>  <code>left_arrow</code></li>
+<li>  <code>right_arrow</code></li>
+<li>  <code>up_arrow</code></li>
+<li>  <code>down_arrow</code></li>
+<li>  <code>left_arrow</code>, <code>left</code></li>
+<li>  <code>right_arrow</code>, <code>right</code></li>
+<li>  <code>up_arrow</code>, <code>up</code></li>
+<li>  <code>down_arrow</code> <code>down</code></li>
+<li>  <code>pageup</code></li>
+<li>  <code>pagedown</code></li>
+<li>  <code>plus</code></li>
+<li>  <code>at</code></li>
+<li>  <code>hash</code></li>
+<li>  <code>forward_slash</code></li>
+<li>  <code>back_slash</code></li>
+<li>  <code>asterisk</code></li>
+<li>  <code>less_than</code></li>
+<li>  <code>greater_than</code></li>
+<li>  <code>ampersand</code></li>
+<li>  <code>superscript_two</code></li>
+<li>  <code>caret</code></li>
+<li>  <code>question_mark</code></li>
+<li>  <code>section</code></li>
+<li>  <code>ordinal_indicator</code></li>
+<li>  <code>raw_key</code> (unique numeric identifier for key)</li>
+<li>  <code>left_right</code></li>
+<li>  <code>up_down</code></li>
+<li>  <code>directional_vector</code></li>
+<li>  <code>truthy_keys</code> (array of <code>Symbols</code>)</li>
 </ul>
 <h3 id='-----keycodes-'><code>keycodes</code> <a style='font-size: small; float: right;' href='#-----keycodes-'>link</a></h3> 
 <p>
 If the explicit named key isn't in the list above, you can still get the raw keycode via <code>args.inputs.keyboard.key_(down|held|up).keycodes[KEYCODE_NUMBER]</code>. The <code>KEYCODE_NUMBER</code> represents the keycode provided by SDL.
 </p>
 <p>
-Here is a list SDL Keycodes: <a href='https://wiki.libsdl.org/SDL2/SDLKeycodeLookup'>https://wiki.libsdl.org/SDL2/SDLKeycodeLookup</a>
+Here is a list SDL Keycodes: &lt;https://wiki.libsdl.org/SDL2/SDLKeycodeLookup&gt;
 </p>
 <h3 id='-----char-'><code>char</code> <a style='font-size: small; float: right;' href='#-----char-'>link</a></h3> 
 <p>
-Method is available under <code>inputs.key_down</code>, <code>inputs.key_held</code>, and <code>inputs.key_up</code>.  Take note that
+Method is available under <code>inputs.key_down</code>, <code>inputs.key_held</code>, and <code>inputs.key_up</code>. Take note that
 </p>
 <p>
 <code>args.inputs.keyboard.key_held.char</code> will only return the ascii value of the last key that was held. Use <code>args.inputs.keyboard.key_held.truthy_keys</code> to get an <code>Array</code> of <code>Symbols</code> representing all keys being held.
@@ -2082,10 +2295,10 @@ end
 Returns a <code>Hash</code> with all keys on the keyboard in their respective state. The <code>Hash</code> contains the following <code>keys</code>
 </p>
 <ul>
-<li><code>:down</code></li>
-<li><code>:held</code></li>
-<li><code>:down_or_held</code></li>
-<li><code>:up</code></li>
+<li>  <code>:down</code></li>
+<li>  <code>:held</code></li>
+<li>  <code>:down_or_held</code></li>
+<li>  <code>:up</code></li>
 </ul>
 <h1 id='--runtime---args-gtk--'>Runtime (<code>args.gtk</code>) <a style='font-size: small; float: right;' href='#--runtime---args-gtk--'>link</a></h1> 
 <p>
@@ -3894,27 +4107,27 @@ Invocation variants:
 <li><code>args.geometry.line_intersect line_1, line_2</code></li>
 <li><code>Geometry::line_intersect line_1, line_2</code></li>
 </ul>
-<p>
-def tick args
-</p>
-<p>
-args.state.line_one ||= { x: 0, y: 0, x2: 1280, y2: 720 }
-</p>
-<p>
-line_two = { x: 0, y: 720, x2: args.inputs.mouse.x, y2: args.inputs.mouse.y }
-</p>
-<p>
-args.state.intersect_point = args.geometry.line_intersect args.state.line_one, line_two
-</p>
-<p>
-args.outputs.lines &lt;&lt; { x: 0, y: 0, x2: 1280, y2: 720 }
-</p>
-<p>
-args.outputs.lines &lt;&lt; line_two
-</p>
-<p>
-if args.state.intersect_point args.outputs.solids &lt;&lt; { x: args.state.intersect_point.x, y: args.state.intersect_point.y, w: 10, h: 10, anchor_x: 0.5, anchor_y: 0.5, r: 255, g: 0, b: 0 } end end
-</p>
+<pre><code class="ruby">def tick args
+  args.state.line_one ||= { x: 0, y: 0, x2: 1280, y2: 720 }
+  line_two = { x: 0, y: 720, x2: args.inputs.mouse.x, y2: args.inputs.mouse.y }
+  args.state.intersect_point = args.geometry.line_intersect args.state.line_one, line_two
+  args.outputs.lines &lt;&lt; { x: 0, y: 0, x2: 1280, y2: 720 }
+  args.outputs.lines &lt;&lt; line_two
+  if args.state.intersect_point
+    args.outputs.solids &lt;&lt; {
+      x: args.state.intersect_point.x,
+      y: args.state.intersect_point.y,
+      w: 10,
+      h: 10,
+      anchor_x: 0.5,
+      anchor_y: 0.5,
+      r: 255,
+      g: 0,
+      b: 0
+    }
+  end
+end
+</code></pre>
 <h2 id='----ray_intersect-'><code>ray_intersect</code> <a style='font-size: small; float: right;' href='#----ray_intersect-'>link</a></h2> 
 <p>
 Given two lines (<code>:x</code>, <code>:y</code>, <code>:x2</code>, <code>:y2</code>), this function returns point of intersection if the ray (infinite line) intersect. If the lines are parallel, <code>nil</code> is returned. If you do not want the lines to be treated as infinite lines, use <code>line_intersect</code>.
@@ -4481,9 +4694,264 @@ Example:
   args.outputs.primitives &lt;&lt; args.layout.debug_primitives
 end
 </code></pre>
+<h1 id='--grid---args-grid--'>Grid (<code>args.grid</code>) <a style='font-size: small; float: right;' href='#--grid---args-grid--'>link</a></h1> 
 <p>
-meow
+Provides information about the screen and game canvas.
 </p>
+<h2 id='----orientation-'><code>orientation</code> <a style='font-size: small; float: right;' href='#----orientation-'>link</a></h2> 
+<p>
+Returns either <code>:landscape</code> (default) or <code>:portrait</code>. The orientation of your game is set within <code>./mygame/metadata/game_metadata.txt</code>.
+</p>
+<h2 id='----origin_name-'><code>origin_name</code> <a style='font-size: small; float: right;' href='#----origin_name-'>link</a></h2> 
+<p>
+Returns either <code>:bottom_left</code> (default) or <code>:center</code>.
+</p>
+<h2 id='----origin_bottom_left--'><code>origin_bottom_left!</code> <a style='font-size: small; float: right;' href='#----origin_bottom_left--'>link</a></h2> 
+<p>
+Change the grids coordinate system where <code>0, 0</code> is at the bottom left corner. <code>origin_name</code> will be set to <code>:bottom_left</code>.
+</p>
+<h2 id='----origin_center--'><code>origin_center!</code> <a style='font-size: small; float: right;' href='#----origin_center--'>link</a></h2> 
+<p>
+Change the grids coordinate system where <code>0, 0</code> is at the center of the screen. <code>origin_name</code> will be set to <code>:center</code>.
+</p>
+<h2 id='---grid-property-categorizations'>Grid Property Categorizations <a style='font-size: small; float: right;' href='#---grid-property-categorizations'>link</a></h2> 
+<p>
+There are two categories of Grid properties that you should be aware of:
+</p>
+<ul>
+<li>Logical: Values are represented at the logical scale of <code>720p</code>
+  (1280x720 for landscape orientation or 720x1280 portrait mode).</li>
+<li>Pixels: Values are represented in the context of Pixels for a given display.</li>
+</ul>
+<p>
+NOTE:
+</p>
+<p>
+ You will almost always use the Logical Category's properties.
+</p>
+<p>
+The Pixel is helpful for sanity checking of Texture Atlases, creating C Extensions, and Shaders (Indie and Pro License features).
+</p>
+<p>
+For the Standard License, the Pixel Category properties will all return values from the Logical Category.
+</p>
+<p>
+Here's an example of what the property conventions look like:
+</p>
+<pre><code class="ruby">def tick args
+  # Logical width
+  args.grid.w
+
+  # Width in pixels
+  args.grid.w_px
+end
+</code></pre>
+<p>
+Note: <code>Grid</code> properties are globally accessible via <code>$grid</code>.
+</p>
+<p>
+NOTE:
+</p>
+<p>
+ All Grid properties that follow take <code>origin_name</code>, and <code>orientation</code> into consideration.
+</p>
+<h2 id='----bottom-'><code>bottom</code> <a style='font-size: small; float: right;' href='#----bottom-'>link</a></h2> 
+<p>
+Returns value that represents the bottom of the grid.
+</p>
+<p>
+Given that the logical canvas is <code>720p</code>, these are the values that <code>bottom</code> may return:
+</p>
+<ul>
+<li>origin: <code>:bottom_left</code>, orientation: <code>:landscape</code>: <code>0</code></li>
+<li>origin: <code>:bottom_left</code>, orientation: <code>:portrait</code>: <code>0</code></li>
+<li>origin: <code>:center</code>, orientation: <code>:landscape</code>: <code>-360</code></li>
+<li>origin: <code>:center</code>, orientation: <code>:portrait</code>: <code>-640</code></li>
+</ul>
+<h2 id='----top-'><code>top</code> <a style='font-size: small; float: right;' href='#----top-'>link</a></h2> 
+<p>
+Returns value that represents the top of the grid.
+</p>
+<h2 id='----left-'><code>left</code> <a style='font-size: small; float: right;' href='#----left-'>link</a></h2> 
+<p>
+Returns value that represents the left of the grid.
+</p>
+<h2 id='----right-'><code>right</code> <a style='font-size: small; float: right;' href='#----right-'>link</a></h2> 
+<p>
+Returns the <code>x</code> value that represents the right of the grid.
+</p>
+<h2 id='----rect-'><code>rect</code> <a style='font-size: small; float: right;' href='#----rect-'>link</a></h2> 
+<p>
+Returns a rectangle Primitive that represents the grid.
+</p>
+<h2 id='----w-'><code>w</code> <a style='font-size: small; float: right;' href='#----w-'>link</a></h2> 
+<p>
+Returns the grid's width.
+</p>
+<h2 id='----h-'><code>h</code> <a style='font-size: small; float: right;' href='#----h-'>link</a></h2> 
+<p>
+Returns the grid's width.
+</p>
+<h2 id='---hd--highdpi--and-all-screen-modes'>HD, HighDPI, and All Screen Modes <a style='font-size: small; float: right;' href='#---hd--highdpi--and-all-screen-modes'>link</a></h2> 
+<p>
+The following properties are available to Pro License holders. These features are enabled via <code>./mygame/metadata/game_metadata.txt</code>:
+</p>
+<ul>
+<li><code>hd=true</code>: Enable Texture Atlases and HD label/font rendering. Grid
+  properties in the Pixel Category will reflect true values instead of values   from the Logical Category.</li>
+<li><code>highdpi=true</code>: HD must be enabled before this property will be
+   respected. Texture Atlas selection and label/font rendering    takes into consideration the hardware's resolution/rendering    capabilities.</li>
+<li><code>hd_letterbox=false</code>: Removes the game's 16:9 letterbox, allowing
+  you to render edge to edge (All Screen). Game content will be   centered within the 16:9 safe area.</li>
+</ul>
+<p>
+NOTE:
+</p>
+<p>
+ For a demonstration of these configurations/property usages, see: <code>./samples/07_advanced_rendering/03_allscreen_properties</code>.
+</p>
+<p>
+When All Screen mode is enabled (<code>hd_letterbox=false</code>), you can render outside of the 1280x720 safe area. The 1280x720 logical canvas will be centered within the screen and scaled to one of the following closest/best-fit resolutions.
+</p>
+<ul>
+<li>  720p: 1280x720</li>
+<li>  HD+: 1600x900</li>
+<li>  1080p: 1920x1080</li>
+<li>  1440p: 2560x1440</li>
+<li>  1880p: 3200x1800</li>
+<li>  4k: 3840x2160</li>
+<li>  5k: 6400x2880</li>
+</ul>
+<h3 id='----all-screen-properties'>All Screen Properties <a style='font-size: small; float: right;' href='#----all-screen-properties'>link</a></h3> 
+<p>
+These properties provide dimensions of the screen outside of the 16:9 safe area as logical <code>720p</code> values.
+</p>
+<ul>
+<li><code>allscreen_left</code></li>
+<li><code>allscreen_right</code></li>
+<li><code>allscreen_top</code></li>
+<li><code>allscreen_bottom</code></li>
+<li><code>allscreen_w</code></li>
+<li><code>allscreen_h</code></li>
+<li><code>allscreen_offset_x</code></li>
+<li><code>allscreen_offset_y</code></li>
+</ul>
+<p>
+NOTE:
+</p>
+<p>
+ With the main canvas being centered in the screen, <code>allscreen_left</code> and <code>allscreen_bottom</code> may return negative numbers for origin <code>:bottom_left</code> since <code>x: 0, y: 0</code> might not align with the bottom left border of the game window.
+</p>
+<p>
+NOTE:
+</p>
+<p>
+ It is strongly recommended that you don't use All Screen properties for any elements the player would interact with (eg buttons in an options menu) as they could get rendered underneath a "notch" on a mobile device or at the far edge of an ultrawide display.
+</p>
+<h4>Logical, Point, Pixel Category Value Comparisons</h4>
+<p>
+NOTE:
+</p>
+<p>
+ Reminder: it's unlikely that you'll use any of the <code>_px</code> variants. The explanation that follows if for those that want the nitty gritty details.
+</p>
+<p>
+Here are the values that a 16-inch MacBook Pro would return for <code>allscreen_</code> properties.
+</p>
+<p>
+Device Specs:
+</p>
+<pre><code class="text">Spec               | Value       |
+------------------ | ----------- |
+Aspect Ratio       | 16:10       |
+Points Resolution  | 1728x1080   |
+Screen Resolution  | 3456x2160   |
+</code></pre>
+<p>
+Game Settings:
+</p>
+<ul>
+<li>HD: Enabled</li>
+<li>HighDPI: Enabled</li>
+</ul>
+<p>
+The property breakdown is:
+</p>
+<pre><code class="text">Property              | Value      |
+--------------------- | ---------- |
+Left/Right            |            |
+left                  | 0          |
+left_px               | 0          |
+right                 | 1280       |
+right_px              | 3456       |
+All Screen Left/Right |            |
+allscreen_left        | 0          |
+allscreen_left_px     | 0          |
+allscreen_right       | 1280      |
+allscreen_right_px    | 1728      |
+allscreen_offset_x    | 0         |
+allscreen_offset_x_px | 0         |
+op/Bottom             |           |
+bottom                | 0         |
+bottom_px             | 0         |
+top                   | 720       |
+top_px                | 1944      |
+All Screen Top/Bottom |           |
+allscreen_bottom      | -40       |
+allscreen_bottom_px   | -108      |
+allscreen_top         | 780       |
+allscreen_top_px      | 2052      |
+allscreen_offset_y    | 40        |
+allscreen_offset_y_px | 108       |
+</code></pre>
+<h3 id='----texture-atlases'>Texture Atlases <a style='font-size: small; float: right;' href='#----texture-atlases'>link</a></h3> 
+<h3 id='-----texture_scale-'><code>texture_scale</code> <a style='font-size: small; float: right;' href='#-----texture_scale-'>link</a></h3> 
+<p>
+Returns a decimal value representing the rendering scale of the game.
+</p>
+<ul>
+<li>  720p: 1.0</li>
+<li>  HD+: 1.25</li>
+<li>  1080p, Full HD: 1.5</li>
+<li>  Full HD+: 1.75</li>
+<li>  1440p: 2.0</li>
+<li>  1880p: 2.5</li>
+<li>  4k: 3.0</li>
+<li>  5k: 4.0</li>
+</ul>
+<h3 id='-----texture_scale_enum-'><code>texture_scale_enum</code> <a style='font-size: small; float: right;' href='#-----texture_scale_enum-'>link</a></h3> 
+<p>
+Returns an integer value representing the rendering scale of the game at a best-fit value. For example, given a render scale of 2.7, the textures atlas that will be selected will be 1880p (enum_value <code>250</code>).
+</p>
+<ul>
+<li>  720p: 100</li>
+<li>  HD+: 125</li>
+<li>  1080p, Full HD: 150</li>
+<li>  Full HD+: 175</li>
+<li>  1440p: 200</li>
+<li>  1880p: 250</li>
+<li>  4k: 300</li>
+<li>  5k: 400</li>
+</ul>
+<p>
+Given the following code:
+</p>
+<pre><code class="ruby">def tick args
+  args.outputs.sprites &lt;&lt; { x: 0, y: 0, w: 100, h: 100, path: "sprites/player.png" }
+end
+</code></pre>
+<p>
+The sprite path of <code>sprites/player.png</code> will be replaced according to the following naming conventions (fallback to a lower resolution is automatically handled if a sprite with naming convention isn't found):
+</p>
+<ul>
+<li>  720p: <code>sprites/player.png</code> (100x100)</li>
+<li>  HD+: <code>sprites/player@125.png</code> (125x125)</li>
+<li>  1080p: <code>sprites/player@150.png</code> (150x150)</li>
+<li>  1440p: <code>sprites/player@200.png</code> (200x200)</li>
+<li>  1880p: <code>sprites/player@250.png</code> (250x250)</li>
+<li>  4k: <code>sprites/player@300.png</code> (300x300)</li>
+<li>  5k: <code>sprites/player@400.png</code> (400x400)</li>
+</ul>
 <h1 id='--array'>Array <a style='font-size: small; float: right;' href='#--array'>link</a></h1> 
 <p>
 The Array class has been extend to provide methods that will help in common game development tasks. Array is one of the most powerful classes in Ruby and a very fundamental component of Game Toolkit.

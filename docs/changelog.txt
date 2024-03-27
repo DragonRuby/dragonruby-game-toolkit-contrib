@@ -1,3 +1,73 @@
+* 5.23
+** [Pro] [Support] Improved documentation for All Screen Mode.
+** [Pro] [Indie] [Shaders] A beta of ~dragonruby-shadersim~ has been released.
+   Login and download at dragonruby.org.
+   The Keeper tech demo [https://youtu.be/xEqggoZoYAo] is the main sample app that ships with DragonRuby ShaderSim.
+** [Pro] [Indie] [Shaders] Documentation added for shaders API.
+** [Support] Docsify version of docs can now be run locally.
+   You can now view the docs offline using ~./dragonruby-httpd ./docs~
+** [Support] ~args.outputs.debug~ when given a String is newline aware.
+   #+begin_src ruby
+     def tick args
+       # two watch labels will be generated given the newline character
+       args.outputs.debug << "hello\nworld"
+     end
+   #+end_src
+** [Support] Added ~args.outputs.debug.watch(o, label_style:, background_style:)~
+   ~args.outputs.debug~ has a ~watch~ function which lets you pass in a non-string value
+   and optional ~label_style:~, and ~background_style~ named parameters.
+
+   #+begin_src ruby
+     def tick args
+       args.state.enemies ||= 10.map do |i|
+         {
+           x: rand(1280),
+           y: rand(720),
+           w: 100,
+           h: 100
+         }
+       end
+
+       args.outputs.debug.watch pretty_format(args.state),
+                                label_style: { r: 0,
+                                               g: 0,
+                                               b: 255,
+                                               size_px: 10 },
+                                background_style: { r: 0,
+                                                    g: 255,
+                                                    b: 0,
+                                                    a: 128,
+                                                    path: :solid }
+     end
+   #+end_src
+** [Support] Replay captures textinput events.
+   Recordings created via ~$recording.start_recording~ or via the
+   DragonRuby Console's "Record Gameplay" button now populate ~args.inputs.text~.
+** [Support] Ctrl+R will stop a replay that is currently running.
+** [Support] ~$gtk.reset_and_replay~ now takes in an optional implicit block.
+   The implicit block can be used to provide debug information during a replay execution.
+
+   #+begin_src ruby
+     def tick args
+       args.state.player ||= {
+         x: 100,
+         y: 100
+       }
+
+       if args.inputs.keyboard.key_down.space
+         args.state.player.x += 1
+         args.gtk.notify! "space pressed!"
+       end
+     end
+
+     # implicit block is called after tick is completed.
+     $gtk.reset_and_replay "replay.txt", speed: 1 do |args|
+       if args.state.player.x != 100
+         puts args.state.player.x
+       end
+     end
+   #+end_src
+** [Bugfix] Warning for sprites greater than 1600x1600 correctly prints sprite path.
 * 5.22
 ** [Support] [Pro] ~$wizards.ios.start~ sends build output immediately to standard out.
 ** [Support] Added ~Geometry::rect_navigate~ to support the navigation of menus using the keyboard/dpad.

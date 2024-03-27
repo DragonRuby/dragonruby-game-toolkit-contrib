@@ -11,9 +11,9 @@ module GridDocs
   end
 
   def docs_class
-    <<-'S'
-meow
-S
+    DocsOrganizer.get_docsify_content path: "docs/api/grid.md",
+                                      heading_level: 1,
+                                      heading_include: "Grid"
   end
 end
 

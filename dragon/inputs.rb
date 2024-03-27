@@ -15,6 +15,8 @@ module GTK
     attr_accessor :text, :history
     attr_accessor :headset
     attr :last_active
+    attr :last_active_at
+    attr :last_active_global_at
     attr :touch_enabled
     attr :locale, :locale_raw
     attr_reader :application_control

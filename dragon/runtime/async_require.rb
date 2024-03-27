@@ -127,20 +127,12 @@ S
       end
 
       def process_load_status
-        return if @load_status == :ready
+        return if @load_status == :ready || @load_status == :boot
         return if pending_reload?
 
         if main_rb_reload_completed?
-          @load_status = :ready
-          log "* INFO: ~GTK::Runtime#load_status~ set to ~:ready~.", subsystem="Engine"
-          Kernel.tick_count = -1
-          Kernel.global_tick_count = -1
-          $gtk.write_file_root (File.join backup_directory, "boot.txt"), Time.now.to_i.to_s
-          $top_level.boot @args if $top_level.respond_to? :boot
-          @args.state.tick_count = -1
-          Kernel.global_tick_count = -1
-          Kernel.tick_count = -1
           reset_all_mtimes
+          @load_status = :boot
         end
       end
 

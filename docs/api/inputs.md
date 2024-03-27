@@ -4,7 +4,10 @@ Access using input using `args.inputs`.
 
 ## `last_active`
 
-This function returns the last active input which will be set to either `:keyboard`, `:mouse`, or `:controller`. The function is helpful when you need to present on screen instructions based on the input the player chose to play with.
+This function returns the last active input which will be set to
+either `:keyboard`, `:mouse`, or `:controller`. The function is
+helpful when you need to present on screen instructions based on the
+input the player chose to play with. 
 
 ```ruby
 def tick args
@@ -16,7 +19,16 @@ def tick args
 end
 ```
 
-`:mouse`, or `:controller`. The function is helpful when you need to present on screen instructions based on the input the player chose to play with.
+The function is helpful when you need to present on screen instructions based on the input the player chose to play with.
+
+## `last_active_at`
+
+Returns the `args.state.tick_count` (`Kernel.tick_count`) of which the
+specific input was last active.
+
+## `last_active_global_at`
+
+Returns the `Kernel.global_tick_count` of which the specific input was last active.
 
 ## `locale`
 

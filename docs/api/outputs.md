@@ -14,7 +14,6 @@ def tick args
 end
 ```
 
-
 ## Collection Render Orders
 
 Primitives are rendered first-in, first-out. The rendering order (sorted by bottom-most to top-most):
@@ -26,7 +25,6 @@ Primitives are rendered first-in, first-out. The rendering order (sorted by bott
 - `lines`
 - `borders`
 - `debug`: Accepts all render primitives. Use this to render primitives for debugging (production builds of your game will not render this layer).
-
 
 ## `primitives`
 
@@ -57,9 +55,11 @@ end
 `args.outputs.debug` will not render in production mode and behaves like `args.outputs.primitives`. Objects in this collection
 are rendered above everything.
 
+### String Primitives
+
 Additionally, `args.outputs.debug` allows you to pass in a `String` as a primitive type. This is helpful for quickly showing the
 value of a variable on the screen. A label with black text and a white background will be created for each `String` sent in. The
-labels will be automatically stacked vertically for you.
+labels will be automatically stacked vertically for you. New lines in the string will be respected.
 
 Example:
 
@@ -73,6 +73,39 @@ def tick args
   # and will auto stack vertically
   args.outputs.debug << "current tick: #{args.state.tick_count}"
   args.outputs.debug << "player x: #{args.state.player.x}"
+  args.outputs.debug << "hello\nworld"
+end
+```
+
+### `watch`
+
+If you need additional control over a string value, you can use the `args.outputs.debug.watch` function.
+
+The functions takes in the following parameters:
+
+- Object to watch. This object will be converted to a string.
+- The `label_style`: optional, named argument can be passed in with a `Hash` to override the default label style for watch variables.
+- The `background_style`: optional named argument can be passed in with a `Hash` to override the default background style for the watch variables.
+
+Example:
+
+```ruby
+def tick args
+  args.state.player ||= { x: 100, y: 100 }
+  args.state.player.x += 1
+  args.state.player.x = 0 if args.state.player.x > 1280
+
+  args.outputs.debug.watch args.state.player
+  args.outputs.debug.watch pretty_format(args.state.player),
+                           label_style: { r: 0,
+                                          g: 0,
+                                          b: 255,
+                                          size_px: 10 },
+                           background_style: { r: 0,
+                                               g: 255,
+                                               b: 0,
+                                               a: 128,
+                                               path: :solid }
 end
 ```
 
@@ -194,6 +227,113 @@ end
 
 Add primitives to this collection to render a sprite to the screen.
 
+### Properties
+
+Here are all the properties that you can set on a sprite. The only required ones are `x`, `y`, `w`, `h`, and `path`.
+
+#### Required
+
+- `x`: X position of the sprite. Note: the botton left corner of the sprite is used for positioning (this can be changed using `anchor_x`, and `anchor_y`).
+- `y`: Y position of the sprite. Note: The origin 0,0 is at the bottom left corner. Setting `y` to a higher value will move the sprite upwards.
+- `w`: The render width.
+- `h`: The render height.
+- `path`: The path of the sprite relative to the game folder.
+
+#### Anchors and Rotations
+
+- `flip_horizonally`: This value can be either `true` or `false` and controls if the sprite will be flipped horizontally (default value is false).
+- `flip_vertically`: This value can be either `true` or `false` and controls if the sprite will be flipped horizontally (default value is false).
+- `anchor_x`: Used to determine anchor point of the sprite's X position (relative to the render width).
+- `anchor_y`: Used to determine anchor point of the sprite's Y position (relative to the render height).
+- `angle`: Rotation of the sprite in degrees (default value is 0). Rotation occurs around the center of the sprite. The point of rotation can be changed using `angle_anchor_x` and `angle_anchor_y`.
+- `angle_anchor_x`: Controls the point of rotation for the sprite (relative to the render width).
+- `angle_anchor_y`: Controls the point of rotation for the sprite (relative to the render height).
+    
+Here's an example of rendering a 80x80 pixel sprite in the center of the screen:
+
+```ruby
+def tick args
+  args.outputs.sprites << {
+    x: 640 - 40, # the logical center of the screen horizontally is 640, minus half the width of the sprite
+    y: 360 - 40, # the logical center of the screen vertically is 360, minus half the height of the sprite
+    w: 80,
+    h: 80,
+    path: "sprites/square/blue.png"
+ }
+end
+```
+
+Instead of computing the offset, you can use `anchor_x`, and `anchor_y` to center the sprite. The following is equivalent to the code above:
+
+```ruby
+def tick args
+  args.outputs.sprites << {
+    x: 640,
+    y: 360,
+    w: 80,
+    h: 80,
+    path: "sprites/square/blue.png",
+    anchor_x: 0.5, # position horizontally at 0.5 of the sprite's width
+    anchor_y: 0.5  # position vertically at 0.5 of the sprite's height
+ }
+end
+```
+
+#### Cropping
+
+- `tile_(x|y|w|h)`: Defines the crop area to use for a sprite. The origin for `tile_` properties uses the TOP LEFT as its origin (useful for cropping tiles from a sprite sheet).
+- `source_(x|y|w|h)`: Defines the crop area to use for a sprite. The origin for `tile_` properties uses the BOTTOM LEFT as its origin.
+
+See the sample apps under `./samples/03_rendering_sprites` for examples of how to use this properties non-trivially.
+
+#### Blending
+
+- `a`: Alpha/transparency of the sprite from 0 to 255 (default value is 255).
+- `r`: Level of red saturation for the sprite (default value is 255). Example: Setting the value to zero will remove all red coloration from the sprite.
+- `g`: Level of green saturation for the sprite (default value is 255).
+- `b`: Level of blue saturation for the sprite (default value is 255).
+- `blendmode_enum`: Valid options are `0`: no blending, `1`: default/alpha blending, `2`: addative blending, `3`: modulo blending, `4`: multiply blending.
+
+The following sample apps show how `blendmode_enum` can be leveraged to create coloring and lighting effects:
+
+- `./samples/07_advanced_rendering/11_blend_modes`
+- `./samples/07_advanced_rendering/13_lighting`
+
+#### Triangles (Indie, Pro Feature)
+
+Sprites can be rendered as triangles at the Indie and Pro License Tiers. To rendering using triangles,
+instead of providing a `w`, `h` property, provide `x2`, `y2`, `x3`, `y3`. This applies for positioning and cropping.
+
+Here is an example:
+
+```ruby
+def tick args
+  args.outputs.sprites << {
+    x: 0,
+    y: 0,
+    x2: 80,
+    y2: 0,
+    x3: 0,
+    y3: 80,
+    source_x: 0,
+    source_y: 0,
+    source_x2: 80,
+    source_y2: 0,
+    source_x3: 0,
+    source_y3: 80,
+    path: "sprites/square/blue.png"
+  }
+end
+```
+
+For more example of rendering using triangles see:
+
+- `./samples/07_advanced_rendering/14_triangles`
+- `./samples/07_advanced_rendering/15_triangles_trapezoid`
+- `./samples/07_advanced_rendering/16_matrix_and_triangles_2d`
+- `./samples/07_advanced_rendering/16_matrix_and_triangles_3d`
+- `./samples/07_advanced_rendering/16_matrix_cubeworld`
+
 ### Rendering a sprite using an Array
 
 Creates a sprite of a white circle located at 100, 100. 160 pixels
@@ -205,6 +345,11 @@ def tick args
   args.outputs.sprites << [100, 100,   160,     90, "sprites/circle/white.png"]
 end
 ```
+
+!> Array-based sprites have limited access to sprite propertie, but
+nice for quick prototyping. Use a `Hash` or `Class` to 
+gain access to all properties, gain long term maintainability of code,
+and a boost in rendering performance. 
 
 ### Rendering a sprite using a Hash
 
@@ -225,111 +370,6 @@ def tick args
   }
 end
 ```
-
-Here are all the properties that you can set on a sprite. The only required ones are `x`, `y`, `w`, `h`, and `path`.
-
-1.  Required properties
-
-    - `x`: X position of the sprite. Note: the botton left corner of the sprite is used for positioning (this can be changed using `anchor_x`, and `anchor_y`).
-    - `y`: Y position of the sprite. Note: The origin 0,0 is at the bottom left corner. Setting `y` to a higher value will move the sprite upwards.
-    - `w`: The render width.
-    - `h`: The render height.
-    - `path`: The path of the sprite relative to the game folder.
-
-2.  Anchors and Rotations
-
-    - `flip_horizonally`: This value can be either `true` or `false` and controls if the sprite will be flipped horizontally (default value is false).
-    - `flip_vertically`: This value can be either `true` or `false` and controls if the sprite will be flipped horizontally (default value is false).
-    - `anchor_x`: Used to determine anchor point of the sprite's X position (relative to the render width).
-    - `anchor_y`: Used to determine anchor point of the sprite's Y position (relative to the render height).
-    - `angle`: Rotation of the sprite in degrees (default value is 0). Rotation occurs around the center of the sprite. The point of rotation can be changed using `angle_anchor_x` and `angle_anchor_y`.
-    - `angle_anchor_x`: Controls the point of rotation for the sprite (relative to the render width).
-    - `angle_anchor_y`: Controls the point of rotation for the sprite (relative to the render height).
-    
-    Here's an example of rendering a 80x80 pixel sprite in the center of the screen:
-    
-    ```ruby
-    def tick args
-      args.outputs.sprites << {
-        x: 640 - 40, # the logical center of the screen horizontally is 640, minus half the width of the sprite
-        y: 360 - 40, # the logical center of the screen vertically is 360, minus half the height of the sprite
-        w: 80,
-        h: 80,
-        path: "sprites/square/blue.png"
-     }
-    end
-    ```
-    
-    Instead of computing the offset, you can use `anchor_x`, and `anchor_y` to center the sprite. The following is equivalent to the code above:
-    
-    ```ruby
-    def tick args
-      args.outputs.sprites << {
-        x: 640,
-        y: 360,
-        w: 80,
-        h: 80,
-        path: "sprites/square/blue.png",
-        anchor_x: 0.5, # position horizontally at 0.5 of the sprite's width
-        anchor_y: 0.5  # position vertically at 0.5 of the sprite's height
-     }
-    end
-    ```
-
-3.  Cropping Properties
-
-    - `tile_(x|y|w|h)`: Defines the crop area to use for a sprite. The origin for `tile_` properties uses the TOP LEFT as its origin (useful for cropping tiles from a sprite sheet).
-    - `source_(x|y|w|h)`: Defines the crop area to use for a sprite. The origin for `tile_` properties uses the BOTTOM LEFT as its origin.
-    
-    See the sample apps under `./samples/03_rendering_sprites` for examples of how to use this properties non-trivially.
-
-4.  Blending Options
-
-    - `a`: Alpha/transparency of the sprite from 0 to 255 (default value is 255).
-    - `r`: Level of red saturation for the sprite (default value is 255). Example: Setting the value to zero will remove all red coloration from the sprite.
-    - `g`: Level of green saturation for the sprite (default value is 255).
-    - `b`: Level of blue saturation for the sprite (default value is 255).
-    - `blendmode_enum`: Valid options are `0`: no blending, `1`: default/alpha blending, `2`: addative blending, `3`: modulo blending, `4`: multiply blending.
-    
-    The following sample apps show how `blendmode_enum` can be leveraged to create coloring and lighting effects:
-    
-    - `./samples/07_advanced_rendering/11_blend_modes`
-    - `./samples/07_advanced_rendering/13_lighting`
-
-5.  Triagles (Indie, Pro Feature)
-
-    Sprites can be rendered as triangles at the Indie and Pro License Tiers. To rendering using triangles,
-    instead of providing a `w`, `h` property, provide `x2`, `y2`, `x3`, `y3`. This applies for positioning and cropping.
-    
-    Here is an example:
-    
-    ```ruby
-    def tick args
-      args.outputs.sprites << {
-        x: 0,
-        y: 0,
-        x2: 80,
-        y2: 0,
-        x3: 0,
-        y3: 80,
-        source_x: 0,
-        source_y: 0,
-        source_x2: 80,
-        source_y2: 0,
-        source_x3: 0,
-        source_y3: 80,
-        path: "sprites/square/blue.png"
-      }
-    end
-    ```
-    
-    For more example of rendering using triangles see:
-    
-    - `./samples/07_advanced_rendering/14_triangles`
-    - `./samples/07_advanced_rendering/15_triangles_trapezoid`
-    - `./samples/07_advanced_rendering/16_matrix_and_triangles_2d`
-    - `./samples/07_advanced_rendering/16_matrix_and_triangles_3d`
-    - `./samples/07_advanced_rendering/16_matrix_cubeworld`
 
 ### Rendering a sprite using a Class
 
@@ -493,3 +533,145 @@ This can be useful if you want to create files with transparent background like 
 The transparency of the color specified by `r`, `g`, `b` will be set to the transparency specified by `a`.
 
 The example above sets the color white (255, 255, 255) as transparent.
+
+## Shaders
+
+Shaders are available to Indie and Pro license holders via
+`dragonruby-shadersim`. Download DragonRuby ShaderSim at [dragonruby.org](https://dragonruby.org).
+
+!> Shaders are currently in Beta.
+<br/>
+<br/>
+Shaders must be GLSL ES2 compatible.
+<br/>
+<br/>
+The long term goal is for DR Shaders to baseline to GLSL
+version 300 and cross-compile to Vulkan, WebGL 2, Metal, and HLSL.
+
+Here is a minimal example of using shaders:
+
+```ruby
+# mygame/app/main.rb
+def tick args
+  args.outputs.shader_path ||= "shaders/example.glsl"
+end
+```
+
+```glsl
+// mygame/shaders/example.glsl
+uniform sampler2D tex0;
+
+varying vec2 v_texCoord;
+
+void main() {
+  gl_FragColor = texture2D(tex0, v_texCoord);
+}
+```
+
+### `shader_path`
+
+Setting `shader_path` on `outputs` signifies to DragonRuby that a
+shader should be compiled and loaded. 
+
+### `shader_uniforms`
+
+You can bind uniforms to a shader by providing an `Array` of `Hashes`
+to `shader_uniforms` with keys `name:`, `value:`, and `type:` which
+currently supports `:int` and `:float`.
+
+```ruby
+def tick args
+  args.outputs.shader_path ||= "shaders/example.glsl"
+
+  args.outputs.shader_uniforms = [
+    {
+      name: :mouse_coord_x,
+      value: args.inputs.mouse.x.fdiv(1280),
+      type: :float
+    },
+    {
+      name: :mouse_coord_y,
+      value: 1.0 - args.inputs.mouse.y.fdiv(720),
+      type: :float
+    },
+    { name: :tick_count, 
+      value: args.state.tick_count, 
+      type: :int
+    }
+  ]
+end
+```
+
+```glsl
+// mygame/shaders/example.glsl
+uniform sampler2D tex0;
+
+uniform float mouse_coord_x;
+uniform float mouse_coord_y;
+uniform int tick_count;
+
+varying vec2 v_texCoord;
+
+void main() {
+  gl_FragColor = texture2D(tex0, v_texCoord);
+}
+```
+
+### `shader_tex(1-15)`
+
+You can bind up to 15 additional render targets via `shaders_tex1`,
+`shaders_tex2`, `shaders_tex3`, etc. `tex0` is reserved for what has
+been rendered to the screen and cannot be set.
+
+```ruby
+def tick args
+  args.outputs.shader_path = "shaders/example.glsl"
+  args.outputs.shader_tex1 = :single_blue_square
+  
+  args.outputs[:single_blue_square].background_color = { r: 255, g: 255, b: 255, a: 255 }
+  args.outputs[:single_blue_square].w = 1280;
+  args.outputs[:single_blue_square].h = 720;
+  args.outputs[:single_blue_square].sprites << {
+    x: 0,
+    y: 0,
+    w: 100,
+    h: 100,
+    path:
+    "sprites/square/blue.png"
+  }
+  
+  args.outputs.background_color = { r: 0, g: 0, b: 0 }
+  args.outputs.sprites << {
+    x: 0,
+    y: 0,
+    w: 200,
+    h: 200,
+    path:
+    "sprites/square/red.png"
+  }
+end
+```
+
+```glsl
+uniform sampler2D tex0;
+uniform sampler2D tex1; // :single_blue_square render target
+
+varying vec2 v_texCoord;
+
+void noop() {
+  vec4 pixel_from_rt = texture2D(tex1, v_texCoord);
+
+  // if the pixel from the render target isn't white
+  // then render the pixel from the RT
+  // otherwise render the pixel from the screen
+  if (pixel_from_rt.r < 1.0 ||
+      pixel_from_rt.g < 1.0 ||
+      pixel_from_rt.b < 1.0) {
+    gl_FragColor.r = pixel_from_rt.r;
+    gl_FragColor.g = pixel_from_rt.g;
+    gl_FragColor.b = pixel_from_rt.b;
+  } else {
+    gl_FragColor = texture2D(tex0, v_texCoord);
+  }
+}
+```

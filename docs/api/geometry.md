@@ -558,19 +558,28 @@ Invocation variants:
 - `args.geometry.line_intersect line_1, line_2`
 - `Geometry::line_intersect line_1, line_2`
 
+```ruby
 def tick args
-
-args.state.line_one ||= { x: 0, y: 0, x2: 1280, y2: 720 }
-
-line_two = { x: 0, y: 720, x2: args.inputs.mouse.x, y2: args.inputs.mouse.y }
-
-args.state.intersect_point = args.geometry.line_intersect args.state.line_one, line_two
-
-args.outputs.lines << { x: 0, y: 0, x2: 1280, y2: 720 }
-
-args.outputs.lines << line_two
-
-if args.state.intersect_point args.outputs.solids << { x: args.state.intersect_point.x, y: args.state.intersect_point.y, w: 10, h: 10, anchor_x: 0.5, anchor_y: 0.5, r: 255, g: 0, b: 0 } end end
+  args.state.line_one ||= { x: 0, y: 0, x2: 1280, y2: 720 }
+  line_two = { x: 0, y: 720, x2: args.inputs.mouse.x, y2: args.inputs.mouse.y }
+  args.state.intersect_point = args.geometry.line_intersect args.state.line_one, line_two
+  args.outputs.lines << { x: 0, y: 0, x2: 1280, y2: 720 }
+  args.outputs.lines << line_two
+  if args.state.intersect_point
+    args.outputs.solids << {
+      x: args.state.intersect_point.x,
+      y: args.state.intersect_point.y,
+      w: 10,
+      h: 10,
+      anchor_x: 0.5,
+      anchor_y: 0.5,
+      r: 255,
+      g: 0,
+      b: 0
+    }
+  end
+end
+```
 
 ## `ray_intersect`
 

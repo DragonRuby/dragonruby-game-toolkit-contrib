@@ -30,9 +30,14 @@ module GTK
       @inputs = Inputs.new
       @outputs = TopLevelOutputs.new args: self
       @cvars = {}
+      $cvars     ||= @cvars
       @audio = AudioHash.new
       @passes = []
-      @state = OpenEntity.new
+      if runtime.state_assigned_to_nil_on_boot
+        @state = nil
+      else
+        @state = OpenEntity.new
+      end
       @temp_state = OpenEntity.new
       @state.tick_count = -1
       @runtime = runtime
@@ -259,7 +264,9 @@ module GTK
     end
 
     def reset
-      @state.tick_count = Kernel.tick_count
+      if @state
+        @state.tick_count = Kernel.tick_count
+      end
       @outputs.clear
       @audio.clear
       @events[:raw].clear
@@ -312,3 +319,4 @@ class AudioHash < Hash
     @volume = @volume.clamp(0.0, 1.0)
   end
 end
+

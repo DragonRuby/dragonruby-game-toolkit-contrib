@@ -8,12 +8,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
 
   <!-- Themes (light + dark) -->
-  <link rel="stylesheet" media="(prefers-color-scheme: dark)" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple-dark.css">
-  <link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
+  <link rel="stylesheet" media="(prefers-color-scheme: dark)" href="/public/theme-simple-dark.css">
+  <link rel="stylesheet" media="(prefers-color-scheme: light)" href="/public/theme-simple.css">
 
   <!-- Prism JS (light + dark) -->
-  <link rel="stylesheet" media="(prefers-color-scheme: dark)" href="https://cdn.jsdelivr.net/npm/prism-themes/themes/prism-one-dark.min.css">
-  <link rel="stylesheet" media="(prefers-color-scheme: light)" href="https://cdn.jsdelivr.net/npm/prism-themes/themes/prism-one-light.min.css">
+  <link rel="stylesheet" media="(prefers-color-scheme: dark)" href="/public/prism-one-dark.min.css">
+  <link rel="stylesheet" media="(prefers-color-scheme: light)" href="/public/prism-one-light.min.css">
 </head>
 <body>
   <div id="app">
@@ -55,24 +55,27 @@
    }
   </script>
   <!-- Docsify v4 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/js/docsify-themeable.min.js"></script>
+  <script src="/public/docsify.min.js"></script>
+  <script src="/public/docsify-themeable.min.js"></script>
 
   <!-- Prism Ruby highlight -->
-  <script src="//cdn.jsdelivr.net/npm/prismjs@v1.x/components/prism-ruby.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/prismjs@v1.x/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="/public/prism-ruby.min.js"></script>
+  <script src="/public/prism-clike.min.js"></script>
+  <script src="/public/prism-c.min.js"></script>
+  <script src="/public/prism-glsl.min.js"></script>
+  <script src="/public/prism-autoloader.min.js"></script>
 
   <!-- Other Plugins -->
-  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/zoom-image.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/docsify-copy-code/dist/docsify-copy-code.min.js"></script>
+  <script src="/public/zoom-image.min.js"></script>
+  <script src="/public/search.min.js"></script>
+  <script src="/public/docsify-copy-code.min.js"></script>
 
   <!-- Mermaid Diagrams -->
   <script type="module">
-    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+    import mermaid from "/public/mermaid@10/dist/mermaid.esm.min.mjs";
     mermaid.initialize({ startOnLoad: true });
     window.mermaid = mermaid;
   </script>
-  <script src="//unpkg.com/docsify-mermaid@2.0.0/dist/docsify-mermaid.js"></script>
+  <script src="/public/docsify-mermaid.js"></script>
 </body>
 </html>
