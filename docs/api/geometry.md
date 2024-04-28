@@ -32,7 +32,7 @@ def tick args
 
   # module variants
   puts args.geometry.intersect_rect?(rect_1, rect_2)
-  puts Geometry::intersect_rect?(rect_1, rect_2)
+  puts Geometry.intersect_rect?(rect_1, rect_2)
 end
 ```
 
@@ -42,7 +42,7 @@ Invocation variants:
 
 - `instance.intersect_rect?(other, tolerance)`
 - `args.geometry.intersect_rect?(rect_1, rect_2, tolerance)`
-- `Geometry::intersect_rect?(rect_1, rect_2, tolerance)`
+- `Geometry.intersect_rect?(rect_1, rect_2, tolerance)`
 - `args.inputs.mouse.intersect_rect?(other, tolerance)`
 
 Given two rectangle primitives this function will return `true` or `false` depending on if the two rectangles intersect or not. An optional final parameter can be passed in representing the `tolerence` of overlap needed to be considered a true intersection. The default value of `tolerance` is `0.1` which keeps the function from returning true if only the edges of the rectangles overlap.
@@ -115,7 +115,7 @@ Invocation variants:
 
 - `instance.inside_rect?(other)`
 - `args.geometry.inside_rect?(rect_1, rect_2)`
-- `Geometry::inside_rect?(rect_1, rect_2)`
+- `Geometry.inside_rect?(rect_1, rect_2)`
 
 Given two rectangle primitives this function will return `true` or `false` depending on if the first rectangle (or `self`) is inside of the second rectangle.
 
@@ -255,7 +255,7 @@ end
 Invocation variants:
 
 - `args.geometry.angle start_point, end_point`
-- `Geometry::angle start_point, end_point`
+- `Geometry.angle start_point, end_point`
 
 Returns an angle in degrees from the `start_point` to the `end_point` (if you want the value in radians call `.to_radians` on the value returned).
 
@@ -264,7 +264,7 @@ Returns an angle in degrees from the `start_point` to the `end_point` (if you wa
 Invocation variants:
 
 - `args.geometry.angle_from start_point, end_point`
-- `Geometry::angle_from start_point, end_point`
+- `Geometry.angle_from start_point, end_point`
 - `start_point.angle_from end_point`
 
 Returns an angle in degrees from the `end_point` to the `start_point` (if you want the value in radians, you can call `.to_radians` on the value returned):
@@ -297,8 +297,8 @@ Invocation variants:
 
 - `args.geometry.angle_to start_point, end_point`
 - `args.geometry.angle start_point, end_point` (alias)
-- `Geometry::angle_to start_point, end_point`
-- `Geometry::angle start_point, end_point` (alias)
+- `Geometry.angle_to start_point, end_point`
+- `Geometry.angle start_point, end_point` (alias)
 - `start_point.angle_to end_point`
 
 Returns an angle in degrees to the `end_point` from the `start_point` (if you want the value in radians, you can call `.to_radians` on the value returned):
@@ -330,9 +330,83 @@ end
 Invocation variants:
 
 - `args.geometry.angle_turn_direction angle, target_angle`
-- `Geometry::angle_turn_direction angle, target_angle`
+- `Geometry.angle_turn_direction angle, target_angle`
 
 Returns `1` or -1 depending on which direction the `angle` needs to turn to reach the `target_angle` most efficiently. The angles are assumed to be in degrees. `1` means turn clockwise, and `-1` means turn counter-clockwise.
+
+## `angle_delta`
+
+Invocation variants:
+
+- `args.geometry.angle_delta angle, target_angle`
+- `Geometry.angle_delta angle, target_angle`
+
+Given an `angle` and a `target_angle`, this function will return the
+smallest angle delta between the two angles. The angles are assumed to
+be in degrees.
+
+## `angle_within_range?`
+
+Invocation variants:
+
+- `args.geometry.angle_within_range? test_angle, target_angle, range`
+- `Geometry.angle_within_range? test_angle, target_angle, range`
+
+Given a `test_angle`, `target_angle`, and `range` (all in degrees),
+this function will return `true` if the `test_angle` is within the
+`range` of the `target_angle` on either side. The `range` is the
+number of degrees from the `target_angle` that the `test_angle` can be
+within to return `true`.
+
+```ruby
+def tick args
+  args.state.target_angle ||= 90
+  args.state.angle_range  ||= 10
+  mouse_angle  = Geometry.angle({ x: 640, y: 0 }, args.inputs.mouse.point)
+  delta_angle  = Geometry.angle_delta(args.state.target_angle, mouse_angle)
+  within_range = Geometry.angle_within_range?(args.state.target_angle, mouse_angle, args.state.angle_range)
+
+  # render line for mouse
+  args.outputs.lines << { x: 640,
+                          y: 0,
+                          x2: args.inputs.mouse.x,
+                          y2: args.inputs.mouse.y,
+                          r: 0,
+                          g: 0,
+                          b: 0 }
+
+  # render line for target angle
+  args.outputs.lines << { x: 640,
+                          y: 0,
+                          x2: 640 + 700 * args.state.target_angle.vector_x,
+                          y2: 700 * args.state.target_angle.vector_y,
+                          r: 0,
+                          g: 0,
+                          b: 0 }
+
+  # render lines for angle range
+  args.outputs.lines << { x: 640,
+                          y: 0,
+                          x2: 640 + 700 * (args.state.target_angle - args.state.angle_range).vector_x,
+                          y2: 700 * (args.state.target_angle - args.state.angle_range).vector_y,
+                          r: 0,
+                          g: 0,
+                          b: 0 }
+  args.outputs.lines << { x: 640,
+                          y: 0,
+                          x2: 640 + 700 * (args.state.target_angle + args.state.angle_range).vector_x,
+                          y2: 700 * (args.state.target_angle + args.state.angle_range).vector_y,
+                          r: 0,
+                          g: 0,
+                          b: 0 }
+
+  args.outputs.debug << "Target Angle #{args.state.target_angle}"
+  args.outputs.debug << "Angle Range #{args.state.angle_range}"
+  args.outputs.debug << "Mouse Angle #{mouse_angle.to_sf}"
+  args.outputs.debug << "Delta Angle #{delta_angle.to_sf}"
+  args.outputs.debug << "Within Range? #{within_range}"
+end
+```
 
 ## `distance`
 
@@ -372,7 +446,7 @@ Invocation variants:
 
 - `point_1.point_inside_circle? circle_center, circle_radius`
 - `args.geometry.point_inside_circle? point_1, circle_center, circle_radius`
-- `Geometry::point_inside_circle? point_1, circle_center, circle_radius`
+- `Geometry.point_inside_circle? point_1, circle_center, circle_radius`
 
 `circle_center` can also contain the `radius` value (instead of passing it as a separate argument).
 
@@ -443,7 +517,7 @@ Invocation variants:
 
 - `target_rect.center_inside_rect reference_rect`
 - `args.geometry.center_inside_rect target_rect, reference_rect`
-- `Geometry::center_inside_rect target_rect, reference_rect`
+- `Geometry.center_inside_rect target_rect, reference_rect`
 
 Given a target rect and a reference rect, the target rect is centered inside the reference rect (a new rect is returned).
 
@@ -556,7 +630,7 @@ Given two lines (`:x`, `:y`, `:x2`, `:y2`), this function returns point of inter
 Invocation variants:
 
 - `args.geometry.line_intersect line_1, line_2`
-- `Geometry::line_intersect line_1, line_2`
+- `Geometry.line_intersect line_1, line_2`
 
 ```ruby
 def tick args
@@ -588,7 +662,7 @@ Given two lines (`:x`, `:y`, `:x2`, `:y2`), this function returns point of inter
 Invocation variants:
 
 - `args.geometry.ray_intersect line_1, line_2`
-- `Geometry::ray_intersect line_1, line_2`
+- `Geometry.ray_intersect line_1, line_2`
 
 ```ruby
 def tick args
@@ -823,12 +897,12 @@ Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y
 
 Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
 
-## `rect_normalize`
+## `rect_props`
 
 Invocation variants:
 
-- `args.geometry.angle start_point, end_point`
-- `Geometry::angle start_point, end_point`
+- `args.geometry.rect_props rect`
+- `Geometry.rect_props rect`
 
 Given a `Hash` with `x`, `y`, `w`, `h`, (and optionally `anchor_x`, `anchor_y`), this function returns a `Hash` in the following form.
 
@@ -994,7 +1068,7 @@ def tick args
   args.state.selected_button ||= args.state.buttons.first
 
   # navigate based on the keyboard's left_right, up_down properties
-  args.state.selected_button = Geometry::rect_navigate(
+  args.state.selected_button = Geometry.rect_navigate(
     rect: args.state.selected_button,
     rects: args.state.buttons,
     left_right: args.inputs.keyboard.key_down.left_right,
@@ -1012,7 +1086,7 @@ end
 Using `directional_vector`:
 
 ```ruby
-args.state.selected_button = Geometry::rect_navigate(
+args.state.selected_button = Geometry.rect_navigate(
   rect: args.state.selected_button,
   rects: args.state.buttons,
   directional_vector: args.inputs.keyboard.key_down.directional_vector
@@ -1022,7 +1096,7 @@ args.state.selected_button = Geometry::rect_navigate(
 Optional properties:
 
 ```ruby
-args.state.selected_button = Geometry::rect_navigate(
+args.state.selected_button = Geometry.rect_navigate(
   rect: args.state.selected_button,
   rects: args.state.buttons,
   left_right: args.inputs.keyboard.key_down.left_right,

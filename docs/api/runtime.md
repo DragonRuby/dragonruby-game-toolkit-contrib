@@ -221,6 +221,16 @@ def tick args
 end
 ```
 
+`calcstringbox` also supports named parameters for `size_enum` and `size_px`.
+
+```ruby
+  # size_enum, and font named parameters
+  string_w, string_h = args.gtk.calcstringbox text, size_enum: 0, font: "fonts/example.ttf"
+  
+  # size_px, and font named parameters
+  string_w, string_h = args.gtk.calcstringbox text, size_px: 20, font: "fonts/example.ttf"
+```
+
 ### `request_quit`
 
 Call this function to exit your game. You will be given one additional tick if you need to perform any housekeeping before that game closes.

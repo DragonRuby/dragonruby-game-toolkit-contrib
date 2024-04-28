@@ -307,12 +307,12 @@ S
 
     def console_toggle_keys
       [
-        :backtick!,
-        :tilde!,
-        :superscript_two!,
-        :section_sign!,
-        :ordinal_indicator!,
-        :circumflex!,
+        :backtick,
+        :tilde,
+        :superscript_two,
+        :section_sign,
+        :ordinal_indicator,
+        :circumflex,
       ]
     end
 

@@ -1,3 +1,33 @@
+* 5.25
+** [Pro] [iOS] Added new collection of icons that cover new devices.
+** [Pro] [Android] [Bugfix] Fixed warning message about sprites being too large for Android to load.
+** [Support] Added support for ~ignore_directories~ to =game_metadata.txt= which will not be packaged during ~dragonruby-publish~.
+   A comma delimited list of directories that should be ignored during the
+   publishing process. For example, if your game supports saves, you'd want to ignore
+   that directory (example format: ignore_directories=tmp,saves,dev,assets).
+     IMPORTANT:
+     Any directory that matches the ignore list will be ignored (REGARDLESS OF HIERARCHY).
+     For example:
+       ignore_directories value: saves
+       Directory structure:
+       - mygame
+         - saves <---- This directory will be ignored
+         - libs
+           - saves <---- This directory will be ignored
+   ignore_directories=saves
+** [Support] Controllers now have a ~name~ property that will be set when a controller is connected.
+** [Support] Removed custom overrides of ~const_defined?~ and ~const_missing~ (no longer needed).
+** [Support] ~Geometry::rect_navigate~ left right wrapping behavior improved.
+** [Support] ~Runtime#calcstringbox~ supports ~size_px~ via a named parameter.
+** [Support] Source code backups now organized under =YYYY-MM-DDDD= directories.
+** [OSS] ~Runtime#platform?~, ~Runtime#platform?~, and ~Runtime#platform_mappings~ open sourced.
+** [Bugfix] ~Inputs#up_down_perc~ consults WASD/has parity with ~Inputs#left_right_perc~.
+* 5.24
+** [Pro] [Android] Fixed IP Address retrieval for remote hotload on Window.
+** [Support] ~$gtk.notify! STRING~ respects new lines and will increase height accordingly.
+** [Samples] Added sample app that shows how to create a radial menu that works with mouse and controller.
+   Sample app location: =samples/09_ui_controls/03_radial_menu=
+** [Bugfix] Reverted experimental terminal stdin/stdout for MacOS and Linux.
 * 5.23
 ** [Pro] [Support] Improved documentation for All Screen Mode.
 ** [Pro] [Indie] [Shaders] A beta of ~dragonruby-shadersim~ has been released.

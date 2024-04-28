@@ -5,6 +5,7 @@
 
 module GTK
   class Controller
+    attr :name
     attr :key_down
     attr :key_up
     attr :key_held
@@ -36,11 +37,32 @@ module GTK
       @connected = false
     end
 
+    def to_h
+      serialize
+    end
+
+    def to_hash
+      serialize
+    end
+
     def serialize
       {
-        key_down: @key_down.serialize,
-        key_held: @key_held.serialize,
-        key_up:   @key_up.serialize
+        left_analog_x_raw:     @left_analog_x_raw,
+        left_analog_y_raw:     @left_analog_y_raw,
+        left_analog_x_perc:    @left_analog_x_perc,
+        left_analog_y_perc:    @left_analog_y_perc,
+        right_analog_x_raw:    @right_analog_x_raw,
+        right_analog_y_raw:    @right_analog_y_raw,
+        right_analog_x_perc:   @right_analog_x_perc,
+        right_analog_y_perc:   @right_analog_y_perc,
+        active:                @active,
+        key_down:              @key_down.serialize,
+        key_held:              @key_held.serialize,
+        key_up:                @key_up.serialize,
+        left_analog_angle:     left_analog_angle,
+        right_analog_angle:    right_analog_angle,
+        left_analog_active:    left_analog_active?,
+        right_analog_active:    right_analog_active?
       }
     end
 
@@ -112,6 +134,72 @@ module GTK
       end
 
       return send(m)
+    end
+
+    def inspect
+      "#{serialize}"
+    end
+
+    def to_s
+      "#{serialize}"
+    end
+
+    def left_analog_angle
+      return nil if left_analog_x_raw == 0 && left_analog_y_raw == 0
+      Math.atan2(left_analog_y_perc, left_analog_x_perc).to_degrees % 360
+    end
+
+    def right_analog_angle
+      return nil if right_analog_x_raw == 0 && right_analog_y_raw == 0
+      Math.atan2(right_analog_y_perc, right_analog_x_perc).to_degrees % 360
+    end
+
+    def left_analog_active? threshold_raw: nil, threshold_perc: nil
+      threshold_value = threshold_raw || threshold_perc || 0
+      threshold_to_use = if threshold_raw
+                           :raw
+                         elsif threshold_perc
+                           :perc
+                         else
+                           :raw
+                         end
+      if threshold_to_use == :raw
+        if left_analog_x_raw == 0 && left_analog_y_raw == 0
+          return false
+        else
+          return true
+        end
+      else
+        if left_analog_x_perc.abs < threshold_value && left_analog_y_perc.abs < threshold_value
+          return false
+        else
+          return true
+        end
+      end
+    end
+
+    def right_analog_active? threshold_raw: nil, threshold_perc: nil
+      threshold_value = threshold_raw || threshold_perc || 0
+      threshold_to_use = if threshold_raw
+                           :raw
+                         elsif threshold_perc
+                           :perc
+                         else
+                           :raw
+                         end
+      if threshold_to_use == :raw
+        if right_analog_x_raw == 0 && right_analog_y_raw == 0
+          return false
+        else
+          return true
+        end
+      else
+        if right_analog_x_perc.abs < threshold_value && right_analog_y_perc.abs < threshold_value
+          return false
+        else
+          return true
+        end
+      end
     end
   end
 end

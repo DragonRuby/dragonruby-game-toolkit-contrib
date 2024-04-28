@@ -723,108 +723,43 @@ Do:
   args.state.fx_queue.reject! { |fx| fx.countdown < 0 }
 #+end_src
 
-* RECIPIES:
-** How To Determine What Frame You Are On
+** Using ~args.state~ To Store Your Game State
 
-There is a property on ~state~ called ~tick_count~ that is incremented
-by DragonRuby every time the ~tick~ method is called. The following
-code renders a label that displays the current ~tick_count~.
+~args.state~ is a open data structure that allows you to define
+properties that are arbitrarily nested. You don't need to define any kind of
+~class~.
 
-#+begin_src ruby
+To initialize your game state, use the ~||=~ operator. Any value on
+the right side of ~||=~ will only be assigned _once_.
+
+To assign a value every frame, just use the ~=~ operator, but _make
+sure_ you've initialized a default value.
+
+#+begin_src
   def tick args
-    args.outputs.labels << [10, 670, "#{args.state.tick_count}"]
-  end
-#+end_src
+    # initialize your game state ONCE
+    args.state.player.x  ||= 0
+    args.state.player.y  ||= 0
+    args.state.player.hp ||= 100
 
-** How To Get Current Framerate
+    # increment the x position of the character by one every frame
+    args.state.player.x += 1
 
-Current framerate is a top level property on the Game Toolkit Runtime
-and is accessible via ~args.gtk.current_framerate~.
-
-#+begin_src ruby
-  def tick args
-    args.outputs.labels << [10, 710, "framerate: #{args.gtk.current_framerate.round}"]
-  end
-#+end_src
-
-** How To Render A Sprite Using An Array
-
-All file paths should use the forward slash ~/~ *not* backslash
-~\~. Game Toolkit includes a number of sprites in the ~sprites~
-folder (everything about your game is located in the ~mygame~ directory).
-
-The following code renders a sprite with a ~width~ and ~height~ of
-~100~ in the center of the screen.
-
-~args.outputs.sprites~ is used to render a sprite.
-
-NOTE: Rendering using an ~Array~ is "quick and dirty". It's generally recommended that
-      you render using ~Hashes~ long term.
-
-#+begin_src ruby
-  def tick args
+    # Render a sprite with a label above the sprite
     args.outputs.sprites << [
-      640 - 50,                 # X
-      360 - 50,                 # Y
-      100,                      # W
-      100,                      # H
-      'sprites/square-blue.png' # PATH
-   ]
+      args.state.player.x,
+      args.state.player.y,
+      32, 32,
+      "player.png"
+    ]
+
+    args.outputs.labels << [
+      args.state.player.x,
+      args.state.player.y - 50,
+      args.state.player.hp
+    ]
   end
 #+end_src
-
-** Rendering a Sprite Using a ~Hash~
-
-Using ordinal positioning can get a little unruly given so many
-properties you have control over.
-
-You can represent a sprite as a ~Hash~:
-
-#+begin_src ruby
-  def tick args
-    args.outputs.sprites << {
-      x: 640 - 50,
-      y: 360 - 50,
-      w: 100,
-      h: 100,
-
-      path: 'sprites/square-blue.png',
-      angle: 0,
-
-      a: 255,
-      r: 255,
-      g: 255,
-      b: 255,
-
-      # source_ properties have origin of bottom left
-      source_x:  0,
-      source_y:  0,
-      source_w: -1,
-      source_h: -1,
-
-      # tile_ properties have origin of top left
-      tile_x:  0,
-      tile_y:  0,
-      tile_w: -1,
-      tile_h: -1,
-
-      flip_vertically: false,
-      flip_horizontally: false,
-
-      angle_anchor_x: 0.5,
-      angle_anchor_y: 1.0,
-
-      blendmode_enum: 1
-
-      # sprites anchor/alignment (default is nil)
-      anchor_x: 0.5,
-      anchor_y: 0.5
-    }
-  end
-#+end_src
-
-The ~blendmode_enum~ value can be set to ~0~ (no blending), ~1~ (alpha blending),
-~2~ (additive blending), ~3~ (modulo blending), ~4~ (multiply blending).
 
 ** How To Play A Sound
 
@@ -990,6 +925,85 @@ You can use a strategy like the following to create multiple labels from a Strin
   end
 #+end_src
 
+** How To Render A Sprite Using An Array
+
+All file paths should use the forward slash ~/~ *not* backslash
+~\~. Game Toolkit includes a number of sprites in the ~sprites~
+folder (everything about your game is located in the ~mygame~ directory).
+
+The following code renders a sprite with a ~width~ and ~height~ of
+~100~ in the center of the screen.
+
+~args.outputs.sprites~ is used to render a sprite.
+
+NOTE: Rendering using an ~Array~ is "quick and dirty". It's generally recommended that
+      you render using ~Hashes~ long term.
+
+#+begin_src ruby
+  def tick args
+    args.outputs.sprites << [
+      640 - 50,                 # X
+      360 - 50,                 # Y
+      100,                      # W
+      100,                      # H
+      'sprites/square-blue.png' # PATH
+   ]
+  end
+#+end_src
+
+** Rendering a Sprite Using a ~Hash~
+
+Using ordinal positioning can get a little unruly given so many
+properties you have control over.
+
+You can represent a sprite as a ~Hash~:
+
+#+begin_src ruby
+  def tick args
+    args.outputs.sprites << {
+      x: 640 - 50,
+      y: 360 - 50,
+      w: 100,
+      h: 100,
+
+      path: 'sprites/square-blue.png',
+      angle: 0,
+
+      a: 255,
+      r: 255,
+      g: 255,
+      b: 255,
+
+      # source_ properties have origin of bottom left
+      source_x:  0,
+      source_y:  0,
+      source_w: -1,
+      source_h: -1,
+
+      # tile_ properties have origin of top left
+      tile_x:  0,
+      tile_y:  0,
+      tile_w: -1,
+      tile_h: -1,
+
+      flip_vertically: false,
+      flip_horizontally: false,
+
+      angle_anchor_x: 0.5,
+      angle_anchor_y: 1.0,
+
+      blendmode_enum: 1
+
+      # sprites anchor/alignment (default is nil)
+      anchor_x: 0.5,
+      anchor_y: 0.5
+    }
+  end
+#+end_src
+
+The ~blendmode_enum~ value can be set to ~0~ (no blending), ~1~ (alpha blending),
+~2~ (additive blending), ~3~ (modulo blending), ~4~ (multiply blending).
+
 ** Accessing files
 
 DragonRuby uses a sandboxed filesystem which will automatically read from and
@@ -1027,41 +1041,27 @@ to run the ~dragonruby~ binary from a shared location. It's
 recommended that the directory structure contained in the zip is not
 altered and games are built using that starter template.
 
-** Using ~args.state~ To Store Your Game State
+* RECIPIES:
+** How To Determine What Frame You Are On
 
-~args.state~ is a open data structure that allows you to define
-properties that are arbitrarily nested. You don't need to define any kind of
-~class~.
+There is a property on ~state~ called ~tick_count~ that is incremented
+by DragonRuby every time the ~tick~ method is called. The following
+code renders a label that displays the current ~tick_count~.
 
-To initialize your game state, use the ~||=~ operator. Any value on
-the right side of ~||=~ will only be assigned _once_.
-
-To assign a value every frame, just use the ~=~ operator, but _make
-sure_ you've initialized a default value.
-
-#+begin_src
+#+begin_src ruby
   def tick args
-    # initialize your game state ONCE
-    args.state.player.x  ||= 0
-    args.state.player.y  ||= 0
-    args.state.player.hp ||= 100
+    args.outputs.labels << [10, 670, "#{args.state.tick_count}"]
+  end
+#+end_src
 
-    # increment the x position of the character by one every frame
-    args.state.player.x += 1
+** How To Get Current Framerate
 
-    # Render a sprite with a label above the sprite
-    args.outputs.sprites << [
-      args.state.player.x,
-      args.state.player.y,
-      32, 32,
-      "player.png"
-    ]
+Current framerate is a top level property on the Game Toolkit Runtime
+and is accessible via ~args.gtk.current_framerate~.
 
-    args.outputs.labels << [
-      args.state.player.x,
-      args.state.player.y - 50,
-      args.state.player.hp
-    ]
+#+begin_src ruby
+  def tick args
+    args.outputs.labels << [10, 710, "framerate: #{args.gtk.current_framerate.round}"]
   end
 #+end_src
 
@@ -1894,7 +1894,6 @@ Returns a floating point value between ~-1~ and ~1~. The following inputs are in
 -   Controller One's Left Analog (if a controller is connected and the value is not 0.0): ~args.inputs.controller_one.up_analog_y_perc~
 -   If the left analog isn't being used, then Controller One's DPAD is consulted: ~args.inputs.controller_one.dpad_up~, ~args.inputs.controller_one.dpad_down~
 -   Keyboard's up/down arrow keys: ~args.inputs.keyboard.(up|down)_arrow~
--   WASD is NOT consulted.
 
 Here is some sample code to help visualize the ~up_down~ functions.
 
@@ -1993,6 +1992,10 @@ Returns a ~Hash~ with ~x~ and ~y~ denoting a touch point that is on the right si
 
 Represents controllers connected to the usb ports. There is also ~args.inputs.controllers~ which returns controllers one through four as an array (~args.inputs.controllers[0]~ points to ~args.inputs.controller_one~).
 
+*** ~name~
+
+String value representing the controller's name.
+
 *** ~active~
 
 Returns true if any of the controller's buttons were used.
@@ -2072,6 +2075,24 @@ Returns ~true~ if the specific button is being held. ~args.inputs.controller_(on
 *** ~key_up~
 
 Returns ~true~ if the specific button was released. ~args.inputs.controller_(one-four).key_up.BUTTON~ will be true only on the frame the button was released.
+
+*** ~left_analog_active?(threshold_raw:, threshold_perc:)~
+
+Returns true if the Left Analog Stick is tilted. The ~threshold_raw~
+and ~threshold_perc~ are optional parameters that can be used to set
+the minimum threshold for the analog stick to be considered
+active. The ~threshold_raw~ is a number between 0 and 32,767, and the
+~threshold_perc~ is a number between 0 and 1.
+
+*** ~right_analog_active?~
+
+*** ~right_analog_active?(threshold_raw:, threshold_perc:)~
+
+Returns true if the Right Analog Stick is tilted. The ~threshold_raw~
+and ~threshold_perc~ are optional parameters that can be used to set
+the minimum threshold for the analog stick to be considered
+active. The ~threshold_raw~ is a number between 0 and 32,767, and the
+~threshold_perc~ is a number between 0 and 1.
 
 ** Keyboard (~args.inputs.keyboard~)
 
@@ -2480,6 +2501,16 @@ Returns the render width and render height as a tuple for a piece of text. The p
       b: 0
     }
   end
+#+end_src
+
+~calcstringbox~ also supports named parameters for ~size_enum~ and ~size_px~.
+
+#+begin_src ruby
+    # size_enum, and font named parameters
+    string_w, string_h = args.gtk.calcstringbox text, size_enum: 0, font: "fonts/example.ttf"
+  
+    # size_px, and font named parameters
+    string_w, string_h = args.gtk.calcstringbox text, size_px: 20, font: "fonts/example.ttf"
 #+end_src
 
 *** ~request_quit~
@@ -3614,7 +3645,7 @@ You can invoke the functions above using either the mixin variant or the module 
   
     # module variants
     puts args.geometry.intersect_rect?(rect_1, rect_2)
-    puts Geometry::intersect_rect?(rect_1, rect_2)
+    puts Geometry.intersect_rect?(rect_1, rect_2)
   end
 #+end_src
 
@@ -3624,7 +3655,7 @@ Invocation variants:
 
 - ~instance.intersect_rect?(other, tolerance)~
 - ~args.geometry.intersect_rect?(rect_1, rect_2, tolerance)~
-- ~Geometry::intersect_rect?(rect_1, rect_2, tolerance)~
+- ~Geometry.intersect_rect?(rect_1, rect_2, tolerance)~
 - ~args.inputs.mouse.intersect_rect?(other, tolerance)~
 
 Given two rectangle primitives this function will return ~true~ or ~false~ depending on if the two rectangles intersect or not. An optional final parameter can be passed in representing the ~tolerence~ of overlap needed to be considered a true intersection. The default value of ~tolerance~ is ~0.1~ which keeps the function from returning true if only the edges of the rectangles overlap.
@@ -3697,7 +3728,7 @@ Invocation variants:
 
 - ~instance.inside_rect?(other)~
 - ~args.geometry.inside_rect?(rect_1, rect_2)~
-- ~Geometry::inside_rect?(rect_1, rect_2)~
+- ~Geometry.inside_rect?(rect_1, rect_2)~
 
 Given two rectangle primitives this function will return ~true~ or ~false~ depending on if the first rectangle (or ~self~) is inside of the second rectangle.
 
@@ -3837,7 +3868,7 @@ Returns a new rect that is anchored by an ~anchor_x~ and ~anchor_y~ value. The w
 Invocation variants:
 
 - ~args.geometry.angle start_point, end_point~
-- ~Geometry::angle start_point, end_point~
+- ~Geometry.angle start_point, end_point~
 
 Returns an angle in degrees from the ~start_point~ to the ~end_point~ (if you want the value in radians call ~.to_radians~ on the value returned).
 
@@ -3846,7 +3877,7 @@ Returns an angle in degrees from the ~start_point~ to the ~end_point~ (if you wa
 Invocation variants:
 
 - ~args.geometry.angle_from start_point, end_point~
-- ~Geometry::angle_from start_point, end_point~
+- ~Geometry.angle_from start_point, end_point~
 - ~start_point.angle_from end_point~
 
 Returns an angle in degrees from the ~end_point~ to the ~start_point~ (if you want the value in radians, you can call ~.to_radians~ on the value returned):
@@ -3879,8 +3910,8 @@ Invocation variants:
 
 - ~args.geometry.angle_to start_point, end_point~
 - ~args.geometry.angle start_point, end_point~ (alias)
-- ~Geometry::angle_to start_point, end_point~
-- ~Geometry::angle start_point, end_point~ (alias)
+- ~Geometry.angle_to start_point, end_point~
+- ~Geometry.angle start_point, end_point~ (alias)
 - ~start_point.angle_to end_point~
 
 Returns an angle in degrees to the ~end_point~ from the ~start_point~ (if you want the value in radians, you can call ~.to_radians~ on the value returned):
@@ -3912,7 +3943,7 @@ Returns an angle in degrees to the ~end_point~ from the ~start_point~ (if you wa
 Invocation variants:
 
 - ~args.geometry.angle_turn_direction angle, target_angle~
-- ~Geometry::angle_turn_direction angle, target_angle~
+- ~Geometry.angle_turn_direction angle, target_angle~
 
 Returns ~1~ or -1 depending on which direction the ~angle~ needs to turn to reach the ~target_angle~ most efficiently. The angles are assumed to be in degrees. ~1~ means turn clockwise, and ~-1~ means turn counter-clockwise.
 
@@ -3954,7 +3985,7 @@ Invocation variants:
 
 - ~point_1.point_inside_circle? circle_center, circle_radius~
 - ~args.geometry.point_inside_circle? point_1, circle_center, circle_radius~
-- ~Geometry::point_inside_circle? point_1, circle_center, circle_radius~
+- ~Geometry.point_inside_circle? point_1, circle_center, circle_radius~
 
 ~circle_center~ can also contain the ~radius~ value (instead of passing it as a separate argument).
 
@@ -4025,7 +4056,7 @@ Invocation variants:
 
 - ~target_rect.center_inside_rect reference_rect~
 - ~args.geometry.center_inside_rect target_rect, reference_rect~
-- ~Geometry::center_inside_rect target_rect, reference_rect~
+- ~Geometry.center_inside_rect target_rect, reference_rect~
 
 Given a target rect and a reference rect, the target rect is centered inside the reference rect (a new rect is returned).
 
@@ -4138,7 +4169,7 @@ Given two lines (~:x~, ~:y~, ~:x2~, ~:y2~), this function returns point of inter
 Invocation variants:
 
 - ~args.geometry.line_intersect line_1, line_2~
-- ~Geometry::line_intersect line_1, line_2~
+- ~Geometry.line_intersect line_1, line_2~
 
 #+begin_src ruby
   def tick args
@@ -4170,7 +4201,7 @@ Given two lines (~:x~, ~:y~, ~:x2~, ~:y2~), this function returns point of inter
 Invocation variants:
 
 - ~args.geometry.ray_intersect line_1, line_2~
-- ~Geometry::ray_intersect line_1, line_2~
+- ~Geometry.ray_intersect line_1, line_2~
 
 #+begin_src ruby
   def tick args
@@ -4405,32 +4436,6 @@ Given a ~Hash~ with ~x~ and ~y~ keys (or an ~Object~ that responds to ~x~ and ~y
 
 Note: Take a look at this sample app for a non-trivial example of how to use this function: ~./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/~
 
-** ~rect_normalize~
-
-Invocation variants:
-
-- ~args.geometry.angle start_point, end_point~
-- ~Geometry::angle start_point, end_point~
-
-Given a ~Hash~ with ~x~, ~y~, ~w~, ~h~, (and optionally ~anchor_x~, ~anchor_y~), this function returns a ~Hash~ in the following form.
-
-#+begin_src ruby
-  {
-    x: ...,
-    y: ...,
-    w: ...,
-    h: ...,
-    center: {
-      x: ...,
-      y: ...,
-    }
-  }
-#+end_src
-
-Notes:
-
-- Any object that responds to ~x~, ~y~, ~w~, ~h~, ~anchor_x~, ~anchor_y~ can leverage this function.
-- The returned ~Hash~ will not include ~anchor_(x|y)~ (recomputes ~x~, ~y~ to take the anchors into consideration).
 
 ** ~line_vec2~
 
@@ -4576,7 +4581,7 @@ Example:
     args.state.selected_button ||= args.state.buttons.first
   
     # navigate based on the keyboard's left_right, up_down properties
-    args.state.selected_button = Geometry::rect_navigate(
+    args.state.selected_button = Geometry.rect_navigate(
       rect: args.state.selected_button,
       rects: args.state.buttons,
       left_right: args.inputs.keyboard.key_down.left_right,
@@ -4594,7 +4599,7 @@ Example:
 Using ~directional_vector~:
 
 #+begin_src ruby
-  args.state.selected_button = Geometry::rect_navigate(
+  args.state.selected_button = Geometry.rect_navigate(
     rect: args.state.selected_button,
     rects: args.state.buttons,
     directional_vector: args.inputs.keyboard.key_down.directional_vector
@@ -4604,7 +4609,7 @@ Using ~directional_vector~:
 Optional properties:
 
 #+begin_src ruby
-  args.state.selected_button = Geometry::rect_navigate(
+  args.state.selected_button = Geometry.rect_navigate(
     rect: args.state.selected_button,
     rects: args.state.buttons,
     left_right: args.inputs.keyboard.key_down.left_right,

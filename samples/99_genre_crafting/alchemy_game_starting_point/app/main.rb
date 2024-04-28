@@ -11,10 +11,10 @@ class Element
   # { x:, y:, w:, h:, center: { x:, y: } }
   def self.tile_rect x:, y:, anchor_x: 0, anchor_y: 0, **ignore
     w, h = tile_size.values_at(:w, :h)
-    Geometry::rect_normalize x: x - w * anchor_x,
-                             y: y - h * anchor_y,
-                             w: w,
-                             h: h
+    Geometry.rect_props x: x - w * anchor_x,
+                        y: y - h * anchor_y,
+                        w: w,
+                        h: h
   end
 
   # given a element, and it's position, this fucntion

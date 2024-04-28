@@ -142,7 +142,6 @@ Returns a floating point value between `-1` and `1`. The following inputs are in
 -   Controller One's Left Analog (if a controller is connected and the value is not 0.0): `args.inputs.controller_one.up_analog_y_perc`
 -   If the left analog isn't being used, then Controller One's DPAD is consulted: `args.inputs.controller_one.dpad_up`, `args.inputs.controller_one.dpad_down`
 -   Keyboard's up/down arrow keys: `args.inputs.keyboard.(up|down)_arrow`
--   WASD is NOT consulted.
 
 Here is some sample code to help visualize the `up_down` functions.
 
@@ -241,6 +240,10 @@ Returns a `Hash` with `x` and `y` denoting a touch point that is on the right si
 
 Represents controllers connected to the usb ports. There is also `args.inputs.controllers` which returns controllers one through four as an array (`args.inputs.controllers[0]` points to `args.inputs.controller_one`).
 
+### `name`
+
+String value representing the controller's name.
+
 ### `active`
 
 Returns true if any of the controller's buttons were used.
@@ -320,6 +323,24 @@ Returns `true` if the specific button is being held. `args.inputs.controller_(on
 ### `key_up`
 
 Returns `true` if the specific button was released. `args.inputs.controller_(one-four).key_up.BUTTON` will be true only on the frame the button was released.
+
+### `left_analog_active?(threshold_raw:, threshold_perc:)`
+
+Returns true if the Left Analog Stick is tilted. The `threshold_raw`
+and `threshold_perc` are optional parameters that can be used to set
+the minimum threshold for the analog stick to be considered
+active. The `threshold_raw` is a number between 0 and 32,767, and the
+`threshold_perc` is a number between 0 and 1.
+
+### `right_analog_active?`
+
+### `right_analog_active?(threshold_raw:, threshold_perc:)`
+
+Returns true if the Right Analog Stick is tilted. The `threshold_raw`
+and `threshold_perc` are optional parameters that can be used to set
+the minimum threshold for the analog stick to be considered
+active. The `threshold_raw` is a number between 0 and 32,767, and the
+`threshold_perc` is a number between 0 and 1.
 
 ## Keyboard (`args.inputs.keyboard`)
 

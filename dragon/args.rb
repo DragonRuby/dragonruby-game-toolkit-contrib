@@ -267,7 +267,7 @@ module GTK
       if @state
         @state.tick_count = Kernel.tick_count
       end
-      @outputs.clear
+      @outputs.reset
       @audio.clear
       @events[:raw].clear
       # on reset of the game, we want to clear out render target's historical events

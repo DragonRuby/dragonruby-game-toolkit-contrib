@@ -20,6 +20,7 @@ module GTK
     attr :touch_enabled
     attr :locale, :locale_raw
     attr_reader :application_control
+    attr :a11y
 
     def initialize
       @controllers = [Controller.new, Controller.new, Controller.new, Controller.new]
@@ -30,6 +31,7 @@ module GTK
       @finger_two = nil
       @text = []
       @http_requests = []
+      @a11y = {}
       @headset = {
         position: { x: 0, y: 0, z: 0 },
         orientation: { x: 0, y: 0, z: 0 }
@@ -123,7 +125,7 @@ module GTK
       if controller_one && controller_one.left_analog_y_perc != 0
         controller_one.left_analog_y_perc
       else
-        up_down_directional
+        up_down
       end
     end
 

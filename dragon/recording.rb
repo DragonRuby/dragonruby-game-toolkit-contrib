@@ -57,14 +57,15 @@ module GTK
       @on_recording_tick = block
     end
 
-    def start_recording seed_number = nil
+    def start_recording seed_number = nil, rng_seed: nil, simulation_speed: nil
+      seed_number ||= rng_seed
       if !seed_number
         log <<-S
 * ERROR:
 To start recording, you must provide an integer value to
 seed random number generation.
 S
-        $console.set_command "$recording.start SEED_NUMBER"
+        $console.set_command "$recording.start rng_seed: 100"
         return
       end
 
@@ -96,6 +97,7 @@ S
       @is_recording = true
       @runtime.__reset__
       @seed_number = seed_number
+      @runtime.simulation_speed = simulation_speed if simulation_speed
       @runtime.set_rng seed_number
 
       @global_input_order = 1
@@ -103,8 +105,8 @@ S
       @runtime.notify! "Recording started. When completed, open the console to save it using $recording.stop FILE_NAME (or cancel).", 300
     end
 
-    def start seed_number = nil
-      start_recording seed_number
+    def start seed_number = nil, rng_seed: nil, simulation_speed: nil
+      start_recording seed_number, rng_seed: rng_seed, simulation_speed: simulation_speed
     end
 
     def is_replaying?

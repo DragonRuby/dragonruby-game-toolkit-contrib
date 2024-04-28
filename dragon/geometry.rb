@@ -214,6 +214,17 @@ Consider passing in ~replace_infinity: VALUE~ to handle for vertical lines.
 S
       end
 
+      def angle_delta angle_one, angle_two
+        angle_one = angle_one % 360
+        angle_two = angle_two % 360
+        (angle_two - angle_one + 180) % 360 - 180
+      end
+
+      def angle_within_range? test_angle, target_angle, range
+        delta = angle_delta target_angle, test_angle
+        delta.abs <= range
+      end
+
       def angle_between_lines line_one, line_two, replace_infinity: nil
         m_line_one = line_slope line_one, replace_infinity: replace_infinity
         m_line_two = line_slope line_two, replace_infinity: replace_infinity
@@ -555,7 +566,7 @@ S
         end
       end
 
-      def rect_normalize r
+      def rect_props r
         anchor_x = r.anchor_x || 0
         anchor_y = r.anchor_y || 0
         normalized_rect = {
@@ -569,10 +580,12 @@ S
       rescue Exception => e
         raise e, <<-S
 * ERROR:
-Geometry::rect_normalize for r #{r}
+Geometry.rect_props for r #{r}
 #{e}
 S
       end
+
+      alias_method :rect_normalize, :rect_props
 
       def line_horizontal? line
         angle = line_angle line
@@ -761,7 +774,7 @@ S
                                 all_above = rect_entries.find_all do |r|
                                   r.center.y < subject.center.y
                                 end.sort_by do |r|
-                                  r.distance
+                                  [-r.center.y, r.distance]
                                 end
 
                                 closest_below = all_above.first
@@ -780,7 +793,7 @@ S
             closest_entry ||= rect_entries.find_all do |r|
               r.center.y < subject.center.y
             end.sort_by do |r|
-              r.distance
+              r.center.y
             end.first
 
             closest_entry ||= rect_entries.find_all do |r|
@@ -805,7 +818,7 @@ S
                                 all_above = rect_entries.find_all do |r|
                                   r.center.y > subject.center.y
                                 end.sort_by do |r|
-                                  r.distance
+                                  [r.center.y, r.distance]
                                 end
 
                                 closest_above = all_above.first
@@ -893,12 +906,21 @@ S
         directional_vector ||= { x: 0, y: 0 }
         left_right ||= directional_vector.x.sign
         up_down ||= directional_vector.y.sign
+        original_rect = rect
         current_rect = rect
         current_rect = rect_navigate_left_right rect: current_rect,
                                                 rects: rects,
                                                 left_right: left_right,
                                                 wrap: wrap_x,
                                                 using: using
+
+        # if we don't want to wrap y, and the wrapping of x to the right
+        # led to a upwards y shift, then revert the move
+        if !wrap_y && current_rect.y > original_rect.y && left_right == 1
+          current_rect = original_rect
+        elsif !wrap_y && current_rect.y < original_rect.y && left_right == -1
+          current_rect = original_rect
+        end
 
         current_rect = rect_navigate_up_down rect: current_rect,
                                              rects: rects,

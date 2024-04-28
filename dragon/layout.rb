@@ -54,10 +54,33 @@ module GTK
 
       opts_col        = opts[:col] || 0
       opts_row        = opts[:row] || 0
+
+      if opts_col.is_a?(Array) && opts_col.length == 2
+        # eg rect(row: [3, 18])
+        opts_from_col = opts[:col][0]
+        opts_to_col   = opts[:col][1]
+
+        # eg rect(row: [5, -5])
+        opts_to_col   = opts_to_col - 1 + @col_count if opts_to_col <= 0
+
+        opts_col      = opts_from_col
+        opts_w        = opts_to_col - opts_from_col + 1
+      else
+        opts_w          = opts[:w] || 1
+      end
+
+      if opts_row.is_a?(Array) && opts_row.length == 2
+        opts_from_row = opts[:row][0]
+        opts_to_row   = opts[:row][1]
+        opts_to_row   = opts_to_row - 1 + @row_count if opts_to_row <= 0
+        opts_row      = opts_from_row
+        opts_h        = opts_to_row - opts_from_row + 1
+      else
+        opts_h          = opts[:h] || 1
+      end
+
       opts_row        = row_max_index - opts[:row_from_bottom] if opts[:row_from_bottom]
       opts_col        = col_max_index - opts[:col_from_right] if opts[:col_from_right]
-      opts_w          = opts[:w]   || 1
-      opts_h          = opts[:h]   || 1
       opts_max_height = opts[:max_height] || opts_h
       opts_max_width  = opts[:max_width] || opts_w
       opts_dx         = opts[:dx] || 0
@@ -335,7 +358,7 @@ module GTK
         center_horizontal = { x: safe_area.x, y: $gtk.args.grid.h.idiv(2), w: safe_area.w, h: gutter, path: :pixel, r: 128, g: 128, b: 128, anchor_y: 0.5 }
 
         values = [
-          "scaling: [#{$gtk.args.grid.native_scale_enum.fdiv(100).to_sf}]",
+          "scaling: [#{Grid.texture_scale_enum.fdiv(100).to_sf}]",
           "safe area: [#{safe_area.x},#{safe_area.y},#{safe_area.w},#{safe_area.h}]",
           "cell: [#{single_cell.w},#{single_cell.h}]",
           "cell 2X: [#{double_cell.w},#{double_cell.h}]"

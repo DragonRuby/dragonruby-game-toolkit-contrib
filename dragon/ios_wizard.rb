@@ -19,6 +19,11 @@ class IOSWizard < Wizard
              #+begin_src
                $wizards.ios.start env: :hotload
              #+end_src
+         *** Do not uninstall game before deploy the new version
+             Supported in both ~:dev~ and ~:hotload~
+             #+begin_src
+               $wizards.ios.start env: :dev, uninstall: false
+             #+end_src
          ** Simulator
          *** Deploy app to simulator
              The default simulator is iPhone 13 Pro Max and will be automatically installed if it doesn't exist.
@@ -86,6 +91,34 @@ class IOSWizard < Wizard
       :clear_payload_directory,
 
       :create_dev_payload_directory,
+
+      :create_payload,
+      :code_sign_binary,
+      :create_ipa,
+      :deploy_to_device
+    ]
+  end
+
+  def steps_test_build
+    [
+      *prerequisite_steps,
+
+      :check_for_device,
+      :check_for_dev_profile,
+
+      *app_metadata_retrieval_steps,
+      :determine_devcert,
+
+      :clear_tmp_directory,
+      :stage_ios_app,
+
+      :development_write_info_plist,
+
+      :write_entitlements_plist,
+      :compile_icons,
+      :clear_payload_directory,
+
+      :create_test_payload_directory,
 
       :create_payload,
       :code_sign_binary,
@@ -170,7 +203,7 @@ class IOSWizard < Wizard
   end
 
   def dev_build?
-    @build_type == :dev || hotload_build?
+    @build_type == :dev || hotload_build? || @build_type == :test
   end
 
   def sim_build?
@@ -184,7 +217,7 @@ class IOSWizard < Wizard
   def start opts = nil
     @opts = opts || {}
 
-    if !(@opts.is_a? Hash) || !($gtk.args.fn.eq_any? @opts[:env], :dev, :prod, :hotload, :sim)
+    if !(@opts.is_a? Hash) || !($gtk.args.fn.eq_any? @opts[:env], :dev, :prod, :hotload, :sim, :test)
       process_wizard_exception WizardException.new(
                                  "* $wizards.ios.start needs to be provided an ~env:~ option.",
                                  "** To deploy your app to an iOS device connected to your computer:\n   $wizards.ios.start env: :dev",
@@ -195,6 +228,7 @@ class IOSWizard < Wizard
                                )
     end
 
+    @should_uninstall = @opts[:uninstall]
     @build_type = @opts[:env]
     @certificate_name = nil
     @app_version = opts[:version]
@@ -319,8 +353,8 @@ class IOSWizard < Wizard
   end
 
   def provisioning_profile_path environment
-    return "profiles/distribution.mobileprovision" if environment == :prod
-    return "profiles/development.mobileprovision"
+    return File.expand_path("profiles/distribution.mobileprovision") if environment == :prod
+    return File.expand_path("profiles/development.mobileprovision")
   end
 
   def ios_metadata_template
@@ -861,15 +895,15 @@ XML
   end
 
   def tmp_directory
-    "#{relative_path}/tmp/ios"
+    File.expand_path "#{relative_path}/tmp/ios"
   end
 
   def app_path
-    "#{tmp_directory}/#{@app_name}.app"
+    File.expand_path "#{tmp_directory}/#{@app_name}.app"
   end
 
   def root_folder
-    "#{relative_path}/#{$gtk.cli_arguments[:dragonruby]}"
+    File.expand_path "#{relative_path}/#{$gtk.cli_arguments[:dragonruby]}"
   end
 
   def embed_mobileprovision
@@ -889,17 +923,22 @@ XML
     :success
   end
 
+  def root_folder_directories
+    directories = $gtk.list_files ""
+    ignored_directories = Cvars["game_metadata.ignore_directories"].value
+                                                                   .split(",")
+                                                                   .reject { |d| d.strip.length == 0 }
+    directories.reject { |d| ignored_directories.include? d }
+  end
+
   def stage_ios_app
     log_info "Staging."
     sh "mkdir -p #{tmp_directory}"
     sh "cp -R #{relative_path}/dragonruby-ios.app/ \"#{tmp_directory}/#{@app_name}.app/\""
     sh "mv \"#{tmp_directory}/#{@app_name}.app/Runtime\" \"#{tmp_directory}/#{@app_name}.app/#{@app_name}\""
-    sh %Q[cp -r "#{root_folder}/app/" "#{app_path}/app/"]
-    sh %Q[cp -r "#{root_folder}/sounds/" "#{app_path}/sounds/"]
-    sh %Q[cp -r "#{root_folder}/sprites/" "#{app_path}/sprites/"]
-    sh %Q[cp -r "#{root_folder}/data/" "#{app_path}/data/"]
-    sh %Q[cp -r "#{root_folder}/fonts/" "#{app_path}/fonts/"]
-    sh %Q[cp -r "#{root_folder}/metadata/" "#{app_path}/metadata/"]
+    root_folder_directories.each do |d|
+      sh %Q[cp -r "#{root_folder}/#{d}/" "#{app_path}/#{d}/"]
+    end
     :success
   end
 
@@ -909,12 +948,9 @@ XML
     sh "mkdir -p #{tmp_directory}"
     sh "cp -R #{relative_path}/dragonruby-ios-simulator.app/ \"#{tmp_directory}/#{@app_name}.app/\""
     sh "mv \"#{tmp_directory}/#{@app_name}.app/Runtime\" \"#{tmp_directory}/#{@app_name}.app/#{@app_name}\""
-    sh %Q[cp -r "#{root_folder}/app/" "#{app_path}/app/"]
-    sh %Q[cp -r "#{root_folder}/sounds/" "#{app_path}/sounds/"]
-    sh %Q[cp -r "#{root_folder}/sprites/" "#{app_path}/sprites/"]
-    sh %Q[cp -r "#{root_folder}/data/" "#{app_path}/data/"]
-    sh %Q[cp -r "#{root_folder}/fonts/" "#{app_path}/fonts/"]
-    sh %Q[cp -r "#{root_folder}/metadata/" "#{app_path}/metadata/"]
+    root_folder_directories.each do |d|
+      sh %Q[cp -r "#{root_folder}/#{d}/" "#{app_path}/#{d}/"]
+    end
     :success
   end
 
@@ -941,6 +977,19 @@ XML
 
     # production build marker
     sh %Q[mkdir -p "#{app_path}/metadata/"]
+    :success
+  end
+
+  def create_test_payload_directory
+    embed_mobileprovision
+    clear_payload_directory
+    stage_ios_app
+    # write dev machine's ip address for hotloading
+    write_server_ip_address if hotload_build?
+
+    # production build marker
+    sh %Q[mkdir -p "#{app_path}/metadata/"]
+    sh %Q[touch "#{app_path}/metadata/dragonruby_production_build"]
     :success
   end
 
@@ -996,7 +1045,7 @@ SCRIPT
   end
 
   def deploy_to_device
-    sh "ideviceinstaller --uninstall #{@app_id}"
+    sh "ideviceinstaller --uninstall #{@app_id}" if @should_uninstall
     sh "ideviceinstaller -i \"#{tmp_directory}/#{@app_name}.ipa\""
     log_info "Check your device!!"
     :success
@@ -1127,7 +1176,7 @@ SCRIPT
       sh "mv \"#{tmp_directory}/Entitlements.plist\" #{tmp_directory}/intermediary_artifacts"
       sh "mv \"#{tmp_directory}/ipa_root\" #{tmp_directory}/intermediary_artifacts/"
       sh "open /Applications/Transporter.app"
-      sh "open ./tmp/ios/"
+      sh "open \"#{tmp_directory}\""
     end
 
     :success
@@ -1193,11 +1242,13 @@ S
   end
 
   def get_steps_to_execute
-    if sim_build?
+    if @build_type == :sim
       steps_sim_build
-    elsif dev_build?
+    elsif @build_type == :dev || @build_type == :hotload
       steps_dev_build
-    elsif production_build?
+    elsif @build_type == :test
+      steps_test_build
+    elsif @build_type == :prod
       steps_prod_build
     else
       []

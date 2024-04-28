@@ -32,6 +32,10 @@ module GTK
       serialize
     end
 
+    def to_h
+      serialize
+    end
+
     def serialize
       {
         x: @x,
@@ -159,6 +163,14 @@ module GTK
 
     def down
       @click
+    end
+
+    def to_h
+      serialize
+    end
+
+    def to_hash
+      serialize
     end
 
     def serialize

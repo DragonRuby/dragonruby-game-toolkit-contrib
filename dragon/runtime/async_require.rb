@@ -103,17 +103,6 @@ module GTK
       end
 
       def main_rb_loaded!
-        @new_methods ||= important_instance_methods
-        new_methods = important_instance_methods - @new_methods
-
-        if new_methods.length > 0 && Kernel.global_tick_count > 60
-          log <<-S
-* INFO: New methods discovered.
-#{new_methods.map { |m| "** #{m.inspect}" }.join("\n")}
-S
-          @new_methods = important_instance_methods
-        end
-
         process_load_status
       end
 
@@ -175,7 +164,7 @@ S
           add_to_require_queue file
           log_debug "Reloaded #{file}. (#{Kernel.global_tick_count})", subsystem="Engine"
           $gtk.reset_framerate_calculation
-          notify_subdued!
+          notify_subdued! if @global_notification_at != Kernel.global_tick_count
           return true
         else
           # handle a special case where a syntax error exists in main.rb on startup
