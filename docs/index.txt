@@ -1918,7 +1918,7 @@ Instead of manually defining the properties, you can represent a sprite using th
     # anything you want to represent as a sprite
     attr_sprite
 
-    def initialize(x: 0, y: 0, w: 0, h: 0k
+    def initialize(x: 0, y: 0, w: 0, h: 0)
       @x = x
       @y = y
       @w = w
