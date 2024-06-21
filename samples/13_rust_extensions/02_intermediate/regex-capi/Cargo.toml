@@ -17,4 +17,4 @@ crate-type = ["staticlib", "cdylib"]
 
 [dependencies]
 libc = "0.2"
-regex = "1.4.2"
+regex = "1.5.5"
