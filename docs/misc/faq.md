@@ -140,8 +140,8 @@ That doesn't make any sense. A language specification can't be slow... it's a la
 
 Here are some quick demonstrations of how well DragonRuby Game Toolkit Performs:
 
-DragonRuby vs Unity: https://youtu.be/MFR-dvsllA4
-DragonRuby vs PyGame: https://youtu.be/fuRGs6j6fPQ
+- DragonRuby vs Unity: https://youtu.be/MFR-dvsllA4
+- DragonRuby vs PyGame: https://youtu.be/fuRGs6j6fPQ
 
 ### Dynamic languages are slow.
 

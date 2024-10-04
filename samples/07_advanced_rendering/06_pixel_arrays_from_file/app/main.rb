@@ -2,7 +2,7 @@ def tick args
   args.state.rotation ||= 0
 
   # on load, get pixels from png and load it into a pixel array
-  if args.state.tick_count == 0
+  if Kernel.tick_count == 0
     pixel_array = args.gtk.get_pixels 'sprites/square/blue.png'
     args.pixel_array(:square).w = pixel_array.w
     args.pixel_array(:square).h = pixel_array.h

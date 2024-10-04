@@ -182,7 +182,7 @@ def move_tanks args
 end
 
 def calc_turrets args
-  return unless args.state.tick_count.mod_zero? args.state.turret_shoot_period
+  return unless Kernel.tick_count.mod_zero? args.state.turret_shoot_period
   args.state.turrets.each do | turret |
     # Finds the closest tank
     target = nil
@@ -257,7 +257,7 @@ def copy_sign value, sign
 end
 
 def spawn_tank args
-  return unless args.state.tick_count.mod_zero? args.state.tank_spawn_period
+  return unless Kernel.tick_count.mod_zero? args.state.tank_spawn_period
   args.state.tanks << {
     x: args.state.grid_start.x,
     y: args.state.grid_start.y,

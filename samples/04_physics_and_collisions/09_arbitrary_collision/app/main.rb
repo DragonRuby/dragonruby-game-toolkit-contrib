@@ -18,7 +18,7 @@ def defaults args
   args.state.game_area ||= [(args.state.board_width + args.grid.w / 8), 0, args.state.board_width, args.grid.h]
   args.state.balls ||= []
   args.state.num_balls ||= 0
-  args.state.ball_created_at ||= args.state.tick_count
+  args.state.ball_created_at ||= Kernel.tick_count
   args.state.ball_hypotenuse = (10**2 + 10**2)**0.5
   args.state.ballParents ||= []
 
@@ -72,7 +72,7 @@ begin :default_methods
       args.state.balls.append(Ball.new(args,args.state.num_balls,BALL_COUNT-1, args.state.balls.last, nil) )
       args.state.balls[-2].child = args.state.balls[-1]
     end
-    args.state.ball_created_at = args.state.tick_count
+    args.state.ball_created_at = Kernel.tick_count
     args.state.num_balls += 1
   end
 end

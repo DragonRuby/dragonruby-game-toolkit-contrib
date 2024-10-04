@@ -48,7 +48,6 @@ def tick args
   end
 
   # define scene
-  args.outputs[:scene].transient!
   args.outputs[:scene].w = Camera::WORLD_SIZE
   args.outputs[:scene].h = Camera::WORLD_SIZE
 

@@ -46,7 +46,7 @@ def tick args
                            r: 0,
                            g: 80,
                            b: 40,
-                           a: args.state.tick_count % 255 }
+                           a: Kernel.tick_count % 255 }
 
   # primitives outputs requires a primitive_marker to differentiate
   # between a solid or a border
@@ -57,7 +57,7 @@ def tick args
                                r: 0,
                                g: 80,
                                b: 40,
-                               a: args.state.tick_count % 255,
+                               a: Kernel.tick_count % 255,
                                primitive_marker: :solid }
 
   args.outputs.borders << { x: 710,
@@ -67,7 +67,7 @@ def tick args
                             r: 0,
                             g: 80,
                             b: 40,
-                            a: args.state.tick_count % 255 }
+                            a: Kernel.tick_count % 255 }
 
   # primitives outputs requires a primitive_marker to differentiate
   # between a solid or a border
@@ -78,6 +78,6 @@ def tick args
                             r: 0,
                             g: 80,
                             b: 40,
-                            a: args.state.tick_count % 255,
+                            a: Kernel.tick_count % 255,
                             primitive_marker: :border }
 end

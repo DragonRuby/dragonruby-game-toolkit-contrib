@@ -4,7 +4,7 @@ APIs listing that haven't been encountered in a previous sample apps:
 
 - args.inputs.keyboard.key_up.KEY: The value of the properties will be set
   to the frame  that the key_up event occurred (the frame correlates
-  to args.state.tick_count). Otherwise the value will be nil. For a
+  to Kernel.tick_count). Otherwise the value will be nil. For a
   full listing of keys, take a look at mygame/documentation/06-keyboard.md.
 - args.state.PROPERTY: The state property on args is a dynamic
   structure. You can define ANY property here with ANY type of
@@ -24,13 +24,13 @@ APIs listing that haven't been encountered in a previous sample apps:
 
 def tick args
   tick_instructions args, "Sample app shows how keyboard events are registered and accessed.", 360
-  args.outputs.labels << { x: 460, y: row_to_px(args, 0), text: "Current game time: #{args.state.tick_count}", size_enum: -1 }
+  args.outputs.labels << { x: 460, y: row_to_px(args, 0), text: "Current game time: #{Kernel.tick_count}", size_enum: -1 }
   args.outputs.labels << { x: 460, y: row_to_px(args, 2), text: "Keyboard input: args.inputs.keyboard.key_up.h", size_enum: -1 }
   args.outputs.labels << { x: 460, y: row_to_px(args, 3), text: "Press \"h\" on the keyboard.", size_enum: -1 }
 
   # Input on a specifc key can be found through args.inputs.keyboard.key_up followed by the key
   if args.inputs.keyboard.key_up.h
-    args.state.h_pressed_at = args.state.tick_count
+    args.state.h_pressed_at = Kernel.tick_count
   end
 
   # This code simplifies to if args.state.h_pressed_at has not been initialized, set it to false

@@ -97,7 +97,6 @@ def calc args
 end
 
 def render args
-  args.outputs[:screen].transient!
   args.outputs[:screen].sprites << { x: 0,
                                      y: 160,
                                      w: 750,

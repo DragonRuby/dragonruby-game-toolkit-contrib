@@ -43,8 +43,8 @@ class LowrezOutputs
   end
 
   def outputs_lowrez
-    return @args.outputs if @args.state.tick_count <= 0
-    return @args.outputs[:lowrez].transient!
+    return @args.outputs if Kernel.tick_count <= 0
+    return @args.outputs[:lowrez]
   end
 
   def solids
@@ -138,7 +138,7 @@ module GTK
       @args.init_lowrez
       __original_tick_core__
 
-      return if @args.state.tick_count <= 0
+      return if Kernel.tick_count <= 0
 
       @args.render_target(:lowrez)
            .labels
@@ -151,8 +151,8 @@ module GTK
            .each do |l|
         l.y  += 1
         l.y2 += 1
-        l.y2 += 1 if l.y1 != l.y2
-        l.x2 += 1 if l.x1 != l.x2
+        l.y2 += 1 if l.y != l.y2
+        l.x2 += 1 if l.x != l.x2
       end
 
       @args.outputs

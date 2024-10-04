@@ -163,7 +163,7 @@ end
 
 ## `each`
 
-The function, given a block, invokes the block for each item in the `Array`. `Array#each` is synonymous to foreach constructs in other languages.
+The function, given a block, invokes the block for each item in the `Array`. `Array#each` is synonymous to for each constructs in other languages.
 
 Example of using `Array#each` in conjunction with `args.state` and `args.outputs.sprites` to render sprites to the screen:
 
@@ -187,7 +187,7 @@ def tick args
   # with a width and height of 50.
   args.state
       .rainbow_colors
-      .map do |color| # <-- ~Array#each~ usage
+      .each do |color| # <-- ~Array#each~ usage
         args.outputs.sprites << [
           color[:order] * 50,
           color[:order] * 50,

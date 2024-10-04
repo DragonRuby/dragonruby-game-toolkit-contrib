@@ -1,47 +1,73 @@
 class Square
   attr_sprite
 
-  def initialize
-    @x    = rand 1280
-    @y    = rand 720
-    @w    = 15
-    @h    = 15
+  def initialize x, y
+    @x    = x
+    @y    = y
+    @w    = 8
+    @h    = 8
     @path = 'sprites/square/blue.png'
-    @dir = 1
+    @dir = if x < 640
+             -1.0
+           else
+             1.0
+           end
   end
 
-  def mark_collisions all
-    @path = if all[self]
-              'sprites/square/red.png'
-            else
-              'sprites/square/blue.png'
-            end
+  def reset_collision
+    @path = "sprites/square/blue.png"
+  end
+
+  def mark_collision
+    @path = 'sprites/square/red.png'
   end
 
   def move
-    @dir  = -1 if (@x + @w >= 1280) && @dir ==  1
-    @dir  =  1 if (@x      <=    0) && @dir == -1
+    @dir  = -1.0 if (@x + @w >= 1280) && @dir ==  1.0
+    @dir  =  1.0 if (@x      <=    0) && @dir == -1.0
     @x   += @dir
   end
 end
 
-def reset_if_needed args
-  if args.state.tick_count == 0 || args.inputs.mouse.click
-    args.state.star_count = 1500
-    args.state.stars = args.state.star_count.map { |i| Square.new }.to_a
-    args.outputs.static_sprites.clear
-    args.outputs.static_sprites << args.state.stars
+def generate_random_squares args, center_x, center_y
+  100.times do
+    angle = rand 360
+    distance = rand(200) + 20
+    x = center_x + angle.vector_x * distance
+    y = center_y + angle.vector_y * distance
+    if x > 0 && x < 1280 && y < 720 && y > 0
+      args.state.squares << Square.new(x, y)
+    end
   end
+
+  args.outputs.static_sprites.clear
+  args.outputs.static_sprites << args.state.squares
+  args.state.square_count = args.state.squares.length
 end
 
 def tick args
-  reset_if_needed args
+  args.state.squares ||= []
 
-  Fn.each args.state.stars do |s| s.move end
+  if Kernel.tick_count == 0
+    generate_random_squares args, 640, 360
+  end
 
-  all = GTK::Geometry.find_collisions args.state.stars
-  Fn.each args.state.stars do |s| s.mark_collisions all end
+  if args.inputs.mouse.click
+    generate_random_squares args, args.inputs.mouse.x, args.inputs.mouse.y
+  end
+
+  Array.each(args.state.squares) do |s|
+    s.reset_collision
+    s.move
+  end
+
+  Geometry.each_intersect_rect(args.state.squares, args.state.squares) do |a, b|
+    a.mark_collision
+    b.mark_collision
+  end
 
   args.outputs.background_color = [0, 0, 0]
-  args.outputs.primitives << args.gtk.current_framerate_primitives
+  args.outputs.watch "FPS: #{GTK.current_framerate.to_sf}"
+  args.outputs.watch "Square Count: #{args.state.square_count.to_i}"
+  args.outputs.watch "Instructions: click to add squares."
 end

@@ -32,7 +32,7 @@ class NokiaOutputs
   end
 
   def outputs_nokia
-    return @args.outputs if @args.state.tick_count <= 0
+    return @args.outputs if Kernel.tick_count <= 0
     return @args.outputs[:nokia].transient!
   end
 
@@ -128,7 +128,7 @@ module GTK
 
       __original_tick_core__
 
-      return if @args.state.tick_count <= 0
+      return if Kernel.tick_count <= 0
 
       @args.render_target(:nokia)
            .labels
@@ -185,8 +185,8 @@ module GTK
            .each do |l|
         l.y  += 1
         l.y2 += 1
-        l.y2 += 1 if l.y1 != l.y2
-        l.x2 += 1 if l.x1 != l.x2
+        l.y2 += 1 if l.y != l.y2
+        l.x2 += 1 if l.x != l.x2
 
         if (l.a || 255) > 128
           l.r = 67

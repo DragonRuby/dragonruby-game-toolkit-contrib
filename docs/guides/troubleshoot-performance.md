@@ -3,9 +3,6 @@
 - Avoid deep recursive calls.
 - If you're using `Arrays` for your primitives (`args.outputs.sprites
   << []`), use `Hash` instead (`args.outputs.sprites << { x: ... }`). 
-- If you're using `Entity` for your primitives (`args.outputs.sprites
-  << args.state.new_entity`), use `StrictEntity` instead
-  (`args.outputs.sprites << args.state.new_entity_strict`). 
 - Use `.each` instead of `.map` if you don't care about the return value.
 - When concatenating primitives to outputs, do them in bulk.
 
@@ -35,23 +32,25 @@
 
   ```ruby
   args.state.bullets.each do |bullet|
-      args.state.fx_queue.each |fx|
-        fx.count_down ||= 255
-        fx.countdown -= 5
-        if fx.countdown < 0
-          args.state.fx_queue.delete fx
-        end
+    args.state.fx_queue.each |fx|
+      fx.count_down ||= 255
+      fx.countdown -= 5
+      if fx.countdown < 0
+        args.state.fx_queue.delete fx
       end
+    end
+  end
   ```
   
   Do:
   
   ```ruby
   args.state.bullets.each do |bullet|
-      args.state.fx_queue.each |fx|
-        fx.countdown ||= 255
-        fx.countdown -= 5
-      end
-      
-      args.state.fx_queue.reject! { |fx| fx.countdown < 0 }
+    args.state.fx_queue.each |fx|
+      fx.countdown ||= 255
+      fx.countdown -= 5
+    end
+  end
+  
+  args.state.fx_queue.reject! { |fx| fx.countdown < 0 }
   ```

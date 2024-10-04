@@ -9,7 +9,6 @@ class SceneOne
   attr_gtk
 
   def tick
-    outputs[:scene].transient!
     outputs[:scene].labels << { x: 640,
                                 y: 360,
                                 text: "I am scene ONE. Press enter to go to scene TWO.",
@@ -24,7 +23,6 @@ class SceneTwo
   attr_gtk
 
   def tick
-    outputs[:scene].transient!
     outputs[:scene].labels << { x: 640,
                                 y: 360,
                                 text: "I am scene TWO. Press enter to go to scene ONE.",
@@ -50,7 +48,7 @@ class RootScene
   end
 
   def defaults
-    set_current_scene! :scene_one if state.tick_count == 0
+    set_current_scene! :scene_one if Kernel.tick_count == 0
     state.scene_transition_duration ||= 30
   end
 
@@ -77,7 +75,7 @@ class RootScene
     end
 
     if state.next_scene && state.next_scene != state.transition_scene && state.next_scene != state.current_scene
-      state.transition_scene_at = state.tick_count
+      state.transition_scene_at = Kernel.tick_count
       state.transition_scene = state.next_scene
     end
 
@@ -91,7 +89,7 @@ class RootScene
   def set_current_scene! id
     return if state.current_scene == id
     state.current_scene = id
-    state.current_scene_at = state.tick_count
+    state.current_scene_at = Kernel.tick_count
     state.transition_scene = nil
     state.transition_scene_at = nil
 

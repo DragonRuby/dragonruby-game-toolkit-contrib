@@ -6,11 +6,11 @@ def tick args
   # render the combined sprite
   # using its name :two_squares
   # have it move across the screen and rotate
-  args.outputs.sprites << { x: args.state.tick_count % 1280,
+  args.outputs.sprites << { x: Kernel.tick_count % 1280,
                             y: 0,
                             w: 80,
                             h: 80,
-                            angle: args.state.tick_count,
+                            angle: Kernel.tick_count,
                             path: :two_squares }
 end
 
@@ -22,11 +22,10 @@ def create_combined_sprite args
   # if the combined sprite never changes, comment out the line
   # below to only construct it on the first frame and then
   # use the cached texture
-  # return if args.state.tick_count != 0 # <---- guard clause to only construct on first frame and cache
+  # return if Kernel.tick_count != 0 # <---- guard clause to only construct on first frame and cache
 
   # define the dimensions of the combined sprite
   # the name of the combined sprite is :two_squares
-  args.outputs[:two_squares].transient!
   args.outputs[:two_squares].w = 80
   args.outputs[:two_squares].h = 80
 

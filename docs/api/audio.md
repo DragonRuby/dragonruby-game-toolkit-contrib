@@ -27,7 +27,7 @@ Here's how to play audio one-time (does not loop).
 ```ruby
 def tick args
   # play a one-time non-looping sound every second
-  if (args.state.tick_count % 60) == 0
+  if (Kernel.tick_count % 60) == 0
     args.audio[:coin] = { input: "sounds/coin.wav" }
     # OR
     args.outputs.sounds << "sounds/coin.wav"
@@ -41,7 +41,7 @@ Here's how to play audio that loops (eg background music), and how to stop the s
 
 ```ruby
 def tick args
-  if args.state.tick_count == 0
+  if Kernel.tick_count == 0
     args.audio[:bg_music] = { input: "sounds/bg-music.ogg", looping: true }
   end
 
@@ -78,14 +78,14 @@ IMPORTANT: Please take note that `gain` and `pitch` must be given `float` values
 
 ## Advanced Audio Manipulation (Crossfade)
 
-Take a look at the Audio Mixer sample app for a non-trival example of how to use these properties. The sample app is located within the DragonRuby zip file at `./samples/07_advanced_audio/01_audio_mixer`.
+Take a look at the Audio Mixer sample app for a non-trivial example of how to use these properties. The sample app is located within the DragonRuby zip file at `./samples/07_advanced_audio/01_audio_mixer`.
 
 Here's an example of crossfading two bg music tracks.
 
 ```ruby
 def tick args
   # start bg-1.ogg at the start
-  if args.state.tick_count == 0
+  if Kernel.tick_count == 0
     args.audio[:bg_music] = { input: "sounds/bg-1.ogg", looping: true, gain: 0.0 }
   end
 
@@ -192,7 +192,7 @@ def generate_sine_wave frequency:, duration:, fade_out: true
 end
 
 def tick args
-  if args.state.tick_count == 0
+  if Kernel.tick_count == 0
     wave_data = generate_sine_wave frequency: 440.0,
                                    duration: 60 * 1.5,
                                    fade_out: true

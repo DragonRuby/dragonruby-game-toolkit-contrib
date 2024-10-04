@@ -147,7 +147,7 @@ class TextedBasedGame
 
   # Update every 60 frames (or every second)
   def should_tick?
-    state.tick_count.mod_zero?(60)
+    Kernel.tick_count.zmod?(60)
   end
 
   # Sets the value of the game state provider.
@@ -197,7 +197,7 @@ class TextedBasedGamePresenter
 
   # Outputs a label of the tick count (passage of time) and calls all render methods.
   def render
-    outputs.labels << [10, 30, state.tick_count]
+    outputs.labels << [10, 30, Kernel.tick_count]
     render_alert
     render_room
     render_highlights

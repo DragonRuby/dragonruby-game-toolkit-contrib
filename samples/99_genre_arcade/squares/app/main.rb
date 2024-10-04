@@ -63,15 +63,14 @@ class StartScene
     self.args = args
     @play_button = PulseButton.new layout.rect(row: 6, col: 11, w: 2, h: 2), "play" do
       state.next_scene = :game
-      state.events.game_started_at = state.tick_count
+      state.events.game_started_at = Kernel.tick_count
       state.events.game_over_at = nil
     end
   end
 
   def tick
     return if state.current_scene != :start
-    @play_button.tick state.tick_count, inputs.mouse
-    outputs[:start_scene].transient!
+    @play_button.tick Kernel.tick_count, inputs.mouse
     outputs[:start_scene].labels << layout.point(row: 0, col: 12).merge(text: "Squares", anchor_x: 0.5, anchor_y: 0.5, size_px: 64)
     outputs[:start_scene].primitives << @play_button.prefab(easing)
   end
@@ -87,15 +86,14 @@ class GameOverScene
     self.args = args
     @replay_button = PulseButton.new layout.rect(row: 6, col: 11, w: 2, h: 2), "replay" do
       state.next_scene = :game
-      state.events.game_retried_at = state.tick_count
+      state.events.game_retried_at = Kernel.tick_count
       state.events.game_over_at = nil
     end
   end
 
   def tick
     return if state.current_scene != :game_over
-    @replay_button.tick state.tick_count, inputs.mouse
-    outputs[:game_over_scene].transient!
+    @replay_button.tick Kernel.tick_count, inputs.mouse
     outputs[:game_over_scene].labels << layout.point(row: 0, col: 12).merge(text: "Game Over", anchor_x: 0.5, anchor_y: 0.5, size_px: 64)
     outputs[:game_over_scene].primitives << @replay_button.prefab(easing)
 
@@ -118,7 +116,7 @@ class GameScene
   end
 
   def defaults
-    return if started_at != state.tick_count
+    return if started_at != Kernel.tick_count
 
     # initalization of scene_state variables for the game
     scene_state.score_animation_spline = [[0.0, 0.66, 1.0, 1.0], [1.0, 0.33, 0.0, 0.0]]
@@ -168,7 +166,7 @@ class GameScene
   def calc_game_over_at
     return if !death_at
     return if death_at.elapsed_time < 120
-    state.events.game_over_at ||= state.tick_count
+    state.events.game_over_at ||= Kernel.tick_count
   end
 
   # this function calculates the particles
@@ -190,7 +188,7 @@ class GameScene
     scene_state.launch_particle_queue.reject! { |p| p.a <= 0 }
 
     scene_state.scale_down_particles_queue.each do |p|
-      next if p.start_at > state.tick_count
+      next if p.start_at > Kernel.tick_count
       p.scale_speed = p.scale_speed.abs
       p.x += p.scale_speed
       p.y += p.scale_speed
@@ -219,14 +217,14 @@ class GameScene
               scene_state.score
             end
 
-    label_scale_prec = easing.ease_spline(scene_state.score_at || 0, state.tick_count, 15, scene_state.score_animation_spline)
+    label_scale_prec = easing.ease_spline(scene_state.score_at || 0, Kernel.tick_count, 15, scene_state.score_animation_spline)
     rect = layout.point row: 4, col: 12
     rect.merge(text: score, anchor_x: 0.5, anchor_y: 0.5, size_px: 128 + 50 * label_scale_prec, **state.gray_color)
   end
 
   def player_prefab
     return nil if death_at
-    scale_perc = easing.ease(started_at + 30, state.tick_count, 15, :smooth_start_quad, :flip)
+    scale_perc = easing.ease(started_at + 30, Kernel.tick_count, 15, :smooth_start_quad, :flip)
     player.merge(x: player.x - player.w / 2 * scale_perc, y: player.y + player.h / 2 * scale_perc,
                  w: player.w * (1 - scale_perc), h: player.h * (1 - scale_perc))
   end
@@ -242,7 +240,7 @@ class GameScene
 
   # computes the squares movement
   def calc_squares
-    squares << new_square if state.tick_count.zmod? scene_state.square_spawn_rate
+    squares << new_square if Kernel.tick_count.zmod? scene_state.square_spawn_rate
 
     squares.each do |square|
       square.angle += 1
@@ -259,8 +257,8 @@ class GameScene
     return if !collision
     if collision.type == :good
       scene_state.score += 1
-      scene_state.score_at = state.tick_count
-      scene_state.scale_down_particles_queue << collision.merge(start_at: state.tick_count, scale_speed: -2)
+      scene_state.score_at = Kernel.tick_count
+      scene_state.scale_down_particles_queue << collision.merge(start_at: Kernel.tick_count, scale_speed: -2)
       squares.delete collision
     else
       generate_death_particles
@@ -269,14 +267,14 @@ class GameScene
       state.score_last_game = scene_state.score
       scene_state.score = 0
       scene_state.square_number = 1
-      scene_state.death_at = state.tick_count
+      scene_state.death_at = Kernel.tick_count
       state.next_scene = :game_over
     end
   end
 
   # this function generates the particles when the player is hit
   def generate_death_particles
-    square_particles = squares.map { |b| b.merge(start_at: state.tick_count + 60, scale_speed: -1) }
+    square_particles = squares.map { |b| b.merge(start_at: Kernel.tick_count + 60, scale_speed: -1) }
 
     scene_state.scale_down_particles_queue.concat square_particles
 
@@ -335,7 +333,7 @@ class GameScene
   end
 
   def scene_outputs
-    outputs[:game_scene].transient!
+    outputs[:game_scene]
   end
 
   def player
@@ -393,7 +391,7 @@ class RootScene
 
   # initlalization of game state that is shared between scenes
   def init_game
-    return if state.tick_count != 0
+    return if Kernel.tick_count != 0
 
     state.current_scene = :start
 
@@ -441,17 +439,17 @@ class RootScene
       outputs.sprites << state.viewport.merge(y: in_y, path: :game_scene)
     else
       in_y = transition_in_y 0
-      start_scene_perc = easing.ease(0, state.tick_count, 30, :smooth_stop_quad, :flip)
+      start_scene_perc = easing.ease(0, Kernel.tick_count, 30, :smooth_stop_quad, :flip)
       outputs.sprites << state.viewport.merge(y: in_y, path: :start_scene)
     end
   end
 
   def transition_in_y start_at
-    easing.ease(start_at, state.tick_count, 30, :smooth_stop_quad, :flip) * -1280
+    easing.ease(start_at, Kernel.tick_count, 30, :smooth_stop_quad, :flip) * -1280
   end
 
   def transition_out_y start_at
-    easing.ease(start_at, state.tick_count, 30, :smooth_stop_quad) * 1280
+    easing.ease(start_at, Kernel.tick_count, 30, :smooth_stop_quad) * 1280
   end
 end
 

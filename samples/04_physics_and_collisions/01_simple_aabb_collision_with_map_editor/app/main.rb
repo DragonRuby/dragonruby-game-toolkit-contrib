@@ -3,7 +3,7 @@
 def tick args
   # if it's the first tick, read the terrain data from disk
   # and create the player
-  if args.state.tick_count == 0
+  if Kernel.tick_count == 0
     args.state.terrain = read_terrain_data args
 
     args.state.player = {

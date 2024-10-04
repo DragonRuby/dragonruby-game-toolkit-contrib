@@ -45,9 +45,9 @@ module GTK
 
     attr :allscreen_bottom, :allscreen_bottom_px
 
-    attr :allscreen_w, :allscreen_w_px
+    attr :allscreen_w, :allscreen_w_px, :allscreen_w_pt
 
-    attr :allscreen_h, :allscreen_h_px
+    attr :allscreen_h, :allscreen_h_px, :allscreen_h_pt
 
     attr :allscreen_offset_x, :allscreen_offset_x_px
 
@@ -58,7 +58,7 @@ module GTK
     def initialize runtime
       @runtime = runtime
       @ffi_draw = runtime.ffi_draw
-      origin_bottom_left!
+      __origin_bottom_left__!
     end
 
     def orientation
@@ -89,8 +89,10 @@ module GTK
       @ffi_draw = value
     end
 
-    def origin_bottom_left!
-      return if @origin_name == :bottom_left
+    def __origin_bottom_left__!(force: false)
+      if !force
+        return if @origin_name == :bottom_left
+      end
       @origin_name = :bottom_left
       @left        = 0.0
       @right       = @runtime.logical_width
@@ -106,11 +108,17 @@ module GTK
       @center      = { x: @center_x, y: @center_y }
       @origin_x    = 0.0
       @origin_y    = @runtime.logical_height
+    end
+
+    def origin_bottom_left!(force: false)
+      __origin_bottom_left__!(force: force)
       @ffi_draw.set_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
     end
 
-    def origin_center!
-      return if @origin_name == :center
+    def origin_center!(force: false)
+      if !force
+        return if @origin_name == :center
+      end
       @origin_name = :center
       @left        = -@runtime.logical_width.half
       @right       = @runtime.logical_width.half
@@ -186,10 +194,32 @@ module GTK
     end
 
     def letterbox?
-      @letterbox ||= Cvars["game_metadata.hd_letterbox"].value
+      @letterbox
     end
 
-    alias_method :letterbox, :letterbox?
+    def letterbox
+      @letterbox
+    end
+
+    def letterbox= value
+      @letterbox = value
+    end
+
+    def landscape?
+      @runtime.orientation == :landscape
+    end
+
+    def portrait?
+      @runtime.orientation == :portrait
+    end
+
+    def aspect_ratio_w
+      landscape? ? 16 : 9
+    end
+
+    def aspect_ratio_h
+      landscape? ? 9 : 16
+    end
 
     def hd?
       @hd ||= @hd = Cvars["game_metadata.hd"].value

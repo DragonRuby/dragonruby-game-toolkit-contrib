@@ -1,14 +1,26 @@
 def tick args
-  args.state.port ||= 3000
   args.state.reqnum ||= 0
-  # by default the embedded webserver runs on port 9001 (the port number is over 9000) and is disabled in a production build
-  # to enable the http server in a production build, you need to manually start
-  # the server up:
-  args.gtk.start_server! port: args.state.port, enable_in_prod: true
+  # by default the embedded webserver is disabled in a production build
+  # to enable the http server in a production build you need to:
+  # - update metadata/cvars.txt
+  # - manually start the server up with enable_in_prod set to true:
+  args.gtk.start_server! port: 3000, enable_in_prod: true
   args.outputs.background_color = [0, 0, 0]
-  args.outputs.labels << [640, 600, "Point your web browser at http://localhost:#{args.state.port}/", 10, 1, 255, 255, 255]
+  args.outputs.labels << { x: 640,
+                           y: 360,
+                           text: "Point your web browser at http://localhost:#{args.state.port}/",
+                           size_px: 30,
+                           anchor_x: 0.5,
+                           anchor_y: 0.5 }
 
-  if args.state.tick_count == 1
+  args.outputs.labels << { x: 640,
+                           y: 360,
+                           text: "See metadata/cvars.txt for webserer configuration requirements.",
+                           size_px: 30,
+                           anchor_x: 0.5,
+                           anchor_y: 1.5 }
+
+  if Kernel.tick_count == 1
     $gtk.openurl "http://localhost:3000"
   end
 

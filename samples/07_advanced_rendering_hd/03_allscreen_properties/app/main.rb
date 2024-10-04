@@ -8,7 +8,7 @@ def tick args
   args.outputs.labels << { x: 10, y:  70.from_top, text: "allscreen_offset_x:  #{args.grid.allscreen_offset_x}", **label_style }
   args.outputs.labels << { x: 10, y: 100.from_top, text: "allscreen_offset_y:  #{args.grid.allscreen_offset_y}", **label_style }
 
-  if (args.state.tick_count % 500) < 250
+  if (Kernel.tick_count % 500) < 250
     args.outputs.labels << { x: 10, y: 130.from_top, text: "cropped to:          grid", **label_style }
 
     args.outputs.sprites << { x:        args.grid.left,

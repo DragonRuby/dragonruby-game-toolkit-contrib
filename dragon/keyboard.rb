@@ -35,7 +35,7 @@ module GTK
 
     attr_accessor :zero, :one, :two, :three, :four,
                   :five, :six, :seven, :eight, :nine,
-                  :backspace, :escape, :enter, :tab,
+                  :backspace, :delete, :escape, :enter, :tab,
                   :open_square_brace, :close_square_brace,
                   :semicolon, :equal,
                   :hyphen, :space,
@@ -271,11 +271,27 @@ module GTK
 
       char = KeyboardKeys.char_with_shift raw_key, modifier
       names = KeyboardKeys.char_to_method char, raw_key
-      names << :alt if (modifier & (256|512)) != 0    # alt key
-      names << :meta if (modifier & (1024|2048)) != 0 # meta key (command/apple/windows key)
-      names << :control if (modifier & (64|128)) != 0 # ctrl key
-      names << :shift if (modifier & (1|2)) != 0      # shift key
+      names << :alt if KeyboardKeys.modifier_alt? modifier
+      names << :meta if KeyboardKeys.modifier_meta? modifier
+      names << :control if KeyboardKeys.modifier_ctrl? modifier
+      names << :shift if KeyboardKeys.modifier_shift? modifier
       names
+    end
+
+    def self.modifier_shift? modifier
+      (modifier & (1|2)) != 0
+    end
+
+    def self.modifier_ctrl? modifier
+      (modifier & (64|128)) != 0
+    end
+
+    def self.modifier_alt? modifier
+      (modifier & (256|512)) != 0
+    end
+
+    def self.modifier_meta? modifier
+      (modifier & (1024|2048)) != 0
     end
 
     def self.utf_8_char raw_key
@@ -287,7 +303,7 @@ module GTK
 
     def self.char_with_shift raw_key, modifier
       return nil unless raw_key >= 0 && raw_key <= 255
-      if modifier != 1 && modifier != 2 && modifier != 3
+      if !KeyboardKeys.modifier_shift?(modifier)
         return utf_8_char raw_key
       else
         @shift_keys ||= {
@@ -361,9 +377,9 @@ module GTK
         ":"  => [:colon],
         ";"  => [:semicolon],
         "="  => [:equal],
-        "-"  => [:hyphen, :minus],
+        "-"  => [:hyphen],
         " "  => [:space],
-        "$"  => [:dollar_sign],
+        "$"  => [:dollar],
         "\"" => [:double_quotation_mark],
         "'"  => [:single_quotation_mark],
         "`"  => [:backtick],
@@ -677,6 +693,22 @@ module GTK
       @has_focus   = false
     end
 
+    def key_down? key
+      @key_down.send(key)
+    end
+
+    def key_up? key
+      @key_up.send(key)
+    end
+
+    def key_held? key
+      @key_held.send(key)
+    end
+
+    def key_down_or_held? key
+      key_down?(key) || key_held?(key)
+    end
+
     def p
       @key_down.p || @key_held.p
     end
@@ -749,6 +781,10 @@ module GTK
     # @return [String]
     def to_s
       serialize.to_s
+    end
+
+    def to_h
+      serialize
     end
 
     def key

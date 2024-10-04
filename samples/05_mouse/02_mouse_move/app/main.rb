@@ -66,7 +66,7 @@ class ProtectThePuppiesFromTheZombies
                        attack_angle: 0,
                        dx: 0,
                        dy: 0,
-                       created_at: state.tick_count }
+                       created_at: Kernel.tick_count }
   end
 
   # Outputs a gray background.
@@ -155,14 +155,14 @@ class ProtectThePuppiesFromTheZombies
                          x: grid.rect.w.randomize(:ratio), # random x position on screen (within grid scope)
                          y: [-10, 730].sample, # y position is set to either -10 or 730 (randomly chosen)
                          w: 4 * 3, h: 8 * 3,
-                         created_at: state.tick_count
+                         created_at: Kernel.tick_count
                        }
                       else
                        {
                          x: [-10, 1290].sample, # x position is set to either -10 or 1290 (randomly chosen)
                          y: grid.rect.w.randomize(:ratio), # random y position on screen
                          w: 4 * 3, h: 8 * 3,
-                         created_at: state.tick_count
+                         created_at: Kernel.tick_count
                        }
                       end)
 
@@ -207,19 +207,19 @@ class ProtectThePuppiesFromTheZombies
     state.killed_zombies += killed_this_frame # add newly killed zombies to killed zombies
 
     if killed_this_frame.length > 0 # if atleast one zombie was killed in the frame
-      state.flash_at = state.tick_count # flash_at set to the frame when the zombie was killed
+      state.flash_at = Kernel.tick_count # flash_at set to the frame when the zombie was killed
     # Don't forget, the rendered flash lasts for 10 frames after the zombie is killed (look at render_flash method)
     end
 
     # Sets the tick_count (passage of time) as the value of the death_at variable for each killed zombie.
     # Death_at stores the frame a zombie was killed.
     killed_this_frame.each do |z|
-      z.death_at = state.tick_count
+      z.death_at = Kernel.tick_count
     end
 
     # Zombies are rejected from the killed_zombies collection depending on when they were killed.
     # They are rejected if more than 30 frames have passed since their death.
-    state.killed_zombies = state.killed_zombies.reject { |z| state.tick_count - z.death_at > 30 }
+    state.killed_zombies = state.killed_zombies.reject { |z| Kernel.tick_count - z.death_at > 30 }
   end
 
   # Uses input from the user to move the player around the screen.

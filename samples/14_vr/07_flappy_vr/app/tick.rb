@@ -57,7 +57,7 @@ class FlappyDragon
   end
 
   def render
-    outputs.sounds << "sounds/flappy-song.ogg" if state.tick_count == 1
+    outputs.sounds << "sounds/flappy-song.ogg" if Kernel.tick_count == 1
     render_score
     render_menu
     render_game
@@ -115,7 +115,7 @@ class FlappyDragon
   end
 
   def render_background
-    scroll_point_at   = state.tick_count
+    scroll_point_at   = Kernel.tick_count
     scroll_point_at   = state.scene_at if state.scene == :menu
     scroll_point_at   = state.death_at if state.countdown > 0
     scroll_point_at ||= 0
@@ -304,7 +304,7 @@ class FlappyDragon
   def calc_game_over
     return unless game_over?
 
-    state.death_at = state.tick_count
+    state.death_at = Kernel.tick_count
     state.death_from = state.walls.first
     state.death_fall_direction = -1
     state.death_fall_direction =  1 if state.x > state.death_from.x
@@ -369,7 +369,7 @@ class FlappyDragon
     elsif (inputs.mouse.down || inputs.mouse.click || inputs.keyboard.key_down.space || inputs.controller_one.key_down.a) && state.countdown == 0
       state.dy = 0
       state.dy += state.flap_power
-      state.flapped_at = state.tick_count
+      state.flapped_at = Kernel.tick_count
       outputs.sounds << "sounds/fly-sound.wav"
     end
   end
@@ -441,7 +441,7 @@ class FlappyDragon
   end
 
   def reset_game set_flash = true
-    state.flash_at = state.tick_count if set_flash
+    state.flash_at = Kernel.tick_count if set_flash
     state.walls = []
     state.y = 500
     state.x =  state.x_starting_point
@@ -456,7 +456,7 @@ class FlappyDragon
 
   def change_to_scene scene
     state.scene = scene
-    state.scene_at = state.tick_count
+    state.scene_at = Kernel.tick_count
     inputs.keyboard.clear
     inputs.controller_one.clear
   end

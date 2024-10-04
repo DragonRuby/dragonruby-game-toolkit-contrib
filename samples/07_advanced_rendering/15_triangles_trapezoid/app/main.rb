@@ -1,12 +1,5 @@
 def tick args
-  args.outputs.labels << {
-    x: 640,
-    y: 30.from_top,
-    text: "Triangle rendering is available in Indie and Pro versions (ignored in Standard Edition).",
-    alignment_enum: 1
-  }
-
-  transform_scale = ((args.state.tick_count / 3).sin.abs ** 5).half
+  transform_scale = ((Kernel.tick_count / 3).sin.abs ** 5).half
   args.outputs.sprites << [
     { x:         600,
       y:         320,

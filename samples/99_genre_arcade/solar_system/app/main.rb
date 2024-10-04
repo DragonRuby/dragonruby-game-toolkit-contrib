@@ -45,7 +45,7 @@ def to_sprite args, entity
   y = 0
 
   if entity.year_in_days
-    day = args.state.tick_count
+    day = Kernel.tick_count
     day_in_year = day % entity.year_in_days
     entity.random_start_day ||= day_in_year * rand
     percentage_of_year = day_in_year.fdiv(entity.year_in_days)
@@ -78,7 +78,7 @@ def calc args
     [x, y, speed, r, g, b]
   end
 
-  if args.state.tick_count == 0
+  if Kernel.tick_count == 0
     args.audio[:bg_music] = {
       input: 'sounds/bg.ogg',
       looping: true

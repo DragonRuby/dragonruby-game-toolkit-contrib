@@ -54,9 +54,8 @@ class OneBitLowrezPaint
                          h: rt_canvas.height,
                          path: :rt_canvas }.center_inside_rect(x: 0, y: 0, w: 640, h: 720)
 
-    return unless state.tick_count == 1
+    return unless Kernel.tick_count == 1
 
-    outputs[:rt_canvas].transient!
     outputs[:rt_canvas].width      = rt_canvas.width
     outputs[:rt_canvas].height     = rt_canvas.height
     outputs[:rt_canvas].sprites   << (rt_canvas.size + 1).map_with_index do |x|
@@ -94,7 +93,7 @@ class OneBitLowrezPaint
   end
 
   def render_canvas
-    return if state.tick_count.zero?
+    return if Kernel.tick_count.zero?
     outputs.sprites << rt_canvas.sprite
   end
 
@@ -116,9 +115,8 @@ class OneBitLowrezPaint
   end
 
   def render_animation_frame_thumbnails
-    return if state.tick_count.zero?
+    return if Kernel.tick_count.zero?
 
-    outputs[:current_animation_frame].transient!
     outputs[:current_animation_frame].width   = rt_canvas.size
     outputs[:current_animation_frame].height  = rt_canvas.size
     outputs[:current_animation_frame].solids <<  selected_animation_frame.pixels.map_with_index do |f, i|
@@ -168,7 +166,7 @@ class OneBitLowrezPaint
 
   def input_mouse_click
     if inputs.mouse.up
-      state.last_mouse_up = state.tick_count
+      state.last_mouse_up = Kernel.tick_count
     elsif inputs.mouse.moved && user_is_editing?
       edit_current_animation_frame inputs.mouse.point
     end
@@ -184,7 +182,7 @@ class OneBitLowrezPaint
     end
 
     if (inputs.mouse.point.inside_rect? rt_canvas.sprite)
-      state.last_mouse_down = state.tick_count
+      state.last_mouse_down = Kernel.tick_count
       edit_current_animation_frame inputs.mouse.point
     end
   end
@@ -198,10 +196,10 @@ class OneBitLowrezPaint
       gtk.serialize_state "tmp/canvas_backups/#{t.to_i}/state.txt", state
       animation_frames.each_with_index do |animation_frame, i|
         queues.update_rt_animation_frame << { index: i,
-                                              at: state.tick_count + i,
+                                              at: Kernel.tick_count + i,
                                               queue_sprite_creation: true }
         queues.create_sprite << { index: i,
-                                  at: state.tick_count + animation_frames.length + i,
+                                  at: Kernel.tick_count + animation_frames.length + i,
                                   path_override: "tmp/canvas_backups/#{t.to_i}/sprite-#{i}.png" }
       end
       gtk.notify! "Canvas saved."
@@ -212,7 +210,7 @@ class OneBitLowrezPaint
       args.state = gtk.deserialize_state 'canvas/state.txt'
       animation_frames.each_with_index do |a, i|
         queues.update_rt_animation_frame << { index: i,
-                                              at: state.tick_count + i,
+                                              at: Kernel.tick_count + i,
                                               queue_sprite_creation: true }
       end
       gtk.notify! "Canvas loaded."
@@ -221,7 +219,7 @@ class OneBitLowrezPaint
     # d to go into delete mode, release to paint
     if inputs.keyboard.key_held.d
       state.edit_mode = :erasing
-      gtk.notify! "Erasing." if inputs.keyboard.key_held.d == (state.tick_count - 1)
+      gtk.notify! "Erasing." if inputs.keyboard.key_held.d == (Kernel.tick_count - 1)
     elsif inputs.keyboard.key_up.d
       state.edit_mode = :drawing
       gtk.notify! "Drawing."
@@ -230,9 +228,9 @@ class OneBitLowrezPaint
     # a to add a frame to the end
     if inputs.keyboard.key_down.a
       queues.create_sprite << { index: state.animation_frames_selected_index,
-                                at: state.tick_count }
+                                at: Kernel.tick_count }
       queues.create_sprite << { index: state.animation_frames_selected_index + 1,
-                                at: state.tick_count }
+                                at: Kernel.tick_count }
       add_animation_frame_to_end
       gtk.notify! "Frame added to end."
     end
@@ -247,7 +245,7 @@ class OneBitLowrezPaint
     if (inputs.keyboard.key_down.v || inputs.keyboard.key_down.q) && state.clipboard
       selected_animation_frame.pixels = [state.clipboard].flatten
       queues.update_rt_animation_frame << { index: state.animation_frames_selected_index,
-                                            at: state.tick_count,
+                                            at: Kernel.tick_count,
                                             queue_sprite_creation: true }
       gtk.notify! "Pasted."
     end
@@ -288,7 +286,7 @@ class OneBitLowrezPaint
     return if state.last_mouse_up.elapsed_time != 30
     # auto export current animation frame if there is no editing for 30 ticks
     queues.create_sprite << { index: state.animation_frames_selected_index,
-                              at: state.tick_count }
+                              at: Kernel.tick_count }
   end
 
   def calc_buttons_frame_selection
@@ -345,7 +343,7 @@ class OneBitLowrezPaint
 
       if h.queue_sprite_creation
         queues.create_sprite << { index: h.index,
-                                  at: state.tick_count + 1 }
+                                  at: Kernel.tick_count + 1 }
       end
     end
   end
@@ -353,7 +351,6 @@ class OneBitLowrezPaint
   def update_animation_frame_render_target animation_frame
     return if !animation_frame
 
-    outputs[animation_frame.rt_name].transient = true
     outputs[animation_frame.rt_name].width   = state.rt_canvas.size
     outputs[animation_frame.rt_name].height  = state.rt_canvas.size
     outputs[animation_frame.rt_name].solids << animation_frame.pixels.map do |f|
@@ -377,7 +374,7 @@ class OneBitLowrezPaint
 
     state.animation_frames_selected_index = (animation_frames.length - 1)
     queues.update_rt_animation_frame << { index: state.animation_frames_selected_index,
-                                          at: state.tick_count,
+                                          at: Kernel.tick_count,
                                           queue_sprite_creation: true }
   end
 
@@ -396,7 +393,7 @@ class OneBitLowrezPaint
                                 .items[i].inner_rect
                                 .merge(path: "tmp/sprite_backups/#{Time.now.to_i}-sprite-#{i}.png")
 
-    queues.reset_sprite << { index: i, at: state.tick_count }
+    queues.reset_sprite << { index: i, at: Kernel.tick_count }
   end
 
   def selected_animation_frame
@@ -408,12 +405,12 @@ class OneBitLowrezPaint
     if state.edit_mode == :drawing && (!selected_animation_frame.pixels.include? draw_area_point)
       selected_animation_frame.pixels << draw_area_point
       queues.update_rt_animation_frame << { index: state.animation_frames_selected_index,
-                                            at: state.tick_count,
+                                            at: Kernel.tick_count,
                                             queue_sprite_creation: !user_is_editing? }
     elsif state.edit_mode == :erasing && (selected_animation_frame.pixels.include? draw_area_point)
       selected_animation_frame.pixels = selected_animation_frame.pixels.reject { |p| p == draw_area_point }
       queues.update_rt_animation_frame << { index: state.animation_frames_selected_index,
-                                            at: state.tick_count,
+                                            at: Kernel.tick_count,
                                             queue_sprite_creation: !user_is_editing? }
     end
   end

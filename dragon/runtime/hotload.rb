@@ -58,6 +58,7 @@ module GTK
             'dragon/outputs.rb',
             'dragon/outputs_docs.rb',
             'dragon/keyboard.rb',
+            'dragon/mouse_keys.rb',
             'dragon/mouse.rb',
             'dragon/keyboard.rb',
             'dragon/inputs.rb',
@@ -73,6 +74,7 @@ module GTK
             'dragon/fn.rb',
             'dragon/args.rb',
             'dragon/args_docs.rb',
+            'dragon/console_font_style.rb',
             'dragon/console_prompt.rb',
             'dragon/console_menu.rb',
             'dragon/console_evaluator.rb',
@@ -87,18 +89,21 @@ module GTK
             'dragon/runtime/c_bridge.rb',
             'dragon/runtime/hotload.rb',
             'dragon/runtime/backup.rb',
+            'dragon/runtime/require.rb',
             'dragon/runtime/async_require.rb',
             'dragon/runtime/platform.rb',
             'dragon/runtime/autocomplete.rb',
             'dragon/runtime/texture_atlas.rb',
             'dragon/runtime/download_stb_rb.rb',
             'dragon/runtime/auto_test.rb',
+            'dragon/runtime/a11y.rb',
             'dragon/runtime/a11y_emulation.rb',
             'dragon/runtime/notify.rb',
+            'dragon/runtime/window.rb',
+            'dragon/runtime/developer_support.rb',
             'dragon/api.rb',
             'dragon/runtime.rb',
             'dragon/runtime_docs.rb',
-            'dragon/trace.rb',
             'dragon/readme_docs.rb',
             'dragon/hotload_client.rb',
             'dragon/wizards.rb',
@@ -149,7 +154,6 @@ module GTK
       def on_load_succeeded file
         self.files_reloaded << file
         self.reloaded_files << file
-        Trace.untrace_classes!
       end
 
       def reset_all_mtimes

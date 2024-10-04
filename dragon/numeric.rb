@@ -248,25 +248,25 @@ S
     elsif definitions.length == 1 && definitions[0] == :int
       return rand self
     elsif definitions.length == 1 && definitions[0] == :sign
-      return rand_sign
+      return rand_sign * self
     elsif definitions[0] == :ratio && definitions[1] == :sign
-      return rand_sign * rand
+      return rand_sign * rand * self
     elsif definitions[0] == :sign && definitions[1] == :ratio
-      return rand_sign * rand
+      return rand_sign * rand * self
     elsif definitions[0] == :int && definitions[1] == :sign
       result = rand_sign
-      return rand result
+      return rand(self) * result
     elsif definitions[0] == :sign && definitions[1] == :int
       result = rand_sign
-      return rand result
+      return rand(self) * result
     end
 
     self
   end
 
   def rand_sign
-    return self * -1 if rand > 0.5
-    self
+    return -1 if rand > 0.5
+    1
   end
 
   def rand_ratio

@@ -32,7 +32,7 @@ def tick args
   move_multiplier = 1
   dzoom = 0.01
 
-  if args.state.tick_count.zmod? zmod
+  if Kernel.tick_count.zmod? zmod
     args.state.camera.x += args.inputs.left_right * -1 * move_multiplier
     args.state.camera.y += args.inputs.up_down * -1 * move_multiplier
   end
@@ -47,7 +47,7 @@ def tick args
 
   args.outputs.sprites << triangles_mat3_mul(args.state.square_one,
                                              mat3_translate(-50, -50),
-                                             mat3_rotate(args.state.tick_count),
+                                             mat3_rotate(Kernel.tick_count),
                                              mat3_translate(0, 0),
                                              mat3_translate(args.state.camera.x, args.state.camera.y),
                                              mat3_scale(args.state.camera.zoom),
@@ -55,7 +55,7 @@ def tick args
 
   args.outputs.sprites << triangles_mat3_mul(args.state.square_two,
                                              mat3_translate(-50, -50),
-                                             mat3_rotate(args.state.tick_count),
+                                             mat3_rotate(Kernel.tick_count),
                                              mat3_translate(100, 100),
                                              mat3_translate(args.state.camera.x, args.state.camera.y),
                                              mat3_scale(args.state.camera.zoom),
@@ -76,7 +76,7 @@ def tick args
   args.outputs.labels << { x: 30, y: 90.from_top, text: "Mouse: #{mouse_coord.x.to_sf} #{mouse_coord.y.to_sf}" }
   args.outputs.labels << { x: 30,
                            y: 30.from_top,
-                           text: "W,A,S,D to move. I, O to zoom. Triangles is a Indie/Pro Feature and will be ignored in Standard." }
+                           text: "W,A,S,D to move. I, O to zoom." }
 end
 
 def sprite_to_triangles sprite

@@ -82,7 +82,7 @@ def tick args
   # if the keyboard doesn't have focus, and the game is in production mode, and it isn't the first tick
   if (!args.inputs.keyboard.has_focus &&
       args.gtk.production &&
-      args.state.tick_count != 0)
+      Kernel.tick_count != 0)
     args.outputs.background_color = [0, 0, 0]
     args.outputs.labels << { x: 640,
                              y: 360,

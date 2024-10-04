@@ -117,7 +117,6 @@ module RuntimeDocs
       :docs_reload_history,
       :docs_reload_history_pending,
       :docs_reload_if_needed,
-      :docs_add_caller_to_puts!,
 
       :docs_api_summary_state,
     ]
@@ -565,12 +564,6 @@ module RuntimeDocs
     DocsOrganizer.get_docsify_content path: "docs/api/runtime.md",
                                       heading_level: 1,
                                       heading_include: "State"
-  end
-
-  def docs_add_caller_to_puts!
-    DocsOrganizer.get_docsify_content path: "docs/api/runtime.md",
-                                      heading_level: 3,
-                                      heading_include: __method__.to_s.gsub("docs_", "")
   end
 
   def docs_production?

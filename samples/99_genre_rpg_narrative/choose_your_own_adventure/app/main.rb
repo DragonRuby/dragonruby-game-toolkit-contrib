@@ -44,7 +44,7 @@ def tick args
     tick_game args # calls tick_game method, runs game
   end
 
-  if args.state.tick_count.mod_zero? 60 # update every 60 frames
+  if Kernel.tick_count.mod_zero? 60 # update every 60 frames
     t = args.gtk.ffi_file.mtime GAME_FILE # mtime returns modification time for named file
     if t != args.state.mtime
       args.state.mtime = t

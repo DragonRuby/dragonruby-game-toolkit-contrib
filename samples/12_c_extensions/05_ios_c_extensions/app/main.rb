@@ -61,7 +61,7 @@ S
 end
 
 def tick args
-  if args.state.tick_count == 60 && args.gtk.platform?(:ios)
+  if Kernel.tick_count == 60 && args.gtk.platform?(:ios)
     args.gtk.dlopen 'ext'
     include FFI::CExt
     puts "the results of hello world are:"

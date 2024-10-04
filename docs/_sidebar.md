@@ -1,9 +1,10 @@
 * [Home](/index.md)
-* [Getting Started](/guides/getting-started.md)
-* [FAQ](/misc/faq.md)
+* [Quick Start](/guides/getting-started.md)
 * [DragonRuby Philosophy](/misc/philosophy.md)
+* [FAQ](/misc/faq.md)
 * Guides
   * [Starting A New Project](/guides/starting-a-new-project.md)
+  * [Updating DragonRuby](/guides/updating-dragonruby.md)
   * [Deploying To Itch.io](/guides/deploying-to-itch.md)
   * [Deploying Mobile](/guides/deploying-to-mobile.md)
   * [Deploying To Steam](/guides/deploying-to-steam.md)
@@ -11,13 +12,14 @@
 * API
   * [Outputs (`args.outputs`)](/api/outputs.md)
   * [Inputs (`args.inputs`)](/api/inputs.md)
+  * [Events (`args.events`)](/api/events.md)
   * [Runtime (`args.gtk`)](/api/runtime.md)
   * [Geometry (`args.geometry`)](/api/geometry.md)
   * [Audio (`args.audio`)](/api/audio.md)
   * [Easing (`args.easing`)](/api/easing.md)
   * [Layout (`args.layout`)](/api/layout.md)
   * [Grid (`args.grid`)](/api/grid.md)
-  * [CVars (`args.cvars`)](/api/cvars.md)
+  * [CVars / Configuration (`args.cvars`)](/api/cvars.md)
   * [Array](/api/array.md)
   * [Numeric](/api/numeric.md)
 * Samples

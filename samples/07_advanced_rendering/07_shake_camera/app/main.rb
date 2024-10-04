@@ -11,7 +11,6 @@ class ScreenShake
     outputs.labels << { x: 600, y: 400, text: "Hold Space!" }
 
     # Add outputs to :scene
-    outputs[:scene].transient!
     outputs[:scene].sprites << { x: 100, y: 100,          w: 80, h: 80, path: 'sprites/square/blue.png' }
     outputs[:scene].sprites << { x: 200, y: 300.from_top, w: 80, h: 80, path: 'sprites/square/blue.png' }
     outputs[:scene].sprites << { x: 900, y: 200,          w: 80, h: 80, path: 'sprites/square/blue.png' }

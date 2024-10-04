@@ -2,7 +2,7 @@ class Game
   attr_gtk
 
   def defaults
-    state.show_debug_layer = true if state.tick_count == 0
+    state.show_debug_layer = true if Kernel.tick_count == 0
 
     state.player ||= {
       tile_size: 64,
@@ -154,7 +154,7 @@ class Game
   def slash_can_damage?
     # damage occurs half way into the slash animation
     return false if slash_complete?
-    return false if (player.slash_at + player.slash_frames.idiv(2)) != state.tick_count
+    return false if (player.slash_at + player.slash_frames.idiv(2)) != Kernel.tick_count
     return true
   end
 

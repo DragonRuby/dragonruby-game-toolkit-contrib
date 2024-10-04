@@ -28,7 +28,7 @@
    For more information about solids, go to mygame/documentation/03-solids-and-borders.md.
 
  - args.outputs.lines: An array. The values generate a line.
-   The parameters are [X1, Y1, X2, Y2, RED, GREEN, BLUE]
+   The parameters are [X, Y, X2, Y2, RED, GREEN, BLUE]
    For more information about lines, go to mygame/documentation/04-lines.md.
 
  - args.state.new_entity: Used when we want to create a new object, like a sprite or button.

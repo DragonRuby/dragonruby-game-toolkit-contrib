@@ -6,29 +6,6 @@
 class String
   include ValueType
 
-  def self.wrapped_lines_recur word, rest, length, aggregate
-    if word.nil?
-      return aggregate
-    elsif rest[0].nil?
-      aggregate << word + "\n"
-      return aggregate
-    elsif (word + " " + rest[0]).length > length
-      aggregate << word + "\n"
-      return wrapped_lines_recur rest[0], rest[1..-1], length, aggregate
-    elsif (word + " " + rest[0]).length <= length
-      next_word = (word + " " + rest[0])
-      return wrapped_lines_recur next_word, rest[1..-1], length, aggregate
-    else
-      log <<-S
-WARNING:
-#{word} is too long to fit in length of #{length}.
-
-S
-      next_word = (word + " " + rest[0])
-      return wrapped_lines_recur next_word, rest[1..-1], length, aggregate
-    end
-  end
-
   def char_byte
     return nil if self.length == 0
     c = self.each_char.first.bytes
@@ -62,15 +39,30 @@ S
     self[0..-2]
   end
 
-  def self.wrapped_lines string, length
-    string.each_line.map do |l|
-      l = l.rstrip
-      if l.length < length
-        l + "\n"
+  def self.wrapped_lines(string, length)
+    string.each_line.map do |line|
+      output_lines = []
+      line = line.rstrip
+
+      if line.length < length
+        output_lines << line + "\n"
       else
-        words = l.split ' '
-        wrapped_lines_recur(words[0], words[1..-1], length, []).flatten
+        words = line.split ' '
+        current_line = words[0]
+
+        words[1..-1].each do |word|
+          if (current_line + " " + word).length > length
+            output_lines << current_line + "\n"
+            current_line = word
+          else
+            current_line += " " + word
+          end
+        end
+
+        output_lines << current_line + "\n" if current_line
       end
+
+      output_lines
     end.flatten
   end
 
@@ -141,5 +133,21 @@ S
     self.each_line.map do |l|
       "#{spaces}#{l}"
     end.join
+  end
+
+  def ljust(count, padstr = " ")
+    if self.length >= count
+      self
+    else
+      self + (padstr * (count - self.length))
+    end
+  end
+
+  def rjust(count, padstr = " ")
+    if self.length >= count
+      self
+    else
+      (padstr * (count - self.length)) + self
+    end
   end
 end

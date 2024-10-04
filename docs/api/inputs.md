@@ -23,8 +23,7 @@ The function is helpful when you need to present on screen instructions based on
 
 ## `last_active_at`
 
-Returns the `args.state.tick_count` (`Kernel.tick_count`) of which the
-specific input was last active.
+Returns `Kernel.tick_count` of which the specific input was last active.
 
 ## `last_active_global_at`
 
@@ -32,7 +31,7 @@ Returns the `Kernel.global_tick_count` of which the specific input was last acti
 
 ## `locale`
 
-Returns the ISO 639-1 two-letter langauge code based on OS preferences. Refer to the following link for locale strings: <https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes>).
+Returns the ISO 639-1 two-letter language code based on OS preferences. Refer to the following link for locale strings: <https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes>).
 
 Defaults to "en" if locale can't be retrieved (`args.inputs.locale_raw` will be nil in this case).
 
@@ -67,7 +66,7 @@ The following inputs are inspected to determine the result:
 
 Returns a floating point value between `-1` and `1`. This method is aliased to `args.inputs.left_right_perc_with_wasd`
 
-The following inputs are inspected to dermine the result:
+The following inputs are inspected to determine the result:
 
 -   Controller One's Left Analog (if a controller is connected and the value is not 0.0): `args.inputs.controller_one.left_analog_x_perc`
 -   If the left analog isn't being used, then Controller One's DPAD is consulted: `args.inputs.controller_one.dpad_left`, `args.inputs.controller_one.dpad_right`
@@ -86,7 +85,7 @@ The following inputs are inspected to determine the result:
 
 ## `left_right_directional_perc`
 
-Returns a floating point value between `-1` and `1`. The following inputs are inspected to dermine the result:
+Returns a floating point value between `-1` and `1`. The following inputs are inspected to determine the result:
 
 -   Controller One's Left Analog (if a controller is connected and the value is not 0.0): `args.inputs.controller_one.left_analog_x_perc`
 -   If the left analog isn't being used, then Controller One's DPAD is consulted: `args.inputs.controller_one.dpad_left`, `args.inputs.controller_one.dpad_right`
@@ -137,7 +136,7 @@ The following inputs are inspected to determine the result:
 
 ## `up_down_perc`
 
-Returns a floating point value between `-1` and `1`. The following inputs are inspected to dermine the result:
+Returns a floating point value between `-1` and `1`. The following inputs are inspected to determine the result:
 
 -   Controller One's Left Analog (if a controller is connected and the value is not 0.0): `args.inputs.controller_one.up_analog_y_perc`
 -   If the left analog isn't being used, then Controller One's DPAD is consulted: `args.inputs.controller_one.dpad_up`, `args.inputs.controller_one.dpad_down`
@@ -174,7 +173,7 @@ Represents the user's mouse.
 
 ### `has_focus`
 
-Return's true if the game has mouse focus.
+Returns true if the game has mouse focus.
 
 ### `x`
 
@@ -183,6 +182,22 @@ Returns the current `x` location of the mouse.
 ### `y`
 
 Returns the current `y` location of the mouse.
+
+### `previous_x`
+
+Returns the x location of the mouse on the previous frame.
+
+### `previous_y`
+
+Returns the y location of the mouse on the previous frame.
+
+### `relative_x`
+
+Returns the difference between the current x location of the mouse and its previous x location.
+
+### `relative_y`
+
+Returns the difference between the current y location of the mouse and its previous y location.
 
 ### `inside_rect? rect`
 
@@ -212,6 +227,16 @@ Returns `true` if the right mouse button is down.
 
 Returns a bitmask for all buttons on the mouse: `1` for a button in the `down` state, `0` for a button in the `up` state.
 
+Here is a snippet to help visualize all mouse button states:
+```ruby
+def tick args
+  args.outputs.debug.watch "button_left:   #{inputs.mouse.button_left}"
+  args.outputs.debug.watch "button_middle: #{inputs.mouse.button_middle}"
+  args.outputs.debug.watch "button_right:  #{inputs.mouse.button_right}"
+  args.outputs.debug.watch "button_bits:   #{inputs.mouse.button_bits.to_s(2)}"
+end
+```
+
 ### `wheel`
 
 Represents the mouse wheel. Returns `nil` if no mouse wheel actions occurred. Otherwise `args.inputs.mouse.wheel` will return a `Hash` with `x`, and `y` (representing movement on each axis).
@@ -239,6 +264,11 @@ Returns a `Hash` with `x` and `y` denoting a touch point that is on the right si
 ## Controller (`args.inputs.controller_(one-four)`)
 
 Represents controllers connected to the usb ports. There is also `args.inputs.controllers` which returns controllers one through four as an array (`args.inputs.controllers[0]` points to `args.inputs.controller_one`).
+
+### `connected`
+
+Returns `true` if a controller is connected. If this value is `false`, controller properties
+will not be `nil`, but return `0` for directional based properties and `false` button state properties.
 
 ### `name`
 
@@ -332,8 +362,6 @@ the minimum threshold for the analog stick to be considered
 active. The `threshold_raw` is a number between 0 and 32,767, and the
 `threshold_perc` is a number between 0 and 1.
 
-### `right_analog_active?`
-
 ### `right_analog_active?(threshold_raw:, threshold_perc:)`
 
 Returns true if the Right Analog Stick is tilted. The `threshold_raw`
@@ -342,13 +370,38 @@ the minimum threshold for the analog stick to be considered
 active. The `threshold_raw` is a number between 0 and 32,767, and the
 `threshold_perc` is a number between 0 and 1.
 
+### `key_down?(key)`, `key_up?(key)`, `key_held?(key)`, `key_down_or_held?(key)`
+
+Given a symbol, this returns `true` or `false` if the key is in the
+current state.
+
+Here's how each of these methods are equivalent to key-based methods:
+
+```ruby
+# key_down equivalent
+args.inputs.controller_one.key_down.enter
+args.inputs.controller_one.key_down?(:enter)
+
+# key_up
+args.inputs.controller_one.key_up.enter
+args.inputs.controller_one.key_up?(:enter)
+
+# key held
+args.inputs.controller_one.key_held.enter
+args.inputs.controller_one.key_held?(:enter)
+
+# key down or held
+args.inputs.controller_one.enter
+args.inputs.controller_one.key_down_or_held?(:enter)
+```
+
 ## Keyboard (`args.inputs.keyboard`)
 
 Represents the user's keyboard.
 
 ### `active`
 
-Returns `Kernel.tick_count` (`args.state.tick_count`) if any keys on the keyboard were pressed.
+Returns `Kernel.tick_count` if any keys on the keyboard were pressed.
 
 ### `has_focus`
 
@@ -381,6 +434,56 @@ Returns `-1` (left), `0` (neutral), or `+1` (right) depending on results of `arg
 ### keyboard properties
 
 The following properties represent keys on the keyboard and are available on `args.inputs.keyboard.KEY`, `args.inputs.keyboard.key_down.KEY`, `args.inputs.keyboard.key_held.KEY`, and `args.inputs.keyboard.key_up.KEY`:
+
+Here is an example showing all the ways to access a key's state:
+
+```ruby
+def tick args
+  # create a value in state to
+  # track tick_count of the G key
+  args.state.g_key ||= {
+    ctrl_at: nil,
+    key_down_at: nil,
+    key_held_at: nil,
+    key_down_or_held_at: nil,
+    key_up_at: nil,
+  }
+
+  # for each keyboard event, capture the tick_count
+  # that the event occurred
+  # Ctrl + G
+  if args.inputs.keyboard.ctrl_g
+    args.state.g_key.ctrl_at = args.inputs.keyboard.ctrl_g
+  end
+
+  # G pressed/down
+  if args.inputs.keyboard.key_down.g
+    args.state.g_key.key_down_at = args.inputs.keyboard.key_down.g
+  end
+
+  # G held
+  if args.inputs.keyboard.key_held.g
+    args.state.g_key.key_held_at = args.inputs.keyboard.key_held.g
+  end
+
+  # G down or held
+  if args.inputs.keyboard.g
+    args.state.g_key.key_down_or_held_at = args.inputs.keyboard.g
+  end
+
+  # G up
+  if args.inputs.keyboard.key_up.g
+    args.state.g_key.key_up_at = args.inputs.keyboard.key_up.g
+  end
+
+  # display the tick_count of each event
+  args.outputs.debug.watch "ctrl+g?         #{args.state.g_key.ctrl_at}"
+  args.outputs.debug.watch "g down?         #{args.state.g_key.key_down_at}"
+  args.outputs.debug.watch "g held?         #{args.state.g_key.key_held_at}"
+  args.outputs.debug.watch "g down or held? #{args.state.g_key.key_down_or_held_at}"
+  args.outputs.debug.watch "g up?           #{args.state.g_key.key_up_at}"
+end
+```
 
 -   `alt`
 -   `meta`
@@ -427,8 +530,8 @@ The following properties represent keys on the keyboard and are available on `ar
 -   `shift_left`
 -   `shift_right`
 -   `control`, `ctrl`
--   `contro_left`, `ctrl_left`
--   `contro_right`, `ctrl_right`
+-   `control_left`, `ctrl_left`
+-   `control_right`, `ctrl_right`
 -   `alt`, `option`
 -   `alt_left`, `option_left`
 -   `alt_right`, `option_right`
@@ -460,6 +563,46 @@ The following properties represent keys on the keyboard and are available on `ar
 -   `section`
 -   `ordinal_indicator`
 -   `raw_key` (unique numeric identifier for key)
+-   `caps_lock`
+-   `f1`
+-   `f2`
+-   `f3`
+-   `f4`
+-   `f5`
+-   `f6`
+-   `f7`
+-   `f8`
+-   `f9`
+-   `f10`
+-   `f11`
+-   `f12`
+-   `print_screen`
+-   `scroll_lock`
+-   `pause`
+-   `insert`
+-   `home`
+-   `page_up`
+-   `delete`
+-   `end`
+-   `page_down`
+-   `num_lock`
+-   `kp_divide`
+-   `kp_multiply`
+-   `kp_minus`
+-   `kp_plus`
+-   `kp_enter`
+-   `kp_one`
+-   `kp_two`
+-   `kp_three`
+-   `kp_four`
+-   `kp_five`
+-   `kp_six`
+-   `kp_seven`
+-   `kp_eight`
+-   `kp_nine`
+-   `kp_zero`
+-   `kp_period`
+-   `kp_equals`
 -   `left_right`
 -   `up_down`
 -   `directional_vector`
@@ -519,6 +662,33 @@ def tick args
                            text: "key_up.j:      #{keyboard.key_up.j}" }
 end
 ```
+
+### `key_down?(key)`, `key_up?(key)`, `key_held?(key)`, `key_down_or_held?(key)`
+
+Given a symbol, this returns `true` or `false` if the key is in the
+current state.
+
+Here's how each of these methods are equivalent to key-based methods:
+
+```ruby
+# key_down equivalent
+args.inputs.keyboard.key_down.enter
+args.inputs.keyboard.key_down?(:enter)
+
+# key_up
+args.inputs.keyboard.key_up.enter
+args.inputs.keyboard.key_up?(:enter)
+
+# key held
+args.inputs.keyboard.key_held.enter
+args.inputs.keyboard.key_held?(:enter)
+
+# key down or held
+args.inputs.keyboard.enter
+args.inputs.keyboard.key_down_or_held?(:enter)
+```
+
+The following 
 
 ### `keys`
 

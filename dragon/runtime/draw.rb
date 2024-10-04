@@ -19,10 +19,12 @@ module GTK
           anchor_x = s.anchor_x if s.respond_to? :anchor_x
           anchor_y = s.anchor_y if s.respond_to? :anchor_y
           if !w && !h
-            @ffi_draw.draw_triangle s.x, s.y, s.x2, s.y2, s.x3, s.y3,
-                                    s.r, s.g, s.b, s.a,
-                                    nil, nil, nil, nil, nil, nil, nil,
-                                    (s.blendmode_enum || 1)
+            @ffi_draw.draw_triangle_2 s.x, s.y, s.x2, s.y2, s.x3, s.y3,
+                                      s.r, s.g, s.b, s.a,
+                                      nil, nil, nil, nil, nil, nil, nil,
+                                      (s.blendmode_enum || 1),
+                                      s.r2, s.g2, s.b2, s.a2,
+                                      s.r3, s.g3, s.b3, s.a3
           else
             @ffi_draw.draw_solid_3 s.x, s.y, w, h,
                                    s.r, s.g, s.b, s.a,
@@ -65,7 +67,10 @@ module GTK
               anchor_y = nil
               anchor_y = s.anchor_y if s.respond_to? :anchor_y
 
-              @ffi_draw.draw_sprite_5 s.x, s.y, w, h,
+              scale_quality_enum = nil
+              scale_quality_enum = s.scale_quality_enum if s.respond_to? :scale_quality_enum
+
+              @ffi_draw.draw_sprite_6 s.x, s.y, w, h,
                                       (s.path || 'pixel').to_s,
                                       s.angle,
                                       s.a, s.r, s.g, s.b,
@@ -73,7 +78,8 @@ module GTK
                                       !!s.flip_horizontally, !!s.flip_vertically,
                                       s.angle_anchor_x, s.angle_anchor_y,
                                       s.source_x, s.source_y, s.source_w, s.source_h,
-                                      (s.blendmode_enum || 1), anchor_x, anchor_y
+                                      (s.blendmode_enum || 1), anchor_x, anchor_y,
+                                      scale_quality_enum
             end
           end
         end

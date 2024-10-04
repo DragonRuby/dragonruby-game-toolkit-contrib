@@ -22,7 +22,7 @@ end
 
 def defaults args
   # hide the mouse cursor for this game, we are going to render our own cursor
-  if args.state.tick_count == 0
+  if Kernel.tick_count == 0
     args.gtk.hide_cursor
   end
 

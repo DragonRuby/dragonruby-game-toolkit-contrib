@@ -56,8 +56,7 @@ module GTK
       end
 
       def docs_clicked
-        @console.scroll_to_bottom
-        log Kernel.docs_classes
+        GTK.openurl("https://docs.dragonruby.org")
       end
 
       def scroll_end_clicked
@@ -102,8 +101,8 @@ module GTK
             (button id: :record,      row: 1, col: col_max_index - 3, text: "framerate diagnostics", method: :framerate_diagnostics_clicked),
             (button id: :reset,       row: 1, col: col_max_index - 1, text: "reset game",            method: :reset_clicked),
 
-            (button id: :reset,       row: 2, col: col_max_index - 1, text: "docs",                  method: :docs_clicked),
-            (button id: :reset,       row: 2, col: col_max_index - 3, text: "itch wizard",           method: :itch_wizard_clicked),
+            (button id: :docs,        row: 2, col: col_max_index - 1, text: "docs",                  method: :docs_clicked),
+            (button id: :itch_wizard, row: 2, col: col_max_index - 3, text: "itch wizard",           method: :itch_wizard_clicked),
             *custom_buttons
           ]
         end
@@ -116,7 +115,11 @@ module GTK
           clicked = @buttons.find { |b| args.inputs.mouse.inside_rect? b[:rect] }
           if clicked
             args.inputs.mouse.click = nil
-            send clicked[:method]
+            if clicked[:method].is_a? Proc
+              clicked[:method].call
+            else
+              send clicked[:method]
+            end
           end
         end
       end

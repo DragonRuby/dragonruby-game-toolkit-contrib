@@ -63,7 +63,7 @@ def calc args
     # if the player is not standing, set them to standing and capture the frame
     if args.state.player.action != :standing
       args.state.player.action = :standing
-      args.state.player.action_at = args.state.tick_count
+      args.state.player.action_at = Kernel.tick_count
     end
   elsif (player_hitbox.x + player_hitbox.w / 2) > 1280
     args.state.player.x = 1280 - player_hitbox.w / 2
@@ -72,7 +72,7 @@ def calc args
     # if the player is not standing, set them to standing and capture the frame
     if args.state.player.action != :standing
       args.state.player.action = :standing
-      args.state.player.action_at = args.state.tick_count
+      args.state.player.action_at = Kernel.tick_count
     end
   end
 
@@ -80,13 +80,13 @@ def calc args
   if args.state.player.dx.abs > 0
     if args.state.player.action != :running || args.state.player.direction != args.state.player.previous_direction
       args.state.player.action = :running
-      args.state.player.action_at = args.state.tick_count
+      args.state.player.action_at = Kernel.tick_count
     end
   elsif args.inputs.left_right == 0
     # if the player's dx is 0 and they are not currently trying to run (left_right == 0), set them to standing and capture the frame
     if args.state.player.action != :standing
       args.state.player.action = :standing
-      args.state.player.action_at = args.state.tick_count
+      args.state.player.action_at = Kernel.tick_count
     end
   end
 

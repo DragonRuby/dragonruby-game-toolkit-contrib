@@ -41,7 +41,7 @@ class DuelingSpaceships
       path: path,
       bullet_sprite_path: bullet_path,
       color: color,
-      created_at: state.tick_count,
+      created_at: Kernel.tick_count,
       last_bullet_at: 0,
       fire_rate: 10 }
   end
@@ -207,7 +207,7 @@ class DuelingSpaceships
       h: 6,
       anchor_x: 0.5,
       anchor_y: 0.5,
-      created_at: state.tick_count,
+      created_at: Kernel.tick_count,
       a: a }
   end
 
@@ -288,7 +288,7 @@ class DuelingSpaceships
       angle: angle,
       speed: speed,
       lifetime: lifetime,
-      created_at: state.tick_count,
+      created_at: Kernel.tick_count,
       path: ship.bullet_sprite_path,
       anchor_x: 0.5,
       anchor_y: 0.5,
@@ -303,7 +303,7 @@ class DuelingSpaceships
     return if ship.dead
     return if ship.last_bullet_at.elapsed_time < ship.fire_rate
 
-    ship.last_bullet_at = state.tick_count
+    ship.last_bullet_at = Kernel.tick_count
 
     state.bullets << new_bullet(x: ship.x + ship.angle.vector_x * 32,
                                 y: ship.y + ship.angle.vector_y * 32,
@@ -365,7 +365,7 @@ class DuelingSpaceships
 
   def calc_reset_ships
     return unless state.round_finished
-    state.round_finished_at ||= state.tick_count
+    state.round_finished_at ||= Kernel.tick_count
     return if state.round_finished_at.elapsed_time <= 2.seconds
     start_new_round!
   end

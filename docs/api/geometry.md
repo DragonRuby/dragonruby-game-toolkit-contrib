@@ -45,9 +45,9 @@ Invocation variants:
 - `Geometry.intersect_rect?(rect_1, rect_2, tolerance)`
 - `args.inputs.mouse.intersect_rect?(other, tolerance)`
 
-Given two rectangle primitives this function will return `true` or `false` depending on if the two rectangles intersect or not. An optional final parameter can be passed in representing the `tolerence` of overlap needed to be considered a true intersection. The default value of `tolerance` is `0.1` which keeps the function from returning true if only the edges of the rectangles overlap.
+Given two rectangle primitives this function will return `true` or `false` depending on if the two rectangles intersect or not. An optional final parameter can be passed in representing the `tolerance` of overlap needed to be considered a true intersection. The default value of `tolerance` is `0.1` which keeps the function from returning true if only the edges of the rectangles overlap.
 
-`:anchor_x`, and `anchor_y` is taken into consideration if the objects respond to these methods.
+?> `:anchor_x`, and `anchor_y` is taken into consideration if the objects respond to these methods.
 
 Here is an example where one rectangle is stationary, and another rectangle is controlled using directional input. The rectangles change color from blue to read if they intersect.
 
@@ -121,7 +121,7 @@ Given two rectangle primitives this function will return `true` or `false` depen
 
 Here is an example where one rectangle is stationary, and another rectangle is controlled using directional input. The rectangles change color from blue to read if the movable rectangle is entirely inside the stationary rectangle.
 
-`:anchor_x`, and `anchor_y` is taken into consideration if the objects respond to these methods.
+?> `:anchor_x`, and `anchor_y` is taken into consideration if the objects respond to these methods.
 
 ```ruby
 def tick args
@@ -178,6 +178,87 @@ def tick args
   # render the rectangles as border primitives on the screen
   args.outputs.borders << args.state.box_1
   args.outputs.borders << args.state.box_2
+end
+```
+
+## `rect_to_circle`
+
+Invocation variants:
+
+- `Geometry.rect_to_circle(circle)`
+- `Geometry.rect_to_circle(rect)`
+
+The parameters must be one of the following:
+
+- A `Hash` with `x`, `y`, and `radius` (or an object that responds to `x`, `y`, and `radius`).
+- A `Hash` with `x`, `y`, `w`, `h`, `anchor_x`, and `anchor_y` (or an object that responds to `x`, `y`, `w`, `h`, `anchor_x`, and `anchor_y`). If the parameter is a `Hash`, `anchor_x` and `anchor_y` are optional and default to `0`.
+
+Given a circle or a rectangle, this function will return a rectangle that is the smallest rectangle that can contain the circle.
+
+## `intersect_circle?`
+
+Invocation variants:
+
+- `Geometry.intersect_circle?(circle_1, circle_2)`
+- `Geometry.intersect_circle?(rect_1, circle_2)`
+- `Geometry.intersect_circle?(circle_1, rect_2)`
+- `Geometry.intersect_circle?(rect_1, rect_2)`
+
+The parameters must be one of the following:
+
+- A `Hash` with `x`, `y`, and `radius` (or an object that responds to `x`, `y`, and `radius`).
+- A `Hash` with `x`, `y`, `w`, `h`, `anchor_x`, and `anchor_y` (or an object that responds to `x`, `y`, `w`, `h`, `anchor_x`, and `anchor_y`). If the parameter is a `Hash`, `anchor_x` and `anchor_y` are optional and default to `0`.
+
+Given two shapes that represent circles or rectangles, this function will return `true` or `false`
+depending on if the two circles intersect or not.
+
+```ruby
+def tick args
+  # create a rect at the center of the screen
+  args.state.rect ||= { x: 640 - 50,
+                        y: 360 - 50,
+                        w: 100,
+                        h: 100 }
+
+  # create a circle that fits inside the rect
+  args.state.circle ||= Geometry.rect_to_circle(args.state.rect)
+
+  # create a rect at the mouse position
+  args.state.mouse_rect = { x: args.inputs.mouse.x,
+                            y: args.inputs.mouse.y,
+                            w: 100,
+                            h: 100,
+                            anchor_x: 0.5,
+                            anchor_y: 0.5 }
+
+  # create a circle that fits inside the mouse rect
+  args.state.mouse_circle = Geometry.rect_to_circle(args.state.mouse_rect)
+
+  # render the center rect, circle, mouse rect, and mouse circle
+  args.outputs.sprites << args.state.rect
+                              .merge(path: "sprites/square/blue.png")
+  args.outputs.sprites << args.state.circle
+                              .merge(path: "sprites/circle/red.png")
+  args.outputs.sprites << args.state.mouse_rect
+                              .merge(path: "sprites/square/orange.png")
+  args.outputs.sprites << args.state.mouse_circle
+                              .merge(path: "sprites/circle/green.png")
+
+  # render a label if the rect and mouse rect intersect
+  if Geometry.intersect_rect? args.state.rect, args.state.mouse_rect
+    args.outputs.labels << { x: 640,
+                             y: 700,
+                             text: "Rect and Mouse Rect intersect",
+                             anchor_x: 0.5 }
+  end
+
+  # render a label if the rect and mouse rect intersect
+  if Geometry.intersect_circle? args.state.circle, args.state.mouse_circle
+    args.outputs.labels << { x: 640,
+                             y: 680,
+                             text: "Circle and Mouse Circle intersect",
+                             anchor_x: 0.5 }
+  end
 end
 ```
 
@@ -763,6 +844,8 @@ Consider using `find_intersect_rect` instead (it's more descriptive and faster):
 collision = args.geometry.find_intersect_rect args.state.player, args.state.terrain
 ```
 
+?> Function returns `nil` if either parameter is `nil` (`nil` values within the collection are skipped).
+
 ## `find_all_intersect_rect`
 
 Given a rect and a collection of rects, `find_all_intersect_rect` returns all rects that intersects with the the first parameter.
@@ -780,6 +863,8 @@ Consider using `find_all_intersect_rect` instead (it's more descriptive and fast
 ```ruby
 collisions = args.geometry.find_all_intersect_rect args.state.player, args.state.terrain
 ```
+
+?> Function returns an empty `Array` if either parameter is `nil` (`nil` values within the collection are skipped).
 
 ## `find_intersect_rect_quad_tree`
 
@@ -978,6 +1063,79 @@ This function will return `true` if the point is on the line, and `false` if it 
 
 Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
 
+## `each_intersect_rect`
+
+The first parameter can be an array or a single `Hash` (or an object that responds to `x`, `y`, `w`, `h`).
+
+The second parameter can be an array or a single `Hash` (or an object that responds to `x`, `y`, `w`, `h`). The second parameter should be the larger of the two sets of rectangles.
+
+The third parameter is optional and is the tolerance for the intersection. The default value is `0.1`.
+
+An optional `using:` named parameter can be given to specify what
+function should be used to extract the `x`, `y`, `w`, and `h`
+properties from the objects in the first and second parameters. This
+parameter can be a `Symbol` or a `Proc`. If it is a `Symbol`, it will
+be used as a method name to call on the objects in the first and
+second parameters. If it is a `Proc`, it will be called with the
+object in the first and second parameters. 
+
+An implicit block is required for this function. The block will be called with each pair of intersecting rectangles.
+
+### Simple Usage
+
+```ruby
+rects_1 = [{ x: 0, y: 0, w: 100, h: 100 }]
+rects_2 = [{ x: 50, y: 50, w: 100, h: 100 }]
+
+args.geometry.each_intersect_rect(rects_1, rects_2) do |rect_1, rect_2|
+  # do something with the intersecting rectangles
+end
+```
+
+### Advanced Usage
+
+```ruby
+class Player
+  def initialize x:, y:, w:, h:;
+    @x = x
+    @y = y
+    @w = w
+    @h = h
+  end
+
+  def box
+    { x: @x, y: @y, w: @w, h: @h }
+  end
+end
+
+class Bullet
+  def initialize x:, y:, w:, h:;
+    @x = x
+    @y = y
+    @w = w
+    @h = h
+  end
+
+  def box
+    { x: @x, y: @y, w: @w, h: @h }
+  end
+end
+
+rects_1 = [Player.new(x: 0, y: 0, w: 100, h: 100)]
+rects_2 = [Bullet.new(x: 50, y: 50, w: 100, h: 100)]
+
+Geometry.each_intersect_rect(rects_1, rects_2, using: :box) do |player, bullet|
+  # do something with the intersecting rectangles
+end
+
+# OR
+Geometry.each_intersect_rect(rects_1,
+                             rects_2,
+                             using: lambda { |obj| obj.box }) do |player, bullet|
+  # do something with the intersecting rectangles
+end
+```
+
 ## `find_collisions`
 
 Given an `Array` of rects, returns a `Hash` of collisions. Each entry in the return `Hash` maps two rects from the input `Array` that intersect.
@@ -995,7 +1153,7 @@ def tick(args)
   # add a new square every 4 ticks until we get to 26
   # the last part of the condition is to make sure we always have at least 1 square before
   # we start checking for collisions, otherwise #find_collisions will throw an error
-  if (args.state.tick_count % 4 == 0 && args.state.squares.size < 26) || args.state.squares.size == 0
+  if (Kernel.tick_count % 4 == 0 && args.state.squares.size < 26) || args.state.squares.size == 0
 
     # add a new square to the array with a random position, with some padding
     # so that the squares don't spawn too close to the edge of the screen

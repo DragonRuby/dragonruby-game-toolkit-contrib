@@ -158,7 +158,7 @@ end
 
 def tick_explain_tick_count
   return unless $tutorial_outputs.sprites.any? {|s| s == [1110, 200, 100, 100, 'sprites/dragon_fly_0.png']}
-  return if $tutorial_outputs.labels.any? {|l| l == [1210, 200, state.tick_count, 255, 255, 255]}
+  return if $tutorial_outputs.labels.any? {|l| l == [1210, 200, Kernel.tick_count, 255, 255, 255]}
   state.explain_tick_count_confirmed = true
 
   queue_message "Look at the cute little dragon!
@@ -166,25 +166,25 @@ def tick_explain_tick_count
 We can create a LABEL with ARRAYS too. Let's create a LABEL showing
 THE PASSAGE OF TIME, which is called TICK_COUNT.
 
-  outputs.labels << [1210, 200, state.tick_count, 0, 255, 0]
+  outputs.labels << [1210, 200, Kernel.tick_count, 0, 255, 0]
 "
 end
 
 def tick_explain_mod
-  return unless $tutorial_outputs.labels.any? {|l| l == [1210, 200, state.tick_count, 0, 255, 0]}
+  return unless $tutorial_outputs.labels.any? {|l| l == [1210, 200, Kernel.tick_count, 0, 255, 0]}
   state.explain_mod_confirmed = true
   queue_message "
-The code: outputs.labels << [1210, 200, state.tick_count, 0, 255, 0]
+The code: outputs.labels << [1210, 200, Kernel.tick_count, 0, 255, 0]
 Does the following:
 1. GET the place where labels go: outputs.labels
 2. Request that a new label be ADDED: <<
 3. The DEFINITION of a LABEL is the ARRAY:
-   [1210, 200, state.tick_count, 0, 255, 0]
+   [1210, 200, Kernel.tick_count, 0, 255, 0]
 
       GET       ADD     X      Y          TEXT         RED  GREEN  BLUE
        |         |      |      |            |           |     |     |
        |         |      |      |            |           |     |     |
-outputs.labels  <<    [1210,  200,   state.tick_count,  0,   255,   0]
+outputs.labels  <<    [1210,  200,   Kernel.tick_count,  0,   255,   0]
                       |______________________________________________|
                                               |
                                               |
@@ -192,7 +192,7 @@ outputs.labels  <<    [1210,  200,   state.tick_count,  0,   255,   0]
 
 Now let's do some MATH, save the result to STATE, and create a LABEL:
 
-    state.sprite_frame = state.tick_count.idiv(4).mod(6)
+    state.sprite_frame = Kernel.tick_count.idiv(4).mod(6)
     outputs.labels << [1210, 170, state.sprite_frame, 0, 255, 0]
 
 Type the lines above (pressing ENTER after each line).
@@ -201,7 +201,7 @@ end
 
 def tick_explain_string_interpolation
   return unless state.explain_mod_confirmed
-  return unless state.sprite_frame == state.tick_count.idiv(4).mod(6)
+  return unless state.sprite_frame == Kernel.tick_count.idiv(4).mod(6)
   return unless $tutorial_outputs.labels.any? {|l| l == [1210, 170, state.sprite_frame, 0, 255, 0]}
 
   queue_message "Here is what the mathematical computation you just typed does:
@@ -215,7 +215,7 @@ def tick_explain_string_interpolation
      |          |             TIME         TO SHOW    IMAGES
      |          |              |           AN IMAGE   TO FLIP THROUGH
      |          |              |               |      |
-state.sprite_frame =     state.tick_count.idiv(4).mod(6)
+state.sprite_frame =     Kernel.tick_count.idiv(4).mod(6)
                                            |       |
                                            |       +- REMAINDER OF DIVIDE
                                     DIVIDE EVENLY

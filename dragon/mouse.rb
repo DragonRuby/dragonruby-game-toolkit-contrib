@@ -59,9 +59,12 @@ module GTK
                   :moved_at,
                   :global_moved_at,
                   :up, :has_focus,
-                  :button_bits, :button_left,
-                  :button_middle, :button_right,
-                  :button_x1, :button_x2,
+                  :button_bits,
+                  :button_left,
+                  :button_middle,
+                  :button_right,
+                  :button_x1,
+                  :button_x2,
                   :wheel, :relative_x, :relative_y,
                   :active
 
@@ -75,36 +78,77 @@ module GTK
     attr_accessor :y
     attr_accessor :previous_x
     attr_accessor :previous_y
+    attr_accessor :key_down, :key_up, :key_held
+    attr_accessor :buttons
 
     def initialize
       @x = 0
       @y = 0
       @has_focus = false
       @button_bits = 0
-      @button_left = false
-      @button_middle = false
-      @button_right = false
-      @button_x1 = false
-      @button_x2 = false
       @relative_x = 0
       @relative_y = 0
+      @buttons_left = MouseButton.new :left, 0, @x, @y
+      @buttons_middle = MouseButton.new :middle, 1, @x, @y
+      @buttons_right = MouseButton.new :right, 2, @x, @y
+      @buttons_x1 = MouseButton.new :x1, 3, @x, @y
+      @buttons_x2 = MouseButton.new :x2, 4, @x, @y
+      @buttons = MouseButtons.new @buttons_left, @buttons_middle, @buttons_right, @buttons_x1, @buttons_x2
+      @key_down = MouseKeysDown.new @buttons
+      @key_up = MouseKeysUp.new @buttons
+      @key_held = MouseKeysHeld.new @buttons
       clear
     end
 
     def held
-      return false if !global_click_at
-      return true if global_click_at && !global_up_at
-      return global_up_at < global_click_at
+      click_occured_last_frame = @global_click_at == Kernel.global_tick_count - 1
+      up_should_be_considered = @global_click_at && @global_up_at
+      up_occurred_after_click = if up_should_be_considered && @global_up_at >= @global_click_at
+                                  true
+                                else
+                                  false
+                                end
+
+      if click_occured_last_frame && !up_occurred_after_click
+        @held_point = MousePoint.new @x, @y
+        @held_point.created_at = @click.created_at + 1
+        @held_point.global_created_at = @click.global_created_at + 1
+      elsif up_should_be_considered && !up_occurred_after_click
+        @held_point ||= MousePoint.new @x, @y
+        @held_point.created_at ||= @click.created_at + 1
+        @held_point.global_created_at ||= @click.global_created_at + 1
+        @held_point.x = @x
+        @held_point.y = @y
+      else
+        @held_point = nil
+      end
+
+      if @held_point
+        @held_point.x = @x
+        @held_point.y = @y
+      end
+
+      @held_point
     end
 
     def held_at
-      return nil if !held
-      return click_at + 1
+      click_occured_last_frame = @global_click_at == Kernel.global_tick_count - 1
+      up_occured_on_click_frame = @global_click_at && @global_up_at && @global_click_at == @global_up_at
+      if click_occured_last_frame && !up_occured_on_click_frame
+        @held_at = @click_at + 1
+      end
+
+      @held_at
     end
 
     def global_held_at
-      return nil if !held
-      return global_click_at + 1
+      click_occured_last_frame = @global_click_at == Kernel.global_tick_count - 1
+      up_occured_on_click_frame = @global_click_at && @global_up_at && @global_click_at != @global_up_at
+      if click_occured_last_frame && !up_occured_on_click_frame
+        @global_held_at = @global_click_at + 1
+      end
+
+      @global_held_at
     end
 
     def point
@@ -139,6 +183,42 @@ module GTK
       0
     end
 
+    def left
+      @buttons_left.click || @buttons_left.held
+    end
+
+    def middle
+      @buttons_middle.click || @buttons_middle.held
+    end
+
+    def right
+      @buttons_right.click || @buttons_right.held
+    end
+
+    def x1
+      @buttons_x1.click || @buttons_x1.held
+    end
+
+    def x2
+      @buttons_x2.click || @buttons_x2.held
+    end
+
+    def key_down? key
+      @key_down.send key
+    end
+
+    def key_up? key
+      @key_up.send key
+    end
+
+    def key_held? key
+      @key_held.send key
+    end
+
+    def key_down_or_held? key
+      key_down?(key) || key_held?(key)
+    end
+
     alias_method :position, :point
 
     def clear
@@ -155,6 +235,16 @@ module GTK
       @wheel = nil
       @relative_x = 0
       @relative_y = 0
+
+      @buttons.each do |button|
+        if button.click
+          button.previous_click = MousePoint.new button.click.point.x, button.click.point.y
+          button.previous_click.created_at = button.click.created_at
+          button.previous_click.global_created_at = button.click.global_created_at
+        end
+
+        button.clear
+      end
     end
 
     def up
@@ -196,6 +286,22 @@ module GTK
     end
 
     alias_method :inspect, :to_s
+
+    def buffered_click
+      @buttons_left.buffered_click   ||
+      @buttons_middle.buffered_click ||
+      @buttons_right.buffered_click  ||
+      @buttons_x1.buffered_click     ||
+      @buttons_x2.buffered_click
+    end
+
+    def buffered_held
+      @buttons_left.buffered_held   ||
+      @buttons_middle.buffered_held ||
+      @buttons_right.buffered_held  ||
+      @buttons_x1.buffered_held     ||
+      @buttons_x2.buffered_held
+    end
   end
 
   class FingerTouch
@@ -206,7 +312,8 @@ module GTK
                   :global_down_at,
                   :touch_order,
                   :first_tick_down,
-                  :x, :y
+                  :x, :y,
+                  :previous_x, :previous_y
 
     def initialize
       @moved = false

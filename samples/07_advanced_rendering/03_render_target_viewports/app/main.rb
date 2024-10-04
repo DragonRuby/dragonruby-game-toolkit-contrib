@@ -52,7 +52,7 @@
 
  - args.inputs.keyboard.key_up.KEY: The value of the properties will be set
    to the frame  that the key_up event occurred (the frame correlates
-   to args.state.tick_count).
+   to Kernel.tick_count).
    For more information about the keyboard, go to mygame/documentation/06-keyboard.md.
 
  - args.state.labels:
@@ -96,7 +96,7 @@
 # This sample app shows different objects that can be used when making games, such as labels,
 # lines, sprites, solids, buttons, etc. Each demo section shows how these objects can be used.
 
-# Also note that state.tick_count refers to the passage of time, or current frame.
+# Also note that Kernel.tick_count refers to the passage of time, or current frame.
 
 class TechDemo
   attr_accessor :inputs, :state, :outputs, :grid, :args
@@ -143,9 +143,9 @@ class TechDemo
     outputs.labels << [5, 500, "Lines (x, y, x2, y2, r, g, b, a)"]
     outputs.lines  << [5, 450, 100, 450]
     outputs.lines  << [5, 430, 300, 430]
-    outputs.lines  << [5, 410, 300, 410, state.tick_count % 255, 0, 0, 255] # red saturation changes
-    outputs.lines  << [5, 390 - state.tick_count % 25, 300, 390, 0, 0, 0, 255] # y position changes
-    outputs.lines  << [5 + state.tick_count % 200, 360, 300, 360, 0, 0, 0, 255] # x position changes
+    outputs.lines  << [5, 410, 300, 410, Kernel.tick_count % 255, 0, 0, 255] # red saturation changes
+    outputs.lines  << [5, 390 - Kernel.tick_count % 25, 300, 390, 0, 0, 0, 255] # y position changes
+    outputs.lines  << [5 + Kernel.tick_count % 200, 360, 300, 360, 0, 0, 0, 255] # x position changes
   end
 
   # Shows output of different kinds of solids on the screen
@@ -155,7 +155,7 @@ class TechDemo
     outputs.solids << [ 70, 270, 50, 50, 0, 0, 0]
     outputs.solids << [130, 270, 50, 50, 255, 0, 0]
     outputs.solids << [190, 270, 50, 50, 255, 0, 0, 128]
-    outputs.solids << [250, 270, 50, 50, 0, 0, 0, 128 + state.tick_count % 128] # transparency changes
+    outputs.solids << [250, 270, 50, 50, 0, 0, 0, 128 + Kernel.tick_count % 128] # transparency changes
   end
 
   # Shows output of different kinds of borders on the screen
@@ -166,15 +166,15 @@ class TechDemo
     outputs.borders << [ 70, 180, 50, 50, 0, 0, 0]
     outputs.borders << [130, 180, 50, 50, 255, 0, 0]
     outputs.borders << [190, 180, 50, 50, 255, 0, 0, 128]
-    outputs.borders << [250, 180, 50, 50, 0, 0, 0, 128 + state.tick_count % 128] # transparency changes
+    outputs.borders << [250, 180, 50, 50, 0, 0, 0, 128 + Kernel.tick_count % 128] # transparency changes
   end
 
   # Shows output of different kinds of sprites on the screen
   def sprites_tech_demo
     outputs.labels <<  [   5, 170, "Sprites (x, y, w, h, path, angle, a)"]
     outputs.sprites << [  10, 40, 128, 101, 'dragonruby.png']
-    outputs.sprites << [ 150, 40, 128, 101, 'dragonruby.png', state.tick_count % 360] # angle changes
-    outputs.sprites << [ 300, 40, 128, 101, 'dragonruby.png', 0, state.tick_count % 255] # transparency changes
+    outputs.sprites << [ 150, 40, 128, 101, 'dragonruby.png', Kernel.tick_count % 360] # angle changes
+    outputs.sprites << [ 300, 40, 128, 101, 'dragonruby.png', 0, Kernel.tick_count % 255] # transparency changes
   end
 
   # Holds size, alignment, color (black), and alpha (transparency) parameters
@@ -196,12 +196,12 @@ class TechDemo
   # Uses labels to output current game time (passage of time), and whether or not "h" was pressed
   # If "h" is pressed, the frame is output when the key_up event occurred
   def keyboards_tech_demo
-    outputs.labels << [460, row_to_px(0), "Current game time: #{state.tick_count}", small_font]
+    outputs.labels << [460, row_to_px(0), "Current game time: #{Kernel.tick_count}", small_font]
     outputs.labels << [460, row_to_px(2), "Keyboard input: inputs.keyboard.key_up.h", small_font]
     outputs.labels << [460, row_to_px(3), "Press \"h\" on the keyboard.", small_font]
 
     if inputs.keyboard.key_up.h # if "h" key_up event occurs
-      state.h_pressed_at = state.tick_count # frame it occurred is stored
+      state.h_pressed_at = Kernel.tick_count # frame it occurred is stored
     end
 
     # h_pressed_at is initially set to false, and changes once the user presses the "h" key.
@@ -446,7 +446,6 @@ def tick args
   $tech_demo.grid = args.grid
   $tech_demo.args = args
   $tech_demo.outputs = args.render_target(:mini_map)
-  $tech_demo.outputs.transient = true
   $tech_demo.tick
   args.outputs.labels  << [830, 715, "Render target:", [-2, 0, 0, 0, 0, 255]]
   args.outputs.sprites << [0, 0, 1280, 720, :mini_map]

@@ -34,7 +34,7 @@ def create_button args, id, text, w, h
   return if args.state.created_buttons[id]
 
   # if the render_target hasn't been created, then generate it and store it in the created_buttons cache
-  args.state.created_buttons[id] = { created_at: args.state.tick_count, id: id, w: w, h: h, text: text }
+  args.state.created_buttons[id] = { created_at: Kernel.tick_count, id: id, w: w, h: h, text: text }
 
   # define the w/h of the texture
   args.outputs[id].w = w

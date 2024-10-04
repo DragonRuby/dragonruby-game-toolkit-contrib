@@ -4,10 +4,8 @@
 # benchmark.rb has been released under MIT (*only this file*).
 
 module GTK
-  class Runtime
-    module Benchmark
+    class Benchmark; class << self
       def benchmark_iterations_single iterations, name, proc
-
         idx = 0
         r = nil
         time_start = Time.now
@@ -126,13 +124,13 @@ S
 
         if only_one_result
         summary = <<-S
-j BENCHMARK WINNER: #{r.first_place.name}
+BENCHMARK WINNER: #{r.first_place.name}
 S
         else
           summary += <<-S
 ** Most Completed: #{r.first_place.name}
 ** Second Most:    #{r.second_place.name}
-** Margin %:       #{r.second_place.name} did #{r.difference_percentage}% fewer iterations than #{r.first_place.name}
+** Margin %:       #{r.second_place.name} did #{r.difference_percentage - 100}% fewer iterations than #{r.first_place.name}
 ** Margin Count:   #{r.second_place.name} completed #{r.difference_iterations.abs.to_si} fewer iterations than #{r.first_place.name} (#{r.second_place.iterations.to_si} vs #{r.first_place.iterations.to_si})
 ** Counts:
 #{r.iterations.map { |t| "*** #{t.name}: total: #{t.iterations.to_si}, perc: #{t.difference_percentage}% fewer, diff: #{t.difference_iterations.abs.to_si}." }.join("\n")}
@@ -231,6 +229,5 @@ S
         r
       end
 
-    end
-  end
+  end; end
 end

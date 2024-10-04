@@ -80,7 +80,7 @@ def tick args
   args.outputs.solids << [calc_x, calc_y, calc_w, calc_h, 0, 0, 0]
 
   # count down
-  count_down = args.state.start_animate_at - args.state.tick_count
+  count_down = args.state.start_animate_at - Kernel.tick_count
   if count_down > 0
     args.outputs.labels << [640, 375, "Running: #{args.state.animation_type} in...", 3, 1]
     args.outputs.labels << [640, 345, "%.2f" % count_down.fdiv(60), 3, 1]

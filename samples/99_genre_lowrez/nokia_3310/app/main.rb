@@ -123,7 +123,7 @@ def hello_world args
     h: 20,
     path: 'sprites/monochrome-ship.png',
     a: 255,
-    angle: args.state.tick_count % 360
+    angle: Kernel.tick_count % 360
   }
 end
 
@@ -270,7 +270,7 @@ def how_to_animate_a_sprite args
                              path: sprite_path }
   else
     # if the sprite_index is nil, render a countdown instead
-    countdown_in_seconds = ((start_animation_on_tick - args.state.tick_count) / 60).round(1)
+    countdown_in_seconds = ((start_animation_on_tick - Kernel.tick_count) / 60).round(1)
 
     args.nokia.labels  << args.nokia
                                .default_label
@@ -285,7 +285,7 @@ def how_to_animate_a_sprite args
                                .default_label
                                .merge(x: 0,
                                       y: 11,
-                                      text: "Tick: #{args.state.tick_count}")
+                                      text: "Tick: #{Kernel.tick_count}")
   args.nokia.labels  << args.nokia
                                .default_label
                                .merge(x: 0,
@@ -321,7 +321,7 @@ def how_to_animate_a_sprite_sheet args
     }
   else
     # if the sprite_index is nil, render a countdown instead
-    countdown_in_seconds = ((start_animation_on_tick - args.state.tick_count) / 60).round(1)
+    countdown_in_seconds = ((start_animation_on_tick - Kernel.tick_count) / 60).round(1)
 
     args.nokia.labels  << args.nokia
                                .default_label
@@ -336,7 +336,7 @@ def how_to_animate_a_sprite_sheet args
                                .default_label
                                .merge(x: 0,
                                       y: 11,
-                                      text: "tick: #{args.state.tick_count}")
+                                      text: "tick: #{Kernel.tick_count}")
   args.nokia.labels  << args.nokia
                                .default_label
                                .merge(x: 0,
@@ -585,12 +585,12 @@ def render_debug args
 
   args.state.last_click ||= 0
   args.state.last_up    ||= 0
-  args.state.last_click   = args.state.tick_count if args.nokia.mouse_down # you can also use args.nokia.click
-  args.state.last_up      = args.state.tick_count if args.nokia.mouse_up
+  args.state.last_click   = Kernel.tick_count if args.nokia.mouse_down # you can also use args.nokia.click
+  args.state.last_up      = Kernel.tick_count if args.nokia.mouse_up
   args.state.label_style  = { size_enum: -1.5 }
 
   args.state.watch_list = [
-    "args.state.tick_count is:      #{args.state.tick_count}",
+    "Kernel.tick_count is:          #{Kernel.tick_count}",
     "args.nokia.mouse_position is:  #{args.nokia.mouse_position.x}, #{args.nokia.mouse_position.y}",
     "args.nokia.mouse_down tick:    #{args.state.last_click || "never"}",
     "args.nokia.mouse_up tick:      #{args.state.last_up || "false"}",

@@ -441,7 +441,7 @@ class CleptoFrog
   def input_level_editor
     return unless state.level_editor_mode
 
-    if state.tick_count.mod_zero?(5)
+    if Kernel.tick_count.mod_zero?(5)
       # zoom
       if inputs.keyboard.equal_sign || inputs.keyboard.plus
         set_camera_scale state.camera_scale + 0.1

@@ -64,7 +64,7 @@ class Game
   end
 
   def tick
-    @pulse_button.tick state.tick_count, inputs.mouse
+    @pulse_button.tick Kernel.tick_count, inputs.mouse
     outputs.primitives << @pulse_button.prefab(easing)
   end
 end

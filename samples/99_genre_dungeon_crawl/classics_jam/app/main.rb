@@ -46,7 +46,7 @@ class Game
   def input
     player.angle = inputs.directional_angle || player.angle
     if inputs.controller_one.key_down.a || inputs.keyboard.key_down.space
-      player.attacked_at = state.tick_count
+      player.attacked_at = Kernel.tick_count
     end
   end
 
@@ -58,8 +58,8 @@ class Game
   end
 
   def calc_player
-    if player.attacked_at == state.tick_count
-      player.projectiles << { at: state.tick_count,
+    if player.attacked_at == Kernel.tick_count
+      player.projectiles << { at: Kernel.tick_count,
                               x: player.x,
                               y: player.y,
                               angle: player.angle,
