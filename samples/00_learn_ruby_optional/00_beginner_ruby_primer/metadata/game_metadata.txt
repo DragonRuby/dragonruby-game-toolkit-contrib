@@ -1,6 +1,0 @@
-devid=dragonruby
-devtitle=DragonRuby LLC
-gameid=beginner-ruby-primer
-gametitle=Beginner Ruby Primer
-version=1.0
-icon=metadata/icon.png
