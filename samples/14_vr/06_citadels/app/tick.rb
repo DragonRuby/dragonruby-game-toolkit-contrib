@@ -2,7 +2,7 @@ class Game
   attr_gtk
 
   def citadel x, y, z
-    angle = state.tick_count.idiv(10) % 360
+    angle = Kernel.tick_count.idiv(10) % 360
     adjacent = 40
     adjacent = adjacent.ceil
     angle = Math.atan2(40, 70).to_degrees

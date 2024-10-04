@@ -34,7 +34,7 @@ module GTK
       @archived_log = []
       @log = [ 'Console ready.' ]
       @max_log_lines = 1000  # I guess...?
-      @max_history = 1000  # I guess...?
+      @max_history = 5000  # I guess...?
       @log_invocation_count = 0
       @command_history = []
       @command_history_index = -1
@@ -267,8 +267,8 @@ look at.
 Example:
 
   args.gtk.console.toast :say_hello,
-                            \"Hello world.\",
-                            args.state.tick_count
+                        \"Hello world.\",
+                          Kernel.tick_count
 
 Toast messages autohide after 5 seconds.
 
@@ -356,8 +356,8 @@ S
         @log_offset = 0
         prompt.clear
 
-        @command_history.pop while @command_history.length >= @max_history
-        @command_history.unshift cmd
+        @command_history.pop_back while @command_history.length >= @max_history
+        @command_history.push_front cmd
         @command_history_index = -1
         @nonhistory_input = ''
 
@@ -371,8 +371,6 @@ S
 It looks like you are trying to publish your game. The dragonruby-publish
 command must be run from your terminal (not the DragonRuby Console).
 S
-        elsif cmd.start_with? ':'
-          send ((cmd.gsub '-', '_').gsub ':', '')
         else
           puts "-> #{cmd}"
 
@@ -390,7 +388,7 @@ S
               if cmd.include?("docs") && (results.is_a? String) && (results.start_with? "*")
                 puts "=>\n#{results}"
               else
-                puts "=> #{results}"
+                puts "=> #{results.inspect}"
               end
             end
 
@@ -494,6 +492,14 @@ S
       end
     end
 
+    def __paste__
+      prompt << $gtk.ffi_misc.getclipboard
+    end
+
+    def __copy__
+      $gtk.ffi_misc.setclipboard prompt.current_input_str
+    end
+
     def process_inputs args
       if console_toggle_key_down? args
         args.inputs.text.clear
@@ -522,7 +528,7 @@ S
         end
       elsif args.inputs.keyboard.key_down.v
         if args.inputs.keyboard.key_down.control || args.inputs.keyboard.key_down.meta
-          prompt << $gtk.ffi_misc.getclipboard
+          __paste__
         end
       elsif args.inputs.keyboard.key_down.home
         prompt.move_cursor_home
@@ -546,9 +552,17 @@ S
           self.current_input_str = @command_history[@command_history_index].dup
         end
       elsif args.inputs.keyboard.key_down.left
-        prompt.move_cursor_left
+        if args.inputs.keyboard.key_down.control || args.inputs.keyboard.key_down.alt
+          prompt.move_cursor_left_word
+        else
+          prompt.move_cursor_left
+        end
       elsif args.inputs.keyboard.key_down.right
-        prompt.move_cursor_right
+        if args.inputs.keyboard.key_down.control || args.inputs.keyboard.key_down.alt
+          prompt.move_cursor_right_word
+        else
+          prompt.move_cursor_right
+        end
       elsif inputs_scroll_up_full? args
         scroll_up_full
       elsif inputs_scroll_down_full? args
@@ -577,7 +591,7 @@ S
     def write_primitive_and_return_offset(args, left, y, str, archived: false)
       if str.is_a?(Hash)
         padding = 10
-        args.outputs.reserved << [left + 10, y + 5, str[:w], str[:h], str[:path]].sprite
+        args.outputs.reserved << { x: left + 10, y: y + 5, w: str[:w], h: str[:h], path: str[:path], a: (255.0 * slide_progress).to_i }
         return str[:h] + padding
       else
         write_line args, left, y, str, archived: archived
@@ -586,8 +600,9 @@ S
     end
 
     def write_line(args, left, y, str, archived: false)
-      color = color_for_log_entry(str)
-      color = color.mult_alpha(0.5) if archived
+      color = color_for_log_entry(str).to_h
+      color.a = (255.0 * slide_progress).to_i
+      color.a *= 0.5 if archived
       str = str[4..-1] if str.start_with?('!c!')  # chop off loglevel color
       args.outputs.reserved << font_style.label(x: left.shift_right(10), y: y, text: str, color: color)
     end
@@ -603,20 +618,23 @@ S
       @logo_final_y = $gtk.args.layout.rect(row: 0, h: 1).center_y
     end
 
+    def slide_progress_bottom
+      top - (h * slide_progress)
+    end
+
     def render args
       return if !@toggled_at
       return if slide_progress == 0
 
-      @bottom = top - (h * slide_progress)
-      args.outputs.reserved << { x: left, y: @bottom, w: w, h: h, path: :solid, **@background_color.mult_alpha(slide_progress).to_h }
+      args.outputs.reserved << { x: left, y: slide_progress_bottom, w: w, h: h, path: :solid, **@background_color.mult_alpha(slide_progress).to_h }
       args.outputs.reserved << { x: 20,
-                                 y: @bottom.shift_up(logo_final_y - 44),
+                                 y: slide_progress_bottom.shift_up(logo_final_y - 44),
                                  w: 100,
                                  h: 100,
                                  path: @logo,
                                  a: (80.0 * slide_progress).to_i }
 
-      y = @bottom + 2  # just give us a little padding at the bottom.
+      y = slide_progress_bottom + 2  # just give us a little padding at the bottom.
       prompt.render args, x: left.shift_right(10), y: y
       y += line_height_px * 1.5
       args.outputs.reserved << line(y: y, color: @text_color.mult_alpha(slide_progress))
@@ -641,12 +659,10 @@ S
 
       render_log_offset args
 
-      if @prompt.str_len < 100
-        args.outputs.reserved << { x: 10.from_right, y: @bottom + 5,
-                                   text: "Press CTRL+g or ESCAPE to clear the prompt.",
-                                   vertical_alignment_enum: 0,
-                                   alignment_enum: 2, r: 80, g: 80, b: 80 }.label!
-      end
+      args.outputs.reserved << { x: 10.from_right, y: slide_progress_bottom + 35,
+                                 text: "Press CTRL+g or ESCAPE to clear the prompt.",
+                                 vertical_alignment_enum: 0,
+                                 alignment_enum: 2, r: 80, g: 80, b: 80, a: (255 * slide_progress).to_i }
     end
 
     def render_log_offset args
@@ -701,8 +717,11 @@ S
     def tick args
       begin
         if @disabled
-          if console_toggle_key_down? args
-            args.gtk.notify! "Console is currently disabled (this message will not show up in a production build)."
+          if console_toggle_key_down?(args)
+            if !@disable_notification_shown
+              args.gtk.notify! "Console is currently disabled (this message will not show up in a production build)."
+              @disable_notification_shown = true
+            end
           end
           return
         end
@@ -718,6 +737,7 @@ S
         begin
           puts "#{e}"
           puts "* FATAL: The GTK::Console console threw an unhandled exception and has been reset. You should report this exception (along with reproduction steps) to DragonRuby."
+          puts "#{e.__backtrace_to_org__}"
         rescue
         end
         @disabled = true
@@ -802,19 +822,27 @@ S
     private
 
     def w
-      $gtk.logical_width
+      Grid.w
     end
 
     def h
-      $gtk.logical_height
+      Grid.h
     end
 
-    # methods top; left; right
-    # Forward to grid
-    %i[top left right].each do |method|
-      define_method method do
-        $gtk.args.grid.send(method)
-      end
+    def top
+      Grid.top
+    end
+
+    def left
+      Grid.bottom
+    end
+
+    def bottom
+      Grid.bottom
+    end
+
+    def right
+      Grid.right
     end
 
     def line_height_px
@@ -947,9 +975,9 @@ S
     def slide_progress
       return 0 if !@toggled_at
       if visible?
-        @slide_progress = @toggled_at.global_ease(@animation_duration, :flip, :quint, :flip)
+        @slide_progress = Easing.ease @toggled_at, Kernel.global_tick_count, @animation_duration, :flip, :quint, :flip
       else
-        @slide_progress = @toggled_at.global_ease(@animation_duration, :flip, :quint)
+        @slide_progress = Easing.ease @toggled_at, Kernel.global_tick_count, @animation_duration, :flip, :quint
       end
       @slide_progress
     end

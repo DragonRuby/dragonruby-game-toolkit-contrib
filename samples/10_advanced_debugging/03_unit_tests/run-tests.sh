@@ -4,7 +4,7 @@ set -e
 rake
 COMMENT
 
-rake clean default
+rake
 
 # ./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/input_emulation_tests.rb
 # ./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/gen_docs.rb

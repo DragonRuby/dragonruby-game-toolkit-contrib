@@ -14,7 +14,7 @@ module GTK
       message ||= ""
       message = "#{message}"
       return if @notification_message == message
-      return if !self.production
+      return if @production
       @global_notification_at = Kernel.global_tick_count
       @notification_duration = duration
       @notification_message = message
@@ -31,7 +31,7 @@ module GTK
       env       = opts.env      || :dev
       a         = opts.a        || 255
       overwrite = opts.overwrite
-      return if env != :prod && self.production
+      return if @production && env != :prod
       return if !overwrite && @notification_message == message
       @global_notification_at = Kernel.global_tick_count
       @notification_duration = duration
@@ -55,7 +55,11 @@ module GTK
         logo_y = @args.grid.bottom
 
         if @notification_message.length != 0
-          max_character_length = 110
+          max_character_length = if Grid.orientation == :landscape
+                                   110
+                                 else
+                                   60
+                                 end
           line_height = 30
           long_string = @notification_message.strip
           long_strings_split = args.string.wrapped_lines long_string, max_character_length

@@ -48,7 +48,7 @@ def tick args
   end
 
   # init
-  if args.state.tick_count == 0
+  if Kernel.tick_count == 0
     args.state.stars = args.state.star_count.map { |i| new_star args }
   end
 

@@ -1,11 +1,118 @@
 # Runtime (`args.gtk`)
 
-The `GTK::Runtime` class is the core of DragonRuby. It is globally accessible via `$gtk` or inside of the `tick` method through `args`.
+The `GTK::Runtime` class is the core of DragonRuby.
+
+?> All functions `$gtk`, `GTK`, or inside of the `tick` method through `args`.
+```ruby
+def tick args
+  args.gtk.function(...)
+
+  # OR available globally
+  $gtk.function(...)
+  # OR
+  GTK.function(...)
+end
+```
+
+## Top Level Functions
+
+DragonRuby is aware of the following top level functions (top level functions are functions defined outside of a class or a module).
+
+### `tick`
+
+This is the main entry point for your game and will be called at 60 fps.
 
 ```ruby
 def tick args
-  args.gtk # accessible like this
-  $gtk # or like this
+  args.outputs.labels << {
+    x: 640,
+    y: 360,
+    text: "current tick count is: #{Kernel.tick_count}"
+  }
+end
+```
+
+### `boot`
+
+This function will be called once when your game boots. It will never be called again after that initial startup.
+
+```ruby
+def boot args
+  puts "The current tick count is: #{Kernel.tick_count}"
+  puts "The global tick count is: #{Kernel.global_tick_count}"
+end
+```
+
+### `reset`
+
+This function will be called if `$gtk.reset` is invoked. It will be called before DragonRuby resets game state and
+is useful for capturing state information before a reset occurs (you can use this override to reset state external
+to DragonRuby's `args.state` construct).
+
+```ruby
+# class that handles your game loop
+class MyGame
+  attr :foo
+  
+  # initialization method that sets member variables
+  # external to args.state
+  def initialize args
+    puts "initializing game"
+    @foo = 0
+    args.state.bar ||= 0
+  end
+
+  # game logic
+  def tick args
+    args.state.bar += 1
+    @foo += 1
+    args.outputs.labels << {
+      x: 640,
+      y: 360,
+      text: "#{$game.foo}, #{args.state.bar}"
+    }
+  end
+end
+
+def tick args
+  # initialize global game variable if it's nil
+  $game ||= MyGame.new(args)
+  
+  # run tick
+  $game.tick args
+  
+  # at T=600, invoke reset
+  if Kernel.tick_count == 600
+    $gtk.reset
+  end
+end
+
+# this function will be invoked before
+# $gtk.reset occurs
+def reset args
+  puts "resetting"
+  puts "foo is: #{$game.foo}"
+  puts "bar is: #{args.state.bar}"
+  puts "tick count: #{Kernel.tick_count}"
+  
+  # reset global game to nil so that it will be re-initialized next tick
+  $game = nil
+end
+```
+
+### `reboot`
+
+Invoking `$gtk.reboot` will reset your game as if it were started for the first time. Any
+methods that were added to classes during hotload will be removed (leaving you with a pristine
+environment). This function is in a beta state (report issues on the Discord Server).
+
+### `shutdown`
+
+This function will be called before your game exits.
+
+```ruby
+def shutdown args
+  puts "Shutting down at #{Kernel.tick_count}"
 end
 ```
 
@@ -35,7 +142,7 @@ end
 
 ### `attr_gtk`
 
-As the size/complexity of your game increases. You may want to create classes to organize everything. The `attr_gtk` class macro adds DragonRuby's environment methods (such as `args.state`, `args.inputs`, `args.outputs`, `args.audio`, etc) to your class so you don't have to pass `args` around everwhere.
+As the size/complexity of your game increases. You may want to create classes to organize everything. The `attr_gtk` class macro adds DragonRuby's environment methods (such as `args.state`, `args.inputs`, `args.outputs`, `args.audio`, etc) to your class so you don't have to pass `args` around everywhere.
 
 Instead of:
 
@@ -53,7 +160,7 @@ class Game
 
   def calc args
     if args.inputs.keyboard.key_down.space
-      args.state.space_pressed_at = args.state.tick_count
+      args.state.space_pressed_at = Kernel.tick_count
     end
   end
 
@@ -92,7 +199,7 @@ class Game
 
   def calc
     if inputs.keyboard.key_down.space
-      state.space_pressed_at = state.tick_count
+      state.space_pressed_at = Kernel.tick_count
     end
   end
 
@@ -176,6 +283,140 @@ Loads a precompiled C Extension into your game.
 
 See the sample apps at `./samples/12_c_extensions` for detailed walkthroughs of creating C extensions.
 
+## Window Functions
+
+### `window_fullscreen?`
+
+Returns `true` if the window is currently in fullscreen mode.
+
+### `can_resize_window?`
+
+Returns `true` if the window can be resized on the platform the game
+is running on. This is useful for conditionally showing a "Toggle
+Fullscreen" option in your game.
+
+### `set_window_fullscreen`
+
+This function takes in a single `boolean` parameter. `true` to make the game fullscreen, `false` to return the game back to windowed mode.
+
+```ruby
+def tick args
+  # make the game full screen after 600 frames (10 seconds)
+  if Kernel.tick_count == 600
+    args.gtk.set_window_fullscreen true
+  end
+
+  # return the game to windowed mode after 20 seconds
+  if Kernel.tick_count == 1200
+    args.gtk.set_window_fullscreen false
+  end
+end
+```
+
+### `toggle_window_fullscreen`
+
+Toggles the fullscreen state of the window.
+
+### `set_window_scale`
+
+The first parameter is a float value used to resize the game
+window to a percentage of 1280x720 (or 720x1280 in portrait mode). The
+valid scale options are 0.1, 0.25, 0.5, 0.75, 1.25, 1.5, 2.0, 2.5,
+3.0, and 4.0. The float value you pass in will be floored to the
+nearest valid scale option.
+
+The second and third parameters are optional and default to `16` and
+`9` (representing with width and height aspect ratios for the
+window). Providing these parameters will resize the window with the 
+non-standard aspect ratio. This is useful for testing letter-boxing
+and All Screen modes (Pro feature).
+
+Setting the window scale to the following will give a good
+representation of your game on various form factors.
+
+```ruby
+# how your game will look on an iPad
+$gtk.set_window_scale 1.0, 4, 3
+
+# how your game will look on a wide aspect ratio
+$gtk.set_window_scale 1.0, 21, 9
+```
+
+### `set_window_title`
+
+This function takes in a string updates the title of the game in the Menu Bar.
+
+Note: The default title for your game is specified in via the `gametitle` property in `mygame/metadata/game_metadata.txt`.
+
+### `can_close_window?`
+
+Returns `true` if quitting is allowed on the platform you are releasing to (eg: iOS and Web games do not allow exiting).
+
+### `move_window_to_next_display`
+
+If you have multiple monitors, this function can be used to move the
+game to the next monitor. The function will cycle back to the first
+monitor if needed. 
+
+### `maximize_window`
+
+If `can_resize_window?` returns `true`, this functions will maximize the game window.
+
+### `can_change_orientation?`
+
+Returns `true` if the game's orientation can be altered while the game is running.
+
+### `toggle_orientation`
+
+If `can_change_orientation?` returns `true`, the orientation of the
+game will be changed from landscape to portrait (or portrait to
+landscape) while the game is running. This function is useful for
+testing rendering of games that support both portrait and landscape orientations.
+
+### `set_orientation`
+
+Function accepts `:landscape`, or `:portrait` as the first
+parameter and sets the game's orientation while the game is running.
+
+### `set_hd_max_scale`
+
+Function accepts on of the following `Integer` values:
+
+- `100`: 720p (1280x720)
+- `125`: HD+ (1600x900)
+- `150`: 1080p/Full HD (1920x1080)
+- `175`: Full HD+ (2240x1260)
+- `200`: 1440p (2560x1440)
+- `250`: 1800p (3200x1800)
+- `300`: 4k (3840x2160)
+- `400`: 5k (6400x2880)
+
+Updates the `hd_max_scale` metadata value for your game while it's
+running. This is useful for testing the scaling of your game on edge
+to edge displays.
+
+?> The ability to set your game's HD Max Scale is available to Pro
+license holders (the function no-ops otherwise).
+
+### `toggle_hd_letterbox`
+
+Adds or removes the letterbox within your game while it's
+running. This is useful for testing how your game renders on edge to 
+edge displays.
+
+### `set_hd_letterbox`
+
+Function requires one `Boolean` parameter (`true` or `false`). The
+letter boxing for your game will be added or removed while the game is
+running. 
+
+?> `toggle_hd_letterbox` and `set_hd_letterbox` correlates to the
+`hd_letterbox` configuration value in =metadata/game_metadata.txt=
+(which allows you to render outside of the 16:9 safe area). 
+
+?> The ability to remove the letterbox for you game is available to Pro
+license holders (these functions no-ops otherwise).
+
 ## Environment and Utility Functions
 
 The following functions will help in interacting with the OS and rendering pipeline.
@@ -185,7 +426,7 @@ The following functions will help in interacting with the OS and rendering pipel
 Returns the render width and render height as a tuple for a piece of text. The parameters this method takes are:
 
 -   `text`: the text you want to get the width and height of.
--   `size_enum`: number representing the render size for the text. This parameter is optional and defaults to `0` which represents a baseline font size in units specific to DragonRuby (a negative value denotes a size smaller than what would be comfortable to read on a handheld device postive values above `0` represent larger font sizes).
+-   `size_enum`: number representing the render size for the text. This parameter is optional and defaults to `0` which represents a baseline font size in units specific to DragonRuby (a negative value denotes a size smaller than what would be comfortable to read on a handheld device positive values above `0` represent larger font sizes).
 -   `font`: path to a font file that the width and height will be based off of. This field is optional and defaults to the DragonRuby's default font.
 
 ```ruby
@@ -238,7 +479,7 @@ Call this function to exit your game. You will be given one additional tick if y
 ```ruby
 def tick args
   # exit the game after 600 frames (10 seconds)
-  if args.state.tick_count == 600
+  if Kernel.tick_count == 600
     args.gtk.request_quit
   end
 end
@@ -247,38 +488,6 @@ end
 ### `quit_requested?`
 
 This function will return `true` if the game is about to exit (either from the user closing the game or if `request_quit` was invoked).
-
-### `set_window_fullscreen`
-
-This function takes in a single boolean parameter. `true` to make the game fullscreen, `false` to return the game back to windowed mode.
-
-```ruby
-def tick args
-  # make the game full screen after 600 frames (10 seconds)
-  if args.state.tick_count == 600
-    args.gtk.set_window_fullscreen true
-  end
-
-  # return the game to windowed mode after 20 seconds
-  if args.state.tick_count == 1200
-    args.gtk.set_window_fullscreen false
-  end
-end
-```
-
-### `window_fullscreen?`
-
-Returns true if the window is currently in fullscreen mode.
-
-### `set_window_scale`
-
-This function takes in a float value and uses that to resize the game window to a percentage of 1280x720 (or 720x1280 in portrait mode). The valid scale options are 0.1, 0.25, 0.5, 0.75, 1.25, 1.5, 2.0, 2.5, 3.0, and 4.0. The float value you pass in will be floored to the nearest valid scale option.
-
-### `set_window_scale`
-
-This function takes in a string updates the title of the game in the Menu Bar.
-
-Note: The default title for your game is specified in via the `gametitle` property in `mygame/metadata/game_metadata.txt`.
 
 ### `platform?`
 
@@ -343,12 +552,12 @@ Given the mappings above, `args.gtk.platform? :desktop` would return `true` if t
 
 ### `open_url`
 
-Given a uri represented as a string. This fuction will open the uri in the user's default browser.
+Given a uri represented as a string. This function will open the uri in the user's default browser.
 
 ```ruby
 def tick args
   # open a url after 600 frames (10 seconds)
-  if args.state.tick_count == 600
+  if Kernel.tick_count == 600
     args.gtk.open_url "http://dragonruby.org"
   end
 end
@@ -361,7 +570,7 @@ Given an OS dependent cli command represented as a string, this function execute
 ```ruby
 def tick args
   # execute ls on the current directory in 10 seconds
-  if args.state.tick_count == 600
+  if Kernel.tick_count == 600
     args.gtk.system "ls ."
   end
 end
@@ -374,7 +583,7 @@ Given an OS dependent cli command represented as a string, this function execute
 ```ruby
 def tick args
   # execute ls on the current directory in 10 seconds
-  if args.state.tick_count == 600
+  if Kernel.tick_count == 600
     results = args.gtk.exec "ls ."
     puts "The results of the command are:"
     puts results
@@ -404,15 +613,15 @@ Takes in a numeric parameter representing the mouse grab mode.
 
 ### `set_system_cursor`
 
-Takes in a string value of `"arrow"`, `"ibeam"`, `"wait"`, or `"hand"` and sets the mouse curosor to the corresponding system cursor (if available on the OS).
+Takes in a string value of `"arrow"`, `"ibeam"`, `"wait"`, or `"hand"` and sets the mouse cursor to the corresponding system cursor (if available on the OS).
 
 ### `set_cursor`
 
-Replaces the mouse cursor with a sprite. Takes in a `path` to the sprite, and optionally an `x` and `y` value representing the realtive positioning the sprite will have to the mouse cursor.
+Replaces the mouse cursor with a sprite. Takes in a `path` to the sprite, and optionally an `x` and `y` value representing the relative positioning the sprite will have to the mouse cursor.
 
 ```ruby
 def tick args
-  if args.state.tick_count == 0
+  if Kernel.tick_count == 0
     # assumes a sprite of size 80x80 and centers the sprite
     # relative to the cursor position.
     args.gtk.set_cursor "sprites/square/blue.png", 40, 40
@@ -420,11 +629,15 @@ def tick args
 end
 ```
 
+### `create_uuid`
+
+Returns a `UUID`/`GUID` as a `String` value. The UUID uses `srand` and is not cryptographically secure.
+
 ## File IO Functions
 
 The following functions give you the ability to interact with the file system.
 
-IMPORTANT: File access functions are sandoxed and assume that the `dragonruby` binary lives alongside the game you are building. Do not expect these functions to return correct values if you are attempting to run the `dragonruby` binary from a shared location. It's recommended that the directory structure contained in the zip is not altered and games are built using that starter template.
+IMPORTANT: File access functions are sandboxed and assume that the `dragonruby` binary lives alongside the game you are building. Do not expect these functions to return correct values if you are attempting to run the `dragonruby` binary from a shared location. It's recommended that the directory structure contained in the zip is not altered and games are built using that starter template.
 
 ### `list_files`
 
@@ -447,7 +660,7 @@ This function takes in one parameter. The parameter is the file path and assumes
 
 def tick args
   if args.inputs.mouse.click
-    args.gtk.write_file "last-mouse-click.txt", "Mouse was clicked at #{args.state.tick_count}."
+    args.gtk.write_file "last-mouse-click.txt", "Mouse was clicked at #{Kernel.tick_count}."
   end
 
   file_info = args.gtk.stat_file "last-mouse-click.txt"
@@ -481,19 +694,19 @@ This function takes in two parameters. The first parameter is the file path and 
 ```ruby
 def tick args
   if args.inputs.mouse.click
-    args.gtk.write_file "last-mouse-click.txt", "Mouse was clicked at #{args.state.tick_count}."
+    args.gtk.write_file "last-mouse-click.txt", "Mouse was clicked at #{Kernel.tick_count}."
   end
 end
 ```
 
 ### `append_file`
 
-This function takes in two parameters. The first parameter is the file path and assumes the the game directory is the root. The second parameter is the string that will be written. The method appends to whatever is currently in the file (a new file is created if one does not alread exist). Use `write_file` to overwrite the file's contents as opposed to appending.
+This function takes in two parameters. The first parameter is the file path and assumes the the game directory is the root. The second parameter is the string that will be written. The method appends to whatever is currently in the file (a new file is created if one does not already exist). Use `write_file` to overwrite the file's contents as opposed to appending.
 
 ```ruby
 def tick args
   if args.inputs.mouse.click
-    args.gtk.append_file "click-history.txt", "Mouse was clicked at #{args.state.tick_count}.\n"
+    args.gtk.append_file "click-history.txt", "Mouse was clicked at #{Kernel.tick_count}.\n"
     puts args.gtk.read_file("click-history.txt")
   end
 end
@@ -521,7 +734,7 @@ Notes:
 def tick args
   if args.inputs.keyboard.key_down.w
     # press w to write file
-    args.gtk.append_file "example-file.txt", "File written at #{args.state.tick_count}\n"
+    args.gtk.append_file "example-file.txt", "File written at #{Kernel.tick_count}\n"
     args.gtk.notify "File written/appended."
   elsif args.inputs.keyboard.key_down.d
     # press d to delete file "unsafely"
@@ -575,7 +788,7 @@ The following functions help with interacting with the network.
 
 ### `http_get`
 
-Returns an object that represents an http response which will eventually have a value. This http<sub>get</sub> method is invoked asynchronously. Check for completion before attempting to read results.
+Returns an object that represents an http response which will eventually have a value. This `http_get` method is invoked asynchronously. Check for completion before attempting to read results.
 
 ```ruby
 def tick args
@@ -601,7 +814,7 @@ end
 
 ### `http_post`
 
-Returns an object that represents an http response which will eventually have a value. This http<sub>post</sub> method is invoked asynchronously. Check for completion before attempting to read results.
+Returns an object that represents an http response which will eventually have a value. This `http_post` method is invoked asynchronously. Check for completion before attempting to read results.
 
 -   First parameter: The url to send the request to.
 -   Second parameter: Hash that represents form fields to send.
@@ -636,7 +849,7 @@ end
 
 ### `http_post_body`
 
-Returns an object that represents an http response which will eventually have a value. This http<sub>post</sub><sub>body</sub> method is invoked asynchronously. Check for completion before attempting to read results.
+Returns an object that represents an http response which will eventually have a value. This `http_post_body` method is invoked asynchronously. Check for completion before attempting to read results.
 
 -   First parameter: The url to send the request to.
 -   Second parameter: String that represents the body that will be sent
@@ -682,7 +895,7 @@ def tick args
 end
 ```
 
-Here's how you would responde to http requests:
+Here's how you would respond to http requests:
 
 ```ruby
 def tick args
@@ -711,13 +924,13 @@ Returns `true` if the version of DragonRuby is NOT Standard Edition.
 
 ### `game_version`
 
-Returns a version string within mygame/game<sub>metadata.txt</sub>.
+Returns a version string within `mygame/game_metadata.txt`.
 
-To get other values from mygame/game<sub>metadata.txt</sub>, you can do:
+To get other values from `mygame/game_metadata.txt`, you can do:
 
 ```ruby
 def tick args
-  if args.state.tick_count == 0
+  if Kernel.tick_count == 0
     puts args.gtk.game_version
     args.cvars["game_metadata.version"].value
   end
@@ -726,7 +939,7 @@ end
 
 ### `reset`
 
-Resets DragonRuby's internal state as if it were just started. `args.state.tick_count` is set to `0` and `args.state` is cleared of any values. This function is helpful when you are developing your game and want to reset everything as if the game just booted up.
+Resets DragonRuby's internal state as if it were just started. `Kernel.tick_count` is set to `0` and `args.state` is cleared of any values. This function is helpful when you are developing your game and want to reset everything as if the game just booted up.
 
 ```ruby
 def tick args
@@ -751,7 +964,7 @@ $gtk.reset
     def tick args
       $game ||= Game.new
     
-      if args.state.tick_count == 0
+      if Kernel.tick_count == 0
         puts "tick_count is 0"
       end
     
@@ -768,7 +981,7 @@ $gtk.reset
     end
     ```
 
-2.  `seed` and RNG (advanced)
+2.  `rng_seed` RNG (advanced)
 
     Optionally, `$gtk.reset` (`args.gtk.reset`) can take in a named parameter for RNG called `seed:`. Passing in `seed:` will reset RNG so that `rand` returns a repeatable set of random numbers. This `seed` value is initialized with the start time of your game (`$gtk.started_at`). Having this option is is helpful for replays and unit tests.
     
@@ -784,7 +997,7 @@ $gtk.reset
     
     ```ruby
     def tick args
-      if args.state.tick_count == 0
+      if Kernel.tick_count == 0
         puts rand
         puts rand
         puts rand
@@ -792,7 +1005,7 @@ $gtk.reset
       end
     end
     
-    puts "Started at (RNG seed inital value)"
+    puts "Started at (RNG seed initial value)"
     puts $gtk.started_at # Time as an integer that your game was started at
     
     puts "Seed value that will be used on reset"
@@ -812,11 +1025,22 @@ $gtk.reset
     # $gtk.reset seed: $gtk.started_at
     ```
     
+    If you want a new RNG seed with every reset while in dev mode:
+
+    ```ruby
+    # reset is a top-level function that DR is aware of
+    # and will be invoked before GTK.reset occurs.
+    def reset args
+      # A new rng will be used GTK.reset is invoked
+      GTK.set_rng (Time.now.to_f * 100).to_i
+    end
+    ```
+
     If you want to set RNG without resetting your game state, you can use `$gtk.set_rng VALUE`.
 
 ### `reset_next_tick`
 
-Has the same behavior as `reset` except the reset occurs before `tick` is executed again. `reset` resets the environment immediately (while the `tick` method is inflight). It's recommended that `reset` should be called outside of the tick method (invoked when a file is saved/hotloaded), and `reset_next_tick` be used inside of the `tick` method so you don't accidentally blow away state the your game depends on to complete the current `tick` without exceptions.
+Has the same behavior as `reset` except the reset occurs before `tick` is executed again. `reset` resets the environment immediately (while the `tick` method is in-flight). It's recommended that `reset` should be called outside of the tick method (invoked when a file is saved/hotloaded), and `reset_next_tick` be used inside of the `tick` method so you don't accidentally blow away state the your game depends on to complete the current `tick` without exceptions.
 
 ```ruby
 def tick args
@@ -1076,7 +1300,7 @@ Returns the path to the location of the dragonruby binary. In production mode, t
 
 Returns the location within sandbox storage that the game is running. When developing your game, this value will be your `mygame` directory. In production, it'll return a value that is OS specific (eg the Roaming directory on Windows or the Application Support directory on Mac).
 
-Invocations of ~(write|append)<sub>file</sub> will write to this sandboxed directory.
+Invocations of `(write|append)_file` will write to this sandboxed directory.
 
 ### `get_game_dir_url`
 
@@ -1100,7 +1324,7 @@ Returns a string representing the command line arguments passed to the DragonRub
 
 ### `cli_arguments`
 
-Returns a `Hash` for command line arguments in the format of `--switch value` (two hyphens preceding the switch flag with the value seperated by a space). This should be used for development/debugging purposes only.
+Returns a `Hash` for command line arguments in the format of `--switch value` (two hyphens preceding the switch flag with the value separated by a space). This should be used for development/debugging purposes only.
 
 ### `download_stb_rb(_raw)`
 
@@ -1114,12 +1338,12 @@ end
 
 # option 1:
 # source code will be downloaded from the specified GitHub url, and saved locally with a
-# predefined folder convension.
+# predefined folder convention.
 $gtk.download_stb_rb "https://github.com/xenobrain/ruby_vectormath/blob/main/vectormath_2d.rb"
 
 # option 2:
 # source code will be downloaded from the specified GitHub username, repository, and file.
-# code will be saved locally with a predefined folder convension.
+# code will be saved locally with a predefined folder convention.
 $gtk.download_stb_rb "xenobrain", "ruby_vectormath", "vectormath_2d.rb"
 
 # option 3:
@@ -1140,15 +1364,37 @@ Returns a `Hash` for files that have been queued for reload, but haven't been pr
 
 Given a file name, this function will queue the file for reload if it's been modified. An optional second parameter can be passed in to signify if the file should be forced loaded regardless of modified time (`true` means to force load, `false` means to load only if the file has been modified). This function should be used for development/debugging purposes only.
 
-### `add_caller_to_puts!`
+### `trace_puts!`
 
-If you need to hund down rogue `puts` statements in your code do:
+If you need to hunt down rogue `puts` statements in your code do:
 
 ```ruby
 def tick args
   # adding the following line to the TOP of your tick method
   # will print ~caller~ along side each ~puts~ statement
-  $gtk.add_caller_to_puts!
+  $gtk.trace_puts!
+end
+```
+
+### `current_thermal_state`
+
+iOS only (returns `nil` for other platforms). Returns a symbol representing the thermal state of the device: `:unknown`, `:nominal`, `:fair`, `:serious`, `:critical`.
+
+When deploying to your local dev device, if the value is `:serious` or `:critical`, you will be notified via a toast message.
+
+Here's how you can explicitly display the thermal state on the screen:
+
+```ruby
+def tick args
+  args.outputs.labels << { x: Grid.w / 2,
+                           y: Grid.h / 2,
+                           text: "thermal state: #{GTK.current_thermal_state || :unknown}",
+                           r: 255,
+                           g: 255,
+                           b: 255,
+                           size_px: 30,
+                           anchor_x: 0.5,
+                           anchor_y: 0.5 }
 end
 ```
 
@@ -1173,7 +1419,7 @@ Entities can have an `entity_type` which is represented as a `Symbol`.
 
 ## `created_at`
 
-Entities have `created_at` set to `args.state.tick_count` when they are created.
+Entities have `created_at` set to `Kernel.tick_count` when they are created.
 
 ## `created_at_elapsed`
 
@@ -1210,8 +1456,7 @@ Creates a new Strict Entity. While Entities created via `args.state.new_entity` 
 
 ## `tick_count`
 
-Returns the current tick of the game. `args.state.tick_count` is `0` when the game is first started or if the game is reset via `$gtk.reset`.
-
+Returns the current tick of the game. `Kernel.tick_count` is `0` when the game is first started or if the game is reset via `$gtk.reset`.
 
 # `Kernel`
 

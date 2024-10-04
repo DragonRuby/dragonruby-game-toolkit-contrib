@@ -25,7 +25,7 @@ def tick args
   args.state.star_count ||= 0
 
   # init
-  if args.state.tick_count == 0
+  if Kernel.tick_count == 0
     args.state.stars = args.state.star_count.map { |i| Star.new }
     args.outputs.static_sprites << args.state.stars
   end

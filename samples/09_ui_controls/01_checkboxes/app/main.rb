@@ -15,7 +15,7 @@ def tick args
       # mark checkbox value
       checkbox.checked = !checkbox.checked
       # set the time the checkbox was changed
-      checkbox.changed_at = args.state.tick_count
+      checkbox.changed_at = Kernel.tick_count
     end
   end
 
@@ -41,7 +41,7 @@ def tick args
     # rendering if checked or not
     if checkbox.checked
       # fade in
-      a = 255 * args.easing.ease(checkbox.changed_at, args.state.tick_count, 30, :smooth_stop_quint)
+      a = 255 * args.easing.ease(checkbox.changed_at, Kernel.tick_count, 30, :smooth_stop_quint)
 
       [
         label,
@@ -50,7 +50,7 @@ def tick args
       ]
     else
       # fade out
-      a = 255 * args.easing.ease(checkbox.changed_at, args.state.tick_count, 30, :smooth_stop_quint, :flip)
+      a = 255 * args.easing.ease(checkbox.changed_at, Kernel.tick_count, 30, :smooth_stop_quint, :flip)
 
       [
         label,

@@ -34,7 +34,7 @@ class Game
 
   def queue_move_to_right_side
     # use the tick queue mechanism to kick off the player moving right
-    @tick_queue.queue_tick state.tick_count do |args, entry|
+    @tick_queue.queue_tick Kernel.tick_count do |args, entry|
       state.player.x += 30
       # once the player is done moving right, stage the next step of the cutscene (moving left)
       if state.player.x + state.player.w > 1280
@@ -49,7 +49,7 @@ class Game
 
   def queue_move_to_left_side
     # use the tick queue mechanism to kick off the player moving right
-    @tick_queue.queue_tick state.tick_count do |args, entry|
+    @tick_queue.queue_tick Kernel.tick_count do |args, entry|
       args.state.player.x -= 30
       # once the player id done moving left, decide on whether they should move right again or fade to black
       # the decision point is based on the number of times the player has moved left and right
@@ -72,12 +72,12 @@ class Game
 
   def queue_fade_to_black
     # we know the cutscene will end in 255 tickes, so we can queue a notification that will kick off in the future notifying that the cutscene is done
-    @tick_queue.queue_one_time_tick state.tick_count + 255 do |args, entry|
+    @tick_queue.queue_one_time_tick Kernel.tick_count + 255 do |args, entry|
       $gtk.notify "Cutscene complete!"
     end
 
     # start the fade to black
-    @tick_queue.queue_tick state.tick_count do |args, entry|
+    @tick_queue.queue_tick Kernel.tick_count do |args, entry|
       args.state.fade_to_black += 1
       entry.complete! if state.fade_to_black > 255
     end
@@ -112,7 +112,7 @@ class TickQueue
 
   def tick
     # get all queued callbacs that need to start running on the current frame
-    entries_this_tick = @queued_ticks.delete args.state.tick_count
+    entries_this_tick = @queued_ticks.delete Kernel.tick_count
 
     # if there are values, then add them to the list of currently running callbacks
     if entries_this_tick
@@ -129,7 +129,7 @@ class TickQueue
 
     # there is a chance that a queued tick will queue another tick, so we need to check
     # if there are any queued ticks for the current frame. if so, then recursively call tick again
-    if @queued_ticks[args.state.tick_count] && @queued_ticks[args.state.tick_count].length > 0
+    if @queued_ticks[Kernel.tick_count] && @queued_ticks[Kernel.tick_count].length > 0
       tick
     end
   end

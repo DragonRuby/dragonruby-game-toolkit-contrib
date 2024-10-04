@@ -5,9 +5,9 @@ class GTK::Console::Menu
     [
       (button id: :yay,
               # row for button
-              row: 3,
+              row: 2,
               # column for button
-              col: 10,
+              col: 18,
               # text
               text: "I AM CUSTOM",
               # when clicked call the custom_button_clicked function
@@ -15,9 +15,9 @@ class GTK::Console::Menu
 
       (button id: :yay,
               # row for button
-              row: 3,
+              row: 2,
               # column for button
-              col: 9,
+              col: 16,
               # text
               text: "CUSTOM ALSO",
               # when clicked call the custom_button_also_clicked function

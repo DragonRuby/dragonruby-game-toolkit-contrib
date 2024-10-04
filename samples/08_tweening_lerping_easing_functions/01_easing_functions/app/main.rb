@@ -33,7 +33,7 @@ def tick args
   # [:quint]
 
   # Linear reversed, and smooth stop are the same as the animations defined above, but reversed:
-  # [:flip, :identity]
+  # [:flip, :identity, :flip]
   # [:flip, :quad, :flip]
   # [:flip, :cube, :flip]
   # [:flip, :quart, :flip]
@@ -50,7 +50,7 @@ def tick args
   # args.state.animation_type = [:cube]
   # args.state.animation_type = [:quart]
   # args.state.animation_type = [:quint]
-  # args.state.animation_type = [:flip, :identity]
+  # args.state.animation_type = [:flip, :identity, :flip]
   # args.state.animation_type = [:flip, :quad, :flip]
   # args.state.animation_type = [:flip, :cube, :flip]
   # args.state.animation_type = [:flip, :quart, :flip]
@@ -80,7 +80,7 @@ def tick args
   args.outputs.solids << [calc_x, calc_y, calc_w, calc_h, 0, 0, 0]
 
   # count down
-  count_down = args.state.start_animate_at - args.state.tick_count
+  count_down = args.state.start_animate_at - Kernel.tick_count
   if count_down > 0
     args.outputs.labels << [640, 375, "Running: #{args.state.animation_type} in...", 3, 1]
     args.outputs.labels << [640, 345, "%.2f" % count_down.fdiv(60), 3, 1]

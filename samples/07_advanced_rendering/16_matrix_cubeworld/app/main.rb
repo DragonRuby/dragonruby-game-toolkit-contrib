@@ -5,7 +5,7 @@ include MatrixFunctions
 def tick args
   args.outputs.labels << { x: 0,
                            y: 30.from_top,
-                           text: "W,A,S,D to move. Mouse to look. Triangles is a Indie/Pro Feature and will be ignored in Standard.",
+                           text: "W,A,S,D to move. Mouse to look.",
                            alignment_enum: 1 }
 
   args.grid.origin_center!

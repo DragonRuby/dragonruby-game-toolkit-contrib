@@ -64,7 +64,7 @@ $gtk.schedule_callback 80 do
 end
 
 $gtk.schedule_callback 90 do
-  $gtk.console.set_command "outputs.labels << [1210, 200, state.tick_count, 0, 255, 0]"
+  $gtk.console.set_command "outputs.labels << [1210, 200, Kernel.tick_count, 0, 255, 0]"
 end
 
 $gtk.schedule_callback 100 do
@@ -72,7 +72,7 @@ $gtk.schedule_callback 100 do
 end
 
 $gtk.schedule_callback 110 do
-  $gtk.console.set_command "state.sprite_frame = state.tick_count.idiv(4).mod(6)"
+  $gtk.console.set_command "state.sprite_frame = Kernel.tick_count.idiv(4).mod(6)"
 end
 
 $gtk.schedule_callback 120 do

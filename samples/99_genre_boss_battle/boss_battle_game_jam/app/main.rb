@@ -11,7 +11,7 @@ class Game
   def defaults
     state.high_score          ||= 0
     state.damage_render_queue ||= []
-    game_reset if state.tick_count == 0 || state.start_new_game
+    game_reset if Kernel.tick_count == 0 || state.start_new_game
   end
 
   def game_reset
@@ -46,7 +46,7 @@ class Game
     player.is_moving = false
 
     if input_attack?
-      player.slash_at = state.tick_count
+      player.slash_at = Kernel.tick_count
     end
 
     if !player_attacking?
@@ -126,7 +126,7 @@ class Game
     boss.y += dy * 0.25 ** 2
 
     if boss.intersect_rect?(player_hurt_box) && player.damaged_at.elapsed?(120)
-      player.damaged_at = state.tick_count
+      player.damaged_at = Kernel.tick_count
       player.hp -= 1
       player.hp  = 0 if player.hp < 0
     end
@@ -247,7 +247,7 @@ class Game
 
   def player_slash_can_damage?
     return false if !player_attacking?
-    return false if (player.slash_at + player.slash_frames.idiv(2)) != state.tick_count
+    return false if (player.slash_at + player.slash_frames.idiv(2)) != Kernel.tick_count
     return true
   end
 

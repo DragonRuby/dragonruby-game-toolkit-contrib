@@ -16,10 +16,6 @@ def tick args
   args.outputs[:clipped_area].w = 1280
   args.outputs[:clipped_area].h = 720
 
-  # mark it as transient so that the render target
-  # isn't cached (since we are going to be changing it every frame)
-  args.outputs[:clipped_area].transient!
-
   # render the player in the render target
   args.outputs[:clipped_area].sprites << args.state.player
 

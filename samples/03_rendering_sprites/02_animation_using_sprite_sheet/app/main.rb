@@ -10,19 +10,19 @@ def tick args
   if args.inputs.keyboard.right
     args.state.player.x += 3
     args.state.player.direction = 1
-    args.state.player.started_running_at ||= args.state.tick_count
+    args.state.player.started_running_at ||= Kernel.tick_count
   elsif args.inputs.keyboard.left
     args.state.player.x -= 3
     args.state.player.direction = -1
-    args.state.player.started_running_at ||= args.state.tick_count
+    args.state.player.started_running_at ||= Kernel.tick_count
   end
 
   if args.inputs.keyboard.up
     args.state.player.y += 1
-    args.state.player.started_running_at ||= args.state.tick_count
+    args.state.player.started_running_at ||= Kernel.tick_count
   elsif args.inputs.keyboard.down
     args.state.player.y -= 1
-    args.state.player.started_running_at ||= args.state.tick_count
+    args.state.player.started_running_at ||= Kernel.tick_count
   end
 
   # if no arrow keys are being pressed, set the player as not moving
@@ -33,18 +33,18 @@ def tick args
   # wrap player around the stage
   if args.state.player.x > 1280
     args.state.player.x = -64
-    args.state.player.started_running_at ||= args.state.tick_count
+    args.state.player.started_running_at ||= Kernel.tick_count
   elsif args.state.player.x < -64
     args.state.player.x = 1280
-    args.state.player.started_running_at ||= args.state.tick_count
+    args.state.player.started_running_at ||= Kernel.tick_count
   end
 
   if args.state.player.y > 720
     args.state.player.y = -64
-    args.state.player.started_running_at ||= args.state.tick_count
+    args.state.player.started_running_at ||= Kernel.tick_count
   elsif args.state.player.y < -64
     args.state.player.y = 720
-    args.state.player.started_running_at ||= args.state.tick_count
+    args.state.player.started_running_at ||= Kernel.tick_count
   end
 
   # render player as standing or running

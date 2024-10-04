@@ -20,7 +20,6 @@ def tick args
   args.outputs.primitives << { x: 10, y: 50.from_top, text: "space to cycle target hero", r: 255, g: 255, b: 255}.label!
 
   # render scene
-  args.outputs[:scene].transient!
   args.outputs[:scene].w = args.state.world.w
   args.outputs[:scene].h = args.state.world.h
 
@@ -65,7 +64,7 @@ def tick args
     else
       args.state.target_hero = :hero_1
     end
-    args.state.target_hero_changed_at = args.state.tick_count
+    args.state.target_hero_changed_at = Kernel.tick_count
   end
 
   # move target hero
@@ -83,9 +82,9 @@ def tick args
   end
 
   # +/- to zoom in and out
-  if args.inputs.keyboard.plus && args.state.tick_count.zmod?(3)
+  if args.inputs.keyboard.plus && Kernel.tick_count.zmod?(3)
     args.state.camera.scale += 0.05
-  elsif args.inputs.keyboard.hyphen && args.state.tick_count.zmod?(3)
+  elsif args.inputs.keyboard.hyphen && Kernel.tick_count.zmod?(3)
     args.state.camera.scale -= 0.05
   end
 
@@ -115,7 +114,7 @@ def calc_scene_position args
 
   # calculate the lerp percentage based on the time since the target hero changed
   lerp_percentage = args.easing.ease args.state.target_hero_changed_at,
-                                     args.state.tick_count,
+                                     Kernel.tick_count,
                                      30,
                                      :smooth_stop_quint,
                                      :flip

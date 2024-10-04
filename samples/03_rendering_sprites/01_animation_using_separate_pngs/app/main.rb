@@ -87,15 +87,15 @@ def one_time_animation args
   # If "f" is pressed on the keyboard...
   if args.inputs.keyboard.key_down.f
     # Print the frame that "f" was pressed on.
-    puts "Hello from main.rb! The \"f\" key was in the down state on frame: #{args.state.tick_count}"
+    puts "Hello from main.rb! The \"f\" key was in the down state on frame: #{Kernel.tick_count}"
 
     # And MOST IMPORTANTLY set the point it time to start the animation,
-    # equal to "now" which is represented as args.state.tick_count.
+    # equal to "now" which is represented as Kernel.tick_count.
 
     # Also IMPORTANT, you'll notice that the value of when to start looping
     # is stored in `args.state`. This construct's values are retained across
     # executions of the `tick` method.
-    args.state.start_looping_at = args.state.tick_count
+    args.state.start_looping_at = Kernel.tick_count
   end
 
   # These are the same local variables that were defined

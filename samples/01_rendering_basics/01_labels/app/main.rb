@@ -38,10 +38,10 @@ def tick args
   # render the current frame to the screen using a simple array
   # this is useful for quick and dirty output and is recommended to use
   # a Hash to render long term.
-  args.outputs.labels << [640, 650, "frame: #{args.state.tick_count}"]
+  args.outputs.labels << [640, 650, "frame: #{Kernel.tick_count}"]
 
   # render the current frame to the screen centered vertically and horizontally at 640, 620
-  args.outputs.labels << { x: 640, y: 620, anchor_x: 0.5, anchor_y: 0.5, text: "frame: #{args.state.tick_count}" }
+  args.outputs.labels << { x: 640, y: 620, anchor_x: 0.5, anchor_y: 0.5, text: "frame: #{Kernel.tick_count}" }
 
   # Here are some examples of simple labels, with the minimum number of parameters
   # Note that the default values for the other parameters are 0, except for Alpha which is 255 and Font Style which is the default font

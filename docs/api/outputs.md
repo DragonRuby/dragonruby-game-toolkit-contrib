@@ -34,19 +34,31 @@ For example, you can render a `solid` above a `sprite`:
 
 ```ruby
 def tick args
+  # sprite
   args.outputs.primitives << { x: 100, y: 100,
                                w: 100, h: 100,
                                path: "sprites/square/blue.png" }
+
+  # solid
   args.outputs.primitives << { x: 0,
                                y: 0,
                                w: 100,
                                h: 100,
                                primitive_marker: :solid }
+
+  # border
   args.outputs.primitives << { x: 0,
                                y: 0,
                                w: 100,
                                h: 100,
                                primitive_marker: :border }
+
+  # label
+  args.outputs.primitives << { x: 100, y: 100,
+                               text: "hello world" }
+
+  # line
+  args.outputs.primitives << { x: 100, y: 100, x2: 150, y2: 150 }
 end
 ```
 
@@ -71,7 +83,7 @@ def tick args
 
   # the following string values will generate labels with backgrounds
   # and will auto stack vertically
-  args.outputs.debug << "current tick: #{args.state.tick_count}"
+  args.outputs.debug << "current tick: #{Kernel.tick_count}"
   args.outputs.debug << "player x: #{args.state.player.x}"
   args.outputs.debug << "hello\nworld"
 end
@@ -113,7 +125,43 @@ end
 
 Add primitives to this collection to render a solid to the screen.
 
-### Rendering a solid using an Array
+!> This render primitive is fine to use sparingly. If you find
+yourself rendering a large number of solids, render `sprites` instead
+(the textures that solid primitives generate are not cached and do not
+perform as well as rendering sprites).
+
+For example, the following `solid` and `sprite` are equivalent:
+
+```ruby
+def tick args
+  args.outputs.solids << {
+    x: 0,
+    y: 0,
+    w: 100,
+    h: 100,
+    r: 255,
+    g: 255,
+    b: 255,
+    a: 128
+  }
+
+  # is equivalent to
+
+  args.outputs.sprites << {
+    x: 0,
+    y: 0,
+    w: 100,
+    h: 100,
+    path: :solid,
+    r: 255,
+    g: 255,
+    b: 255,
+    a: 128
+  }
+end
+```
+
+### Rendering a Solid using an Array
 
 Creates a solid black rectangle located at 100, 100. 160 pixels
 wide and 90 pixels tall.
@@ -125,7 +173,10 @@ def tick args
 end
 ```
 
-### Rendering a solid using an Array with colors and alpha
+!> `Array`-based primitives are find for debugging purposes/quick prototypes. But should
+not be used as the default rendering approach. Use `Hash`-based or `Class`-based primitives.
+
+### Rendering a Solid using an Array with colors and alpha
 
 The value for the color and alpha is a number between `0` and `255`. The
 alpha property is optional and will be set to `255` if not specified.
@@ -139,7 +190,7 @@ def tick args
 end
 ```
 
-### Rendering a solid using a Hash
+### Rendering a Solid using a Hash
 
 If you want a more readable invocation. You can use the following hash to create a solid.
 Any parameters that are not specified will be given a default value. The keys of the hash can
@@ -163,7 +214,7 @@ def tick args
 end
 ```
 
-### Rendering a solid using a Class
+### Rendering a Solid using a Class
 
 You can also create a class with solid properties and render it as a primitive.
 ALL properties must be on the class. **Additionally**, a method called `primitive_marker`
@@ -233,7 +284,7 @@ Here are all the properties that you can set on a sprite. The only required ones
 
 #### Required
 
-- `x`: X position of the sprite. Note: the botton left corner of the sprite is used for positioning (this can be changed using `anchor_x`, and `anchor_y`).
+- `x`: X position of the sprite. Note: the bottom left corner of the sprite is used for positioning (this can be changed using `anchor_x`, and `anchor_y`).
 - `y`: Y position of the sprite. Note: The origin 0,0 is at the bottom left corner. Setting `y` to a higher value will move the sprite upwards.
 - `w`: The render width.
 - `h`: The render height.
@@ -241,8 +292,8 @@ Here are all the properties that you can set on a sprite. The only required ones
 
 #### Anchors and Rotations
 
-- `flip_horizonally`: This value can be either `true` or `false` and controls if the sprite will be flipped horizontally (default value is false).
-- `flip_vertically`: This value can be either `true` or `false` and controls if the sprite will be flipped horizontally (default value is false).
+- `flip_horizontally`: This value can be either `true` or `false` and controls if the sprite will be flipped horizontally (default value is false).
+- `flip_vertically`: This value can be either `true` or `false` and controls if the sprite will be flipped vertically (default value is false).
 - `anchor_x`: Used to determine anchor point of the sprite's X position (relative to the render width).
 - `anchor_y`: Used to determine anchor point of the sprite's Y position (relative to the render height).
 - `angle`: Rotation of the sprite in degrees (default value is 0). Rotation occurs around the center of the sprite. The point of rotation can be changed using `angle_anchor_x` and `angle_anchor_y`.
@@ -292,7 +343,8 @@ See the sample apps under `./samples/03_rendering_sprites` for examples of how t
 - `r`: Level of red saturation for the sprite (default value is 255). Example: Setting the value to zero will remove all red coloration from the sprite.
 - `g`: Level of green saturation for the sprite (default value is 255).
 - `b`: Level of blue saturation for the sprite (default value is 255).
-- `blendmode_enum`: Valid options are `0`: no blending, `1`: default/alpha blending, `2`: addative blending, `3`: modulo blending, `4`: multiply blending.
+- `blendmode_enum`: Valid options are `0`: no blending, `1`: default/alpha blending, `2`: additive blending, `3`: modulo blending, `4`: multiply blending.
+- `scale_quality_enum`: Valid options are `0`: nearest neighbor, `1`: linear scaling, `2`: anti-aliasing. If the value is `nil` then the `scale_quality` value that was set in `mygame/game_metadata.txt` will be used.
 
 The following sample apps show how `blendmode_enum` can be leveraged to create coloring and lighting effects:
 
@@ -334,7 +386,7 @@ For more example of rendering using triangles see:
 - `./samples/07_advanced_rendering/16_matrix_and_triangles_3d`
 - `./samples/07_advanced_rendering/16_matrix_cubeworld`
 
-### Rendering a sprite using an Array
+### Rendering a Sprite using an Array
 
 Creates a sprite of a white circle located at 100, 100. 160 pixels
 wide and 90 pixels tall.
@@ -346,12 +398,12 @@ def tick args
 end
 ```
 
-!> Array-based sprites have limited access to sprite propertie, but
+!> Array-based sprites have limited access to sprite properties, but
 nice for quick prototyping. Use a `Hash` or `Class` to 
 gain access to all properties, gain long term maintainability of code,
 and a boost in rendering performance. 
 
-### Rendering a sprite using a Hash
+### Rendering a Sprite using a Hash
 
 If you want a more readable (and faster) invocation, you can use the following hash to create a sprite.
 Any parameters that are not specified will be given a default value. The keys of the hash can
@@ -371,7 +423,7 @@ def tick args
 end
 ```
 
-### Rendering a sprite using a Class
+### Rendering a Sprite using a Class
 
 You can also create a class with solid/border properties and render it as a primitive.
 ALL properties must be on the class. **Additionally**, a method called `primitive_marker`
@@ -388,7 +440,7 @@ class Sprite
                 :angle_x, :angle_y, :z,
                 :source_x, :source_y, :source_w, :source_h, :blendmode_enum,
                 :source_x2, :source_y2, :source_x3, :source_y3, :x2, :y2, :x3, :y3,
-                :anchor_x, :anchor_y
+                :anchor_x, :anchor_y, :scale_quality_enum
 
   def primitive_marker
     :sprite
@@ -438,7 +490,7 @@ class BlueSquare
   # anything you want to represent as a sprite
   attr_sprite
 
-  def initialize(x: 0, y: 0, w: 0, h: 0k
+  def initialize(x: 0, y: 0, w: 0, h: 0)
     @x = x
     @y = y
     @w = w
@@ -455,11 +507,79 @@ def tick args
 end
 ```
 
+## `lines`
+
+Add primitives to this collection to render a line.
+
+### Rendering a Line using an Array
+
+```ruby
+def tick args
+                         #  X    Y   X2   Y2
+  args.outputs.lines << [100, 100, 150, 150]
+end
+```
+
+!> `Array`-based primitives are find for debugging purposes/quick prototypes. But should
+not be used as the default rendering approach. Use `Hash`-based or `Class`-based primitives.
+
+### Rendering a Line using a Hash
+
+```ruby
+def tick args
+  args.outputs.lines << {
+    x:  100,
+    y:  100,
+    x2: 150,
+    y2: 150,
+    r:  0,
+    g:  0,
+    b:  0,
+    a:  255,
+    blendmode_enum: 1
+  }
+end
+```
+
+### Rendering a Line using a Class
+
+```
+# Create type with ALL line properties AND primitive_marker
+class Line
+  attr_accessor :x, :y, :x2, :y2, :r, :g, :b, :a, :blendmode_enum
+
+  def primitive_marker
+    :line
+  end
+end
+
+# Inherit from type
+class RedLine < Line
+  # constructor
+  def initialize x, y, x2, y2
+    self.x = x
+    self.y = y
+    self.x2 = x2
+    self.y2 = y2
+    self.r  = 255
+    self.g  = 0
+    self.b  = 0
+    self.a  = 255
+  end
+end
+
+def tick args
+  # render line
+  args.outputs.lines << RedLine.new(100, 100, 150, 150)
+end
+
+```
+
 ## `labels`
 
 Add primitives to this collection to render a label.
 
-### Rendering a label using an Array
+### Rendering a Label using an Array
 
 Labels represented as Arrays/Tuples:
 
@@ -491,7 +611,15 @@ def tick args
 end
 ```
 
-### Rendering a label using a Hash
+!> `Array`-based primitives are find for debugging purposes/quick prototypes. But should
+not be used as the default rendering approach. Use `Hash`-based or `Class`-based primitives.
+
+### Rendering a Label using a Hash
+
+?> `size_enum` is an opaque unit and signifies the recommended size for labels. The default `size_enum` of `0`
+means "this size is the smallest font size that is comfortable to read on a hand-held device". `size_enum` of `0`
+corresponds to `22px` at `720p`. Each increment of `size_enum` increases/decreases the pixels by `2` (`size_enum` of `1` means `24px`,
+`size_enum` of `-1` means `20px`, etc). If you want to control the size of a label explicitly, use `size_px` instead.
 
 ```ruby
 def tick args
@@ -506,8 +634,27 @@ def tick args
       b:                       50,
       a:                       255,
       font:                    "fonts/manaspc.ttf",
-      vertical_alignment_enum: 0  # 0 = bottom, 1 = center, 2 = top
+      vertical_alignment_enum: 0  # 0 = bottom, 1 = center, 2 = top,
+      anchor_x:                0, # if provided, alignment_enum is ignored
+      anchor_y:                1, # if provided, vertical_alignment_enum is ignored,
+      size_px:                 30, # if provided, size_enum is ignored.
+      blendmode_enum:          1
   }
+end
+```
+
+### Rendering a Label using a Class
+
+```ruby
+# Create type with ALL label properties AND primitive_marker
+class Label
+  attr_accessor :x, :y, :w, :h, :r, :g, :b, :text, :font, :anchor_x,
+                :anchor_y, :blendmode_enum, :size_px, :size_enum, :alignment_enum,
+                :vertical_alignment_enum
+
+  def primitive_marker
+    :solid # or :border
+  end
 end
 ```
 
@@ -594,8 +741,9 @@ def tick args
       value: 1.0 - args.inputs.mouse.y.fdiv(720),
       type: :float
     },
-    { name: :tick_count, 
-      value: args.state.tick_count, 
+    {
+      name: :tick_count,
+      value: Kernel.tick_count,
       type: :int
     }
   ]

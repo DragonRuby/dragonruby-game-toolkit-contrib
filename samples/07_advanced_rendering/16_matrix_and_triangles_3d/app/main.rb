@@ -3,7 +3,7 @@ include MatrixFunctions
 def tick args
   args.outputs.labels << { x: 0,
                            y: 30.from_top,
-                           text: "W,A,S,D to move. Q,E,U,O to turn, I,K for elevation. Triangles is a Indie/Pro Feature and will be ignored in Standard.",
+                           text: "W,A,S,D to move. Q,E,U,O to turn, I,K for elevation.",
                            alignment_enum: 1 }
 
   args.grid.origin_center!
@@ -54,7 +54,7 @@ def tick args
                                  args.state.a,
                                  (translate -0.25, -0.25, 0),
                                  (translate  0, 0, 0.25),
-                                 (rotate_x args.state.tick_count)
+                                 (rotate_x Kernel.tick_count)
 
   args.state.a_camera = mul_cam args, args.state.a_world
   args.state.a_projected = mul_perspective args, args.state.a_camera
@@ -71,7 +71,7 @@ def tick args
                                  args.state.b,
                                  (translate -0.25, -0.25, 0),
                                  (translate  0, 0, -0.25),
-                                 (rotate_x args.state.tick_count)
+                                 (rotate_x Kernel.tick_count)
 
   args.state.b_camera = mul_cam args, args.state.b_world
   args.state.b_projected = mul_perspective args, args.state.b_camera
@@ -89,7 +89,7 @@ def tick args
                                  (translate -0.25, -0.25, 0),
                                  (rotate_y 90),
                                  (translate -0.25,  0, 0),
-                                 (rotate_x args.state.tick_count)
+                                 (rotate_x Kernel.tick_count)
 
   args.state.c_camera = mul_cam args, args.state.c_world
   args.state.c_projected = mul_perspective args, args.state.c_camera
@@ -107,7 +107,7 @@ def tick args
                                  (translate -0.25, -0.25, 0),
                                  (rotate_y 90),
                                  (translate  0.25,  0, 0),
-                                 (rotate_x args.state.tick_count)
+                                 (rotate_x Kernel.tick_count)
 
   args.state.d_camera = mul_cam args, args.state.d_world
   args.state.d_projected = mul_perspective args, args.state.d_camera
@@ -125,7 +125,7 @@ def tick args
                                  (translate -0.25, -0.25, 0),
                                  (rotate_x 90),
                                  (translate  0,  0.25, 0),
-                                 (rotate_x args.state.tick_count)
+                                 (rotate_x Kernel.tick_count)
 
   args.state.e_camera = mul_cam args, args.state.e_world
   args.state.e_projected = mul_perspective args, args.state.e_camera
@@ -143,7 +143,7 @@ def tick args
                                  (translate -0.25, -0.25, 0),
                                  (rotate_x 90),
                                  (translate  0,  -0.25, 0),
-                                 (rotate_x args.state.tick_count)
+                                 (rotate_x Kernel.tick_count)
 
   args.state.f_camera = mul_cam args, args.state.f_world
   args.state.f_projected = mul_perspective args, args.state.f_camera

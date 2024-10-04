@@ -2,9 +2,9 @@
 APIs listing that haven't been encountered in a previous sample apps:
 
 - args.outputs.lines: Provided an Array or a Hash, lines will be rendered to the screen.
-- args.state.tick_count: This property contains an integer value that
+- Kernel.tick_count: This property contains an integer value that
   represents the current frame. DragonRuby renders at 60 FPS. A value of 0
-  for args.state.tick_count represents the initial load of the game.
+  for Kernel.tick_count represents the initial load of the game.
 =end
 
 # The parameters required for lines are:
@@ -31,20 +31,20 @@ def tick args
   args.outputs.lines  << [380, 450, 675, 450]
   args.outputs.lines  << [380, 410, 875, 410]
 
-  # These examples utilize args.state.tick_count to change the length of the lines over time
-  # args.state.tick_count is the ticks that have occurred in the game
-  # This is accomplished by making either the starting or ending point based on the args.state.tick_count
+  # These examples utilize Kernel.tick_count to change the length of the lines over time
+  # Kernel.tick_count is the ticks that have occurred in the game
+  # This is accomplished by making either the starting or ending point based on the Kernel.tick_count
   args.outputs.lines  << { x:  380,
                            y:  370,
                            x2: 875,
                            y2: 370,
-                           r:  args.state.tick_count % 255,
+                           r:  Kernel.tick_count % 255,
                            g:  0,
                            b:  0,
                            a:  255 }
 
   args.outputs.lines  << { x:  380,
-                           y:  330 - args.state.tick_count % 25,
+                           y:  330 - Kernel.tick_count % 25,
                            x2: 875,
                            y2: 330,
                            r:  0,
@@ -52,7 +52,7 @@ def tick args
                            b:  0,
                            a:  255 }
 
-  args.outputs.lines  << { x:  380 + args.state.tick_count % 400,
+  args.outputs.lines  << { x:  380 + Kernel.tick_count % 400,
                            y:  290,
                            x2: 875,
                            y2: 290,

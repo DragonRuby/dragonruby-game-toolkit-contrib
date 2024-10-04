@@ -11,7 +11,7 @@ def tick args
 
   # cycle between labels in top level args.outputs
   # and labels inside of render target
-  if args.state.tick_count.zmod? 300
+  if Kernel.tick_count.zmod? 300
     if args.state.output_cycle == :top_level
       args.state.output_cycle = :render_target
     else
@@ -42,7 +42,6 @@ def render_main args
 end
 
 def render_scene args
-  args.outputs[:scene].transient!
   args.outputs[:scene].background_color = [255, 255, 255, 0]
 
   # center line

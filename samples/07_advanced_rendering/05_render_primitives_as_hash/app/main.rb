@@ -31,7 +31,7 @@
    For more information about borders, go to mygame/documentation/03-solids-and-borders.md.
 
  - args.outputs.lines: An array. The values generate a line.
-   The parameters are [X1, Y1, X2, Y2, RED, GREEN, BLUE]
+   The parameters are [X, Y, X2, Y2, RED, GREEN, BLUE]
    For more information about labels, go to mygame/documentation/02-labels.md.
 
 =end

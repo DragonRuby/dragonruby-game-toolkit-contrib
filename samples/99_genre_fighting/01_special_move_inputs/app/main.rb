@@ -11,7 +11,7 @@ end
 def defaults args
   fiddle args
 
-  args.state.tick_count = args.state.tick_count
+  Kernel.tick_count = Kernel.tick_count
   args.state.bridge_top = 128
   args.state.player.x  ||= 0                        # initializes player's properties
   args.state.player.y  ||= args.state.bridge_top
@@ -99,7 +99,7 @@ def render args
                  args.state.player.r+90,
                  0]
 
-  if ((args.state.tick_count - args.state.lastpush) <= 15)
+  if ((Kernel.tick_count - args.state.lastpush) <= 15)
     if (args.state.inputlist[0] == "<<")
       player = [args.state.player.x, args.state.player.y,
                 args.state.player.w, args.state.player.h,
@@ -192,7 +192,7 @@ def reset_player args
   args.state.player.dx = 0
   args.state.enemy.hammers.clear # empties hammer collection
   args.state.enemy.hammer_queue.clear # empties hammer_queue
-  args.state.game_over_at = args.state.tick_count # game_over_at set to current frame (or passage of time)
+  args.state.game_over_at = Kernel.tick_count # game_over_at set to current frame (or passage of time)
 end
 
 # Processes input from the user to move the player
@@ -215,7 +215,7 @@ def input args
        (args.inputs.controller_one.key_down.x && args.inputs.controller_one.key_down.y)
       args.state.inputlist.unshift("shield")
     elsif (args.inputs.keyboard.key_down.k || args.inputs.controller_one.key_down.y) &&
-          (args.state.inputlist[0] == "forward-attack") && ((args.state.tick_count - args.state.lastpush) <= 15)
+          (args.state.inputlist[0] == "forward-attack") && ((Kernel.tick_count - args.state.lastpush) <= 15)
       args.state.inputlist.unshift("dash-attack")
       args.state.player.dx = 20
     elsif (args.inputs.keyboard.key_down.j && args.inputs.keyboard.a) ||
@@ -230,21 +230,21 @@ def input args
       args.state.inputlist.unshift("up-attack")
     elsif (args.inputs.controller_one.key_down.left || args.inputs.keyboard.key_down.a) &&
           (args.state.inputlist[0] == "<") &&
-          ((args.state.tick_count - args.state.lastpush) <= 10)
+          ((Kernel.tick_count - args.state.lastpush) <= 10)
       args.state.inputlist.unshift("<<")
       args.state.player.dx = -15
     elsif (args.inputs.controller_one.key_down.left || args.inputs.keyboard.key_down.a)
       args.state.inputlist.unshift("<")
-      args.state.timeleft = args.state.tick_count
+      args.state.timeleft = Kernel.tick_count
     elsif (args.inputs.controller_one.key_down.right || args.inputs.keyboard.key_down.d)
       args.state.inputlist.unshift(">")
     end
 
-    args.state.lastpush = args.state.tick_count
+    args.state.lastpush = Kernel.tick_count
   end
 
   if args.inputs.keyboard.space || args.inputs.controller_one.r2   # if the user presses the space bar
-    args.state.player.jumped_at ||= args.state.tick_count # jumped_at is set to current frame
+    args.state.player.jumped_at ||= Kernel.tick_count # jumped_at is set to current frame
 
     # if the time that has passed since the jump is less than the player's jump duration and
     # the player is not falling
@@ -276,7 +276,7 @@ def input args
     args.state.player.dx *= args.state.player_speed_slowdown_rate # dx is scaled down
   end
 
-  if ((args.state.player.dx).abs > 5) #&& ((args.state.tick_count - args.state.lastpush) <= 10)
+  if ((args.state.player.dx).abs > 5) #&& ((Kernel.tick_count - args.state.lastpush) <= 10)
     args.state.player.dx *= 0.95
   end
 end

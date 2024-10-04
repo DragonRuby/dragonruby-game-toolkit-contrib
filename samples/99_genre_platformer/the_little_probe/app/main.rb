@@ -23,7 +23,7 @@ class FallingCircle
   end
 
   def defaults
-    if state.tick_count == 0
+    if Kernel.tick_count == 0
       args.audio[:bg] = { input: "sounds/bg.ogg", looping: true }
     end
 
@@ -40,7 +40,7 @@ class FallingCircle
       { text: "the game jam was fun though ^_^",   distance_gate: 10000 },
     ]
 
-    load_level force: args.state.tick_count == 0
+    load_level force: Kernel.tick_count == 0
     state.line_mode            ||= :terrain
 
     state.sound_index          ||= 1
@@ -74,16 +74,16 @@ class FallingCircle
 
   def render_game
     outputs.background_color = [0, 0, 0]
-    outputs.sprites << [-circle.x + 1100,
-                        -circle.y - 100,
-                        2416 * 4,
-                        3574 * 4,
-                        'sprites/jupiter.png']
-    outputs.sprites << [-circle.x,
-                        -circle.y,
-                        2416 * 4,
-                        3574 * 4,
-                        'sprites/level.png']
+    outputs.sprites << { x: -circle.x + 1100,
+                         y: -circle.y - 100,
+                         w: 2416 * 4,
+                         h: 3574 * 4,
+                         path: 'sprites/jupiter.png' }
+    outputs.sprites << { x: -circle.x,
+                         y: -circle.y,
+                         w: 2416 * 4,
+                         h: 3574 * 4,
+                         path: 'sprites/level.png' }
     outputs.sprites << state.whisp_queue
     render_aiming_retical
     render_circle
@@ -115,22 +115,22 @@ class FallingCircle
     y = circle.y + camera.y - 40
     w = 900
     h = 30
-    outputs.primitives << [x - w.idiv(2), y - h, w, h, 255, 255, 255, 255].solid
-    outputs.primitives << [x - w.idiv(2), y - h, w, h, 0, 0, 0, 255].border
-    outputs.labels << [x, y - 4, label_text, 1, 1, 0, 0, 0, 255]
+    outputs.primitives << { x: x - w.idiv(2), y: y - h, w: w, h: h, r: 255, g: 255, b: 255, a: 255, primitive_marker: :solid }
+    outputs.primitives << { x: x - w.idiv(2), y: y - h, w: w, h: h, r: 0, g: 0, b: 0, a: 255, primitive_marker: :border }
+    outputs.labels << { x: x, y: y - 4, text: label_text, size_enum: 1, alignment_enum: 1, r: 0, g: 0, b: 0, a: 255 }
   end
 
   def render_aiming_retical
-    outputs.sprites << [state.camera.x + circle.x + circle.angle.vector_x(circle.potential_lift * 10) - 5,
-                        state.camera.y + circle.y + circle.angle.vector_y(circle.potential_lift * 10) - 5,
-                        10, 10, 'sprites/circle-orange.png']
-    outputs.sprites << [state.camera.x + circle.x + circle.angle.vector_x(circle.radius * 3) - 5,
-                        state.camera.y + circle.y + circle.angle.vector_y(circle.radius * 3) - 5,
-                        10, 10, 'sprites/circle-orange.png', 0, 128]
+    outputs.sprites << { x: state.camera.x + circle.x + circle.angle.vector_x(circle.potential_lift * 10) - 5,
+                         y: state.camera.y + circle.y + circle.angle.vector_y(circle.potential_lift * 10) - 5,
+                         w: 10, h: 10, path: 'sprites/circle-orange.png' }
+    outputs.sprites << { x: state.camera.x + circle.x + circle.angle.vector_x(circle.radius * 3) - 5,
+                         y: state.camera.y + circle.y + circle.angle.vector_y(circle.radius * 3) - 5,
+                         w: 10, h: 10, path: 'sprites/circle-orange.png', angle: 0, a: 128 }
     if rand > 0.9
-      outputs.sprites << [state.camera.x + circle.x + circle.angle.vector_x(circle.radius * 3) - 5,
-                          state.camera.y + circle.y + circle.angle.vector_y(circle.radius * 3) - 5,
-                          10, 10, 'sprites/circle-white.png', 0, 128]
+      outputs.sprites << { x: state.camera.x + circle.x + circle.angle.vector_x(circle.radius * 3) - 5,
+                           y: state.camera.y + circle.y + circle.angle.vector_y(circle.radius * 3) - 5,
+                           w: 10, h: 10, path: 'sprites/circle-white.png', angle: 0, a: 128 }
     end
   end
 
@@ -143,20 +143,20 @@ class FallingCircle
                path: 'sprites/circle-white.png')
     end
 
-    outputs.sprites << [(circle.x - circle.radius) + state.camera.x,
-                        (circle.y - circle.radius) + state.camera.y,
-                        circle.radius * 2,
-                        circle.radius * 2,
-                        'sprites/probe.png']
+    outputs.sprites << { x: (circle.x - circle.radius) + state.camera.x,
+                         y: (circle.y - circle.radius) + state.camera.y,
+                         w: circle.radius * 2,
+                         h: circle.radius * 2,
+                         path: 'sprites/probe.png' }
   end
 
   def render_debug
     return unless state.debug_mode
 
-    outputs.labels << [10, 30, state.line_mode, 0, 0, 0, 0, 0]
-    outputs.labels << [12, 32, state.line_mode, 0, 0, 255, 255, 255]
+    outputs.labels << { x: 10, y: 30, text: state.line_mode, size_enum: 0, alignment_enum: 0, r: 0, g: 0, b: 0 }
+    outputs.labels << { x: 12, y: 32, text: state.line_mode, size_enum: 0, alignment_enum: 0, r: 255, g: 255, b: 255 }
 
-    args.outputs.lines << trajectory(circle).line.to_hash.tap do |h|
+    args.outputs.lines << trajectory(circle).to_line.to_hash.tap do |h|
       h[:x] += state.camera.x
       h[:y] += state.camera.y
       h[:x2] += state.camera.x
@@ -167,7 +167,7 @@ class FallingCircle
       circle.x.between?(t.x - 640, t.x2 + 640) || circle.y.between?(t.y - 360, t.y2 + 360)
     end.map do |t|
       [
-        t.line.associate(r: 0, g: 255, b: 0) do |h|
+        t.to_line.merge(r: 0, g: 255, b: 0).then do |h|
           h.x  += state.camera.x
           h.y  += state.camera.y
           h.x2 += state.camera.x
@@ -178,7 +178,7 @@ class FallingCircle
           end
           h
         end,
-        t[:rect].border.associate(r: 255, g: 0, b: 0) do |h|
+        t[:rect].to_border.merge(r: 255, g: 0, b: 0).then do |h|
           h.x += state.camera.x
           h.y += state.camera.y
           h.b = 255 if line_near_rect? circle.rect, t
@@ -191,7 +191,7 @@ class FallingCircle
       circle.x.between?(t.x - 640, t.x2 + 640) || circle.y.between?(t.y - 360, t.y2 + 360)
     end.map do |t|
       [
-        t.line.associate(r: 0, g: 0, b: 255) do |h|
+        t.to_line.merge(r: 0, g: 0, b: 255).then do |h|
           h.x  += state.camera.x
           h.y  += state.camera.y
           h.x2 += state.camera.x
@@ -202,7 +202,7 @@ class FallingCircle
           end
           h
         end,
-        t[:rect].border.associate(r: 255, g: 0, b: 0) do |h|
+        t[:rect].to_border.merge(r: 255, g: 0, b: 0).then do |h|
           h.x += state.camera.x
           h.y += state.camera.y
           h.b = 255 if line_near_rect? circle.rect, t
@@ -270,36 +270,11 @@ class FallingCircle
   end
 
   def trajectory body
-    [body.x + body.dx,
-     body.y + body.dy,
-     body.x + body.dx * 1000,
-     body.y + body.dy * 1000,
-     0, 255, 255]
-  end
-
-  def lengthen_line line, num
-    line = normalize_line(line)
-    slope = geometry.line_slope(line, replace_infinity: 10).abs
-    if slope < 2
-      [line.x - num, line.y, line.x2 + num, line.y2].line.to_hash
-    else
-      [line.x, line.y, line.x2, line.y2].line.to_hash
-    end
-  end
-
-  def normalize_line line
-    if line.x > line.x2
-      x  = line.x2
-      y  = line.y2
-      x2 = line.x
-      y2 = line.y
-    else
-      x  = line.x
-      y  = line.y
-      x2 = line.x2
-      y2 = line.y2
-    end
-    [x, y, x2, y2]
+    { x: body.x + body.dx,
+      y: body.y + body.dy,
+      x2: body.x + body.dx * 1000,
+      y2: body.y + body.dy * 1000,
+      r: 0, g: 255, b: 255 }
   end
 
   def rect_for_line line
@@ -423,7 +398,7 @@ class FallingCircle
 
   def save_lines lines, file
     s = lines.map do |l|
-      "#{l.x1},#{l.y1},#{l.x2},#{l.y2}"
+      "#{l.x},#{l.y},#{l.x2},#{l.y2}"
     end.join("\n")
     gtk.write_file(file, s)
   end
@@ -574,7 +549,7 @@ class FallingCircle
     circle.y = circle.check_point_y
     circle.dx = 0
     circle.dy = 0
-    circle.game_over_at = state.tick_count
+    circle.game_over_at = Kernel.tick_count
   end
 
   def not_game_over!
@@ -587,7 +562,7 @@ class FallingCircle
     circle.on_floor = impact_history_entry[:body][:new_on_floor]
 
     if circle.on_floor
-      circle.check_point_at = state.tick_count
+      circle.check_point_at = Kernel.tick_count
       circle.check_point_x = circle.x
       circle.check_point_y = circle.y
     end
@@ -806,7 +781,7 @@ class FallingCircle
     end
     calc_camera
     state.whisp_queue ||= []
-    if state.tick_count.mod_zero?(4)
+    if Kernel.tick_count.mod_zero?(4)
       state.whisp_queue << {
         x: -300,
         y: 1400 * rand,
@@ -814,7 +789,7 @@ class FallingCircle
         w: 20,
         h: 20, path: 'sprites/whisp.png',
         a: 0,
-        created_at: state.tick_count,
+        created_at: Kernel.tick_count,
         angle: 0,
         r: 100,
         g: 128 + 128 * rand,
@@ -833,14 +808,14 @@ class FallingCircle
 
     state.whisp_queue = state.whisp_queue.reject { |w| w[:x] > 1280 }
 
-    if state.tick_count.mod_zero?(2) && (circle.dx != 0 || circle.dy != 0)
+    if Kernel.tick_count.mod_zero?(2) && (circle.dx != 0 || circle.dy != 0)
       circle.after_images << {
         x: circle.x,
         y: circle.y,
         w: circle.radius,
         h: circle.radius,
         a: 255,
-        created_at: state.tick_count
+        created_at: Kernel.tick_count
       }
     end
 

@@ -2,8 +2,6 @@ def tick args
   args.state.player         ||= {x: 600, y: 320, w: 80, h: 80, path: 'sprites/circle-white.png', vx: 0, vy: 0, health: 10, cooldown: 0, score: 0}
   args.state.enemies        ||= []
   args.state.player_bullets ||= []
-  args.state.tick_count     ||= -1
-  args.state.tick_count     += 1
   spawn_enemies args
   kill_enemies args
   move_enemies args
@@ -27,7 +25,7 @@ end
 
 def spawn_enemies args
   # Spawn enemies more frequently as the player's score increases.
-  if rand < (100+args.state.player[:score])/(10000 + args.state.player[:score]) || args.state.tick_count.zero?
+  if rand < (100+args.state.player[:score])/(10000 + args.state.player[:score]) || Kernel.tick_count.zero?
     theta = rand * Math::PI * 2
     args.state.enemies << {
         x: 600 + Math.cos(theta) * 800, y: 320 + Math.sin(theta) * 800, w: 80, h: 80, path: 'sprites/circle-white.png',

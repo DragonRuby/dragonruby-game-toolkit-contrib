@@ -12,7 +12,7 @@ def tick args
   args.state.player_rect ||= { x: 640 - 20, y: 360 - 20, w: 40, h: 40 }
   args.state.collision_type ||= :using_lambda
 
-  if args.state.tick_count == 0
+  if Kernel.tick_count == 0
     generate_scene args, args.state.quad_tree
   end
 
@@ -94,7 +94,6 @@ def add_rect args, x, y
 end
 
 def generate_scene args, quad_tree
-  args.outputs[:scene].transient!
   args.outputs[:scene].w = 1280
   args.outputs[:scene].h = 720
   args.outputs[:scene].solids << { x: 0, y: 0, w: 1280, h: 720, r: 255, g: 255, b: 255 }

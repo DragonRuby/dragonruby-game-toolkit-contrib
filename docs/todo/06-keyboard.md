@@ -47,7 +47,7 @@ def tick args
     [args.inputs.controller_two, :controller_two]
   ].each do |input, name|
     if input.key_down.truthy_keys.length > 0
-      args.gtk.write_file("app/#{name}_key_down_#{args.state.tick_count}", input.key_down.truthy_keys.to_s)
+      args.gtk.write_file("app/#{name}_key_down_#{Kernel.tick_count}", input.key_down.truthy_keys.to_s)
     end
   end
 end

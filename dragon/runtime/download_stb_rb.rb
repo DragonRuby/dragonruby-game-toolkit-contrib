@@ -122,3 +122,9 @@ module GTK
     end # end DownloadStbRb module
   end # end Runtime class
 end # end GTK module
+
+module GTK
+  class Runtime
+    include DownloadStbRb
+  end
+end

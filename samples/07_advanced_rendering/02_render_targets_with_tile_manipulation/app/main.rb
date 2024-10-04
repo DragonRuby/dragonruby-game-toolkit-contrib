@@ -22,7 +22,7 @@ def draw_scene args, pass
   pass.solids << [0, 0, 1280, 360, 0, 127, 0]
 
   blocksize = 100
-  angleoffset = args.state.tick_count * 2.5
+  angleoffset = Kernel.tick_count * 2.5
   centerx = (1280 - blocksize) / 2
   centery = (720 - blocksize) / 2
 

@@ -2,7 +2,7 @@ class Game
   attr_gtk
 
   def request_action name, at: nil
-    at ||= state.tick_count
+    at ||= Kernel.tick_count
     state.player.requested_action = name
     state.player.requested_action_at = at
   end
@@ -26,7 +26,6 @@ class Game
 
   def render
     outputs.background_color = [32, 32, 32]
-    outputs[:scene].transient!
     outputs[:scene].w = 128
     outputs[:scene].h = 128
     outputs[:scene].borders << { x: 0, y: 0, w: 128, h: 128, r: 255, g: 255, b: 255 }
@@ -154,7 +153,7 @@ class Game
     end
 
     if inputs.controller_one.key_down.a ||
-       inputs.mouse.button_left  ||
+       inputs.mouse.button_left ||
        inputs.keyboard.key_down.j ||
        inputs.keyboard.key_down.f
       request_action :attack
@@ -166,11 +165,11 @@ class Game
     else
       key_0 = state.player.next_action_queue.keys[0]
       key_1 = state.player.next_action_queue.keys[1]
-      if state.tick_count == key_0
+      if Kernel.tick_count == key_0
         should_update_facing = true
-      elsif state.tick_count == key_1
+      elsif Kernel.tick_count == key_1
         should_update_facing = true
-      elsif key_0 && key_1 && state.tick_count.between?(key_0, key_1)
+      elsif key_0 && key_1 && Kernel.tick_count.between?(key_0, key_1)
         should_update_facing = true
       end
     end
@@ -212,7 +211,7 @@ class Game
       end
       state.player.dy = 1
       state.player.jump_count += 1
-      state.player.jump_at     = state.tick_count
+      state.player.jump_at     = Kernel.tick_count
     end
   end
 
@@ -252,7 +251,7 @@ class Game
 
   def calc_requested_action
     return if !state.player.requested_action
-    return if state.player.requested_action_at > state.tick_count
+    return if state.player.requested_action_at > Kernel.tick_count
 
     player_action = state.player.action
     player_action_at = state.player.action_at
@@ -261,13 +260,13 @@ class Game
     if state.player.requested_action == :attack
       if player_action == :standing
         state.player.next_action_queue.clear
-        state.player.next_action_queue[state.tick_count] = :slash_0
-        state.player.next_action_queue[state.tick_count + state.actions_lookup.slash_0.duration] = :standing
+        state.player.next_action_queue[Kernel.tick_count] = :slash_0
+        state.player.next_action_queue[Kernel.tick_count + state.actions_lookup.slash_0.duration] = :standing
       else
         current_action = state.actions_lookup[state.player.action]
         state.player.next_action_queue.clear
         queue_at = player_action_at + current_action.interrupt_duration
-        queue_at = state.tick_count if queue_at < state.tick_count
+        queue_at = Kernel.tick_count if queue_at < Kernel.tick_count
         next_action = current_action.next_action
         next_action ||= { name: :standing,
                           duration: 4 }
@@ -296,7 +295,7 @@ class Game
     current_action = state.actions_lookup[state.player.action]
     throw_at = state.player.action_at + (current_action.throw_frame) * 5
     catch_at = state.player.action_at + (current_action.catch_frame) * 5
-    if !state.tick_count.between? throw_at, catch_at
+    if !Kernel.tick_count.between? throw_at, catch_at
       state.sabre.facing = nil
       state.sabre.is_active = false
       return
@@ -314,7 +313,7 @@ class Game
     throw_duration = catch_at - throw_at
 
     current_progress = args.easing.ease_spline throw_at,
-                                               state.tick_count,
+                                               Kernel.tick_count,
                                                throw_duration,
                                                spline
 
@@ -324,13 +323,13 @@ class Game
   end
 
   def calc_next_action
-    return if !state.player.next_action_queue[state.tick_count]
+    return if !state.player.next_action_queue[Kernel.tick_count]
 
     state.player.previous_action = state.player.action
     state.player.previous_action_at = state.player.action_at
-    state.player.previous_action_ended_at = state.tick_count
-    state.player.action = state.player.next_action_queue[state.tick_count]
-    state.player.action_at = state.tick_count
+    state.player.previous_action_ended_at = Kernel.tick_count
+    state.player.action = state.player.next_action_queue[Kernel.tick_count]
+    state.player.action_at = Kernel.tick_count
 
     is_air_born = state.player.y != 0
 

@@ -20,7 +20,7 @@ Standard license can deploy to Steam using the Steamworks toolchain <https://par
 2.  Open up Konsole and set an admin password via `passwd`.
 3.  Disable readonly mode: `sudo steamos-readonly disable`.
 4.  Update pacman `sudo pacman-key --populate archlinux`.
-5.  Update sshd<sub>config</sub> `sudo vim /etc/ssh/sshd_config` and uncomment the `PubkeyAuthentication yes` line.
+5.  Update sshd_config `sudo vim /etc/ssh/sshd_config` and uncomment the `PubkeyAuthentication yes` line.
 6.  Enable ssh: `sudo systemctl enable sshd`.
 7.  Start ssh: `sudo systemctl start sshd`.
 8.  Run `dragonruby-publish --only-package`.
@@ -84,8 +84,8 @@ Under "Launch Options," click the "Add new launch option" button, edit the new s
 that just popped up, and set it like this:
 
 (Whenever you see "mygamename" in here, this should be whatever your
-game<sub>metadata</sub>'s "gameid" value is set to. If you see "My Game Name", it's
-whatever your game<sub>metadata</sub>'s "gametitle" value is set to, but you'll have
+`game_metadata`'s "gameid" value is set to. If you see "My Game Name", it's
+whatever your `game_metadata`'s "gametitle" value is set to, but you'll have
 to check in case we mangled it to work as a filename.)
 
 -   Executable: mygamename.exe
@@ -118,6 +118,24 @@ changed in here), then click "Prepare for Publishing", then
 
 Go to <https://partner.steamgames.com/apps/associated/$APPID> For each package,
 make sure all three depots are included.
+
+### Associated Packages
+
+Once you have the bundles and launch options set up, go to your game's
+Dashboard (the url is `https://partner.steamgames.com/apps/landing/APPID`).
+
+Under the "View Associated Items" section, select "View Associated
+Items All Associated Packages, DLC, Demos And Tools" (the url is
+`https://partner.steamgames.com/apps/associated/APPID`) .
+
+Under the "Store packages" section, select the row for your
+game. Remove any invalid bundle ids and add the Windows, Mac, and
+Linux repos you set up earlier.
+
+There is a section called "Promotional or special-use packages" with
+two rows, one called "Beta Test" and another called "Developer
+Comp". Remove any invalid bundle ids and add the Windows, Mac, and Linux
+repos you set up earlier.
 
 ## Configuring `dragonruby-publish`
 

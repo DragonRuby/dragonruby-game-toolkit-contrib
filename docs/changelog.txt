@@ -1,3 +1,415 @@
+* 6.3
+** [Support] [Pro] [C Extensions] Reincorporated deprecated mRuby C APIs.
+   Notes:
+   - ~mrb_ary_ref~ is deprecated in future versions of Ruby. Use ~mrb_ary_entry~ instead.
+   - If you are using C Extensions, it's strongly recommended that you recompile your extensions
+     against the new release.
+* 6.2
+** [Support] Significant improvement to GC events.
+   Decision points on when DR will GC during down time has been
+   significantly improved. A full mark and sweep GC no longer occurs and
+   has been replaced with an incremental GC.
+
+   This yields performance improvements accross the board (most noticeable in games with a large,
+   long-running game state).
+
+   Thermal levels on mobile devices also gain significant improvements
+   because of this change.
+
+   Special thanks to the podo@discord and pvande@discord for helping
+   to verify this new GC behavior, and thecire@discord for providing a
+   an old codebase that suffered from GC performance issues.
+** [Support] ARM64 Linux exports added.
+   Running ~dragonruby-publish~ will now generate an ARM64 Linux
+   export. This binary is compatible with Raspberry PI 5 and the
+   rumored ARM64 Linux Steam Deck.
+** [Support] Render Targets no longer have to be marked as ~transient!~.
+   You no longer after to worry about marking a render target as
+   ~transient!~. The function now no-ops and can be removed from your
+   code bases at your leisure.
+
+   Background context (feel free to skip over this):
+
+   DX9 will lose render target data if the window is resized. The
+   really confusing ~transient!~ flag was added to help decide which
+   render targets should be recoverable, and which ones should skip
+   the expensive serialization process. This issue has been
+   side-stepped by setting the render driver explicitly to DX12, DX11,
+   or OpenGL (in this order). An error message will be presented
+   stating that one of these render drivers must be installed.
+
+   DX9 is over two decades old at this point and boxes that can't run
+   DX11 or DX12 have a reliable fallback of OpenGL.
+** [Support] Added functions for getting key states to ~args.inputs.keyboard~ and ~args.inputs.controller_*~.
+   More info in the docs: [[https://docs.dragonruby.org/#/api/inputs?id=key_downkey-key_upkey-key_heldkey-key_down_or_heldkey]]
+
+   Example:
+   #+begin_src ruby
+     def tick args
+       # the following code blocks are equivalent
+       if args.inputs.keyboard.key_down.space
+         puts "hello world"
+       end
+
+       if args.inputs.keyboard.key_down?(:space)
+         puts "hello world"
+       end
+     end
+   #+end_src
+
+** [Bugfix] [Pro] Touch apis report correct x, y positions for all ~hd_max_scale~ values.
+   Setting your game resizing behavior to pixel-perfect (~hd_max_scale~ values other than ~0~) no longer
+   yields incorrect touch positions.
+** [Support] Mouse button apis significantly improved.
+   Mouse button apis have parity with the conventions within ~args.inputs.keyboard~ and ~args.inputs.controller_*~.
+
+   Example:
+   #+begin_src ruby
+     def tick args
+       if args.inputs.mouse.key_down.left
+         puts "hello world"
+       end
+     end
+   #+end_src
+
+   For a full api demonstration, see =samples/02_input_basics/02_mouse_properties=.
+
+   Special thinks to sophira@discord for kicking the tires on this new api.
+** [Support] Added ~$gtk.reboot~.
+   Multiple hotloads during development can leave methods within your
+   game that no longer exist within source code. ~$gtk.reboot~ will
+   reset your entire game code as if you shutdown and restarted DR.
+
+   This can be triggered via shift+ctrl+r or executing ~$gtk.reboot~
+   within the Console.
+** [Support] Windows now has a terminal associated with it when running a game in dev mode.
+   Mac and Linux would print standard out messages to the terminal if
+   DR is started from the command line. On Windows, getting this same
+   behavior was painful. During dev mode on a Window box, DR will
+   start up a terminal for you automatically.
+** [Bugfix] Mouse Y position was off by one pixel.
+   This has been fixed. Stupid off by one errors.
+
+   Special thanks to sophira@discord for finding this issue.
+** [Bugfix] [Pro] Rendering a cropped area of a Render Target in HD mode works.
+   Render targets were incorrectly cropped when provided ~source_(x|y|w|h)~ values.
+
+   This has been fixed. Special thanks to podo@discord for help in troubleshooting.
+** [Support] Added ~$gtk.speedup!~ to compliment ~$gtk.slowmo!~.
+   An initial cut of ~$gtk.speedup!(factor)~ has been added. This function is useful if you want
+   to move quickly past points in the game to continue feature development. Adding this function call to
+   the top of your ~tick~ method will speed up your simulation by the factor that's passed in.
+** [Support] Initial cut of ~args.inputs.pinch_zoom~ for touch devices.
+   Touch apis emulate mouse events more accurately. Specifically if there are multiple
+   fingers touching the screen. Resolution of the mouse position is
+   averaged between the touch points for example.
+
+   Pinch and zoom value is now available via ~args.inputs.pinch_zoom~ (more improvements to come).
+** [Bugfix] Console evaluating a symbol no longer throws an exception.
+** [Bugfix] ~Geometry.find(_all)_intersect_rect~ raises an exception if a flattened array isn't given as a second parameter.
+   This up front verification also resolves issues related to non array-based primitives being inadvertently flattened.
+
+   Special thanks to RedComputer@discord for providing a repro for this bug.
+** [OSS] Incorporated bugfix from upstream mRuby.
+
+   https://github.com/mruby/mruby/commit/30b1287df5d2dc23b797a578e4916199715754ef:
+
+   state.c: check irep reference count overflow.
+* 6.1
+** [Pro] [iOS] [Bugfix] Fixed issue in iOS wizard that would cause package creation to fail.
+   Bug was introduced in 6.0. If you're having issues creating an iOS package, upgrade
+   to 6.1.
+** [Pro] [iOS] [Android] [Bugfix] Fixed issue in ~$gtk.delete_file~ on mobile platforms would cause an exception.
+** [Bugfix] Standard License triangle rendering wasn't fully enabled. This has been fixed.
+** [Samples] =samples/99_genre_mario= sample apps cleaned up.
+   Simplified code in the following sample apps which show platforming physics and AABB collision:
+   - =samples/99_genre_mario/02_jumping_and_collisions=
+   - =samples/99_genre_mario/01_jumping=
+** [Support] Better formatting of method missing exceptions.
+** [Support] String#wrapped_lines performance improvements.
+** [Support] Improvements to experimental method ~$gtk.reboot~.
+   ~$gtk.reboot~ attempts to remove methods from classes that were added because of hotloading and
+   simulates the behavior of your game as if it were started for the first time. There are still
+   kinks to work out, but you may find it useful to experiment with.
+* 6.0
+** [IMPORTANT] This release does NOT contain breaking changes. This is an epoch version bump.
+** [Support] The ability to render triangles is now available at ALL license tiers woo hoo!
+   Special thanks to lyniat@discord for continuing to explore unique usages of triangle rendering.
+** [Samples] Sample app added to show how to do Verlet Integrations.
+   Sample app location: =samples/04_physics_and_collisions/13_verlet_integration=
+** [Support] ~Kernel#p~ sends output to console.
+   Special thanks to levi@discord for validating ~Kernel#p~ behavior.
+** [Bugfix] Fixed an issue where scale quality applied to sprites caused a side-effect when rendering fonts.
+   Special thanks to dishcandantly@discord for help in isolating this difficult to reproduce issue.
+* 5.36
+** [Pro] [iOS] Default audio volume set to 40% on iOS (iPhone speakers are loud).
+** [Pro] [iOS] Deploying to the simulator does not require =metadata/ios_metadata.txt= to be filled out.
+** [Support] Better drift correction of the fixed-update simulation thread.
+** [Support] Framerate calculation is recomputed on `$gtk.reset` or when the Console is closed.
+** [Support] Orientation for game can be set to "both".
+   This is an initial cut and should be used for testing only. Setting the ~orientation~
+   to ~landscape,portrait~ or ~portrait,landscape~ will automatically change the orientation of
+   your game based on the width/height ratio of the window. The value that is specified first
+   signifies the starting orientation of your game.
+** [Samples] Added sample app that shows how to calibrate a rhythm based game.
+   Sample app location: =samples/07_advanced_audio/03_rhythm_game_calibration=
+** [A11y] A11y emulation can be controlled via gamepad.
+** [Bugfix] Printing ~OpenEntities~ with recursive references no longer causes a stack overflow.
+* 5.35
+** [Samples] Added sample app that demonstrates how to create particles.
+   Sample app location: =samples/03_rendering_sprites/05_particles=
+** [Support] Added ~FFI::Misc#setclipboard~ (accessible via ~gtk.ffi_misc~).
+** [Support] ~Inputs#last_active~ set to a reasonable default value based on platform.
+** [Bugfix] Inputs#finger_(left|right) reports correct locations when in portrait mode.
+** [Bugfix] Improved ~Runtime#calcstringbox~'s accuracy improved for ~size_px:~ parameter.
+** [Bugfix] Named parameters are respected for ~Geometry::line_to_rect~.
+** [Bugfix] ~Layout#rect~ returns correct values after ~Runtime#toggle_orientation~ has been invoked.
+** [Bugfix] DR class macros moved to ~Module~ from ~Object~.
+* 5.34
+** [Pro] [iOS] Deploying to the simulator no longer requires a provisioning profile.
+   Deploying to the device can be done through the Console, but requires provisioning profiles
+   create from https://developer.apple.com:
+   #+begin_src ruby
+     $wizards.ios.start env: :dev
+   #+end_src
+
+   You can deploy to the simulator without a provisioning profile:
+   #+begin_src ruby
+     $wizards.ios.start env: :sim
+   #+end_src
+
+   Additional details for iOS deployment available via ~help~:
+   #+begin_src ruby
+     $wizards.ios.help
+   #+end_src
+** [Pro] [iOS] General improvements to A11y emulation to support VoiceOver functionality on iOS.
+** [Support] Added ~Geometry::each_intersect_rect~ (many to many collision).
+   ~Geometry::each_intersect_rect~ executes a callback for each collision found.
+
+   Example:
+   #+begin_src ruby
+     rects_1 = [{ x: 0, y: 0, w: 100, h: 100 }]
+     rects_2 = [{ x: 50, y: 50, w: 100, h: 100 }]
+
+     args.geometry.each_intersect_rect(rects_1, rects_2) do |rect_1, rect_2|
+       # do something with the intersecting rectangles
+     end
+   #+end_src
+
+   The following sample app has been updated to leverage the new function:
+   =samples/09_performance/09_collision_limits_many_to_many=
+
+   See docs for more info: https://docs.dragonruby.org/#/api/geometry?id=each_intersect_rect
+** [Support] Rendering performance improvements for classes that use the ~attr_sprite~ class macro.
+   If a class uses ~attr_sprite~, DragonRuby will assume that sprite properties are provided via
+   iVars and will pull those values directly instead of invoking methods.
+** [Support] Initial cut of ~$gtk.reboot~.
+   Invoking ~$gtk.reboot~ will reset your game as if it were started for the first time. Any
+   methods that were added to classes during hotload will be removed (leaving you with a pristine
+   environment). This function is in a beta state (report issues on the Discord Server).
+** [Bugfix] Console no longer shown for method missing exceptions that have been handled.
+* 5.33
+** [Pro] [iOS] iOS wizard respects ~orientation_ios~ override if specified in =metadata/game_metadata.txt=
+** [Pro] [Support] ~$gtk.set_window_scale~ accepts optional aspect ratio.
+   See docs for usage details: https://docs.dragonruby.org/#/api/runtime?id=set_window_scale
+   This is useful for testing different aspect ratios and how it'll
+   render when ~hd_letterbox=false~ (All Screen Mode).
+** [Bugfix] Exceptions within ~boot~ presents the Console instead of segfaulting.
+** [Support] Analog deadzone increased from 1600 to 3200.
+   Steam OS's default deadzone is 8192 which has been criticized for
+   being too damn high and a value of 1600 is below the minimum value
+   that the Steam Deck/Steam OS supports. After testing multiple
+   controllers, values below 3200 turned out to be too sensitive and
+   resulted in unintended anolog activity.
+** [Support] ~args.outputs.watch~ added as an alias to ~args.outputs.debug.watch~.
+** [Support] Class level ~Array~ methods added.
+   Here are some benchmarks of the Class level methods vs Instance
+   level methods:
+   - ~Array.compact!~:   2250% faster
+   - ~Array.compact~:    2075% faster
+   - ~Array.flat_map~:    918% faster
+   - ~Array.map~:         196% faster
+   - ~Array.find_all~:    141% faster
+   - ~Array.select~:      141% faster
+   - ~Array.filter_map~:   93% faster
+   - ~Array.map!~:         85% faster
+   - ~Array.select!~:      72% faster
+   - ~Array.reject~:       59% faster
+   - ~Array.reject!~:      47% faster
+
+   NOTE: These functions are still somewhat experimental and do not
+         conform to the ~Enumerable~ interface and may not support
+         all the capabilities that instance-based functions
+         have (they are also a bit more cumbersome to chain).
+** [Support] Added aliases for common easing/lerping functions.
+   See docs for usage details: https://docs.dragonruby.org/#/api/easing?id=easinglerping
+   - ~Easing.smooth_start~
+   - ~Easing.smooth_stop~
+   - ~Easing.smooth_step~
+   - ~Easing.mix~
+* 5.32
+** [Pro] [Android] API 34 support added.
+   Target SDK for Android bumped to API 34 (Google Play compliance). NDK dependency upgraded to r26d.
+** [Pro] [Support] Added ability to change your game's HD Max Scale and HD Letterbox while the game is running.
+   The following functions are accessible via ~$gtk~, ~GTK~, or ~args.gtk~:
+   - ~set_hd_max_scale(integer)~
+   - ~toggle_hd_letterbox~, ~set_hd_letterbox(bool)~
+
+   Details located in docs under Runtime -> Window Functions: https://docs.dragonruby.org/#/api/runtime?id=window-functions
+** [Pro] [Bugfix] Fixed behavior of ~game_metadata.hd_max_scale~ for non-standard device resolutions.
+** [Pro] [Support] Grid's ~allscreen_*~ properties are more accurate.
+** [Pro] [Android] [Support] Removed size limitations of render targets (sprites must still be under 4000x4000 for Android).
+** [Support] Various window and rendering specific functions have been added.
+   The following functions are accessible via ~$gtk~, ~GTK~, or ~args.gtk~:
+   - ~maximize_window~
+   - ~toggle_orientation~, ~set_orientation(bool)~
+   - ~move_window_to_next_display~
+   - ~toggle_orientation~, ~set_orientation(symbol)~
+
+   Details located in docs under Runtime -> Window Functions: https://docs.dragonruby.org/#/api/runtime?id=window-functions
+** [OSS] ~require~ and ~require_relative~ machinery have been open sourced.
+   Location: =docs/oss/dragon/runtime/require.rb=
+** [Bugfix] ~require_relative~ works for =.rb= files that are not inside of a directory.
+   Special thanks to kfischer_okarin@discord for submitting a patch.
+** [Support] Changed console output terminal colors to use non-bright ansi escape sequences.
+** [Support] In-Game webserver disabled by default.
+   The in-game web server is disabled by default. To enable it, update
+   =metadata/cvars.txt= in your game folder with the following:
+
+   # Enable the use of In-Game Web Server.
+   webserver.enabled=true
+
+   # Port that will be used for In-Game Web Server
+   webserver.port=9001
+
+   # Allow Remote Clients.
+   # only needs to be true if you want to accept client connections originating from
+   # sources other than localhost.
+   webserver.remote_clients=true
+
+   NOTE: For remote hotload to work, the webserver needs to be enabled, the ~port~ set to 9001,
+         and ~remote_clients~ must be set to ~true~.
+* 5.31
+** [Pro] [Android] Notes added to game_metadata.txt that packageid is required for Android.
+** [Pro] [Android] Controller configuration wizard disabled by default on Anroid (and iOS).
+** [Support] More control over RNG when ~GTK.reset~ is invoked.
+   See docs for the ~reset~ function under Runtime -> Top Level Functions.
+** [Support] Statements evaluated in the Console will show object's ~.inspect~ representation as opposed to ~.to_s~.
+** [Support] A ~LoadError~ will be raised if an exception occurs during ~require~.
+** [Support] ~Grid.allscreen_(x|y|w|h)~ provide logical pixel values in both HD and SD modes.
+   This is useful for resizing/positioning a render target that has an aspect ratio other
+   than 16:9 (eg: a lowrez game with an aspect ratio of 1:1).
+** [Bugfix] ~args.inputs~ related to attributes where the shift key is held are reported correctly.
+   Method aliasing and NumLock status were affecting these attributes.
+** [Bugfix] Input for replays of recorded gameplay were off by one frame.
+** [Samples] Added platformer sample app that demonstrates AABB collision, camera movement, plus in-game map editor.
+   Sample app location: =samples/99_genre_platformer/map_editor=
+* 5.30
+** [Support] Added ~Grid#landscape?~ and ~Grid#portrait?~
+   These are helper methods which check ~Grid.orientation == :landscape~
+   and ~Grid.orientation == :portrait~.
+** [Support] Added windowing helper functions.
+   - ~$gtk.can_resize_window?~
+   - ~$gtk.can_close_window?~
+   - ~$gtk.toggle_window_fullscreen~
+** [Support] ~$gtk.set_window_scale~ centers window after setting the window scale.
+** [Support] References to ~args.state.tick_count~ updated to ~Kernel.tick_count~
+   While ~args.state.tick_count~ will continue to be supported, it is recommeded to use
+   ~Kernel.tick_count~ instead. Sample apps and docs have been updated to use ~Kernel.tick_count~.
+** [Support] Better validation/error messages for invalid primitives sent to ~args.outputs~.
+   This should reduce segfaults related to sending objects that can't be rendered.
+* 5.29
+** [Pro] [Support] [iOS] [Android] Game's orientation can be overridden for mobile platforms.
+   Example:
+   #+begin_src
+     # orientation for desktop/web
+     orientation=landscape
+     # if the following entries are provided, the orientation will be overridden
+     orientation_android=portrait
+     orientation_ios=portrait
+   #+end_src
+** [Support] ~$gtk.notify~ takes into consideration whether remote hotloading is enabled.
+   Notifications will come through if remote hotloading is enabled even in production builds.
+** [Support] ~Layout.debug_primitives~ renders additional seperators to help with alignment.
+   Example of how to show Layout debug primitives:
+   #+begin_src ruby
+     def tick args
+       if args.state.tick_count == 0
+         args.outputs.static_primitives << Layout.debug_primitives
+       end
+     end
+   #+end_src
+** [Bugfix] Fixed issue of simulation loop running "catch up" ticks causing the game to inadvertantly speed up.
+   This is a regression that was introduced in v5.18.
+** [Bugfix] Fixed issue where ~$gtk.create_uuid~ would return the last generated UUID on a subsequent invocation.
+** [OSS] ~GTK::Outputs~ and ~GTK::Runtime::CBridge~ have been open sourced.
+* 5.28
+** [Indie] [Pro] [Support] Triangle primitives accept ~r, g, b, a~ for point.
+   #+begin_src ruby
+     def tick args
+       args.outputs.primitives << {
+         x: 0, y: 0,
+         source_x: 0, source_y: 0,
+         r: 255, g: 0, b: 0, a: 255,
+         x2: 0, y2: 100,
+         source_x2: 0, source_y2: 100,
+         r2: 0, g2: 255, b2: 0, a2: 64,
+         x3: 100, y3: 0,
+         source_x3: 100, source_y3: 0,
+         r3: 0, g3: 0, b3: 255, a3: 32,
+         path: :pixel
+       }
+     end
+   #+end_src
+** [Support] Added ~$gtk.create_uuid~ that returns a ~String~.
+   NOTE: This function does not generate cryptographically secure UUIDs.
+** [Support] [OSS] Function keys, and numpad keys added ~args.inputs.keyboard~.
+   Thank you to Hiro@discord for adding this functionality. Thank you
+   Podo@discord for testing.
+** [Samples] Added sample app that demonstrates how to create a scroll view.
+   Sample app location: =samples/09_ui_controls/03_scroll_view=
+** [Bugfix] Inner exception is captured if a file raising an exception during ~require~.
+** [Bugfix] Ensure that ~require~ doesn't require the same file multiple times on the same tick.
+* 5.27
+** [mRuby] [Bugfix] Incoporated fix: Array#shuffle(!) result distribution #6227
+   https://github.com/mruby/mruby/pull/6227
+
+   Patch info located at =./docs/oss/mruby/dragonruby-mruby-3.patch=
+
+   Congrats to levi@discord for this getting merged into mRuby!
+   Special thanks to Pineapple@discord for creating a minimum repro to verify fix in DR.
+* 5.26
+** [Pro] [iOS] Initial cut of accessibility APIs that interact with iOS's VoiceOver capabilities.
+   A sample app has been created showing the release candidate api.
+   =./samples/09_ui_controls/04_accessiblity_for_the_blind/=
+
+   These accessibility functions will be expanded to cover more platforms over time and will be
+   available at all License tiers.
+
+   Users on the Standard License can run this sample app which will emulate iOS VoiceOver behavior by
+   posting notification entries during dev mode.
+
+   Pro users can release to their device and enable VoiceOver to demo the fully integrated experience.
+
+   To use VoiceOver on your iOS device:
+   1. Deploy app to device.
+   2. Say "Hey Siri, enable voice over.".
+   3. Make a capital Z gesture using two fingers to dismiss Siri.
+   4. Swipe left or right to navigate to your app.
+   5. Double tap to open your app.
+   6. Swipe left and right to navigate within your app.
+   7. Double tap accessibility elements and a click event will be issued.
+** [Pro] [Bugfix] Fixed letterbox background color rendering for games that have ~hd_max_scale~ set to a non-zero value.
+** [Pro] [Android] AndroidManifest.xml updated to be in compliance with Google Play Pass requirements.
+** [Support] Added top level function ~shutdown~ which will be invoked before your game exits.
+   There are four top level functions that DragonRuby will be aware of:
+   - ~tick~: Your game loop.
+   - ~boot~: Invokes once when your game starts up.
+   - ~reset~: Invoked before ~$gtk.reset~ occurs.
+   - ~shutdown~: Invoked before your game exists.
+
+   See docs API -> Runtime -> Top Level Functions documentation for detailed explanations.
+** [Bugfix] ~$gtk.calcstringbox~ respects ~size_enum:~ named parameter.
 * 5.25
 ** [Pro] [iOS] Added new collection of icons that cover new devices.
 ** [Pro] [Android] [Bugfix] Fixed warning message about sprites being too large for Android to load.

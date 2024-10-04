@@ -14,53 +14,53 @@ def tick args
                                   args.state.a,
                                   (translate -0.05, -0.05, 0),
                                   (translate 0, 0, -0.05),
-                                  (rotate_x args.state.tick_count),
-                                  (rotate_y args.state.tick_count),
-                                  (rotate_z args.state.tick_count)
+                                  (rotate_x Kernel.tick_count),
+                                  (rotate_y Kernel.tick_count),
+                                  (rotate_z Kernel.tick_count)
 
   args.state.front = mul_triangles args,
                                    args.state.a,
                                    (translate -0.05, -0.05, 0),
                                    (translate 0, 0, 0.05),
-                                   (rotate_x args.state.tick_count),
-                                   (rotate_y args.state.tick_count),
-                                   (rotate_z args.state.tick_count)
+                                   (rotate_x Kernel.tick_count),
+                                   (rotate_y Kernel.tick_count),
+                                   (rotate_z Kernel.tick_count)
 
   args.state.left = mul_triangles args,
                                   args.state.a,
                                   (translate -0.05, -0.05, 0),
                                   (rotate_y 90),
                                   (translate -0.05, 0, 0),
-                                  (rotate_x args.state.tick_count),
-                                  (rotate_y args.state.tick_count),
-                                  (rotate_z args.state.tick_count)
+                                  (rotate_x Kernel.tick_count),
+                                  (rotate_y Kernel.tick_count),
+                                  (rotate_z Kernel.tick_count)
 
   args.state.right = mul_triangles args,
                                    args.state.a,
                                    (translate -0.05, -0.05, 0),
                                    (rotate_y 90),
                                    (translate  0.05, 0, 0),
-                                   (rotate_x args.state.tick_count),
-                                   (rotate_y args.state.tick_count),
-                                   (rotate_z args.state.tick_count)
+                                   (rotate_x Kernel.tick_count),
+                                   (rotate_y Kernel.tick_count),
+                                   (rotate_z Kernel.tick_count)
 
   args.state.top = mul_triangles args,
                                  args.state.a,
                                  (translate -0.05, -0.05, 0),
                                  (rotate_x 90),
                                  (translate 0, 0.05, 0),
-                                 (rotate_x args.state.tick_count),
-                                 (rotate_y args.state.tick_count),
-                                 (rotate_z args.state.tick_count)
+                                 (rotate_x Kernel.tick_count),
+                                 (rotate_y Kernel.tick_count),
+                                 (rotate_z Kernel.tick_count)
 
   args.state.bottom = mul_triangles args,
                                     args.state.a,
                                     (translate -0.05, -0.05, 0),
                                     (rotate_x 90),
                                     (translate 0, -0.05, 0),
-                                    (rotate_x args.state.tick_count),
-                                    (rotate_y args.state.tick_count),
-                                    (rotate_z args.state.tick_count)
+                                    (rotate_x Kernel.tick_count),
+                                    (rotate_y Kernel.tick_count),
+                                    (rotate_z Kernel.tick_count)
 
   render_square args, args.state.back
   render_square args, args.state.front

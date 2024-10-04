@@ -104,7 +104,7 @@ class YouSoBasicGorillas
 
   def render_banana
     return unless state.banana
-    rotation = state.tick_count.%(360) * 20
+    rotation = Kernel.tick_count.%(360) * 20
     rotation *= -1 if state.banana.dx > 0
     outputs.sprites << [state.banana.x, state.banana.y, 15, 15, 'sprites/banana.png', rotation]
   end

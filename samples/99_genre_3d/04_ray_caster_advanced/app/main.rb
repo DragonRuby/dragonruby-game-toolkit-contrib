@@ -177,7 +177,6 @@ end
 
 def render args
   # Render the sky
-  args.outputs[:screen].transient!
   args.outputs[:screen].sprites << { x: 0,
                                      y: 320,
                                      w: 960,

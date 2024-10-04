@@ -12,7 +12,7 @@ class Game
     current_scene.tick
     if state.next_scene
       state.scene = state.next_scene
-      state.scene_at = state.tick_count
+      state.scene_at = Kernel.tick_count
       state.next_scene = nil
     end
   end
@@ -61,7 +61,7 @@ class ShopScene
   end
 
   def tick
-    if state.scene_at == state.tick_count - 1
+    if state.scene_at == Kernel.tick_count - 1
       activate
     end
 
@@ -220,7 +220,7 @@ class LevelScene
   end
 
   def calc_bullets
-    if state.tick_count.zmod? state.blaster_rate
+    if Kernel.tick_count.zmod? state.blaster_rate
       bullet_count = state.blaster_spread
       min_degrees = state.blaster_spread.idiv(2) * -2
       bullet_count.times do |i|
@@ -241,7 +241,7 @@ class LevelScene
   end
 
   def calc_enemies
-    if state.tick_count.zmod?(state.enemy_spawn_rate) && state.enemies_spawned < state.enemies_to_spawn
+    if Kernel.tick_count.zmod?(state.enemy_spawn_rate) && state.enemies_spawned < state.enemies_to_spawn
       state.enemies_spawned += 1
       x = rand(1280 - 96) + 48
       y = 720
@@ -252,7 +252,7 @@ class LevelScene
                          h: 48,
                          push_back_x: 0,
                          push_back_y: 0,
-                         spawn_at: state.tick_count,
+                         spawn_at: Kernel.tick_count,
                          dy: state.enemy_dy,
                          start_hp: hp,
                          hp: hp }
@@ -296,8 +296,8 @@ class LevelScene
           push_back_y = push_back_angle.vector_y * state.bullet_damage * 0.1
           e.push_back_x += push_back_x
           e.push_back_y += push_back_y
-          e.hit_at = state.tick_count
-          b.dead_at = state.tick_count
+          e.hit_at = Kernel.tick_count
+          b.dead_at = Kernel.tick_count
         end
       end
     end

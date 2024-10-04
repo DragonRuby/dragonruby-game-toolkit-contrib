@@ -73,7 +73,7 @@ def defaults args
   fiddle args
   args.state.enemy.hammers ||= []
   args.state.enemy.hammer_queue ||= []
-  args.state.tick_count = args.state.tick_count
+  Kernel.tick_count = Kernel.tick_count
   args.state.bridge_top = 128
   args.state.player.x  ||= 0                        # initializes player's properties
   args.state.player.y  ||= args.state.bridge_top
@@ -169,12 +169,12 @@ def calc args
   end
 
   # if 60 frames have passed and the enemy is not moving vertically
-  if args.state.tick_count.mod_zero?(args.state.enemy_jump_interval) && args.state.enemy.dy == 0
+  if Kernel.tick_count.mod_zero?(args.state.enemy_jump_interval) && args.state.enemy.dy == 0
     args.state.enemy.dy = args.state.enemy_jump_power # the enemy jumps up
   end
 
   # if 40 frames have passed or 5 frames have passed since the game ended
-  if args.state.tick_count.mod_zero?(args.state.hammer_throw_interval) || args.state.game_over_at.elapsed_time == 5
+  if Kernel.tick_count.mod_zero?(args.state.hammer_throw_interval) || args.state.game_over_at.elapsed_time == 5
     # rand will return a number greater than or equal to 0 and less than given variable's value (since max is excluded)
     # that is why we're adding 1, to include the max possibility
     volley_dx   = (rand(args.state.hammer_launch_power_default) + 1) * -1 # horizontal movement (follow order of operations)
@@ -198,7 +198,7 @@ def calc args
         h: args.state.hammer_size,
         dx: volley_dx, # change in horizontal position
         # multiplication operator takes precedence over addition operator
-        throw_at: args.state.tick_count + i * args.state.gap_between_hammers
+        throw_at: Kernel.tick_count + i * args.state.gap_between_hammers
       }
     end
   end
@@ -206,7 +206,7 @@ def calc args
   # add elements from hammer_queue collection to the hammers collection by
   # finding all hammers that were thrown before the current frame (have already been thrown)
   args.state.enemy.hammers += args.state.enemy.hammer_queue.find_all do |h|
-    h[:throw_at] < args.state.tick_count
+    h[:throw_at] < Kernel.tick_count
   end
 
   args.state.enemy.hammers.each do |h| # sets values for all hammers in collection
@@ -220,7 +220,7 @@ def calc args
 
   # reject hammers that have been thrown before current frame (have already been thrown)
   args.state.enemy.hammer_queue = args.state.enemy.hammer_queue.reject do |h|
-    h[:throw_at] < args.state.tick_count
+    h[:throw_at] < Kernel.tick_count
   end
 
   # any hammers with a y position less than 0 are rejected from the hammers collection
@@ -248,13 +248,13 @@ def reset_player args
   args.state.player.dx = 0
   args.state.enemy.hammers.clear # empties hammer collection
   args.state.enemy.hammer_queue.clear # empties hammer_queue
-  args.state.game_over_at = args.state.tick_count # game_over_at set to current frame (or passage of time)
+  args.state.game_over_at = Kernel.tick_count # game_over_at set to current frame (or passage of time)
 end
 
 # Processes input from the user to move the player
 def input args
   if args.inputs.keyboard.space # if the user presses the space bar
-    args.state.player.jumped_at ||= args.state.tick_count # jumped_at is set to current frame
+    args.state.player.jumped_at ||= Kernel.tick_count # jumped_at is set to current frame
 
     # if the time that has passed since the jump is less than the player's jump duration and
     # the player is not falling

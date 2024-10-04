@@ -83,10 +83,10 @@ class Game
     if inputs.keyboard.key_down.space && inputs.keyboard.down
       player.dy             = player.jump_power * -1
       player.jumped_at      = 0
-      player.jumped_down_at = state.tick_count
+      player.jumped_down_at = Kernel.tick_count
     elsif inputs.keyboard.key_down.space
       player.dy             = player.jump_power
-      player.jumped_at      = state.tick_count
+      player.jumped_at      = Kernel.tick_count
       player.jumped_down_at = 0
     end
   end

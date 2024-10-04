@@ -66,19 +66,14 @@ module GTK
         tick_argv_test_path
       end
 
-      # used for unit testing http and isn't meant
-      # to be used for game dev
-      def schedule_callback tick_count, &callback
-        raise "Callback has already been scheduled for tick #{tick_count}. If you meant to do this, execute $gtk.scheduled_callbacks.clear first." if @scheduled_callbacks[tick_count]
-        @scheduled_callbacks[tick_count] = callback
-      end
-
       def quit_after_startup_eval?
         return false unless @no_tick
         # @scheduled_callbacks is used by unit testing http
         # it keeps the app from exiting until all scheduled
         # callbacks have been processed (eg we need to keep the
         # game running for unit tests around http which are async)
+
+        # it's also useful for debugging
         last_scheduled_proc = @scheduled_callbacks.keys.sort[-1]
         return true unless last_scheduled_proc
         return Kernel.tick_count > ((last_scheduled_proc || 0) + 1)
