@@ -724,66 +724,6 @@ Geometry::line_normal for line #{line} and point #{point}.
 S
       end
 
-      def rect_to_circle rect
-        if circle? rect
-          rect
-        elsif rect? rect
-          x = rect.x
-          y = rect.y
-          anchor_shift_x = 0.5 - (rect.anchor_x || 0)
-          anchor_shift_y = 0.5 - (rect.anchor_y || 0)
-          x += rect.w * anchor_shift_x
-          y += rect.h * anchor_shift_y
-          radius = if rect.w <= rect.h
-                     rect.w / 2
-                   else
-                     rect.h / 2
-                   end
-          { x: x, y: y, radius: radius }
-        else
-          raise <<-S
-Parameter provided returned false for both Geometry::circle? and Geometry::rect?.
-S
-        end
-      rescue Exception => e
-        raise e, <<-S
-* ERROR:
-Geometry::rect_to_circle for rect #{rect}.
-#{e}
-Make sure the parameter adheres to one of the following:
-- A ~Hash~ with ~x~, ~y~, and ~radius~ (or an object that responds to ~x~, ~y~, and ~radius~).
-- A ~Hash~ with ~x~, ~y~, ~w~, ~h~, ~anchor_x~, and ~anchor_y~ (or an object that responds to ~x~, ~y~, ~w~, ~h~, ~anchor_x~, and ~anchor_y~).
-  If the parameter is a ~Hash~, ~anchor_x~ and ~anchor_y~ are optional and default to ~0~.
-S
-      end
-
-      def rect? shape
-        if shape.is_a? Hash
-          shape.w && shape.h
-        else
-          shape.respond_to?(:x) &&
-          shape.respond_to?(:y) &&
-          shape.respond_to?(:w) &&
-          shape.respond_to?(:h) &&
-          shape.respond_to?(:anchor_x) &&
-          shape.respond_to?(:anchor_y)
-        end
-      rescue Exception => e
-        raise e, <<-S
-* ERROR:
-Geometry::rect? for shape #{shape}.
-#{e}
-S
-      end
-
-      def circle? shape
-        if shape.is_a?(Hash)
-          !!shape.radius
-        else
-          shape.respond_to?(:radius)
-        end
-      end
-
       def intersect_circle? circle_one, circle_two
         circle_one_radius   = circle_one.radius if circle_one.respond_to? :radius
         circle_one_radius ||= if circle_one.w <= circle_one.h
