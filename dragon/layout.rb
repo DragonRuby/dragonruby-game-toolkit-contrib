@@ -663,13 +663,17 @@ module GTK
       __debug_primitives_seperators__
     end
 
-    def debug_primitives(invert_colors: false)
+    def debug_primitives(invert_colors: false, custom_color: nil)
       color = if invert_colors
                 { r: 255, g: 255, b: 255 }
               else
                 { r: 0, g: 0, b: 0 }
               end
-
+    
+      if cusomt_color && !invert_colors
+        color = custom_color
+      end
+    
       @debug_primitives_colors ||= color
 
       if @debug_primitives_colors != color
