@@ -724,6 +724,68 @@ Geometry::line_normal for line #{line} and point #{point}.
 S
       end
 
+      def rect_to_circle rect
+        x = y = w = h = radius = nil
+
+        if circle? rect
+          radius = rect.radius
+          w = h = radius * 2
+        elsif rect? rect
+          w = rect.w
+          h = rect.h
+          radius = if w <= h
+                     w / 2
+                   else
+                     h / 2
+                   end
+        else
+          raise <<-S
+Parameter provided returned false for both Geometry::circle? and Geometry::rect?.
+S
+        end
+
+        x = rect.x
+        y = rect.y
+        x -= rect.anchor_x * w if rect.respond_to?(:anchor_x) && rect.anchor_x
+        y -= rect.anchor_y * h if rect.respond_to?(:anchor_y) && rect.anchor_y
+
+        { x: x, y: y, w: w, h: h, radius: radius }
+      rescue Exception => e
+        raise e, <<-S
+* ERROR:
+Geometry::rect_to_circle for rect #{rect}.
+#{e}
+Make sure the parameter adheres to one of the following:
+- A ~Hash~ with ~x~, ~y~, and ~radius~ (or an object that responds to ~x~, ~y~, and ~radius~).
+- A ~Hash~ with ~x~, ~y~, ~w~, and ~h~ (or an object that responds to ~x~, ~y~, ~w~, and ~h~).
+S
+      end
+
+      def rect? shape
+        shape.respond_to?(:x) &&
+        shape.respond_to?(:y) &&
+        shape.respond_to?(:w) &&
+        shape.respond_to?(:h)
+      rescue Exception => e
+        raise e, <<-S
+* ERROR:
+Geometry::rect? for shape #{shape}.
+#{e}
+S
+      end
+
+      def circle? shape
+        shape.respond_to?(:x) &&
+        shape.respond_to?(:y) &&
+        shape.respond_to?(:radius)
+      rescue Exception => e
+        raise e, <<-S
+* ERROR:
+Geometry::circle? for shape #{shape}.
+#{e}
+S
+      end
+
       def intersect_circle? circle_one, circle_two
         circle_one_radius   = circle_one.radius if circle_one.respond_to? :radius
         circle_one_radius ||= if circle_one.w <= circle_one.h
