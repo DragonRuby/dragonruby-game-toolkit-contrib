@@ -124,9 +124,9 @@ class Game
 
     state.cube_attributes.each do |c|
       render_cube (cube x: c.x, y: c.y, z: c.z,
-                        angle_x: state.tick_count,
-                        angle_y: state.tick_count,
-                        angle_z: state.tick_count)
+                        angle_x: Kernel.tick_count,
+                        angle_y: Kernel.tick_count,
+                        angle_z: Kernel.tick_count)
     end
 
     args.outputs.background_color = [255, 255, 255]

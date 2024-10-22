@@ -18,7 +18,9 @@ module GTK
          :right_analog_y_raw,
          :right_analog_x_perc,
          :right_analog_y_perc,
-         :active
+         :active,
+         :active_at,
+         :active_global_at
 
     attr :connected
 
@@ -35,6 +37,22 @@ module GTK
       @right_analog_x_perc = 0
       @right_analog_y_perc = 0
       @connected = false
+    end
+
+    def key_down? key
+      @key_down.send(key)
+    end
+
+    def key_up? key
+      @key_up.send(key)
+    end
+
+    def key_held? key
+      @key_held.send(key)
+    end
+
+    def key_down_or_held? key
+      key_down?(key) || key_held?(key)
     end
 
     def to_h
@@ -176,6 +194,10 @@ module GTK
           return true
         end
       end
+    end
+
+    def name
+      @name || ""
     end
 
     def right_analog_active? threshold_raw: nil, threshold_perc: nil

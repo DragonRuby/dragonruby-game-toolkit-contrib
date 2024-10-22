@@ -76,7 +76,7 @@ module GTK
 
     def serialize
       {
-        state:      state.as_hash,
+        state:      state ? state.as_hash : state,
         temp_state: temp_state.as_hash,
         inputs:     inputs.serialize,
         passes:     passes.serialize,
@@ -123,6 +123,15 @@ module GTK
 
     def render_target name
       name = name.to_s
+
+      if name == "pixel" || name == "solid"
+        raise <<~S
+              * ERROR: Unable to create render target with name ~#{name}~.
+              The render target name ~#{name}~ is reserved/used by DragonRuby.
+              Please use another name for your render target.
+              S
+      end
+
       if !@render_targets[name]
         @render_targets[name] = RenderTargetOutputs.new(args: self, target: name, background_color_override: [255, 255, 255, 0])
         @passes << @render_targets[name]
@@ -226,11 +235,16 @@ module GTK
       @current_audio_object_ids = @audio.values.map { |v| v.object_id }
     end
 
+    def __clear_events__
+      @events[:orientation_changed] = false
+      @events[:resize_occurred] = false
+      @events[:raw].clear
+    end
+
     def tick_after
       @inputs.touch.each { |k, v| v.first_tick_down = false }
       @temp_state.clear!
-      @events[:resize_occurred] = false
-      @events[:raw].clear
+      __clear_events__
 
       new_audio_data = {}
 
@@ -269,7 +283,7 @@ module GTK
       end
       @outputs.reset
       @audio.clear
-      @events[:raw].clear
+      __clear_events__
       # on reset of the game, we want to clear out render target's historical events
       # this hash is used to control whether a render target will be marked as transient or not
       @render_targets_render_at.clear
@@ -296,7 +310,11 @@ end
 
 class AudioHash < Hash
   def volume
-    @volume ||= 1.0
+    @volume ||= if $gtk.platform?(:ios)
+                  0.4
+                else
+                  1.0
+                end
     # do not mute if tick_count is 0
     return @volume if Kernel.tick_count == 0
 
@@ -317,6 +335,10 @@ class AudioHash < Hash
   def volume= value
     @volume = value
     @volume = @volume.clamp(0.0, 1.0)
+  end
+
+  def sync!
+    GTK.update_simulation_audio_state
   end
 end
 

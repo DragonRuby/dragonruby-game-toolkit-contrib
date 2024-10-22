@@ -132,8 +132,6 @@ class IOSWizard < Wizard
       *prerequisite_steps,
       :install_simulator_if_needed,
 
-      :check_for_dev_profile,
-
       *app_metadata_retrieval_steps,
       :determine_devcert,
 
@@ -234,7 +232,10 @@ class IOSWizard < Wizard
     @app_version = opts[:version]
     @app_version = "1.0" if @opts[:env] == :dev && !@app_version
     init_wizard_status
-    result = execute_steps get_steps_to_execute
+    log_info "Starting iOS Wizard with #{@opts}"
+    GTK.on_tick_count Kernel.tick_count + 30 do
+      execute_steps get_steps_to_execute
+    end
     nil
   end
 
@@ -346,6 +347,13 @@ class IOSWizard < Wizard
         { w: 300, h: 122, path: get_reserved_sprite("profiles.png") },
         "** 6. Download the mobile provision and save it to 'profiles/development.mobileprovision'.",
         { w: 200, h: 124, path: get_reserved_sprite("profiles-folder.png") },
+        "* NOTE: If you don't want to create a mobile provision right now, you can deploy to the simulator without one. Run the following command:",
+        <<~S
+        #+begin_src ruby
+          # run this in the console to deploy to the simulator (no provisioning profile needed)
+          $wizards.ios.start env: :sim
+        #+end_src
+        S
       )
     end
 
@@ -413,15 +421,32 @@ S
   end
 
   def determine_team_identifier
-    @team_id = (ios_metadata.teamid || "")
-    raise_ios_metadata_required if @team_id.strip.length == 0
+    @team_id = (ios_metadata.teamid || "").strip
+    if @build_type == :sim && @team_id.length == 0
+      log_warn <<-S
+* WARNING: =mygame/metadata/ios_metadata.txt= does not specify =teamid=
+  Since this is a simulator build, the default =teamid= of =UNKNOWN= will be used.
+S
+      @team_id = "UNKNOWN"
+    elsif @team_id.length == 0
+      raise_ios_metadata_required if @team_id.strip.length == 0
+    end
     log_info "Team Identifer is: #{@team_id}"
     :success
   end
 
   def determine_app_name
-    @app_name = (ios_metadata.appname || "")
-    raise_ios_metadata_required if @app_name.strip.length == 0
+    @app_name = (ios_metadata.appname || "").strip
+    if @build_type == :sim && @app_name.length == 0
+      log_warn <<-S
+* WARNING: =mygame/metadata/ios_metadata.txt= does not specify =appname=
+  Since this is a simulator build, the default =appname= of =Game= will be used.
+S
+      @app_name = "Game"
+    elsif @app_name.length == 0
+      raise_ios_metadata_required if @app_name.length == 0
+    end
+
     log_info "App name is: #{@app_name}."
     :success
   end
@@ -447,15 +472,31 @@ S
   end
 
   def determine_app_id
-    @app_id = ios_metadata.appid
-    raise_ios_metadata_required if @app_id.strip.length == 0
+    @app_id = (ios_metadata.appid || "").strip
+    if @build_type == :sim && @app_id.length == 0
+      log_warn <<-S
+* WARNING: =mygame/metadata/ios_metadata.txt= does not specify =appid=
+  Since this is a simulator build, the default =appid= of =com.unknown.game= will be used.
+S
+      @app_id = "com.unknown.game"
+    elsif @app_id.length == 0
+      raise_ios_metadata_required if @app_id.strip.length == 0
+    end
     log_info "App Identifier is set to: #{@app_id}"
     :success
   end
 
   def determine_devcert
-    @certificate_name = ios_metadata.devcert
-    raise_ios_metadata_required if @certificate_name.strip.length == 0
+    @certificate_name = (ios_metadata.devcert || "").strip
+    if @build_type == :sim && @certificate_name.length == 0
+      log_warn <<-S
+* WARNING: =mygame/metadata/ios_metadata.txt= does not specify =devcert=
+  Since this is a simulator build, the default =devcert= of =Unknown= will be used.
+S
+      @certificate_name = "Unknown"
+    elsif @certificate_name.length == 0
+      raise_ios_metadata_required
+    end
     log_info "Dev Certificate is set to: #{@certificate_name}"
     :success
   end
@@ -629,14 +670,39 @@ XML
     :success
   end
 
-  def __get_plist_orientation_value__
-    orientation_string = "UIInterfaceOrientationLandscapeRight"
+  def __get_plist_orientation_values_xml__
+    values_xml = __get_plist_orientation_values__.map do |v|
+      <<-S.rstrip
+                <string>#{v}</string>
+S
+    end.join "\n"
 
-    if $gtk.orientation == :portrait
-      orientation_string = "UIInterfaceOrientationPortrait"
+    array_xml = <<-S.rstrip
+        <array>
+#{values_xml}
+        </array>
+S
+
+    array_xml
+  end
+
+  def __get_plist_orientation_values__
+    orientation_string_landscape = "UIInterfaceOrientationLandscapeRight"
+    orientation_string_portrait = "UIInterfaceOrientationPortrait"
+
+    # check ios orientation override and return plist values accordingly
+    ios_orientation = Cvars["game_metadata.orientation_ios"].value
+    ios_orientation = Cvars["game_metadata.orientation"].value if ios_orientation.length == 0
+
+    if ios_orientation == "portrait,landscape"
+      [orientation_string_portrait, orientation_string_landscape]
+    elsif ios_orientation == "landscape,portrait"
+      [orientation_string_landscape, orientation_string_portrait]
+    elsif ios_orientation == "portrait"
+      [orientation_string_portrait]
+    elsif ios_orientation == "landscape"
+      [orientation_string_landscape]
     end
-
-    orientation_string
   end
 
   def development_write_info_plist
@@ -647,7 +713,7 @@ XML
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
+    <dict>
         <key>BuildMachineOSBuild</key>
         <string>20D91</string>
         <key>CFBundleDevelopmentRegion</key>
@@ -746,10 +812,19 @@ XML
         <key>UIStatusBarStyle</key>
         <string>UIStatusBarStyleDefault</string>
         <key>UISupportedInterfaceOrientations</key>
+#{__get_plist_orientation_values_xml__}
+        <key>CFBundleURLTypes</key>
         <array>
-                <string>#{__get_plist_orientation_value__}</string>
+            <dict>
+                <key>CFBundleURLName</key>
+                <string>:app_id</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>:app_id</string>
+                </array>
+            </dict>
         </array>
-</dict>
+    </dict>
 </plist>
 XML
 
@@ -868,8 +943,17 @@ XML
         <key>UIStatusBarStyle</key>
         <string>UIStatusBarStyleDefault</string>
         <key>UISupportedInterfaceOrientations</key>
+#{__get_plist_orientation_values_xml__}
+        <key>CFBundleURLTypes</key>
         <array>
-                <string>#{__get_plist_orientation_value__}</string>
+            <dict>
+                <key>CFBundleURLName</key>
+                <string>:app_id</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>:app_id</string>
+                </array>
+            </dict>
         </array>
 </dict>
 </plist>
@@ -887,11 +971,6 @@ XML
 
     @info_plist_written = true
     :success
-  end
-
-  def device_orientation_xml
-    return "UIInterfaceOrientationLandscapeRight" if $gtk.logical_width > $gtk.logical_height
-    return "UIInterfaceOrientationPortrait"
   end
 
   def tmp_directory
@@ -1039,7 +1118,7 @@ SCRIPT
     result = `#{cmd} 2>&1`.strip.each_line.map(&:strip).join("\n")
     if result.strip.length > 0
       log_info result
-      puts_immediate result
+      __puts__ result
     end
     result
   end

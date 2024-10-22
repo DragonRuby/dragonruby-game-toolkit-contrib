@@ -19,33 +19,33 @@ def storyline_history_include? args, text
 end
 
 def blinking_light_side_of_home_render args, lowrez_sprites, lowrez_labels, lowrez_solids
-  lowrez_sprites << [48, 44, 5, 5, 'sprites/square.png', 0,  50 * (args.state.tick_count % 50).fdiv(50), 0, 255, 0]
-  lowrez_sprites << [49, 45, 3, 3, 'sprites/square.png', 0, 100 * (args.state.tick_count % 50).fdiv(50), 0, 255, 0]
-  lowrez_sprites << [50, 46, 1, 1, 'sprites/square.png', 0, 255 * (args.state.tick_count % 50).fdiv(50), 0, 255, 0]
+  lowrez_sprites << [48, 44, 5, 5, 'sprites/square.png', 0,  50 * (Kernel.tick_count % 50).fdiv(50), 0, 255, 0]
+  lowrez_sprites << [49, 45, 3, 3, 'sprites/square.png', 0, 100 * (Kernel.tick_count % 50).fdiv(50), 0, 255, 0]
+  lowrez_sprites << [50, 46, 1, 1, 'sprites/square.png', 0, 255 * (Kernel.tick_count % 50).fdiv(50), 0, 255, 0]
 end
 
 def blinking_light_mountain_pass_render args, lowrez_sprites, lowrez_labels, lowrez_solids
-  lowrez_sprites << [18, 47, 5, 5, 'sprites/square.png', 0,  50 * (args.state.tick_count % 50).fdiv(50), 0, 255, 0]
-  lowrez_sprites << [19, 48, 3, 3, 'sprites/square.png', 0, 100 * (args.state.tick_count % 50).fdiv(50), 0, 255, 0]
-  lowrez_sprites << [20, 49, 1, 1, 'sprites/square.png', 0, 255 * (args.state.tick_count % 50).fdiv(50), 0, 255, 0]
+  lowrez_sprites << [18, 47, 5, 5, 'sprites/square.png', 0,  50 * (Kernel.tick_count % 50).fdiv(50), 0, 255, 0]
+  lowrez_sprites << [19, 48, 3, 3, 'sprites/square.png', 0, 100 * (Kernel.tick_count % 50).fdiv(50), 0, 255, 0]
+  lowrez_sprites << [20, 49, 1, 1, 'sprites/square.png', 0, 255 * (Kernel.tick_count % 50).fdiv(50), 0, 255, 0]
 end
 
 def blinking_light_path_to_observatory_render args, lowrez_sprites, lowrez_labels, lowrez_solids
-  lowrez_sprites << [0, 26, 5, 5, 'sprites/square.png', 0,  50 * (args.state.tick_count % 50).fdiv(50), 0, 255, 0]
-  lowrez_sprites << [1, 27, 3, 3, 'sprites/square.png', 0, 100 * (args.state.tick_count % 50).fdiv(50), 0, 255, 0]
-  lowrez_sprites << [2, 28, 1, 1, 'sprites/square.png', 0, 255 * (args.state.tick_count % 50).fdiv(50), 0, 255, 0]
+  lowrez_sprites << [0, 26, 5, 5, 'sprites/square.png', 0,  50 * (Kernel.tick_count % 50).fdiv(50), 0, 255, 0]
+  lowrez_sprites << [1, 27, 3, 3, 'sprites/square.png', 0, 100 * (Kernel.tick_count % 50).fdiv(50), 0, 255, 0]
+  lowrez_sprites << [2, 28, 1, 1, 'sprites/square.png', 0, 255 * (Kernel.tick_count % 50).fdiv(50), 0, 255, 0]
 end
 
 def blinking_light_observatory_render args, lowrez_sprites, lowrez_labels, lowrez_solids
-  lowrez_sprites << [23, 59, 5, 5, 'sprites/square.png', 0,  50 * (args.state.tick_count % 50).fdiv(50), 0, 255, 0]
-  lowrez_sprites << [24, 60, 3, 3, 'sprites/square.png', 0, 100 * (args.state.tick_count % 50).fdiv(50), 0, 255, 0]
-  lowrez_sprites << [25, 61, 1, 1, 'sprites/square.png', 0, 255 * (args.state.tick_count % 50).fdiv(50), 0, 255, 0]
+  lowrez_sprites << [23, 59, 5, 5, 'sprites/square.png', 0,  50 * (Kernel.tick_count % 50).fdiv(50), 0, 255, 0]
+  lowrez_sprites << [24, 60, 3, 3, 'sprites/square.png', 0, 100 * (Kernel.tick_count % 50).fdiv(50), 0, 255, 0]
+  lowrez_sprites << [25, 61, 1, 1, 'sprites/square.png', 0, 255 * (Kernel.tick_count % 50).fdiv(50), 0, 255, 0]
 end
 
 def blinking_light_inside_observatory_render args, lowrez_sprites, lowrez_labels, lowrez_solids
-  lowrez_sprites << [30, 30, 5, 5, 'sprites/square.png', 0,  50 * (args.state.tick_count % 50).fdiv(50), 0, 255, 0]
-  lowrez_sprites << [31, 31, 3, 3, 'sprites/square.png', 0, 100 * (args.state.tick_count % 50).fdiv(50), 0, 255, 0]
-  lowrez_sprites << [32, 32, 1, 1, 'sprites/square.png', 0, 255 * (args.state.tick_count % 50).fdiv(50), 0, 255, 0]
+  lowrez_sprites << [30, 30, 5, 5, 'sprites/square.png', 0,  50 * (Kernel.tick_count % 50).fdiv(50), 0, 255, 0]
+  lowrez_sprites << [31, 31, 3, 3, 'sprites/square.png', 0, 100 * (Kernel.tick_count % 50).fdiv(50), 0, 255, 0]
+  lowrez_sprites << [32, 32, 1, 1, 'sprites/square.png', 0, 255 * (Kernel.tick_count % 50).fdiv(50), 0, 255, 0]
 end
 
 def decision_graph context_message, context_action, context_result_one, context_result_two, context_result_three = [], context_result_four = []

@@ -15,7 +15,7 @@ def tick args
   # and whether it was inside or outside the box
   if args.inputs.mouse.click
     args.state.last_mouse_click = args.inputs.mouse.click
-    args.state.last_mouse_click_at = args.state.tick_count
+    args.state.last_mouse_click_at = Kernel.tick_count
     if args.state.last_mouse_click.inside_rect? args.state.box
       args.state.was_inside_rect = true
     else

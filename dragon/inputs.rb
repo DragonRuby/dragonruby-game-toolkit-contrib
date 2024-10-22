@@ -10,8 +10,10 @@ module GTK
     attr_reader :mouse
     attr_accessor :http_requests
     attr_reader :touch
+    attr_accessor :multi_touch_finger_up_at
     attr_accessor :finger_one, :finger_two
     attr_accessor :finger_left, :finger_right
+    attr_accessor :pinch_zoom
     attr_accessor :text, :history
     attr_accessor :headset
     attr :last_active
@@ -26,6 +28,7 @@ module GTK
       @controllers = [Controller.new, Controller.new, Controller.new, Controller.new]
       @keyboard = Keyboard.new
       @mouse = Mouse.new
+      @pinch_zoom = 0
       @touch = {}
       @finger_one = nil
       @finger_two = nil
@@ -170,6 +173,7 @@ module GTK
       }
       @finger_one = nil
       @finger_two = nil
+      @pinch_zoom = 0
     end
 
     def serialize

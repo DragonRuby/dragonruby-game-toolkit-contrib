@@ -3,7 +3,7 @@ def tick args
   # They essentially allow you to create a sprite programmatically and cache the result.
 
   # Create a render_target of a :block and a :gradient on tick zero.
-  if args.state.tick_count == 0
+  if Kernel.tick_count == 0
     args.render_target(:block).solids << [0, 0, 1280, 100]
 
     # The gradient is actually just a collection of black solids with increasing

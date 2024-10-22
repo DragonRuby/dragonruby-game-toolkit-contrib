@@ -51,7 +51,7 @@ class VerticalPlatformer
       new_platform(x: 0, y: 300, w: 700, h: 32, dx: 1, speed: 0, rect: nil), # 300 pixels higher
     ]
 
-    s.tick_count  = args.state.tick_count
+    s.tick_count  = Kernel.tick_count
     s.gravity     = -0.3 # what goes up must come down because of gravity
     s.player.platforms_cleared ||= 0 # counts how many platforms the player has successfully cleared
     s.player.x  ||= 0           # sets player values

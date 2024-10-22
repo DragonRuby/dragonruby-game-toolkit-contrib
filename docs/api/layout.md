@@ -1,6 +1,19 @@
 # Layout (`args.layout`)
 
-Layout provides apis for placing primitives on a virtual grid that's within the "safe area" accross all platforms. This virtual grid is useful for rendering static controls (buttons, menu items, configuration screens, etc).
+Layout provides apis for placing primitives on a virtual grid that's
+within the "safe area" accross all platforms. This virtual grid is
+useful for rendering static controls (buttons, menu items,
+configuration screens, etc). 
+
+?> All functions are available globally via `Layout.*`.
+```ruby
+def tick args
+   puts args.layout.function(...)
+
+   # OR available globally
+   puts Layout.function(...)
+end
+```
 
 For reference implementations, take a look at the following sample apps:
 
@@ -72,12 +85,32 @@ Given a `row:`, `col:`, `w:`, `h:`, returns a `Hash` with properties `x`, `y`, `
 
 ## `debug_primitives`
 
-Function returns an array of primities that can be rendered to the screen to help you place items within the grid.
+Function returns an array of primitives that can be rendered to the screen to help you place items within the grid.
 
 Example:
 
 ```ruby
 def tick args
-  args.outputs.primitives << args.layout.debug_primitives
+  ...
+
+  # at the end of tick method, render the
+  # grid overlay to static_primitives on
+  # tick_count=0 to help with positioning
+  if Kernel.tick_count == 0
+    # Layout.debug_primitives returns a flat hash of values
+    # so you can customize the colors/alphas if needed
+    # args.outputs.static_primitives << Layout.debug_primitives.map do |primitive|
+    #   primitive.merge(r: ..., g: ..., b: ..., etc)
+    # end
+    args.outputs.static_primitives << Layout.debug_primitives
+  end
 end
 ```
+
+## `portrait?`
+
+Alias for `Grid.portrait?`.
+
+## `landscape?`
+
+Alias for `Grid.landscape?`.

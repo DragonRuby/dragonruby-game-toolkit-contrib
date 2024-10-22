@@ -6,7 +6,7 @@ def defaults args
   args.state.scene_history ||= []
   args.state.storyline_history ||= []
   args.state.word_delay ||= 8
-  if args.state.tick_count == 0
+  if Kernel.tick_count == 0
     args.gtk.stop_music
     args.outputs.sounds << 'sounds/static-loop.ogg'
   end
@@ -72,7 +72,7 @@ def calc_storyline_hotspot args
   elsif null_or_empty?(hotspots)
     args.state.inside_storyline_hotspot = false
 
-    args.state.storyline_queue_empty_at ||= args.state.tick_count
+    args.state.storyline_queue_empty_at ||= Kernel.tick_count
     args.state.is_storyline_dialog_active = false
     args.state.scene_storyline_queue.clear
   end
@@ -105,11 +105,11 @@ def null_or_whitespace? word
 end
 
 def calc_storyline_presentation args
-  return unless args.state.tick_count > args.state.next_storyline
+  return unless Kernel.tick_count > args.state.next_storyline
   return unless args.state.scene_storyline_queue
   next_storyline = args.state.scene_storyline_queue.shift
   if null_or_whitespace? next_storyline
-    args.state.storyline_queue_empty_at ||= args.state.tick_count
+    args.state.storyline_queue_empty_at ||= Kernel.tick_count
     args.state.is_storyline_dialog_active = false
     return
   end
@@ -298,7 +298,7 @@ def queue_storyline_text args, text
     args.state.storyline_to_show = ""
   end
   args.state.scene_storyline_queue << ""
-  args.state.next_storyline = args.state.tick_count
+  args.state.next_storyline = Kernel.tick_count
 end
 
 def set_scene args, scene
@@ -308,7 +308,7 @@ def set_scene args, scene
   args.state.scenes = (scene[:scenes] || []).reject { |s| !s }
   args.state.scene_render_override = scene[:render_override]
   args.state.storylines = (scene[:storylines] || []).reject { |s| !s }
-  args.state.scene_changed_at = args.state.tick_count
+  args.state.scene_changed_at = Kernel.tick_count
   if scene[:player]
     args.state.player = scene[:player]
   end

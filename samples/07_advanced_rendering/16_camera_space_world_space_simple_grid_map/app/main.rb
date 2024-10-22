@@ -103,7 +103,6 @@ def render args
   args.outputs.background_color = [0, 0, 0]
 
   # define scene
-  args.outputs[:scene].transient!
   args.outputs[:scene].w = Camera::WORLD_SIZE
   args.outputs[:scene].h = Camera::WORLD_SIZE
   args.outputs[:scene].background_color = [0, 0, 0, 0]

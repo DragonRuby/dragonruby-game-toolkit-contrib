@@ -24,7 +24,7 @@ class Game
   def calc_directional_input
     return if state.input_debounce.elapsed_time < 10
     return if !inputs.directional_vector
-    state.input_debounce = state.tick_count
+    state.input_debounce = Kernel.tick_count
 
     state.selected_button = Geometry::rect_navigate(
       rect: state.selected_button,

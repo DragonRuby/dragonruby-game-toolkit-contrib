@@ -86,3 +86,9 @@ S
     end
   end
 end
+
+module GTK
+  class Runtime
+    include Platform
+  end
+end

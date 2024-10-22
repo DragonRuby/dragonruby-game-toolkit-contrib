@@ -41,7 +41,8 @@ module AttrSprite
                 :angle_x, :angle_y, :z,
                 :source_x, :source_y, :source_w, :source_h, :blendmode_enum,
                 :source_x2, :source_y2, :source_x3, :source_y3, :x2, :y2, :x3, :y3,
-                :anchor_x, :anchor_y
+                :anchor_x, :anchor_y, :r2, :g2, :b2, :a2, :r3, :g3, :b3, :a3,
+                :scale_quality_enum
 
   def primitive_marker
     :sprite

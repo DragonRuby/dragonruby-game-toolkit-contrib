@@ -1,31 +1,27 @@
 def tick args
   defaults args
-  render args
   input args
   calc args
+  render args
 end
 
 def defaults args
-  args.state.player.x      ||= args.grid.w.half
-  args.state.player.y      ||= 0
-  args.state.player.size   ||= 100
-  args.state.player.dy     ||= 0
-  args.state.player.action ||= :jumping
-  args.state.jump.power           = 20
-  args.state.jump.increase_frames = 10
-  args.state.jump.increase_power  = 1
-  args.state.gravity              = -1
-end
-
-def render args
-  args.outputs.sprites << {
-    x: args.state.player.x -
-       args.state.player.size.half,
-    y: args.state.player.y,
-    w: args.state.player.size,
-    h: args.state.player.size,
-    path: 'sprites/square/red.png'
+  args.state.player ||= {
+    x: Grid.w / 2,
+    y: 0,
+    w: 100,
+    h: 100,
+    dy: 0,
+    action: :standing
   }
+
+  args.state.jump ||= {
+    power: 20,
+    increase_frames: 10,
+    increase_power: 1
+  }
+
+  args.state.gravity ||= -1
 end
 
 def input args
@@ -35,7 +31,7 @@ def input args
       args.state.player.dy = args.state.jump.power
 
       # record when the action took place
-      current_frame = args.state.tick_count
+      current_frame = Kernel.tick_count
       args.state.player.action_at = current_frame
     end
   end
@@ -75,4 +71,15 @@ def calc args
     args.state.player.y      = 0
     args.state.player.action = :standing
   end
+end
+
+def render args
+  args.outputs.sprites << {
+    x: args.state.player.x -
+       args.state.player.w / 2,
+    y: args.state.player.y,
+    w: args.state.player.w,
+    h: args.state.player.h,
+    path: 'sprites/square/red.png'
+  }
 end

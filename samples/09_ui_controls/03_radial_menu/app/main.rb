@@ -56,10 +56,10 @@ class Game
       GTK.notify! "You selected #{state.hovered_menu_item[:text]}"
     elsif show_menu_requested
       state.menu_status = :shown
-      state.menu_status_at = state.tick_count
+      state.menu_status_at = Kernel.tick_count
     elsif hide_menu_requested
       state.menu_status = :hidden
-      state.menu_status_at = state.tick_count
+      state.menu_status_at = Kernel.tick_count
     end
 
     state.hovered_menu_item = state.menu_items.find { |item| Geometry.point_inside_circle? inputs.mouse, item.circle }
@@ -139,9 +139,9 @@ class Game
     outputs.primitives << { x: 640, y: 360, w: 10, h: 10, path: :solid, r: 128, g: 0, b: 0, a: 128, anchor_x: 0.5, anchor_y: 0.5 }
 
     if state.menu_status == :shown
-      perc = Easing.ease(state.menu_status_at, state.tick_count, 30, :smooth_stop_quart)
+      perc = Easing.ease(state.menu_status_at, Kernel.tick_count, 30, :smooth_stop_quart)
     else
-      perc = Easing.ease(state.menu_status_at, state.tick_count, 30, :smooth_stop_quart, :flip)
+      perc = Easing.ease(state.menu_status_at, Kernel.tick_count, 30, :smooth_stop_quart, :flip)
     end
 
     outputs.primitives << state.menu_items.map do |item|

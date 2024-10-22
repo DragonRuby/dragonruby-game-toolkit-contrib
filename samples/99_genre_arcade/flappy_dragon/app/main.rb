@@ -31,7 +31,7 @@ class FlappyDragon
   end
 
   def render
-    outputs.sounds << "sounds/flappy-song.ogg" if state.tick_count == 1
+    outputs.sounds << "sounds/flappy-song.ogg" if Kernel.tick_count == 1
     render_score
     render_menu
     render_game
@@ -89,7 +89,7 @@ class FlappyDragon
   def render_background
     outputs.sprites << { x: 0, y: 0, w: 1280, h: 720, path: 'sprites/background.png' }
 
-    scroll_point_at   = state.tick_count
+    scroll_point_at   = Kernel.tick_count
     scroll_point_at   = state.scene_at if state.scene == :menu
     scroll_point_at   = state.death_at if state.countdown > 0
     scroll_point_at ||= 0
@@ -121,7 +121,7 @@ class FlappyDragon
 
     if state.show_death == false || !state.death_at
       animation_index = state.flapped_at.frame_index 6, 2, false if state.flapped_at
-      sprite_name = "sprites/dragon_fly#{animation_index.or(0) + 1}.png"
+      sprite_name = "sprites/dragon_fly#{(animation_index || 0) + 1}.png"
       state.dragon_sprite = { x: state.x, y: state.y, w: 100, h: 80, path: sprite_name, angle: state.dy * 1.2 }
     else
       sprite_name = "sprites/dragon_die.png"
@@ -190,7 +190,7 @@ class FlappyDragon
   def calc_game_over
     return unless game_over?
 
-    state.death_at = state.tick_count
+    state.death_at = Kernel.tick_count
     state.death_from = state.walls.first
     state.death_fall_direction = -1
     state.death_fall_direction =  1 if state.x > state.death_from.x
@@ -255,7 +255,7 @@ class FlappyDragon
     elsif (inputs.mouse.down || inputs.mouse.click || inputs.keyboard.key_down.space || inputs.controller_one.key_down.a) && state.countdown == 0
       state.dy = 0
       state.dy += state.flap_power
-      state.flapped_at = state.tick_count
+      state.flapped_at = Kernel.tick_count
       outputs.sounds << "sounds/fly-sound.wav"
     end
   end
@@ -325,7 +325,7 @@ class FlappyDragon
   end
 
   def reset_game set_flash = true
-    state.flash_at = state.tick_count if set_flash
+    state.flash_at = Kernel.tick_count if set_flash
     state.walls = []
     state.y = 500
     state.dy = 0
@@ -338,7 +338,7 @@ class FlappyDragon
 
   def change_to_scene scene
     state.scene = scene
-    state.scene_at = state.tick_count
+    state.scene_at = Kernel.tick_count
     inputs.keyboard.clear
     inputs.controller_one.clear
   end

@@ -27,7 +27,6 @@ def display_tiles args
   # in "displaying_tiles" mode
   if args.state.displaying_tiles
     # create a render target that can hold 9 640x640 tiles
-    args.outputs[:scene].transient!
     args.outputs[:scene].background_color = [0, 0, 0, 0]
     args.outputs[:scene].w = 1920
     args.outputs[:scene].h = 1920

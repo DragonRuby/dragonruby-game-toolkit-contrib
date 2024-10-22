@@ -145,7 +145,7 @@ class Game
   def add_element_to_canvas! element, position, fade_in: false
     return if !element
     new_entry = element.copy
-    new_entry.added_at = state.tick_count if fade_in
+    new_entry.added_at = Kernel.tick_count if fade_in
     new_entry.position = { x: position.x, y: position.y }
     state.canvas.elements << new_entry
     new_entry
@@ -184,7 +184,7 @@ class Game
       end
     elsif inputs.mouse.held && inputs.mouse.moved
       # emit pretty particles when the mouse is held and moved
-      if state.tick_count.zmod? 2
+      if Kernel.tick_count.zmod? 2
         state.mouse_particles_queue << {
           x: inputs.mouse.x + 10.randomize(:ratio, :sign),
           y: inputs.mouse.y + 10.randomize(:ratio, :sign),
@@ -217,7 +217,7 @@ class Game
           state.mouse_particles_queue.concat(30.map do |i|
                                                { x: rect.center.x + 10.randomize(:ratio, :sign),
                                                  y: rect.center.y + 10.randomize(:ratio, :sign),
-                                                 start_at: state.tick_count + i + rand(2),
+                                                 start_at: Kernel.tick_count + i + rand(2),
                                                  w: 10, h: 10, path: "sprites/star.png" }
                                              end)
 
@@ -259,9 +259,9 @@ class Game
     # play an error sound if the requirements for interactions don't match,
     # or if duplicate elements are touching
     if !possible || duplicate_ids
-      state.invalid_mixtures_queue << { ref_id: source.object_id, at: state.tick_count }
+      state.invalid_mixtures_queue << { ref_id: source.object_id, at: Kernel.tick_count }
       intersecting_elements.each do |r|
-        state.invalid_mixtures_queue << { ref_id: r.object_id, at: state.tick_count }
+        state.invalid_mixtures_queue << { ref_id: r.object_id, at: Kernel.tick_count }
       end
     end
   end
@@ -293,9 +293,9 @@ class Game
 
     # process the mouse particles queue
     state.mouse_particles_queue.each do |mp|
-      mp.start_at ||= state.tick_count
+      mp.start_at ||= Kernel.tick_count
       mp.a ||= 255
-      if mp.start_at < state.tick_count
+      if mp.start_at < Kernel.tick_count
         mp.dx ||= 1.randomize(:ratio, :sign)
         mp.dy ||= 1.randomize(:ratio, :sign)
         mp.x += mp.dx
@@ -370,7 +370,7 @@ class Game
         # if the newly created element is not in the list of discovered elements
         # then add it to the list of discovered elements
         if state.discovered_elements.none? { |i| i.name == completed_element.name }
-          state.discovered_elements << { name: completed_element.name, added_at: state.tick_count }
+          state.discovered_elements << { name: completed_element.name, added_at: Kernel.tick_count }
         end
       end
     end
@@ -405,7 +405,7 @@ class Game
 
   def render_queues
     outputs.primitives << state.fade_out_queue
-    outputs.primitives << state.mouse_particles_queue.reject { |mp| mp.start_at > state.tick_count }
+    outputs.primitives << state.mouse_particles_queue.reject { |mp| mp.start_at > Kernel.tick_count }
   end
 
   def render_selected_element

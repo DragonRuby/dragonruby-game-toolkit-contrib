@@ -2,6 +2,16 @@
 
 Provides information about the screen and game canvas.
 
+?> All functions are available globally via `Grid.*`.
+```ruby
+def tick args
+   puts args.grid.function(...)
+
+   # OR available globally
+   puts Grid.function(...)
+end
+```
+
 ## `orientation`
 
 Returns either `:landscape` (default) or `:portrait`. The orientation of your game is set within `./mygame/metadata/game_metadata.txt`.
@@ -19,6 +29,14 @@ corner. `origin_name` will be set to `:bottom_left`.
 
 Change the grids coordinate system where `0, 0` is at the center of the
 screen. `origin_name` will be set to `:center`.
+
+## `portrait?`
+
+Returns `true` if `orientation` is `:portrait`.
+
+## `landscape?`
+
+Returns `true` if `orientation` is `:landscape`.
 
 ## Grid Property Categorizations
 
@@ -89,6 +107,14 @@ Returns the grid's width.
 ## `h`
 
 Returns the grid's width.
+
+## `aspect_ratio_w`
+
+Returns either `16` or `9` based on orientation.
+
+## `aspect_ratio_h`
+
+Returns either `16` or `9` based on orientation.
 
 ## HD, HighDPI, and All Screen Modes
 

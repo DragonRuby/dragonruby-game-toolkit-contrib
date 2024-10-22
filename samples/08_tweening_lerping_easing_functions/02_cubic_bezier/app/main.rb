@@ -14,10 +14,10 @@ def tick args
 end
 
 
-def bezier x1, y1, x2, y2, x3, y3, x4, y4, step
+def bezier x, y, x2, y2, x3, y3, x4, y4, step
   step ||= 0
   color = [200, 200, 200]
-  points = points_for_bezier [x1, y1], [x2, y2], [x3, y3], [x4, y4], step
+  points = points_for_bezier [x, y], [x2, y2], [x3, y3], [x4, y4], step
 
   points.each_cons(2).map do |p1, p2|
     [p1, p2, color]

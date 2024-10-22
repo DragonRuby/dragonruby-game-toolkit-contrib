@@ -10,7 +10,7 @@ class Game
   def defaults
     # set a reliable seed when not in production so the
     # saved replay works correctly
-    srand 0 if state.tick_count == 0 && !gtk.production?
+    srand 0 if Kernel.tick_count == 0 && !gtk.production?
 
     # set rendering positions/properties
     state.cell_size     ||= 64
@@ -100,7 +100,7 @@ class Game
       ]
 
       alpha_percentage = args.easing.ease_spline state.won_at,
-                                                 state.tick_count,
+                                                 Kernel.tick_count,
                                                  180,
                                                  spline
 
@@ -175,7 +175,7 @@ class Game
 
     state.win = sorted_values == (1..16).to_a
 
-    state.won_at ||= state.tick_count if state.win
+    state.won_at ||= Kernel.tick_count if state.win
   end
 
   def swap_with_empty cell, empty
@@ -186,13 +186,13 @@ class Game
     cell.loc, empty.loc = empty.loc, cell.loc
 
     # take note of the current tick count (which will be used for animation)
-    cell.clicked_at = state.tick_count
+    cell.clicked_at = Kernel.tick_count
   end
 
   def cell_prefab cell
     # determine the percentage for the lerp that should be performed
     percentage = if cell.clicked_at
-                   easing.ease cell.clicked_at, state.tick_count, 15, :smooth_stop_quint, :flip
+                   easing.ease cell.clicked_at, Kernel.tick_count, 15, :smooth_stop_quint, :flip
                  else
                    1
                  end

@@ -23,7 +23,6 @@ def tick args
   args.outputs.primitives << { x: 10, y: 50.from_top, text: "tab to change camera edge behavior", r: 255, g: 255, b: 255}.label!
 
   # render scene
-  args.outputs[:scene].transient!
   args.outputs[:scene].w = args.state.world.w
   args.outputs[:scene].h = args.state.world.h
 
@@ -50,9 +49,9 @@ def tick args
   end
 
   # +/- to zoom in and out
-  if args.inputs.keyboard.plus && args.state.tick_count.zmod?(3)
+  if args.inputs.keyboard.plus && Kernel.tick_count.zmod?(3)
     args.state.camera.scale += 0.05
-  elsif args.inputs.keyboard.hyphen && args.state.tick_count.zmod?(3)
+  elsif args.inputs.keyboard.hyphen && Kernel.tick_count.zmod?(3)
     args.state.camera.scale -= 0.05
   elsif args.inputs.keyboard.key_down.tab
     if args.state.camera.show_empty_space == :yes

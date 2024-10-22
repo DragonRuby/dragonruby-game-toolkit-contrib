@@ -409,7 +409,7 @@ class MetroidvaniaStarter
         "#{x},#{y},#{sprite_number}"                           # using string interpolation
       end
       gtk.write_file(MAP_FILE_PATH, export_string.join("\n")) # writes string into a file
-      state.map_saved_at = state.tick_count # frame number (passage of time) when the map was saved
+      state.map_saved_at = Kernel.tick_count # frame number (passage of time) when the map was saved
     end
   end
 

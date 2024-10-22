@@ -17,7 +17,7 @@ end
 
 def spawn_bullets args
   # span a bullet in a random location on the far right every half second
-  return if !args.state.tick_count.zmod? 30
+  return if !Kernel.tick_count.zmod? 30
   args.state.bullets << {
     x: 1280 - 100,
     y: rand(720 - 100),
@@ -41,7 +41,7 @@ def calc_bullets args
       b.exploded = true
 
       # queue the explosion by adding it to the explosion queue
-      args.state.explosion_queue << b.merge(exploded_at: args.state.tick_count)
+      args.state.explosion_queue << b.merge(exploded_at: Kernel.tick_count)
     end
   end
 

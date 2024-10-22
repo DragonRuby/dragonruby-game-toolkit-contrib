@@ -1,0 +1,8 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=sample-app
+gametitle=Map Editor
+version=1.0
+icon=metadata/icon.png
+hd=true
+highdpi=true

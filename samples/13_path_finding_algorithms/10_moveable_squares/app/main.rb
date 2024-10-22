@@ -62,7 +62,7 @@ class Game
     outputs.primitives << { x: 30, y: 30.from_top, text: "+/- to increase decrease movement radius." }
     outputs.primitives << { x: 30, y: 60.from_top, text: "click to add/remove wall." }
     outputs.primitives << { x: 30, y: 90.from_top, text: "FPS: #{$gtk.current_framerate.to_sf}" }
-    if state.tick_count <= 1
+    if Kernel.tick_count <= 1
       outputs[:world_grid].w = 1280
       outputs[:world_grid].h = 720
       outputs[:world_grid].primitives << state.world.w.flat_map do |x|
@@ -83,7 +83,6 @@ class Game
 
     outputs[:world_overlay].w = 1280
     outputs[:world_overlay].h = 720
-    outputs[:world_overlay].transient!
 
     if state.hovered_square
       outputs[:world_overlay].primitives << path_to_square_prefab(state.hovered_square)
@@ -101,7 +100,6 @@ class Game
 
     outputs[:world].w = 1280
     outputs[:world].h = 720
-    outputs[:world].transient!
     outputs[:world].primitives << { x: 0, y: 0, w: 1280, h: 720, path: :world_grid }
     outputs[:world].primitives << { x: 0, y: 0, w: 1280, h: 720, path: :world_overlay }
     outputs.primitives << { x: 0, y: 0, w: 1280, h: 720, path: :world }

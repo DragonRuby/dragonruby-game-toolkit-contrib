@@ -81,7 +81,7 @@ frames that shouldn't be considered when looped:
                                    hold_for: 4,
                                    repeat: true,
                                    repeat_index: 0,
-                                   tick_count_override: args.state.tick_count
+                                   tick_count_override: Kernel.tick_count
 
     sprite_index ||= 0
 
@@ -105,7 +105,7 @@ The named parameter variant of ~frame_index~ is also available on ~Numeric~:
                           hold_for: 4,
                           repeat: true,
                           repeat_index: 0,
-                          tick_count_override: args.state.tick_count
+                          tick_count_override: Kernel.tick_count
 
     sprite_index ||= 0
 
@@ -157,14 +157,14 @@ Example usage:
 
     if args.state.box_queue.empty?
       args.state.box_queue << { name: :red,
-                                create_at: args.state.tick_count + 60 }
+                                create_at: Kernel.tick_count + 60 }
     end
 
     boxes_to_spawn_this_frame = args.state
                                     .box_queue
                                     .find_all { |b| b[:create_at].new? }
 
-    boxes_to_spawn_this_frame.each { |b| puts "box \#{b} was new? on \#{args.state.tick_count}." }
+    boxes_to_spawn_this_frame.each { |b| puts "box \#{b} was new? on \#{Kernel.tick_count}." }
 
     args.state.box_queue -= boxes_to_spawn_this_frame
   end
@@ -186,11 +186,11 @@ Example usage (no optional parameter):
 
     if args.state.box_queue.empty?
       args.state.box_queue << { name: :red,
-                                destroy_at: args.state.tick_count + 60 }
+                                destroy_at: Kernel.tick_count + 60 }
       args.state.box_queue << { name: :green,
-                                destroy_at: args.state.tick_count + 60 }
+                                destroy_at: Kernel.tick_count + 60 }
       args.state.box_queue << { name: :blue,
-                                destroy_at: args.state.tick_count + 120 }
+                                destroy_at: Kernel.tick_count + 120 }
     end
 
     boxes_to_destroy = args.state
@@ -201,7 +201,7 @@ Example usage (no optional parameter):
       puts "boxes to destroy count: \#{boxes_to_destroy.length}"
     end
 
-    boxes_to_destroy.each { |b| puts "box \#{b} was elapsed? on \#{args.state.tick_count}." }
+    boxes_to_destroy.each { |b| puts "box \#{b} was elapsed? on \#{Kernel.tick_count}." }
 
     args.state.box_queue -= boxes_to_destroy
   end
@@ -215,13 +215,13 @@ Example usage (with optional parameter):
 
     if args.state.box_queue.empty?
       args.state.box_queue << { name: :red,
-                                create_at: args.state.tick_count + 120,
+                                create_at: Kernel.tick_count + 120,
                                 lifespan: 60 }
       args.state.box_queue << { name: :green,
-                                create_at: args.state.tick_count + 120,
+                                create_at: Kernel.tick_count + 120,
                                 lifespan: 60 }
       args.state.box_queue << { name: :blue,
-                                create_at: args.state.tick_count + 120,
+                                create_at: Kernel.tick_count + 120,
                                 lifespan: 120 }
     end
 
@@ -234,7 +234,7 @@ Example usage (with optional parameter):
       puts "boxes to destroy count: \#{boxes_to_destroy.length}"
     end
 
-    boxes_to_destroy.each { |b| puts "box \#{b} was elapsed? on \#{args.state.tick_count}." }
+    boxes_to_destroy.each { |b| puts "box \#{b} was elapsed? on \#{Kernel.tick_count}." }
 
     args.state.box_queue -= boxes_to_destroy
   end
@@ -252,7 +252,7 @@ S
 
   def docs_to_si
     <<-S
-** ~to_sf~
+** ~to_si~
 Returns a "string int" representation of a number with underscores for thousands seperator. eg: ~50000.8778~ will be shown as ~50_000~.
 S
   end
@@ -273,7 +273,7 @@ Here is an example of how elapsed_time can be used.
 
     # record when a mouse click occurs
     if args.inputs.mouse.click
-      args.state.last_click_at = args.state.tick_count
+      args.state.last_click_at = Kernel.tick_count
     end
 
     # Use Numeric#elapsed_time to determine how long it's been
@@ -289,8 +289,8 @@ And here is an example where the override parameter is passed in:
   def tick args
     args.state.last_click_at ||= 0
 
-    # create a state variable that tracks time at half the speed of args.state.tick_count
-    args.state.simulation_tick = args.state.tick_count.idiv 2
+    # create a state variable that tracks time at half the speed of Kernel.tick_count
+    args.state.simulation_tick = Kernel.tick_count.idiv 2
 
     # record when a mouse click occurs
     if args.inputs.mouse.click

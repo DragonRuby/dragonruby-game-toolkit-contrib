@@ -135,7 +135,7 @@ def $top_level.TICK &block
   end
 
   def $top_level.tc
-    $args.state.tick_count
+    Kernel.tick_count
   end
 
   def $top_level.scene! w = 1280, h = 720, scale = nil

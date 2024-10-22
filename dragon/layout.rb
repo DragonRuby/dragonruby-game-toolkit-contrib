@@ -5,20 +5,21 @@
 
 module GTK
   class Layout
-    attr :w, :h, :ratio_w, :ratio_h, :orientation,
+    attr :w, :h, :aspect_ratio_w, :aspect_ratio_h, :orientation,
          :gutter_left, :gutter_right, :gutter_top, :gutter_bottom,
          :cell_size, :gutter
 
-    def initialize w, h, ratio_w, ratio_h, orientation
-      @w = w
-      @h = h
-      @ratio_w = ratio_w
-      @ratio_h = ratio_h
-      @orientation = orientation
-      initialize_gutters
+    def initialize w, h, aspect_ratio_w, aspect_ratio_h, orientation
+      reinitialize w, h, aspect_ratio_w, aspect_ratio_h, orientation
     end
 
-    def initialize_gutters
+    def reinitialize w, h, aspect_ratio_w, aspect_ratio_h, orientation
+      @debug_primitives = nil
+      @w = w
+      @h = h
+      @aspect_ratio_w = aspect_ratio_w
+      @aspect_ratio_h = aspect_ratio_h
+      @orientation = orientation
       @gutter_left   = 18
       @gutter_right  = 18
       @gutter_top    = 47
@@ -96,12 +97,12 @@ module GTK
       rect_x += opts_dx
       rect_y += opts_dy
 
-      if opts[:include_row_gutter]
+      if opts[:include_col_gutter]
         rect_x -= @gutter
         rect_w += @gutter * 2
       end
 
-      if opts[:include_col_gutter]
+      if opts[:include_row_gutter]
         rect_y -= @gutter
         rect_h += @gutter * 2
       end
@@ -124,6 +125,72 @@ module GTK
 
       result.merge! opts[:merge] if opts[:merge]
       result
+    end
+
+    def rects items,
+              direction: :row,
+              row: 0,
+              col: 0,
+              w: 1,
+              h: 1,
+              include_row_gutter: false,
+              include_col_gutter: false
+
+      return [] if !items
+      return [] if items.length == 0
+
+      running_row = row
+      running_col = col
+      results = []
+
+      items.each_with_index do |item, i|
+        if direction == :row
+          if running_col + w > col_count && i > 0
+            running_col = col
+            running_row += h
+          end
+        elsif direction == :col
+          if running_row + h > row_count && i > 0
+            running_row = row
+            running_col += w
+          end
+        end
+
+        if (item.is_a?(Hash) || item.respond_to?(:rect_args)) && item.rect_args
+          r_w = item.rect_args.w
+          r_h = item.rect_args.h
+          r_include_row_gutter = item.rect_args.include_row_gutter
+          r_include_col_gutter = item.rect_args.include_col_gutter
+        end
+
+        r_w                  ||= w
+        r_h                  ||= h
+        r_include_row_gutter ||= include_row_gutter
+        r_include_col_gutter ||= include_col_gutter
+
+        r = rect row: running_row,
+                 col: running_col,
+                 w: r_w,
+                 h: r_h,
+                 include_row_gutter: r_include_row_gutter,
+                 include_col_gutter: r_include_col_gutter
+
+        results << r.merge(item: item,
+                           layout: { row: running_row,
+                                     col: running_col,
+                                     w: r_w,
+                                     h: r_h,
+                                     include_row_gutter: r_include_row_gutter,
+                                     include_col_gutter: r_include_col_gutter })
+
+        if direction == :row
+          running_col += r_w
+        elsif direction == :col
+          running_row += r_h
+        end
+      end
+
+      results
     end
 
     def font_relative_size_enum size_enum
@@ -337,53 +404,232 @@ module GTK
       { x: target.x - delta_x, y: target.y - delta_y, w: reference.w, h: reference.h }
     end
 
-    def debug_primitives opts = {}
-      row_count_rework = 12
-      col_count_rework = 24
+    def __debug_primitives_crosshair__
+      [
+        {
+          id: :crosshair_diagonal_top_left_to_bottom_right,
+          x: Grid.w / 2,
+          y: Grid.h / 2,
+          w: gutter,
+          h: Grid.allscreen_h * 2,
+          angle: 45,
+          anchor_x: 0.5,
+          anchor_y: 0.5,
+          r: 232, g: 232, b: 232,
+          path: :solid,
+        },
+        {
+          id: :crosshair_diagonal_bottom_left_to_top_right,
+          x: Grid.w / 2,
+          y: Grid.h / 2,
+          w: Grid.allscreen_w * 2,
+          h: gutter,
+          angle: 45,
+          anchor_x: 0.5,
+          anchor_y: 0.5,
+          r: 232, g: 232, b: 232,
+          path: :solid,
+        },
+        {
+          id: :crosshair_left,
+          x: 0,
+          y: Grid.h / 2,
+          h: Grid.allscreen_h,
+          w: gutter,
+          anchor_x: 0.5,
+          anchor_y: 0.5,
+          path: :solid,
+          r: 128, g: 128, b: 128
+        },
+        {
+          id: :crosshair_right,
+          x: Grid.w,
+          y: Grid.h / 2,
+          h: Grid.allscreen_h,
+          w: gutter,
+          anchor_x: 0.5,
+          anchor_y: 0.5,
+          path: :solid,
+          r: 128, g: 128, b: 128
+        },
+        {
+          id: :crosshair_bottom,
+          x: Grid.w / 2,
+          y: 0,
+          h: gutter,
+          w: Grid.allscreen_w,
+          anchor_x: 0.5,
+          anchor_y: 0.5,
+          path: :solid,
+          r: 128, g: 128, b: 128
+        },
+        {
+          id: :crosshair_top,
+          x: Grid.w / 2,
+          y: Grid.h,
+          h: gutter,
+          w: Grid.allscreen_w,
+          anchor_x: 0.5,
+          anchor_y: 0.5,
+          path: :solid,
+          r: 128, g: 128, b: 128
+        },
+      ]
+    end
 
-      if @orientation == :portrait
-        row_count_rework = 24
-        col_count_rework = 12
-      end
+    def __debug_primitives_seperators__
+      single_cell = rect row: row_count - 1, col: 0, w: 1, h: 1
+      double_cell = rect row: row_count - 1, col: 0, w: 2, h: 2
+      single_row = rect row: 0, col: 0, w: col_count, h: 1
+      single_col = rect row: 0, col: 0, w: 1, h: row_count
+      safe_area = rect row: 0, col: 0, w: col_count, h: row_count, include_row_gutter: true, include_col_gutter: true
+      bg_rect = rect(row: 0, col: 1, w: col_count, h: 1).merge(w: Grid.w - gutter)
 
-      if !@debug_primitives
-        single_cell = rect row: row_count_rework - 1, col: 0, w: 1, h: 1
-        double_cell = rect row: row_count_rework - 1, col: 0, w: 2, h: 2
-        single_row = rect row: 0, col: 0, w: col_count_rework, h: 1
-        single_col = rect row: 0, col: 0, w: 1, h: row_count_rework
-        safe_area = rect row: 0, col: 0, w: col_count_rework, h: row_count_rework, include_row_gutter: true, include_col_gutter: true
-        bg_rect = rect row: 0, col: 1, w: 10, h: 1
+      one_quarter_vertical   = { id: :one_quarter_vertical,
+                                 x: Layout.rect(col: @col_count.idiv(4)).x - @gutter / 2,
+                                 y: safe_area.y,
+                                 w: gutter,
+                                 h: safe_area.h,
+                                 path: :pixel,
+                                 r: 232,
+                                 g: 232,
+                                 b: 232,
+                                 anchor_x: 0.5 }
+      two_quarter_vertical   = { id: :two_quarter_vertical,
+                                 x: Layout.rect(col: @col_count.idiv(4) * 2).x - @gutter / 2,
+                                 y: safe_area.y,
+                                 w: gutter,
+                                 h: safe_area.h,
+                                 path: :pixel,
+                                 r: 128,
+                                 g: 128,
+                                 b: 128,
+                                 anchor_x: 0.5 }
+      three_quarter_vertical = { id: :three_quarter_vertical,
+                                 x: Layout.rect(col: @col_count.idiv(4) * 3).x - @gutter / 2,
+                                 y: safe_area.y,
+                                 w: gutter,
+                                 h: safe_area.h,
+                                 path: :pixel,
+                                 r: 232,
+                                 g: 232,
+                                 b: 232,
+                                 anchor_x: 0.5}
 
-        center_vertical = { x: $gtk.args.grid.w.idiv(2), y: safe_area.y, w: gutter, h: safe_area.h, path: :pixel, r: 128, g: 128, b: 128, anchor_x: 0.5 }
-        center_horizontal = { x: safe_area.x, y: $gtk.args.grid.h.idiv(2), w: safe_area.w, h: gutter, path: :pixel, r: 128, g: 128, b: 128, anchor_y: 0.5 }
+      one_quarter_horizontal = { id: :one_quarter_horizontal,
+                                 x: safe_area.x,
+                                 y: Layout.rect(row: @row_count.idiv(4) * 1 - 1).y - @gutter / 2,
+                                 w: safe_area.w,
+                                 h: gutter,
+                                 path: :pixel,
+                                 r: 232,
+                                 g: 232,
+                                 b: 232,
+                                 anchor_y: 0.5 }
 
-        values = [
-          "scaling: [#{Grid.texture_scale_enum.fdiv(100).to_sf}]",
-          "safe area: [#{safe_area.x},#{safe_area.y},#{safe_area.w},#{safe_area.h}]",
-          "cell: [#{single_cell.w},#{single_cell.h}]",
-          "cell 2X: [#{double_cell.w},#{double_cell.h}]"
-        ]
+      two_quarter_horizontal = { id: :two_quarter_horizontal,
+                                 x: safe_area.x,
+                                 y: Layout.rect(row: @row_count.idiv(2) - 1).y - @gutter / 2,
+                                 w: safe_area.w,
+                                 h: gutter,
+                                 path: :pixel,
+                                 r: 128,
+                                 g: 128,
+                                 b: 128,
+                                 anchor_y: 0.5 }
 
-        single_cell_label = { x: safe_area.center.x,
-                              y: safe_area.y + safe_area.h - 6,
-                              text: values.join(" "),
-                              anchor_x: 0.5,
-                              anchor_y: 0.5,
-                              r: 255, g: 255, b: 255, a: 255,
-                              size_px: 12 }
+      three_quarter_horizontal = { id: :three_quarter_horizontal,
+                                   x: safe_area.x,
+                                   y: Layout.rect(row: @row_count.idiv(4) * 3 - 1).y - @gutter / 2,
+                                   w: safe_area.w,
+                                   h: gutter,
+                                   path: :pixel,
+                                   r: 232,
+                                   g: 232,
+                                   b: 232,
+                                   anchor_y: 0.5 }
 
-        single_cell_bg = { x: safe_area.center.x, y: safe_area.y + safe_area.h - 6, anchor_x: 0.5, anchor_y: 0.5, h: 12, w: bg_rect.w, path: :pixel, r: 0, g: 0, b: 0, a: 255 }
+      single_cell_border = { id: :single_cell_border, **safe_area, primitive_marker: :border }
 
-        single_cell_border = { **safe_area, primitive_marker: :border }
+      single_cell_bg = { id: :single_cell_bg,
+                         x: safe_area.center.x,
+                         y: @h - 14,
+                         anchor_x: 0.5,
+                         anchor_y: 0.5,
+                         h: 24,
+                         w: bg_rect.w,
+                         path: :pixel,
+                         r: 0,
+                         g: 0,
+                         b: 0,
+                         a: 255 }
 
-        @debug_primitives = col_count_rework.map_with_index do |col|
-          row_count_rework.map_with_index do |row|
-            cell   = rect row: row, col: col
-            center = Geometry.rect_center_point cell
-            [
-              cell.merge(opts).border!(row: row, col: col, docs: "border for cell at row #{row}, col #{col}"),
-              cell.merge(opts)
-                .label!(x: cell.center.x,
+      single_cell_bg_bottom = { id: :single_cell_bg_bottom,
+                                x: safe_area.center.x,
+                                y: 0 + 14,
+                                anchor_x: 0.5,
+                                anchor_y: 0.5,
+                                h: 24,
+                                w: bg_rect.w,
+                                path: :pixel,
+                                r: 0,
+                                g: 0,
+                                b: 0,
+                                a: 255 }
+
+      values = [
+        "scaling: [#{Grid.texture_scale_enum.fdiv(100).to_sf}]",
+        "safe area: [#{safe_area.x},#{safe_area.y},#{safe_area.w},#{safe_area.h}]",
+        "cell: [#{single_cell.w},#{single_cell.h}]",
+        "cell 2X: [#{double_cell.w},#{double_cell.h}]"
+      ]
+
+      single_cell_label = { id: :single_cell_label,
+                            x: safe_area.center.x,
+                            y: @h - 14,
+                            text: values.join(" "),
+                            anchor_x: 0.5,
+                            anchor_y: 0.5,
+                            r: 255, g: 255, b: 255, a: 255,
+                            size_px: 18 }
+
+      single_cell_label_bottom = { id: :single_cell_label_bottom,
+                                   x: safe_area.center.x,
+                                   y: 0 + 14,
+                                   text: "To invert colors use Layout.debug_primitives(invert_colors: true)",
+                                   anchor_x: 0.5,
+                                   anchor_y: 0.5,
+                                   r: 255, g: 255, b: 255, a: 255,
+                                   size_px: 18 }
+
+      [one_quarter_horizontal,
+       two_quarter_horizontal,
+       three_quarter_horizontal,
+       one_quarter_vertical,
+       two_quarter_vertical,
+       three_quarter_vertical,
+       single_cell_border,
+       single_cell_bg,
+       single_cell_label,
+       single_cell_bg_bottom,
+       single_cell_label_bottom]
+    end
+
+    def __debug_primitives_cell_prefabs__(color:)
+      col_count.map_with_index do |col|
+        row_count.map_with_index do |row|
+          cell   = rect row: row, col: col
+          center = Geometry.rect_center_point cell
+          [
+            cell.copy
+                .border!(id: "row_#{row}_col_#{col}_border".to_sym,
+                         row: row,
+                         col: col,
+                         **color,
+                         docs: "border for cell at row #{row}, col #{col}"),
+            cell.copy
+                .label!(id: "row_#{row}_col_#{col}_oridinal_label".to_sym,
+                        x: cell.center.x,
                         y: cell.center.y,
                         text: "#{row},#{col}",
                         size_px: 12,
@@ -391,9 +637,11 @@ module GTK
                         anchor_y: 0.5 + 0.5,
                         row: row,
                         col: col,
+                        **color,
                         docs: "label for cell at row #{row}, col #{col}"),
-              cell.merge(opts)
-                .label!(x: cell.center.x,
+            cell.copy
+                .label!(id: "row_#{row}_col_#{col}_px_label".to_sym,
+                        x: cell.center.x,
                         y: cell.center.y,
                         text: "#{cell.x},#{cell.y}",
                         size_px: 12,
@@ -401,22 +649,43 @@ module GTK
                         anchor_y: 0.5 - 0.5,
                         row: row,
                         col: col,
+                        **color,
                         docs: "label for cell at row #{row}, col #{col}")
 
-            ]
-          end
-        end.flatten + [center_horizontal, center_vertical, single_cell_border, single_cell_bg, single_cell_label]
+          ]
+        end
+      end.flatten
+    end
+
+    def __debug_primitives__(color:)
+      __debug_primitives_cell_prefabs__(color: color) +
+      __debug_primitives_crosshair__ +
+      __debug_primitives_seperators__
+    end
+
+    def debug_primitives(invert_colors: false)
+      color = if invert_colors
+                { r: 255, g: 255, b: 255 }
+              else
+                { r: 0, g: 0, b: 0 }
+              end
+
+      @debug_primitives_colors ||= color
+
+      if @debug_primitives_colors != color
+        @debug_primitives = nil
+        @debug_primitives_colors = color
       end
 
-      @debug_primitives
+      @debug_primitives ||= __debug_primitives__(color: color)
     end
 
     def serialize
       {
         w: @w,
         h: @h,
-        ratio_w: @ratio_w,
-        ratio_h: @ratio_h,
+        aspect_ratio_w: @aspect_ratio_w,
+        aspect_ratio_h: @aspect_ratio_h,
         orientation: @orientation,
         gutter_left: @gutter_left,
         gutter_right: @gutter_right,
@@ -435,9 +704,25 @@ module GTK
       serialize.to_s
     end
 
+    def orientation_changed!
+      @w = Grid.w
+      @h = Grid.h
+      @aspect_ratio_w = Grid.aspect_ratio_w
+      @aspect_ratio_h = Grid.aspect_ratio_h
+      @orientation = Grid.orientation
+      reinitialize @w, @h, @aspect_ratio_w, @aspect_ratio_h, @orientation
+    end
+
     def reset
-      @debug_primitives = nil
-      initialize_gutters
+      reinitialize @w, @h, @aspect_ratio_w, @aspect_ratio_h, @orientation
+    end
+
+    def landscape?
+      Grid.landscape?
+    end
+
+    def portrait?
+      Grid.portrait?
     end
 
     class << self

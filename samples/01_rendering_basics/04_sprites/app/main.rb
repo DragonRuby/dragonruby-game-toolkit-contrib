@@ -66,7 +66,7 @@ def tick args
                             w: 128,
                             h: 101,
                             path: 'dragonruby.png',
-                            a: args.state.tick_count % 255 }
+                            a: Kernel.tick_count % 255 }
 
   args.outputs.sprites << { x: 760 + 64,
                             y: 470 + 50,
@@ -77,7 +77,7 @@ def tick args
                             path: 'dragonruby.png',
                             flip_horizontally: true,
                             flip_vertically: true,
-                            a: args.state.tick_count % 255 }
+                            a: Kernel.tick_count % 255 }
 
   # ==================
   # ROW 2 Angle/Angle Anchors
@@ -91,7 +91,7 @@ def tick args
                             w: 128,
                             h: 101,
                             path: 'dragonruby.png',
-                            angle: args.state.tick_count % 360 }
+                            angle: Kernel.tick_count % 360 }
 
   # rotation anchor using angle_anchor_x
   args.outputs.sprites << { x: 760,
@@ -99,7 +99,7 @@ def tick args
                             w: 128,
                             h: 101,
                             path: 'dragonruby.png',
-                            angle: args.state.tick_count % 360,
+                            angle: Kernel.tick_count % 360,
                             angle_anchor_x: 0,
                             angle_anchor_y: 0 }
 

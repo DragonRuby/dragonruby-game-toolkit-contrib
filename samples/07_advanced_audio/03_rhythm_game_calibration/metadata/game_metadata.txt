@@ -1,0 +1,9 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=rhythm-game-calibration
+gametitle=Rhythm Game Calibration
+version=1.0
+icon=metadata/icon.png
+# HD and High DPI available via the Pro License
+hd=true
+highdpi=true

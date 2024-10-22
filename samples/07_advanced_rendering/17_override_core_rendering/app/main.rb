@@ -2,26 +2,26 @@ class GTK::Runtime
   # You can completely override how DR renders by defining this method
   # It is strongly recommend that you do not do this unless you know what you're doing.
   def primitives pass
-    # fn.each_send pass.solids,            self, :draw_solid
-    # fn.each_send pass.static_solids,     self, :draw_solid
-    # fn.each_send pass.sprites,           self, :draw_sprite
-    # fn.each_send pass.static_sprites,    self, :draw_sprite
-    # fn.each_send pass.primitives,        self, :draw_primitive
-    # fn.each_send pass.static_primitives, self, :draw_primitive
-    fn.each_send pass.labels,            self, :draw_label
-    fn.each_send pass.static_labels,     self, :draw_label
-    # fn.each_send pass.lines,             self, :draw_line
-    # fn.each_send pass.static_lines,      self, :draw_line
-    # fn.each_send pass.borders,           self, :draw_border
-    # fn.each_send pass.static_borders,    self, :draw_border
+    # pass.solids.each { |o| draw_solid o }
+    # pass.static_solids.each { |o| draw_solid o }
+    # pass.sprites.each { |o| draw_sprite o }
+    # pass.static_sprites.each { |o| draw_sprite o }
+    # pass.primitives.each { |o| draw_primitive o }
+    # pass.static_primitives.each { |o| draw_primitive o }
+    pass.labels.each { |o| draw_label o }
+    pass.static_labels.each { |o| draw_label o }
+    # pass.lines.each { |o| draw_line o }
+    # pass.static_lines.each { |o| draw_line o }
+    # pass.borders.each { |o| draw_border o }
+    # pass.static_borders.each { |o| draw_border o }
 
     # if !self.production
-    #   fn.each_send pass.debug,           self, :draw_primitive
-    #   fn.each_send pass.static_debug,    self, :draw_primitive
+    #   pass.debug.each { |o| draw_primitive o }
+    #   pass.static_debug.each { |o| draw_primitive o }
     # end
 
-    # fn.each_send pass.reserved,          self, :draw_primitive
-    # fn.each_send pass.static_reserved,   self, :draw_primitive
+    # pass.reserved.each { |o| draw_primitive o }
+    # pass.static_reserved.each { |o| draw_primitive o }
   end
 end
 

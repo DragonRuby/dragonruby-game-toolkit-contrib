@@ -195,12 +195,14 @@ S
         args.outputs.reserved << (@cursor_color.to_h.merge x: x + @cursor_position_px + 0.5,
                                                            y: y + 5,
                                                            x2: x + @cursor_position_px + 0.5,
-                                                           y2: y + @font_style.letter_size.h + 4)
+                                                           y2: y + @font_style.letter_size.h + 4,
+                                                           a: Math.sin(Kernel.tick_count.fdiv(10)) * 64 + 192)
 
         args.outputs.reserved << (@cursor_color.to_h.merge x: x + @cursor_position_px + 1,
                                                            y: y + 5,
                                                            x2: x + @cursor_position_px + 1,
-                                                           y2: y + @font_style.letter_size.h + 4)
+                                                           y2: y + @font_style.letter_size.h + 4,
+                                                           a: Math.sin(Kernel.tick_count.fdiv(10)) * 64 + 192)
       end
 
       def tick

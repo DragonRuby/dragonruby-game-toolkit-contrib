@@ -11,7 +11,7 @@ DISTANCE           = 10
 
 def tick args
   args.outputs.background_color = [0, 0, 0]
-  a = Math.sin(args.state.tick_count / SPINDURATION) * Math.tan(args.state.tick_count / SPINDURATION)
+  a = Math.sin(Kernel.tick_count / SPINDURATION) * Math.tan(Kernel.tick_count / SPINDURATION)
   s = Math.sin(a)
   c = Math.cos(a)
   x = STARTX

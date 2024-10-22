@@ -1,11 +1,4 @@
 def tick args
-  args.outputs.labels << {
-    x: 640,
-    y: 30.from_top,
-    text: "Triangle rendering is available in Indie and Pro versions (ignored in Standard Edition).",
-    alignment_enum: 1
-  }
-
   dragonruby_logo_width  = 128
   dragonruby_logo_height = 101
 
@@ -86,7 +79,7 @@ def tick args
     col_0 + dragonruby_logo_width,
     row_1,
     0, 128, 128,
-    args.state.tick_count.to_radians.sin_r.abs * 255
+    Kernel.tick_count.to_radians.sin_r.abs * 255
   )
 
   args.outputs.primitives << {
@@ -96,7 +89,7 @@ def tick args
     y2: row_1 + dragonruby_logo_height,
     x3: col_1 + dragonruby_logo_width,
     y3: row_1,
-    r:  0, g: 0, b: 0, a: args.state.tick_count.to_radians.sin_r.abs * 255
+    r:  0, g: 0, b: 0, a: Kernel.tick_count.to_radians.sin_r.abs * 255
   }
 
   args.outputs.sprites << {
@@ -109,7 +102,7 @@ def tick args
     source_y:  0,
     source_w:  dragonruby_logo_width,
     source_h:  dragonruby_logo_height.half +
-               dragonruby_logo_height.half * Math.sin(args.state.tick_count.to_radians).abs,
+               dragonruby_logo_height.half * Math.sin(Kernel.tick_count.to_radians).abs,
   }
 
   args.outputs.primitives << {
@@ -124,7 +117,7 @@ def tick args
     source_y:  0,
     source_x2: dragonruby_logo_width.half,
     source_y2: dragonruby_logo_height.half +
-               dragonruby_logo_height.half * Math.sin(args.state.tick_count.to_radians).abs,
+               dragonruby_logo_height.half * Math.sin(Kernel.tick_count.to_radians).abs,
     source_x3: dragonruby_logo_width,
     source_y3: 0
   }
@@ -140,7 +133,7 @@ def tick args
                                               source_y:  0,
                                               source_x2: dragonruby_logo_width.half,
                                               source_y2: dragonruby_logo_height.half +
-                                                         dragonruby_logo_height.half * Math.sin(args.state.tick_count.to_radians).abs,
+                                                         dragonruby_logo_height.half * Math.sin(Kernel.tick_count.to_radians).abs,
                                               source_x3: dragonruby_logo_width,
                                               source_y3: 0)
 end

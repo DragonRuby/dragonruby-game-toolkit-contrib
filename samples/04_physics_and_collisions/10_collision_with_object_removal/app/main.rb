@@ -109,10 +109,10 @@ begin :calc_methods
       #Freeze the paddle
       args.state.paddle.enabled = false
 
-      args.state.game_over_at = args.state.tick_count
+      args.state.game_over_at = Kernel.tick_count
     end
 
-    if args.state.game_over_at.elapsed_time < 60 && args.state.tick_count > 60 && args.state.bricks.count != 0
+    if args.state.game_over_at.elapsed_time < 60 && Kernel.tick_count > 60 && args.state.bricks.count != 0
       #Display a "Game over" message
       args.outputs.labels << [100, 100, "GAME OVER", 10]
     end
@@ -159,10 +159,10 @@ begin :calc_methods
       #Freeze the paddle
       args.state.paddle.enabled = false
 
-      args.state.game_over_at = args.state.tick_count
+      args.state.game_over_at = Kernel.tick_count
     end
 
-    if args.state.game_over_at.elapsed_time < 60 && args.state.tick_count > 60 && args.state.bricks.count == 0
+    if args.state.game_over_at.elapsed_time < 60 && Kernel.tick_count > 60 && args.state.bricks.count == 0
       #Display a "Game over" message
       args.outputs.labels << [100, 100, "CONGRATULATIONS!", 10]
     end

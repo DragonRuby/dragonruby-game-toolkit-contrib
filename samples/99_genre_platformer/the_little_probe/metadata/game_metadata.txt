@@ -7,13 +7,16 @@ icon=metadata/icon.png
 
 # Below configurations requires a Pro license.
 
-# Uncomment these lines to see what the game looks
-# like with all screen mode
-# hd=true
-# allscreen=true
+# HD mode enabled
+hd=true
 
-# max scale options
-# hd_letterbox=false
+# High DPI enabled
+highdpi=true
+
+# Letterbox removed (All Screen Mode)
+hd_letterbox=false
+
+# Uncomment these lines to see what the game looks like with all screen mode
 # hd_max_scale=0
 # hd_max_scale=100
 # hd_max_scale=125

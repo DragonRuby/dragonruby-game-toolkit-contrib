@@ -65,7 +65,7 @@ code renders a label that displays the current ~tick_count~.
 
 #+begin_src ruby
   def tick args
-    args.outputs.labels << [10, 670, "#{args.state.tick_count}"]
+    args.outputs.labels << [10, 670, "\#{Kernel.tick_count}"]
   end
 #+end_src
 
@@ -76,7 +76,7 @@ and is accessible via ~args.gtk.current_framerate~.
 
 #+begin_src ruby
   def tick args
-    args.outputs.labels << [10, 710, "framerate: #{args.gtk.current_framerate.round}"]
+    args.outputs.labels << [10, 710, "framerate: \#{args.gtk.current_framerate.round}"]
   end
 #+end_src
 S
@@ -307,7 +307,7 @@ Sounds that end ~.wav~ will play once:
 #+begin_src ruby
   def tick args
     # Play a sound every second
-    if (args.state.tick_count % 60) == 0
+    if (Kernel.tick_count % 60) == 0
       args.outputs.sounds << 'something.wav'
     end
   end
@@ -318,7 +318,7 @@ Sounds that end ~.ogg~ is considered background music and will loop:
 #+begin_src ruby
   def tick args
     # Start a sound loop at the beginning of the game
-    if args.state.tick_count == 0
+    if Kernel.tick_count == 0
       args.outputs.sounds << 'background_music.ogg'
     end
   end
@@ -329,7 +329,7 @@ If you want to play a ~.ogg~ once as if it were a sound effect, you can do:
 #+begin_src ruby
   def tick args
     # Play a sound every second
-    if (args.state.tick_count % 60) == 0
+    if (Kernel.tick_count % 60) == 0
       args.gtk.queue_sound 'some-ogg.ogg'
     end
   end

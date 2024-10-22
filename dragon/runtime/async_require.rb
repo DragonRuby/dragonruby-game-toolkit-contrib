@@ -130,6 +130,7 @@ module GTK
       end
 
       def pending_reload?
+        return false if @load_status == :dragonruby_started
         @reload_list_history.any? do |key, value|
           value[:current][:event] == :reload_queued ||
           value[:current][:event] == :processing
@@ -140,7 +141,7 @@ module GTK
         ext = File.extname(file)
         return false unless ext == ".rb" || ext == ".rbc"
         return true if @suppress_hotload
-        backup_create file
+        Backup.backup_create file, ffi_file: @ffi_file, production: @production
         syntax = (@ffi_file.read file) || ''
         return true if syntax.strip.length == 0
 

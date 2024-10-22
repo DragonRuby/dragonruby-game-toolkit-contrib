@@ -1,4 +1,10 @@
 def tick args
+  # by default the embedded webserver is disabled in a production build
+  # to enable the http server in a production build you need to:
+  # - update metadata/cvars.txt
+  # - manually start the server up with enable_in_prod set to true:
+  args.gtk.start_server! port: $cvars["webserver.port"].value, enable_in_prod: true
+
   # defaults
   args.state.post_button      = args.layout.rect(row: 0, col: 0, w: 5, h: 1).merge(text: "execute http_post")
   args.state.post_body_button = args.layout.rect(row: 1, col: 0, w: 5, h: 1).merge(text: "execute http_post_body")

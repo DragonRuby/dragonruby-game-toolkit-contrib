@@ -84,7 +84,7 @@ def universalUpdate args, shape
   end
   if (didHit)
     shape.count=shape.count-1
-    shape.damageCount.append([(hitter.leastChain+1 - hitter.number)-1, args.state.tick_count])
+    shape.damageCount.append([(hitter.leastChain+1 - hitter.number)-1, Kernel.tick_count])
 
   end
   i=0
@@ -95,7 +95,7 @@ def universalUpdate args, shape
     elsif shape.damageCount[i][1].elapsed_time > BALL_DISTANCE and shape.damageCount[i][0] > 1
       shape.count-=1
       shape.damageCount[i][0]-=1
-      shape.damageCount[i][1] = args.state.tick_count
+      shape.damageCount[i][1] = Kernel.tick_count
     end
     i+=1
   end
@@ -469,7 +469,7 @@ class TShape
       end
       if (didHit)
         @count=@count-1
-        @damageCount.append([(hitter.leastChain+1 - hitter.number)-1, args.state.tick_count])
+        @damageCount.append([(hitter.leastChain+1 - hitter.number)-1, Kernel.tick_count])
 
         if (@count == 0)
           args.state.tshapes.delete(self)

@@ -10,7 +10,7 @@ def thick_line args, cache, line
   line_length = Math.sqrt((line.x2 - line.x)**2 + (line.y2 - line.y)**2)
   name = "line-sprite-#{line_length}-#{line.thickness}"
   cached_line = cache[name]
-  line_angle = Math.atan2(line.y2 - line.y1, line.x2 - line.x1) * 180 / Math::PI
+  line_angle = Math.atan2(line.y2 - line.y, line.x2 - line.x) * 180 / Math::PI
   if cached_line
     perpendicular_angle = (line_angle + 90) % 360
     return cached_line.sprite.merge(x: line.x - perpendicular_angle.vector_x * (line.thickness / 2),

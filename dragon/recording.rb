@@ -226,7 +226,7 @@ S
 
       $replay_data = {
         input_history: { },
-        stopped_at_current_tick: 0
+        stopped_at_current_tick: -1
       }
 
       # the replay file is a text file with the following format:
@@ -471,8 +471,6 @@ S
       return unless @is_replaying
       return unless $replay_data
 
-      $replay_data[:stopped_at_current_tick] += 1
-
       if ($replay_data[:stopped_at] - $replay_data[:stopped_at_current_tick]) <= 1
         @replay_completed_successfully = true
         if @replay_completed_successfully_block
@@ -490,7 +488,10 @@ S
         log_info "Replay ends in #{calculated_tick_count.idiv(60 * @runtime.simulation_speed)} second(s). (#{Kernel.global_tick_count})"
       end
 
+      $replay_data[:stopped_at_current_tick] += 1
+
       return unless inputs_this_tick
+
       inputs_this_tick.each do |v|
         args = []
         args << v[:value_1] if v[:value_count] >= 1

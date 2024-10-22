@@ -10,7 +10,7 @@ class Game
   end
 
   def defaults
-    return if state.tick_count != 0
+    return if Kernel.tick_count != 0
 
     # define the size of the world
     state.world_size = 1280
@@ -139,7 +139,6 @@ class Game
 
   def render
     # create a render target to represent the camera's viewport
-    outputs[:scene].transient!
     outputs[:scene].w = state.world_size
     outputs[:scene].h = state.world_size
 

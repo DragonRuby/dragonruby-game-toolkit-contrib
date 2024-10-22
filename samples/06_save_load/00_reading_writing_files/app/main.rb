@@ -1,6 +1,6 @@
 # APIs covered:
-#   args.gtk.write_file "file-1.txt", args.state.tick_count.to_s
-#   args.gtk.append_file "file-1.txt", args.state.tick_count.to_s
+#   args.gtk.write_file "file-1.txt", Kernel.tick_count.to_s
+#   args.gtk.append_file "file-1.txt", Kernel.tick_count.to_s
 
 #   stat = args.gtk.stat_file "file-1.txt"
 
@@ -55,28 +55,28 @@ def tick args
     # update the center label text based on button clicked
     case button.id
     when :write_file_1
-      args.gtk.write_file("file-1.txt", args.state.tick_count.to_s + "\n")
+      args.gtk.write_file("file-1.txt", Kernel.tick_count.to_s + "\n")
 
       args.state.center_label_text = ""
-      args.state.center_label_text += "* Success (#{args.state.tick_count}):\n"
+      args.state.center_label_text += "* Success (#{Kernel.tick_count}):\n"
       args.state.center_label_text += "  Click \"read file-1.txt\" to see the contents.\n"
       args.state.center_label_text += "\n"
       args.state.center_label_text += "** Sample Code\n"
-      args.state.center_label_text += "   args.gtk.write_file(\"file-1.txt\", args.state.tick_count.to_s + \"\\n\")\n"
+      args.state.center_label_text += "   args.gtk.write_file(\"file-1.txt\", Kernel.tick_count.to_s + \"\\n\")\n"
     when :append_file_1
-      args.gtk.append_file("file-1.txt", args.state.tick_count.to_s + "\n")
+      args.gtk.append_file("file-1.txt", Kernel.tick_count.to_s + "\n")
 
       args.state.center_label_text = ""
-      args.state.center_label_text += "* Success (#{args.state.tick_count}):\n"
+      args.state.center_label_text += "* Success (#{Kernel.tick_count}):\n"
       args.state.center_label_text += "  Click \"read file-1.txt\" to see the contents.\n"
       args.state.center_label_text += "\n"
       args.state.center_label_text += "** Sample Code\n"
-      args.state.center_label_text += "   args.gtk.append_file(\"file-1.txt\", args.state.tick_count.to_s + \"\\n\")\n"
+      args.state.center_label_text += "   args.gtk.append_file(\"file-1.txt\", Kernel.tick_count.to_s + \"\\n\")\n"
     when :stat_file_1
       stat = args.gtk.stat_file "file-1.txt"
 
       args.state.center_label_text = ""
-      args.state.center_label_text += "* Stat File (#{args.state.tick_count})\n"
+      args.state.center_label_text += "* Stat File (#{Kernel.tick_count})\n"
       args.state.center_label_text += "#{stat || "nil (file does not exist)"}"
       args.state.center_label_text += "\n"
       args.state.center_label_text += "\n"
@@ -87,13 +87,13 @@ def tick args
 
       args.state.center_label_text = ""
       if contents
-        args.state.center_label_text += "* Contents (#{args.state.tick_count}):\n"
+        args.state.center_label_text += "* Contents (#{Kernel.tick_count}):\n"
         args.state.center_label_text += contents
         args.state.center_label_text += "\n"
         args.state.center_label_text += "** Sample Code\n"
         args.state.center_label_text += "   contents = args.gtk.read_file(\"file-1.txt\")\n"
       else
-        args.state.center_label_text += "* Contents (#{args.state.tick_count}):\n"
+        args.state.center_label_text += "* Contents (#{Kernel.tick_count}):\n"
         args.state.center_label_text += "Contents of file was nil. Click stat file-1.txt for file information."
         args.state.center_label_text += "\n"
         args.state.center_label_text += "** Sample Code\n"
@@ -124,11 +124,11 @@ def tick args
       app_files  = args.gtk.list_files "app"
 
       args.state.center_label_text = ""
-      args.state.center_label_text += "** Root Files (#{args.state.tick_count}):\n"
+      args.state.center_label_text += "** Root Files (#{Kernel.tick_count}):\n"
       args.state.center_label_text += root_files.join "\n"
       args.state.center_label_text += "\n"
       args.state.center_label_text += "\n"
-      args.state.center_label_text += "** App Files (#{args.state.tick_count}):\n"
+      args.state.center_label_text += "** App Files (#{Kernel.tick_count}):\n"
       args.state.center_label_text += app_files.join "\n"
       args.state.center_label_text += "\n"
       args.state.center_label_text += "\n"

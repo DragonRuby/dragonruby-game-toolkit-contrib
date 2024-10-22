@@ -46,14 +46,25 @@ module GTK
                   :i, :j, :k, :l, :m, :n, :o, :p,
                   :q, :r, :s, :t, :u, :v, :w, :x,
                   :y, :z,
-                  :shift, :control, :alt, :meta,
+                  :forward_slash, :back_slash
+
+    attr_accessor :caps_lock,
+                  :f1, :f2, :f3, :f4, :f5, :f6, :f7, :f8, :f9, :f10, :f11, :f12,
+                  :print_screen, :scroll_lock, :pause,
+                  :insert, :home, :page_up,
+                  :delete, :end, :page_down,
+                  :left_arrow, :right_arrow, :up_arrow, :down_arrow
+
+    attr_accessor :num_lock, :kp_divide, :kp_multiply, :kp_minus, :kp_plus, :kp_enter,
+                  :kp_one, :kp_two, :kp_three, :kp_four, :kp_five,
+                  :kp_six, :kp_seven, :kp_eight, :kp_nine, :kp_zero,
+                  :kp_period, :kp_equals
+
+    attr_accessor :shift, :control, :alt, :meta,
                   :shift_left, :shift_right,
                   :control_left, :control_right,
                   :alt_left, :alt_right,
-                  :meta_left, :meta_right,
-                  :home, :end,
-                  :left_arrow, :right_arrow, :up_arrow, :down_arrow, :page_up, :page_down,
-                  :forward_slash, :back_slash
+                  :meta_left, :meta_right
 
     attr_accessor :ac_search, :ac_home, :ac_back, :ac_forward, :ac_stop, :ac_refresh, :ac_bookmarks
 
@@ -119,22 +130,28 @@ module GTK
     alias_method :left_ctrl=, :control_left=
     alias_method :right_ctrl=, :control_right=
 
-    alias_method :backslash, :back_slash
-    alias_method :forwardslash, :forward_slash
     alias_method :minus, :hyphen
     alias_method :dash, :hyphen
     alias_method :pageup, :page_up
     alias_method :pagedown, :page_down
     alias_method :backslash, :back_slash
     alias_method :forwardslash, :forward_slash
-    alias_method :backslash=, :back_slash=
-    alias_method :forwardslash=, :forward_slash=
+    alias_method :capslock, :caps_lock
+    alias_method :scrolllock, :scroll_lock
+    alias_method :numlock, :num_lock
+    alias_method :printscreen, :print_screen
+    alias_method :break, :pause
     alias_method :minus=, :hyphen=
     alias_method :dash=, :hyphen=
     alias_method :pageup=, :page_up=
     alias_method :pagedown=, :page_down=
     alias_method :backslash=, :back_slash=
     alias_method :forwardslash=, :forward_slash=
+    alias_method :capslock=, :caps_lock=
+    alias_method :scrolllock=, :scroll_lock=
+    alias_method :numlock=, :num_lock=
+    alias_method :printscreen=, :print_screen=
+    alias_method :break=, :pause=
 
     alias_method :left, :left_arrow
     alias_method :right, :right_arrow
@@ -144,7 +161,9 @@ module GTK
     alias_method :right=, :right_arrow=
     alias_method :up=, :up_arrow=
     alias_method :down=, :down_arrow=
+  end
 
+  class KeyboardKeys
     def self.sdl_shift_key? raw_key
       sdl_lshift_key?(raw_key) || sdl_rshift_key?(raw_key)
     end
@@ -252,11 +271,27 @@ module GTK
 
       char = KeyboardKeys.char_with_shift raw_key, modifier
       names = KeyboardKeys.char_to_method char, raw_key
-      names << :alt if (modifier & (256|512)) != 0    # alt key
-      names << :meta if (modifier & (1024|2048)) != 0 # meta key (command/apple/windows key)
-      names << :control if (modifier & (64|128)) != 0 # ctrl key
-      names << :shift if (modifier & (1|2)) != 0      # shift key
+      names << :alt if KeyboardKeys.modifier_alt? modifier
+      names << :meta if KeyboardKeys.modifier_meta? modifier
+      names << :control if KeyboardKeys.modifier_ctrl? modifier
+      names << :shift if KeyboardKeys.modifier_shift? modifier
       names
+    end
+
+    def self.modifier_shift? modifier
+      (modifier & (1|2)) != 0
+    end
+
+    def self.modifier_ctrl? modifier
+      (modifier & (64|128)) != 0
+    end
+
+    def self.modifier_alt? modifier
+      (modifier & (256|512)) != 0
+    end
+
+    def self.modifier_meta? modifier
+      (modifier & (1024|2048)) != 0
     end
 
     def self.utf_8_char raw_key
@@ -268,7 +303,7 @@ module GTK
 
     def self.char_with_shift raw_key, modifier
       return nil unless raw_key >= 0 && raw_key <= 255
-      if modifier != 1 && modifier != 2 && modifier != 3
+      if !KeyboardKeys.modifier_shift?(modifier)
         return utf_8_char raw_key
       else
         @shift_keys ||= {
@@ -342,9 +377,9 @@ module GTK
         ":"  => [:colon],
         ";"  => [:semicolon],
         "="  => [:equal],
-        "-"  => [:hyphen, :minus],
+        "-"  => [:hyphen],
         " "  => [:space],
-        "$"  => [:dollar_sign],
+        "$"  => [:dollar],
         "\"" => [:double_quotation_mark],
         "'"  => [:single_quotation_mark],
         "`"  => [:backtick],
@@ -368,22 +403,57 @@ module GTK
         "?"  => [:question_mark],
         '%'  => [:percent],
         "º"  => [:ordinal_indicator],
+        1073741881 => [:caps_lock],
+        1073741882 => [:f1],
+        1073741883 => [:f2],
+        1073741884 => [:f3],
+        1073741885 => [:f4],
+        1073741886 => [:f5],
+        1073741887 => [:f6],
+        1073741888 => [:f7],
+        1073741889 => [:f8],
+        1073741890 => [:f9],
+        1073741891 => [:f10],
+        1073741892 => [:f11],
+        1073741893 => [:f12],
+        1073741894 => [:print_screen],
+        1073741895 => [:scroll_lock],
+        1073741896 => [:pause],
+        1073741897 => [:insert],
         1073741898 => [:home],
+        1073741899 => [:page_up],
+        127        => [:delete],
         1073741901 => [:end],
+        1073741902 => [:page_down],
         1073741903 => [:right_arrow],
         1073741904 => [:left_arrow],
         1073741905 => [:down_arrow],
         1073741906 => [:up_arrow],
-        1073741899 => [:page_up],
-        1073741902 => [:page_down],
-        127 => [:delete],
-        1073742049 => [:shift_left, :shift],
-        1073742053 => [:shift_right, :shift],
+        1073741907 => [:num_lock],
+        1073741908 => [:kp_divide],
+        1073741909 => [:kp_multiply],
+        1073741910 => [:kp_minus],
+        1073741911 => [:kp_plus],
+        1073741912 => [:kp_enter],
+        1073741913 => [:kp_one],
+        1073741914 => [:kp_two],
+        1073741915 => [:kp_three],
+        1073741916 => [:kp_four],
+        1073741917 => [:kp_five],
+        1073741918 => [:kp_six],
+        1073741919 => [:kp_seven],
+        1073741920 => [:kp_eight],
+        1073741921 => [:kp_nine],
+        1073741922 => [:kp_zero],
+        1073741923 => [:kp_period],
+        1073741927 => [:kp_equals],
         1073742048 => [:control_left, :control],
-        1073742052 => [:control_right, :control],
+        1073742049 => [:shift_left, :shift],
         1073742050 => [:alt_left, :alt],
-        1073742054 => [:alt_right, :alt],
         1073742051 => [:meta_left, :meta],
+        1073742052 => [:control_right, :control],
+        1073742053 => [:shift_right, :shift],
+        1073742054 => [:alt_right, :alt],
         1073742055 => [:meta_right, :meta],
         1073742092 => [:ac_search],
         1073742093 => [:ac_home],
@@ -623,6 +693,22 @@ module GTK
       @has_focus   = false
     end
 
+    def key_down? key
+      @key_down.send(key)
+    end
+
+    def key_up? key
+      @key_up.send(key)
+    end
+
+    def key_held? key
+      @key_held.send(key)
+    end
+
+    def key_down_or_held? key
+      key_down?(key) || key_held?(key)
+    end
+
     def p
       @key_down.p || @key_held.p
     end
@@ -695,6 +781,10 @@ module GTK
     # @return [String]
     def to_s
       serialize.to_s
+    end
+
+    def to_h
+      serialize
     end
 
     def key
