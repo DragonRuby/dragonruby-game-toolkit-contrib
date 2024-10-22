@@ -690,7 +690,10 @@ S
       end
 
       def circle_intersect_line? circle, line
-        center = { x: circle.x, y: circle.y }
+        center    = { x: circle.x + circle.radius, y: circle.y + circle.radius }
+        center.x -= circle.anchor_x * circle.w if circle.respond_to?(:anchor_x) && circle.anchor_x
+        center.y -= circle.anchor_y * circle.h if circle.respond_to?(:anchor_y) && circle.anchor_y
+
         closest_point = line_normal line, center
         result = distance_squared(center, closest_point) <= circle.radius**2
         return false if !result
