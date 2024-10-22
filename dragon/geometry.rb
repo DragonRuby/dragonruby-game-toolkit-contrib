@@ -787,38 +787,15 @@ S
       end
 
       def intersect_circle? circle_one, circle_two
-        circle_one_radius   = circle_one.radius if circle_one.respond_to? :radius
-        circle_one_radius ||= if circle_one.w <= circle_one.h
-                                circle_one.w / 2
-                              else
-                                circle_one.h / 2
-                              end
-        circle_two_radius   = circle_two.radius if circle_two.respond_to? :radius
-        circle_two_radius ||= if circle_two.w <= circle_one.h
-                                circle_two.w / 2
-                              else
-                                circle_two.h / 2
-                              end
+        resolved_circle_one = rect_to_circle circle_one
+        resolved_circle_two = rect_to_circle circle_two
 
-        circle_one_center = { x: circle_one.x + circle_one_radius,
-                              y: circle_one.y + circle_one_radius }
-        circle_two_center = { x: circle_two.x + circle_two_radius,
-                              y: circle_two.y + circle_two_radius }
+        circle_one_center = { x: resolved_circle_one.x + resolved_circle_one.radius,
+                              y: resolved_circle_one.y + resolved_circle_one.radius }
+        circle_two_center = { x: resolved_circle_two.x + resolved_circle_two.radius,
+                              y: resolved_circle_two.y + resolved_circle_two.radius }
 
-        if circle_one.respond_to?(:anchor_x) && circle_one.anchor_x
-          circle_one_center.x -= circle_one.anchor_x * circle_one_radius * 2
-        end
-        if circle_one.respond_to?(:anchor_y) && circle_one.anchor_y
-          circle_one_center.y -= circle_one.anchor_y * circle_one_radius * 2
-        end
-        if circle_two.respond_to?(:anchor_x) && circle_two.anchor_x
-          circle_two_center.x -= circle_two.anchor_x * circle_two_radius * 2
-        end
-        if circle_two.respond_to?(:anchor_y) && circle_two.anchor_y
-          circle_two_center.y -= circle_two.anchor_y * circle_two_radius * 2
-        end
-
-        distance_squared(circle_one_center, circle_two_center) <= (circle_one_radius + circle_two_radius)**2
+        distance_squared(circle_one_center, circle_two_center) <= (resolved_circle_one.radius + resolved_circle_two.radius)**2
       rescue Exception => e
         raise e, <<-S
 * ERROR:
