@@ -66,7 +66,7 @@ class Game
       # set their "action" to standing
       # entity_set_action! updates the current action
       # of the entity and takes note of the frame that
-      # the action occured on
+      # the action occurred on
       if (entity.action == :running)
         entity_set_action! entity, :standing
       end
@@ -119,7 +119,7 @@ class Game
       end
 
       # set the entity's dy value and take note
-      # of when jump occured (also increment jump
+      # of when jump occurred (also increment jump
       # count/eat one of their jumps)
       entity.dy             = entity.jump_power
       entity.jumped_at      = entity.clock
@@ -180,7 +180,7 @@ class Game
   def calc_action_history
     # keep track of the inputs the player has performed over time
     # as the inputs change for the player, mark the point in time
-    # the specific input changed, and when the change occured.
+    # the specific input changed, and when the change occurred.
     # when enemies replay the player's actions, this history (along
     # with the enemy's interal clock) is consulted to determine
     # what action should be performed

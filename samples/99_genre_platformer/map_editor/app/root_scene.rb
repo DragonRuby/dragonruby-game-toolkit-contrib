@@ -10,7 +10,7 @@ class RootScene
   def tick
     args.outputs.background_color = [0, 0, 0]
     args.state.terrain ||= []
-    @level_editor.load_terrain args if args.state.tick_count == 0
+    @level_editor.load_terrain args if Kernel.tick_count == 0
 
     state.player ||= {
       x: 0,

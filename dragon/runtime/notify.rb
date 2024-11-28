@@ -41,6 +41,7 @@ module GTK
     end
 
     def tick_notification
+      return if Kernel.tick_count <= -1
       @notification_max_alpha ||= 255
       @notification_message = nil if @console.visible?
       if @notification_message && @global_notification_at.elapsed_time(Kernel.global_tick_count) < @notification_duration

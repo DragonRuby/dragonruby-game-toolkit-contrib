@@ -36,7 +36,333 @@ def tick args
 end
 ```
 
-## `intersect_rect?`
+## Trig Functions
+
+### `angle`
+
+Invocation variants:
+
+- `args.geometry.angle start_point, end_point`
+- `Geometry.angle start_point, end_point`
+
+Returns an angle in degrees from the `start_point` to the `end_point` (if you want the value in radians call `.to_radians` on the value returned).
+
+### `angle_from`
+
+Invocation variants:
+
+- `args.geometry.angle_from start_point, end_point`
+- `Geometry.angle_from start_point, end_point`
+- `start_point.angle_from end_point`
+
+Returns an angle in degrees from the `end_point` to the `start_point` (if you want the value in radians, you can call `.to_radians` on the value returned):
+
+```ruby
+def tick args
+  rect_1 ||= {
+    x: 0,
+    y: 0,
+  }
+
+  rect_2 ||= {
+    x: 100,
+    y: 100,
+  }
+
+  angle = rect_1.angle_from rect_2 # returns 225 degrees
+  angle_radians = angle.to_radians
+  args.outputs.labels << { x: 30, y: 30.from_top, text: "#{angle}, #{angle_radians}" }
+
+  angle = args.geometry.angle_from rect_1, rect_2 # returns 225 degrees
+  angle_radians = angle.to_radians
+  args.outputs.labels << { x: 30, y: 60.from_top, text: "#{angle}, #{angle_radians}" }
+end
+```
+
+### `angle_to`, `angle`
+
+Invocation variants:
+
+- `args.geometry.angle_to start_point, end_point`
+- `args.geometry.angle start_point, end_point` (alias)
+- `Geometry.angle_to start_point, end_point`
+- `Geometry.angle start_point, end_point` (alias)
+- `start_point.angle_to end_point`
+
+Returns an angle in degrees to the `end_point` from the `start_point` (if you want the value in radians, you can call `.to_radians` on the value returned):
+
+```ruby
+def tick args
+  rect_1 ||= {
+    x: 0,
+    y: 0,
+  }
+
+  rect_2 ||= {
+    x: 100,
+    y: 100,
+  }
+
+  angle = rect_1.angle_to rect_2 # returns 45 degrees
+  angle_radians = angle.to_radians
+  args.outputs.labels << { x: 30, y: 30.from_top, text: "#{angle}, #{angle_radians}" }
+
+  angle = args.geometry.angle_to rect_1, rect_2 # returns 45 degrees
+  angle_radians = angle.to_radians
+  args.outputs.labels << { x: 30, y: 60.from_top, text: "#{angle}, #{angle_radians}" }
+end
+```
+
+### `angle_turn_direction`
+
+Invocation variants:
+
+- `args.geometry.angle_turn_direction angle, target_angle`
+- `Geometry.angle_turn_direction angle, target_angle`
+
+Returns `1` or -1 depending on which direction the `angle` needs to turn to reach the `target_angle` most efficiently. The angles are assumed to be in degrees. `1` means turn clockwise, and `-1` means turn counter-clockwise.
+
+### `angle_delta`
+
+Invocation variants:
+
+- `args.geometry.angle_delta angle, target_angle`
+- `Geometry.angle_delta angle, target_angle`
+
+Given an `angle` and a `target_angle`, this function will return the
+smallest angle delta between the two angles. The angles are assumed to
+be in degrees.
+
+### `angle_within_range?`
+
+Invocation variants:
+
+- `args.geometry.angle_within_range? test_angle, target_angle, range`
+- `Geometry.angle_within_range? test_angle, target_angle, range`
+
+Given a `test_angle`, `target_angle`, and `range` (all in degrees),
+this function will return `true` if the `test_angle` is within the
+`range` of the `target_angle` on either side. The `range` is the
+number of degrees from the `target_angle` that the `test_angle` can be
+within to return `true`.
+
+```ruby
+def tick args
+  args.state.target_angle ||= 90
+  args.state.angle_range  ||= 10
+  mouse_angle  = Geometry.angle({ x: 640, y: 0 }, args.inputs.mouse.point)
+  delta_angle  = Geometry.angle_delta(args.state.target_angle, mouse_angle)
+  within_range = Geometry.angle_within_range?(args.state.target_angle, mouse_angle, args.state.angle_range)
+
+  # render line for mouse
+  args.outputs.lines << { x: 640,
+                          y: 0,
+                          x2: args.inputs.mouse.x,
+                          y2: args.inputs.mouse.y,
+                          r: 0,
+                          g: 0,
+                          b: 0 }
+
+  # render line for target angle
+  args.outputs.lines << { x: 640,
+                          y: 0,
+                          x2: 640 + 700 * args.state.target_angle.vector_x,
+                          y2: 700 * args.state.target_angle.vector_y,
+                          r: 0,
+                          g: 0,
+                          b: 0 }
+
+  # render lines for angle range
+  args.outputs.lines << { x: 640,
+                          y: 0,
+                          x2: 640 + 700 * (args.state.target_angle - args.state.angle_range).vector_x,
+                          y2: 700 * (args.state.target_angle - args.state.angle_range).vector_y,
+                          r: 0,
+                          g: 0,
+                          b: 0 }
+  args.outputs.lines << { x: 640,
+                          y: 0,
+                          x2: 640 + 700 * (args.state.target_angle + args.state.angle_range).vector_x,
+                          y2: 700 * (args.state.target_angle + args.state.angle_range).vector_y,
+                          r: 0,
+                          g: 0,
+                          b: 0 }
+
+  args.outputs.debug << "Target Angle #{args.state.target_angle}"
+  args.outputs.debug << "Angle Range #{args.state.angle_range}"
+  args.outputs.debug << "Mouse Angle #{mouse_angle.to_sf}"
+  args.outputs.debug << "Delta Angle #{delta_angle.to_sf}"
+  args.outputs.debug << "Within Range? #{within_range}"
+end
+```
+
+### `distance`
+
+Returns the distance between two points;
+
+```ruby
+def tick args
+  rect_1 ||= {
+    x: 0,
+    y: 0,
+  }
+
+  rect_2 ||= {
+    x: 100,
+    y: 100,
+  }
+
+  distance = args.geometry.distance rect_1, rect_2
+  args.outputs.labels << {
+    x: 30,
+    y: 30.from_top,
+    text: "#{distance}"
+  }
+
+  args.outputs.lines << {
+    x: rect_1.x,
+    y: rect_1.y,
+    x2: rect_2.x,
+    y2: rect_2.y
+  }
+end
+```
+
+### `distance_squared`
+
+Given two `Hashes` with `x` and `y` keys (or `Objects` that respond to `x` and `y`), this function will return the distance squared between the two points. This is useful when you only want to compare distances, and don't need the actual distance.
+
+Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
+
+### `line_angle`
+
+Given a line, this function will return the angle of the line in degrees.
+
+### `line_rise_run`
+
+Given a line, this function returns a Hash with `x` and `y` keys representing a normalized representation of the rise and run of the line.
+
+```ruby
+def tick args
+  # draw a line from the bottom left to the top right
+  line = {
+    x: 0,
+    y: 0,
+    x2: 1280,
+    y2: 720
+  }
+
+  # get rise and run of line
+  rise_run = args.geometry.line_rise_run line
+
+  # output the rise and run of line
+  args.outputs.labels << {
+    x: 640,
+    y: 360,
+    text: "#{rise_run}",
+    alignment_enum: 1,
+    vertical_alignment_enum: 1,
+  }
+
+  # render the line
+  args.outputs.lines << line
+end
+```
+
+### `line_vec2`
+
+Given a line, this function will return a `Hash` with `x` and `y` keys that represents the vector of the line.
+
+Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
+
+### `line_normal`
+
+The first parameter is a line (a `Hash` with `x`, `y`, `x2`, and `y2` keys, or an `Object` that responds to `x`, `y`, `x2`, and `y2`).
+
+The second parameter is a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`).
+
+This function will return a `Hash` with `x` and `y` keys that represents the normal of the line relative to the point provided.
+
+Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
+
+
+### `rotate_point`
+
+Given a point and an angle in degrees, a new point is returned that is rotated around the origin by the degrees amount. An optional third argument can be provided to rotate the angle around a point other than the origin.
+
+### `vec2_dot_product`
+
+Given two `Hashes` with `x` and `y` keys (or `Objects` that respond to `x` and `y`), this function will return the dot product of the two vectors.
+
+Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
+
+### `vec2_normalize`
+
+Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`), this function will return a `Hash` with `x` and `y` keys that represents the vector normalized.
+
+Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
+
+
+```ruby
+def tick args
+  args.state.rotate_amount ||= 0
+  args.state.rotate_amount  += 1
+
+  if args.state.rotate_amount >= 360
+    args.state.rotate_amount = 0
+  end
+
+  point_1 = {
+    x: 100,
+    y: 100
+  }
+
+  # rotate point around 0, 0
+  rotated_point_1 = args.geometry.rotate_point point_1,
+                                               args.state.rotate_amount
+
+  args.outputs.solids << {
+    x: rotated_point_1.x - 5,
+    y: rotated_point_1.y - 5,
+    w: 10,
+    h: 10
+  }
+
+  point_2 = {
+    x: 640 + 100,
+    y: 360 + 100
+  }
+
+  # rotate point around center screen
+  rotated_point_2 = args.geometry.rotate_point point_2,
+                                               args.state.rotate_amount,
+                                               x: 640, y: 360
+
+  args.outputs.solids << {
+    x: rotated_point_2.x - 5,
+    y: rotated_point_2.y - 5,
+    w: 10,
+    h: 10
+  }
+end
+```
+
+### `vec2_magnitude`
+
+Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`), this function will return the magnitude of the vector.
+
+Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
+
+### `vec2_normal`
+
+Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`), this function will return a `Hash` with `x` and `y` keys that represents the normal of the vector.
+
+Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
+
+
+## Collision Functions
+
+### `intersect_rect?`
 
 Invocation variants:
 
@@ -109,7 +435,7 @@ def tick args
 end
 ```
 
-## `inside_rect?`
+### `inside_rect?`
 
 Invocation variants:
 
@@ -181,21 +507,7 @@ def tick args
 end
 ```
 
-## `rect_to_circle`
-
-Invocation variants:
-
-- `Geometry.rect_to_circle(circle)`
-- `Geometry.rect_to_circle(rect)`
-
-The parameters must be one of the following:
-
-- A `Hash` with `x`, `y`, and `radius` (or an object that responds to `x`, `y`, and `radius`).
-- A `Hash` with `x`, `y`, `w`, `h`, `anchor_x`, and `anchor_y` (or an object that responds to `x`, `y`, `w`, `h`, `anchor_x`, and `anchor_y`). If the parameter is a `Hash`, `anchor_x` and `anchor_y` are optional and default to `0`.
-
-Given a circle or a rectangle, this function will return a rectangle that is the smallest rectangle that can contain the circle.
-
-## `intersect_circle?`
+### `intersect_circle?`
 
 Invocation variants:
 
@@ -262,266 +574,7 @@ def tick args
 end
 ```
 
-## `scale_rect`
-
-Given a `Rectangle` this function returns a new rectangle with a scaled size.
-
-- `ratio`: the ratio by which to scale the rect. A ratio of 2 will double the dimensions of the rect while a ratio of 0.5 will halve its dimensions.
-- `anchor_x` and `anchor_y` specify the point within the rect from which to resize it. Setting both to 0 will affect the width and height of the rect, leaving x and y unchanged. Setting both to 0.5 will scale all sides of the rect proportionally from the center.
-
-```ruby
-def tick args
-  # a rect at the center of the screen
-  args.state.rect_1 ||= { x: 640 - 20, y: 360 - 20, w: 40, h: 40 }
-
-  # render the rect
-  args.outputs.borders << args.state.rect_1
-
-  # the rect half the size with the x and y position unchanged
-  args.outputs.borders << args.state.rect_1.scale_rect(0.5)
-
-  # the rect double the size, repositioned in the center given anchor optional arguments
-  args.outputs.borders << args.state.rect_1.scale_rect(2, 0.5, 0.5)
-end
-```
-
-## `scale_rect_extended`
-
-The behavior is similar to `scale_rect` except that you can independently control the scale of each axis. The parameters are all named:
-
-- `percentage_x`: percentage to change the width (default value of 1.0)
-- `percentage_y`: percentage to change the height (default value of 1.0)
-- `anchor_x`: anchor repositioning of x (default value of 0.0)
-- `anchor_y`: anchor repositioning of y (default value of 0.0)
-
-```ruby
-def tick args
-  baseline_rect = { x: 640 - 20, y: 360 - 20, w: 40, h: 40 }
-  args.state.rect_1 ||= baseline_rect
-  args.state.rect_2 ||= baseline_rect.scale_rect_extended(percentage_x: 2,
-                                                          percentage_y: 0.5,
-                                                          anchor_x: 0.5,
-                                                          anchor_y: 1.0)
-  args.outputs.borders << args.state.rect_1
-  args.outputs.borders << args.state.rect_2
-end
-```
-
-## `anchor_rect`
-
-Returns a new rect that is anchored by an `anchor_x` and `anchor_y` value. The width and height of the rectangle is taken into consideration when determining the anchor position:
-
-```ruby
-def tick args
-  args.state.rect ||= {
-    x: 640,
-    y: 360,
-    w: 100,
-    h: 100
-  }
-
-  # rect's center: 640 + 50, 360 + 50
-  args.outputs.borders << args.state.rect.anchor_rect(0, 0)
-
-  # rect's center: 640, 360
-  args.outputs.borders << args.state.rect.anchor_rect(0.5, 0.5)
-
-  # rect's center: 640, 360
-  args.outputs.borders << args.state.rect.anchor_rect(0.5, 0)
-end
-```
-
-## `angle`
-
-Invocation variants:
-
-- `args.geometry.angle start_point, end_point`
-- `Geometry.angle start_point, end_point`
-
-Returns an angle in degrees from the `start_point` to the `end_point` (if you want the value in radians call `.to_radians` on the value returned).
-
-## `angle_from`
-
-Invocation variants:
-
-- `args.geometry.angle_from start_point, end_point`
-- `Geometry.angle_from start_point, end_point`
-- `start_point.angle_from end_point`
-
-Returns an angle in degrees from the `end_point` to the `start_point` (if you want the value in radians, you can call `.to_radians` on the value returned):
-
-```ruby
-def tick args
-  rect_1 ||= {
-    x: 0,
-    y: 0,
-  }
-
-  rect_2 ||= {
-    x: 100,
-    y: 100,
-  }
-
-  angle = rect_1.angle_from rect_2 # returns 225 degrees
-  angle_radians = angle.to_radians
-  args.outputs.labels << { x: 30, y: 30.from_top, text: "#{angle}, #{angle_radians}" }
-
-  angle = args.geometry.angle_from rect_1, rect_2 # returns 225 degrees
-  angle_radians = angle.to_radians
-  args.outputs.labels << { x: 30, y: 60.from_top, text: "#{angle}, #{angle_radians}" }
-end
-```
-
-## `angle_to`, `angle`
-
-Invocation variants:
-
-- `args.geometry.angle_to start_point, end_point`
-- `args.geometry.angle start_point, end_point` (alias)
-- `Geometry.angle_to start_point, end_point`
-- `Geometry.angle start_point, end_point` (alias)
-- `start_point.angle_to end_point`
-
-Returns an angle in degrees to the `end_point` from the `start_point` (if you want the value in radians, you can call `.to_radians` on the value returned):
-
-```ruby
-def tick args
-  rect_1 ||= {
-    x: 0,
-    y: 0,
-  }
-
-  rect_2 ||= {
-    x: 100,
-    y: 100,
-  }
-
-  angle = rect_1.angle_to rect_2 # returns 45 degrees
-  angle_radians = angle.to_radians
-  args.outputs.labels << { x: 30, y: 30.from_top, text: "#{angle}, #{angle_radians}" }
-
-  angle = args.geometry.angle_to rect_1, rect_2 # returns 45 degrees
-  angle_radians = angle.to_radians
-  args.outputs.labels << { x: 30, y: 60.from_top, text: "#{angle}, #{angle_radians}" }
-end
-```
-
-## `angle_turn_direction`
-
-Invocation variants:
-
-- `args.geometry.angle_turn_direction angle, target_angle`
-- `Geometry.angle_turn_direction angle, target_angle`
-
-Returns `1` or -1 depending on which direction the `angle` needs to turn to reach the `target_angle` most efficiently. The angles are assumed to be in degrees. `1` means turn clockwise, and `-1` means turn counter-clockwise.
-
-## `angle_delta`
-
-Invocation variants:
-
-- `args.geometry.angle_delta angle, target_angle`
-- `Geometry.angle_delta angle, target_angle`
-
-Given an `angle` and a `target_angle`, this function will return the
-smallest angle delta between the two angles. The angles are assumed to
-be in degrees.
-
-## `angle_within_range?`
-
-Invocation variants:
-
-- `args.geometry.angle_within_range? test_angle, target_angle, range`
-- `Geometry.angle_within_range? test_angle, target_angle, range`
-
-Given a `test_angle`, `target_angle`, and `range` (all in degrees),
-this function will return `true` if the `test_angle` is within the
-`range` of the `target_angle` on either side. The `range` is the
-number of degrees from the `target_angle` that the `test_angle` can be
-within to return `true`.
-
-```ruby
-def tick args
-  args.state.target_angle ||= 90
-  args.state.angle_range  ||= 10
-  mouse_angle  = Geometry.angle({ x: 640, y: 0 }, args.inputs.mouse.point)
-  delta_angle  = Geometry.angle_delta(args.state.target_angle, mouse_angle)
-  within_range = Geometry.angle_within_range?(args.state.target_angle, mouse_angle, args.state.angle_range)
-
-  # render line for mouse
-  args.outputs.lines << { x: 640,
-                          y: 0,
-                          x2: args.inputs.mouse.x,
-                          y2: args.inputs.mouse.y,
-                          r: 0,
-                          g: 0,
-                          b: 0 }
-
-  # render line for target angle
-  args.outputs.lines << { x: 640,
-                          y: 0,
-                          x2: 640 + 700 * args.state.target_angle.vector_x,
-                          y2: 700 * args.state.target_angle.vector_y,
-                          r: 0,
-                          g: 0,
-                          b: 0 }
-
-  # render lines for angle range
-  args.outputs.lines << { x: 640,
-                          y: 0,
-                          x2: 640 + 700 * (args.state.target_angle - args.state.angle_range).vector_x,
-                          y2: 700 * (args.state.target_angle - args.state.angle_range).vector_y,
-                          r: 0,
-                          g: 0,
-                          b: 0 }
-  args.outputs.lines << { x: 640,
-                          y: 0,
-                          x2: 640 + 700 * (args.state.target_angle + args.state.angle_range).vector_x,
-                          y2: 700 * (args.state.target_angle + args.state.angle_range).vector_y,
-                          r: 0,
-                          g: 0,
-                          b: 0 }
-
-  args.outputs.debug << "Target Angle #{args.state.target_angle}"
-  args.outputs.debug << "Angle Range #{args.state.angle_range}"
-  args.outputs.debug << "Mouse Angle #{mouse_angle.to_sf}"
-  args.outputs.debug << "Delta Angle #{delta_angle.to_sf}"
-  args.outputs.debug << "Within Range? #{within_range}"
-end
-```
-
-## `distance`
-
-Returns the distance between two points;
-
-```ruby
-def tick args
-  rect_1 ||= {
-    x: 0,
-    y: 0,
-  }
-
-  rect_2 ||= {
-    x: 100,
-    y: 100,
-  }
-
-  distance = args.geometry.distance rect_1, rect_2
-  args.outputs.labels << {
-    x: 30,
-    y: 30.from_top,
-    text: "#{distance}"
-  }
-
-  args.outputs.lines << {
-    x: rect_1.x,
-    y: rect_1.y,
-    x2: rect_2.x,
-    y2: rect_2.y
-  }
-end
-```
-
-## `point_inside_circle?`
+### `point_inside_circle?`
 
 Invocation variants:
 
@@ -592,43 +645,7 @@ def tick args
 end
 ```
 
-## `center_inside_rect`
-
-Invocation variants:
-
-- `target_rect.center_inside_rect reference_rect`
-- `args.geometry.center_inside_rect target_rect, reference_rect`
-- `Geometry.center_inside_rect target_rect, reference_rect`
-
-Given a target rect and a reference rect, the target rect is centered inside the reference rect (a new rect is returned).
-
-```ruby
-def tick args
-  rect_1 = {
-    x: 0,
-    y: 0,
-    w: 100,
-    h: 100
-  }
-
-  rect_2 = {
-    x: 640 - 100,
-    y: 360 - 100,
-    w: 200,
-    h: 200
-  }
-
-  centered_rect = args.geometry.center_inside_rect rect_1, rect_2
-  # OR
-  # centered_rect = rect_1.center_inside_rect rect_2
-
-  args.outputs.solids << rect_1.merge(r: 255)
-  args.outputs.solids << rect_2.merge(b: 255)
-  args.outputs.solids << centered_rect.merge(g: 255)
-end
-```
-
-## `ray_test`
+### `ray_test`
 
 Given a point and a line, `ray_test` returns one of the following symbols based on the location of the point relative to the line: `:left`, `:right`, `:on`
 
@@ -673,38 +690,7 @@ def tick args
 end
 ```
 
-## `line_rise_run`
-
-Given a line, this function returns a Hash with `x` and `y` keys representing a normalized representation of the rise and run of the line.
-
-```ruby
-def tick args
-  # draw a line from the bottom left to the top right
-  line = {
-    x: 0,
-    y: 0,
-    x2: 1280,
-    y2: 720
-  }
-
-  # get rise and run of line
-  rise_run = args.geometry.line_rise_run line
-
-  # output the rise and run of line
-  args.outputs.labels << {
-    x: 640,
-    y: 360,
-    text: "#{rise_run}",
-    alignment_enum: 1,
-    vertical_alignment_enum: 1,
-  }
-
-  # render the line
-  args.outputs.lines << line
-end
-```
-
-## `line_intersect`
+### `line_intersect`
 
 Given two lines (`:x`, `:y`, `:x2`, `:y2`), this function returns point of intersection if the line segments intersect. If the line segments do not intersect, `nil` is returned. If you want the lines to be treated as infinite lines, use `ray_intersect`.
 
@@ -736,7 +722,7 @@ def tick args
 end
 ```
 
-## `ray_intersect`
+### `ray_intersect`
 
 Given two lines (`:x`, `:y`, `:x2`, `:y2`), this function returns point of intersection if the ray (infinite line) intersect. If the lines are parallel, `nil` is returned. If you do not want the lines to be treated as infinite lines, use `line_intersect`.
 
@@ -778,55 +764,8 @@ def tick args
 end
 ```
 
-## `rotate_point`
 
-Given a point and an angle in degrees, a new point is returned that is rotated around the origin by the degrees amount. An optional third argument can be provided to rotate the angle around a point other than the origin.
-
-```ruby
-def tick args
-  args.state.rotate_amount ||= 0
-  args.state.rotate_amount  += 1
-
-  if args.state.rotate_amount >= 360
-    args.state.rotate_amount = 0
-  end
-
-  point_1 = {
-    x: 100,
-    y: 100
-  }
-
-  # rotate point around 0, 0
-  rotated_point_1 = args.geometry.rotate_point point_1,
-                                               args.state.rotate_amount
-
-  args.outputs.solids << {
-    x: rotated_point_1.x - 5,
-    y: rotated_point_1.y - 5,
-    w: 10,
-    h: 10
-  }
-
-  point_2 = {
-    x: 640 + 100,
-    y: 360 + 100
-  }
-
-  # rotate point around center screen
-  rotated_point_2 = args.geometry.rotate_point point_2,
-                                               args.state.rotate_amount,
-                                               x: 640, y: 360
-
-  args.outputs.solids << {
-    x: rotated_point_2.x - 5,
-    y: rotated_point_2.y - 5,
-    w: 10,
-    h: 10
-  }
-end
-```
-
-## `find_intersect_rect`
+### `find_intersect_rect`
 
 Given a rect and a collection of rects, `find_intersect_rect` returns the first rect that intersects with the the first parameter.
 
@@ -846,7 +785,7 @@ collision = args.geometry.find_intersect_rect args.state.player, args.state.terr
 
 ?> Function returns `nil` if either parameter is `nil` (`nil` values within the collection are skipped).
 
-## `find_all_intersect_rect`
+### `find_all_intersect_rect`
 
 Given a rect and a collection of rects, `find_all_intersect_rect` returns all rects that intersects with the the first parameter.
 
@@ -866,174 +805,7 @@ collisions = args.geometry.find_all_intersect_rect args.state.player, args.state
 
 ?> Function returns an empty `Array` if either parameter is `nil` (`nil` values within the collection are skipped).
 
-## `find_intersect_rect_quad_tree`
-
-This is a faster collision algorithm for determining if a rectangle intersects any rectangle in an array. In order to use `find_intersect_rect_quad_tree`, you must first generate a quad tree data structure using `create_quad_tree`. Use this function if `find_intersect_rect` isn't fast enough.
-
-```ruby
-def tick args
-  # create a player
-  args.state.player ||= {
-    x: 640 - 10,
-    y: 360 - 10,
-    w: 20,
-    h: 20
-  }
-
-  # allow control of player movement using arrow keys
-  args.state.player.x += args.inputs.left_right * 5
-  args.state.player.y += args.inputs.up_down * 5
-
-  # generate 40 random rectangles
-  args.state.boxes ||= 40.map do
-    {
-      x: 1180 * rand + 50,
-      y: 620 * rand + 50,
-      w: 100,
-      h: 100
-    }
-  end
-
-  # generate a quad tree based off of rectangles.
-  # the quad tree should only be generated once for
-  # a given array of rectangles. if the rectangles
-  # change, then the quad tree must be regenerated
-  args.state.quad_tree ||= args.geometry.quad_tree_create args.state.boxes
-
-  # use quad tree and find_intersect_rect_quad_tree to determine collision with player
-  collision = args.geometry.find_intersect_rect_quad_tree args.state.player,
-                                                          args.state.quad_tree
-
-  # if there is a collision render a red box
-  if collision
-    args.outputs.solids << collision.merge(r: 255)
-  end
-
-  # render player as green
-  args.outputs.solids << args.state.player.merge(g: 255)
-
-  # render boxes as borders
-  args.outputs.borders << args.state.boxes
-end
-```
-
-## `find_all_intersect_rect_quad_tree`
-
-This is a faster collision algorithm for determining if a rectangle intersects other rectangles in an array. In order to use `find_all_intersect_rect_quad_tree`, you must first generate a quad tree data structure using `create_quad_tree`. Use this function if `find_all_intersect_rect` isn't fast enough.
-
-```ruby
-def tick args
-  # create a player
-  args.state.player ||= {
-    x: 640 - 10,
-    y: 360 - 10,
-    w: 20,
-    h: 20
-  }
-
-  # allow control of player movement using arrow keys
-  args.state.player.x += args.inputs.left_right * 5
-  args.state.player.y += args.inputs.up_down * 5
-
-  # generate 40 random rectangles
-  args.state.boxes ||= 40.map do
-    {
-      x: 1180 * rand + 50,
-      y: 620 * rand + 50,
-      w: 100,
-      h: 100
-    }
-  end
-
-  # generate a quad tree based off of rectangles.
-  # the quad tree should only be generated once for
-  # a given array of rectangles. if the rectangles
-  # change, then the quad tree must be regenerated
-  args.state.quad_tree ||= args.geometry.quad_tree_create args.state.boxes
-
-  # use quad tree and find_intersect_rect_quad_tree to determine collision with player
-  collisions = args.geometry.find_all_intersect_rect_quad_tree args.state.player,
-                                                              args.state.quad_tree
-
-  # if there is a collision render a red box
-  args.outputs.solids << collisions.map { |c| c.merge(r: 255) }
-
-  # render player as green
-  args.outputs.solids << args.state.player.merge(g: 255)
-
-  # render boxes as borders
-  args.outputs.borders << args.state.boxes
-end
-```
-
-## `line_angle`
-
-Given a line, this function will return the angle of the line in degrees.
-
-## `vec2_dot_product`
-
-Given two `Hashes` with `x` and `y` keys (or `Objects` that respond to `x` and `y`), this function will return the dot product of the two vectors.
-
-Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
-
-## `vec2_normalize`
-
-Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`), this function will return a `Hash` with `x` and `y` keys that represents the vector normalized.
-
-Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
-
-## `rect_props`
-
-Invocation variants:
-
-- `args.geometry.rect_props rect`
-- `Geometry.rect_props rect`
-
-Given a `Hash` with `x`, `y`, `w`, `h`, (and optionally `anchor_x`, `anchor_y`), this function returns a `Hash` in the following form.
-
-```ruby
-{
-  x: ...,
-  y: ...,
-  w: ...,
-  h: ...,
-  center: {
-    x: ...,
-    y: ...,
-  }
-}
-```
-
-Notes:
-
-- Any object that responds to `x`, `y`, `w`, `h`, `anchor_x`, `anchor_y` can leverage this function.
-- The returned `Hash` will not include `anchor_(x|y)` (recomputes `x`, `y` to take the anchors into consideration).
-
-## `line_vec2`
-
-Given a line, this function will return a `Hash` with `x` and `y` keys that represents the vector of the line.
-
-Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
-
-## `vec2_magnitude`
-
-Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`), this function will return the magnitude of the vector.
-
-Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
-
-## `distance_squared`
-
-Given two `Hashes` with `x` and `y` keys (or `Objects` that respond to `x` and `y`), this function will return the distance squared between the two points. This is useful when you only want to compare distances, and don't need the actual distance.
-
-Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
-
-## `vec2_normal`
-
-Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`), this function will return a `Hash` with `x` and `y` keys that represents the normal of the vector.
-
-Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
-
-## `circle_intersect_line?`
+### `circle_intersect_line?`
 
 The first parameters is a `Hash` with `x`, `y`, and `radius` keys (or an `Object` that responds to `x`, `y`, and `radius`).
 
@@ -1043,17 +815,7 @@ This function will return `true` if the circle intersects the line, and `false` 
 
 Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
 
-## `line_normal`
-
-The first parameter is a line (a `Hash` with `x`, `y`, `x2`, and `y2` keys, or an `Object` that responds to `x`, `y`, `x2`, and `y2`).
-
-The second parameter is a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`).
-
-This function will return a `Hash` with `x` and `y` keys that represents the normal of the line relative to the point provided.
-
-Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
-
-## `point_on_line?`
+### `point_on_line?`
 
 The first parameter is a point (a `Hash` with `x` and `y` keys, or an `Object` that responds to `x` and `y`).
 
@@ -1063,7 +825,7 @@ This function will return `true` if the point is on the line, and `false` if it 
 
 Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
 
-## `each_intersect_rect`
+### `each_intersect_rect`
 
 The first parameter can be an array or a single `Hash` (or an object that responds to `x`, `y`, `w`, `h`).
 
@@ -1081,7 +843,7 @@ object in the first and second parameters.
 
 An implicit block is required for this function. The block will be called with each pair of intersecting rectangles.
 
-### Simple Usage
+#### Simple Usage
 
 ```ruby
 rects_1 = [{ x: 0, y: 0, w: 100, h: 100 }]
@@ -1092,7 +854,7 @@ args.geometry.each_intersect_rect(rects_1, rects_2) do |rect_1, rect_2|
 end
 ```
 
-### Advanced Usage
+#### Advanced Usage
 
 ```ruby
 class Player
@@ -1136,7 +898,7 @@ Geometry.each_intersect_rect(rects_1,
 end
 ```
 
-## `find_collisions`
+### `find_collisions`
 
 Given an `Array` of rects, returns a `Hash` of collisions. Each entry in the return `Hash` maps two rects from the input `Array` that intersect.
 
@@ -1193,7 +955,141 @@ def tick(args)
 end
 ```
 
-## `rect_navigate`
+### `find_intersect_rect_quad_tree`
+
+This is a faster collision algorithm for determining if a rectangle intersects any rectangle in an array. In order to use `find_intersect_rect_quad_tree`, you must first generate a quad tree data structure using `create_quad_tree`. Use this function if `find_intersect_rect` isn't fast enough.
+
+```ruby
+def tick args
+  # create a player
+  args.state.player ||= {
+    x: 640 - 10,
+    y: 360 - 10,
+    w: 20,
+    h: 20
+  }
+
+  # allow control of player movement using arrow keys
+  args.state.player.x += args.inputs.left_right * 5
+  args.state.player.y += args.inputs.up_down * 5
+
+  # generate 40 random rectangles
+  args.state.boxes ||= 40.map do
+    {
+      x: 1180 * rand + 50,
+      y: 620 * rand + 50,
+      w: 100,
+      h: 100
+    }
+  end
+
+  # generate a quad tree based off of rectangles.
+  # the quad tree should only be generated once for
+  # a given array of rectangles. if the rectangles
+  # change, then the quad tree must be regenerated
+  args.state.quad_tree ||= args.geometry.quad_tree_create args.state.boxes
+
+  # use quad tree and find_intersect_rect_quad_tree to determine collision with player
+  collision = args.geometry.find_intersect_rect_quad_tree args.state.player,
+                                                          args.state.quad_tree
+
+  # if there is a collision render a red box
+  if collision
+    args.outputs.solids << collision.merge(r: 255)
+  end
+
+  # render player as green
+  args.outputs.solids << args.state.player.merge(g: 255)
+
+  # render boxes as borders
+  args.outputs.borders << args.state.boxes
+end
+```
+
+### `find_all_intersect_rect_quad_tree`
+
+This is a faster collision algorithm for determining if a rectangle intersects other rectangles in an array. In order to use `find_all_intersect_rect_quad_tree`, you must first generate a quad tree data structure using `create_quad_tree`. Use this function if `find_all_intersect_rect` isn't fast enough.
+
+```ruby
+def tick args
+  # create a player
+  args.state.player ||= {
+    x: 640 - 10,
+    y: 360 - 10,
+    w: 20,
+    h: 20
+  }
+
+  # allow control of player movement using arrow keys
+  args.state.player.x += args.inputs.left_right * 5
+  args.state.player.y += args.inputs.up_down * 5
+
+  # generate 40 random rectangles
+  args.state.boxes ||= 40.map do
+    {
+      x: 1180 * rand + 50,
+      y: 620 * rand + 50,
+      w: 100,
+      h: 100
+    }
+  end
+
+  # generate a quad tree based off of rectangles.
+  # the quad tree should only be generated once for
+  # a given array of rectangles. if the rectangles
+  # change, then the quad tree must be regenerated
+  args.state.quad_tree ||= args.geometry.quad_tree_create args.state.boxes
+
+  # use quad tree and find_intersect_rect_quad_tree to determine collision with player
+  collisions = args.geometry.find_all_intersect_rect_quad_tree args.state.player,
+                                                              args.state.quad_tree
+
+  # if there is a collision render a red box
+  args.outputs.solids << collisions.map { |c| c.merge(r: 255) }
+
+  # render player as green
+  args.outputs.solids << args.state.player.merge(g: 255)
+
+  # render boxes as borders
+  args.outputs.borders << args.state.boxes
+end
+```
+
+
+### `create_quad_tree`
+
+Generates a quad tree from an array of rectangles. See `find_intersect_rect_quad_tree` for usage.
+
+## Transform Functions
+
+### `rect_props`
+
+Invocation variants:
+
+- `args.geometry.rect_props rect`
+- `Geometry.rect_props rect`
+
+Given a `Hash` with `x`, `y`, `w`, `h`, (and optionally `anchor_x`, `anchor_y`), this function returns a `Hash` in the following form.
+
+```ruby
+{
+  x: ...,
+  y: ...,
+  w: ...,
+  h: ...,
+  center: {
+    x: ...,
+    y: ...,
+  }
+}
+```
+
+Notes:
+
+- Any object that responds to `x`, `y`, `w`, `h`, `anchor_x`, `anchor_y` can leverage this function.
+- The returned `Hash` will not include `anchor_(x|y)` (recomputes `x`, `y` to take the anchors into consideration).
+
+### `rect_navigate`
 
 This function returns the next rect provided a move direction. The function is helpful for navigating controls using a keyboard or controller (like in on a menu screen).
 
@@ -1267,6 +1163,122 @@ args.state.selected_button = Geometry.rect_navigate(
 
 For a non-trivial usage, see the following sample app: `./samples/09_ui_controls/02_menu_navigation`.
 
-## `create_quad_tree`
 
-Generates a quad tree from an array of rectangles. See `find_intersect_rect_quad_tree` for usage.
+### `rect_to_circle`
+
+Invocation variants:
+
+- `Geometry.rect_to_circle(circle)`
+- `Geometry.rect_to_circle(rect)`
+
+The parameters must be one of the following:
+
+- A `Hash` with `x`, `y`, and `radius` (or an object that responds to `x`, `y`, and `radius`).
+- A `Hash` with `x`, `y`, `w`, `h`, `anchor_x`, and `anchor_y` (or an object that responds to `x`, `y`, `w`, `h`, `anchor_x`, and `anchor_y`). If the parameter is a `Hash`, `anchor_x` and `anchor_y` are optional and default to `0`.
+
+Given a circle or a rectangle, this function will return a rectangle that is the smallest rectangle that can contain the circle.
+
+### `scale_rect`
+
+Given a `Rectangle` this function returns a new rectangle with a scaled size.
+
+- `ratio`: the ratio by which to scale the rect. A ratio of 2 will double the dimensions of the rect while a ratio of 0.5 will halve its dimensions.
+- `anchor_x` and `anchor_y` specify the point within the rect from which to resize it. Setting both to 0 will affect the width and height of the rect, leaving x and y unchanged. Setting both to 0.5 will scale all sides of the rect proportionally from the center.
+
+```ruby
+def tick args
+  # a rect at the center of the screen
+  args.state.rect_1 ||= { x: 640 - 20, y: 360 - 20, w: 40, h: 40 }
+
+  # render the rect
+  args.outputs.borders << args.state.rect_1
+
+  # the rect half the size with the x and y position unchanged
+  args.outputs.borders << args.state.rect_1.scale_rect(0.5)
+
+  # the rect double the size, repositioned in the center given anchor optional arguments
+  args.outputs.borders << args.state.rect_1.scale_rect(2, 0.5, 0.5)
+end
+```
+
+### `scale_rect_extended`
+
+The behavior is similar to `scale_rect` except that you can independently control the scale of each axis. The parameters are all named:
+
+- `percentage_x`: percentage to change the width (default value of 1.0)
+- `percentage_y`: percentage to change the height (default value of 1.0)
+- `anchor_x`: anchor repositioning of x (default value of 0.0)
+- `anchor_y`: anchor repositioning of y (default value of 0.0)
+
+```ruby
+def tick args
+  baseline_rect = { x: 640 - 20, y: 360 - 20, w: 40, h: 40 }
+  args.state.rect_1 ||= baseline_rect
+  args.state.rect_2 ||= baseline_rect.scale_rect_extended(percentage_x: 2,
+                                                          percentage_y: 0.5,
+                                                          anchor_x: 0.5,
+                                                          anchor_y: 1.0)
+  args.outputs.borders << args.state.rect_1
+  args.outputs.borders << args.state.rect_2
+end
+```
+
+### `anchor_rect`
+
+Returns a new rect that is anchored by an `anchor_x` and `anchor_y` value. The width and height of the rectangle is taken into consideration when determining the anchor position:
+
+```ruby
+def tick args
+  args.state.rect ||= {
+    x: 640,
+    y: 360,
+    w: 100,
+    h: 100
+  }
+
+  # rect's center: 640 + 50, 360 + 50
+  args.outputs.borders << args.state.rect.anchor_rect(0, 0)
+
+  # rect's center: 640, 360
+  args.outputs.borders << args.state.rect.anchor_rect(0.5, 0.5)
+
+  # rect's center: 640, 360
+  args.outputs.borders << args.state.rect.anchor_rect(0.5, 0)
+end
+```
+
+### `center_inside_rect`
+
+Invocation variants:
+
+- `target_rect.center_inside_rect reference_rect`
+- `args.geometry.center_inside_rect target_rect, reference_rect`
+- `Geometry.center_inside_rect target_rect, reference_rect`
+
+Given a target rect and a reference rect, the target rect is centered inside the reference rect (a new rect is returned).
+
+```ruby
+def tick args
+  rect_1 = {
+    x: 0,
+    y: 0,
+    w: 100,
+    h: 100
+  }
+
+  rect_2 = {
+    x: 640 - 100,
+    y: 360 - 100,
+    w: 200,
+    h: 200
+  }
+
+  centered_rect = args.geometry.center_inside_rect rect_1, rect_2
+  # OR
+  # centered_rect = rect_1.center_inside_rect rect_2
+
+  args.outputs.solids << rect_1.merge(r: 255)
+  args.outputs.solids << rect_2.merge(b: 255)
+  args.outputs.solids << centered_rect.merge(g: 255)
+end
+```

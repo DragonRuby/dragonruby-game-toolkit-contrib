@@ -92,6 +92,7 @@ to check in case we mangled it to work as a filename.)
 -   Launch Type: Launch (Default)
 -   Operating System: Windows
 -   CPU Architecture: 64-bit only
+-   Arguments: `./` (optionally set if you want to [Steam Console Commands](https://help.steampowered.com/en/faqs/view/7D01-D2DD-D75E-2955))
 -   Everything else can be default/blank.
 
 Click the "Update" button on that section.
@@ -100,6 +101,7 @@ Add another launch option, as before:
 
 -   Executable: My Game Name.app
 -   Launch Type: Launch (Default)
+-   Arguments: `./` (optionally set if you want to [Steam Console Commands](https://help.steampowered.com/en/faqs/view/7D01-D2DD-D75E-2955))
 -   Operating System: macOS
 
 Add another launch option, as before:
@@ -107,6 +109,7 @@ Add another launch option, as before:
 -   Executable: mygamename
 -   Launch Type: Launch (Default)
 -   Operating System: Linux + SteamOS
+-   Arguments: `./` (optionally set if you want to [Steam Console Commands](https://help.steampowered.com/en/faqs/view/7D01-D2DD-D75E-2955))
 -   CPU Architecture: 64-bit only
 
 ### Publish Changes

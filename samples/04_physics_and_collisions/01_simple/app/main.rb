@@ -33,7 +33,7 @@ def defaults args
 end
 
 def render args
-  # If the game state denotes that a collision has occured,
+  # If the game state denotes that a collision has occurred,
   # render a solid square, otherwise render a border instead.
   if args.state.center_box_collision
     args.outputs.solids << args.state.center_box

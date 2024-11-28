@@ -73,7 +73,7 @@ end
 
 def render_gridlines_if_needed args
   if args.state.show_gridlines && args.static_lines.length == 0
-    args.static_lines << 65.times.map do |i|
+    args.static_lines << 65.map do |i|
       [
         [CENTER_OFFSET + i * TINY_SCALE + 1,  0,
          CENTER_OFFSET + i * TINY_SCALE + 1,  720,                128, 128, 128],

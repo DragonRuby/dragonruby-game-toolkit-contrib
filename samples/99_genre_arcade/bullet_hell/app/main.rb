@@ -1,10 +1,10 @@
 def tick args
-  args.state.base_columns   ||= 10.times.map { |n| 50 * n + 1280 / 2 - 5 * 50 + 5 }
-  args.state.base_rows      ||= 5.times.map { |n| 50 * n + 720 - 5 * 50 }
-  args.state.offset_columns = 10.times.map { |n| (n - 4.5) * Math.sin(Kernel.tick_count.to_radians) * 12 }
+  args.state.base_columns   ||= 10.map { |n| 50 * n + 1280 / 2 - 5 * 50 + 5 }
+  args.state.base_rows      ||= 5.map { |n| 50 * n + 720 - 5 * 50 }
+  args.state.offset_columns = 10.map { |n| (n - 4.5) * Math.sin(Kernel.tick_count.to_radians) * 12 }
   args.state.offset_rows    = 5.map { 0 }
-  args.state.columns        = 10.times.map { |i| args.state.base_columns[i] + args.state.offset_columns[i] }
-  args.state.rows           = 5.times.map { |i| args.state.base_rows[i] + args.state.offset_rows[i] }
+  args.state.columns        = 10.map { |i| args.state.base_columns[i] + args.state.offset_columns[i] }
+  args.state.rows           = 5.map { |i| args.state.base_rows[i] + args.state.offset_rows[i] }
   args.state.explosions     ||= []
   args.state.enemies        ||= []
   args.state.score          ||= 0
@@ -111,7 +111,7 @@ def tick args
     [1280 - 290, 40, "Accuracy #{(accuracy * 100).floor}%", 255, 255, 255].label,
     [1280 - 290, 20, "Score    #{(args.state.score * accuracy).floor}", 255, 255, 255].label,
   ]
-  args.outputs.primitives << args.state.lives.times.map do |n|
+  args.outputs.primitives << args.state.lives.map do |n|
     [1280 - 290 + 50 * n, 80, 40, 40, 'sprites/circle-gray.png', 90].sprite
   end
   #args.outputs.debug << args.gtk.framerate_diagnostics_primitives
@@ -129,11 +129,11 @@ end
 
 def make_enemies
   enemies = []
-  enemies += 10.times.map { |n| {x: Math.rand * 1280 * 2 - 640, y: Math.rand * 720 * 2 + 720, row: 0, col: n, path: 'sprites/circle-orange.png', move_state: :retreat} }
-  enemies += 10.times.map { |n| {x: Math.rand * 1280 * 2 - 640, y: Math.rand * 720 * 2 + 720, row: 1, col: n, path: 'sprites/circle-orange.png', move_state: :retreat} }
-  enemies += 8.times.map { |n| {x: Math.rand * 1280 * 2 - 640, y: Math.rand * 720 * 2 + 720, row: 2, col: n + 1, path: 'sprites/circle-blue.png', move_state: :retreat} }
-  enemies += 8.times.map { |n| {x: Math.rand * 1280 * 2 - 640, y: Math.rand * 720 * 2 + 720, row: 3, col: n + 1, path: 'sprites/circle-blue.png', move_state: :retreat} }
-  enemies += 4.times.map { |n| {x: Math.rand * 1280 * 2 - 640, y: Math.rand * 720 * 2 + 720, row: 4, col: n + 3, path: 'sprites/circle-green.png', move_state: :retreat} }
+  enemies += 10.map { |n| {x: Math.rand * 1280 * 2 - 640, y: Math.rand * 720 * 2 + 720, row: 0, col: n, path: 'sprites/circle-orange.png', move_state: :retreat} }
+  enemies += 10.map { |n| {x: Math.rand * 1280 * 2 - 640, y: Math.rand * 720 * 2 + 720, row: 1, col: n, path: 'sprites/circle-orange.png', move_state: :retreat} }
+  enemies += 8.map { |n| {x: Math.rand * 1280 * 2 - 640, y: Math.rand * 720 * 2 + 720, row: 2, col: n + 1, path: 'sprites/circle-blue.png', move_state: :retreat} }
+  enemies += 8.map { |n| {x: Math.rand * 1280 * 2 - 640, y: Math.rand * 720 * 2 + 720, row: 3, col: n + 1, path: 'sprites/circle-blue.png', move_state: :retreat} }
+  enemies += 4.map { |n| {x: Math.rand * 1280 * 2 - 640, y: Math.rand * 720 * 2 + 720, row: 4, col: n + 3, path: 'sprites/circle-green.png', move_state: :retreat} }
   enemies
 end
 

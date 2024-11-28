@@ -39,27 +39,35 @@ module GTK
         @row_count     = 24
         @col_count     = 12
       end
+
+      @safe_area_top_left_dx = -@gutter_left + @gutter
+      @safe_area_top_left_dy = @gutter_top - 1
+
+      @safe_area_bottom_left_dx = -@gutter_left + @gutter
+      @safe_area_bottom_left_dy = (h - rect(row: 0, col: 0, w: 1, h: @row_count).h).idiv(2) - @gutter
+
+      @safe_area_top_right_dx = (w - rect(row: 0, col: 0, w: @col_count, h: 1).w).idiv(2) - @gutter
+      @safe_area_top_right_dy = @gutter_top - 1
+
+      @safe_area_bottom_right_dx = (w - rect(row: 0, col: 0, w: @col_count, h: 1).w).idiv(2) - @gutter
+      @safe_area_bottom_right_dy = (h - rect(row: 0, col: 0, w: 1, h: @row_count).h).idiv(2) - @gutter
     end
 
-    def rect *all_opts
-      opts = {}
-
-      if all_opts.length == 1
-        opts = all_opts.first
-      else
-        opts = {}
-        all_opts.each do |o|
-          opts.merge! o
-        end
-      end
-
-      opts_col        = opts[:col] || 0
-      opts_row        = opts[:row] || 0
+    def rect(*ignore_splat, row: 0, col: 0,
+             w: 1, h: 1,
+             row_from_bottom: nil,
+             col_from_right: nil,
+             max_width: nil, max_height: nil,
+             dx: 0, dy: 0,
+             include_row_gutter: false, include_col_gutter: false,
+             merge: nil, origin: :top_left, safe_area: true, **ignore_kwargs)
+      opts_col        = col || 0
+      opts_row        = row || 0
 
       if opts_col.is_a?(Array) && opts_col.length == 2
         # eg rect(row: [3, 18])
-        opts_from_col = opts[:col][0]
-        opts_to_col   = opts[:col][1]
+        opts_from_col = col[0]
+        opts_to_col   = col[1]
 
         # eg rect(row: [5, -5])
         opts_to_col   = opts_to_col - 1 + @col_count if opts_to_col <= 0
@@ -67,42 +75,68 @@ module GTK
         opts_col      = opts_from_col
         opts_w        = opts_to_col - opts_from_col + 1
       else
-        opts_w          = opts[:w] || 1
+        opts_w          = w || 1
       end
 
       if opts_row.is_a?(Array) && opts_row.length == 2
-        opts_from_row = opts[:row][0]
-        opts_to_row   = opts[:row][1]
+        opts_from_row = row[0]
+        opts_to_row   = row[1]
         opts_to_row   = opts_to_row - 1 + @row_count if opts_to_row <= 0
         opts_row      = opts_from_row
         opts_h        = opts_to_row - opts_from_row + 1
       else
-        opts_h          = opts[:h] || 1
+        opts_h          = h || 1
       end
 
-      opts_row        = row_max_index - opts[:row_from_bottom] if opts[:row_from_bottom]
-      opts_col        = col_max_index - opts[:col_from_right] if opts[:col_from_right]
-      opts_max_height = opts[:max_height] || opts_h
-      opts_max_width  = opts[:max_width] || opts_w
-      opts_dx         = opts[:dx] || 0
-      opts_dy         = opts[:dy] || 0
+      opts_row        = row_max_index - row_from_bottom if row_from_bottom
+      opts_col        = col_max_index - col_from_right if col_from_right
+      opts_max_height = max_height || opts_h
+      opts_max_width  = max_width || opts_w
+      opts_dx         = dx || 0
+      opts_dy         = dy || 0
 
-      opts_h = opts[:max_height] if opts_h > opts_max_height
-      opts_w = opts[:max_width]  if opts_w > opts_max_width
+      opts_h = max_height if opts_h > opts_max_height
+      opts_w = max_width  if opts_w > opts_max_width
+
+      if origin == :bottom_left
+        opts_row = row_count - opts_row - opts_h
+      elsif origin == :bottom_right
+        opts_row = row_count - opts_row - opts_h
+        opts_col = col_count - opts_col - opts_w
+      elsif origin == :top_right
+        opts_col = col_count - opts_col - opts_w
+      end
 
       rect_x = @gutter_left + @gutter * opts_col + @cell_size * opts_col
       rect_y = @h - @gutter_top - (@gutter * opts_row) - (@cell_size * opts_row) - (@cell_size * opts_h) - (@gutter * opts_h - 1)
       rect_w = @gutter * (opts_w - 1) + (@cell_size * opts_w)
       rect_h = @gutter * (opts_h - 1) + (@cell_size * opts_h)
+
       rect_x += opts_dx
       rect_y += opts_dy
 
-      if opts[:include_col_gutter]
+      if !safe_area
+        if origin == :top_left
+          rect_x += @safe_area_top_left_dx
+          rect_y += @safe_area_top_left_dy
+        elsif origin == :bottom_left
+          rect_x += @safe_area_bottom_left_dx
+          rect_y -= @safe_area_bottom_left_dy
+        elsif origin == :top_right
+          rect_x += @safe_area_top_right_dx
+          rect_y += @safe_area_top_right_dy
+        elsif origin == :bottom_right
+          rect_x += @safe_area_bottom_right_dx
+          rect_y -= @safe_area_bottom_right_dy
+        end
+      end
+
+      if include_col_gutter
         rect_x -= @gutter
         rect_w += @gutter * 2
       end
 
-      if opts[:include_row_gutter]
+      if include_row_gutter
         rect_y -= @gutter
         rect_h += @gutter * 2
       end
@@ -123,7 +157,7 @@ module GTK
         center: { x: center_x, y: center_y }
       }
 
-      result.merge! opts[:merge] if opts[:merge]
+      result.merge! merge if merge
       result
     end
 

@@ -681,7 +681,7 @@ S
     end
 
     def error_markers
-      ["exception:", "error:", "undefined method", "failed", "syntax error", "deprecated"]
+      ["exception:", "error:", "undefined method", "failed", "syntax error", "deprecated", "exception possibly", "exception thrown"]
     end
 
     def include_subdued_markers? text

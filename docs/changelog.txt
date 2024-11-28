@@ -1,3 +1,27 @@
+* 6.8
+** [Samples] [Pro] [C Extensions] Added sample app that shows how to create background threads with atomic read/write of variables.
+** [Support] Added Zlib ~compress~, ~uncompress~ APIs.
+* 6.7
+** [Samples] [Pro] [Android] [C Extensions] Added sample app that shows how to create C Extensions that leverage Java classes.
+** [Bugfix] Invoking ~$gtk.reset~ no longer blips a white rectangle on a black background in a weird location.
+* 6.6
+** [Bugfix] [Pro] [VR] Fixed crash related to rendering non-hash primitives.
+* 6.5
+** [Samples] Added sample app that shows how to crop a large sprite to viewport.
+   Sample app location: =samples/07_advanced_rendering/10_camera_and_large_sprites=
+** [Samples] Added sample app that shows how to create a C Extension for MacOS.
+   Sample app location: =samples/12_c_extensions/06_handcrafted_mac_extension=
+** [Samples] Added sample app that shows how to create a C Extension for Steam.
+   NOTE: This is still a work in progress and will be improved over time.
+   Sample app location: =samples/12_c_extensions/07_handcrafted_steam_extensions=
+** [Support] ~./dragonruby --version~ will print the version number and exit.
+** [Bugfix] ~./dragonruby-publish~ for game names that contain a apostrophe no longer fails on Mac and Linux.
+* 6.4
+** [Support] [Pro] [iOS] iOS Wizard sets hotload IP Address to localhost when running game on the simulator.
+** [Support] Improved how mult-touch maps to mouse location.
+** [Support] Added ~origin~ and ~safe_area~ optional parameters to ~Layout.rect~
+   These additional parameters will give you more control over the rectangle returned from Layout.rect.
+   See the following sample app for usage of these parameters: =samples/07_advanced_rendering/19_layouts_extended_parameters=
 * 6.3
 ** [Support] [Pro] [C Extensions] Reincorporated deprecated mRuby C APIs.
    Notes:

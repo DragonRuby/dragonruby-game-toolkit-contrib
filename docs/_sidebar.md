@@ -22,6 +22,7 @@
   * [CVars / Configuration (`args.cvars`)](/api/cvars.md)
   * [Array](/api/array.md)
   * [Numeric](/api/numeric.md)
+  * [Zlib](/api/zlib.md)
 * Samples
   * <a href="https://samples.dragonruby.org">Live Demos</a>
   * [Rendering Basics](/samples/rendering-basics.md)

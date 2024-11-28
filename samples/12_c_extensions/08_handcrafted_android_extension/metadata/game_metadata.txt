@@ -1,0 +1,10 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=mygame
+gametitle=mygame
+version=1.0
+icon=metadata/icon.png
+hd=true
+highdpi=true
+packageid=com.dev.mygame
+ignore_directories=app-native,app-android

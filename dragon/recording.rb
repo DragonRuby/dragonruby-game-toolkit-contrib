@@ -366,7 +366,12 @@ S
       @runtime.notify! "Replay started =#{@replay_file_name}= speed: #{@runtime.simulation_speed}."
     end
 
-    def start_replay_next_tick file_name, speed: 1, &block
+    def replay_next_tick file_name, speed: 1, &block
+      log <<-S
+* INFO - Replay queued for next tick for file_name: =#{file_name}=, speed: ~#{speed}~.
+** Caller
+#{caller.map { |l| "*** #{l}" }.join "\n"}
+S
       @replay_next_tick = true
       @replay_next_tick_file_name = file_name
       @on_replay_tick_only_this_run = block
@@ -376,7 +381,7 @@ S
       end
     end
 
-    alias_method :replay_next_tick, :start_replay_next_tick
+    alias_method :start_replay_next_tick, :replay_next_tick
 
     def replay_completed_at
       @replay_completed_at

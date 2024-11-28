@@ -243,34 +243,40 @@ S
   end
 
   def randomize *definitions
-    if definitions.length == 1 && definitions[0] == :ratio
-      return rand * self
-    elsif definitions.length == 1 && definitions[0] == :int
-      return rand self
-    elsif definitions.length == 1 && definitions[0] == :sign
+    def_0 = definitions[0]
+    def_0 = :ratio if def_0 == :float
+
+    def_1 = definitions[1]
+    def_1 = :ratio if def_1 == :float
+
+    if definitions.length == 1 && def_0 == :ratio
+      return Kernel.rand * self
+    elsif definitions.length == 1 && def_0 == :int
+      return Kernel.rand self
+    elsif definitions.length == 1 && def_0 == :sign
       return rand_sign * self
-    elsif definitions[0] == :ratio && definitions[1] == :sign
-      return rand_sign * rand * self
-    elsif definitions[0] == :sign && definitions[1] == :ratio
-      return rand_sign * rand * self
-    elsif definitions[0] == :int && definitions[1] == :sign
+    elsif def_0 == :ratio && def_1 == :sign
+      return rand_sign * Kernel.rand * self
+    elsif def_0 == :sign && def_1 == :ratio
+      return rand_sign * Kernel.rand * self
+    elsif def_0 == :int && def_1 == :sign
       result = rand_sign
-      return rand(self) * result
-    elsif definitions[0] == :sign && definitions[1] == :int
+      return Kernel.rand(self) * result
+    elsif def_0 == :sign && def_1 == :int
       result = rand_sign
-      return rand(self) * result
+      return Kernel.rand(self) * result
     end
 
     self
   end
 
   def rand_sign
-    return -1 if rand > 0.5
+    return -1 if Kernel.rand > 0.5
     1
   end
 
   def rand_ratio
-    self * rand
+    self * Kernel.rand
   end
 
   def remainder_of_divide n
@@ -831,5 +837,96 @@ class Integer
 
   def center other
     (self - other).abs.fdiv(2)
+  end
+end
+
+class Numeric
+  def self.rand(arg = nil)
+    case arg
+    when nil
+      Kernel.rand
+    when Integer
+      Kernel.rand arg
+    when Float
+      Kernel.rand * arg
+    when Range
+      if arg.min > arg.max
+        nil
+      elsif arg.min.is_a?(Float) || arg.max.is_a?(Float)
+        min = arg.min
+        max = arg.max
+        Kernel.rand * (max - min) + min
+      else
+        min = arg.min
+        max = arg.max + 1
+        diff = max - min
+        Kernel.rand(diff) + min
+      end
+    else
+      raise <<-S
+* ERROR: Numeric::rand does not support the argument type: #{arg.class}.
+** Usage:
+- No arguments: ~Numeric.rand()~ will return a random float between 0.0 and 1.0.
+- Numeric argument: ~Numeric.rand(10)~ will return a random integer between 0 and 10 (exclusive).
+- Range argument (integer values): ~Numeric.rand(1..10)~ will return a random integer between 1 and 10 (inclusive).
+- Range argument (integer values): ~Numeric.rand(-10..10)~ will return a random integer between -10 and 10 (inclusive).
+- Range argument (float values): ~Numeric.rand(1.0..10.0)~ will return a random float between 1.0 and 10.0.
+- Range argument (float values): ~Numeric.rand(-10.0..10.0)~ will return a random float between -10.0 and 10.0.
+S
+    end
+  end
+end
+
+class Float
+  def rand(*definitions)
+    arg_0 = definitions[0]
+    arg_0 = :ratio if arg_0 == :float
+    arg_1 = definitions[1]
+    arg_1 = :ratio if arg_1 == :float
+
+    if definitions.length == 1 && arg_0 == :ratio
+      return Numeric.rand * self
+    elsif definitions.length == 1 && arg_0 == :int
+      return Numeric.rand(self.to_i)
+    elsif definitions.length == 1 && arg_0 == :sign
+      return rand_sign * self
+    elsif arg_0 == :ratio && arg_1 == :sign
+      return Numeric.rand((self * -1)..self)
+    elsif arg_0 == :sign && arg_1 == :ratio
+      return Numeric.rand((self * -1)..self)
+    elsif arg_0 == :int && arg_1 == :sign
+      return Numeric.rand((self.to_i * -1)..self.to_i)
+    elsif arg_0 == :sign && arg_1 == :int
+      return Numeric.rand((self.to_i * -1)..self.to_i)
+    end
+
+    Kernel.rand * self
+  end
+end
+
+class Integer
+  def rand(*definitions)
+    arg_0 = definitions[0]
+    arg_0 = :ratio if arg_0 == :float
+    arg_1 = definitions[1]
+    arg_1 = :ratio if arg_1 == :float
+
+    if definitions.length == 1 && arg_0 == :ratio
+      return Numeric.rand * self.to_f
+    elsif definitions.length == 1 && arg_0 == :int
+      return Numeric.rand(self)
+    elsif definitions.length == 1 && arg_0 == :sign
+      return rand_sign * self
+    elsif arg_0 == :ratio && arg_1 == :sign
+      return Numeric.rand((self.to_f * -1)..self)
+    elsif arg_0 == :sign && arg_1 == :ratio
+      return Numeric.rand((self.to_f * -1)..self)
+    elsif arg_0 == :int && arg_1 == :sign
+      return Numeric.rand((self * -1)..self)
+    elsif arg_0 == :sign && arg_1 == :int
+      return Numeric.rand((self * -1)..self)
+    end
+
+    Kernel.rand self
   end
 end

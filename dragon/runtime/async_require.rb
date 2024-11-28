@@ -61,7 +61,7 @@ module GTK
           @reload_list_history[r][:history] ||= []
           @reload_list_history[r][:history]  << { path: r, global_at: Kernel.global_tick_count, event: :processing }
         end
-        @exception_occured = false
+        @exception_occurred = false
         @is_reloading = true
         @reload_list
       end
@@ -70,7 +70,7 @@ module GTK
         return unless @is_reloading
         @is_reloading = false
 
-        if !@exception_occured
+        if !@exception_occurred
           unpause!
           @console.hide if @console.show_reason == :exception || @console.show_reason == :exception_on_load
         end

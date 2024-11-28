@@ -51,7 +51,7 @@ def tick args
                      w: args.state.center_body.w,
                      h: args.state.center_body.h,
                      path: :pixel,
-                     a: collisions.length.idiv(2), # alpha value represents the number of collisions that occured
+                     a: collisions.length.idiv(2), # alpha value represents the number of collisions that occurred
                      r: 255,
                      g: 0,
                      b: 0 } # center body is red solid

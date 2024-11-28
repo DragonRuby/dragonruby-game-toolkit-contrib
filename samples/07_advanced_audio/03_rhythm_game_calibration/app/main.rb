@@ -3,7 +3,7 @@ def tick args
   tick_audio args
   tick_calibration args
 
-  if args.state.tick_count > args.state.start_playing_on_tick
+  if Kernel.tick_count > args.state.start_playing_on_tick
     args.state.beat_accumulator += args.state.beats_per_tick
     args.state.quarter_beat = args.state.beat_accumulator.to_i
     args.state.previous_quarter_beat ||= args.state.quarter_beat
@@ -11,7 +11,7 @@ def tick args
 
   if args.state.previous_quarter_beat != args.state.quarter_beat
     args.state.previous_quarter_beat_at = args.state.quarter_beat
-    args.state.quarter_beat_occurred_at = args.state.tick_count
+    args.state.quarter_beat_occurred_at = Kernel.tick_count
   end
 
   if (Kernel.tick_count - args.state.quarter_beat_occurred_at + args.state.calibration_ticks).abs == 0
@@ -94,7 +94,7 @@ def defaults args
 end
 
 def tick_audio args
-  return if args.state.tick_count < args.state.start_playing_on_tick
+  return if Kernel.tick_count < args.state.start_playing_on_tick
 
   # start up audio
   args.audio[:track_1] ||= {
@@ -114,7 +114,7 @@ def tick_audio args
   args.state.play_head = args.state.play_head % args.state.track_length_in_ticks
 
   # every 10 seconds, cross fade
-  if args.state.play_head.zmod?(600) && args.state.tick_count > args.state.start_playing_on_tick
+  if args.state.play_head.zmod?(600) && Kernel.tick_count > args.state.start_playing_on_tick
     if args.state.main_track == :track_1
       args.state.main_track = :track_2
       args.state.other_track = :track_1
@@ -173,7 +173,7 @@ end
 
 def calc_fx_queues args
   args.state.fx_queue.each do |fx|
-    fx.at ||= args.state.tick_count
+    fx.at ||= Kernel.tick_count
     fx.d_size ||= 0
     fx.w += fx.d_size
     fx.h += fx.d_size
@@ -182,7 +182,7 @@ def calc_fx_queues args
   args.state.fx_queue.reject! { |fx| fx.at.elapsed_time > 5 }
 
   args.state.label_fx_queue.each do |fx|
-    fx.at ||= args.state.tick_count
+    fx.at ||= Kernel.tick_count
     fx.a  ||= 255
     fx.y    = fx.y.lerp(540, 0.1)
     fx.a   -= 5
@@ -192,10 +192,10 @@ def calc_fx_queues args
 end
 
 def render args
-  if args.state.tick_count < args.state.start_playing_on_tick
+  if Kernel.tick_count < args.state.start_playing_on_tick
     args.outputs.labels << { x: 640,
                              y: 360,
-                             text: "Count down: #{(args.state.start_playing_on_tick - args.state.tick_count).idiv(60) + 1}",
+                             text: "Count down: #{(args.state.start_playing_on_tick - Kernel.tick_count).idiv(60) + 1}",
                              anchor_x: 0.5,
                              anchor_y: 0.5 }
   end

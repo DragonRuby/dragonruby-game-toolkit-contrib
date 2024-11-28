@@ -4,7 +4,7 @@ Events contains raw events, and a window resize events.
 
 ## `resize_occurred`
 
-`args.events.resize_occured` will be `true` if the window is resized or
+`args.events.resize_occurred` will be `true` if the window is resized or
 if the orientation of the game is changed.
 
 ## `orientation_changed`

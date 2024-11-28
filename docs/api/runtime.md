@@ -637,7 +637,28 @@ Returns a `UUID`/`GUID` as a `String` value. The UUID uses `srand` and is not cr
 
 The following functions give you the ability to interact with the file system.
 
-IMPORTANT: File access functions are sandboxed and assume that the `dragonruby` binary lives alongside the game you are building. Do not expect these functions to return correct values if you are attempting to run the `dragonruby` binary from a shared location. It's recommended that the directory structure contained in the zip is not altered and games are built using that starter template.
+DragonRuby uses a sandboxed filesystem which will automatically read from and write to a location appropriate for your platform so you don't have to worry about theses details in your code. You can just use `$gtk.read_file`, `$gtk.write_file`, and `$gtk.append_file` with a relative path and the engine will take care of the rest.
+
+The data directories that will be written to in a production build are:
+- Windows: `C:\Users\YourWindowsUsername\AppData\Roaming\[devtitle]\[gametitle]`
+- MacOS: `$HOME/Library/Application Support/[gametitle]`
+- Linux: `$HOME/.local/share/[gametitle]`
+- HTML5: The data will be written to the browser's IndexedDB.
+
+The values in square brackets are the values you set in your `app/metadata/game_metadata.txt` file.
+
+When reading files, the engine will first look in the game's data directory and then in the game directory itself. This means that if you write a file to the data directory that already exists in your game directory, the file in the data directory will be used instead of the one that is in your game.
+
+When running a development build you will directly write to your game directory (and thus overwrite existing files). This can be useful for built-in development tools like level editors.
+
+For more details on the implementation of the sandboxed filesystem, see Ryan C. Gordon's PhysicsFS documentation: [https://icculus.org/physfs/](https://icculus.org/physfs/)
+
+!> File access functions are sandboxed and assume that the
+`dragonruby` binary lives alongside the game you are building. **Do not
+expect these functions to return correct values if you are attempting
+to run the `dragonruby` binary from a shared location**. It's **strongly**
+recommended that the directory structure contained in the zip is not
+altered and games are built using that starter template. 
 
 ### `list_files`
 
@@ -885,6 +906,8 @@ end
 ### `start_server!`
 
 Starts a in-game http server that can be process http requests. When your game is running in development mode. A dev server is started at `http://localhost:9001`
+
+?> You must set `webserver.enabled=true` in `metadata/cvars.txt` to view docs locally. These docs are also available under `./docs` within the zip file in markdown format.
 
 You can start an in-game http server in production via:
 

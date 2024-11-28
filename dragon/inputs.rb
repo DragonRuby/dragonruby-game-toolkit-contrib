@@ -23,6 +23,7 @@ module GTK
     attr :locale, :locale_raw
     attr_reader :application_control
     attr :a11y
+    attr :touch_center
 
     def initialize
       @controllers = [Controller.new, Controller.new, Controller.new, Controller.new]
@@ -30,6 +31,7 @@ module GTK
       @mouse = Mouse.new
       @pinch_zoom = 0
       @touch = {}
+      @touch_center = { x: -1000, y: -1000 }
       @finger_one = nil
       @finger_two = nil
       @text = []

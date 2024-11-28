@@ -227,28 +227,27 @@ Returns a "string float" representation of a number with two decimal places. eg:
 
 Returns a "string int" representation of a number with underscores for thousands separator. eg: `50000.8778` will be shown as `50_000`.
 
-## `new?`
+## `rand`
 
-Returns true if `Numeric#elapsed_time == 0`. Essentially communicating that number is equal to the current frame. An optional parameter 
-the `tick_count_override` can be passed in.
+Numeric has a expanded `rand` implementation that supports `Range`.
 
 Example usage:
 
 ```ruby
 def tick args
-  args.state.box_queue ||= []
-
-  if args.state.box_queue.empty?
-    args.state.box_queue << { name: :red,
-                              create_at: Kernel.tick_count + 60 }
+  # print a random number within range every second
+  if Kernel.tick_count.zmod?(60)
+    random_number = Numeric.rand(-10..10)
+    puts "Random number is: #{random_number}"
   end
-
-  boxes_to_spawn_this_frame = args.state
-                                  .box_queue
-                                  .find_all { |b| b[:create_at].new? }
-
-  boxes_to_spawn_this_frame.each { |b| puts "box #{b} was new? on #{Kernel.tick_count}." }
-
-  args.state.box_queue -= boxes_to_spawn_this_frame
 end
 ```
+
+Parameter variants:
+
+- No arguments: `Numeric.rand()` will return a random `float` between 0.0 and 1.0.
+- Numeric argument: `Numeric.rand(10)` will return a random `integer` between 0 and 10 (exclusive).
+- Range argument (integer values): `Numeric.rand(1..10)` will return a random `integer` between 1 and 10 (inclusive).
+- Range argument (integer values): `Numeric.rand(-10..10)` will return a random `integer` between -10 and 10 (inclusive).
+- Range argument (float values): `Numeric.rand(1.0..10.0)` will return a random `float` between 1.0 and 10.0.
+- Range argument (float values): `Numeric.rand(-10.0..10.0)` will return a random `float` between -10.0 and 10.0.

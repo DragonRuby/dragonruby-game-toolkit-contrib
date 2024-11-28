@@ -33,6 +33,8 @@ module GTK
         touchx = untransform_mouse_x touchx
         touchy = untransform_mouse_y touchy
 
+        touch_count_before = @args.inputs.touch.length
+
         if !@args.inputs.touch.has_key?(touchid)
           @args.inputs.touch[touchid] = FingerTouch.new
         end
@@ -67,7 +69,7 @@ module GTK
         end
         @args.inputs.last_active = :mouse
 
-        __simulate_mouse_move_for_touches__
+        __simulate_mouse_move_for_touches__(touch_count_before)
 
         if @args.inputs.touch.length == 1
           mouse_button_pressed 1
@@ -76,9 +78,7 @@ module GTK
         end
       end
 
-      def __simulate_mouse_move_for_touches__
-        return if @args.inputs.multi_touch_finger_up_at && @args.inputs.multi_touch_finger_up_at.elapsed_time < 30
-
+      def __simulate_mouse_move_for_touches__(touch_count_before)
         # get touch points to compute the point that is equadistant from all touch points
         touch_points = @args.inputs.touch.map { |_, touch| { x: touch.x, y: touch.y } }
 
@@ -95,7 +95,21 @@ module GTK
         # simulate mouse move
         transform_x = @args.grid.transform_x(center.x)
         transform_y = @args.grid.transform_y(center.y)
-        mouse_move transform_x, transform_y
+
+        if @args.inputs.touch.length == 1
+          if touch_count_before == 0
+            @args.inputs.touch_center.x = transform_x
+            @args.inputs.touch_center.y = transform_y
+          else
+            @args.inputs.touch_center.x = @args.inputs.touch_center.x.lerp(transform_x, 0.1)
+            @args.inputs.touch_center.y = @args.inputs.touch_center.y.lerp(transform_y, 0.1)
+          end
+        else
+          @args.inputs.touch_center.x = @args.inputs.touch_center.x.lerp(transform_x, 0.1)
+          @args.inputs.touch_center.y = @args.inputs.touch_center.y.lerp(transform_y, 0.1)
+        end
+
+        mouse_move @args.inputs.touch_center.x, @args.inputs.touch_center.y
       end
 
 
@@ -163,7 +177,7 @@ module GTK
           @args.inputs.pinch_zoom = 0
         end
 
-        __simulate_mouse_move_for_touches__
+        __simulate_mouse_move_for_touches__(@args.inputs.touch.length)
       end
 
       def __mouse_wheel_to_pinch_zoom_ratio__

@@ -232,7 +232,7 @@ class FlappyDragon
 
     if state.show_death == false || !state.death_at
       animation_index = state.flapped_at.frame_index 6, 2, false if state.flapped_at
-      sprite_name = "sprites/dragon_fly#{animation_index.or(0) + 1}.png"
+      sprite_name = "sprites/dragon_fly#{(animation_index || 0) + 1}.png"
       state.dragon_sprite = { x: state.x, y: state.y, z: state.z, w: 100, h: 80, path: sprite_name, angle: state.dy * 1.2 }
     else
       sprite_name = "sprites/dragon_die.png"

@@ -173,6 +173,12 @@ module GTK
         @file_mtimes[file] ||= { current: @ffi_file.mtime(file), last: @ffi_file.mtime(file) }
         @file_mtimes[file].current = @ffi_file.mtime(file)
         return if !force && @file_mtimes[file].current == @file_mtimes[file].last
+        # in the event that an exception was thrown on initial load, if
+        # a file is changed, set load status to :dragonruby_started
+        # so that initialization can be tried again.
+        if @load_status == :main_rb_load_error_shown
+          @load_status = :dragonruby_started
+        end
         on_load_succeeded file if reload_ruby_file file
         @file_mtimes[file].last = @file_mtimes[file].current
       end

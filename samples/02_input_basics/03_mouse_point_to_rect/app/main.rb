@@ -11,7 +11,7 @@ def tick args
   # initialize the rectangle
   args.state.box ||= { x: 785, y: 370, w: 50, h: 50, r: 0, g: 0, b: 170 }
 
-  # store the mouse click and the frame the click occured
+  # store the mouse click and the frame the click occurred
   # and whether it was inside or outside the box
   if args.inputs.mouse.click
     args.state.last_mouse_click = args.inputs.mouse.click

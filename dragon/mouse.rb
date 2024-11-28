@@ -101,7 +101,7 @@ module GTK
     end
 
     def held
-      click_occured_last_frame = @global_click_at == Kernel.global_tick_count - 1
+      click_occurred_last_frame = @global_click_at == Kernel.global_tick_count - 1
       up_should_be_considered = @global_click_at && @global_up_at
       up_occurred_after_click = if up_should_be_considered && @global_up_at >= @global_click_at
                                   true
@@ -109,7 +109,7 @@ module GTK
                                   false
                                 end
 
-      if click_occured_last_frame && !up_occurred_after_click
+      if click_occurred_last_frame && !up_occurred_after_click
         @held_point = MousePoint.new @x, @y
         @held_point.created_at = @click.created_at + 1
         @held_point.global_created_at = @click.global_created_at + 1
@@ -132,9 +132,9 @@ module GTK
     end
 
     def held_at
-      click_occured_last_frame = @global_click_at == Kernel.global_tick_count - 1
-      up_occured_on_click_frame = @global_click_at && @global_up_at && @global_click_at == @global_up_at
-      if click_occured_last_frame && !up_occured_on_click_frame
+      click_occurred_last_frame = @global_click_at == Kernel.global_tick_count - 1
+      up_occurred_on_click_frame = @global_click_at && @global_up_at && @global_click_at == @global_up_at
+      if click_occurred_last_frame && !up_occurred_on_click_frame
         @held_at = @click_at + 1
       end
 
@@ -142,9 +142,9 @@ module GTK
     end
 
     def global_held_at
-      click_occured_last_frame = @global_click_at == Kernel.global_tick_count - 1
-      up_occured_on_click_frame = @global_click_at && @global_up_at && @global_click_at != @global_up_at
-      if click_occured_last_frame && !up_occured_on_click_frame
+      click_occurred_last_frame = @global_click_at == Kernel.global_tick_count - 1
+      up_occurred_on_click_frame = @global_click_at && @global_up_at && @global_click_at != @global_up_at
+      if click_occurred_last_frame && !up_occurred_on_click_frame
         @global_held_at = @global_click_at + 1
       end
 

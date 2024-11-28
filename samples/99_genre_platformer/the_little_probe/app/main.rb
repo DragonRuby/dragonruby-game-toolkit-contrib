@@ -23,9 +23,9 @@ class FallingCircle
   end
 
   def defaults
-    if Kernel.tick_count == 0
-      args.audio[:bg] = { input: "sounds/bg.ogg", looping: true }
-    end
+    # if Kernel.tick_count == 0
+    #   args.audio[:bg] = { input: "sounds/bg.ogg", looping: true }
+    # end
 
     state.storyline ||= [
       { text: "<- -> to aim, hold space to charge",                            distance_gate: 0 },
@@ -717,7 +717,7 @@ class FallingCircle
   def play_sound
     return if state.sound_debounce > 0
     state.sound_debounce = 5
-    outputs.sounds << "sounds/03#{"%02d" % state.sound_index}.wav"
+    # outputs.sounds << "sounds/03#{"%02d" % state.sound_index}.wav"
     state.sound_index += 1
     if state.sound_index > 21
       state.sound_index = 1

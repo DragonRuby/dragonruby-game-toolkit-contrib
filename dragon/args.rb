@@ -44,6 +44,7 @@ module GTK
       @recording = recording
       @grid = Grid.new runtime
       @render_targets = {}
+      @render_target_sizes = {}
       @pixel_arrays = {}
       @all_tests = []
       @geometry = GTK::Geometry
@@ -117,6 +118,12 @@ module GTK
       @render_targets = {}
     end
 
+    def capture_render_target_sizes
+      @render_targets.each do |name, rt|
+        @render_target_sizes[name] = { w: rt.w, h: rt.h }
+      end
+    end
+
     def render_targets
       @render_targets
     end
@@ -134,6 +141,10 @@ module GTK
 
       if !@render_targets[name]
         @render_targets[name] = RenderTargetOutputs.new(args: self, target: name, background_color_override: [255, 255, 255, 0])
+        if @render_target_sizes[name]
+          @render_targets[name].w = @render_target_sizes[name].w
+          @render_targets[name].h = @render_target_sizes[name].h
+        end
         @passes << @render_targets[name]
       end
       @render_targets[name]

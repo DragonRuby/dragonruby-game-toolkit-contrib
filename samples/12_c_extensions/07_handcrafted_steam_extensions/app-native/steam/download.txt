@@ -1,0 +1,1 @@
+Download Steamworks SDK, unzip, and place contents of "sdk" folder here: https://partner.steamgames.com/downloads/list

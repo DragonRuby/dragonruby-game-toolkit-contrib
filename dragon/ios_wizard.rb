@@ -687,7 +687,8 @@ S
   end
 
   def __get_plist_orientation_values__
-    orientation_string_landscape = "UIInterfaceOrientationLandscapeRight"
+    orientation_string_landscape_left = "UIInterfaceOrientationLandscapeLeft"
+    orientation_string_landscape_right = "UIInterfaceOrientationLandscapeRight"
     orientation_string_portrait = "UIInterfaceOrientationPortrait"
 
     # check ios orientation override and return plist values accordingly
@@ -695,13 +696,13 @@ S
     ios_orientation = Cvars["game_metadata.orientation"].value if ios_orientation.length == 0
 
     if ios_orientation == "portrait,landscape"
-      [orientation_string_portrait, orientation_string_landscape]
+      [orientation_string_portrait, orientation_string_landscape_right, orientation_string_landscape_left]
     elsif ios_orientation == "landscape,portrait"
-      [orientation_string_landscape, orientation_string_portrait]
+      [orientation_string_landscape_right, orientation_string_landscape_left, orientation_string_portrait]
     elsif ios_orientation == "portrait"
       [orientation_string_portrait]
     elsif ios_orientation == "landscape"
-      [orientation_string_landscape]
+      [orientation_string_landscape_right, orientation_string_landscape_left]
     end
   end
 
@@ -1041,9 +1042,15 @@ XML
   end
 
   def write_server_ip_address
-    sh %Q[mkdir -p "#{app_path}/metadata/"]
-    sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip}]
-    sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip} > "#{app_path}/metadata/dragonruby_remote_hotload"]
+    if sim_build?
+      sh %Q[mkdir -p "#{app_path}/metadata/"]
+      sh %Q[echo localhost]
+      sh %Q[echo localhost > "#{app_path}/metadata/dragonruby_remote_hotload"]
+    else
+      sh %Q[mkdir -p "#{app_path}/metadata/"]
+      sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip}]
+      sh %Q[echo #{$gtk.ffi_misc.get_local_ip_address.strip} > "#{app_path}/metadata/dragonruby_remote_hotload"]
+    end
     :success
   end
 

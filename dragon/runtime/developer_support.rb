@@ -151,6 +151,118 @@ S
         path = path.gsub " ", "%20"
         "file://#{path}"
       end
+
+      def capture_timings category:, color: nil, &block
+        if @production
+          block.call
+        else
+          color ||= { r: 128, g: 128, b: 128 }
+          @capture_timings_invoked = true
+          @capture_timings_data[category] ||= { color: color, entries: [] }
+          if @capture_timings_data[category][:entries].length > 240
+            @capture_timings_data[category][:entries].pop_front
+          end
+
+          before = Time.now
+          block.call
+          after = Time.now
+          @capture_timings_data[category][:color] = color
+          @capture_timings_data[category][:entries] << { at: Kernel.tick_count,
+                                                         ms_elapsed: ((after.to_f - before.to_f)) }
+        end
+      end
+
+      def tick_capture_timings_before
+        @capture_timings_invoked = false
+      end
+
+      def tick_capture_timings_after
+        if !@capture_timings_invoked || @production
+          @capture_timings_data.clear
+          return
+        end
+
+        scale = 40000
+
+        @args.outputs[:__timing_prefab__].background_color = [0, 0, 0, 0]
+        @args.outputs[:__timing_prefab__].w = 720
+        @args.outputs[:__timing_prefab__].h = 720
+
+        @args.outputs[:__timing_prefab__].primitives << {
+          x: 0,
+          y: 0.016 * scale,
+          x2: 720,
+          y2: 0.016 * scale,
+          r: 255,
+          g: 0,
+          b: 0
+        }
+
+        @args.outputs[:__timing_prefab__].primitives << {
+          x: 0,
+          y: 0.012 * scale,
+          x2: 720,
+          y2: 0.012 * scale,
+          r: 0,
+          g: 128,
+          b: 0
+        }
+
+        @args.outputs[:__timing_prefab__].primitives << {
+          x: 0,
+          y: 0.008 * scale,
+          x2: 720,
+          y2: 0.008 * scale,
+          r: 0,
+          g: 255,
+          b: 0
+        }
+
+        @args.outputs[:__timing_prefab__].primitives << {
+          x: 0,
+          y: 0.004 * scale,
+          x2: 720,
+          y2: 0.004 * scale,
+          r: 0,
+          g: 128,
+          b: 0
+        }
+
+        @args.outputs[:__timing_prefab__].primitives << {
+          x: 0,
+          y: 1,
+          x2: 720,
+          y2: 1,
+          r: 0,
+          g: 255,
+          b: 0
+        }
+
+        @capture_timings_data.each do |category, v|
+          timings = v[:entries]
+          color = v[:color]
+          @args.outputs[:__timing_prefab__].primitives << timings.map_with_index do |timing, i|
+            {
+              x: 3 * i,
+              y: timing.ms_elapsed * scale,
+              w: 2,
+              h: 2,
+              anchor_x: 0.5,
+              anchor_y: 0.5,
+              path: :solid,
+              **color, a: 255
+            }
+          end
+        end
+
+        args.outputs.debug << { x: Grid.w / 2,
+                                y: Grid.h / 2,
+                                w: 720,
+                                h: 720,
+                                path: :__timing_prefab__,
+                                anchor_x: 0.5,
+                                anchor_y: 0.5 }
+      end
     end # end module DeveloperSupport
   end # end class Runtime
 end # end module GTK

@@ -82,7 +82,7 @@ class LinearCollider
     #if at least on point is in the rectangle then collision? is true - otherwise false
     for point in points
       #Check whether a given point lies inside a rectangle or not:
-      #if the sum of the area of traingls, PAB, PBC, PCD, PAD equal the area of the rec, then an intersection has occured
+      #if the sum of the area of traingls, PAB, PBC, PCD, PAD equal the area of the rec, then an intersection has occurred
       areaRec =  triArea.call(rpointA, rpointB, rpointC)+triArea.call(rpointA, rpointC, rpointD)
       areaSum = [
         triArea.call(point, rpointA, rpointB),triArea.call(point, rpointB, rpointC),

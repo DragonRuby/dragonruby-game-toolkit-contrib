@@ -19,8 +19,6 @@ def tick args
 end
 ```
 
-The function is helpful when you need to present on screen instructions based on the input the player chose to play with.
-
 ## `last_active_at`
 
 Returns `Kernel.tick_count` of which the specific input was last active.

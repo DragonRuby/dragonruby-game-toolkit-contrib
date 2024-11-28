@@ -223,7 +223,7 @@ class Game
 
   # Finds the coordinates of the points on the line by performing calculations
   def points_on_line start_x, start_y, rise, run, distance
-    distance.times.map do |i| # perform an action
+    distance.map do |i| # perform an action
       [start_x + run * i, start_y + rise * i] # definition of point
     end
   end

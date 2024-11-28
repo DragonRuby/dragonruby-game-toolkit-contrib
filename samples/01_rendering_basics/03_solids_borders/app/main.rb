@@ -27,16 +27,11 @@ def tick args
                            anchor_y: 0.5 }
 
   # Render solids/borders using Arrays/Tuples
-  # This is quick and dirty and it's recommended to use Hashes long term
+  # Using arrays is quick and dirty and it's recommended to use Hashes long term
   args.outputs.solids << [470, 520, 50, 50]
   args.outputs.solids << [530, 520, 50, 50, 0, 0, 0]
   args.outputs.solids << [590, 520, 50, 50, 255, 0, 0]
   args.outputs.solids << [650, 520, 50, 50, 255, 0, 0, 128]
-
-  args.outputs.borders << [470, 320, 50, 50]
-  args.outputs.borders << [530, 320, 50, 50, 0, 0, 0]
-  args.outputs.borders << [590, 320, 50, 50, 255, 0, 0]
-  args.outputs.borders << [650, 320, 50, 50, 255, 0, 0, 128]
 
   # using Hashes
   args.outputs.solids << { x: 710,
@@ -59,6 +54,36 @@ def tick args
                                b: 40,
                                a: Kernel.tick_count % 255,
                                primitive_marker: :solid }
+
+  # using :solid sprite
+  args.outputs.sprites << { x: 710,
+                            y: 460,
+                            w: 50,
+                            h: 50,
+                            path: :solid,
+                            r: 0,
+                            g: 80,
+                            b: 40,
+                            a: Kernel.tick_count % 255 }
+
+  # using :solid sprite does not require a primitive marker
+  args.outputs.primitives << { x: 770,
+                               y: 460,
+                               w: 50,
+                               h: 50,
+                               path: :solid,
+                               r: 0,
+                               g: 80,
+                               b: 40,
+                               a: Kernel.tick_count % 255 }
+
+
+  # you can also render a border
+  # Using arrays is quick and dirty and it's recommended to use Hashes long term
+  args.outputs.borders << [470, 320, 50, 50]
+  args.outputs.borders << [530, 320, 50, 50, 0, 0, 0]
+  args.outputs.borders << [590, 320, 50, 50, 255, 0, 0]
+  args.outputs.borders << [650, 320, 50, 50, 255, 0, 0, 128]
 
   args.outputs.borders << { x: 710,
                             y: 320,

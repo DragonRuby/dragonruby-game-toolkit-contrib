@@ -648,12 +648,12 @@ end
 ```ruby
 # Create type with ALL label properties AND primitive_marker
 class Label
-  attr_accessor :x, :y, :w, :h, :r, :g, :b, :text, :font, :anchor_x,
+  attr_accessor :x, :y, :w, :h, :r, :g, :b, :a, :text, :font, :anchor_x,
                 :anchor_y, :blendmode_enum, :size_px, :size_enum, :alignment_enum,
                 :vertical_alignment_enum
 
   def primitive_marker
-    :solid # or :border
+    :label
   end
 end
 ```
