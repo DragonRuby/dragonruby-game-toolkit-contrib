@@ -546,7 +546,6 @@ var Module = {
     const iconDataUrl = 'data:image/png;base64,' + iconBase64;
 
     const splashscreenHtmlPath = '/metadata/html5-splashscreen.html';
-    const splashscreenJsPath = '/metadata/html5-splashscreen.js';
     const decoder = new TextDecoder('utf-8');
 
     let splashscreenHtml = decoder.decode(FS.readFile(splashscreenHtmlPath, {}));
