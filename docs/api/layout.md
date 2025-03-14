@@ -114,3 +114,31 @@ Alias for `Grid.portrait?`.
 ## `landscape?`
 
 Alias for `Grid.landscape?`.
+
+## `row_count`
+
+Gives the number of rows in the Layout grid.
+In landscape mode the value is set to `12`
+In portrait mode the value is set to `24`
+
+!> This property is read-only.
+
+## `row_max_index`
+
+Returns the maximum row count index.
+
+!> This property is read-only
+
+## `col_count`
+
+Gives the number of columns in the Layout grid.
+In landscape mode the value is set to `24`
+In portrait mode the value is set to `12`
+
+!> This property is read-only
+
+## `col_max_index`
+
+Returns the maximum column count index.
+
+!> This property is read-only
