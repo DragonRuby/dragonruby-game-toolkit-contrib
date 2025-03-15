@@ -114,3 +114,33 @@ Alias for `Grid.portrait?`.
 ## `landscape?`
 
 Alias for `Grid.landscape?`.
+
+
+## `gutter_height`
+
+The height of the gutter.
+
+!> Defaults to `4`
+!> this property is read-only
+
+## `gutter_width`
+
+The width of the gutter.
+
+!> Defaults to `4`
+!> this property is read-only
+
+## `cell_height`
+
+The height of a grid cell.
+
+!> Defaults to `48`
+!> This property is read-only
+
+## `cell_width`
+
+The width of a grid cell.
+
+!> Defaults to `48`
+!> This property is read-only
+
