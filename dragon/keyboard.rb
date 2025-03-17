@@ -269,6 +269,9 @@ module GTK
       return nil unless (raw_key >= 0 && raw_key <= 255) ||
                         KeyboardKeys.char_to_method_hash[raw_key]
 
+      @num_lock_mode = (modifier & (4096)) != 0       # num lock is on?
+      @caps_lock_mode = (modifier & (8192)) != 0      # caps lock is on?
+
       char = KeyboardKeys.char_with_shift raw_key, modifier
       names = KeyboardKeys.char_to_method char, raw_key
       names << :alt if KeyboardKeys.modifier_alt? modifier
@@ -464,6 +467,7 @@ module GTK
         1073742098 => [:ac_bookmarks]
       }
     end
+    
 
     def self.method_to_key_hash
       return @method_to_key_hash if @method_to_key_hash
@@ -492,6 +496,14 @@ module GTK
     def self.char_to_method char, int = nil
       methods = char_to_method_hash[char] || char_to_method_hash[int]
       methods ? methods.dup : [char.to_sym || int]
+    end
+
+    def self.num_lock_mode
+      @num_lock_mode ||= false
+    end
+
+    def self.caps_lock_mode
+      @caps_lock_mode ||= false
     end
 
     def clear
@@ -755,6 +767,20 @@ module GTK
 
     def down_arrow
       @key_down.down || @key_held.down || false
+    end
+
+    # The num lock is on
+    #
+    # @return [Boolean]
+    def num_lock?
+      KeyboardKeys.num_lock_mode
+    end
+
+    # The caps lock is on
+    #
+    # @return [Boolean]
+    def caps_lock?
+      KeyboardKeys.caps_lock_mode
     end
 
     # Clear all current key presses.
