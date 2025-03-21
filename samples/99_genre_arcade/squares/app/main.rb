@@ -35,7 +35,7 @@ class PulseButton
     # calculate the percentage of the pulse animation that has completed
     # and use the percentage to compute the size and position of the button
     perc = if @clicked_at
-             easing.ease_spline @clicked_at, @tick_count, @duration, @pulse_animation_spline
+             Easing.spline @clicked_at, @tick_count, @duration, @pulse_animation_spline
            else
              0
            end
@@ -128,7 +128,7 @@ class GameScene
     scene_state.square_spawn_rate = 60
     scene_state.movement_outer_rect = layout.rect(row: 11, col: 7, w: 10, h: 1).merge(path: :pixel, **state.gray_color)
 
-    scene_state.player = { x: geometry.rect_center_point(movement_outer_rect).x,
+    scene_state.player = { x: Geometry.rect_center_point(movement_outer_rect).x,
                            y: movement_outer_rect.y,
                            w: movement_outer_rect.h,
                            h: movement_outer_rect.h,
@@ -217,14 +217,14 @@ class GameScene
               scene_state.score
             end
 
-    label_scale_prec = easing.ease_spline(scene_state.score_at || 0, Kernel.tick_count, 15, scene_state.score_animation_spline)
+    label_scale_prec = Easing.spline(scene_state.score_at || 0, Kernel.tick_count, 15, scene_state.score_animation_spline)
     rect = layout.point row: 4, col: 12
     rect.merge(text: score, anchor_x: 0.5, anchor_y: 0.5, size_px: 128 + 50 * label_scale_prec, **state.gray_color)
   end
 
   def player_prefab
     return nil if death_at
-    scale_perc = easing.ease(started_at + 30, Kernel.tick_count, 15, :smooth_start_quad, :flip)
+    scale_perc = Easing.ease(started_at + 30, Kernel.tick_count, 15, :smooth_start_quad, :flip)
     player.merge(x: player.x - player.w / 2 * scale_perc, y: player.y + player.h / 2 * scale_perc,
                  w: player.w * (1 - scale_perc), h: player.h * (1 - scale_perc))
   end
@@ -232,9 +232,9 @@ class GameScene
   # controls the player movement and change in direction of the player when the mouse is clicked
   def calc_player
     player.x += player.movement_speed * player.movement_direction
-    player.movement_direction *= -1 if !geometry.inside_rect? player, scene_state.movement_outer_rect
+    player.movement_direction *= -1 if !Geometry.inside_rect? player, scene_state.movement_outer_rect
     return if !inputs.mouse.click
-    return if !geometry.inside_rect? player, movement_inner_rect
+    return if !Geometry.inside_rect? player, movement_inner_rect
     player.movement_direction = -player.movement_direction
   end
 
@@ -253,7 +253,7 @@ class GameScene
 
   # determines if score should be incremented or if the game should be over
   def calc_game_over
-    collision = geometry.find_intersect_rect player, squares
+    collision = Geometry.find_intersect_rect player, squares
     return if !collision
     if collision.type == :good
       scene_state.score += 1
@@ -292,7 +292,7 @@ class GameScene
   def new_square
     x = movement_inner_rect.x + rand * movement_inner_rect.w
 
-    dx = if x > geometry.rect_center_point(movement_inner_rect).x
+    dx = if x > Geometry.rect_center_point(movement_inner_rect).x
            -0.9
          else
            0.9
@@ -439,17 +439,17 @@ class RootScene
       outputs.sprites << state.viewport.merge(y: in_y, path: :game_scene)
     else
       in_y = transition_in_y 0
-      start_scene_perc = easing.ease(0, Kernel.tick_count, 30, :smooth_stop_quad, :flip)
+      start_scene_perc = Easing.ease(0, Kernel.tick_count, 30, :smooth_stop_quad, :flip)
       outputs.sprites << state.viewport.merge(y: in_y, path: :start_scene)
     end
   end
 
   def transition_in_y start_at
-    easing.ease(start_at, Kernel.tick_count, 30, :smooth_stop_quad, :flip) * -1280
+    Easing.ease(start_at, Kernel.tick_count, 30, :smooth_stop_quad, :flip) * -1280
   end
 
   def transition_out_y start_at
-    easing.ease(start_at, Kernel.tick_count, 30, :smooth_stop_quad) * 1280
+    Easing.ease(start_at, Kernel.tick_count, 30, :smooth_stop_quad) * 1280
   end
 end
 
@@ -462,8 +462,8 @@ def tick args
     @show_fps = !@show_fps
   end
   if @show_fps
-    args.outputs.primitives << args.gtk.current_framerate_primitives
+    args.outputs.primitives << GTK.current_framerate_primitives
   end
 end
 
-$gtk.reset
+GTK.reset

@@ -25,7 +25,7 @@ def tick args
   update_enemies args
   render args
   args.outputs.sprites << { x: 0, y: 0, w: 1280 * 1.5, h: 720 * 1.2, path: :screen }
-  args.outputs.labels  << { x: 30, y: 30.from_top, text: "FPS: #{args.gtk.current_framerate.to_sf} X: #{args.state.player.x} Y: #{args.state.player.y}" }
+  args.outputs.labels  << { x: 30, y: 30.from_top, text: "FPS: #{GTK.current_framerate.to_sf} X: #{args.state.player.x} Y: #{args.state.player.y}" }
 end
 
 def defaults args
@@ -350,7 +350,7 @@ def render args
   # Do a first-pass on the things to draw, calculate distance from player and then
   # sort so more-distant things are drawn first.
   things_to_draw.each do |t|
-    t[:dist] = args.geometry.distance([args.state.player[:x],args.state.player[:y]],[t[:x],t[:y]]).abs
+    t[:dist] = Geometry.distance([args.state.player[:x],args.state.player[:y]],[t[:x],t[:y]]).abs
   end
   things_to_draw = things_to_draw.sort_by { |t| t[:dist] }.reverse
 

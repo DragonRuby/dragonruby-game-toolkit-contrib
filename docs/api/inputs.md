@@ -243,6 +243,30 @@ Represents the mouse wheel. Returns `nil` if no mouse wheel actions occurred. Ot
 
 The properties `args.inputs.mouse.(click|down|previous_click|up)` each return `nil` if the mouse button event didn't occur. And return an Entity that has an `x`, `y` properties along with helper functions to determine collision: `inside_rect?`, `inside_circle`. This value will be true if any of the mouse's buttons caused these events. To scope to a specific button use `.button_left`, `.button_middle`, `.button_right`, or `.button_bits`.
 
+### `key_down`
+
+Returns `true` if the specific button was pressed on this frame. `args.inputs.mouse.key_down.BUTTON` will only be true on the frame it was pressed.
+
+The following `BUTTON` values are applicable for `key_down`,
+`key_held`, and `key_up`:
+
+- `left` (eg `args.inputs.mouse.key_down.left`)
+- `middle`
+- `right`
+- `x1`
+- `x2`
+
+### `key_held`
+
+Returns `true` if the specific button is being held. `args.inputs.mouse.key_held.BUTTON` will be true for all frames after `key_down` (until released).
+
+### `key_up`
+
+Returns `true` if the specific button was released. `args.inputs.mouse.key_up.BUTTON` will be true only on the frame the button was released.
+
+?> For a full demonstration of all mouse button states, refer to the
+sample app located at `./samples/02_input_basics/02_mouse_properties`
+
 ## Touch
 
 The following touch apis are available on touch devices (iOS, Android, Mobile Web, Surface).
@@ -368,9 +392,25 @@ the minimum threshold for the analog stick to be considered
 active. The `threshold_raw` is a number between 0 and 32,767, and the
 `threshold_perc` is a number between 0 and 1.
 
-### `key_down?(key)`, `key_up?(key)`, `key_held?(key)`, `key_down_or_held?(key)`
+### `analog_dead_zone`
 
-Given a symbol, this returns `true` or `false` if the key is in the
+The default value for this property is `3600`. You can set this to a
+lower value for a more responsive analog stick, though it's not
+recommended (the Steam Deck analog sticks don't always settle back to
+a value lower than `3600`).
+
+### `key_STATE?(key)`
+
+There are situations where you may want to get the status of a key
+dynamically as opposed to accessing a property. The following methods
+are provided to assist in this:
+
+- `key_down?(key)`
+- `key_up?(key)`
+- `key_held?(key)`
+- `key_down_or_held?(key)`
+
+Given a symbol, these functions return `true` or `false` if the key is in the
 current state.
 
 Here's how each of these methods are equivalent to key-based methods:
@@ -429,9 +469,9 @@ Returns `-1` (left), `0` (neutral), or `+1` (right) depending on results of `arg
 
 Returns `-1` (left), `0` (neutral), or `+1` (right) depending on results of `args.inputs.keyboard.up` and `args.inputs.keyboard.up`.
 
-### keyboard properties
+### Keyboard properties
 
-The following properties represent keys on the keyboard and are available on `args.inputs.keyboard.KEY`, `args.inputs.keyboard.key_down.KEY`, `args.inputs.keyboard.key_held.KEY`, and `args.inputs.keyboard.key_up.KEY`:
+The following properties represent keys on the keyboard and are available on `args.inputs.keyboard.KEY`, `args.inputs.keyboard.key_down.KEY`, `args.inputs.keyboard.key_held.KEY`, `args.inputs.keyboard.key_up.KEY`, `args.inputs.keyboard.key_repeat.KEY`:
 
 Here is an example showing all the ways to access a key's state:
 
@@ -442,6 +482,8 @@ def tick args
   args.state.g_key ||= {
     ctrl_at: nil,
     key_down_at: nil,
+    key_repeat_at: nil,
+    key_last_repeat_at: nil,
     key_held_at: nil,
     key_down_or_held_at: nil,
     key_up_at: nil,
@@ -457,6 +499,12 @@ def tick args
   # G pressed/down
   if args.inputs.keyboard.key_down.g
     args.state.g_key.key_down_at = args.inputs.keyboard.key_down.g
+  end
+
+  # G pressed or repeated (based on OS key repeat speed)
+  if args.inputs.keyboard.key_repeat.g
+    args.state.g_key.key_last_repeat_at = args.state.g_key.key_repeat_at
+    args.state.g_key.key_repeat_at = args.inputs.keyboard.key_repeat.g
   end
 
   # G held
@@ -477,6 +525,8 @@ def tick args
   # display the tick_count of each event
   args.outputs.debug.watch "ctrl+g?         #{args.state.g_key.ctrl_at}"
   args.outputs.debug.watch "g down?         #{args.state.g_key.key_down_at}"
+  args.outputs.debug.watch "g repeat?       #{args.state.g_key.key_repeat_at}"
+  args.outputs.debug.watch "g last_repeat?  #{args.state.g_key.key_last_repeat_at}"
   args.outputs.debug.watch "g held?         #{args.state.g_key.key_held_at}"
   args.outputs.debug.watch "g down or held? #{args.state.g_key.key_down_or_held_at}"
   args.outputs.debug.watch "g up?           #{args.state.g_key.key_up_at}"
@@ -603,7 +653,8 @@ end
 -   `kp_equals`
 -   `left_right`
 -   `up_down`
--   `directional_vector`
+-   `directional_vector` (returns normalized vector based off of WASD/arrow keys, `nil` if no keys are down/held)
+-   `directional_angle` (returns angle in degrees based off of WASD/arrow keys, `nil` if no keys are down/held)
 -   `truthy_keys` (array of `Symbols`)
 
 ### `keycodes`
@@ -615,8 +666,8 @@ Here is a list SDL Keycodes: <https://wiki.libsdl.org/SDL2/SDLKeycodeLookup>
 ### `char`
 
 Method is available under `inputs.key_down`, `inputs.key_held`, and `inputs.key_up`. Take note that
-
-`args.inputs.keyboard.key_held.char` will only return the ascii value of the last key that was held. Use `args.inputs.keyboard.key_held.truthy_keys` to get an `Array` of `Symbols` representing all keys being held.
+`args.inputs.keyboard.key_held.char` will only return the ascii value of the last key that was held. Use
+`args.inputs.keyboard.key_held.truthy_keys` to get an `Array` of `Symbols` representing all keys being held.
 
 To get a picture of all key states `args.inputs.keyboard.keys` returns a `Hash` with the following keys: `:down`, `:held`, `:down_or_held`, `:up`.
 
@@ -661,9 +712,19 @@ def tick args
 end
 ```
 
-### `key_down?(key)`, `key_up?(key)`, `key_held?(key)`, `key_down_or_held?(key)`
+### `key_STATE?(key)`
 
-Given a symbol, this returns `true` or `false` if the key is in the
+There are situations where you may want to get the status of a key
+dynamically as opposed to accessing a property. The following methods
+are provided to assist in this:
+
+- `key_down?(key)`
+- `key_up?(key)`
+- `key_held?(key)`
+- `key_down_or_held?(key)`
+- `key_repeat?(key)`
+
+Given a symbol, these methods return `true` or `false` if the key is in the
 current state.
 
 Here's how each of these methods are equivalent to key-based methods:
@@ -686,8 +747,6 @@ args.inputs.keyboard.enter
 args.inputs.keyboard.key_down_or_held?(:enter)
 ```
 
-The following 
-
 ### `keys`
 
 Returns a `Hash` with all keys on the keyboard in their respective state. The `Hash` contains the following `keys`
@@ -696,3 +755,4 @@ Returns a `Hash` with all keys on the keyboard in their respective state. The `H
 -   `:held`
 -   `:down_or_held`
 -   `:up`
+-   `:repeat`

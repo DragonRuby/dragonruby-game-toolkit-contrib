@@ -29,7 +29,7 @@ def tick args
     # if currently_dragging_square_id isn't set, then see if there is a square that
     # the mouse is currently hovering over (the square reference will be nil since
     # we haven't selected a drag target yet)
-    square_under_mouse = args.geometry.find_intersect_rect args.inputs.mouse, args.state.squares.values
+    square_under_mouse = Geometry.find_intersect_rect args.inputs.mouse, args.state.squares.values
     square_reference = nil
   end
 
@@ -64,4 +64,8 @@ def tick args
   if square_under_mouse
     args.outputs.sprites << square_under_mouse.merge(path: "sprites/square/red.png")
   end
+end
+
+GTK.recording.on_replay_completed_successfully do |args|
+  raise "Square was not in the right place" if args.state.squares[2].x.floor != 746
 end

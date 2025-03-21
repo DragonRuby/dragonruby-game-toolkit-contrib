@@ -1,6 +1,6 @@
 def tick args
   if args.state.should_reset_framerate_calculation
-    args.gtk.reset_framerate_calculation
+    GTK.reset_framerate_calculation
     args.state.should_reset_framerate_calculation = nil
   end
 
@@ -54,7 +54,7 @@ def tick args
       idx += 1
     end
   else
-    args.state.current_collision = args.geometry.find_intersect_rect args.state.player_rect, args.state.rects
+    args.state.current_collision = Geometry.find_intersect_rect args.state.player_rect, args.state.rects
   end
 
   # render
@@ -83,13 +83,13 @@ end
 
 def add_rects args, points
   args.state.rects.concat(points.map { |point| { x: point.x, y: point.y, w: 5, h: 5 } })
-  # args.state.quad_tree = args.geometry.quad_tree_create args.state.rects
+  # args.state.quad_tree = Geometry.quad_tree_create args.state.rects
   generate_scene args, args.state.quad_tree
 end
 
 def add_rect args, x, y
   args.state.rects << { x: x, y: y, w: 5, h: 5 }
-  # args.state.quad_tree = args.geometry.quad_tree_create args.state.rects
+  # args.state.quad_tree = Geometry.quad_tree_create args.state.rects
   generate_scene args, args.state.quad_tree
 end
 
@@ -105,5 +105,5 @@ def render_instructions args
   args.outputs.labels << { x: 10, y: 10.from_top, r: 255, g: 255, b: 255, size_enum: -2, text: "Click to add 10,000 random rects. Tab to change collision algorithm." }
   args.outputs.labels << { x: 10, y: 40.from_top, r: 255, g: 255, b: 255, size_enum: -2, text: "Algorithm: #{args.state.collision_type}" }
   args.outputs.labels << { x: 10, y: 55.from_top, r: 255, g: 255, b: 255, size_enum: -2, text: "Rect Count: #{args.state.rects.length}" }
-  args.outputs.labels << { x: 10, y: 70.from_top, r: 255, g: 255, b: 255, size_enum: -2, text: "FPS: #{args.gtk.current_framerate.to_sf}" }
+  args.outputs.labels << { x: 10, y: 70.from_top, r: 255, g: 255, b: 255, size_enum: -2, text: "FPS: #{GTK.current_framerate.to_sf}" }
 end

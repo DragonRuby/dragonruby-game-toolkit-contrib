@@ -97,32 +97,32 @@ def select_previous_live_enemy args
 end
 
 def render_actions_menu args
-  args.outputs.borders << args.layout.rect(row:  8, col: 0, w: 4, h: 4, include_row_gutter: true, include_col_gutter: true)
+  args.outputs.borders << Layout.rect(row:  8, col: 0, w: 4, h: 4, include_row_gutter: true, include_col_gutter: true)
   if !args.state.selected_action
     selected_rect = if args.state.potential_action == :attack
-                      args.layout.rect(row:  8, col: 0, w: 4, h: 1)
+                      Layout.rect(row:  8, col: 0, w: 4, h: 1)
                     elsif args.state.potential_action == :special
-                      args.layout.rect(row:  9, col: 0, w: 4, h: 1)
+                      Layout.rect(row:  9, col: 0, w: 4, h: 1)
                     elsif args.state.potential_action == :magic
-                      args.layout.rect(row: 10, col: 0, w: 4, h: 1)
+                      Layout.rect(row: 10, col: 0, w: 4, h: 1)
                     elsif args.state.potential_action == :items
-                      args.layout.rect(row: 11, col: 0, w: 4, h: 1)
+                      Layout.rect(row: 11, col: 0, w: 4, h: 1)
                     end
 
     args.outputs.solids  << selected_rect.merge(r: 200, g: 200, b: 200)
   end
 
-  args.outputs.borders << args.layout.rect(row:  8, col: 0, w: 4, h: 1)
-  args.outputs.labels  << args.layout.rect(row:  8, col: 0, w: 4, h: 1).center.merge(text: "Attack", vertical_alignment_enum: 1, alignment_enum: 1)
+  args.outputs.borders << Layout.rect(row:  8, col: 0, w: 4, h: 1)
+  args.outputs.labels  << Layout.rect(row:  8, col: 0, w: 4, h: 1).center.merge(text: "Attack", vertical_alignment_enum: 1, alignment_enum: 1)
 
-  args.outputs.borders << args.layout.rect(row:  9, col: 0, w: 4, h: 1)
-  args.outputs.labels  << args.layout.rect(row:  9, col: 0, w: 4, h: 1).center.merge(text: "Special", vertical_alignment_enum: 1, alignment_enum: 1)
+  args.outputs.borders << Layout.rect(row:  9, col: 0, w: 4, h: 1)
+  args.outputs.labels  << Layout.rect(row:  9, col: 0, w: 4, h: 1).center.merge(text: "Special", vertical_alignment_enum: 1, alignment_enum: 1)
 
-  args.outputs.borders << args.layout.rect(row: 10, col: 0, w: 4, h: 1)
-  args.outputs.labels  << args.layout.rect(row: 10, col: 0, w: 4, h: 1).center.merge(text: "Magic", vertical_alignment_enum: 1, alignment_enum: 1)
+  args.outputs.borders << Layout.rect(row: 10, col: 0, w: 4, h: 1)
+  args.outputs.labels  << Layout.rect(row: 10, col: 0, w: 4, h: 1).center.merge(text: "Magic", vertical_alignment_enum: 1, alignment_enum: 1)
 
-  args.outputs.borders << args.layout.rect(row: 11, col: 0, w: 4, h: 1)
-  args.outputs.labels  << args.layout.rect(row: 11, col: 0, w: 4, h: 1).center.merge(text: "Items", vertical_alignment_enum: 1, alignment_enum: 1)
+  args.outputs.borders << Layout.rect(row: 11, col: 0, w: 4, h: 1)
+  args.outputs.labels  << Layout.rect(row: 11, col: 0, w: 4, h: 1).center.merge(text: "Items", vertical_alignment_enum: 1, alignment_enum: 1)
 end
 
 def render_enemies args
@@ -131,14 +131,14 @@ def render_enemies args
       nil
     elsif i == args.state.potential_enemy_index && args.state.phase == :selecting_target
       [
-        args.layout.rect(row: 1, col: 9 + i * 2, w: 2, h: 2).solid!(r: 200, g: 200, b: 200),
-        args.layout.rect(row: 1, col: 9 + i * 2, w: 2, h: 2).border!,
-        args.layout.rect(row: 1, col: 9 + i * 2, w: 2, h: 2).center.label!(text: "#{e.name}", vertical_alignment_enum: 1, alignment_enum: 1)
+        Layout.rect(row: 1, col: 9 + i * 2, w: 2, h: 2).solid!(r: 200, g: 200, b: 200),
+        Layout.rect(row: 1, col: 9 + i * 2, w: 2, h: 2).border!,
+        Layout.rect(row: 1, col: 9 + i * 2, w: 2, h: 2).center.label!(text: "#{e.name}", vertical_alignment_enum: 1, alignment_enum: 1)
       ]
     else
       [
-        args.layout.rect(row: 1, col: 9 + i * 2, w: 2, h: 2).border!,
-        args.layout.rect(row: 1, col: 9 + i * 2, w: 2, h: 2).center.label!(text: "#{e.name}", vertical_alignment_enum: 1, alignment_enum: 1)
+        Layout.rect(row: 1, col: 9 + i * 2, w: 2, h: 2).border!,
+        Layout.rect(row: 1, col: 9 + i * 2, w: 2, h: 2).center.label!(text: "#{e.name}", vertical_alignment_enum: 1, alignment_enum: 1)
       ]
     end
   end
@@ -148,21 +148,21 @@ def render_heroes args
   args.outputs.primitives << args.state.heroes.map_with_index do |h, i|
     if i == args.state.currently_acting_hero_index
       [
-        args.layout.rect(row: 5, col: 9 + i * 2, w: 2, h: 2).solid!(r: 200, g: 200, b: 200),
-        args.layout.rect(row: 5, col: 9 + i * 2, w: 2, h: 2).border!,
-        args.layout.rect(row: 5, col: 9 + i * 2, w: 2, h: 2).center.label!(text: "#{h.name}", vertical_alignment_enum: 1, alignment_enum: 1)
+        Layout.rect(row: 5, col: 9 + i * 2, w: 2, h: 2).solid!(r: 200, g: 200, b: 200),
+        Layout.rect(row: 5, col: 9 + i * 2, w: 2, h: 2).border!,
+        Layout.rect(row: 5, col: 9 + i * 2, w: 2, h: 2).center.label!(text: "#{h.name}", vertical_alignment_enum: 1, alignment_enum: 1)
       ]
     else
       [
-        args.layout.rect(row: 5, col: 9 + i * 2, w: 2, h: 2).border!,
-        args.layout.rect(row: 5, col: 9 + i * 2, w: 2, h: 2).center.label!(text: "#{h.name}", vertical_alignment_enum: 1, alignment_enum: 1)
+        Layout.rect(row: 5, col: 9 + i * 2, w: 2, h: 2).border!,
+        Layout.rect(row: 5, col: 9 + i * 2, w: 2, h: 2).center.label!(text: "#{h.name}", vertical_alignment_enum: 1, alignment_enum: 1)
       ]
     end
   end
 end
 
 def render_hero_statuses args
-  args.outputs.borders << args.layout.rect(row: 8, col: 4, w: 20, h: 4, include_col_gutter: true, include_row_gutter: true)
+  args.outputs.borders << Layout.rect(row: 8, col: 4, w: 20, h: 4, include_col_gutter: true, include_row_gutter: true)
 end
 
-$gtk.reset
+GTK.reset

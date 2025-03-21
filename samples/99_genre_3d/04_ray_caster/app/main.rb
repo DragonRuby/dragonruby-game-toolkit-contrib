@@ -7,7 +7,7 @@ def tick args
   calc args
   render args
   args.outputs.sprites << { x: 0, y: 0, w: 1280 * 2.66, h: 720 * 2.25, path: :screen }
-  args.outputs.labels  << { x: 30, y: 30.from_top, text: "FPS: #{args.gtk.current_framerate.to_sf}" }
+  args.outputs.labels  << { x: 30, y: 30.from_top, text: "FPS: #{GTK.current_framerate.to_sf}" }
 end
 
 def defaults args

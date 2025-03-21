@@ -47,7 +47,7 @@ class Game
   end
 
   def calc_edit_mode
-    state.current_grid_point = geometry.find_intersect_rect(inputs.mouse, state.grid_points)
+    state.current_grid_point = Geometry.find_intersect_rect(inputs.mouse, state.grid_points)
     calc_edit_mode_click
   end
 
@@ -100,8 +100,8 @@ class Game
   end
 
   def reflect_velocity! circle, line
-    slope = geometry.line_slope line, replace_infinity: 1000
-    slope_angle = geometry.line_angle line
+    slope = Geometry.line_slope line, replace_infinity: 1000
+    slope_angle = Geometry.line_angle line
     if slope_angle == 90 || slope_angle == 270
       circle.dx *= -circle.elasticity
     else
@@ -112,9 +112,9 @@ class Game
       vec.x /= len
       vec.y /= len
 
-      n = geometry.vec2_normal vec
+      n = Geometry.vec2_normal vec
 
-      v_dot_n = geometry.vec2_dot_product({ x: circle.dx, y: circle.dy }, n)
+      v_dot_n = Geometry.vec2_dot_product({ x: circle.dx, y: circle.dy }, n)
 
       circle.dx = circle.dx - n.x * (2 * v_dot_n)
       circle.dy = circle.dy - n.y * (2 * v_dot_n)
@@ -142,7 +142,7 @@ class Game
 
   def position_on_line! circle, line
     circle.colliding = true
-    point = geometry.line_normal line, circle
+    point = Geometry.line_normal line, circle
     if point.y > circle.y
       circle.colliding_from_above = true
     else
@@ -151,16 +151,16 @@ class Game
 
     circle.colliding_with = line
 
-    if !geometry.point_on_line? point, line
-      distance_from_start_of_line = geometry.distance_squared({ x: line.x, y: line.y }, point)
-      distance_from_end_of_line = geometry.distance_squared({ x: line.x2, y: line.y2 }, point)
+    if !Geometry.point_on_line? point, line
+      distance_from_start_of_line = Geometry.distance_squared({ x: line.x, y: line.y }, point)
+      distance_from_end_of_line = Geometry.distance_squared({ x: line.x2, y: line.y2 }, point)
       if distance_from_start_of_line < distance_from_end_of_line
         point = { x: line.x, y: line.y }
       else
         point = { x: line.x2, y: line.y2 }
       end
     end
-    angle = geometry.angle_to point, circle
+    angle = Geometry.angle_to point, circle
     circle.y = point.y + angle.vector_y * (circle.radius)
     circle.x = point.x + angle.vector_x * (circle.radius)
   end
@@ -175,7 +175,7 @@ class Game
   end
 
   def roll! circle, line
-    slope_angle = geometry.line_angle line
+    slope_angle = Geometry.line_angle line
     return if slope_angle == 90 || slope_angle == 270
 
     ax = -circle.gravity * slope_angle.vector_y
@@ -211,7 +211,7 @@ class Game
 
   def player_terrain_collisions
     terrain.find_all do |terrain|
-             geometry.circle_intersect_line? player, terrain
+             Geometry.circle_intersect_line? player, terrain
            end
            .sort_by do |terrain|
              if player.facing == -1

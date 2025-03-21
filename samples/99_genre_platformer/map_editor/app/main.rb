@@ -12,4 +12,4 @@ def reset
   $root_scene = nil
 end
 
-$gtk.reset
+GTK.reset

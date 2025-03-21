@@ -4,7 +4,7 @@ def tick args
   # to enable the http server in a production build you need to:
   # - update metadata/cvars.txt
   # - manually start the server up with enable_in_prod set to true:
-  args.gtk.start_server! port: 3000, enable_in_prod: true
+  GTK.start_server! port: 3000, enable_in_prod: true
   args.outputs.background_color = [0, 0, 0]
   args.outputs.labels << { x: 640,
                            y: 360,
@@ -21,7 +21,7 @@ def tick args
                            anchor_y: 1.5 }
 
   if Kernel.tick_count == 1
-    $gtk.openurl "http://localhost:3000"
+    GTK.openurl "http://localhost:3000"
   end
 
   args.inputs.http_requests.each { |req|

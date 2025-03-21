@@ -202,6 +202,7 @@ S
 
     def start_replay file_name = nil, speed: 1
       return if replay_recently_stopped?
+      @exception_in_completed_successfully_block = nil
       @replay_completed_successfully = false
       if !file_name
         log <<-S
@@ -428,7 +429,15 @@ S
       $console.set_command_silent "$replay.start '#{@replay_file_name}', speed: 1"
       @is_replaying = false
       @on_replay_tick_only_this_run = nil
-      @runtime.__reset__ if @should_reset_after_replay_completed
+
+
+      if @exception_in_completed_successfully_block
+        log "* ERROR: Exception was raised when on_replay_completed_successfully's callback was invoked."
+        raise @exception_in_completed_successfully_block
+      else
+        @runtime.__reset__ if @should_reset_after_replay_completed
+      end
+
       @runtime.notify! notification_message
     end
 
@@ -478,9 +487,18 @@ S
 
       if ($replay_data[:stopped_at] - $replay_data[:stopped_at_current_tick]) <= 1
         @replay_completed_successfully = true
+        log_info "Checking callback provided by ~GTK.recording.on_replay_completed_successfully(&block)~."
         if @replay_completed_successfully_block
-          @replay_completed_successfully_block.call @runtime.args
+          begin
+            log_info "Callback found. Invoking ~callback.call(args)~."
+            @replay_completed_successfully_block.call @runtime.args
+          rescue Exception => e
+            @exception_in_completed_successfully_block = e
+          end
+        else
+          log_info "No callback found."
         end
+
         @replay_completed_at = Kernel.global_tick_count
         stop_replay "Replay completed [#{@replay_file_name}]. To rerun, bring up the Console and press enter."
         @runtime.simulation_speed = 1

@@ -86,8 +86,8 @@ def label_with_drop_shadow x, y, text
 end
 
 def check_box opts = {}
-  checkbox_template = opts.args.layout.rect(w: 0.5, h: 0.5, col: 2)
-  final_rect = checkbox_template.center_inside_rect_y(opts.args.layout.rect(row: opts.row, col: opts.col))
+  checkbox_template = Layout.rect(w: 0.5, h: 0.5, col: 2)
+  final_rect = checkbox_template.center_inside_rect_y(Layout.rect(row: opts.row, col: opts.col))
   color = { r:   0, g:   0, b:   0 }
   color = { r: 255, g: 255, b: 255 } if opts.checked
 
@@ -100,14 +100,14 @@ def check_box opts = {}
 end
 
 def progress_bar opts = {}
-  outer_rect  = opts.args.layout.rect(row: opts.row, col: opts.col, w: 5, h: 1)
+  outer_rect  = Layout.rect(row: opts.row, col: opts.col, w: 5, h: 1)
   color = opts.percentage * 255
   baseline_progress_bar = opts.args
                               .layout
                               .rect(w: 5, h: 0.5)
 
   final_rect = baseline_progress_bar.center_inside_rect(outer_rect)
-  center = final_rect.rect_center_point
+  center = Geometry.rect_center_point(final_rect)
 
   {
     rect: final_rect,
@@ -125,48 +125,48 @@ def panel_primitives args, audio_entry
 
   # this uses DRGTK's layout apis to layout the controls
   # imagine the screen is split into equal cells (24 cells across, 12 cells up and down)
-  # args.layout.rect returns a hash which we merge values with to create primitives
-  # using args.layout.rect removes the need for pixel pushing
+  # Layout.rect returns a hash which we merge values with to create primitives
+  # using Layout.rect removes the need for pixel pushing
 
-  # args.outputs.debug << args.layout.debug_primitives(r: 255, g: 255, b: 255)
+  # args.outputs.debug << Layout.debug_primitives(r: 255, g: 255, b: 255)
 
   white_color = { r: 255, g: 255, b: 255 }
   label_style = white_color.merge(vertical_alignment_enum: 1)
 
   # panel background
-  results.primitives << args.layout.rect(row: 0, col: 0, w: 7, h: 6, include_col_gutter: true, include_row_gutter: true)
+  results.primitives << Layout.rect(row: 0, col: 0, w: 7, h: 6, include_col_gutter: true, include_row_gutter: true)
                                    .border!(r: 255, g: 255, b: 255)
 
   # title
-  results.primitives << args.layout.point(row: 0, col: 3.5, row_anchor: 0.5)
+  results.primitives << Layout.point(row: 0, col: 3.5, row_anchor: 0.5)
                                    .merge(label_style)
                                    .merge(text:           "Source #{args.state.selected} (#{args.audio[args.state.selected].name})",
                                           size_enum:      3,
                                           alignment_enum: 1)
 
   # seperator line
-  results.primitives << args.layout.rect(row: 1, col: 0, w: 7, h: 0)
+  results.primitives << Layout.rect(row: 1, col: 0, w: 7, h: 0)
                                    .line!(white_color)
 
   # screen location
-  results.primitives << args.layout.point(row: 1.0, col: 0, row_anchor: 0.5)
+  results.primitives << Layout.point(row: 1.0, col: 0, row_anchor: 0.5)
                                    .merge(label_style)
                                    .merge(text: "screen:")
 
-  results.primitives << args.layout.point(row: 1.0, col: 2, row_anchor: 0.5)
+  results.primitives << Layout.point(row: 1.0, col: 2, row_anchor: 0.5)
                                    .merge(label_style)
                                    .merge(text: "(#{audio_entry.screenx.to_i}, #{audio_entry.screeny.to_i})")
 
   # position
-  results.primitives << args.layout.point(row: 1.5, col: 0, row_anchor: 0.5)
+  results.primitives << Layout.point(row: 1.5, col: 0, row_anchor: 0.5)
                                    .merge(label_style)
                                    .merge(text: "position:")
 
-  results.primitives << args.layout.point(row: 1.5, col: 2, row_anchor: 0.5)
+  results.primitives << Layout.point(row: 1.5, col: 2, row_anchor: 0.5)
                                    .merge(label_style)
                                    .merge(text: "(#{audio_entry[:x].round(5).to_s[0..6]}, #{audio_entry[:y].round(5).to_s[0..6]})")
 
-  results.primitives << args.layout.point(row: 2.0, col: 0, row_anchor: 0.5)
+  results.primitives << Layout.point(row: 2.0, col: 0, row_anchor: 0.5)
                                    .merge(label_style)
                                    .merge(text: "pitch:")
 
@@ -177,7 +177,7 @@ def panel_primitives args, audio_entry
 
   results.primitives << results.pitch_slider_rect.primitives
 
-  results.primitives << args.layout.point(row: 2.5, col: 0, row_anchor: 0.5)
+  results.primitives << Layout.point(row: 2.5, col: 0, row_anchor: 0.5)
                                    .merge(label_style)
                                    .merge(text: "playtime:")
 
@@ -189,7 +189,7 @@ def panel_primitives args, audio_entry
 
   results.primitives << results.playtime_slider_rect.primitives
 
-  results.primitives << args.layout.point(row: 3.0, col: 0, row_anchor: 0.5)
+  results.primitives << Layout.point(row: 3.0, col: 0, row_anchor: 0.5)
                                    .merge(label_style)
                                    .merge(text: "gain:")
 
@@ -202,29 +202,29 @@ def panel_primitives args, audio_entry
   results.primitives << results.gain_slider_rect.primitives
 
 
-  results.primitives << args.layout.point(row: 3.5, col: 0, row_anchor: 0.5)
+  results.primitives << Layout.point(row: 3.5, col: 0, row_anchor: 0.5)
                                    .merge(label_style)
                                    .merge(text: "looping:")
 
-  checkbox_template = args.layout.rect(w: 0.5, h: 0.5, col: 2)
+  checkbox_template = Layout.rect(w: 0.5, h: 0.5, col: 2)
 
   results.looping_checkbox_rect = check_box(args: args, row: 3.5, col: 2, checked: audio_entry.looping)
   results.primitives << results.looping_checkbox_rect.primitives
 
-  results.primitives << args.layout.point(row: 4.0, col: 0, row_anchor: 0.5)
+  results.primitives << Layout.point(row: 4.0, col: 0, row_anchor: 0.5)
                                    .merge(label_style)
                                    .merge(text: "paused:")
 
-  checkbox_template = args.layout.rect(w: 0.5, h: 0.5, col: 2)
+  checkbox_template = Layout.rect(w: 0.5, h: 0.5, col: 2)
 
   results.paused_checkbox_rect = check_box(args: args, row: 4.0, col: 2, checked: !audio_entry.paused)
   results.primitives << results.paused_checkbox_rect.primitives
 
-  results.delete_button_rect = { rect: args.layout.rect(row: 5, col: 0, w: 7, h: 1) }
+  results.delete_button_rect = { rect: Layout.rect(row: 5, col: 0, w: 7, h: 1) }
 
   results.primitives << results.delete_button_rect.rect.to_solid(r: 180)
 
-  results.primitives << args.layout.point(row: 5, col: 3.5, row_anchor: 0.5)
+  results.primitives << Layout.point(row: 5, col: 3.5, row_anchor: 0.5)
                                    .merge(label_style)
                                    .merge(text: "DELETE", alignment_enum: 1)
 
@@ -331,7 +331,7 @@ def defaults args
     # create a group of buttons
     # column centered (using col_offset to calculate the column offset)
     # where each item is 2 columns apart
-    rects = args.layout.rect_group row:   11,
+    rects = Layout.rect_group row:   11,
                                    col_offset: {
                                      count: args.state.sound_files.length,
                                      w:     2

@@ -99,7 +99,7 @@ class LevelEditor
   end
 
   def generate_tilesheet
-    return if state.tick_count > 0
+    return if Kernel.tick_count > 0
     results = []
     rows = 20
     cols = 20

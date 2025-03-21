@@ -20,7 +20,8 @@ module GTK
          :right_analog_y_perc,
          :active,
          :active_at,
-         :active_global_at
+         :active_global_at,
+         :analog_dead_zone
 
     attr :connected
 
@@ -37,6 +38,7 @@ module GTK
       @right_analog_x_perc = 0
       @right_analog_y_perc = 0
       @connected = false
+      @analog_dead_zone = 3600
     end
 
     def key_down? key

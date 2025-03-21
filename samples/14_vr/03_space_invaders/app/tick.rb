@@ -52,4 +52,4 @@ def tick_game args
   $game.tick
 end
 
-$gtk.reset
+GTK.reset

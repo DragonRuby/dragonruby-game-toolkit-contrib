@@ -1,18 +1,18 @@
-# Easing (`args.easing`)
+# Easing
 
 A set of functions that allow you to determine the current progression of an easing function.
 
-?> All functions are available globally via `Easing.*`.
+All functions are available globally via `Easing.*`.
+
 ```ruby
 def tick args
-   args.easing.function(...)
-
-   # OR available globally
    Easing.function(...)
 end
 ```
 
-## `ease_spline`
+?> This YouTube video is a fantastic introduction to easing functions: <https://www.youtube.com/watch?v=mr5xkf6zSzk>
+
+## `spline`
 
 Given a start, current, duration, and a multiple bezier values, this function returns a number between 0 and 1 that represents the progress of an easing function.
 
@@ -21,43 +21,79 @@ This example will move a box at a linear speed from 0 to 1280 and then back to 0
 ```ruby
 def tick args
   start_time = 10
-  duration = 60
-  spline = [
+  duration = 300
+  spline_definition = [
     [  0, 0.25, 0.75, 1.0],
     [1.0, 0.75, 0.25,   0]
   ]
-  current_progress = args.easing.ease_spline start_time,
-                                             Kernel.tick_count,
-                                             duration,
-                                             spline
-  args.outputs.solids << { x: 1280 * current_progress, y: 360, w: 10, h: 10 }
+
+  current_progress = Easing.spline start_time,
+                                   Kernel.tick_count,
+                                   duration,
+                                   spline_definition
+
+  args.outputs.solids << {
+    x: 1280 * current_progress,
+    y: 360,
+    w: 10,
+    h: 10,
+    anchor_x: 0.5,
+    anchor_y: 0.5
+  }
 end
 ```
 
-## Easing/Lerping
+This example will move a box at quadratic speed from 0 to 1280 and then back (after a small pause).
 
-?> This YouTube video is a fantastic introduction to easing functions: <https://www.youtube.com/watch?v=mr5xkf6zSzk>
+```ruby
+def tick args
+  start_time = 10
+  duration = 300
+  spline_definition = [
+    [0.0, 0.0,  0.66, 1.0],
+    [1.0, 1.0,  1.0,  1.0],
+    [1.0, 0.33, 0.0,  0.0]
+  ]
+
+  current_progress = Easing.spline start_time,
+                                   Kernel.tick_count,
+                                   duration,
+                                   spline_definition
+
+  args.outputs.solids << {
+    x: 1280 * current_progress,
+    y: 360,
+    w: 10,
+    h: 10,
+    anchor_x: 0.5,
+    anchor_y: 0.5
+  }
+end
+```
+
+## `smooth_start`
 
 The `smooth_start`, `smooth_stop`, and `smooth_step` functions have the following
 invocation variants:
 
-- `Easing.FUNCTION(initial:, final:, perc:, power:)`
+- `Easing.FUNCTION(initial:, final:, perc:, power:, flip:)`
   - `initial`: starting value of the easing function (defaults to `0.0`).
   - `final`: ending value of the easing function (defaults to `1.0`).
   - `perc`: current easing percentage (a value over `1.0` will result in a higher final value).
   - `power`: `1` for linear, `2` for quadratic, `3` for cube, etc (defaults to `1.0`).
-- `Easing.FUNCTION(start_at:, end_at:, tick_count:, power:)`
+  - `flip`: This is an optional parameter (defaults to `false`). If the value is `true` then the resulting percentange is subtracted from `1` (percentage goes from `1` to `0`, instead of `0` to `1`).
+- `Easing.FUNCTION(start_at:, end_at:, tick_count:, power:, flip:)`
   - `start_at`: starting tick_count to begin the easing function .
   - `end_at`: ending value of the easing function.
   - `tick_count`: current tick_count (defaults to `Kernel.tick_count`)
   - `power`: `1` for linear, `2` for quadratic, `3` for cube, etc (defaults to `1.0`).
-- `Easing.FUNCTION(start_at:, duration:, tick_count:, power:)`
+  - `flip`: This is an optional parameter (defaults to `false`). If the value is `true` then the resulting percentange is subtracted from `1` (percentage goes from `1` to `0`, instead of `0` to `1`).
+- `Easing.FUNCTION(start_at:, duration:, tick_count:, power:, flip:)`
   - `start_at`: starting tick_count to begin the easing function .
   - `duration`: used to compute `end_at` value.
   - `tick_count`: Current tick_count (defaults to `Kernel.tick_count`)
   - `power`: `1` for linear, `2` for quadratic, `3` for cube, etc (defaults to `1.0`).
-
-### `smooth_start`
+  - `flip`: This is an optional parameter (defaults to `false`). If the value is `true` then the resulting percentange is subtracted from `1` (percentage goes from `1` to `0`, instead of `0` to `1`).
 
 Here are examples of using `smooth_start`:
 
@@ -95,7 +131,7 @@ def tick args
 end
 ```
 
-### `smooth_stop`
+## `smooth_stop`
 
 Here are examples of using `smooth_stop`:
 
@@ -133,7 +169,7 @@ def tick args
 end
 ```
 
-### `smooth_step`
+## `smooth_step`
 
 Here are examples of using `smooth_step`:
 
@@ -171,7 +207,7 @@ def tick args
 end
 ```
 
-### `mix`
+## `mix`
 
 Function expects 3 parameters. The first two parameters are the values
 to mix, and the third parameter is the mix percentage.
@@ -215,11 +251,99 @@ def tick args
 end
 ```
 
+## `lerp` vs `Easing`
+
+Using `Numeric#lerp` directly is simpler, but lacks frame perfect control. Here's an example of
+stretching and shrinking a rectangle using only `Numeric#lerp`:
+
+```ruby
+def tick args
+  args.state.player ||= {
+    x: 640,
+    y: 360,
+    w: 0,
+    h: 32,
+    anchor_x: 0.5,
+    anchor_y: 0.5,
+    target_w: 200,
+  }
+
+  player = args.state.player
+
+  if args.inputs.keyboard.key_down.up
+    player.target_w = player.target_w + 200
+  elsif args.inputs.keyboard.key_down.down
+    player.target_w = player.target_w - 100
+  end
+
+  # unconditionally lerp player.w to player.target_w
+  player.target_w = player.target_w.clamp(200, 1000)
+
+  # lerp percentage is guess and test
+  player.w = player.w.lerp(player.target_w, 0.2)
+  args.outputs.sprites << player.merge(path: :solid, r: 128, g: 128, b: 128)
+end
+```
+
+Using `Easing` in combination with `Numeric#lerp` is more code, but deterministic/frame-perfect:
+
+```ruby
+def tick args
+  # "bar" that represents the player
+  args.state.player ||= {
+    x: 640,
+    y: 360,
+    w: 0,
+    h: 32,
+    anchor_x: 0.5,
+    anchor_y: 0.5,
+    powerup_target_w: 200,
+    powerup_at: 0,
+  }
+
+  # duration of the lerp animation
+  powerup_animation_duration = 15
+
+  player = args.state.player
+
+  # if the last powerup time has elapsed then allow for grow or shrink
+  if player.powerup_at.elapsed_time > powerup_animation_duration
+    if args.inputs.keyboard.key_down.up && player.w <= 1000
+      # if up arrow pressed and the player's width is <= 1000
+      # then set the frame the power up was performed and set the target width
+      player.powerup_at = Kernel.tick_count
+      player.powerup_target_w = player.w + 200
+    elsif args.inputs.keyboard.key_down.down && player.w > 200
+      # if down arrow pressed and the player's width is > 200
+      # then set the frame the power up was performed and set the target width
+      player.powerup_at = Kernel.tick_count
+      player.powerup_target_w = player.w - 100
+    end
+  else
+    # if the last powerup time is less than the animation duration
+    # compute the easing percentage
+    perc = Easing.smooth_stop(start_at: player.powerup_at,
+                              duration: powerup_animation_duration,
+                              power: 2)
+
+    # lerp to the target width based off the percentage
+    player.w = player.w.lerp(player.powerup_target_w, perc)
+  end
+
+  args.outputs.sprites << player.merge(path: :solid,
+                                       r: 128,
+                                       g: 128,
+                                       b: 128)
+end
+```
+
 ## Chaining Time Stamped Based Easing Functions (Advanced)
 
 Easing functions can be chained using the `ease` class function.
 
 ### `ease`
+
+!> `Easing.ease` is not super fast. Consider using `Easing.smooth_(start|stop|step)` if your easing definition is simple.
 
 This function will give you a float value between `0` and `1` that represents a percentage. You need to give the function a `start_tick`, `current_tick`, duration, and easing `definitions`.
 
@@ -262,11 +386,11 @@ There are a number of easing definitions available to you:
 
 1.  `:identity`
 
-    The easing definition for `:identity` is `f(x) = x`. For example, if `start_tick` is `0`, `current_tick` is `50`, and `duration` is `100`, then `args.easing.ease 0, 50, 100, :identity` will return `0.5` (since tick `50` is half way between `0` and `100`).
+    The easing definition for `:identity` is `f(x) = x`. For example, if `start_tick` is `0`, `current_tick` is `50`, and `duration` is `100`, then `Easing.ease 0, 50, 100, :identity` will return `0.5` (since tick `50` is half way between `0` and `100`).
 
 2.  `:flip`
 
-    The easing definition for `:flip` is `f(x) = 1 - x`. For example, if `start_tick` is `0`, `current_tick` is `10`, and `duration` is `100`, then `args.easing.ease 0, 10, 100, :flip` will return `0.9` (since tick `10` means 100% - 10%).
+    The easing definition for `:flip` is `f(x) = 1 - x`. For example, if `start_tick` is `0`, `current_tick` is `10`, and `duration` is `100`, then `Easing.ease 0, 10, 100, :flip` will return `0.9` (since tick `10` means 100% - 10%).
 
 3.  `:quad`, `:cube`, `:quart`, `:quint`
 
@@ -328,10 +452,10 @@ def tick args
   duration     = 120
 
   # :flip, :quad, :flip is Smooth Stop
-  percentage   = args.easing.ease start_tick,
-                                  current_tick,
-                                  duration,
-                                  :flip, :quad, :flip
+  percentage   = Easing.ease start_tick,
+                             current_tick,
+                             duration,
+                             :flip, :quad, :flip
   start_x      = 100
   end_x        = 1180
   distance_x   = end_x - start_x
@@ -372,10 +496,10 @@ def tick args
                     fx
                   end
 
-  percentage    = args.easing.ease fade_in_at,
-                                   current_tick,
-                                   duration,
-                                   easing_lambda
+  percentage    = Easing.ease fade_in_at,
+                              current_tick,
+                              duration,
+                              easing_lambda
 
   alpha = 255 * percentage
   args.outputs.labels << { x: 640,
@@ -408,10 +532,10 @@ def tick args
   duration      = 600
 
   # 2. Reference easing definition by name
-  percentage    = args.easing.ease fade_in_at,
-                                   current_tick,
-                                   duration,
-                                   :saw_tooth
+  percentage    = Easing.ease fade_in_at,
+                              current_tick,
+                              duration,
+                              :saw_tooth
 
   alpha = 255 * percentage
   args.outputs.labels << { x: 640,

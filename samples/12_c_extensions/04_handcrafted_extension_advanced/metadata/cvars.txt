@@ -1,7 +1,7 @@
 log.filter_subsystems=HTTPServer
 
 # Whether or not the game should use the whole display, be sure to
-# expose $gtk.set_window_fullscreen(false) or $gtk.request_quit
+# expose GTK.set_window_fullscreen(false) or GTK.request_quit
 # to the player so they can get out of full screen mode.
 # renderer.fullscreen=true
 
@@ -11,5 +11,5 @@ log.filter_subsystems=HTTPServer
 # Set the window as borderless.
 # Note: the ability to quit the application via OS shortcuts will not
 # work if this value is true and you must provide a means to exit the
-# game and wire it up to $gtk.request_quit
+# game and wire it up to GTK.request_quit
 # renderer.borderless=true

@@ -627,7 +627,7 @@ end
 def tick args
   # Pressing r resets the program
   if args.inputs.keyboard.key_down.r
-    args.gtk.reset
+    GTK.reset
     reset
     return
   end

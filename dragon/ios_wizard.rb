@@ -51,8 +51,8 @@ class IOSWizard < Wizard
     @doctor_executed_at = 0
   end
 
-  def relative_path
-    (File.dirname $gtk.binary_path)
+  def root_dir
+    $gtk.get_base_dir
   end
 
   def prerequisite_steps
@@ -308,9 +308,9 @@ class IOSWizard < Wizard
   def check_for_distribution_profile
     @provisioning_profile_path = "profiles/distribution.mobileprovision"
     if !($gtk.read_file @provisioning_profile_path)
-      $gtk.system "mkdir -p #{relative_path}/profiles"
-      $gtk.system "open #{relative_path}/profiles"
-      $gtk.system "echo Download the mobile provisioning profile and place it here with the name distribution.mobileprovision > #{relative_path}/profiles/README.txt"
+      $gtk.system "mkdir -p #{root_dir}/profiles"
+      $gtk.system "open #{root_dir}/profiles"
+      $gtk.system "echo Download the mobile provisioning profile and place it here with the name distribution.mobileprovision > #{root_dir}/profiles/README.txt"
       raise WizardException.new(
         "* I didn't find a mobile provision.",
         "** 1. Go to http://developer.apple.com and click \"Certificates, IDs & Profiles\".",
@@ -332,9 +332,9 @@ class IOSWizard < Wizard
   def check_for_dev_profile
     @provisioning_profile_path = "profiles/development.mobileprovision"
     if !($gtk.read_file @provisioning_profile_path)
-      $gtk.system "mkdir -p #{relative_path}/profiles"
-      $gtk.system "open #{relative_path}/profiles"
-      $gtk.system "echo Download the mobile provisioning profile and place it here with the name development.mobileprovision > #{relative_path}/profiles/README.txt"
+      $gtk.system "mkdir -p #{root_dir}/profiles"
+      $gtk.system "open #{root_dir}/profiles"
+      $gtk.system "echo Download the mobile provisioning profile and place it here with the name development.mobileprovision > #{root_dir}/profiles/README.txt"
       raise WizardException.new(
         "* I didn't find a mobile provision.",
         "** 1. Go to http://developer.apple.com and click \"Certificates, IDs & Profiles\".",
@@ -975,15 +975,15 @@ XML
   end
 
   def tmp_directory
-    File.expand_path "#{relative_path}/tmp/ios"
+    "#{root_dir}/tmp/ios"
   end
 
   def app_path
-    File.expand_path "#{tmp_directory}/#{@app_name}.app"
+    "#{tmp_directory}/#{@app_name}.app"
   end
 
-  def root_folder
-    File.expand_path "#{relative_path}/#{$gtk.cli_arguments[:dragonruby]}"
+  def game_dir
+    GTK.get_game_dir
   end
 
   def embed_mobileprovision
@@ -1014,22 +1014,22 @@ XML
   def stage_ios_app
     log_info "Staging."
     sh "mkdir -p #{tmp_directory}"
-    sh "cp -R #{relative_path}/dragonruby-ios.app/ \"#{tmp_directory}/#{@app_name}.app/\""
+    sh "cp -R #{root_dir}/dragonruby-ios.app/ \"#{tmp_directory}/#{@app_name}.app/\""
     sh "mv \"#{tmp_directory}/#{@app_name}.app/Runtime\" \"#{tmp_directory}/#{@app_name}.app/#{@app_name}\""
     root_folder_directories.each do |d|
-      sh %Q[cp -r "#{root_folder}/#{d}/" "#{app_path}/#{d}/"]
+      sh %Q[cp -r "#{game_dir}/#{d}/" "#{app_path}/#{d}/"]
     end
     :success
   end
 
   def stage_sim_app
     log_info "Staging."
-    sh "codesign --remove-signature #{relative_path}/dragonruby-ios-simulator.app/Runtime"
+    sh "codesign --remove-signature #{root_dir}/dragonruby-ios-simulator.app/Runtime"
     sh "mkdir -p #{tmp_directory}"
-    sh "cp -R #{relative_path}/dragonruby-ios-simulator.app/ \"#{tmp_directory}/#{@app_name}.app/\""
+    sh "cp -R #{root_dir}/dragonruby-ios-simulator.app/ \"#{tmp_directory}/#{@app_name}.app/\""
     sh "mv \"#{tmp_directory}/#{@app_name}.app/Runtime\" \"#{tmp_directory}/#{@app_name}.app/#{@app_name}\""
     root_folder_directories.each do |d|
-      sh %Q[cp -r "#{root_folder}/#{d}/" "#{app_path}/#{d}/"]
+      sh %Q[cp -r "#{game_dir}/#{d}/" "#{app_path}/#{d}/"]
     end
     :success
   end
@@ -1081,7 +1081,7 @@ XML
 
   def create_prod_payload_directory
     # production builds does not hotload ip address
-    sh %Q[rm "#{root_folder}/app/server_ip_address.txt"]
+    sh %Q[rm "#{game_dir}/app/server_ip_address.txt"]
 
     embed_mobileprovision
     stage_ios_app
@@ -1284,7 +1284,7 @@ S
   end
 
   def stage_native_libs
-    sh "cp -r \"#{root_folder}/native/\" \"#{app_path}/native/\""
+    sh "cp -r \"#{game_dir}/native/\" \"#{app_path}/native/\""
     sh "CODESIGN_ALLOCATE=\"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/codesign_allocate\" /usr/bin/codesign -f -s \"#{@certificate_name}\" --entitlements #{tmp_directory}/Entitlements.plist \"#{tmp_directory}/#{@app_name}.app/native/ios-device/ext.dylib\""
   end
 

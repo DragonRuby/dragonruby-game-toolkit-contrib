@@ -401,14 +401,14 @@ class TechDemo
     state.export_game_state_button ||= new_button_prefab(460, 100, "click to export app state")
     tick_button_prefab(state.export_game_state_button) # calls method to output button
     if button_clicked? state.export_game_state_button # if the export button is clicked
-      args.gtk.export! "Exported from clicking the export button in the tech demo." # the export occurs
+      GTK.export! "Exported from clicking the export button in the tech demo." # the export occurs
     end
   end
 
   # The mouse and keyboard focus are set to "yes" when the Dragonruby window is the active window.
   def window_state_demo
-    m = $gtk.args.inputs.mouse.has_focus ? 'Y' : 'N' # ternary operator (similar to if statement)
-    k = $gtk.args.inputs.keyboard.has_focus ? 'Y' : 'N'
+    m = GTK.args.inputs.mouse.has_focus ? 'Y' : 'N' # ternary operator (similar to if statement)
+    k = GTK.args.inputs.keyboard.has_focus ? 'Y' : 'N'
     outputs.labels << [460, 20, "mouse focus: #{m}   keyboard focus: #{k}", small_font]
   end
 

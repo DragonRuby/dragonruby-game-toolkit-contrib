@@ -50,12 +50,12 @@ def tick args
   args.state.cam_z ||= 6.4
   if args.inputs.keyboard.up
     point_1 = { x: 0, y: 0.02 }
-    point_r = args.geometry.rotate_point point_1, args.state.cam_angle_y
+    point_r = Geometry.rotate_point point_1, args.state.cam_angle_y
     args.state.cam_x -= point_r.x
     args.state.cam_z -= point_r.y
   elsif args.inputs.keyboard.down
     point_1 = { x: 0, y: -0.02 }
-    point_r = args.geometry.rotate_point point_1, args.state.cam_angle_y
+    point_r = Geometry.rotate_point point_1, args.state.cam_angle_y
     args.state.cam_x -= point_r.x
     args.state.cam_z -= point_r.y
   end
@@ -63,12 +63,12 @@ def tick args
   args.state.cam_x ||= 0.00
   if args.inputs.keyboard.right
     point_1 = { x: -0.02, y: 0 }
-    point_r = args.geometry.rotate_point point_1, args.state.cam_angle_y
+    point_r = Geometry.rotate_point point_1, args.state.cam_angle_y
     args.state.cam_x -= point_r.x
     args.state.cam_z -= point_r.y
   elsif args.inputs.keyboard.left
     point_1 = { x:  0.02, y: 0 }
-    point_r = args.geometry.rotate_point point_1, args.state.cam_angle_y
+    point_r = Geometry.rotate_point point_1, args.state.cam_angle_y
     args.state.cam_x -= point_r.x
     args.state.cam_z -= point_r.y
   end
@@ -280,4 +280,4 @@ def new_random_cube
   cube
 end
 
-$gtk.reset
+GTK.reset

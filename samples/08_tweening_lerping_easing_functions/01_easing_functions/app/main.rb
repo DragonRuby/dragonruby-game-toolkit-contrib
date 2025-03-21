@@ -87,12 +87,12 @@ def tick args
   elsif progress >= 1
     args.outputs.labels << [640, 360, "Click screen to reset.", 3, 1]
     if args.inputs.click
-      $gtk.reset
+      GTK.reset
     end
   end
 end
 
-# $gtk.reset
+# GTK.reset
 
 # you can make own variations of animations using this
 module Easing

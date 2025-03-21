@@ -84,7 +84,7 @@ Now, somewhere within `main.rb` do the following:
 
 ```rb
 # Teach DRGTK about the bindings
-$gtk.ffi_misc.dlopen("bindings")
+GTK.ffi_misc.dlopen("bindings")
 # Use the `square` function seamlessly
 puts FFI::CExt::square(42)
 # yeilds: 1764.0
@@ -156,7 +156,7 @@ Point fourtyPoint() {
 Here is how to use it in the Ruby code:
 
 ```ruby
-$gtk.ffi_misc.gtk_dlopen("bindings")
+GTK.ffi_misc.gtk_dlopen("bindings")
 include FFI::CExt
 p = Point.new
 p.x = 15
@@ -208,7 +208,7 @@ void free_ints(int *ints) {
 The usage:
 
 ```rb
-$gtk.ffi_misc.gtk_dlopen("bindings")
+GTK.ffi_misc.gtk_dlopen("bindings")
 include FFI::CExt
 ints = createInts(10)
 10.times do |i|
@@ -279,7 +279,7 @@ char *getStaticString() {
 Usage:
 
 ```rb
-$gtk.ffi_misc.gtk_dlopen("bindings")
+GTK.ffi_misc.gtk_dlopen("bindings")
 include FFI::CExt
 s1 = allocateString()
 printString(s1)

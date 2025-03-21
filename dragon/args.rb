@@ -33,12 +33,13 @@ module GTK
       $cvars     ||= @cvars
       @audio = AudioHash.new
       @passes = []
-      if runtime.state_assigned_to_nil_on_boot
-        @state = nil
+      if runtime.__state_assigned_to_hash_on_boot__
+        @state = {}
+        @temp_state = {}
       else
         @state = OpenEntity.new
+        @temp_state = OpenEntity.new
       end
-      @temp_state = OpenEntity.new
       @state.tick_count = -1
       @runtime = runtime
       @recording = recording

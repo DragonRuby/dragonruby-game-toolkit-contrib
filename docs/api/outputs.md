@@ -161,7 +161,7 @@ def tick args
 end
 ```
 
-### Rendering a Solid using an Array
+### Array Render Primitive
 
 Creates a solid black rectangle located at 100, 100. 160 pixels
 wide and 90 pixels tall.
@@ -176,12 +176,9 @@ end
 !> `Array`-based primitives are find for debugging purposes/quick prototypes. But should
 not be used as the default rendering approach. Use `Hash`-based or `Class`-based primitives.
 
-### Rendering a Solid using an Array with colors and alpha
+While not recommended for long term maintainability, you can also set the following properties.
 
-The value for the color and alpha is a number between `0` and `255`. The
-alpha property is optional and will be set to `255` if not specified.
-
-Creates a green solid rectangle with an opacity of 50%.
+Example Creates a green solid rectangle with an opacity of 50% (the value for the color and alpha is a number between `0` and `255`, the alpha property is optional and will be set to `255` if not specified):
 
 ```ruby
 def tick args
@@ -190,7 +187,7 @@ def tick args
 end
 ```
 
-### Rendering a Solid using a Hash
+### Hash Render Primitive
 
 If you want a more readable invocation. You can use the following hash to create a solid.
 Any parameters that are not specified will be given a default value. The keys of the hash can
@@ -214,7 +211,7 @@ def tick args
 end
 ```
 
-### Rendering a Solid using a Class
+### Class Render Primitive
 
 You can also create a class with solid properties and render it as a primitive.
 ALL properties must be on the class. **Additionally**, a method called `primitive_marker`
@@ -333,7 +330,7 @@ end
 #### Cropping
 
 - `tile_(x|y|w|h)`: Defines the crop area to use for a sprite. The origin for `tile_` properties uses the TOP LEFT as its origin (useful for cropping tiles from a sprite sheet).
-- `source_(x|y|w|h)`: Defines the crop area to use for a sprite. The origin for `tile_` properties uses the BOTTOM LEFT as its origin.
+- `source_(x|y|w|h)`: Defines the crop area to use for a sprite. The origin for `source_` properties uses the BOTTOM LEFT as its origin.
 
 See the sample apps under `./samples/03_rendering_sprites` for examples of how to use this properties non-trivially.
 
@@ -351,10 +348,9 @@ The following sample apps show how `blendmode_enum` can be leveraged to create c
 - `./samples/07_advanced_rendering/11_blend_modes`
 - `./samples/07_advanced_rendering/13_lighting`
 
-#### Triangles (Indie, Pro Feature)
+#### Triangles
 
-Sprites can be rendered as triangles at the Indie and Pro License Tiers. To rendering using triangles,
-instead of providing a `w`, `h` property, provide `x2`, `y2`, `x3`, `y3`. This applies for positioning and cropping.
+To rendering using triangles, instead of providing a `w`, `h` property, provide `x2`, `y2`, `x3`, `y3`. This applies for positioning and cropping.
 
 Here is an example:
 
@@ -386,7 +382,7 @@ For more example of rendering using triangles see:
 - `./samples/07_advanced_rendering/16_matrix_and_triangles_3d`
 - `./samples/07_advanced_rendering/16_matrix_cubeworld`
 
-### Rendering a Sprite using an Array
+### Array Render Primitive
 
 Creates a sprite of a white circle located at 100, 100. 160 pixels
 wide and 90 pixels tall.
@@ -403,7 +399,7 @@ nice for quick prototyping. Use a `Hash` or `Class` to
 gain access to all properties, gain long term maintainability of code,
 and a boost in rendering performance. 
 
-### Rendering a Sprite using a Hash
+### Hash Render Primitive
 
 If you want a more readable (and faster) invocation, you can use the following hash to create a sprite.
 Any parameters that are not specified will be given a default value. The keys of the hash can
@@ -423,9 +419,9 @@ def tick args
 end
 ```
 
-### Rendering a Sprite using a Class
+### Class Render Primitive
 
-You can also create a class with solid/border properties and render it as a primitive.
+You can also create a class with sprite properties and render it as a primitive.
 ALL properties must be on the class. **Additionally**, a method called `primitive_marker`
 must be defined on the class.
 
@@ -511,7 +507,7 @@ end
 
 Add primitives to this collection to render a line.
 
-### Rendering a Line using an Array
+### Array Render Primitive
 
 ```ruby
 def tick args
@@ -523,7 +519,7 @@ end
 !> `Array`-based primitives are find for debugging purposes/quick prototypes. But should
 not be used as the default rendering approach. Use `Hash`-based or `Class`-based primitives.
 
-### Rendering a Line using a Hash
+### Hash Render Primitive
 
 ```ruby
 def tick args
@@ -541,9 +537,9 @@ def tick args
 end
 ```
 
-### Rendering a Line using a Class
+### Class Render Primitive
 
-```
+```ruby
 # Create type with ALL line properties AND primitive_marker
 class Line
   attr_accessor :x, :y, :x2, :y2, :r, :g, :b, :a, :blendmode_enum
@@ -579,7 +575,7 @@ end
 
 Add primitives to this collection to render a label.
 
-### Rendering a Label using an Array
+### Array Render Primitive
 
 Labels represented as Arrays/Tuples:
 
@@ -614,7 +610,7 @@ end
 !> `Array`-based primitives are find for debugging purposes/quick prototypes. But should
 not be used as the default rendering approach. Use `Hash`-based or `Class`-based primitives.
 
-### Rendering a Label using a Hash
+### Hash Render Primitive
 
 ?> `size_enum` is an opaque unit and signifies the recommended size for labels. The default `size_enum` of `0`
 means "this size is the smallest font size that is comfortable to read on a hand-held device". `size_enum` of `0`
@@ -643,7 +639,7 @@ def tick args
 end
 ```
 
-### Rendering a Label using a Class
+### Class Render Primitive
 
 ```ruby
 # Create type with ALL label properties AND primitive_marker
@@ -655,6 +651,139 @@ class Label
   def primitive_marker
     :label
   end
+end
+```
+
+## Render Targets (`[]` operator)
+
+The `args.outputs` structure renders to the screen. You can render to
+a texture/virtual canvas using `args.outputs[SYMBOL]`. What ever
+primitives are sent to the virtual canvas are cached and reused (the
+cache is invalidated whenever you render to virtual canvas).
+
+?> You can also use render targets to accomplish many complex layouts
+such as a game camera, perform scene management, or add lighting.
+<br/>
+<br/>
+Take a look at the following sample apps:
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;All sample apps under `./samples/07_advanced_rendering`.
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;The Map Editor reference implementation (`samples/99_genre_platformer/map_editor`).
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;The arcade game Square Fall (`samples/99_genre_arcade/squares`).
+<br/>
+<br/>
+Many of the sample apps use render targets, so be sure to explore as
+many as you can!
+
+Here's an example that programmatically creates a `:combined` sprite composed of
+two pngs and a label:
+
+```ruby
+def tick args
+  # on tick 0, create a render target composed of two sprites and a label
+  if Kernel.tick_count == 0
+    # to reiterate, this sprite will be cached until it's written to again
+    # the :combined sprite has a w/h of 200
+    args.outputs[:combined].w = 200
+    args.outputs[:combined].h = 200
+
+    # and a black transparent background
+    args.outputs[:combined].background_color = [0, 0, 0, 0]
+
+    # add two sprites to the render target
+    args.outputs[:combined].primitives << {
+      x: 0,
+      y: 0,
+      w: 100,
+      h: 200,
+      path: "sprites/square/blue.png"
+    }
+
+    args.outputs[:combined].primitives << {
+      x: 100,
+      y: 0,
+      w: 100,
+      h: 200,
+      path: "sprites/square/red.png"
+    }
+
+    # add a label in the center of the render target
+    args.outputs[:combined].primitives << {
+      x: 100,
+      y: 100,
+      text: "COMBINED!",
+      anchor_x: 0.5,
+      anchor_y: 0.5,
+    }
+  end
+
+  # rendered the :combined sprite in multiple
+  # places on the screen
+  args.outputs.sprites << {
+    x: 0,
+    y: 0,
+    w: 400,
+    h: 400,
+    path: :combined,
+    angle: 33
+  }
+
+  args.outputs.sprites << {
+    x: 640,
+    y: 360,
+    w: 100,
+    h: 100,
+    path: :combined,
+    angle: 180,
+    a: 128
+  }
+end
+```
+
+Render targets are extremely powerful and you'll end up using them a
+lot (so be sure to get familiar with them by studying the sample apps).
+
+!> Take note that simply accessing a render target via `args.outputs[]` will invalidate the cached texture. Proceed with caution!
+
+Here's an example of this side-effect:
+
+```ruby
+def tick args
+  # Create the render target only on the first tick.
+  # It's then cached and used indefinitely until it's 
+  # accessed again.
+  if Kernel.tick_count <= 0
+    args.outputs[:render_target].w = 100
+    args.outputs[:render_target].h = 100
+    args.outputs[:render_target].sprites << {
+      x: 0,
+      y: 0,
+      w: 100,
+      h: 100,
+      r: 0,
+      b: 0,
+      g: 0,
+      a: 64,
+      path: :solid
+    }
+  end
+
+  # CAUTION: accessing the render target will invalidate it! 
+  #          don't do this unless you're wanting to update the
+  #          texture
+  render_target = args.outputs[:render_target]
+  
+  # store information you need about a render target in state
+  # or an iVar/member variable instead of accessing the render target
+  args.outputs.sprites << {
+    x: 100,
+    y: 100,
+    w: render_target.w,
+    h: render_target.h,
+    path: :render_target,
+  }
 end
 ```
 

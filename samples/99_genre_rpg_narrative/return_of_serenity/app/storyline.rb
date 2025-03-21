@@ -135,12 +135,12 @@ def ship_control_hotspot offset_x, offset_y, a, b, c, d
 end
 
 def reload_current_scene
-  if $gtk.args.state.last_hotspot_scene
-    set_scene $gtk.args, send($gtk.args.state.last_hotspot_scene, $gtk.args)
-    tick $gtk.args
+  if GTK.args.state.last_hotspot_scene
+    set_scene GTK.args, send(GTK.args.state.last_hotspot_scene, GTK.args)
+    tick GTK.args
   elsif respond_to? :set_scene
-    set_scene $gtk.args, (replied_to_serenity_alive_firmly $gtk.args)
-    tick $gtk.args
+    set_scene GTK.args, (replied_to_serenity_alive_firmly GTK.args)
+    tick GTK.args
   end
-  $gtk.console.close
+  GTK.console.close
 end

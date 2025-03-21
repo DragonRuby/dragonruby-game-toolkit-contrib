@@ -443,4 +443,4 @@ def tick args
   $game.tick
 end
 
-# $gtk.reset
+# GTK.reset

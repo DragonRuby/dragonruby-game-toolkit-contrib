@@ -130,7 +130,7 @@ class Game
     end
 
     args.outputs.background_color = [255, 255, 255]
-    framerate_primitives = args.gtk.current_framerate_primitives
+    framerate_primitives = GTK.current_framerate_primitives
     framerate_primitives.find { |p| p.text }.each { |p| p.z = 1 }
     framerate_primitives[-1].text = "cube count: #{state.cube_count} (#{state.cube_count * 12} triangles)"
     args.outputs.primitives << framerate_primitives

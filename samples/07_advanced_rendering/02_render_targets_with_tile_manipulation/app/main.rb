@@ -3,7 +3,7 @@
 #  a scene to wipe away; the actual wipe effect is in the last 20 lines or
 #  so.
 
-$gtk.reset   # reset all game state if reloaded.
+GTK.reset   # reset all game state if reloaded.
 
 def circle_of_blocks pass, xoffset, yoffset, angleoffset, blocksize, distance
   numblocks = 10

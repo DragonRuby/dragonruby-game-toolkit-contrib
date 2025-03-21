@@ -31,7 +31,7 @@ def tick args
   # After rendering :block, render gradient on top of :block.
   args.outputs.sprites << [0, 0, 1280, 720, :gradient]
 
-  args.outputs.labels  << [1270, 710, args.gtk.current_framerate, 0, 2, 255, 255, 255]
+  args.outputs.labels  << [1270, 710, GTK.current_framerate, 0, 2, 255, 255, 255]
   tick_instructions args, "Sample app shows how to use render_targets (programmatically create cached sprites)."
 end
 
@@ -49,4 +49,4 @@ def tick_instructions args, text, y = 715
   args.outputs.debug << [640, y - 25, "(click to dismiss instructions)" , -2, 1, 255, 255, 255].label
 end
 
-$gtk.reset
+GTK.reset

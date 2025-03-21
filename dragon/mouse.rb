@@ -68,12 +68,6 @@ module GTK
                   :wheel, :relative_x, :relative_y,
                   :active
 
-    attr_accessor :click
-    attr_accessor :click_at
-    attr_accessor :global_click_at
-    attr_accessor :up_at
-    attr_accessor :global_up_at
-    attr_accessor :previous_click
     attr_accessor :x
     attr_accessor :y
     attr_accessor :previous_x
@@ -100,55 +94,32 @@ module GTK
       clear
     end
 
+    def click
+      @buttons_left.click
+    end
+
+    def click= value
+      @buttons_left.click = value
+    end
+
+    def click_at
+      @buttons_left.click&.created_at
+    end
+
+    def global_click_at
+      @buttons_left.click&.global_created_at
+    end
+
     def held
-      click_occurred_last_frame = @global_click_at == Kernel.global_tick_count - 1
-      up_should_be_considered = @global_click_at && @global_up_at
-      up_occurred_after_click = if up_should_be_considered && @global_up_at >= @global_click_at
-                                  true
-                                else
-                                  false
-                                end
-
-      if click_occurred_last_frame && !up_occurred_after_click
-        @held_point = MousePoint.new @x, @y
-        @held_point.created_at = @click.created_at + 1
-        @held_point.global_created_at = @click.global_created_at + 1
-      elsif up_should_be_considered && !up_occurred_after_click
-        @held_point ||= MousePoint.new @x, @y
-        @held_point.created_at ||= @click.created_at + 1
-        @held_point.global_created_at ||= @click.global_created_at + 1
-        @held_point.x = @x
-        @held_point.y = @y
-      else
-        @held_point = nil
-      end
-
-      if @held_point
-        @held_point.x = @x
-        @held_point.y = @y
-      end
-
-      @held_point
+      @buttons_left.held
     end
 
     def held_at
-      click_occurred_last_frame = @global_click_at == Kernel.global_tick_count - 1
-      up_occurred_on_click_frame = @global_click_at && @global_up_at && @global_click_at == @global_up_at
-      if click_occurred_last_frame && !up_occurred_on_click_frame
-        @held_at = @click_at + 1
-      end
-
-      @held_at
+      @buttons_left.held&.created_at
     end
 
     def global_held_at
-      click_occurred_last_frame = @global_click_at == Kernel.global_tick_count - 1
-      up_occurred_on_click_frame = @global_click_at && @global_up_at && @global_click_at != @global_up_at
-      if click_occurred_last_frame && !up_occurred_on_click_frame
-        @global_held_at = @global_click_at + 1
-      end
-
-      @global_held_at
+      @buttons_left.held&.global_created_at
     end
 
     def point
@@ -221,13 +192,11 @@ module GTK
 
     alias_method :position, :point
 
-    def clear
-      if @click
-        @previous_click = MousePoint.new @click.point.x, @click.point.y
-        @previous_click.created_at = @click.created_at
-        @previous_click.global_created_at = @click.global_created_at
-      end
+    def previous_click
+      @buttons_left.previous_click
+    end
 
+    def clear
       @active = nil
       @click = nil
       @up    = nil
@@ -248,11 +217,19 @@ module GTK
     end
 
     def up
-      @up
+      @buttons_left.up
+    end
+
+    def up_at
+      @buttons_left.up&.created_at
+    end
+
+    def global_up_at
+      @buttons_left.up&.global_created_at
     end
 
     def down
-      @click
+      @buttons_left.down
     end
 
     def to_h

@@ -163,23 +163,23 @@ class TextedBasedGame
 
   # Saves the state of the game in a text file called game_state.txt.
   def save
-    $gtk.serialize_state('game_state.txt', state)
+    GTK.serialize_state('game_state.txt', state)
   end
 
   # Loads the game state from the game_state.txt text file.
   # If the load is unsuccessful, the user is informed since the story line indicates the failure.
   def load
-    parsed_state = $gtk.deserialize_state('game_state.txt')
+    parsed_state = GTK.deserialize_state('game_state.txt')
     if !parsed_state
       set_story_line "no game to load. press save first."
     else
-      $gtk.args.state = parsed_state
+      GTK.args.state = parsed_state
     end
   end
 
   # Resets the game.
   def reset
-    $gtk.reset
+    GTK.reset
   end
 end
 

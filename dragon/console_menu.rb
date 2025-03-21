@@ -72,7 +72,7 @@ module GTK
 
         @menu_shown ||= :hidden
 
-        col_max_index = $gtk.args.layout.col_max_index
+        col_max_index = Layout.col_max_index
 
         if $gtk.production
           @buttons = [
@@ -125,7 +125,7 @@ module GTK
       end
 
       def rect_for_layout row, col
-        $gtk.args.layout.rect(row: row, col: col, w: 2, h: 1)
+        Layout.rect(row: row, col: col, w: 2, h: 1)
       end
 
       def button args

@@ -149,7 +149,7 @@ class ShopScene
     return nil if !text
     [
       rect.merge(path: :solid, r: 255, g: 255, b: 255, a: a),
-      geometry.center(rect).merge(text: text.gsub("_", " "), anchor_x: 0.5, anchor_y: 0.5, r: 0, g: 0, b: 0, size_px: rect.h.idiv(4))
+      Geometry.center(rect).merge(text: text.gsub("_", " "), anchor_x: 0.5, anchor_y: 0.5, r: 0, g: 0, b: 0, size_px: rect.h.idiv(4))
     ]
   end
 end
@@ -165,18 +165,18 @@ class LevelScene
       roll = rand
       if roll < 0.33
         state.bullet_damage += 1
-        $gtk.notify_extended! message: "bullet damage increased: #{state.bullet_damage}", env: :prod
+        GTK.notify_extended! message: "bullet damage increased: #{state.bullet_damage}", env: :prod
       elsif roll < 0.66
         if state.blaster_rate > 3
           state.blaster_rate = (state.blaster_rate * 0.85).to_i
           state.blaster_rate = 3 if state.blaster_rate < 3
-          $gtk.notify_extended! message: "blaster rate upgraded: #{state.blaster_rate}", env: :prod
+          GTK.notify_extended! message: "blaster rate upgraded: #{state.blaster_rate}", env: :prod
         else
-          $gtk.notify_extended! message: "blaster rate already at fastest.", env: :prod
+          GTK.notify_extended! message: "blaster rate already at fastest.", env: :prod
         end
       else
         state.blaster_spread += 2
-        $gtk.notify_extended! message: "blaster spread increased: #{state.blaster_spread}", env: :prod
+        GTK.notify_extended! message: "blaster spread increased: #{state.blaster_spread}", env: :prod
       end
     end
 
@@ -201,7 +201,7 @@ class LevelScene
     b = (enemy.hp / (state.enemy_min_health + state.enemy_health_range)) * 255
     [
       enemy.merge(path: :solid, r: 128, g: 0, b: b),
-      geometry.center(enemy).merge(text: enemy.hp, anchor_x: 0.5, anchor_y: 0.5, r: 255, g: 255, b: 255, size_px: enemy.h * 0.5)
+      Geometry.center(enemy).merge(text: enemy.hp, anchor_x: 0.5, anchor_y: 0.5, r: 255, g: 255, b: 255, size_px: enemy.h * 0.5)
     ]
   end
 
@@ -289,9 +289,9 @@ class LevelScene
   def calc_bullet_hits
     state.bullets.each do |b|
       state.enemies.each do |e|
-        if geometry.intersect_rect? b.merge(w: 4, h: 4, anchor_x: 0.5, anchor_x: 0.5), e
+        if Geometry.intersect_rect? b.merge(w: 4, h: 4, anchor_x: 0.5, anchor_x: 0.5), e
           e.hp -= state.bullet_damage
-          push_back_angle = geometry.angle b, geometry.center(e)
+          push_back_angle = Geometry.angle b, geometry.center(e)
           push_back_x = push_back_angle.vector_x * state.bullet_damage * 0.1
           push_back_y = push_back_angle.vector_y * state.bullet_damage * 0.1
           e.push_back_x += push_back_x
@@ -306,10 +306,10 @@ class LevelScene
   def calc_enemy_push_back
     state.enemies.sort_by { |e| -e.y }.each do |e|
       has_pushed_back = false
-      other_enemies = geometry.find_all_intersect_rect e, state.enemies
+      other_enemies = Geometry.find_all_intersect_rect e, state.enemies
       other_enemies.each do |e2|
         next if e == e2
-        push_back_angle = geometry.angle geometry.center(e), geometry.center(e2)
+        push_back_angle = Geometry.angle geometry.center(e), geometry.center(e2)
         e2.push_back_x += (e.push_back_x).fdiv(other_enemies.length) * 0.7
         e2.push_back_y += (e.push_back_y).fdiv(other_enemies.length) * 0.7
         has_pushed_back = true
@@ -323,7 +323,7 @@ class LevelScene
   end
 
   def attack_angle
-    geometry.angle state.turret_position, inputs.mouse
+    Geometry.angle state.turret_position, inputs.mouse
   end
 end
 
@@ -337,4 +337,4 @@ def reset
   $game = nil
 end
 
-$gtk.reset
+GTK.reset

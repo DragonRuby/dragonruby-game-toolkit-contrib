@@ -1,6 +1,6 @@
 def tick args
   args.state.id_seed    ||= 1
-  args.state.bullets    ||= []
+  args.state.boxes      ||= []
   args.state.terrain    ||= [
     {
       x: 40, y: 0, w: 1200, h: 40, path: :pixel, r: 0, g: 0, b: 0
@@ -47,44 +47,36 @@ def tick args
   ]
 
   if args.inputs.keyboard.space
-      b = {
-        id: args.state.id_seed,
-        x: 60,
-        y: 60,
-        w: 10,
-        h: 10,
-        dy: rand(20) + 10,
-        dx: rand(20) + 10,
-        path: 'sprites/square/blue.png'
-      }
+    args.state.boxes << {
+      id: args.state.id_seed,
+      x: 60,
+      y: 60,
+      w: 10,
+      h: 10,
+      dy: Numeric.rand(10..30),
+      dx: Numeric.rand(10..30),
+      path: :solid,
+      r: Numeric.rand(200),
+      g: Numeric.rand(200),
+      b: Numeric.rand(200)
+    }
 
-      args.state.bullets << b # if b.id == 122
+    args.state.id_seed += 1
+  end
 
-      args.state.id_seed += 1
+  if args.inputs.keyboard.backspace
+    args.state.boxes.pop_back
   end
 
   terrain = args.state.terrain
 
-  args.state.bullets.each do |b|
-    next if b.still
-    # if b.still
-    #   x_dir = if rand > 0.5
-    #             -1
-    #           else
-    #             1
-    #           end
-
-    #   y_dir = if rand > 0.5
-    #             -1
-    #           else
-    #             1
-    #           end
-
-    #   b.dy = rand(20) + 10 * x_dir
-    #   b.dx = rand(20) + 10 * y_dir
-    #   b.still = false
-    #   b.on_floor = false
-    # end
+  args.state.boxes.each do |b|
+    if b.still
+      b.dy = Numeric.rand(20)
+      b.dx = Numeric.rand(-20..20)
+      b.still = false
+      b.on_floor = false
+    end
 
     if b.on_floor
       b.dx *= 0.9
@@ -92,7 +84,7 @@ def tick args
 
     b.x += b.dx
 
-    collision_x = args.geometry.find_intersect_rect(b, terrain)
+    collision_x = Geometry.find_intersect_rect(b, terrain)
 
     if collision_x
       if b.dx > 0
@@ -106,7 +98,7 @@ def tick args
     b.dy -= 0.25
     b.y += b.dy
 
-    collision_y = args.geometry.find_intersect_rect(b, terrain)
+    collision_y = Geometry.find_intersect_rect(b, terrain)
 
     if collision_y
       if b.dy > 0
@@ -127,11 +119,11 @@ def tick args
     end
   end
 
-  args.outputs.labels << { x: 60, y: 60.from_top, text: "Hold space bar to add squares." }
-  args.outputs.labels << { x: 60, y: 90.from_top, text: "FPS: #{args.gtk.current_framerate.to_sf}" }
-  args.outputs.labels << { x: 60, y: 120.from_top, text: "Count: #{args.state.bullets.length}" }
+  args.outputs.labels << { x: 60, y: 60.from_top, text: "Hold SPACEBAR to add boxes. Hold BACKSPACE to remove boxes." }
+  args.outputs.labels << { x: 60, y: 90.from_top, text: "FPS: #{GTK.current_framerate.to_sf}" }
+  args.outputs.labels << { x: 60, y: 120.from_top, text: "Count: #{args.state.boxes.length}" }
   args.outputs.borders << args.state.terrain
-  args.outputs.sprites << args.state.bullets
+  args.outputs.sprites << args.state.boxes
 end
 
-# $gtk.reset
+# GTK.reset

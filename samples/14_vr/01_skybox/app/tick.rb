@@ -152,4 +152,4 @@ def render_guides args
   end
 end
 
-$gtk.reset
+GTK.reset

@@ -15,6 +15,7 @@ module GTK
     end
 
     def self.ease_extended start_tick, current_tick, end_tick, default_before, default_after, *definitions
+      log_once :consider_smooth!, "Easing::ease can be expensive to invoke, consider using Easing.smooth_(start|stop|step) instead."
       definitions.flatten!
       definitions = [:identity] if definitions.length == 0
       duration = end_tick - start_tick
@@ -29,6 +30,10 @@ module GTK
     end
 
     def self.ease_spline start_tick, current_tick, duration, spline
+      ease_spline_extended start_tick, current_tick, start_tick + duration, spline
+    end
+
+    def self.spline start_tick, current_tick, duration, spline
       ease_spline_extended start_tick, current_tick, start_tick + duration, spline
     end
 
@@ -139,7 +144,7 @@ S
 
     def self.smooth_step(initial: nil, final: nil, perc: nil,
                          start_at: nil, end_at: nil, duration: nil,
-                         tick_count: nil, power: 1)
+                         tick_count: nil, power: 1, flip: false)
 
       params = __resolve_params__ m: :smooth_step,
                                   initial: initial, final: final, perc: perc,
@@ -148,31 +153,37 @@ S
 
       start = smooth_start params
       stop = smooth_stop params
-      mix start, stop, 0.5
+      r = mix start, stop, 0.5
+      r = 1 - r if flip
+      r
     end
 
     def self.smooth_start(initial: nil, final: nil, perc: nil,
                           start_at: nil, end_at: nil, duration: nil,
-                          tick_count: nil, power: 1)
+                          tick_count: nil, power: 1, flip: false)
 
       params = __resolve_params__ m: :smooth_start,
                                   initial: initial, final: final, perc: perc,
                                   start_at: start_at, end_at: end_at,
                                   duration: duration, tick_count: tick_count, power: power
 
-      params.initial + (params.perc**params.power) * (params.final - params.initial)
+      r = params.initial + (params.perc**params.power) * (params.final - params.initial)
+      r = 1 - r if flip
+      r
     end
 
     def self.smooth_stop(initial: nil, final: nil, perc: nil,
                          start_at: nil, end_at: nil, duration: nil,
-                         tick_count: nil, power: 1)
+                         tick_count: nil, power: 1, flip: false)
 
       params = __resolve_params__ m: :smooth_stop,
                                   initial: initial, final: final, perc: perc,
                                   start_at: start_at, end_at: end_at,
                                   duration: duration, tick_count: tick_count, power: power
 
-      params.initial + (1 - (1 - params.perc)**params.power) * (params.final - params.initial)
+      r = params.initial + (1 - (1 - params.perc)**params.power) * (params.final - params.initial)
+      r = 1 - r if flip
+      r
     end
 
     def self.identity x

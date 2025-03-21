@@ -615,7 +615,7 @@ S
     end
 
     def logo_final_y
-      @logo_final_y = $gtk.args.layout.rect(row: 0, h: 1).center_y
+      @logo_final_y = Layout.rect(row: 0, h: 1).center_y
     end
 
     def slide_progress_bottom
@@ -661,8 +661,30 @@ S
 
       args.outputs.reserved << { x: 10.from_right, y: slide_progress_bottom + 35,
                                  text: "Press CTRL+g or ESCAPE to clear the prompt.",
+                                 anchor_y: 0,
+                                 anchor_x: 1,
+                                 r: 80,
+                                 g: 80,
+                                 b: 80,
+                                 a: (255 * slide_progress).to_i }
+
+      args.outputs.reserved << { x: 10.from_right, y: slide_progress_bottom + 60,
+                                 text: "Press SHIFT+CTRL+r to hard reboot your game.",
+                                 anchor_y: 0,
+                                 anchor_x: 1,
+                                 r: 80,
+                                 g: 80,
+                                 b: 80,
+                                 a: (255 * slide_progress).to_i }
+
+      args.outputs.reserved << { x: 10.from_right, y: slide_progress_bottom + 85,
+                                 text: "Press CTRL+r to soft reset your game.",
                                  vertical_alignment_enum: 0,
-                                 alignment_enum: 2, r: 80, g: 80, b: 80, a: (255 * slide_progress).to_i }
+                                 anchor_x: 1,
+                                 r: 80,
+                                 g: 80,
+                                 b: 80,
+                                 a: (255 * slide_progress).to_i }
     end
 
     def render_log_offset args
@@ -834,7 +856,7 @@ S
     end
 
     def left
-      Grid.bottom
+      Grid.left
     end
 
     def bottom

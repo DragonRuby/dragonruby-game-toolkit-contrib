@@ -106,4 +106,4 @@ def reset args
   $game = nil
 end
 
-$gtk.reset
+GTK.reset

@@ -241,6 +241,17 @@ of the engine. But you know that the code you’ve written will definitely work 
 version that was committed to source control.
 * Deploying To Itch.io
 
+NOTE:
+
+ It's strongly recommended that you do NOT keep DragonRuby Game Toolkit in a shared location and
+instead unzip a clean copy for every game (and commit everything to source control). 
+ 
+
+File access functions are sandoxed and assume that the ~dragonruby~ binary lives alongside
+the game you are building. Do not expect file access functions to return correct values if you are attempting
+to run the ~dragonruby~ binary from a shared location. It's recommended that the directory
+structure contained in the zip is not altered and games are built using that starting directory structure.
+
 Once you've built your game, you're all set to deploy! Good luck in
 your game dev journey and if you get stuck, come to the Discord
 channel!
@@ -346,7 +357,7 @@ If you want your game to run at full speed even when it's in the background, add
 *** Consider Adding a Request to Review Your Game In-Game
 
 Getting reviews of your game are extremely important and it's recommended that you put an option to review
-within the game itself. You can use ~args.gtk.open_url~ plus a review URL. Here's an example:
+within the game itself. You can use ~args.gtk.openurl~ plus a review URL. Here's an example:
 #+begin_src ruby
   def tick args
     # render the review button
@@ -385,6 +396,17 @@ within the game itself. You can use ~args.gtk.open_url~ plus a review URL. Here'
   end
 #+end_src
 * Deploying To Mobile Devices
+
+NOTE:
+
+ It's strongly recommended that you do NOT keep DragonRuby Game Toolkit in a shared location and
+instead unzip a clean copy for every game (and commit everything to source control). 
+ 
+
+File access functions are sandoxed and assume that the ~dragonruby~ binary lives alongside
+the game you are building. Do not expect file access functions to return correct values if you are attempting
+to run the ~dragonruby~ binary from a shared location. It's recommended that the directory
+structure contained in the zip is not altered and games are built using that starting directory structure.
 
 If you have a Pro subscription, you also have the capability to deploy
 to mobile devices.
@@ -745,6 +767,30 @@ Do:
   args.state.fx_queue.reject! { |fx| fx.countdown < 0 }
 #+end_src
 
+* RECIPIES:
+** How To Determine What Frame You Are On
+
+There is a property on ~state~ called ~tick_count~ that is incremented
+by DragonRuby every time the ~tick~ method is called. The following
+code renders a label that displays the current ~tick_count~.
+
+#+begin_src ruby
+  def tick args
+    args.outputs.labels << [10, 670, "\#{Kernel.tick_count}"]
+  end
+#+end_src
+
+** How To Get Current Framerate
+
+Current framerate is a top level property on the Game Toolkit Runtime
+and is accessible via ~args.gtk.current_framerate~.
+
+#+begin_src ruby
+  def tick args
+    args.outputs.labels << [10, 710, "framerate: \#{args.gtk.current_framerate.round}"]
+  end
+#+end_src
+
 ** How To Render A Sprite Using An Array
 
 All file paths should use the forward slash ~/~ *not* backslash
@@ -953,67 +999,6 @@ You can use a strategy like the following to create multiple labels from a Strin
   end
 #+end_src
 
-* RECIPIES:
-** How To Determine What Frame You Are On
-
-There is a property on ~state~ called ~tick_count~ that is incremented
-by DragonRuby every time the ~tick~ method is called. The following
-code renders a label that displays the current ~tick_count~.
-
-#+begin_src ruby
-  def tick args
-    args.outputs.labels << [10, 670, "\#{Kernel.tick_count}"]
-  end
-#+end_src
-
-** How To Get Current Framerate
-
-Current framerate is a top level property on the Game Toolkit Runtime
-and is accessible via ~args.gtk.current_framerate~.
-
-#+begin_src ruby
-  def tick args
-    args.outputs.labels << [10, 710, "framerate: \#{args.gtk.current_framerate.round}"]
-  end
-#+end_src
-
-** Accessing files
-
-DragonRuby uses a sandboxed filesystem which will automatically read from and
-write to a location appropriate for your platform so you don't have to worry
-about theses details in your code. You can just use ~gtk.read_file~,
-~gtk.write_file~, and ~gtk.append_file~ with a relative path and the engine
-will take care of the rest.
-
-The data directories that will be written to in a production build are:
-
-- Windows: ~C:\Users\[username]\AppData\Roaming\[devtitle]\[gametitle]~
-- MacOS: ~$HOME/Library/Application Support/[gametitle]~
-- Linux: ~$HOME/.local/share/[gametitle]~
-- HTML5: The data will be written to the browser's IndexedDB.
-
-The values in square brackets are the values you set in your
-~app/metadata/game_metadata.txt~ file.
-
-When reading files, the engine will first look in the game's data directory
-and then in the game directory itself. This means that if you write a file
-to the data directory that already exists in your game directory, the file
-in the data directory will be used instead of the one that is in your game.
-
-When running a development build you will directly write to your game
-directory (and thus overwrite existing files). This can be useful for built-in
-development tools like level editors.
-
-For more details on the implementation of the sandboxed filesystem, see Ryan
-C. Gordon's PhysicsFS documentation: [[https://icculus.org/physfs/]]
-
-IMPORTANT: File access functions are sandoxed and assume that the
-~dragonruby~ binary lives alongside the game you are building. Do not
-expect file access functions to return correct values if you are attempting
-to run the ~dragonruby~ binary from a shared location. It's
-recommended that the directory structure contained in the zip is not
-altered and games are built using that starter template.
-
 ** How To Play A Sound
 
 Sounds that end ~.wav~ will play once:
@@ -1086,6 +1071,43 @@ sure_ you've initialized a default value.
     ]
   end
 #+end_src
+
+** Accessing files
+
+DragonRuby uses a sandboxed filesystem which will automatically read from and
+write to a location appropriate for your platform so you don't have to worry
+about theses details in your code. You can just use ~gtk.read_file~,
+~gtk.write_file~, and ~gtk.append_file~ with a relative path and the engine
+will take care of the rest.
+
+The data directories that will be written to in a production build are:
+
+- Windows: ~C:\Users\[username]\AppData\Roaming\[devtitle]\[gametitle]~
+- MacOS: ~$HOME/Library/Application Support/[gametitle]~
+- Linux: ~$HOME/.local/share/[gametitle]~
+- HTML5: The data will be written to the browser's IndexedDB.
+
+The values in square brackets are the values you set in your
+~app/metadata/game_metadata.txt~ file.
+
+When reading files, the engine will first look in the game's data directory
+and then in the game directory itself. This means that if you write a file
+to the data directory that already exists in your game directory, the file
+in the data directory will be used instead of the one that is in your game.
+
+When running a development build you will directly write to your game
+directory (and thus overwrite existing files). This can be useful for built-in
+development tools like level editors.
+
+For more details on the implementation of the sandboxed filesystem, see Ryan
+C. Gordon's PhysicsFS documentation: [[https://icculus.org/physfs/]]
+
+IMPORTANT: File access functions are sandoxed and assume that the
+~dragonruby~ binary lives alongside the game you are building. Do not
+expect file access functions to return correct values if you are attempting
+to run the ~dragonruby~ binary from a shared location. It's
+recommended that the directory structure contained in the zip is not
+altered and games are built using that starter template.
 
 * Outputs (~args.outputs~)
 
@@ -1252,7 +1274,7 @@ For example, the following ~solid~ and ~sprite~ are equivalent:
   end
 #+end_src
 
-*** Rendering a Solid using an Array
+*** Array Render Primitive
 
 Creates a solid black rectangle located at 100, 100. 160 pixels
 wide and 90 pixels tall.
@@ -1269,12 +1291,9 @@ NOTE:
  ~Array~-based primitives are find for debugging purposes/quick prototypes. But should
 not be used as the default rendering approach. Use ~Hash~-based or ~Class~-based primitives.
 
-*** Rendering a Solid using an Array with colors and alpha
+While not recommended for long term maintainability, you can also set the following properties.
 
-The value for the color and alpha is a number between ~0~ and ~255~. The
-alpha property is optional and will be set to ~255~ if not specified.
-
-Creates a green solid rectangle with an opacity of 50%.
+Example Creates a green solid rectangle with an opacity of 50% (the value for the color and alpha is a number between ~0~ and ~255~, the alpha property is optional and will be set to ~255~ if not specified):
 
 #+begin_src ruby
   def tick args
@@ -1283,7 +1302,7 @@ Creates a green solid rectangle with an opacity of 50%.
   end
 #+end_src
 
-*** Rendering a Solid using a Hash
+*** Hash Render Primitive
 
 If you want a more readable invocation. You can use the following hash to create a solid.
 Any parameters that are not specified will be given a default value. The keys of the hash can
@@ -1307,7 +1326,7 @@ be provided in any order.
   end
 #+end_src
 
-*** Rendering a Solid using a Class
+*** Class Render Primitive
 
 You can also create a class with solid properties and render it as a primitive.
 ALL properties must be on the class. --Additionally--, a method called ~primitive_marker~
@@ -1426,7 +1445,7 @@ Instead of computing the offset, you can use ~anchor_x~, and ~anchor_y~ to cente
 **** Cropping
 
 - ~tile_(x|y|w|h)~: Defines the crop area to use for a sprite. The origin for ~tile_~ properties uses the TOP LEFT as its origin (useful for cropping tiles from a sprite sheet).
-- ~source_(x|y|w|h)~: Defines the crop area to use for a sprite. The origin for ~tile_~ properties uses the BOTTOM LEFT as its origin.
+- ~source_(x|y|w|h)~: Defines the crop area to use for a sprite. The origin for ~source_~ properties uses the BOTTOM LEFT as its origin.
 
 See the sample apps under ~./samples/03_rendering_sprites~ for examples of how to use this properties non-trivially.
 
@@ -1444,10 +1463,9 @@ The following sample apps show how ~blendmode_enum~ can be leveraged to create c
 - ~./samples/07_advanced_rendering/11_blend_modes~
 - ~./samples/07_advanced_rendering/13_lighting~
 
-**** Triangles (Indie, Pro Feature)
+**** Triangles
 
-Sprites can be rendered as triangles at the Indie and Pro License Tiers. To rendering using triangles,
-instead of providing a ~w~, ~h~ property, provide ~x2~, ~y2~, ~x3~, ~y3~. This applies for positioning and cropping.
+To rendering using triangles, instead of providing a ~w~, ~h~ property, provide ~x2~, ~y2~, ~x3~, ~y3~. This applies for positioning and cropping.
 
 Here is an example:
 
@@ -1479,7 +1497,7 @@ For more example of rendering using triangles see:
 - ~./samples/07_advanced_rendering/16_matrix_and_triangles_3d~
 - ~./samples/07_advanced_rendering/16_matrix_cubeworld~
 
-*** Rendering a Sprite using an Array
+*** Array Render Primitive
 
 Creates a sprite of a white circle located at 100, 100. 160 pixels
 wide and 90 pixels tall.
@@ -1498,7 +1516,7 @@ nice for quick prototyping. Use a ~Hash~ or ~Class~ to
 gain access to all properties, gain long term maintainability of code,
 and a boost in rendering performance.
 
-*** Rendering a Sprite using a Hash
+*** Hash Render Primitive
 
 If you want a more readable (and faster) invocation, you can use the following hash to create a sprite.
 Any parameters that are not specified will be given a default value. The keys of the hash can
@@ -1518,9 +1536,9 @@ be provided in any order.
   end
 #+end_src
 
-*** Rendering a Sprite using a Class
+*** Class Render Primitive
 
-You can also create a class with solid/border properties and render it as a primitive.
+You can also create a class with sprite properties and render it as a primitive.
 ALL properties must be on the class. --Additionally--, a method called ~primitive_marker~
 must be defined on the class.
 
@@ -1606,7 +1624,7 @@ Instead of manually defining the properties, you can represent a sprite using th
 
 Add primitives to this collection to render a line.
 
-*** Rendering a Line using an Array
+*** Array Render Primitive
 
 #+begin_src ruby
   def tick args
@@ -1620,7 +1638,7 @@ NOTE:
  ~Array~-based primitives are find for debugging purposes/quick prototypes. But should
 not be used as the default rendering approach. Use ~Hash~-based or ~Class~-based primitives.
 
-*** Rendering a Line using a Hash
+*** Hash Render Primitive
 
 #+begin_src ruby
   def tick args
@@ -1638,9 +1656,9 @@ not be used as the default rendering approach. Use ~Hash~-based or ~Class~-based
   end
 #+end_src
 
-*** Rendering a Line using a Class
+*** Class Render Primitive
 
-#+begin_src 
+#+begin_src ruby
   # Create type with ALL line properties AND primitive_marker
   class Line
     attr_accessor :x, :y, :x2, :y2, :r, :g, :b, :a, :blendmode_enum
@@ -1676,7 +1694,7 @@ not be used as the default rendering approach. Use ~Hash~-based or ~Class~-based
 
 Add primitives to this collection to render a label.
 
-*** Rendering a Label using an Array
+*** Array Render Primitive
 
 Labels represented as Arrays/Tuples:
 
@@ -1713,7 +1731,7 @@ NOTE:
  ~Array~-based primitives are find for debugging purposes/quick prototypes. But should
 not be used as the default rendering approach. Use ~Hash~-based or ~Class~-based primitives.
 
-*** Rendering a Label using a Hash
+*** Hash Render Primitive
 
 ?> ~size_enum~ is an opaque unit and signifies the recommended size for labels. The default ~size_enum~ of ~0~
 means "this size is the smallest font size that is comfortable to read on a hand-held device". ~size_enum~ of ~0~
@@ -1742,7 +1760,7 @@ corresponds to ~22px~ at ~720p~. Each increment of ~size_enum~ increases/decreas
   end
 #+end_src
 
-*** Rendering a Label using a Class
+*** Class Render Primitive
 
 #+begin_src ruby
   # Create type with ALL label properties AND primitive_marker
@@ -1754,6 +1772,148 @@ corresponds to ~22px~ at ~720p~. Each increment of ~size_enum~ increases/decreas
     def primitive_marker
       :label
     end
+  end
+#+end_src
+
+** Render Targets (~[]~ operator)
+
+The ~args.outputs~ structure renders to the screen. You can render to
+a texture/virtual canvas using ~args.outputs[SYMBOL]~. What ever
+primitives are sent to the virtual canvas are cached and reused (the
+cache is invalidated whenever you render to virtual canvas).
+
+?> You can also use render targets to accomplish many complex layouts
+such as a game camera, perform scene management, or add lighting.
+
+
+
+
+Take a look at the following sample apps:
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;All sample apps under ~./samples/07_advanced_rendering~.
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;The Map Editor reference implementation (~samples/99_genre_platformer/map_editor~).
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;The arcade game Square Fall (~samples/99_genre_arcade/squares~).
+
+
+
+
+Many of the sample apps use render targets, so be sure to explore as
+many as you can!
+
+Here's an example that programmatically creates a ~:combined~ sprite composed of
+two pngs and a label:
+
+#+begin_src ruby
+  def tick args
+    # on tick 0, create a render target composed of two sprites and a label
+    if Kernel.tick_count == 0
+      # to reiterate, this sprite will be cached until it's written to again
+      # the :combined sprite has a w/h of 200
+      args.outputs[:combined].w = 200
+      args.outputs[:combined].h = 200
+  
+      # and a black transparent background
+      args.outputs[:combined].background_color = [0, 0, 0, 0]
+  
+      # add two sprites to the render target
+      args.outputs[:combined].primitives << {
+        x: 0,
+        y: 0,
+        w: 100,
+        h: 200,
+        path: "sprites/square/blue.png"
+      }
+  
+      args.outputs[:combined].primitives << {
+        x: 100,
+        y: 0,
+        w: 100,
+        h: 200,
+        path: "sprites/square/red.png"
+      }
+  
+      # add a label in the center of the render target
+      args.outputs[:combined].primitives << {
+        x: 100,
+        y: 100,
+        text: "COMBINED!",
+        anchor_x: 0.5,
+        anchor_y: 0.5,
+      }
+    end
+  
+    # rendered the :combined sprite in multiple
+    # places on the screen
+    args.outputs.sprites << {
+      x: 0,
+      y: 0,
+      w: 400,
+      h: 400,
+      path: :combined,
+      angle: 33
+    }
+  
+    args.outputs.sprites << {
+      x: 640,
+      y: 360,
+      w: 100,
+      h: 100,
+      path: :combined,
+      angle: 180,
+      a: 128
+    }
+  end
+#+end_src
+
+Render targets are extremely powerful and you'll end up using them a
+lot (so be sure to get familiar with them by studying the sample apps).
+
+NOTE:
+
+ Take note that simply accessing a render target via ~args.outputs[]~ will invalidate the cached texture. Proceed with caution!
+
+Here's an example of this side-effect:
+
+#+begin_src ruby
+  def tick args
+    # Create the render target only on the first tick.
+    # It's then cached and used indefinitely until it's
+    # accessed again.
+    if Kernel.tick_count <= 0
+      args.outputs[:render_target].w = 100
+      args.outputs[:render_target].h = 100
+      args.outputs[:render_target].sprites << {
+        x: 0,
+        y: 0,
+        w: 100,
+        h: 100,
+        r: 0,
+        b: 0,
+        g: 0,
+        a: 64,
+        path: :solid
+      }
+    end
+  
+    # CAUTION: accessing the render target will invalidate it!
+    #          don't do this unless you're wanting to update the
+    #          texture
+    render_target = args.outputs[:render_target]
+  
+    # store information you need about a render target in state
+    # or an iVar/member variable instead of accessing the render target
+    args.outputs.sprites << {
+      x: 100,
+      y: 100,
+      w: render_target.w,
+      h: render_target.h,
+      path: :render_target,
+    }
   end
 #+end_src
 
@@ -2173,6 +2333,30 @@ Represents the mouse wheel. Returns ~nil~ if no mouse wheel actions occurred. Ot
 
 The properties ~args.inputs.mouse.(click|down|previous_click|up)~ each return ~nil~ if the mouse button event didn't occur. And return an Entity that has an ~x~, ~y~ properties along with helper functions to determine collision: ~inside_rect?~, ~inside_circle~. This value will be true if any of the mouse's buttons caused these events. To scope to a specific button use ~.button_left~, ~.button_middle~, ~.button_right~, or ~.button_bits~.
 
+*** ~key_down~
+
+Returns ~true~ if the specific button was pressed on this frame. ~args.inputs.mouse.key_down.BUTTON~ will only be true on the frame it was pressed.
+
+The following ~BUTTON~ values are applicable for ~key_down~,
+~key_held~, and ~key_up~:
+
+- ~left~ (eg ~args.inputs.mouse.key_down.left~)
+- ~middle~
+- ~right~
+- ~x1~
+- ~x2~
+
+*** ~key_held~
+
+Returns ~true~ if the specific button is being held. ~args.inputs.mouse.key_held.BUTTON~ will be true for all frames after ~key_down~ (until released).
+
+*** ~key_up~
+
+Returns ~true~ if the specific button was released. ~args.inputs.mouse.key_up.BUTTON~ will be true only on the frame the button was released.
+
+?> For a full demonstration of all mouse button states, refer to the
+sample app located at ~./samples/02_input_basics/02_mouse_properties~
+
 ** Touch
 
 The following touch apis are available on touch devices (iOS, Android, Mobile Web, Surface).
@@ -2298,9 +2482,25 @@ the minimum threshold for the analog stick to be considered
 active. The ~threshold_raw~ is a number between 0 and 32,767, and the
 ~threshold_perc~ is a number between 0 and 1.
 
-*** ~key_down?(key)~, ~key_up?(key)~, ~key_held?(key)~, ~key_down_or_held?(key)~
+*** ~analog_dead_zone~
 
-Given a symbol, this returns ~true~ or ~false~ if the key is in the
+The default value for this property is ~3600~. You can set this to a
+lower value for a more responsive analog stick, though it's not
+recommended (the Steam Deck analog sticks don't always settle back to
+a value lower than ~3600~).
+
+*** ~key_STATE?(key)~
+
+There are situations where you may want to get the status of a key
+dynamically as opposed to accessing a property. The following methods
+are provided to assist in this:
+
+- ~key_down?(key)~
+- ~key_up?(key)~
+- ~key_held?(key)~
+- ~key_down_or_held?(key)~
+
+Given a symbol, these functions return ~true~ or ~false~ if the key is in the
 current state.
 
 Here's how each of these methods are equivalent to key-based methods:
@@ -2359,9 +2559,9 @@ Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~arg
 
 Returns ~-1~ (left), ~0~ (neutral), or ~+1~ (right) depending on results of ~args.inputs.keyboard.up~ and ~args.inputs.keyboard.up~.
 
-*** keyboard properties
+*** Keyboard properties
 
-The following properties represent keys on the keyboard and are available on ~args.inputs.keyboard.KEY~, ~args.inputs.keyboard.key_down.KEY~, ~args.inputs.keyboard.key_held.KEY~, and ~args.inputs.keyboard.key_up.KEY~:
+The following properties represent keys on the keyboard and are available on ~args.inputs.keyboard.KEY~, ~args.inputs.keyboard.key_down.KEY~, ~args.inputs.keyboard.key_held.KEY~, ~args.inputs.keyboard.key_up.KEY~, ~args.inputs.keyboard.key_repeat.KEY~:
 
 Here is an example showing all the ways to access a key's state:
 
@@ -2372,6 +2572,8 @@ Here is an example showing all the ways to access a key's state:
     args.state.g_key ||= {
       ctrl_at: nil,
       key_down_at: nil,
+      key_repeat_at: nil,
+      key_last_repeat_at: nil,
       key_held_at: nil,
       key_down_or_held_at: nil,
       key_up_at: nil,
@@ -2387,6 +2589,12 @@ Here is an example showing all the ways to access a key's state:
     # G pressed/down
     if args.inputs.keyboard.key_down.g
       args.state.g_key.key_down_at = args.inputs.keyboard.key_down.g
+    end
+  
+    # G pressed or repeated (based on OS key repeat speed)
+    if args.inputs.keyboard.key_repeat.g
+      args.state.g_key.key_last_repeat_at = args.state.g_key.key_repeat_at
+      args.state.g_key.key_repeat_at = args.inputs.keyboard.key_repeat.g
     end
   
     # G held
@@ -2407,6 +2615,8 @@ Here is an example showing all the ways to access a key's state:
     # display the tick_count of each event
     args.outputs.debug.watch "ctrl+g?         #{args.state.g_key.ctrl_at}"
     args.outputs.debug.watch "g down?         #{args.state.g_key.key_down_at}"
+    args.outputs.debug.watch "g repeat?       #{args.state.g_key.key_repeat_at}"
+    args.outputs.debug.watch "g last_repeat?  #{args.state.g_key.key_last_repeat_at}"
     args.outputs.debug.watch "g held?         #{args.state.g_key.key_held_at}"
     args.outputs.debug.watch "g down or held? #{args.state.g_key.key_down_or_held_at}"
     args.outputs.debug.watch "g up?           #{args.state.g_key.key_up_at}"
@@ -2533,7 +2743,8 @@ Here is an example showing all the ways to access a key's state:
 -   ~kp_equals~
 -   ~left_right~
 -   ~up_down~
--   ~directional_vector~
+-   ~directional_vector~ (returns normalized vector based off of WASD/arrow keys, ~nil~ if no keys are down/held)
+-   ~directional_angle~ (returns angle in degrees based off of WASD/arrow keys, ~nil~ if no keys are down/held)
 -   ~truthy_keys~ (array of ~Symbols~)
 
 *** ~keycodes~
@@ -2545,8 +2756,8 @@ Here is a list SDL Keycodes: <https://wiki.libsdl.org/SDL2/SDLKeycodeLookup>
 *** ~char~
 
 Method is available under ~inputs.key_down~, ~inputs.key_held~, and ~inputs.key_up~. Take note that
-
-~args.inputs.keyboard.key_held.char~ will only return the ascii value of the last key that was held. Use ~args.inputs.keyboard.key_held.truthy_keys~ to get an ~Array~ of ~Symbols~ representing all keys being held.
+~args.inputs.keyboard.key_held.char~ will only return the ascii value of the last key that was held. Use
+~args.inputs.keyboard.key_held.truthy_keys~ to get an ~Array~ of ~Symbols~ representing all keys being held.
 
 To get a picture of all key states ~args.inputs.keyboard.keys~ returns a ~Hash~ with the following keys: ~:down~, ~:held~, ~:down_or_held~, ~:up~.
 
@@ -2591,9 +2802,19 @@ This is a demonstration of the behavior (see ~./samples/02_input_basics/01_keybo
   end
 #+end_src
 
-*** ~key_down?(key)~, ~key_up?(key)~, ~key_held?(key)~, ~key_down_or_held?(key)~
+*** ~key_STATE?(key)~
 
-Given a symbol, this returns ~true~ or ~false~ if the key is in the
+There are situations where you may want to get the status of a key
+dynamically as opposed to accessing a property. The following methods
+are provided to assist in this:
+
+- ~key_down?(key)~
+- ~key_up?(key)~
+- ~key_held?(key)~
+- ~key_down_or_held?(key)~
+- ~key_repeat?(key)~
+
+Given a symbol, these methods return ~true~ or ~false~ if the key is in the
 current state.
 
 Here's how each of these methods are equivalent to key-based methods:
@@ -2616,8 +2837,6 @@ Here's how each of these methods are equivalent to key-based methods:
   args.inputs.keyboard.key_down_or_held?(:enter)
 #+end_src
 
-The following
-
 *** ~keys~
 
 Returns a ~Hash~ with all keys on the keyboard in their respective state. The ~Hash~ contains the following ~keys~
@@ -2626,6 +2845,7 @@ Returns a ~Hash~ with all keys on the keyboard in their respective state. The ~H
 -   ~:held~
 -   ~:down_or_held~
 -   ~:up~
+-   ~:repeat~
 * Runtime (~args.gtk~)
 
 The ~GTK::Runtime~ class is the core of DragonRuby.
@@ -2805,9 +3025,22 @@ See the following sample apps for how to use pixel arrays:
 
 *** ~dlopen~
 
-Loads a precompiled C Extension into your game.
+Loads a precompiled C Extension into your game given the ~name~ of the library (without the ~lib~ prefix or platform sepcific file extension).
 
 See the sample apps at ~./samples/12_c_extensions~ for detailed walkthroughs of creating C extensions.
+
+?> All license tiers can load C Extensions in dev mode. The Standard
+license --does not include the dependencies required to create C
+Extensions however--.
+
+ During the publishing process, any C Extension
+directories will be ignored during packaging and an exception will be
+thrown if ~dlopen~ is called in Production (for Standard license
+only).
+
+ This gives Standard license users the ability to load/try out C
+Extensions in development mode. An [Indie or Pro license](https://dragonruby.org#purchase) is required to
+compile C Extensions/publish games that have C Extensions.
 
 ** Environment and Utility Functions
 
@@ -2905,6 +3138,10 @@ Returns ~true~ if the window is currently in fullscreen mode.
 
 *** ~set_window_scale~
 
+NOTE:
+
+ This function should only be used for debugging/development purposes and is not guaranteed to work cross platform. Do not use as a in-game feature in production.
+
 The first parameter is a float value used to resize the game
 window to a percentage of 1280x720 (or 720x1280 in portrait mode). The
 valid scale options are 0.1, 0.25, 0.5, 0.75, 1.25, 1.5, 2.0, 2.5,
@@ -2922,13 +3159,17 @@ representation of your game on various form factors.
 
 #+begin_src ruby
   # how your game will look on an iPad
-  $gtk.set_window_scale 1.0, 4, 3
+  GTK.set_window_scale 1.0, 4, 3
   
   # how your game will look on a wide aspect ratio
-  $gtk.set_window_scale 1.0, 21, 9
+  GTK.set_window_scale 1.0, 21, 9
 #+end_src
 
 *** ~set_window_title~
+
+NOTE:
+
+ This function should only be used for debugging/development purposes and is not guaranteed to work cross platform. Do not use as a in-game feature in production.
 
 This function takes in a string updates the title of the game in the Menu Bar.
 
@@ -2995,20 +3236,12 @@ These are the current platform categorizations (~args.gtk.platform_mappings~):
 
 Given the mappings above, ~args.gtk.platform? :desktop~ would return ~true~ if the game is running on a player's computer irrespective of OS (MacOS, Linux, and Windows are all categorized as ~:desktop~ platforms).
 
-*** ~open_url~
-
-Given a uri represented as a string. This function will open the uri in the user's default browser.
-
-#+begin_src ruby
-  def tick args
-    # open a url after 600 frames (10 seconds)
-    if Kernel.tick_count == 600
-      args.gtk.open_url "http://dragonruby.org"
-    end
-  end
-#+end_src
 
 *** ~system~
+
+NOTE:
+
+ This function should only be used for debugging/development purposes and is not guaranteed to work cross platform. Do not use as a in-game feature in production.
 
 Given an OS dependent cli command represented as a string, this function executes the command and ~puts~ the results to the DragonRuby Console (returns ~nil~).
 
@@ -3022,6 +3255,10 @@ Given an OS dependent cli command represented as a string, this function execute
 #+end_src
 
 *** ~exec~
+
+NOTE:
+
+ This function should only be used for debugging/development purposes and is not guaranteed to work cross platform. Do not use as a in-game feature in production.
 
 Given an OS dependent cli command represented as a string, this function executes the command and returns a ~string~ representing the results.
 
@@ -3076,9 +3313,18 @@ Replaces the mouse cursor with a sprite. Takes in a ~path~ to the sprite, and op
 
 ** File IO Functions
 
+NOTE:
+
+ File access functions are sandboxed and assume that the
+~dragonruby~ binary lives alongside the game you are building. --Do not
+expect these functions to return correct values if you are attempting
+to run the ~dragonruby~ binary from a shared location--. It's --strongly--
+recommended that the directory structure contained in the zip is not
+altered and games are built using that starter template.
+
 The following functions give you the ability to interact with the file system.
 
-DragonRuby uses a sandboxed filesystem which will automatically read from and write to a location appropriate for your platform so you don't have to worry about theses details in your code. You can just use ~$gtk.read_file~, ~$gtk.write_file~, and ~$gtk.append_file~ with a relative path and the engine will take care of the rest.
+DragonRuby uses a sandboxed filesystem which will automatically read from and write to a location appropriate for your platform so you don't have to worry about theses details in your code. You can just use ~GTK.read_file~, ~GTK.write_file~, and ~GTK.append_file~ with a relative path and the engine will take care of the rest.
 
 The data directories that will be written to in a production build are:
 - Windows: ~C:\Users\YourWindowsUsername\AppData\Roaming\[devtitle]\[gametitle]~
@@ -3093,15 +3339,6 @@ When reading files, the engine will first look in the game's data directory and 
 When running a development build you will directly write to your game directory (and thus overwrite existing files). This can be useful for built-in development tools like level editors.
 
 For more details on the implementation of the sandboxed filesystem, see Ryan C. Gordon's PhysicsFS documentation: [https://icculus.org/physfs/](https://icculus.org/physfs/)
-
-NOTE:
-
- File access functions are sandboxed and assume that the
-~dragonruby~ binary lives alongside the game you are building. --Do not
-expect these functions to return correct values if you are attempting
-to run the ~dragonruby~ binary from a shared location--. It's --strongly--
-recommended that the directory structure contained in the zip is not
-altered and games are built using that starter template.
 
 *** ~list_files~
 
@@ -3225,7 +3462,7 @@ Given a json string, this function returns a hash representing the json data.
 
 *** ~parse_json_file~
 
-Same behavior as ~parse_json_file~ except a file path is read for the json string.
+Same behavior as ~parse_json~ except a file path is read for the json string.
 
 *** ~parse_xml~
 
@@ -3528,7 +3765,7 @@ To get other values from ~mygame/game_metadata.txt~, you can do:
 
 *** ~reset~
 
-This function will be called if ~$gtk.reset~ is invoked. It will be called before DragonRuby resets game state and
+This function will be called if ~GTK.reset~ is invoked. It will be called before DragonRuby resets game state and
 is useful for capturing state information before a reset occurs (you can use this override to reset state external
 to DragonRuby's ~args.state~ construct).
 
@@ -3566,12 +3803,12 @@ to DragonRuby's ~args.state~ construct).
   
     # at T=600, invoke reset
     if Kernel.tick_count == 600
-      $gtk.reset
+      GTK.reset
     end
   end
   
   # this function will be invoked before
-  # $gtk.reset occurs
+  # GTK.reset occurs
   def reset args
     puts "resetting"
     puts "foo is: #{$game.foo}"
@@ -3597,7 +3834,7 @@ Has the same behavior as ~reset~ except the reset occurs before ~tick~ is execut
   
   # reset the game if this file is hotloaded/required
   # (removes the need to press "r" when I file is updated)
-  $gtk.reset
+  GTK.reset
 #+end_src
 
 *** ~reset_sprite~
@@ -3608,13 +3845,15 @@ This function can also be used to delete/garbage collect render targets you are 
 
 *** ~reset_sprites~
 
-Sprites when loaded are cached. This method invalidates the cache record of all sprites so that updates on from the disk can be loaded. This function is automatically called when ~args.gtk.reset~ (~$gtk.reset~) is invoked.
+Sprites when loaded are cached. This method invalidates the cache record of all sprites so that updates on from the disk can be loaded. This function is automatically called when ~args.gtk.reset~ (~GTK.reset~) is invoked.
 
 *** ~calcspritebox~
 
-Given a path to a sprite, this method returns the ~width~ and ~height~ of a sprite as a tuple.
+NOTE:
 
-NOTE: This method should be used for development purposes only and is expensive to call every frame. Do not use this method to set the size of sprite when rendering (hard code those values since you know what they are beforehand).
+ This method should be used for development purposes only and is expensive to call every frame. Do not use this method to set the size of sprite when rendering (hard code those values since you know what they are beforehand).
+
+Given a path to a sprite, this method returns the ~width~ and ~height~ of a sprite as a tuple.
 
 *** ~current_framerate~
 
@@ -3773,7 +4012,7 @@ Shows the DragonRuby console. Useful when debugging/customizing an in-game dev w
 
 *** ~hide_console~
 
-Shows the DragonRuby console. Useful when debugging/customizing an in-game dev workflow.
+Hides the DragonRuby console. Useful when debugging/customizing an in-game dev workflow.
 
 *** ~enable_console~
 
@@ -3785,7 +4024,7 @@ Disables the DragonRuby Console so that it won't show up even if you press the t
 
 *** ~disable_reset_via_ctrl_r~
 
-By default, pressing ~CTRL+R~ invokes ~$gtk.reset_next_tick~ (safely resetting your game with a convenient key combo).
+By default, pressing ~CTRL+R~ invokes ~GTK.reset_next_tick~ (safely resetting your game with a convenient key combo).
 
 If you want to disable this behavior, add the following to the ~main.rb~:
 
@@ -3794,18 +4033,18 @@ If you want to disable this behavior, add the following to the ~main.rb~:
     ...
   end
   
-  $gtk.disable_reset_via_ctrl_r
+  GTK.disable_reset_via_ctrl_r
 #+end_src
 
-NOTE: ~$gtk.disable_console~ will also disable the ~CTRL+R~ reset behavior.
+NOTE: ~GTK.disable_console~ will also disable the ~CTRL+R~ reset behavior.
 
 *** ~disable_controller_config~
 
-DragonRuby has a built-in controller configuration/mapping wizard. You can disable this wizard by adding ~$gtk.disable_controller_config~ at the top of main.rb.
+DragonRuby has a built-in controller configuration/mapping wizard. You can disable this wizard by adding ~GTK.disable_controller_config~ at the top of main.rb.
 
 *** ~enable_controller_config~
 
-DragonRuby has a built-in controller configuration/mapping wizard. You can re-enable this wizard by adding ~$gtk.enable_controller_config~ at the top of main.rb (this is enabled by default).
+DragonRuby has a built-in controller configuration/mapping wizard. You can re-enable this wizard by adding ~GTK.enable_controller_config~ at the top of main.rb (this is enabled by default).
 
 *** ~start_recording~
 
@@ -3884,16 +4123,16 @@ Examples:
   # option 1:
   # source code will be downloaded from the specified GitHub url, and saved locally with a
   # predefined folder convention.
-  $gtk.download_stb_rb "https://github.com/xenobrain/ruby_vectormath/blob/main/vectormath_2d.rb"
+  GTK.download_stb_rb "https://github.com/xenobrain/ruby_vectormath/blob/main/vectormath_2d.rb"
   
   # option 2:
   # source code will be downloaded from the specified GitHub username, repository, and file.
   # code will be saved locally with a predefined folder convention.
-  $gtk.download_stb_rb "xenobrain", "ruby_vectormath", "vectormath_2d.rb"
+  GTK.download_stb_rb "xenobrain", "ruby_vectormath", "vectormath_2d.rb"
   
   # option 3:
   # source code will be downloaded from a direct/raw url and saved to a direct/raw local path.
-  $gtk.download_stb_rb_raw "https://raw.githubusercontent.com/xenobrain/ruby_vectormath/main/vectormath_2d.rb",
+  GTK.download_stb_rb_raw "https://raw.githubusercontent.com/xenobrain/ruby_vectormath/main/vectormath_2d.rb",
                            "lib/xenobrain/ruby_vectionmath/vectormath_2d.rb"
 #+end_src
 
@@ -3948,28 +4187,11 @@ Returns the elapsed number of global ticks since creation.
 
 Entity cast to a ~Hash~ so you can update values as if you were updating a ~Hash~.
 
-** ~new_entity~
-
-Creates a new Entity with a ~type~, and initial properties. An option block can be passed to change the newly created entity:
-
-#+begin_src ruby
-  def tick args
-    args.state.player ||= args.state.new_entity :player, x: 0, y: 0 do |e|
-      e.max_hp = 100
-      e.hp     = e.max_hp * rand
-    end
-  end
-#+end_src
-
-** ~new_entity_strict~
-
-Creates a new Strict Entity. While Entities created via ~args.state.new_entity~ can have new properties added later on, Entities created using ~args.state.new_entity_strict~ must define all properties that are allowed during its initialization. Attempting to add new properties after initialization will result in an exception.
-
 ** ~tick_count~
 
-Returns the current tick of the game. ~Kernel.tick_count~ is ~0~ when the game is first started or if the game is reset via ~$gtk.reset~.
+Returns the current tick of the game. ~Kernel.tick_count~ is ~0~ when the game is first started or if the game is reset via ~GTK.reset~.
 
-* Geometry (~args.geometry~)
+* Geometry
 
 The Geometry ~module~ contains methods for calculations that are frequently used in game development.
 
@@ -4070,7 +4292,8 @@ is a high level summary of each value.
 |--------------------------------|----------------------------|------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | --metadata/cvars.txt--         | ~webserver.enabled~        | ~true~ or ~false~ (default is ~false~)                                       | Controls whether or not the in-game web server at ~localhost:9001~ is enabled in dev mode. The in-game web server is primarily needed for remote-hotloading. |
 |                                | ~webserver.port~           | Number representing a port (default is ~9001~)                               | Port that the in-game web server runs on. For remote-hotloading, this value must be ~9001~.                                                                  |
-|                                | ~webserver.remote_clients~ | ~true~ or ~false~ (default is ~false~)                                       | Controls whether or not remote connections to the in-game web server are allowed. Must be set to ~true~ for remote-hotloading.                                |
+|                                | ~webserver.remote_clients~ | ~true~ or ~false~ (default is ~false~)                                       | Controls whether or not remote connections to the in-game web server are allowed. Must be set to ~true~ for remote-hotloading.                               |
+|                                | ~renderer.background_sleep~| Number representing (default is ~50~, set to ~0~ to disable)                 | Controls how long to wait before attempting to rendering the game when the game does not have focus (wasted CPU cycles rendering when the window isn't top). |
 | --metadata/game_metadata.txt-- | ~devid~                    | String value                                                                 | Your Developer Id on Itch.io. |
 |                                | ~devname~                  | String value                                                                 | Developer name/studio name. |
 |                                | ~gameid~                   | String value                                                                 | Your Game Id on Itch.io |
@@ -4094,7 +4317,7 @@ is a high level summary of each value.
 |                                | ~appname~                  | String value                                                                 | The name to show under the App icon. |
 |                                | ~devcert~                  | String value                                                                 | Apple Development Certificate name used to sign your game for local device deployment. This is a Pro feature. |
 |                                | ~prodcert~                 | String value                                                                 | Apple Distribution Certificate name used to sign your game release to the App Store. This is a Pro feature. |
-* Layout (~args.layout~)
+* Layout
 
 Layout provides apis for placing primitives on a virtual grid that's
 within the "safe area" accross all platforms. This virtual grid is
@@ -4203,7 +4426,7 @@ Example:
   end
 #+end_src
 
-* Grid (~args.grid~)
+* Grid
 
 Provides information about the screen and game canvas.
 
@@ -4448,9 +4671,22 @@ The property breakdown is:
 
 *** Texture Atlases
 
+*** ~native_scale~
+
+Represents the native scale of the window compared to 720p.
+
+*** ~render_scale~
+
+Represents the render scale of the window compared to 720p. This value
+will be the same as ~native_scale~ if ~game_metadata.hd_max_scale=0~
+(stretch to fit). For values ~100 through 400~, the ~render_scale~
+represents the best fit scale to render pixel perfect. See CVars /
+Configuration (~args.cvars~), and ~metadata/game_metadata.txt~ for
+details about ~hd_max_scale~'s usage.
+
 *** ~texture_scale~
 
-Returns a decimal value representing the rendering scale of the game.
+Returns a decimal value representing the rendering scale for textures as a float.
 
 -   720p: 1.0
 -   HD+: 1.25

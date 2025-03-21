@@ -1,10 +1,10 @@
 def tick args
   # use layout apis to position check boxes
   args.state.checkboxes ||= [
-    args.layout.rect(row: 0, col: 0, w: 1, h: 1).merge(id: :option1, text: "Option 1", checked: false, changed_at: -120),
-    args.layout.rect(row: 1, col: 0, w: 1, h: 1).merge(id: :option1, text: "Option 2", checked: false, changed_at: -120),
-    args.layout.rect(row: 2, col: 0, w: 1, h: 1).merge(id: :option1, text: "Option 3", checked: false, changed_at: -120),
-    args.layout.rect(row: 3, col: 0, w: 1, h: 1).merge(id: :option1, text: "Option 4", checked: false, changed_at: -120),
+    Layout.rect(row: 0, col: 0, w: 1, h: 1).merge(id: :option1, text: "Option 1", checked: false, changed_at: -120),
+    Layout.rect(row: 1, col: 0, w: 1, h: 1).merge(id: :option1, text: "Option 2", checked: false, changed_at: -120),
+    Layout.rect(row: 2, col: 0, w: 1, h: 1).merge(id: :option1, text: "Option 3", checked: false, changed_at: -120),
+    Layout.rect(row: 3, col: 0, w: 1, h: 1).merge(id: :option1, text: "Option 4", checked: false, changed_at: -120),
   ]
 
   # check for click of checkboxes
@@ -41,7 +41,7 @@ def tick args
     # rendering if checked or not
     if checkbox.checked
       # fade in
-      a = 255 * args.easing.ease(checkbox.changed_at, Kernel.tick_count, 30, :smooth_stop_quint)
+      a = 255 * Easing.ease(checkbox.changed_at, Kernel.tick_count, 30, :smooth_stop_quint)
 
       [
         label,
@@ -50,7 +50,7 @@ def tick args
       ]
     else
       # fade out
-      a = 255 * args.easing.ease(checkbox.changed_at, Kernel.tick_count, 30, :smooth_stop_quint, :flip)
+      a = 255 * Easing.ease(checkbox.changed_at, Kernel.tick_count, 30, :smooth_stop_quint, :flip)
 
       [
         label,

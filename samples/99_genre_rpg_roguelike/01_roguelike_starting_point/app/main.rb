@@ -91,7 +91,7 @@ def tick_game args
 end
 
 def tile_in_game x, y, tile_key
-  tile($gtk.args.state.grid.padding + x * DESTINATION_TILE_SIZE,
-       $gtk.args.state.grid.padding + y * DESTINATION_TILE_SIZE,
+  tile(GTK.args.state.grid.padding + x * DESTINATION_TILE_SIZE,
+       GTK.args.state.grid.padding + y * DESTINATION_TILE_SIZE,
        tile_key)
 end

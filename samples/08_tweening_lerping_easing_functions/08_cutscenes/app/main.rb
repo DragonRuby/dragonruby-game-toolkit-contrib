@@ -73,7 +73,7 @@ class Game
   def queue_fade_to_black
     # we know the cutscene will end in 255 tickes, so we can queue a notification that will kick off in the future notifying that the cutscene is done
     @tick_queue.queue_one_time_tick Kernel.tick_count + 255 do |args, entry|
-      $gtk.notify "Cutscene complete!"
+      GTK.notify "Cutscene complete!"
     end
 
     # start the fade to black
@@ -177,4 +177,4 @@ def tick args
   $game.tick
 end
 
-$gtk.reset
+GTK.reset

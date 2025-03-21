@@ -211,7 +211,7 @@ end
 def create_tiles_if_needed args
   # We are going to use args.outputs.screenshots to generate tiles of a
   # png of size 6400x6400 called sprites/large.png.
-  if !args.gtk.stat_file("sprites/tile-9-9.png") && !args.state.creating_tiles
+  if !GTK.stat_file("sprites/tile-9-9.png") && !args.state.creating_tiles
     args.state.displaying_tiles = false
     args.outputs.labels << {
       x: 960,
@@ -296,4 +296,4 @@ def create_tiles_if_needed args
   end
 end
 
-$gtk.reset
+GTK.reset

@@ -45,4 +45,4 @@ def tick args
   args.outputs.sprites << { x: 1280 - 160, y: 0, w: 160, h: 90, path: :clipped_area }
 end
 
-$gtk.reset
+GTK.reset

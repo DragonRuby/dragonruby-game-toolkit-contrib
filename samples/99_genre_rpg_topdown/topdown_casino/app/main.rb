@@ -1,4 +1,4 @@
-$gtk.reset
+GTK.reset
 
 def coinflip
   rand < 0.5

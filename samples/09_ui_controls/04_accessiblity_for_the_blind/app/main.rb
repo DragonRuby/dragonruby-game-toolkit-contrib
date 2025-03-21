@@ -45,8 +45,8 @@ def tick args
   # beind the scenes)
 
   # =======================================
-  # from the Console run $gtk.a11y_enable!
-  # ctrl+r will disable a11y (or you can run $gtk.a11y_disable! in the console)
+  # from the Console run GTK.a11y_enable!
+  # ctrl+r will disable a11y (or you can run GTK.a11y_disable! in the console)
   # =======================================
 
   # with the a11y emulation enabled, you can only use left arrow, right arrow, and enter
@@ -111,4 +111,4 @@ def tick args
   end
 end
 
-$gtk.reset
+GTK.reset

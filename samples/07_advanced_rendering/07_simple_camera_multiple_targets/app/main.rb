@@ -113,17 +113,17 @@ def calc_scene_position args
                end
 
   # calculate the lerp percentage based on the time since the target hero changed
-  lerp_percentage = args.easing.ease args.state.target_hero_changed_at,
-                                     Kernel.tick_count,
-                                     30,
-                                     :smooth_stop_quint,
-                                     :flip
+  lerp_percentage = Easing.ease args.state.target_hero_changed_at,
+                                Kernel.tick_count,
+                                30,
+                                :smooth_stop_quint,
+                                :flip
 
   # calculate the angle and distance between the target hero and the other hero
-  angle_to_other_hero = args.geometry.angle_to target_hero, other_hero
+  angle_to_other_hero = Geometry.angle_to target_hero, other_hero
 
   # calculate the distance between the target hero and the other hero
-  distance_to_other_hero = args.geometry.distance target_hero, other_hero
+  distance_to_other_hero = Geometry.distance target_hero, other_hero
 
   # the camera position is the target hero position plus the angle and distance to the other hero (lerped)
   { x: args.state.camera.x - (target_hero.x + (angle_to_other_hero.vector_x * distance_to_other_hero * lerp_percentage)) * args.state.camera.scale,

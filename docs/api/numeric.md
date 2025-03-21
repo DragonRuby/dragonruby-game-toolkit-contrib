@@ -229,7 +229,7 @@ Returns a "string int" representation of a number with underscores for thousands
 
 ## `rand`
 
-Numeric has a expanded `rand` implementation that supports `Range`.
+Numeric has an expanded `rand` implementation that supports `Range` arguments.
 
 Example usage:
 
@@ -251,3 +251,123 @@ Parameter variants:
 - Range argument (integer values): `Numeric.rand(-10..10)` will return a random `integer` between -10 and 10 (inclusive).
 - Range argument (float values): `Numeric.rand(1.0..10.0)` will return a random `float` between 1.0 and 10.0.
 - Range argument (float values): `Numeric.rand(-10.0..10.0)` will return a random `float` between -10.0 and 10.0.
+
+## `vector_x`
+
+Assuming that the numeric value represents an angle in degrees,
+this function will return the `x` vector for the angle. 
+
+If the numeric value represents an angle in radians, you can use `vector_x_r`.
+
+Eg: `33.vector_x # result: ~0.83`
+
+## `vector_y`
+
+Assuming that the numeric value represents an angle value in degrees,
+this function will return the `y` vector for the angle.
+
+If the numeric value represents an angle in radians, you can use `vector_y_r`.
+
+Eg: `33.vector_y # result: ~0.54`
+
+## `idiv`
+
+Performs interger division for a numeric value.
+
+Eg: `5.0.idiv(3) # result: 1`
+
+## `fdiv`
+
+Performs floating point division for a numeric value.
+
+Eg: `1.fdiv(2) # result: 0.5`
+
+## `zmod?`
+
+A helper method that returns `true` if the modulo for the numeric
+value is zero.
+
+Eg: `60.zmod?(6) # result: true` (`zmod?` is essentially an alias for `60 % 6 == 0`)
+
+## `lerp`
+
+Given a `target` and `step`, this function will lerp towards the
+target. Think of it as a quick and dirty `Easing.smooth_stop`.
+
+Example:
+
+```ruby
+def tick args
+  args.state.solid_w ||= 1280
+  args.state.solid_w = args.state.solid_w.lerp(0, 0.05)
+  args.outputs.sprites << {
+    x: 0,
+    y: 360,
+    w: args.state.solid_w,
+    h: 10,
+    path: :solid,
+    r: 128,
+    g: 128,
+    b: 128
+  }
+end
+```
+
+## `remap`
+
+Remaps a value from one range to another. Parameters are `r1_being`, `r1_end`, `r2_begin`, `r2_end`.
+
+This function is useful for proportionally scaling values from one range to another.
+
+Example:
+
+```ruby
+def tick args
+  args.state.solid_perc ||= 0
+  args.state.solid_perc = args.state.solid_perc.lerp(1, 0.05)
+  solid_w = args.state.solid_perc.remap(0, 1, 0, 1280)
+  args.outputs.sprites << {
+    x: 0,
+    y: 360,
+    w: solid_w,
+    h: 10,
+    path: :solid,
+    r: 128,
+    g: 128,
+    b: 128
+  }
+end
+```
+
+## `clamp`
+
+Clamps a value between a minimum and maximum value.
+
+Eg: `100.clamp(0, 50) # result: 50`
+
+## `clamp_wrap`
+
+Clamps a value between a minimum and maximum value, but wraps around
+the minimum and maximum values.
+
+Eg: `100.clamp_wrap(0, 50) # result: 49`
+
+## `times`
+
+Executes a block of code a number of times equal to the numeric value.
+
+Eg: `5.times { puts "Hello" } # result: "Hello" "Hello" "Hello" "Hello" "Hello"`
+
+## `map`
+
+Returns the result of a block given the numeric value.
+
+Eg: `5.map { |i| i * 2 } # result: [0, 2, 4, 6, 8]`
+
+Essentially an alias for `5.times.map { |i| i * 2 }`.
+
+## `seconds`
+
+Converts a `Numeric` value representing seconds to number of frames/ticks.
+
+Eg `5.seconds` yields `300`.

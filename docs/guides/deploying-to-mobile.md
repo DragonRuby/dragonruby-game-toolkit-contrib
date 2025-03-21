@@ -1,5 +1,12 @@
 # Deploying To Mobile Devices
 
+!> It's strongly recommended that you do NOT keep DragonRuby Game Toolkit in a shared location and
+instead unzip a clean copy for every game (and commit everything to source control). <br/> <br/>
+File access functions are sandoxed and assume that the `dragonruby` binary lives alongside
+the game you are building. Do not expect file access functions to return correct values if you are attempting
+to run the `dragonruby` binary from a shared location. It's recommended that the directory
+structure contained in the zip is not altered and games are built using that starting directory structure.
+
 If you have a Pro subscription, you also have the capability to deploy
 to mobile devices.
 

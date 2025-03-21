@@ -1,4 +1,4 @@
-$gtk.ffi_misc.gtk_dlopen("ext")
+GTK.ffi_misc.gtk_dlopen("ext")
 include FFI::CExt
 
 def tick args
@@ -17,6 +17,6 @@ def tick args
   args.outputs.primitives << [x, y, w, h, :scanner, args.state.rotation].sprite
   args.state.rotation += 1
 
-  args.outputs.primitives << args.gtk.current_framerate_primitives
+  args.outputs.primitives << GTK.current_framerate_primitives
 end
 

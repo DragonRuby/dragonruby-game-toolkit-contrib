@@ -7,7 +7,7 @@ end
 
 def defaults args
   # uncomment the line below to slow the game down by a factor of 4 -> 15 fps (for debugging)
-  # args.gtk.slowmo! 4
+  # GTK.slowmo! 4
 
   args.state.player ||= {
     x: 144,                # render x of the player
@@ -144,4 +144,4 @@ def hitbox entity
 end
 
 
-$gtk.reset
+GTK.reset

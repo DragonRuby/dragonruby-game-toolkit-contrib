@@ -18,6 +18,17 @@ def tick args
       args.state.output_cycle = :top_level
     end
   end
+
+  args.state.window_scale ||= 1
+  if args.inputs.keyboard.key_down.space
+    if args.state.window_scale == 1
+      args.state.window_scale = 2
+      GTK.set_window_scale 2
+    else
+      args.state.window_scale = 1
+      GTK.set_window_scale 1
+    end
+  end
 end
 
 def render_main args

@@ -44,7 +44,7 @@ def tick args
 
   # "r" to reset
   if args.inputs.keyboard.key_down.r
-    $gtk.reset_next_tick
+    GTK.reset_next_tick
   end
 
   # define scene
@@ -131,4 +131,4 @@ class Camera
   end
 end
 
-$gtk.reset
+GTK.reset

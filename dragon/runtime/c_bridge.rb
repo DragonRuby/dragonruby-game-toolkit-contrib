@@ -347,10 +347,6 @@ module GTK
         mousex = @args.inputs.mouse.x
         mousey = @args.inputs.mouse.y
 
-        @args.inputs.mouse.click = MousePoint.new mousex, mousey
-        @args.inputs.mouse.click_at = Kernel.tick_count
-        @args.inputs.mouse.global_click_at = Kernel.global_tick_count
-
         if @args.inputs.last_active != :mouse
           @args.inputs.last_active_at = Kernel.tick_count
           @args.inputs.last_active_global_at = Kernel.global_tick_count
@@ -415,10 +411,6 @@ module GTK
 
         mousex = @args.inputs.mouse.x
         mousey = @args.inputs.mouse.y
-
-        @args.inputs.mouse.up = MousePoint.new mousex, mousey
-        @args.inputs.mouse.up_at = Kernel.tick_count
-        @args.inputs.mouse.global_up_at = Kernel.global_tick_count
 
         if @args.inputs.last_active != :mouse
           @args.inputs.last_active_at = Kernel.tick_count
@@ -533,6 +525,7 @@ module GTK
         @args.inputs.keyboard.key_down.char    = KeyboardKeys.char_with_shift(raw_key, modifier)
         @args.inputs.keyboard.key_down.raw_key = raw_key
         @args.inputs.keyboard.key_down.set keys_to_set, Kernel.tick_count
+        @args.inputs.keyboard.key_repeat.set names, Kernel.tick_count
         if @args.inputs.last_active != :keyboard
           @args.inputs.last_active_at = Kernel.tick_count
           @args.inputs.last_active_global_at = Kernel.global_tick_count
@@ -736,7 +729,7 @@ module GTK
       end
 
       def __controller_analog_set_last_active_if_needed__ target_controller, raw_analog_value
-        return if raw_analog_value.abs <= analog_dead_zone
+        return if raw_analog_value.abs <= target_controller.analog_dead_zone
 
         if !target_controller.active
           target_controller.active = true
@@ -751,10 +744,6 @@ module GTK
         end
       end
 
-      def analog_dead_zone
-        3200
-      end
-
       # WARNING: do not update this function signature or you'll break replays. create a new function instead
       def left_analog_x_player_1 value, sender = false
         return if self.recording.is_replaying? && sender != :replay
@@ -762,7 +751,7 @@ module GTK
         @previous_left_analog_x_player_1 = value
         self.record_input_history :left_analog_x_player_1, value, 0, 1
         __controller_analog_set_last_active_if_needed__ @args.inputs.controller_one, value
-        value = 0 if value.abs <= analog_dead_zone
+        value = 0 if value.abs <= @args.inputs.controller_one.analog_dead_zone
         @args.inputs.controller_one.left_analog_x_raw = value
         @args.inputs.controller_one.left_analog_x_perc = analog_to_perc value
       end
@@ -774,7 +763,7 @@ module GTK
         @previous_left_analog_y_player_1 = value
         self.record_input_history :left_analog_y_player_1, value, 0, 1
         __controller_analog_set_last_active_if_needed__ @args.inputs.controller_one, value
-        value = 0 if value.abs <= analog_dead_zone
+        value = 0 if value.abs <= @args.inputs.controller_one.analog_dead_zone
         @args.inputs.controller_one.left_analog_y_raw = value.*(-1)
         @args.inputs.controller_one.left_analog_y_perc = analog_to_perc value.*(-1)
       end
@@ -786,7 +775,7 @@ module GTK
         @previous_right_analog_x_player_1 = value
         self.record_input_history :right_analog_x_player_1, value, 0, 1
         __controller_analog_set_last_active_if_needed__ @args.inputs.controller_one, value
-        value = 0 if value.abs <= analog_dead_zone
+        value = 0 if value.abs <= @args.inputs.controller_one.analog_dead_zone
         @args.inputs.controller_one.right_analog_x_raw = value
         @args.inputs.controller_one.right_analog_x_perc = analog_to_perc value
       end
@@ -798,7 +787,7 @@ module GTK
         @previous_right_analog_y_player_1 = value
         self.record_input_history :right_analog_y_player_1, value, 0, 1
         __controller_analog_set_last_active_if_needed__ @args.inputs.controller_one, value
-        value = 0 if value.abs <= analog_dead_zone
+        value = 0 if value.abs <= @args.inputs.controller_one.analog_dead_zone
         @args.inputs.controller_one.right_analog_y_raw = value.*(-1)
         @args.inputs.controller_one.right_analog_y_perc = analog_to_perc value.*(-1)
       end
@@ -835,7 +824,7 @@ module GTK
         @previous_left_analog_x_player_2 = value
         self.record_input_history :left_analog_x_player_2, value, 0, 1
         __controller_analog_set_last_active_if_needed__ @args.inputs.controller_two, value
-        value = 0 if value.abs <= analog_dead_zone
+        value = 0 if value.abs <= @args.inputs.controller_two.analog_dead_zone
         @args.inputs.controller_two.left_analog_x_raw = value
         @args.inputs.controller_two.left_analog_x_perc = analog_to_perc value
       end
@@ -847,7 +836,7 @@ module GTK
         @previous_left_analog_y_player_2 = value
         self.record_input_history :left_analog_y_player_2, value, 0, 1
         __controller_analog_set_last_active_if_needed__ @args.inputs.controller_two, value
-        value = 0 if value.abs <= analog_dead_zone
+        value = 0 if value.abs <= @args.inputs.controller_two.analog_dead_zone
         @args.inputs.controller_two.left_analog_y_raw = value.*(-1)
         @args.inputs.controller_two.left_analog_y_perc = analog_to_perc value.*(-1)
       end
@@ -859,7 +848,7 @@ module GTK
         @previous_right_analog_x_player_2 = value
         self.record_input_history :right_analog_x_player_2, value, 0, 1
         __controller_analog_set_last_active_if_needed__ @args.inputs.controller_two, value
-        value = 0 if value.abs <= analog_dead_zone
+        value = 0 if value.abs <= @args.inputs.controller_two.analog_dead_zone
         @args.inputs.controller_two.right_analog_x_raw = value
         @args.inputs.controller_two.right_analog_x_perc = analog_to_perc value
       end
@@ -871,7 +860,7 @@ module GTK
         @previous_right_analog_y_player_2 = value
         self.record_input_history :right_analog_y_player_2, value, 0, 1
         __controller_analog_set_last_active_if_needed__ @args.inputs.controller_two, value
-        value = 0 if value.abs <= analog_dead_zone
+        value = 0 if value.abs <= @args.inputs.controller_two.analog_dead_zone
         @args.inputs.controller_two.right_analog_y_raw = value.*(-1)
         @args.inputs.controller_two.right_analog_y_perc = analog_to_perc value.*(-1)
       end
@@ -908,7 +897,7 @@ module GTK
         @previous_left_analog_x_player_3 = value
         self.record_input_history :left_analog_x_player_3, value, 0, 1
         __controller_analog_set_last_active_if_needed__ @args.inputs.controller_three, value
-        value = 0 if value.abs <= analog_dead_zone
+        value = 0 if value.abs <= @args.inputs.controller_three.analog_dead_zone
         @args.inputs.controller_three.left_analog_x_raw = value
         @args.inputs.controller_three.left_analog_x_perc = analog_to_perc value
       end
@@ -920,7 +909,7 @@ module GTK
         @previous_left_analog_y_player_3 = value
         self.record_input_history :left_analog_y_player_3, value, 0, 1
         __controller_analog_set_last_active_if_needed__ @args.inputs.controller_three, value
-        value = 0 if value.abs <= analog_dead_zone
+        value = 0 if value.abs <= @args.inputs.controller_three.analog_dead_zone
         @args.inputs.controller_three.left_analog_y_raw = value.*(-1)
         @args.inputs.controller_three.left_analog_y_perc = analog_to_perc value.*(-1)
       end
@@ -932,7 +921,7 @@ module GTK
         @previous_right_analog_x_player_3 = value
         self.record_input_history :right_analog_x_player_3, value, 0, 1
         __controller_analog_set_last_active_if_needed__ @args.inputs.controller_three, value
-        value = 0 if value.abs <= analog_dead_zone
+        value = 0 if value.abs <= @args.inputs.controller_three.analog_dead_zone
         @args.inputs.controller_three.right_analog_x_raw = value
         @args.inputs.controller_three.right_analog_x_perc = analog_to_perc value
       end
@@ -944,7 +933,7 @@ module GTK
         @previous_right_analog_y_player_3 = value
         self.record_input_history :right_analog_y_player_3, value, 0, 1
         __controller_analog_set_last_active_if_needed__ @args.inputs.controller_three, value
-        value = 0 if value.abs <= analog_dead_zone
+        value = 0 if value.abs <= @args.inputs.controller_three.analog_dead_zone
         @args.inputs.controller_three.right_analog_y_raw = value.*(-1)
         @args.inputs.controller_three.right_analog_y_perc = analog_to_perc value.*(-1)
       end
@@ -981,7 +970,7 @@ module GTK
         @previous_left_analog_x_player_4 = value
         self.record_input_history :left_analog_x_player_4, value, 0, 1
         __controller_analog_set_last_active_if_needed__ @args.inputs.controller_four, value
-        value = 0 if value.abs <= analog_dead_zone
+        value = 0 if value.abs <= @args.inputs.controller_four.analog_dead_zone
         @args.inputs.controller_four.left_analog_x_raw = value
         @args.inputs.controller_four.left_analog_x_perc = analog_to_perc value
       end
@@ -993,7 +982,7 @@ module GTK
         @previous_left_analog_y_player_4 = value
         self.record_input_history :left_analog_y_player_4, value, 0, 1
         __controller_analog_set_last_active_if_needed__ @args.inputs.controller_four, value
-        value = 0 if value.abs <= analog_dead_zone
+        value = 0 if value.abs <= @args.inputs.controller_four.analog_dead_zone
         @args.inputs.controller_four.left_analog_y_raw = value.*(-1)
         @args.inputs.controller_four.left_analog_y_perc = analog_to_perc value.*(-1)
       end
@@ -1005,7 +994,7 @@ module GTK
         @previous_right_analog_x_player_4 = value
         self.record_input_history :right_analog_x_player_4, value, 0, 1
         __controller_analog_set_last_active_if_needed__ @args.inputs.controller_four, value
-        value = 0 if value.abs <= analog_dead_zone
+        value = 0 if value.abs <= @args.inputs.controller_four.analog_dead_zone
         @args.inputs.controller_four.right_analog_x_raw = value
         @args.inputs.controller_four.right_analog_x_perc = analog_to_perc value
       end
@@ -1016,7 +1005,7 @@ module GTK
         return if @previous_right_analog_y_player_4 == value
         @previous_right_analog_y_player_4 = value
         __controller_analog_set_last_active_if_needed__ @args.inputs.controller_four, value
-        value = 0 if value.abs <= analog_dead_zone
+        value = 0 if value.abs <= @args.inputs.controller_four.analog_dead_zone
         @args.inputs.controller_four.right_analog_y_raw = value.*(-1)
         @args.inputs.controller_four.right_analog_y_perc = analog_to_perc value.*(-1)
       end
@@ -1073,10 +1062,11 @@ module GTK
       end
 
       def windowevent_size_changed orientation_w, orientation_h,
-                                   window_width, window_height,
-                                   allscreen_width_px, allscreen_height_px,
+                                   window_w, window_h,
+                                   allscreen_w_px, allscreen_h_px,
                                    allscreen_offset_x_px, allscreen_offset_y_px,
-                                   texture_scale, texture_scale_enum
+                                   native_scale, texture_scale_enum, render_scale,
+                                   high_dpi_scale
         g = @args.grid
 
         # indicates that orientation was changed
@@ -1099,63 +1089,69 @@ module GTK
           Layout.orientation_changed!
         end
 
-        g.allscreen_w_pt        = window_width
-        g.allscreen_h_pt        = window_height
-        g.texture_scale         = texture_scale.to_f
+        g.allscreen_w_pt        = window_w
+        g.allscreen_h_pt        = window_h
+        g.native_scale          = native_scale
+        g.render_scale          = render_scale
+        g.high_dpi_scale        = high_dpi_scale
         g.texture_scale_enum    = texture_scale_enum
+        g.texture_scale         = texture_scale_enum.fdiv(100)
 
-        g.allscreen_w_px        = allscreen_width_px
-        g.allscreen_h_px        = allscreen_height_px
+        g.allscreen_w_px        = allscreen_w_px
+        g.allscreen_h_px        = allscreen_h_px
         g.allscreen_offset_x_px = allscreen_offset_x_px
         g.allscreen_offset_y_px = allscreen_offset_y_px
 
         g.w                     = orientation_w
         g.h                     = orientation_h
-        g.w_px                  = (orientation_w * texture_scale).ceil
-        g.h_px                  = (orientation_h * texture_scale).ceil
+        g.w_px                  = (orientation_w * render_scale).ceil
+        g.h_px                  = (orientation_h * render_scale).ceil
 
-        g.allscreen_w           = (g.allscreen_w_px / texture_scale).ceil
-        g.allscreen_h           = (g.allscreen_h_px / texture_scale).ceil
-        g.allscreen_offset_x    = (g.allscreen_offset_x_px / texture_scale).ceil
-        g.allscreen_offset_y    = (g.allscreen_offset_y_px / texture_scale).ceil
+        g.allscreen_w           = (g.allscreen_w_px / render_scale).ceil
+        g.allscreen_h           = (g.allscreen_h_px / render_scale).ceil
+        g.allscreen_offset_x    = (g.allscreen_offset_x_px / render_scale).ceil
+        g.allscreen_offset_y    = (g.allscreen_offset_y_px / render_scale).ceil
+
+        g.allscreen_offset_x   += ((g.allscreen_w_px / render_scale) - (g.w + g.allscreen_offset_x * 2)).ceil
+        g.allscreen_offset_y   += ((g.allscreen_h_px / render_scale) - (g.h + g.allscreen_offset_y * 2)).ceil
 
         g.allscreen_left_px     = -g.allscreen_offset_x_px
         g.allscreen_bottom_px   = -g.allscreen_offset_y_px
+
         g.allscreen_left        = -g.allscreen_offset_x
         g.allscreen_bottom      = -g.allscreen_offset_y
 
+        g.left_px               = 0
+        g.bottom_px             = 0
+
+        g.left                  = 0
+        g.bottom                = 0
+
+        if @args.grid.origin_name == :center
+          g.allscreen_left_px   -= (g.w_px / 2).ceil
+          g.allscreen_bottom_px -= (g.h_px / 2).ceil
+
+          g.allscreen_left      -= (g.w / 2).ceil
+          g.allscreen_bottom    -= (g.h / 2).ceil
+
+          g.left_px             -= (g.w_px / 2).ceil
+          g.bottom_px           -= (g.h_px / 2).ceil
+
+          g.left                -= (g.w / 2).ceil
+          g.bottom              -= (g.h / 2).ceil
+        end
+
         g.allscreen_right_px    = g.allscreen_left_px   + g.allscreen_w_px + g.allscreen_offset_x_px
         g.allscreen_top_px      = g.allscreen_bottom_px + g.allscreen_h_px + g.allscreen_offset_y_px
+
         g.allscreen_right       = g.allscreen_left      + g.allscreen_w    + g.allscreen_offset_x
         g.allscreen_top         = g.allscreen_bottom    + g.allscreen_h    + g.allscreen_offset_y
 
-        g.bottom         = 0
-        g.left           = 0
-        g.right          = g.w
-        g.top            = g.h
-        g.bottom_px      = 0
-        g.left_px        = 0
-        g.right_px       = g.w_px
-        g.top_px         = g.h_px
+        g.right_px              = g.left_px + g.w_px
+        g.top_px                = g.bottom_px + g.h_px
 
-        if @args.grid.origin_name == :center
-          g.allscreen_left_px   -= (g.allscreen_w_px / 2).ceil
-          g.allscreen_right_px  -= (g.allscreen_w_px / 2).ceil
-          g.allscreen_bottom_px -= (g.allscreen_h_px / 2).ceil
-          g.allscreen_top_px    -= (g.allscreen_h_px / 2).ceil
-          g.allscreen_left      -= (g.allscreen_w / 2).ceil
-          g.allscreen_right     -= (g.allscreen_w / 2).ceil
-          g.allscreen_bottom    -= (g.allscreen_h / 2).ceil
-          g.allscreen_top       -= (g.allscreen_h / 2).ceil
-          g.left_px             -= (g.w_px / 2).ceil
-          g.right_px            -= (g.w_px / 2).ceil
-          g.bottom_px           -= (g.h_px / 2).ceil
-          g.top_px              -= (g.h_px / 2).ceil
-          g.left                -= (g.w / 2).ceil
-          g.right               -= (g.w / 2).ceil
-          g.bottom              -= (g.h / 2).ceil
-          g.top                 -= (g.h / 2).ceil
-        end
+        g.right                 = g.left + g.w
+        g.top                   = g.bottom + g.h
 
         @args.events[:resize_occurred] = true
       end

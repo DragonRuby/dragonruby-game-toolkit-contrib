@@ -31,18 +31,18 @@ begin # region: top level tick methods
     args.state.buttons.each do |b|
       if args.inputs.mouse.click && (args.inputs.mouse.click.inside_rect? b[:rect])
         parameter_string = (b.slice :frequency, :note, :octave).map { |k, v| "#{k}: #{v}" }.join ", "
-        args.gtk.notify! "#{b[:method_to_call]} #{parameter_string}"
+        GTK.notify! "#{b[:method_to_call]} #{parameter_string}"
         send b[:method_to_call], args, b
       end
     end
 
-    if args.inputs.mouse.click && (args.inputs.mouse.click.inside_rect? (args.layout.rect(row: 0).yield_self { |r| r.merge y: r.y + r.h.half, h: r.h.half }))
-      args.gtk.openurl 'https://www.youtube.com/watch?v=zEzovM5jT-k&ab_channel=AmirRajan'
+    if args.inputs.mouse.click && (args.inputs.mouse.click.inside_rect? (Layout.rect(row: 0).yield_self { |r| r.merge y: r.y + r.h.half, h: r.h.half }))
+      GTK.openurl 'https://www.youtube.com/watch?v=zEzovM5jT-k&ab_channel=AmirRajan'
     end
   end
 
   def process_audio_queue args
-    to_queue = args.state.audio_queue.find_all { |v| v[:queue_at] <= args.tick_count }
+    to_queue = args.state.audio_queue.find_all { |v| v[:queue_at] <= Kernel.tick_count }
     args.state.audio_queue -= to_queue
     to_queue.each { |a| args.audio[a[:id]] = a }
 
@@ -59,7 +59,7 @@ end
 
 begin # region: button definitions, ui layout, callback functions
   def button args, opts
-    button_def = opts.merge rect: (args.layout.rect (opts.merge w: 2, h: 1))
+    button_def = opts.merge rect: (Layout.rect (opts.merge w: 2, h: 1))
 
     button_def[:border] = button_def[:rect].merge r: 0, g: 0, b: 0
 
@@ -472,7 +472,7 @@ begin # region: wave generation
         id:               (new_id! args),
         frequency:        frequency,
         sample_rate:      48000,
-        stop_at:          args.tick_count + opts[:queue_in] + opts[:duration],
+        stop_at:          Kernel.tick_count + opts[:queue_in] + opts[:duration],
         gain:             opts[:gain].to_f,
         queue_at:         Kernel.tick_count + opts[:queue_in],
         decay_rate:       decay_rate,
@@ -504,7 +504,7 @@ begin # region: wave generation
                 frequency.to_i % 170,
                 frequency.to_i % 255
 
-      starting_rect = args.layout.rect(row: 5, col: 13)
+      starting_rect = Layout.rect(row: 5, col: 13)
       x_scale    = 10
       y_scale    = 100
       max_points = 25
@@ -584,4 +584,4 @@ begin # region: wave generation
   end
 end
 
-$gtk.reset
+GTK.reset

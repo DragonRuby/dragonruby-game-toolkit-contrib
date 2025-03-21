@@ -3,7 +3,7 @@ end
 
 def tick args
   if args.inputs.mouse.click && !@dl_opened
-    $gtk.dlopen("ext")
+    GTK.dlopen("ext")
     @dl_opened = true
   elsif args.inputs.mouse.click
     h = UserDefaults.new

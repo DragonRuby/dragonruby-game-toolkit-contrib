@@ -12,32 +12,32 @@ class Game
   end
 
   def defaults
-    @args.state ||= {
-      orbit: {
-        x: 640,
-        y: 640,
-        w: 1280,
-        h: 1280,
-        anchor_x: 0.5,
-        anchor_y: 0.5
-      },
-      viewport: {
-        x: 0,
-        y: 0,
-        w: 720,
-        h: 720
-      },
-      camera: {
-        x: 0,
-        y: 0,
-        scale: 0.25,
-        w: 720,
-        h: 720
-      }
+    @args.state.orbit ||= {
+      x: 640,
+      y: 640,
+      w: 1280,
+      h: 1280,
+      anchor_x: 0.5,
+      anchor_y: 0.5
+    }
+
+    @args.state.viewport ||= {
+      x: 0,
+      y: 0,
+      w: 720,
+      h: 720
+    }
+
+    @args.state.camera ||= {
+      x: 0,
+      y: 0,
+      scale: 0.25,
+      w: 720,
+      h: 720
     }
 
     if !@args.state.orbit_sprite_size
-      w, h = $gtk.calcspritebox("sprites/ring-1280.png")
+      w, h = GTK.calcspritebox("sprites/ring-1280.png")
       @args.state.orbit_sprite_size = {
         w: w,
         h: h
@@ -227,7 +227,7 @@ class Game
 end
 
 def boot args
-  args.state = nil
+  args.state = {}
 end
 
 def tick args

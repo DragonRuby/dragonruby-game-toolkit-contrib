@@ -10,7 +10,7 @@
 #    c. compile C extension into Framework
 #    d. copy framework to Payload directory and Sign
 # 4. Run $wizards.ios.start env: (:prod|:dev|:hotload) to create ipa
-# 5. Invoke args.gtk.dlopen giving the name of the C Extensions (~1s to load).
+# 5. Invoke GTK.dlopen giving the name of the C Extensions (~1s to load).
 # 6. Invoke methods as needed.
 
 # ===================================================
@@ -24,11 +24,11 @@ class IOSWizard < Wizard
     sh "./dragonruby-bind --output=mygame/ext-bind.m mygame/ext.h"
 
     # update generated implementation file
-    contents = $gtk.read_file "ext-bind.m"
+    contents = GTK.read_file "ext-bind.m"
     contents = contents.gsub("#include \"mygame/ext.h\"", "#include \"mygame/ext.h\"\n#include \"mygame/ext.m\"")
     puts contents
 
-    $gtk.write_file "ext-bind.m", contents
+    GTK.write_file "ext-bind.m", contents
 
     # create output location
     sh "rm -rf ./mygame/native/ios-device/ext.framework"
@@ -61,11 +61,11 @@ S
 end
 
 def tick args
-  if Kernel.tick_count == 60 && args.gtk.platform?(:ios)
-    args.gtk.dlopen 'ext'
+  if Kernel.tick_count == 60 && GTK.platform?(:ios)
+    GTK.dlopen 'ext'
     include FFI::CExt
     puts "the results of hello world are:"
     puts hello_world()
-    $gtk.console.show
+    GTK.console.show
   end
 end

@@ -1,4 +1,4 @@
-$gtk.ffi_misc.gtk_dlopen("ext")
+GTK.ffi_misc.gtk_dlopen("ext")
 include FFI::RE
 
 def split_words(input)

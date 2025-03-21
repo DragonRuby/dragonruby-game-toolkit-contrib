@@ -1,16 +1,16 @@
 # APIs covered:
-#   args.gtk.write_file "file-1.txt", Kernel.tick_count.to_s
-#   args.gtk.append_file "file-1.txt", Kernel.tick_count.to_s
+#   GTK.write_file "file-1.txt", Kernel.tick_count.to_s
+#   GTK.append_file "file-1.txt", Kernel.tick_count.to_s
 
-#   stat = args.gtk.stat_file "file-1.txt"
+#   stat = GTK.stat_file "file-1.txt"
 
-#   contents = args.gtk.read_file "file-1.txt"
+#   contents = GTK.read_file "file-1.txt"
 
-#   args.gtk.delete_file "file-1.txt"
-#   args.gtk.delete_file_if_exist "file-1.txt"
+#   GTK.delete_file "file-1.txt"
+#   GTK.delete_file_if_exist "file-1.txt"
 
-#   root_files = args.gtk.list_files ""
-#   app_files  = args.gtk.list_files "app"
+#   root_files = GTK.list_files ""
+#   app_files  = GTK.list_files "app"
 
 def tick args
   # create buttons
@@ -33,7 +33,7 @@ def tick args
   if args.state.center_label_text
     long_string = args.state.center_label_text
     max_character_length = 80
-    long_strings_split = args.string.wrapped_lines long_string, max_character_length
+    long_strings_split = String.wrapped_lines long_string, max_character_length
     line_height = 23
     offset = (long_strings_split.length / 2) * line_height
     args.outputs.labels << long_strings_split.map_with_index do |s, i|
@@ -55,25 +55,25 @@ def tick args
     # update the center label text based on button clicked
     case button.id
     when :write_file_1
-      args.gtk.write_file("file-1.txt", Kernel.tick_count.to_s + "\n")
+      GTK.write_file("file-1.txt", Kernel.tick_count.to_s + "\n")
 
       args.state.center_label_text = ""
       args.state.center_label_text += "* Success (#{Kernel.tick_count}):\n"
       args.state.center_label_text += "  Click \"read file-1.txt\" to see the contents.\n"
       args.state.center_label_text += "\n"
       args.state.center_label_text += "** Sample Code\n"
-      args.state.center_label_text += "   args.gtk.write_file(\"file-1.txt\", Kernel.tick_count.to_s + \"\\n\")\n"
+      args.state.center_label_text += "   GTK.write_file(\"file-1.txt\", Kernel.tick_count.to_s + \"\\n\")\n"
     when :append_file_1
-      args.gtk.append_file("file-1.txt", Kernel.tick_count.to_s + "\n")
+      GTK.append_file("file-1.txt", Kernel.tick_count.to_s + "\n")
 
       args.state.center_label_text = ""
       args.state.center_label_text += "* Success (#{Kernel.tick_count}):\n"
       args.state.center_label_text += "  Click \"read file-1.txt\" to see the contents.\n"
       args.state.center_label_text += "\n"
       args.state.center_label_text += "** Sample Code\n"
-      args.state.center_label_text += "   args.gtk.append_file(\"file-1.txt\", Kernel.tick_count.to_s + \"\\n\")\n"
+      args.state.center_label_text += "   GTK.append_file(\"file-1.txt\", Kernel.tick_count.to_s + \"\\n\")\n"
     when :stat_file_1
-      stat = args.gtk.stat_file "file-1.txt"
+      stat = GTK.stat_file "file-1.txt"
 
       args.state.center_label_text = ""
       args.state.center_label_text += "* Stat File (#{Kernel.tick_count})\n"
@@ -81,9 +81,9 @@ def tick args
       args.state.center_label_text += "\n"
       args.state.center_label_text += "\n"
       args.state.center_label_text += "** Sample Code\n"
-      args.state.center_label_text += "   args.gtk.stat_files(\"file-1.txt\")\n"
+      args.state.center_label_text += "   GTK.stat_files(\"file-1.txt\")\n"
     when :read_file_1
-      contents = args.gtk.read_file("file-1.txt")
+      contents = GTK.read_file("file-1.txt")
 
       args.state.center_label_text = ""
       if contents
@@ -91,25 +91,25 @@ def tick args
         args.state.center_label_text += contents
         args.state.center_label_text += "\n"
         args.state.center_label_text += "** Sample Code\n"
-        args.state.center_label_text += "   contents = args.gtk.read_file(\"file-1.txt\")\n"
+        args.state.center_label_text += "   contents = GTK.read_file(\"file-1.txt\")\n"
       else
         args.state.center_label_text += "* Contents (#{Kernel.tick_count}):\n"
         args.state.center_label_text += "Contents of file was nil. Click stat file-1.txt for file information."
         args.state.center_label_text += "\n"
         args.state.center_label_text += "** Sample Code\n"
-        args.state.center_label_text += "   contents = args.gtk.read_file(\"file-1.txt\")\n"
+        args.state.center_label_text += "   contents = GTK.read_file(\"file-1.txt\")\n"
       end
     when :delete_file_1
       args.state.center_label_text = ""
 
-      if args.gtk.stat_file "file-1.txt"
-        args.gtk.delete_file "file-1.txt"
+      if GTK.stat_file "file-1.txt"
+        GTK.delete_file "file-1.txt"
         args.state.center_label_text += "* Delete File\n"
         args.state.center_label_text += "file-1.txt was deleted. Click \"list files\" or \"stat file-1.txt\" for more info."
         args.state.center_label_text += "\n"
         args.state.center_label_text += "\n"
         args.state.center_label_text += "** Sample Code\n"
-        args.state.center_label_text += "   args.gtk.delete_file(\"file-1.txt\")\n"
+        args.state.center_label_text += "   GTK.delete_file(\"file-1.txt\")\n"
       else
         args.state.center_label_text = ""
         args.state.center_label_text += "* Delete File\n"
@@ -117,11 +117,11 @@ def tick args
         args.state.center_label_text += "\n"
         args.state.center_label_text += "\n"
         args.state.center_label_text += "** Sample Code\n"
-        args.state.center_label_text += "   if args.gtk.stat_file(\"file-1.txt\") ...\n"
+        args.state.center_label_text += "   if GTK.stat_file(\"file-1.txt\") ...\n"
       end
     when :list_files
-      root_files = args.gtk.list_files ""
-      app_files  = args.gtk.list_files "app"
+      root_files = GTK.list_files ""
+      app_files  = GTK.list_files "app"
 
       args.state.center_label_text = ""
       args.state.center_label_text += "** Root Files (#{Kernel.tick_count}):\n"
@@ -133,19 +133,19 @@ def tick args
       args.state.center_label_text += "\n"
       args.state.center_label_text += "\n"
       args.state.center_label_text += "** Sample Code\n"
-      args.state.center_label_text += "   root_files = args.gtk.list_files(\"\")\n"
-      args.state.center_label_text += "   app_files = args.gtk.list_files(\"app\")\n"
+      args.state.center_label_text += "   root_files = GTK.list_files(\"\")\n"
+      args.state.center_label_text += "   app_files = GTK.list_files(\"app\")\n"
     end
   end
 end
 
 def create_button args, id:, row:, col:, text:;
-  # args.layout.rect(row:, col:, w:, h:) is method that will
+  # Layout.rect(row:, col:, w:, h:) is method that will
   # return a rectangle inside of a grid with 12 rows and 24 columns
-  rect = args.layout.rect row: row, col: col, w: 3, h: 1
+  rect = Layout.rect row: row, col: col, w: 3, h: 1
 
-  # get senter of rect for label
-  center = args.geometry.rect_center_point rect
+  # get center of rect for label
+  center = Geometry.rect_center_point rect
 
   {
     id: id,
@@ -174,4 +174,4 @@ def create_button args, id:, row:, col:, text:;
   }
 end
 
-$gtk.reset
+GTK.reset

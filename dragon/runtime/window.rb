@@ -49,6 +49,14 @@ module GTK
         @ffi_draw.set_window_scale scale, aspect_unit_w, aspect_unit_h
       end
 
+      def set_window_size w_px, h_px
+        @ffi_draw.set_window_size w_px, h_px
+      end
+
+      def set_window_position x_px, y_px
+        @ffi_draw.set_window_position x_px, y_px
+      end
+
       def window_fullscreen?
         @window_fullscreen
       end

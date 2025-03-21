@@ -34,7 +34,7 @@ def repeating_texture args, x:, y:, w:, h:, path:, anchor_x: 0, anchor_y: 0
   args.outputs[rt_name].h = h
 
   # calculate the sprite box for the repeating texture
-  sprite_w, sprite_h = args.gtk.calcspritebox path
+  sprite_w, sprite_h = GTK.calcspritebox path
 
   # calculate the number of rows and columns needed to fill the repeating texture
   rows = h.idiv(sprite_h) + 1
@@ -60,4 +60,4 @@ def repeating_texture args, x:, y:, w:, h:, path:, anchor_x: 0, anchor_y: 0
   repeating_texture args, x: x, y: y, w: w, h: h, path: path
 end
 
-$gtk.reset
+GTK.reset

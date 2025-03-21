@@ -4,8 +4,8 @@ class Rectangle
     @image = "sprites/roundSquare_white.png"
     @width  = 160.0
     @height = 80.0
-    @x=$args.grid.right/2.0 - @width/2.0
-    @y=$args.grid.top/2.0 - @height/2.0
+    @x=Grid.right/2.0 - @width/2.0
+    @y=Grid.top/2.0 - @height/2.0
 
     @xtmp = @width  * (1.0/10.0)
     @ytmp = @height * (1.0/10.0)

@@ -64,7 +64,7 @@ class Game
   end
 
   def zoom_factor_single
-    2 - ((args.geometry.distance player, center_map).fdiv arena_radius)
+    2 - ((Geometry.distance player, center_map).fdiv arena_radius)
   end
 
   def zoom_factor
@@ -103,4 +103,4 @@ def tick args
   $game.tick
 end
 
-$gtk.reset
+GTK.reset

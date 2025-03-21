@@ -24,6 +24,6 @@ def test_universe args, assert
 end
 
 puts "running tests"
-$gtk.reset 100
-$gtk.log_level = :off
-$gtk.tests.start
+GTK.reset 100
+GTK.log_level = :off
+GTK.tests.start

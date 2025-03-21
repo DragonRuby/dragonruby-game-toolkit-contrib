@@ -305,17 +305,17 @@ class Game
 
     state.sabre.is_active = true
 
-    spline = [
+    spline_definition = [
       [  0, 0.25, 0.75, 1.0],
       [1.0, 0.75, 0.25,   0]
     ]
 
     throw_duration = catch_at - throw_at
 
-    current_progress = args.easing.ease_spline throw_at,
-                                               Kernel.tick_count,
-                                               throw_duration,
-                                               spline
+    current_progress = Easing.spline throw_at,
+                                     Kernel.tick_count,
+                                     throw_duration,
+                                     spline_definition
 
     farthest_sabre_x = 32
     state.sabre.y = state.player.y
@@ -398,4 +398,4 @@ def tick args
   $game.tick
 end
 
-$gtk.reset
+GTK.reset

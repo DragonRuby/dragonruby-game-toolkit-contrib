@@ -6,6 +6,14 @@
 module GTK
   class Runtime
     module DeveloperSupport
+      def setenv name, value, overwrite
+        @ffi_misc.setenv name, value, overwrite
+      end
+
+      def getenv name
+        @ffi_misc.getenv name
+      end
+
       def version
         GTK_VERSION
       end
@@ -152,11 +160,12 @@ S
         "file://#{path}"
       end
 
-      def capture_timings category:, color: nil, &block
+      def capture_timings category: nil, color: nil, &block
+        category ||= block.source_location.join(":")
+
         if @production
           block.call
         else
-          color ||= { r: 128, g: 128, b: 128 }
           @capture_timings_invoked = true
           @capture_timings_data[category] ||= { color: color, entries: [] }
           if @capture_timings_data[category][:entries].length > 240
@@ -174,6 +183,31 @@ S
 
       def tick_capture_timings_before
         @capture_timings_invoked = false
+        if Kernel.global_tick_count - 1 == GTK.hotload_global_at
+          @capture_timings_data.clear
+        end
+      end
+
+      def __capture_timings_colors__
+        # dawn bringer color palette
+        @__capture_timings_colors__ = [
+          { r: 50 + 20,  g: 50 + 12,  b: 50 + 28 },
+          { r: 50 + 68,  g: 50 + 36,  b: 50 + 52 },
+          { r: 50 + 48,  g: 50 + 52,  b: 50 + 109 },
+          { r: 50 + 78,  g: 50 + 74,  b: 50 + 78 },
+          { r: 50 + 133, g: 50 + 76,  b: 50 + 48 },
+          { r: 50 + 52,  g: 50 + 101, b: 50 + 36 },
+          { r: 50 + 208, g: 50 + 70,  b: 50 + 72 },
+          { r: 50 + 117, g: 50 + 113, b: 50 + 97 },
+          { r: 50 + 89,  g: 50 + 125, b: 50 + 206 },
+          { r: 50 + 210, g: 50 + 125, b: 50 + 44 },
+          { r: 50 + 133, g: 50 + 149, b: 50 + 161 },
+          { r: 50 + 109, g: 50 + 170, b: 50 + 44 },
+          { r: 50 + 210, g: 50 + 170, b: 50 + 153 },
+          { r: 50 + 109, g: 50 + 194, b: 50 + 202 },
+          { r: 50 + 218, g: 50 + 212, b: 50 + 94 },
+          { r: 50 + 222, g: 50 + 238, b: 50 + 214 }
+        ]
       end
 
       def tick_capture_timings_after
@@ -182,17 +216,29 @@ S
           return
         end
 
-        scale = 40000
+        @current_scale ||= 40000
+        @target_scale  = 40000
 
         @args.outputs[:__timing_prefab__].background_color = [0, 0, 0, 0]
         @args.outputs[:__timing_prefab__].w = 720
         @args.outputs[:__timing_prefab__].h = 720
 
+        r = @capture_timings_data.map do |category, v|
+          max_ms_elapsed = v[:entries].map { |t| t.ms_elapsed }.max
+          { category: category, max_ms_elapsed: max_ms_elapsed }
+        end
+
+        max_ms_elapsed = r.map { |t| t[:max_ms_elapsed] || 0 }.max
+
+        @target_scale = @target_scale * 0.016 / max_ms_elapsed
+        @target_scale = 40000 if @target_scale > 40000
+        @current_scale = @current_scale.lerp(@target_scale, 0.1)
+
         @args.outputs[:__timing_prefab__].primitives << {
           x: 0,
-          y: 0.016 * scale,
+          y: 0.016 * @current_scale,
           x2: 720,
-          y2: 0.016 * scale,
+          y2: 0.016 * @current_scale,
           r: 255,
           g: 0,
           b: 0
@@ -200,9 +246,9 @@ S
 
         @args.outputs[:__timing_prefab__].primitives << {
           x: 0,
-          y: 0.012 * scale,
+          y: 0.012 * @current_scale,
           x2: 720,
-          y2: 0.012 * scale,
+          y2: 0.012 * @current_scale,
           r: 0,
           g: 128,
           b: 0
@@ -210,9 +256,9 @@ S
 
         @args.outputs[:__timing_prefab__].primitives << {
           x: 0,
-          y: 0.008 * scale,
+          y: 0.008 * @current_scale,
           x2: 720,
-          y2: 0.008 * scale,
+          y2: 0.008 * @current_scale,
           r: 0,
           g: 255,
           b: 0
@@ -220,9 +266,9 @@ S
 
         @args.outputs[:__timing_prefab__].primitives << {
           x: 0,
-          y: 0.004 * scale,
+          y: 0.004 * @current_scale,
           x2: 720,
-          y2: 0.004 * scale,
+          y2: 0.004 * @current_scale,
           r: 0,
           g: 128,
           b: 0
@@ -238,20 +284,57 @@ S
           b: 0
         }
 
-        @capture_timings_data.each do |category, v|
+        color_i = 0
+        @capture_timings_data.each.with_index do |(category, v), i|
           timings = v[:entries]
-          color = v[:color]
+          color = v[:color] || __capture_timings_colors__[color_i % __capture_timings_colors__.length]
+          color_i += 1
+
+          @args.outputs[:__timing_prefab__].primitives << {
+            x: 8 + 1,
+            y: 720 - 80 - 1,
+            text: category,
+            r: 0, g: 0, b: 0,
+            anchor_y: i + 0.5,
+          }
+
+          @args.outputs[:__timing_prefab__].primitives << {
+            x: 8,
+            y: 720 - 80,
+            text: category,
+            **color,
+            anchor_y: i + 0.5,
+          }
+
           @args.outputs[:__timing_prefab__].primitives << timings.map_with_index do |timing, i|
-            {
-              x: 3 * i,
-              y: timing.ms_elapsed * scale,
-              w: 2,
-              h: 2,
-              anchor_x: 0.5,
-              anchor_y: 0.5,
-              path: :solid,
-              **color, a: 255
-            }
+            [
+              {
+                x: 3 * i,
+                y: timing.ms_elapsed * @current_scale,
+                w: 4,
+                h: 4,
+                anchor_x: 0.5,
+                anchor_y: 0.5,
+                path: :solid,
+                r: 0, g: 0, b: 0, a: 255
+              },
+              {
+                x: 3 * i,
+                y: timing.ms_elapsed * @current_scale,
+                w: 2,
+                h: 2,
+                anchor_x: 0.5,
+                anchor_y: 0.5,
+                path: :solid,
+                **color, a: 255
+              },
+            ]
+          end
+        end
+
+        @capture_timings_data.each do |category, v|
+          v[:entries].reject! do |timing|
+            timing[:at].elapsed_time > 240
           end
         end
 

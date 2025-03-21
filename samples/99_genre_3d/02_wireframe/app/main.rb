@@ -9,7 +9,7 @@ def tick args
   args.state.mtx     = mtx_mul(args.state.mtx, delta_mtx)
   args.state.model.fast_3x3_transform! args.state.mtx
   args.outputs.background_color = [0, 0, 0]
-  args.outputs.debug << args.gtk.framerate_diagnostics_primitives
+  args.outputs.debug << GTK.framerate_diagnostics_primitives
 end
 
 def input_roll args
@@ -56,7 +56,7 @@ class Object3D
   end
 
   def _init_from_file path
-    file_lines = $gtk.read_file(path).split("\n")
+    file_lines = GTK.read_file(path).split("\n")
                      .reject { |line| line.start_with?('#') || line.split(' ').length == 0 } # Strip out simple comments and blank lines
                      .map { |line| line.split('#')[0] } # Strip out end of line comments
                      .map { |line| line.split(' ') } # Tokenize by splitting on whitespace

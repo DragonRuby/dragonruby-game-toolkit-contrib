@@ -116,7 +116,7 @@ On Android:
 Now, the C extension is available under the `FFI::RE` namespace.
 
 ```
-$gtk.ffi_misc.gtk_dlopen("ext")
+GTK.ffi_misc.gtk_dlopen("ext")
 include FFI::RE
 ```
 
@@ -133,7 +133,7 @@ The function returns the first location of the found pattern, or -1 if the
 pattern is not found. The usage in DragonRuby is straightforward:
 
 ```ruby
-$gtk.ffi_misc.gtk_dlopen("ext")
+GTK.ffi_misc.gtk_dlopen("ext")
 include FFI::RE
 
 input = "<<Hello, DragonRiders!>>"
@@ -159,7 +159,7 @@ With this knowledge, we can now create a slightly more complex function that
 splits input into an array of words:
 
 ```ruby
-$gtk.ffi_misc.gtk_dlopen("ext")
+GTK.ffi_misc.gtk_dlopen("ext")
 include FFI::RE
 
 def split_words(input)

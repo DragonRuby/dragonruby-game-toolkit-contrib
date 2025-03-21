@@ -23,7 +23,7 @@ end
 def defaults args
   # hide the mouse cursor for this game, we are going to render our own cursor
   if Kernel.tick_count == 0
-    args.gtk.hide_cursor
+    GTK.hide_cursor
   end
 
   args.state.click_ripples ||= []
@@ -420,4 +420,4 @@ end
 # Any lines outside of a function will be executed when the file is reloaded.
 # So every time you save main.rb, the game will be reset.
 # Comment out the line below if you don't want this to happen.
-$gtk.reset
+GTK.reset

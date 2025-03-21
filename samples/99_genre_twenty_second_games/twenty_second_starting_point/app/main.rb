@@ -118,7 +118,7 @@ def tick args
   else
     # if r is pressed, reset the game
     if args.inputs.keyboard.key_down.r
-      $gtk.reset
+      GTK.reset
       return
     end
   end
@@ -159,4 +159,4 @@ def game_over? args
   args.state.count_down < 0
 end
 
-$gtk.reset
+GTK.reset

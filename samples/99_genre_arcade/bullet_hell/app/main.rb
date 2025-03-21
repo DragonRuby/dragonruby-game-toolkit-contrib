@@ -114,7 +114,7 @@ def tick args
   args.outputs.primitives << args.state.lives.map do |n|
     [1280 - 290 + 50 * n, 80, 40, 40, 'sprites/circle-gray.png', 90].sprite
   end
-  #args.outputs.debug << args.gtk.framerate_diagnostics_primitives
+  #args.outputs.debug << GTK.framerate_diagnostics_primitives
 
   if (!args.state.player[:alive]) && args.state.enemy_bullets.empty? && args.state.explosions.empty? && args.state.enemies.all? { |enemy| enemy[:move_state] == :normal }
     args.state.player[:alive] = true

@@ -1,4 +1,4 @@
-# Geometry (`args.geometry`)
+# Geometry
 
 The Geometry `module` contains methods for calculations that are frequently used in game development.
 
@@ -196,6 +196,54 @@ def tick args
 end
 ```
 
+### `rotate_point`
+
+Given a point and an angle in degrees, a new point is returned that is rotated around the origin by the degrees amount. An optional third argument can be provided to rotate the angle around a point other than the origin.
+
+```ruby
+def tick args
+  args.state.rotate_amount ||= 0
+  args.state.rotate_amount  += 1
+
+  if args.state.rotate_amount >= 360
+    args.state.rotate_amount = 0
+  end
+
+  point_1 = {
+    x: 100,
+    y: 100
+  }
+
+  # rotate point around 0, 0
+  rotated_point_1 = args.geometry.rotate_point point_1,
+                                               args.state.rotate_amount
+
+  args.outputs.solids << {
+    x: rotated_point_1.x - 5,
+    y: rotated_point_1.y - 5,
+    w: 10,
+    h: 10
+  }
+
+  point_2 = {
+    x: 640 + 100,
+    y: 360 + 100
+  }
+
+  # rotate point around center screen
+  rotated_point_2 = args.geometry.rotate_point point_2,
+                                               args.state.rotate_amount,
+                                               x: 640, y: 360
+
+  args.outputs.solids << {
+    x: rotated_point_2.x - 5,
+    y: rotated_point_2.y - 5,
+    w: 10,
+    h: 10
+  }
+end
+```
+
 ### `distance`
 
 Returns the distance between two points;
@@ -285,80 +333,35 @@ This function will return a `Hash` with `x` and `y` keys that represents the nor
 
 Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
 
-
-### `rotate_point`
-
-Given a point and an angle in degrees, a new point is returned that is rotated around the origin by the degrees amount. An optional third argument can be provided to rotate the angle around a point other than the origin.
-
 ### `vec2_dot_product`
 
 Given two `Hashes` with `x` and `y` keys (or `Objects` that respond to `x` and `y`), this function will return the dot product of the two vectors.
 
 Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
 
-### `vec2_normalize`
-
-Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`), this function will return a `Hash` with `x` and `y` keys that represents the vector normalized.
-
-Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
-
-
-```ruby
-def tick args
-  args.state.rotate_amount ||= 0
-  args.state.rotate_amount  += 1
-
-  if args.state.rotate_amount >= 360
-    args.state.rotate_amount = 0
-  end
-
-  point_1 = {
-    x: 100,
-    y: 100
-  }
-
-  # rotate point around 0, 0
-  rotated_point_1 = args.geometry.rotate_point point_1,
-                                               args.state.rotate_amount
-
-  args.outputs.solids << {
-    x: rotated_point_1.x - 5,
-    y: rotated_point_1.y - 5,
-    w: 10,
-    h: 10
-  }
-
-  point_2 = {
-    x: 640 + 100,
-    y: 360 + 100
-  }
-
-  # rotate point around center screen
-  rotated_point_2 = args.geometry.rotate_point point_2,
-                                               args.state.rotate_amount,
-                                               x: 640, y: 360
-
-  args.outputs.solids << {
-    x: rotated_point_2.x - 5,
-    y: rotated_point_2.y - 5,
-    w: 10,
-    h: 10
-  }
-end
-```
-
 ### `vec2_magnitude`
 
-Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`), this function will return the magnitude of the vector.
+Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`), this function will return the magnitude of the vector. 
 
-Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
+### `vec2_normalize`
+
+Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`), this function will return a `Hash` with `x` and `y` keys that represents the normalized vector. Normalization is performed by dividing the x and y components of a vector by its magnitude.
 
 ### `vec2_normal`
 
 Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`), this function will return a `Hash` with `x` and `y` keys that represents the normal of the vector.
 
-Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
+### `ve2_add`
 
+Given two `Hashes` with `x` and `y` keys (or an `Objects` that responds to `x` and `y`), this function will return a `Hash` with `x` and `y` keys that represents the sum of the two vectors.
+
+### `vec2_subtract`, `vec2_sub`
+
+Given two `Hashes` with `x` and `y` keys (or an `Objects` that responds to `x` and `y`), this function will return a `Hash` with `x` and `y` keys that represents the difference of the two vectors.
+
+### `vec2_scale`
+
+Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`) and a `Numeric` value, this function will return a `Hash` with `x` and `y` keys with each component of the vector multiplied by the scalar value.
 
 ## Collision Functions
 
@@ -375,7 +378,7 @@ Given two rectangle primitives this function will return `true` or `false` depen
 
 ?> `:anchor_x`, and `anchor_y` is taken into consideration if the objects respond to these methods.
 
-Here is an example where one rectangle is stationary, and another rectangle is controlled using directional input. The rectangles change color from blue to read if they intersect.
+Here is an example where one rectangle is stationary, and another rectangle is controlled using directional input. The rectangles change color from blue to red if they intersect.
 
 ```ruby
 def tick args
@@ -445,7 +448,7 @@ Invocation variants:
 
 Given two rectangle primitives this function will return `true` or `false` depending on if the first rectangle (or `self`) is inside of the second rectangle.
 
-Here is an example where one rectangle is stationary, and another rectangle is controlled using directional input. The rectangles change color from blue to read if the movable rectangle is entirely inside the stationary rectangle.
+Here is an example where one rectangle is stationary, and another rectangle is controlled using directional input. The rectangles change color from blue to red if the movable rectangle is entirely inside the stationary rectangle.
 
 ?> `:anchor_x`, and `anchor_y` is taken into consideration if the objects respond to these methods.
 
@@ -767,7 +770,7 @@ end
 
 ### `find_intersect_rect`
 
-Given a rect and a collection of rects, `find_intersect_rect` returns the first rect that intersects with the the first parameter.
+Given a rect and a collection of rects, `find_intersect_rect` returns the **first rect** that intersects with the the first parameter.
 
 `:anchor_x`, and `anchor_y` is taken into consideration if the objects respond to these methods.
 
@@ -787,7 +790,7 @@ collision = args.geometry.find_intersect_rect args.state.player, args.state.terr
 
 ### `find_all_intersect_rect`
 
-Given a rect and a collection of rects, `find_all_intersect_rect` returns all rects that intersects with the the first parameter.
+Given a rect and a collection of rects, `find_all_intersect_rect` returns **all rects** that intersects with the the first parameter.
 
 `:anchor_x`, and `anchor_y` is taken into consideration if the objects respond to these methods.
 
@@ -1066,7 +1069,6 @@ Generates a quad tree from an array of rectangles. See `find_intersect_rect_quad
 
 Invocation variants:
 
-- `args.geometry.rect_props rect`
 - `Geometry.rect_props rect`
 
 Given a `Hash` with `x`, `y`, `w`, `h`, (and optionally `anchor_x`, `anchor_y`), this function returns a `Hash` in the following form.
@@ -1088,6 +1090,110 @@ Notes:
 
 - Any object that responds to `x`, `y`, `w`, `h`, `anchor_x`, `anchor_y` can leverage this function.
 - The returned `Hash` will not include `anchor_(x|y)` (recomputes `x`, `y` to take the anchors into consideration).
+
+### `rect_center_point`
+
+- `Geometry.rect_center_point rect`
+
+Given a `Hash` with `x`, `y`, `w`, `h`, (and optionally `anchor_x`, `anchor_y`), this function returns a `Hash` representing the center point of the rect in the following form.
+
+```ruby
+  {
+    x: ...,
+    y: ...,
+  }
+```
+
+### `line_center_point`
+
+- `Geometry.line_center_point line`
+
+Given a `Hash` with `x`, `y`, `x2`, `y2` this function returns a `Hash` representing the center point of the line in the following form.
+
+### `center`
+
+- `Geometry.line_center_point rect_or_line`
+
+Given a `Hash` with `x`, `y`, `w`, `h`, (and optionally `anchor_x`, `anchor_y`) or a `Hash` with `x`, `y`, `x2`, `y2`, this function returns a `Hash` representing the center point of the rect or line.
+
+Here's an example usage of `rect_center_point`, `rect_props`, and `line_center_point`:
+
+```ruby
+def tick args
+  # rect without anchors
+  rect_one = {
+    x: 100,
+    y: 100,
+    w: 100,
+    h: 100
+  }
+
+  # rect center
+  rect_one_center = Geometry.rect_center_point(rect_one)
+
+  # render rect and center point
+  args.outputs.sprites << rect_one.merge(path: :solid, r: 0, g: 0, b: 0)
+  args.outputs.sprites << rect_one_center.merge(w: 4,
+                                                h: 4,
+                                                path: :solid,
+                                                r: 255,
+                                                g: 0,
+                                                b: 0,
+                                                anchor_x: 0.5,
+                                                anchor_y: 0.5)
+
+  # rect with anchors
+  rect_two = {
+    x: 640,
+    y: 360,
+    w: 100,
+    h: 100,
+    anchor_x: 0.5,
+    anchor_y: 0.5
+  }
+
+  # rect center
+  rect_two_center = Geometry.rect_center_point(rect_two)
+
+  # render rect and center point
+  args.outputs.sprites << rect_two.merge(path: :solid, r: 0, g: 0, b: 0)
+  args.outputs.sprites << rect_two_center.merge(w: 4,
+                                                h: 4,
+                                                path: :solid,
+                                                r: 255,
+                                                g: 0,
+                                                b: 0,
+                                                anchor_x: 0.5,
+                                                anchor_y: 0.5)
+
+  # rect + center with Geometry.rect_props
+  rect_three = Geometry.rect_props(x: 100, y: 600, w: 100, h: 100, anchor_x: 0.5)
+  args.outputs.sprites << rect_three.merge(path: :solid, r: 0, g: 0, b: 0)
+  args.outputs.sprites << rect_three.center.merge(w: 4,
+                                                  h: 4,
+                                                  path: :solid,
+                                                  r: 255,
+                                                  g: 0,
+                                                  b: 0,
+                                                  anchor_x: 0.5,
+                                                  anchor_y: 0.5)
+
+  # line
+  line_one = { x: 640, y: 0, x2: 1280, y2: 720 }
+
+  # line center
+  line_one_center = Geometry.line_center_point(line_one)
+  args.outputs.lines << line_one.merge(r: 0, g: 0, b: 0)
+  args.outputs.sprites << line_one_center.merge(w: 4,
+                                                h: 4,
+                                                path: :solid,
+                                                r: 255,
+                                                g: 0,
+                                                b: 0,
+                                                anchor_x: 0.5,
+                                                anchor_y: 0.5)
+end
+```
 
 ### `rect_navigate`
 

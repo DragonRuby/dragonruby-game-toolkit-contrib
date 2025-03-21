@@ -1,4 +1,4 @@
-# Grid (`args.grid`)
+# Grid
 
 Provides information about the screen and game canvas.
 
@@ -227,9 +227,22 @@ The property breakdown is:
 
 ### Texture Atlases
 
+### `native_scale`
+
+Represents the native scale of the window compared to 720p.
+
+### `render_scale`
+
+Represents the render scale of the window compared to 720p. This value
+will be the same as `native_scale` if `game_metadata.hd_max_scale=0`
+(stretch to fit). For values `100 through 400`, the `render_scale`
+represents the best fit scale to render pixel perfect. See CVars /
+Configuration (`args.cvars`), and `metadata/game_metadata.txt` for
+details about `hd_max_scale`'s usage.
+
 ### `texture_scale`
 
-Returns a decimal value representing the rendering scale of the game.
+Returns a decimal value representing the rendering scale for textures as a float.
 
 -   720p: 1.0
 -   HD+: 1.25

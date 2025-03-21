@@ -44,4 +44,4 @@ def tick args
   args.outputs.sprites << [ 0, 0, 1280, 720, :accumulation ]
 end
 
-$gtk.reset
+GTK.reset

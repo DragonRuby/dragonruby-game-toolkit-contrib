@@ -215,7 +215,7 @@ static_debug:      #{@framerate_captured_diagnostics.static_debug_length}
 ** Additional Help
 Come to the DragonRuby Discord channel if you need help troubleshooting performance issues. http://discord.dragonruby.org.
 
-Source code for these diagnostics can be found at: [[https://github.com/dragonruby/dragonruby-game-toolkit-contrib/]]
+Source code for these diagnostics can be found in this folder under: =./docs/oss/dragon=.
 S
       end
 

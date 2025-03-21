@@ -682,6 +682,7 @@ module GTK
     attr_accessor :key_up
     attr_accessor :key_held
     attr_accessor :key_down
+    attr_accessor :key_repeat
     attr_accessor :has_focus
 
     attr :active
@@ -690,6 +691,7 @@ module GTK
       @key_up      = KeyboardKeys.new
       @key_held    = KeyboardKeys.new
       @key_down    = KeyboardKeys.new
+      @key_repeat  = KeyboardKeys.new
       @has_focus   = false
     end
 
@@ -703,6 +705,10 @@ module GTK
 
     def key_held? key
       @key_held.send(key)
+    end
+
+    def key_repeat? key
+      @key_repeat.send(key)
     end
 
     def key_down_or_held? key
@@ -793,6 +799,7 @@ module GTK
         held: @key_held.truthy_keys,
         down_or_held: (@key_down.truthy_keys + @key_held.truthy_keys).uniq,
         up: @key_up.truthy_keys,
+        repeat: @key_repeat.truthy_keys
       }
     end
 

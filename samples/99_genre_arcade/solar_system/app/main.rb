@@ -107,5 +107,5 @@ def tick args
 end
 
 def r
-  $gtk.reset
+  GTK.reset
 end

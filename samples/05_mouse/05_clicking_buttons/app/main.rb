@@ -40,12 +40,12 @@ def tick args
 end
 
 def create_button args, id:, row:, col:, text:;
-  # args.layout.rect(row:, col:, w:, h:) is method that will
+  # Layout.rect(row:, col:, w:, h:) is method that will
   # return a rectangle inside of a grid with 12 rows and 24 columns
-  rect = args.layout.rect row: row, col: col, w: 3, h: 1
+  rect = Layout.rect row: row, col: col, w: 3, h: 1
 
   # get senter of rect for label
-  center = args.geometry.rect_center_point rect
+  center = Geometry.rect_center_point rect
 
   {
     id: id,
@@ -74,4 +74,4 @@ def create_button args, id:, row:, col:, text:;
   }
 end
 
-$gtk.reset
+GTK.reset

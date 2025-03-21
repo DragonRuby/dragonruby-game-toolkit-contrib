@@ -1,14 +1,14 @@
 def tick args
   args.outputs.background_color = [255, 255, 255, 0]
   if Kernel.tick_count == 0
-    args.gtk.log_spam "log level spam"
-    args.gtk.log_debug "log level debug"
-    args.gtk.log_info "log level info"
-    args.gtk.log_warn "log level warn"
-    args.gtk.log_error "log level error"
-    args.gtk.log_unfiltered "log level unfiltered"
+    GTK.log_spam "log level spam"
+    GTK.log_debug "log level debug"
+    GTK.log_info "log level info"
+    GTK.log_warn "log level warn"
+    GTK.log_error "log level error"
+    GTK.log_unfiltered "log level unfiltered"
     puts "This is a puts call"
-    args.gtk.console.show
+    GTK.console.show
   end
 
   if Kernel.tick_count == 60

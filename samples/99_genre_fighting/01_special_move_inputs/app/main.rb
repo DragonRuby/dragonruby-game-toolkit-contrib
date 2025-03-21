@@ -47,7 +47,7 @@ def render args
   end
 
   #move list
-  (args.layout.rect_group row: 0, col_from_right: 8, drow: 0.3,
+  (Layout.rect_group row: 0, col_from_right: 8, drow: 0.3,
                           merge: { vertical_alignment_enum: 0, size_enum: -2 },
                           group: [
                             { text: "move:             WASD" },
@@ -71,7 +71,7 @@ def render args
   (args.state.inputlist.take(5)).map do |s|
     { text: s, size_enum: -2, vertical_alignment_enum: 0 }
   end.yield_self do |group|
-    (args.layout.rect_group row: 0.3, col: 0, drow: 0.3, group: group).into args.outputs.labels
+    (Layout.rect_group row: 0.3, col: 0, drow: 0.3, group: group).into args.outputs.labels
   end
 
 

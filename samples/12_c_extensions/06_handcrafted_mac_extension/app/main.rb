@@ -1,5 +1,5 @@
 def boot args
-  $gtk.dlopen 'ext'
+  GTK.dlopen 'ext'
 end
 
 def tick args

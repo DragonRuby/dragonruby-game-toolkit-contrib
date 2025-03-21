@@ -1,0 +1,6 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=sample-app
+gametitle=Games - Snake
+version=1.0
+icon=metadata/icon.png

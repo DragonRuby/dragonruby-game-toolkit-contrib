@@ -84,7 +84,7 @@ def calc_inputs args
 
   # "r" to reset
   if args.inputs.keyboard.key_down.r
-    $gtk.reset_next_tick
+    GTK.reset_next_tick
   end
 end
 
@@ -200,4 +200,4 @@ class Camera
   end
 end
 
-$gtk.reset
+GTK.reset

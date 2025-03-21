@@ -35,6 +35,8 @@ def tick args
 end
 ```
 
+?> `.wav` files can have a maximum sample rate of 44.1kHz. You can use `ffmpeg` to resample audio. Eg: `ffmpeg -i input.wav -ar 44100 output.wav`.
+
 ## Looping Audio
 
 Here's how to play audio that loops (eg background music), and how to stop the sound.
@@ -73,6 +75,11 @@ def tick args
   }
 end
 ```
+
+Once an audio track has been loaded, the follow properties will be added to the hash:
+
+- `playtime`: Represents the current position of the play head (a `float` value measured in seconds).
+- `playlength`: Represents the length of the track (a `float` value measured in seconds).
 
 IMPORTANT: Please take note that `gain` and `pitch` must be given `float` values (eg `gain: 1.0`, not `gain: 1` or `game: 0`).
 
@@ -135,6 +142,89 @@ def tick args
     # delete audio when it's at 0%
     if args.audio[:bg_music_fade].gain <= 0.0
       args.audio[:bg_music_fade] = nil
+    end
+  end
+end
+```
+
+Here's an example of crossfading for a list of songs:
+
+```ruby
+def tick args
+  # play list of songs in order
+  args.state.playlist ||= [
+    { input: "sounds/music.ogg", },
+    { input: "sounds/music_2.ogg", },
+    { input: "sounds/music_3.ogg" }
+  ]
+
+  if Kernel.tick_count == 0
+    # on first tick, create a data structure that correlates
+    # the current song with the next song using Ruby's
+    # Enumerable#each_cons (each consecutive 2)
+    args.state.playlist.each_cons(2) do |c, n|
+      # create a unique id for the current song
+      # (this will be the key for the audio hash)
+      c.id = GTK.create_uuid
+      # set the next song for the current song
+      c.next_song = n
+    end
+
+    # queue the first song to start playing (gain of zero)
+    first_song = args.state.playlist.first
+    args.audio[first_song.id] = { input: first_song.input,
+                                  gain: 0,
+                                  next_song: first_song.next_song }
+  end
+
+  # every tick, check the audio hash
+  args.audio.each do |k, v|
+    # if the playlength hasn't been loaded, skip processing for now
+    next if !v.playlength
+
+    # given the playtime, set when the fadeout should start
+    # (3 seconds before the end)
+    v.fadeout_at ||= v.playlength - 3
+
+    # if the current playtime is less than the
+    # fadeout time, increase the volume
+    if v.playtime < v.fadeout_at
+      v.gain += 1.fdiv(180)
+    else
+      # otherwise decrease the volume over 3 seconds to zero and
+      # determine if the next song should be queued
+      v.gain -= 1.fdiv(180)
+
+      # if the next song hasn't been queued and
+      # there is a next song, queue it
+      if v.next_song && !v.next_song_queued
+        song_to_queue = v.next_song
+        args.audio[song_to_queue.id] = {
+          input: song_to_queue.input,
+          gain:  0,
+          next_song: song_to_queue.next_song
+        }
+
+        # set a flag on the current song to indicate
+        # that the next song has been queued
+        v.next_song_queued = true
+      end
+    end
+
+    v.gain = v.gain.clamp(0, 1.0)
+  end
+
+  # display audio information
+  args.audio.each do |k, v|
+    args.outputs.watch "song #{v.input}"
+    args.outputs.watch "  gain #{v.gain}"
+    args.outputs.watch "  playlength #{v.playlength}"
+    args.outputs.watch "  playtime #{v.playtime}"
+    args.outputs.watch "  fadeout_at #{v.fadeout_at}"
+    args.outputs.watch "  next_song_queued #{!!v.next_song_queued}"
+    args.outputs.watch "  has_next_song #{!!v.next_song}"
+    if v.next_song
+      args.outputs.watch "  next_song #{v.next_song.input}"
     end
   end
 end

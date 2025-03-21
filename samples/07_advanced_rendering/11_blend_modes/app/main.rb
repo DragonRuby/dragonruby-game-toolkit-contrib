@@ -1,5 +1,3 @@
-$gtk.reset
-
 def draw_blendmode args, mode
   w = 160
   h = w
@@ -47,3 +45,5 @@ def tick args
   args.state.x = 0  # reset this, draw_blendmode will increment it.
   args.state.blendmodes.each { |blendmode| draw_blendmode args, blendmode }
 end
+
+GTK.reset

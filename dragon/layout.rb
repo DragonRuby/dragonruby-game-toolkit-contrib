@@ -13,8 +13,26 @@ module GTK
       reinitialize w, h, aspect_ratio_w, aspect_ratio_h, orientation
     end
 
+    def tick_after left, bottom, w, h, aspect_ratio_w, aspect_ratio_h, orientation, origin_name
+      if @grid_origin_name != origin_name
+        @debug_primitives = nil
+      end
+
+      @left = left
+      @bottom = bottom
+      @w = w
+      @h = h
+      @aspect_ratio_w = aspect_ratio_w
+      @aspect_ratio_h = aspect_ratio_h
+      @orientation = orientation
+      @grid_origin_name = origin_name
+    end
+
     def reinitialize w, h, aspect_ratio_w, aspect_ratio_h, orientation
+      @grid_origin_name = :bottom_left
       @debug_primitives = nil
+      @left = 0
+      @bottom = 0
       @w = w
       @h = h
       @aspect_ratio_w = aspect_ratio_w
@@ -107,8 +125,8 @@ module GTK
         opts_col = col_count - opts_col - opts_w
       end
 
-      rect_x = @gutter_left + @gutter * opts_col + @cell_size * opts_col
-      rect_y = @h - @gutter_top - (@gutter * opts_row) - (@cell_size * opts_row) - (@cell_size * opts_h) - (@gutter * opts_h - 1)
+      rect_x = @left + @gutter_left + @gutter * opts_col + @cell_size * opts_col
+      rect_y = @bottom + @h - @gutter_top - (@gutter * opts_row) - (@cell_size * opts_row) - (@cell_size * opts_h) - (@gutter * opts_h - 1)
       rect_w = @gutter * (opts_w - 1) + (@cell_size * opts_w)
       rect_h = @gutter * (opts_h - 1) + (@cell_size * opts_h)
 
@@ -442,8 +460,8 @@ module GTK
       [
         {
           id: :crosshair_diagonal_top_left_to_bottom_right,
-          x: Grid.w / 2,
-          y: Grid.h / 2,
+          x: @left + Grid.w / 2,
+          y: @bottom + Grid.h / 2,
           w: gutter,
           h: Grid.allscreen_h * 2,
           angle: 45,
@@ -454,8 +472,8 @@ module GTK
         },
         {
           id: :crosshair_diagonal_bottom_left_to_top_right,
-          x: Grid.w / 2,
-          y: Grid.h / 2,
+          x: @left + Grid.w / 2,
+          y: @bottom + Grid.h / 2,
           w: Grid.allscreen_w * 2,
           h: gutter,
           angle: 45,
@@ -466,8 +484,8 @@ module GTK
         },
         {
           id: :crosshair_left,
-          x: 0,
-          y: Grid.h / 2,
+          x: @left + 0,
+          y: @bottom + Grid.h / 2,
           h: Grid.allscreen_h,
           w: gutter,
           anchor_x: 0.5,
@@ -477,8 +495,8 @@ module GTK
         },
         {
           id: :crosshair_right,
-          x: Grid.w,
-          y: Grid.h / 2,
+          x: @left + Grid.w,
+          y: @bottom + Grid.h / 2,
           h: Grid.allscreen_h,
           w: gutter,
           anchor_x: 0.5,
@@ -488,8 +506,8 @@ module GTK
         },
         {
           id: :crosshair_bottom,
-          x: Grid.w / 2,
-          y: 0,
+          x: @left + Grid.w / 2,
+          y: @bottom + 0,
           h: gutter,
           w: Grid.allscreen_w,
           anchor_x: 0.5,
@@ -499,8 +517,8 @@ module GTK
         },
         {
           id: :crosshair_top,
-          x: Grid.w / 2,
-          y: Grid.h,
+          x: @left + Grid.w / 2,
+          y: @bottom + Grid.h,
           h: gutter,
           w: Grid.allscreen_w,
           anchor_x: 0.5,
@@ -587,7 +605,7 @@ module GTK
 
       single_cell_bg = { id: :single_cell_bg,
                          x: safe_area.center.x,
-                         y: @h - 14,
+                         y: @bottom + @h - 14,
                          anchor_x: 0.5,
                          anchor_y: 0.5,
                          h: 24,
@@ -600,7 +618,7 @@ module GTK
 
       single_cell_bg_bottom = { id: :single_cell_bg_bottom,
                                 x: safe_area.center.x,
-                                y: 0 + 14,
+                                y: @bottom + 0 + 14,
                                 anchor_x: 0.5,
                                 anchor_y: 0.5,
                                 h: 24,
@@ -620,7 +638,7 @@ module GTK
 
       single_cell_label = { id: :single_cell_label,
                             x: safe_area.center.x,
-                            y: @h - 14,
+                            y: @bottom + @h - 14,
                             text: values.join(" "),
                             anchor_x: 0.5,
                             anchor_y: 0.5,
@@ -629,7 +647,7 @@ module GTK
 
       single_cell_label_bottom = { id: :single_cell_label_bottom,
                                    x: safe_area.center.x,
-                                   y: 0 + 14,
+                                   y: @bottom + 0 + 14,
                                    text: "To invert colors use Layout.debug_primitives(invert_colors: true)",
                                    anchor_x: 0.5,
                                    anchor_y: 0.5,

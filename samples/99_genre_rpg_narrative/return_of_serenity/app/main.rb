@@ -7,7 +7,7 @@ def defaults args
   args.state.storyline_history ||= []
   args.state.word_delay ||= 8
   if Kernel.tick_count == 0
-    args.gtk.stop_music
+    GTK.stop_music
     args.outputs.sounds << 'sounds/static-loop.ogg'
   end
 
@@ -147,7 +147,7 @@ end
 
 def inputs_restart_game args
   if args.inputs.keyboard.exclamation_point
-    args.gtk.reset_state
+    GTK.reset_state
   end
 end
 
@@ -441,7 +441,7 @@ def render_current_scene args, lowrez_sprites, lowrez_labels, lowrez_solids
     lowrez_labels << [9, 6, 'Return of', 255, 255, 255]
     lowrez_labels << [9, 1, ' Serenity', 255, 255, 255]
     if !args.state.ended
-      args.gtk.stop_music
+      GTK.stop_music
       args.outputs.sounds << 'sounds/music-loop.ogg'
       args.state.ended = true
     end

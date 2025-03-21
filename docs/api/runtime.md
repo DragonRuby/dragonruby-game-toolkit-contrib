@@ -45,7 +45,7 @@ end
 
 ### `reset`
 
-This function will be called if `$gtk.reset` is invoked. It will be called before DragonRuby resets game state and
+This function will be called if `GTK.reset` is invoked. It will be called before DragonRuby resets game state and
 is useful for capturing state information before a reset occurs (you can use this override to reset state external
 to DragonRuby's `args.state` construct).
 
@@ -83,12 +83,12 @@ def tick args
   
   # at T=600, invoke reset
   if Kernel.tick_count == 600
-    $gtk.reset
+    GTK.reset
   end
 end
 
 # this function will be invoked before
-# $gtk.reset occurs
+# GTK.reset occurs
 def reset args
   puts "resetting"
   puts "foo is: #{$game.foo}"
@@ -102,7 +102,7 @@ end
 
 ### `reboot`
 
-Invoking `$gtk.reboot` will reset your game as if it were started for the first time. Any
+Invoking `GTK.reboot` will reset your game as if it were started for the first time. Any
 methods that were added to classes during hotload will be removed (leaving you with a pristine
 environment). This function is in a beta state (report issues on the Discord Server).
 
@@ -227,61 +227,24 @@ $game = nil
 
 The following functions are only available at the Indie and Pro License tiers.
 
-### `get_pixels`
-
-Given a `file_path` to a sprite, this function returns a `Hash` with `w`, `h`, and `pixels`. The `pixels` key contains an array of hexadecimal values representing the ABGR of each pixel in a sprite with item `0` representing the top left corner of the `png`.
-
-Here's an example of how to get the color data for a pixel:
-
-```ruby
-def tick args
-  # load the pixels from the image
-  args.state.image ||= args.gtk.get_pixels "sprites/square/blue.png"
-
-  # initialize state variables for the pixel coordinates
-  args.state.x_px ||= 0
-  args.state.y_px ||= 0
-
-  sprite_pixels = args.state.image.pixels
-  sprite_h = args.state.image.h
-  sprite_w = args.state.image.w
-
-  # move the pixel coordinates using keyboard
-  args.state.x_px += args.inputs.left_right
-  args.state.y_px += args.inputs.up_down
-
-  # get pixel at the current coordinates
-  args.state.x_px = args.state.x_px.clamp(0, sprite_w - 1)
-  args.state.y_px = args.state.y_px.clamp(0, sprite_h - 1)
-  row = sprite_h - args.state.y_px - 1
-  col = args.state.x_px
-  abgr = sprite_pixels[sprite_h * row + col]
-  a = (abgr >> 24) & 0xff
-  b = (abgr >> 16) & 0xff
-  g = (abgr >> 8) & 0xff
-  r = (abgr >> 0) & 0xff
-
-  # render debug information
-  args.outputs.debug << "row: #{row} col: #{col}"
-  args.outputs.debug << "pixel entry 0: rgba #{r} #{g} #{b} #{a}"
-
-  # render the sprite plus crosshairs
-  args.outputs.sprites << { x: 0, y: 0, w: 80, h: 80, path: "sprites/square/blue.png" }
-  args.outputs.lines << { x: args.state.x_px, y: 0, h: 720 }
-  args.outputs.lines << { x: 0, y: args.state.y_px, w: 1280 }
-end
-```
-
-See the following sample apps for how to use pixel arrays:
-
--   `./samples/07_advanced_rendering/06_pixel_arrays`
--   `./samples/07_advanced_rendering/06_pixel_arrays_from_file`
-
 ### `dlopen`
 
-Loads a precompiled C Extension into your game.
+Loads a precompiled C Extension into your game given the `name` of the library (without the `lib` prefix or platform sepcific file extension).
 
 See the sample apps at `./samples/12_c_extensions` for detailed walkthroughs of creating C extensions.
+
+?> All license tiers can load C Extensions in dev mode. The Standard
+license **does not include the dependencies required to create C
+Extensions however**.<br/><br/> During the publishing process, any C Extension
+directories will be ignored during packaging and an exception will be
+thrown if `dlopen` is called in Production (for Standard license
+only).<br/><br/> This gives Standard license users the ability to load/try out C
+Extensions in development mode. An [Indie or Pro license](https://dragonruby.org#purchase) is required to
+compile C Extensions/publish games that have C Extensions. 
+
+### `get_dlopen_path`
+
+Returns the path that will be searched for dynamic libraries when using `dlopen`. You can optionally pass in a `String` representing the library name to get the full path to the library.
 
 ## Window Functions
 
@@ -317,7 +280,41 @@ end
 
 Toggles the fullscreen state of the window.
 
+### `set_window_size`
+
+!> This function should only be used for debugging/development purposes and is not guaranteed to work cross platform. Do not use as a in-game feature in production.
+
+Takes in two parameters representing the width and height of the window. The window will be resized to the specified dimensions.
+
+```ruby
+# setting window size to 720p
+GTK.set_window_size 1280, 720
+
+# setting window size to 1080p
+GTK.set_window_size 1920, 1080
+
+# setting window to a non-standard 16:9 aspect ratio
+# for letterbox/allscreen testing purposes
+GTK.set_window_size 720, 720
+```
+
+### `set_window_position`
+
+!> This function should only be used for debugging/development
+purposes and is not guaranteed to work cross platform. Do not use as a
+in-game feature in production. 
+
+Takes in two parameters representing the `x` and `y` destination position (the
+`x`, `y` values assumes that the origin is top left... to reiterate,
+only use this function for development/debugging purposes).
+
+```ruby
+GTK.set_window_position 0, 0
+```
+
 ### `set_window_scale`
+
+!> This function should only be used for debugging/development purposes and is not guaranteed to work cross platform. Do not use as a in-game feature in production.
 
 The first parameter is a float value used to resize the game
 window to a percentage of 1280x720 (or 720x1280 in portrait mode). The
@@ -336,13 +333,15 @@ representation of your game on various form factors.
 
 ```ruby
 # how your game will look on an iPad
-$gtk.set_window_scale 1.0, 4, 3
+GTK.set_window_scale 1.0, 4, 3
 
 # how your game will look on a wide aspect ratio
-$gtk.set_window_scale 1.0, 21, 9
+GTK.set_window_scale 1.0, 21, 9
 ```
 
 ### `set_window_title`
+
+!> This function should only be used for debugging/development purposes and is not guaranteed to work cross platform. Do not use as a in-game feature in production.
 
 This function takes in a string updates the title of the game in the Menu Bar.
 
@@ -353,6 +352,8 @@ Note: The default title for your game is specified in via the `gametitle` proper
 Returns `true` if quitting is allowed on the platform you are releasing to (eg: iOS and Web games do not allow exiting).
 
 ### `move_window_to_next_display`
+
+!> This function should only be used for debugging/development purposes and is not guaranteed to work cross platform. Do not use as a in-game feature in production.
 
 If you have multiple monitors, this function can be used to move the
 game to the next monitor. The function will cycle back to the first
@@ -368,6 +369,8 @@ Returns `true` if the game's orientation can be altered while the game is runnin
 
 ### `toggle_orientation`
 
+!> This function should only be used for debugging/development purposes and is not guaranteed to work cross platform. Do not use as a in-game feature in production.
+
 If `can_change_orientation?` returns `true`, the orientation of the
 game will be changed from landscape to portrait (or portrait to
 landscape) while the game is running. This function is useful for
@@ -375,10 +378,16 @@ testing rendering of games that support both portrait and landscape orientations
 
 ### `set_orientation`
 
+!> This function should only be used for debugging/development purposes and is not guaranteed to work cross platform. Do not use as a in-game feature in production.
+
 Function accepts `:landscape`, or `:portrait` as the first
 parameter and sets the game's orientation while the game is running.
 
 ### `set_hd_max_scale`
+
+?> The ability to set your game's HD Max Scale is available to Pro license holders (the function no-ops otherwise).
+
+!> This function should only be used for debugging/development purposes and is not guaranteed to work cross platform. Do not use as a in-game feature in production.
 
 Function accepts on of the following `Integer` values:
 
@@ -395,10 +404,9 @@ Updates the `hd_max_scale` metadata value for your game while it's
 running. This is useful for testing the scaling of your game on edge
 to edge displays.
 
-?> The ability to set your game's HD Max Scale is available to Pro
-license holders (the function no-ops otherwise).
-
 ### `toggle_hd_letterbox`
+
+!> This function should only be used for debugging/development purposes and is not guaranteed to work cross platform. Do not use as a in-game feature in production.
 
 Adds or removes the letterbox within your game while it's
 running. This is useful for testing how your game renders on edge to 
@@ -406,9 +414,7 @@ edge displays.
 
 ### `set_hd_letterbox`
 
-Function requires one `Boolean` parameter (`true` or `false`). The
-letter boxing for your game will be added or removed while the game is
-running. 
+!> This function should only be used for debugging/development purposes and is not guaranteed to work cross platform. Do not use as a in-game feature in production.
 
 ?> `toggle_hd_letterbox` and `set_hd_letterbox` correlates to the
 `hd_letterbox` configuration value in =metadata/game_metadata.txt=
@@ -416,6 +422,10 @@ running.
 
 ?> The ability to remove the letterbox for you game is available to Pro
 license holders (these functions no-ops otherwise).
+
+Function requires one `Boolean` parameter (`true` or `false`). The
+letter boxing for your game will be added or removed while the game is
+running. 
 
 ## Environment and Utility Functions
 
@@ -471,6 +481,56 @@ end
   # size_px, and font named parameters
   string_w, string_h = args.gtk.calcstringbox text, size_px: 20, font: "fonts/example.ttf"
 ```
+
+### `get_pixels`
+
+Given a `file_path` to a sprite, this function returns a `Hash` with `w`, `h`, and `pixels`. The `pixels` key contains an array of hexadecimal values representing the ABGR of each pixel in a sprite with item `0` representing the top left corner of the `png`.
+
+Here's an example of how to get the color data for a pixel:
+
+```ruby
+def tick args
+  # load the pixels from the image
+  args.state.image ||= args.gtk.get_pixels "sprites/square/blue.png"
+
+  # initialize state variables for the pixel coordinates
+  args.state.x_px ||= 0
+  args.state.y_px ||= 0
+
+  sprite_pixels = args.state.image.pixels
+  sprite_h = args.state.image.h
+  sprite_w = args.state.image.w
+
+  # move the pixel coordinates using keyboard
+  args.state.x_px += args.inputs.left_right
+  args.state.y_px += args.inputs.up_down
+
+  # get pixel at the current coordinates
+  args.state.x_px = args.state.x_px.clamp(0, sprite_w - 1)
+  args.state.y_px = args.state.y_px.clamp(0, sprite_h - 1)
+  row = sprite_h - args.state.y_px - 1
+  col = args.state.x_px
+  abgr = sprite_pixels[sprite_h * row + col]
+  a = (abgr >> 24) & 0xff
+  b = (abgr >> 16) & 0xff
+  g = (abgr >> 8) & 0xff
+  r = (abgr >> 0) & 0xff
+
+  # render debug information
+  args.outputs.debug << "row: #{row} col: #{col}"
+  args.outputs.debug << "pixel entry 0: rgba #{r} #{g} #{b} #{a}"
+
+  # render the sprite plus crosshairs
+  args.outputs.sprites << { x: 0, y: 0, w: 80, h: 80, path: "sprites/square/blue.png" }
+  args.outputs.lines << { x: args.state.x_px, y: 0, h: 720 }
+  args.outputs.lines << { x: 0, y: args.state.y_px, w: 1280 }
+end
+```
+
+See the following sample apps for how to use pixel arrays:
+
+-   `./samples/07_advanced_rendering/06_pixel_arrays`
+-   `./samples/07_advanced_rendering/06_pixel_arrays_from_file`
 
 ### `request_quit`
 
@@ -550,7 +610,7 @@ These are the current platform categorizations (`args.gtk.platform_mappings`):
 
 Given the mappings above, `args.gtk.platform? :desktop` would return `true` if the game is running on a player's computer irrespective of OS (MacOS, Linux, and Windows are all categorized as `:desktop` platforms).
 
-### `open_url`
+### `openurl`
 
 Given a uri represented as a string. This function will open the uri in the user's default browser.
 
@@ -558,12 +618,14 @@ Given a uri represented as a string. This function will open the uri in the user
 def tick args
   # open a url after 600 frames (10 seconds)
   if Kernel.tick_count == 600
-    args.gtk.open_url "http://dragonruby.org"
+    args.gtk.openurl "http://dragonruby.org"
   end
 end
 ```
 
 ### `system`
+
+!> This function should only be used for debugging/development purposes and is not guaranteed to work cross platform. Do not use as a in-game feature in production.
 
 Given an OS dependent cli command represented as a string, this function executes the command and `puts` the results to the DragonRuby Console (returns `nil`).
 
@@ -577,6 +639,8 @@ end
 ```
 
 ### `exec`
+
+!> This function should only be used for debugging/development purposes and is not guaranteed to work cross platform. Do not use as a in-game feature in production.
 
 Given an OS dependent cli command represented as a string, this function executes the command and returns a `string` representing the results.
 
@@ -633,11 +697,30 @@ end
 
 Returns a `UUID`/`GUID` as a `String` value. The UUID uses `srand` and is not cryptographically secure.
 
+### `getenv`
+
+Given a `String`, this function will return the value of the environment variable represented as a `String`. `nil` will be returned if the environment variable does not exist.
+
+### `setenv`
+
+Function sets an environment variable. The function takes in three parameters:
+
+- `String` representing the environment variable `name`.
+- `String` representing the `value`.
+- `Boolean` representing whether the environment variable should `overwrite` if it already exists.
+
 ## File IO Functions
+
+!> File access functions are sandboxed and assume that the
+`dragonruby` binary lives alongside the game you are building. **Do not
+expect these functions to return correct values if you are attempting
+to run the `dragonruby` binary from a shared location**. It's **strongly**
+recommended that the directory structure contained in the zip is not
+altered and games are built using that starter template. 
 
 The following functions give you the ability to interact with the file system.
 
-DragonRuby uses a sandboxed filesystem which will automatically read from and write to a location appropriate for your platform so you don't have to worry about theses details in your code. You can just use `$gtk.read_file`, `$gtk.write_file`, and `$gtk.append_file` with a relative path and the engine will take care of the rest.
+DragonRuby uses a sandboxed filesystem which will automatically read from and write to a location appropriate for your platform so you don't have to worry about theses details in your code. You can just use `GTK.read_file`, `GTK.write_file`, and `GTK.append_file` with a relative path and the engine will take care of the rest.
 
 The data directories that will be written to in a production build are:
 - Windows: `C:\Users\YourWindowsUsername\AppData\Roaming\[devtitle]\[gametitle]`
@@ -652,13 +735,6 @@ When reading files, the engine will first look in the game's data directory and 
 When running a development build you will directly write to your game directory (and thus overwrite existing files). This can be useful for built-in development tools like level editors.
 
 For more details on the implementation of the sandboxed filesystem, see Ryan C. Gordon's PhysicsFS documentation: [https://icculus.org/physfs/](https://icculus.org/physfs/)
-
-!> File access functions are sandboxed and assume that the
-`dragonruby` binary lives alongside the game you are building. **Do not
-expect these functions to return correct values if you are attempting
-to run the `dragonruby` binary from a shared location**. It's **strongly**
-recommended that the directory structure contained in the zip is not
-altered and games are built using that starter template. 
 
 ### `list_files`
 
@@ -785,7 +861,7 @@ hash = args.gtk.parse_json '{ "name": "John Doe", "aliases": ["JD"] }'
 
 ### `parse_json_file`
 
-Same behavior as `parse_json_file` except a file path is read for the json string.
+Same behavior as `parse_json` except a file path is read for the json string.
 
 ### `parse_xml`
 
@@ -970,12 +1046,12 @@ end
 
 # reset the game if this file is hotloaded/required
 # (removes the need to press "r" when I file is updated)
-$gtk.reset
+GTK.reset
 ```
 
 1.  Resetting iVars (advanced)
 
-    NOTE: `args.gtk.reset` does not reset global variables or instance of classes you have have constructed. If you want to also reset global variables or instances of classes when $gtk.reset is called. Define a `reset` method. Here's an example:
+    NOTE: `args.gtk.reset` does not reset global variables or instance of classes you have have constructed. If you want to also reset global variables or instances of classes when `GTK.reset` is called. Define a `reset` method. Here's an example:
     
     ```ruby
     class Game
@@ -1006,17 +1082,17 @@ $gtk.reset
 
 2.  `rng_seed` RNG (advanced)
 
-    Optionally, `$gtk.reset` (`args.gtk.reset`) can take in a named parameter for RNG called `seed:`. Passing in `seed:` will reset RNG so that `rand` returns a repeatable set of random numbers. This `seed` value is initialized with the start time of your game (`$gtk.started_at`). Having this option is is helpful for replays and unit tests.
+    Optionally, `GTK.reset` (`args.gtk.reset`) can take in a named parameter for RNG called `seed:`. Passing in `seed:` will reset RNG so that `rand` returns a repeatable set of random numbers. This `seed` value is initialized with the start time of your game (`GTK.started_at`). Having this option is is helpful for replays and unit tests.
     
     Don't worry about this capability if you aren't using DragonRuby's unit testing, or replay capabilities.
     
-    Here is the behavior of `$gtk.reset` when given a seed:
+    Here is the behavior of `GTK.reset` when given a seed:
     
-    -   RNG is seeded initially with the `Time` value of the launch of your game (retrievable via `$gtk.started_at`).
-    -   Calling $gtk.reset will reset your game and re-initialize your RNG with this initial seed value.
-    -   Calling $gtk.reset with a `:seed` parameter will update the seed value for the current and subsequent resets.
-    -   You can get the value used to seed RNG via `$gtk.seed`.
-    -   You can set your RNG seed back to its original value by using `$gtk.started_at`.
+    -   RNG is seeded initially with the `Time` value of the launch of your game (retrievable via `GTK.started_at`).
+    -   Calling `GTK.reset` will reset your game and re-initialize your RNG with this initial seed value.
+    -   Calling `GTK.reset` with a `:seed` parameter will update the seed value for the current and subsequent resets.
+    -   You can get the value used to seed RNG via `GTK.seed`.
+    -   You can set your RNG seed back to its original value by using `GTK.started_at`.
     
     ```ruby
     def tick args
@@ -1029,23 +1105,23 @@ $gtk.reset
     end
     
     puts "Started at (RNG seed initial value)"
-    puts $gtk.started_at # Time as an integer that your game was started at
+    puts GTK.started_at # Time as an integer that your game was started at
     
     puts "Seed value that will be used on reset"
-    puts $gtk.seed # current value that RNG was seeded with
+    puts GTK.seed # current value that RNG was seeded with
     
     # reset the game and use the last seed to reset RNG
-    $gtk.reset
+    GTK.reset
     
     # === OR ===
     # sets the seed value to predefined value
     # subsequent resets will use the new predefined value
-    # $gtk.reset seed: 100
+    # GTK.reset seed: 100
     # (or shorthand)
-    # $gtk.reset 100
+    # GTK.reset 100
     
     # sets the seed back to its original value
-    # $gtk.reset seed: $gtk.started_at
+    # GTK.reset seed: GTK.started_at
     ```
     
     If you want a new RNG seed with every reset while in dev mode:
@@ -1059,7 +1135,7 @@ $gtk.reset
     end
     ```
 
-    If you want to set RNG without resetting your game state, you can use `$gtk.set_rng VALUE`.
+    If you want to set RNG without resetting your game state, you can use `GTK.set_rng VALUE`.
 
 ### `reset_next_tick`
 
@@ -1075,7 +1151,27 @@ end
 
 # reset the game if this file is hotloaded/required
 # (removes the need to press "r" when I file is updated)
-$gtk.reset
+GTK.reset
+```
+
+### `reset_and_replay`
+
+DragonRuby has the ability to record game play that is executed against your current game code (which is helpful when refactoring):
+
+1. Bring up the In-Game Console using `~`.
+2. Click the "Show Menu" button.
+3. Click "Record Gameplay".
+4. Play your game and when you've got a replay you like, press `~` again to stop recording.
+5. The console will be populated with a command to save the replay as `replay.txt`.
+6. You can then put `GTK.reset_and_replay` at the bottom of `main.rb`. Every time you save, the replay will be automatically executed against your current code.
+
+```ruby
+def tick args
+  # game code
+end
+
+# speed parameter can be increased to run the replay at a higher speed
+GTK.reset_and_replay "replay.txt", speed: 1
 ```
 
 ### `reset_sprite`
@@ -1086,13 +1182,13 @@ This function can also be used to delete/garbage collect render targets you are 
 
 ### `reset_sprites`
 
-Sprites when loaded are cached. This method invalidates the cache record of all sprites so that updates on from the disk can be loaded. This function is automatically called when `args.gtk.reset` (`$gtk.reset`) is invoked.
+Sprites when loaded are cached. This method invalidates the cache record of all sprites so that updates on from the disk can be loaded. This function is automatically called when `args.gtk.reset` (`GTK.reset`) is invoked.
 
 ### `calcspritebox`
 
-Given a path to a sprite, this method returns the `width` and `height` of a sprite as a tuple.
+!> This method should be used for development purposes only and is expensive to call every frame. Do not use this method to set the size of sprite when rendering (hard code those values since you know what they are beforehand).
 
-NOTE: This method should be used for development purposes only and is expensive to call every frame. Do not use this method to set the size of sprite when rendering (hard code those values since you know what they are beforehand).
+Given a path to a sprite, this method returns the `width` and `height` of a sprite as a tuple.
 
 ### `current_framerate`
 
@@ -1251,7 +1347,7 @@ Shows the DragonRuby console. Useful when debugging/customizing an in-game dev w
 
 ### `hide_console`
 
-Shows the DragonRuby console. Useful when debugging/customizing an in-game dev workflow.
+Hides the DragonRuby console. Useful when debugging/customizing an in-game dev workflow.
 
 ### `enable_console`
 
@@ -1263,7 +1359,7 @@ Disables the DragonRuby Console so that it won't show up even if you press the t
 
 ### `disable_reset_via_ctrl_r`
 
-By default, pressing `CTRL+R` invokes `$gtk.reset_next_tick` (safely resetting your game with a convenient key combo).
+By default, pressing `CTRL+R` invokes `GTK.reset_next_tick` (safely resetting your game with a convenient key combo).
 
 If you want to disable this behavior, add the following to the `main.rb`:
 
@@ -1272,18 +1368,18 @@ def tick args
   ...
 end
 
-$gtk.disable_reset_via_ctrl_r
+GTK.disable_reset_via_ctrl_r
 ```
 
-NOTE: `$gtk.disable_console` will also disable the `CTRL+R` reset behavior.
+NOTE: `GTK.disable_console` will also disable the `CTRL+R` reset behavior.
 
 ### `disable_controller_config`
 
-DragonRuby has a built-in controller configuration/mapping wizard. You can disable this wizard by adding `$gtk.disable_controller_config` at the top of main.rb.
+DragonRuby has a built-in controller configuration/mapping wizard. You can disable this wizard by adding `GTK.disable_controller_config` at the top of main.rb.
 
 ### `enable_controller_config`
 
-DragonRuby has a built-in controller configuration/mapping wizard. You can re-enable this wizard by adding `$gtk.enable_controller_config` at the top of main.rb (this is enabled by default).
+DragonRuby has a built-in controller configuration/mapping wizard. You can re-enable this wizard by adding `GTK.enable_controller_config` at the top of main.rb (this is enabled by default).
 
 ### `start_recording`
 
@@ -1362,16 +1458,16 @@ end
 # option 1:
 # source code will be downloaded from the specified GitHub url, and saved locally with a
 # predefined folder convention.
-$gtk.download_stb_rb "https://github.com/xenobrain/ruby_vectormath/blob/main/vectormath_2d.rb"
+GTK.download_stb_rb "https://github.com/xenobrain/ruby_vectormath/blob/main/vectormath_2d.rb"
 
 # option 2:
 # source code will be downloaded from the specified GitHub username, repository, and file.
 # code will be saved locally with a predefined folder convention.
-$gtk.download_stb_rb "xenobrain", "ruby_vectormath", "vectormath_2d.rb"
+GTK.download_stb_rb "xenobrain", "ruby_vectormath", "vectormath_2d.rb"
 
 # option 3:
 # source code will be downloaded from a direct/raw url and saved to a direct/raw local path.
-$gtk.download_stb_rb_raw "https://raw.githubusercontent.com/xenobrain/ruby_vectormath/main/vectormath_2d.rb",
+GTK.download_stb_rb_raw "https://raw.githubusercontent.com/xenobrain/ruby_vectormath/main/vectormath_2d.rb",
                          "lib/xenobrain/ruby_vectionmath/vectormath_2d.rb"
 ```
 
@@ -1395,7 +1491,7 @@ If you need to hunt down rogue `puts` statements in your code do:
 def tick args
   # adding the following line to the TOP of your tick method
   # will print ~caller~ along side each ~puts~ statement
-  $gtk.trace_puts!
+  GTK.trace_puts!
 end
 ```
 
@@ -1460,26 +1556,9 @@ Returns the elapsed number of global ticks since creation.
 
 Entity cast to a `Hash` so you can update values as if you were updating a `Hash`.
 
-## `new_entity`
-
-Creates a new Entity with a `type`, and initial properties. An option block can be passed to change the newly created entity:
-
-```ruby
-def tick args
-  args.state.player ||= args.state.new_entity :player, x: 0, y: 0 do |e|
-    e.max_hp = 100
-    e.hp     = e.max_hp * rand
-  end
-end
-```
-
-## `new_entity_strict`
-
-Creates a new Strict Entity. While Entities created via `args.state.new_entity` can have new properties added later on, Entities created using `args.state.new_entity_strict` must define all properties that are allowed during its initialization. Attempting to add new properties after initialization will result in an exception.
-
 ## `tick_count`
 
-Returns the current tick of the game. `Kernel.tick_count` is `0` when the game is first started or if the game is reset via `$gtk.reset`.
+Returns the current tick of the game. `Kernel.tick_count` is `0` when the game is first started or if the game is reset via `GTK.reset`.
 
 # `Kernel`
 
@@ -1487,7 +1566,7 @@ Kernel in the DragonRuby Runtime has patches for how standard out is handled and
 
 ## `tick_count`
 
-Returns the current tick of the game. This value is reset if you call $gtk.reset.
+Returns the current tick of the game. This value is reset if you call GTK.reset.
 
 ## `global_tick_count`
 

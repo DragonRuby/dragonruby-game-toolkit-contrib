@@ -3,11 +3,11 @@ def tick args
   # to enable the http server in a production build you need to:
   # - update metadata/cvars.txt
   # - manually start the server up with enable_in_prod set to true:
-  args.gtk.start_server! port: $cvars["webserver.port"].value, enable_in_prod: true
+  GTK.start_server! port: $cvars["webserver.port"].value, enable_in_prod: true
 
   # defaults
-  args.state.post_button      = args.layout.rect(row: 0, col: 0, w: 5, h: 1).merge(text: "execute http_post")
-  args.state.post_body_button = args.layout.rect(row: 1, col: 0, w: 5, h: 1).merge(text: "execute http_post_body")
+  args.state.post_button      = Layout.rect(row: 0, col: 0, w: 5, h: 1).merge(text: "execute http_post")
+  args.state.post_body_button = Layout.rect(row: 1, col: 0, w: 5, h: 1).merge(text: "execute http_post_body")
   args.state.request_to_s ||= ""
   args.state.request_body ||= ""
 
@@ -37,11 +37,11 @@ def tick args
       form_fields = { "userId" => "#{Time.now.to_i}" }
       # ==================================
 
-      args.gtk.http_post "http://localhost:9001/testing",
+      GTK.http_post "http://localhost:9001/testing",
                          form_fields,
                          ["Content-Type: application/x-www-form-urlencoded"]
 
-      args.gtk.notify! "http_post"
+      GTK.notify! "http_post"
     end
 
     # ============= HTTP_POST_BODY =============
@@ -50,11 +50,11 @@ def tick args
       json = "{ \"userId\": \"#{Time.now.to_i}\"}"
       # ==================================
 
-      args.gtk.http_post_body "http://localhost:9001/testing",
+      GTK.http_post_body "http://localhost:9001/testing",
                               json,
                               ["Content-Type: application/json", "Content-Length: #{json.length}"]
 
-      args.gtk.notify! "http_post_body"
+      GTK.notify! "http_post_body"
     end
   end
 
@@ -71,7 +71,7 @@ def tick args
 end
 
 def draw_label args, row, col, header, text
-  label_pos = args.layout.rect(row: row, col: col, w: 0, h: 0)
+  label_pos = Layout.rect(row: row, col: col, w: 0, h: 0)
   args.outputs.labels << "#{header}\n\n#{text}".wrapped_lines(80).map_with_index do |l, i|
     { x: label_pos.x, y: label_pos.y - (i * 15), text: l, size_enum: -2 }
   end

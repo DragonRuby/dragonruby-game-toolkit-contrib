@@ -41,4 +41,12 @@ def tick args
   end
 
   args.outputs.sprites << { x: 0, y: 0.from_top - 165, w: 410, h: 165, r: 0, g: 0, b: 0, a: 200, path: :pixel }
+
+  if args.inputs.keyboard.key_down.right_arrow
+    GTK.set_window_scale 1, 9, 16
+  elsif args.inputs.keyboard.key_down.left_arrow
+    GTK.set_window_scale 1, 32, 9
+  elsif args.inputs.keyboard.key_down.up_arrow
+    GTK.toggle_window_fullscreen
+  end
 end

@@ -465,6 +465,6 @@ def tick args
     $metroidvania_starter.inputs  = args.inputs
     $metroidvania_starter.state   = args.state
     $metroidvania_starter.outputs = args.outputs
-    $metroidvania_starter.gtk     = args.gtk
+    $metroidvania_starter.gtk     = GTK
     $metroidvania_starter.tick
 end

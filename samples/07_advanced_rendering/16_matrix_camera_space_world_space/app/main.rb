@@ -133,7 +133,7 @@ class Game
 
     # find all the entities that are hovered by the mouse and update their state back to hovered
     mouse_in_world = rect_to_world_coordinates inputs.mouse.rect
-    hovered_entities = geometry.find_all_intersect_rect mouse_in_world, state.entities
+    hovered_entities = Geometry.find_all_intersect_rect mouse_in_world, state.entities
     hovered_entities.each { |entity| entity.hovered = true }
   end
 
@@ -146,7 +146,7 @@ class Game
     outputs[:scene].primitives << rect_to_screen_coordinates(state.backdrop)
 
     # get all entities that are within the camera's viewport
-    entities_to_render = geometry.find_all_intersect_rect state.viewport, state.entities
+    entities_to_render = Geometry.find_all_intersect_rect state.viewport, state.entities
 
     # render all the entities within the viewport
     outputs[:scene].primitives << entities_to_render.map do |entity|
@@ -228,4 +228,4 @@ def tick args
   $game.tick
 end
 
-$gtk.reset
+GTK.reset

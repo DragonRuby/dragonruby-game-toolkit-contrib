@@ -1,5 +1,12 @@
 # Deploying To Itch.io
 
+!> It's strongly recommended that you do NOT keep DragonRuby Game Toolkit in a shared location and
+instead unzip a clean copy for every game (and commit everything to source control). <br/> <br/>
+File access functions are sandoxed and assume that the `dragonruby` binary lives alongside
+the game you are building. Do not expect file access functions to return correct values if you are attempting
+to run the `dragonruby` binary from a shared location. It's recommended that the directory
+structure contained in the zip is not altered and games are built using that starting directory structure.
+
 Once you've built your game, you're all set to deploy! Good luck in
 your game dev journey and if you get stuck, come to the Discord
 channel!
@@ -103,7 +110,7 @@ If you want your game to run at full speed even when it's in the background, add
 ### Consider Adding a Request to Review Your Game In-Game
 
 Getting reviews of your game are extremely important and it's recommended that you put an option to review
-within the game itself. You can use `args.gtk.open_url` plus a review URL. Here's an example:
+within the game itself. You can use `args.gtk.openurl` plus a review URL. Here's an example:
 ```ruby
 def tick args
   # render the review button

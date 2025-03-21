@@ -115,9 +115,9 @@ def tick args
 
   @elements.tick
 
-  args.outputs.labels << { x: 30, y: 30.from_top, text: "#{args.gtk.current_framerate.to_sf}" }
+  args.outputs.labels << { x: 30, y: 30.from_top, text: "#{GTK.current_framerate.to_sf}" }
   args.outputs.labels << { x: 30, y: 60.from_top, text: "#{@elements.element_count}" }
 end
 
-$gtk.reset
+GTK.reset
 @elements = nil

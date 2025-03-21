@@ -1,0 +1,28 @@
+replay_version 2.1
+stopped_at 318
+seed 100
+recorded_at 2024-12-21 15:14:27 -0600
+[:mouse_button_up, 1, 0, 1, 1, 4]
+[:mouse_move, 899, 130, 2, 2, 24]
+[:mouse_move, 897, 135, 2, 3, 25]
+[:mouse_move, 893, 144, 2, 4, 26]
+[:mouse_move, 886, 158, 2, 5, 27]
+[:mouse_move, 879, 171, 2, 6, 28]
+[:mouse_move, 866, 192, 2, 7, 29]
+[:mouse_move, 857, 207, 2, 8, 30]
+[:mouse_move, 844, 226, 2, 9, 31]
+[:mouse_move, 831, 240, 2, 10, 32]
+[:mouse_move, 828, 244, 2, 11, 33]
+[:mouse_move, 821, 250, 2, 12, 34]
+[:mouse_move, 819, 252, 2, 13, 35]
+[:mouse_move, 818, 252, 2, 14, 36]
+[:mouse_move, 818, 253, 2, 15, 40]
+[:mouse_move, 819, 253, 2, 16, 47]
+[:mouse_move, 820, 253, 2, 17, 49]
+[:key_down_raw, 32, 0, 2, 18, 107]
+[:scancode_down_raw, 44, 0, 2, 19, 107]
+[:textinput, " ", 0, 1, 20, 107]
+[:key_up_raw, 32, 0, 2, 21, 0]
+[:scancode_up_raw, 44, 0, 2, 22, 0]
+[:scancode_down_raw, 53, 0, 2, 23, 313]
+[:textinput, "`", 0, 1, 24, 313]

@@ -1,13 +1,13 @@
 def tick args
   args.state.duration = 10.seconds
-  args.state.spline = [
+  args.state.spline_definition = [
     [0.0, 0.33, 0.66, 1.0],
     [1.0, 1.0,  1.0,  1.0],
     [1.0, 0.66, 0.33, 0.0],
   ]
 
   args.state.simulation_tick = Kernel.tick_count % args.state.duration
-  progress = 0.ease_spline_extended args.state.simulation_tick, args.state.duration, args.state.spline
+  progress = Easing.spline 0, args.state.simulation_tick, args.state.duration, args.state.spline_definition
   args.outputs.borders << args.grid.rect
   args.outputs.solids << [20 + 1240 * progress,
                           20 +  680 * progress,

@@ -26,7 +26,11 @@ module GTK
 
         state.__delete_thrash_count__! if state.respond_to? :__delete_thrash_count__!
 
-        result = state.to_s
+        result = if state.is_a? OpenEntity
+                   state.as_hash.to_s
+                 else
+                   state.to_s
+                 end
 
         if file
           write_file file, result
@@ -65,7 +69,7 @@ module GTK
         return nil unless definitely_serialization
 
         begin
-          load_data = Kernel.eval("#{definitely_serialization}")
+          load_data = GTK::Codegen.eval_hash("#{definitely_serialization}")
           state = OpenEntity.parse_serialization_data load_data
           Kernel.tick_count = load_data[:tick_count] if load_data[:tick_count]
           state

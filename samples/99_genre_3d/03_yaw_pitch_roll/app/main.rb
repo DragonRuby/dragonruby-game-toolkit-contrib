@@ -332,4 +332,4 @@ def set_angles x, y, z
   $game.state.angle_z = z
 end
 
-$gtk.reset
+GTK.reset

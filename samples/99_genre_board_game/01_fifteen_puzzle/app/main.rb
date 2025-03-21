@@ -8,25 +8,45 @@ class Game
   end
 
   def defaults
-    # set a reliable seed when not in production so the
-    # saved replay works correctly
-    srand 0 if Kernel.tick_count == 0 && !gtk.production?
-
     # set rendering positions/properties
-    state.cell_size     ||= 64
+    state.cell_size     ||= 160
     state.left_margin   ||= (grid.w - 4 * state.cell_size) / 2
     state.bottom_margin ||= (grid.h - 4 * state.cell_size) / 2
 
+    state.win_notification_duration ||= 180
+
     # if the board isn't initialized
-    if !state.board || state.win
+    if !state.board || (state.win && state.won_at.elapsed_time > state.win_notification_duration)
       # generate a solvable board
-      state.board = solvable_board
+      state.board = new_board
+
+      # shuffle board until we have one that isn't already solved
+      while solved_board?
+        # difficulty increases with the number of wins
+        state.win_count = if !state.win_count
+                            0
+                          else
+                            state.win_count + 1
+                          end
+
+        # find the empty cell (the cell with the value 16) and swap it with a random neighbor
+        # do this X times (win_count + 1 * 5) to make sure the board is scrambled
+        shuffle_count = ((state.win_count + 1) * 5).clamp(10, 100)
+
+        shuffle_count.times do
+          empty_cell = board.find { |cell| cell.value == 16 }
+          empty_cell_neighbors = neighbors empty_cell
+          swap_with_empty empty_cell_neighbors.sample, empty_cell
+        end
+      end
+
       state.win = false
+      state.won_at = nil
     end
   end
 
-  def solvable_board
-    # create a random board with cells of the
+  def new_board
+    # create a board with cells of the
     # following format:
     # {
     #   value: 1,
@@ -34,51 +54,17 @@ class Game
     #   previous_loc: { row: 0, col: 0 },
     #   clicked_at: 0
     # }
-    results = 16.map_with_index do |i|
+    16.map_with_index do |i|
       { value: i + 1 }
     end.sort_by do |cell|
-      rand
+      cell.value
     end.map_with_index do |cell, index|
-      row = index.idiv 4
+      row = 3 - index.idiv(4)
       col = index % 4
       cell.merge loc: { row: row, col: col },
                  previous_loc: { row: row, col: col },
-                 clicked_at: 0
+                 clicked_at: -100
     end
-
-    # determine if the board is solvable
-    # by counting the number of inversions
-    # (a board is solvable if the number of inversions is even)
-    solvable = number_of_inversions(results).even?
-
-    # recursively call this method until a solvable board is generated
-    return solvable_board if !solvable
-
-    return results
-  end
-
-  def number_of_inversions board
-    # get the number of rows
-    number_of_rows = board.map { |cell| cell.loc.row }.uniq.count
-
-    results = 0
-
-    # for each row
-    number_of_rows.times_with_index do |row|
-      # find all the cells in the row
-      # and count the number of inversions for that single row
-      inversions_in_row = board.find_all { |cell| cell.loc.row == row }
-                               .map { |cell| cell.value }
-                               .each_cons(2)
-                               .map { |cell, next_cell| cell > next_cell ? 1 : 0 }
-                               .sum
-
-      # add the number of inversions for that row to the total
-      results += inversions_in_row
-    end
-
-    # return the total number of inversions
-    results
   end
 
   def render
@@ -89,7 +75,7 @@ class Game
     end
 
     # render the win message
-    if state.won_at && state.won_at.elapsed_time < 180
+    if state.won_at && state.won_at.elapsed_time < state.win_notification_duration
       # define a bezier spline that will be used to
       # fade in the win message stay visible for a little bit
       # then fade out
@@ -99,16 +85,16 @@ class Game
         [1.0, 0.75, 0.25,   0]
       ]
 
-      alpha_percentage = args.easing.ease_spline state.won_at,
-                                                 Kernel.tick_count,
-                                                 180,
-                                                 spline
+      alpha_percentage = Easing.spline state.won_at,
+                                       state.tick_count,
+                                       state.win_notification_duration,
+                                       spline
 
       outputs.sprites << {
         x: 0,
-        y: grid.h.half - 32,
+        y: grid.h.half - state.cell_size / 2,
         w: grid.w,
-        h: 64,
+        h: state.cell_size,
         path: :pixel,
         r: 0,
         g: 0,
@@ -123,7 +109,7 @@ class Game
         a: 255 * alpha_percentage,
         alignment_enum: 1,
         vertical_alignment_enum: 1,
-        size_enum: 10,
+        size_enum: (state.cell_size - 20) / 2,
         r: 255,
         g: 255,
         b: 255
@@ -132,12 +118,6 @@ class Game
   end
 
   def calc
-    calc_input
-    calc_win
-  end
-
-  def calc_input
-    # return if the mouse isn't clicked
     return if !inputs.mouse.click
 
     # determine which cell was clicked
@@ -155,9 +135,7 @@ class Game
     return if !clicked_cell
 
     # find the empty cell
-    empty_cell = board.find do |cell|
-      cell.value == 16
-    end
+    empty_cell = board.find { |cell| cell.value == 16 }
 
     # find the clicked cell's neighbors
     clicked_cell_neighbors = neighbors clicked_cell
@@ -167,15 +145,20 @@ class Game
 
     # otherwise swap the clicked cell with the empty cell
     swap_with_empty clicked_cell, empty_cell
+
+    # take note of the current tick count (which will be used for animation)
+    clicked_cell.clicked_at = state.tick_count
+
+    state.win = solved_board?
+
+    state.won_at ||= state.tick_count if state.win
   end
 
-  def calc_win
+  def solved_board?
     sorted_values = board.sort_by { |cell| (cell.loc.col + 1) + (16 - (cell.loc.row * 4)) }
                          .map { |cell| cell.value }
 
-    state.win = sorted_values == (1..16).to_a
-
-    state.won_at ||= Kernel.tick_count if state.win
+    sorted_values == (1..16).to_a
   end
 
   def swap_with_empty cell, empty
@@ -184,15 +167,12 @@ class Game
 
     # swap the cell's location with the empty cell's location and vice versa
     cell.loc, empty.loc = empty.loc, cell.loc
-
-    # take note of the current tick count (which will be used for animation)
-    cell.clicked_at = Kernel.tick_count
   end
 
   def cell_prefab cell
     # determine the percentage for the lerp that should be performed
     percentage = if cell.clicked_at
-                   easing.ease cell.clicked_at, Kernel.tick_count, 15, :smooth_stop_quint, :flip
+                   Easing.ease cell.clicked_at, state.tick_count, 15, :smooth_stop_quint, :flip
                  else
                    1
                  end
@@ -233,7 +213,7 @@ class Game
       below_cell(cell),
       left_cell(cell),
       right_cell(cell),
-    ]
+    ].compact
   end
 
   def below_cell cell

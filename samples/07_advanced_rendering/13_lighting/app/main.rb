@@ -2,14 +2,13 @@ def calc args
   args.state.swinging_light_sign     ||= 1
   args.state.swinging_light_start_at ||= 0
   args.state.swinging_light_duration ||= 300
-  args.state.swinging_light_perc       = args.state
-                                             .swinging_light_start_at
-                                             .ease_spline_extended Kernel.tick_count,
-                                                                   args.state.swinging_light_duration,
-                                                                   [
-                                                                     [0.0, 1.0, 1.0, 1.0],
-                                                                     [1.0, 1.0, 1.0, 0.0]
-                                                                   ]
+  swinging_light_perc = Easing.spline(args.state.swinging_light_start_at,
+                                      Kernel.tick_count,
+                                      args.state.swinging_light_duration,
+                                      [
+                                        [0.0, 1.0, 1.0, 1.0],
+                                        [1.0, 1.0, 1.0, 0.0]
+                                      ])
   args.state.max_swing_angle ||= 45
 
   if args.state.swinging_light_start_at.elapsed_time > args.state.swinging_light_duration
@@ -17,7 +16,7 @@ def calc args
     args.state.swinging_light_sign *= -1
   end
 
-  args.state.swinging_light_angle = 360 + ((args.state.max_swing_angle * args.state.swinging_light_perc) * args.state.swinging_light_sign)
+  args.state.swinging_light_angle = 360 + ((args.state.max_swing_angle * swinging_light_perc) * args.state.swinging_light_sign)
 end
 
 def render args
@@ -71,4 +70,4 @@ def tick args
   calc args
 end
 
-$gtk.reset
+GTK.reset

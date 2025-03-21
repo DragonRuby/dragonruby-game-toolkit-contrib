@@ -2,7 +2,7 @@
 # based off of the writeup here:
 # http://higherorderfun.com/blog/2012/05/20/the-guide-to-implementing-2d-platformers/
 
-# NOTE: at the bottom of the file you'll find $gtk.reset_and_replay "replay.txt"
+# NOTE: at the bottom of the file you'll find GTK.reset_and_replay "replay.txt"
 #       whenever you make changes to this file, a replay will automatically run so you can
 #       see how your changes affected the game. Comment out the line at the bottom if you
 #       don't want the replay to autmatically run.
@@ -122,7 +122,7 @@ def calc_collision args
   end
 
   # get all colisions between the player and the terrain
-  collisions = args.state.geometry.find_all_intersect_rect args.state.player, args.state.terrain
+  collisions = Geometry.find_all_intersect_rect args.state.player, args.state.terrain
 
   # if there are no collisions, then the player is not on the floor or ceiling
   # return from the method since there is nothing more to process
@@ -428,7 +428,7 @@ def tick_toolbar args
   toolbar_button = args.state.toolbar.buttons.find { |t| t.button_rect.intersect_rect? args.inputs.mouse }
 
   # determine if the mouse click occurred over a tile in the terrain
-  terrain_tile = args.geometry.find_intersect_rect mouse_grid_aligned_rect, args.state.terrain
+  terrain_tile = Geometry.find_intersect_rect mouse_grid_aligned_rect, args.state.terrain
 
 
   # if a mouse click occurs....
@@ -543,4 +543,4 @@ def grid_aligned_rect point, size
   { x: grid_aligned_x.to_i, y: grid_aligned_y.to_i, w: size.to_i, h: size.to_i }
 end
 
-$gtk.reset_and_replay "replay.txt", speed: 2
+GTK.reset_and_replay "replay.txt", speed: 2

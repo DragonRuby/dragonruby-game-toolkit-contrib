@@ -410,7 +410,7 @@ class FallingCircle
   end
 
   def line_near_rect? rect, terrain
-    geometry.intersect_rect?(rect, terrain[:rect])
+    Geometry.intersect_rect?(rect, terrain[:rect])
   end
 
   def point_within_line? point, line
@@ -429,19 +429,19 @@ class FallingCircle
     results[:rect] = { x: x - radius, y: y - radius, w: radius * 2, h: radius * 2 }
     results[:trajectory] = trajectory(results)
     results[:impacts] = terrain.find_all { |t| t && (line_near_rect? results[:rect], t) }.map do |t|
-      intersection = geometry.ray_intersect(results[:trajectory], t)
+      intersection = Geometry.ray_intersect(results[:trajectory], t)
       {
         terrain: t,
-        point: geometry.ray_intersect(results[:trajectory], t),
+        point: Geometry.ray_intersect(results[:trajectory], t),
         type: :terrain
       }
     end
 
     results[:impacts] += lava.find_all { |t| line_near_rect? results[:rect], t }.map do |t|
-      intersection = geometry.ray_intersect(results[:trajectory], t)
+      intersection = Geometry.ray_intersect(results[:trajectory], t)
       {
         terrain: t,
-        point: geometry.ray_intersect(results[:trajectory], t),
+        point: Geometry.ray_intersect(results[:trajectory], t),
         type: :lava
       }
     end
@@ -462,10 +462,10 @@ class FallingCircle
     circle.impacts.each do |i|
       future_circle = { x: circle.x + circle.dx, y: circle.y + circle.dy }
       circle.terrains_to_monitor[i[:terrain]] ||= {
-        ray_start: geometry.ray_test(future_circle, i[:terrain]),
+        ray_start: Geometry.ray_test(future_circle, i[:terrain]),
       }
 
-      circle.terrains_to_monitor[i[:terrain]][:ray_current] = geometry.ray_test(future_circle, i[:terrain])
+      circle.terrains_to_monitor[i[:terrain]][:ray_current] = Geometry.ray_test(future_circle, i[:terrain])
       if circle.terrains_to_monitor[i[:terrain]][:ray_start] != circle.terrains_to_monitor[i[:terrain]][:ray_current]
         circle.impact = i
         circle.ray_current = circle.terrains_to_monitor[i[:terrain]][:ray_current]
@@ -482,7 +482,7 @@ class FallingCircle
     }
 
     r[:body][:line] = body.trajectory.dup
-    r[:body][:slope] = geometry.line_slope(body.trajectory, replace_infinity: infinity_alias)
+    r[:body][:slope] = Geometry.line_slope(body.trajectory, replace_infinity: infinity_alias)
     r[:body][:slope_sign] = r[:body][:slope].sign
     r[:body][:x] = body.x
     r[:body][:y] = body.y
@@ -490,10 +490,10 @@ class FallingCircle
     r[:body][:dx] = body.dx
 
     r[:terrain][:line] = impact[:terrain].dup
-    r[:terrain][:slope] = geometry.line_slope(impact[:terrain], replace_infinity: infinity_alias)
+    r[:terrain][:slope] = Geometry.line_slope(impact[:terrain], replace_infinity: infinity_alias)
     r[:terrain][:slope_sign] = r[:terrain][:slope].sign
 
-    r[:impact][:angle] = -geometry.angle_between_lines(body.trajectory, impact[:terrain], replace_infinity: infinity_alias)
+    r[:impact][:angle] = -Geometry.angle_between_lines(body.trajectory, impact[:terrain], replace_infinity: infinity_alias)
     r[:impact][:point] = { x: impact[:point].x, y: impact[:point].y }
     r[:impact][:same_slope_sign] = r[:body][:slope_sign] == r[:terrain][:slope_sign]
     r[:impact][:ray] = body.ray_current
@@ -531,7 +531,7 @@ class FallingCircle
       r[:body][:new_reason] = "0"
     end
 
-    r[:impact][:ray_next] = geometry.ray_test({ x: r[:body][:x] - (r[:body][:dx] * 1.1) + r[:body][:new_dx],
+    r[:impact][:ray_next] = Geometry.ray_test({ x: r[:body][:x] - (r[:body][:dx] * 1.1) + r[:body][:new_dx],
                                                 y: r[:body][:y] - (r[:body][:dy] * 1.1) + r[:body][:new_dy] + state.gravity },
                                               r[:terrain][:line])
 
@@ -844,20 +844,25 @@ class FallingCircle
   end
 end
 
-# $gtk.reset
+# GTK.reset
 
 def tick args
   args.outputs.background_color = [0, 0, 0]
   if args.inputs.keyboard.r
-    args.gtk.reset
+    GTK.reset
     return
   end
   # uncomment the line below to slow down the game so you
   # can see each tick as it passes
-  # args.gtk.slowmo! 30
+  # GTK.slowmo! 30
   $game ||= FallingCircle.new
   $game.args = args
   $game.tick
+
+  args.outputs.watch "native_scale: #{Grid.native_scale}"
+  args.outputs.watch "render_scale: #{Grid.render_scale}"
+  args.outputs.watch "texture_scale: #{Grid.texture_scale}"
+  args.outputs.watch "texture_scale_enum: #{Grid.texture_scale_enum}"
 end
 
 def reset

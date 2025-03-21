@@ -511,10 +511,10 @@ S
       end
 
       def scale_rect_extended rect,
-                              percentage_x: percentage_x,
-                              percentage_y: percentage_y,
-                              anchor_x: anchor_x,
-                              anchor_y: anchor_y
+                              percentage_x: nil,
+                              percentage_y: nil,
+                              anchor_x: nil,
+                              anchor_y: nil
         anchor_x ||= 0.0
         anchor_y ||= 0.0
         percentage_x ||= 1.0
@@ -545,7 +545,11 @@ S
       end
 
       def rect_center_point rect
-        { x: rect.x + rect.w / 2, y: rect.y + rect.h / 2 }
+        if rect.is_a?(Hash) && (rect.anchor_x || rect.anchor_y)
+          rect_props(rect).center
+        else
+          __rect_center_point_normalized_rect__ rect
+        end
       end
 
       def line_center_point line
@@ -554,13 +558,18 @@ S
         { x: center_x, y: center_y }
       end
 
+      # "normalized rect" is a rect w/o anchor_(x|y)
+      def __rect_center_point_normalized_rect__ rect
+        { x: rect.x + rect.w / 2, y: rect.y + rect.h / 2 }
+      end
+
       def line_length line
         Math.sqrt((line.x2 - line.x)**2 + (line.y2 - line.y)**2)
       end
 
       def center rect
         if rect.w && rect.h
-          { x: rect.x + rect.w / 2, y: rect.y + rect.h / 2 }
+          rect_center_point(rect)
         else
           line_center_point rect
         end
@@ -579,7 +588,7 @@ S
           w: w,
           h: h
         }
-        normalized_rect.center = center(normalized_rect)
+        normalized_rect.center = __rect_center_point_normalized_rect__(normalized_rect)
         normalized_rect
       rescue Exception => e
         raise e, <<-S
@@ -636,6 +645,28 @@ Geometry::vec2_dot_product for v1 #{v1} v2: #{v2}.
 S
       end
 
+      def vec2_add v1, v2
+        { x: v1.x + v2.x, y: v1.y + v2.y }
+      rescue Exception => e
+        raise e, <<-S
+* ERROR:
+Geometry::vec2_add for v1 #{v1} and v2 #{v2}.
+#{e}
+S
+      end
+
+      def vec2_subtract v1, v2
+        { x: v1.x - v2.x, y: v1.y - v2.y }
+      rescue Exception => e
+        raise e, <<-S
+* ERROR:
+Geometry::vec2_subtract for v1 #{v1} and v2 #{v2}.
+#{e}
+S
+      end
+
+      alias_method :vec2_sub, :vec2_subtract
+
       def vec2_normalize v
         magnitude = vec2_magnitude v
         { x: v.x / magnitude, y: v.y / magnitude }
@@ -643,6 +674,16 @@ S
         raise e, <<-S
 * ERROR:
 Geometry::vec2_normalize for v #{v}.
+#{e}
+S
+      end
+
+      def vec2_scale v, scalar
+        { x: v.x * scalar, y: v.y * scalar }
+      rescue Exception => e
+        raise e, <<-S
+* ERROR:
+Geometry::vec2_scale for v #{v} and scalar #{scalar}.
 #{e}
 S
       end

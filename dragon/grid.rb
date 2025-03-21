@@ -53,7 +53,11 @@ module GTK
 
     attr :allscreen_offset_y, :allscreen_offset_y_px
 
+    attr :native_scale, :render_scale
+
     attr :texture_scale, :texture_scale_enum
+
+    attr :high_dpi_scale
 
     def initialize runtime
       @runtime = runtime

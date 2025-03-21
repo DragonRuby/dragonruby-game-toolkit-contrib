@@ -31,7 +31,7 @@
 # second method is `one_time_animation`.
 def tick args
   # uncomment the line below to see animation play out in slow motion
-  # args.gtk.slowmo! 6
+  # GTK.slowmo! 6
   looping_animation args
   one_time_animation args
 end

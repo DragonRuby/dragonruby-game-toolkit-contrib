@@ -80,11 +80,11 @@ class CleptoFrog
       h: 1440 / state.camera_scale
     }
 
-    outputs.sprites << geometry.find_all_intersect_rect(viewport, state.mugs).map do |rect|
+    outputs.sprites << Geometry.find_all_intersect_rect(viewport, state.mugs).map do |rect|
       to_camera_space rect
     end
 
-    outputs.sprites << geometry.find_all_intersect_rect(viewport, state.walls).map do |rect|
+    outputs.sprites << Geometry.find_all_intersect_rect(viewport, state.walls).map do |rect|
       to_camera_space(rect).merge!(path: :pixel, r: 128, g: 128, b: 128, a: 128)
     end
   end
@@ -97,7 +97,7 @@ class CleptoFrog
       outputs.sprites << { x: start_of_tongue_render.x - 2,
                            y: start_of_tongue_render.y - 2,
                            w: to_camera_space_w(4),
-                           h: geometry.distance(start_of_tongue_render, anchor_point_render),
+                           h: Geometry.distance(start_of_tongue_render, anchor_point_render),
                            path:  :pixel,
                            angle_anchor_y: 0,
                            r: 255, g: 128, b: 128,
@@ -277,7 +277,7 @@ class CleptoFrog
 
     diff_y = player.y - target_y
 
-    distance = geometry.distance(player, state.anchor_point)
+    distance = Geometry.distance(player, state.anchor_point)
     pull_strength = if distance < 100
                       0
                     else
@@ -299,7 +299,7 @@ class CleptoFrog
     player.dx += player.dx * state.drag
     player.x += player.dx
 
-    collision = geometry.find_intersect_rect player, state.walls
+    collision = Geometry.find_intersect_rect player, state.walls
 
     if collision
       if player.dx > 0
@@ -315,7 +315,7 @@ class CleptoFrog
       player.y += player.dy
     end
 
-    collision = geometry.find_intersect_rect player, state.walls
+    collision = Geometry.find_intersect_rect player, state.walls
 
     if collision
       if player.dy > 0
@@ -330,8 +330,8 @@ class CleptoFrog
 
   def calc_tongue_angle
     return unless state.anchor_point
-    state.tongue_angle = geometry.angle_from state.anchor_point, start_of_tongue
-    state.tongue_length = geometry.distance(start_of_tongue, state.anchor_point)
+    state.tongue_angle = Geometry.angle_from state.anchor_point, start_of_tongue
+    state.tongue_length = Geometry.distance(start_of_tongue, state.anchor_point)
     state.tongue_length = state.tongue_length.greater(100)
   end
 
@@ -546,14 +546,14 @@ class CleptoFrog
   end
 
   def save
-    $gtk.write_file("data/mugs.txt", "")
+    GTK.write_file("data/mugs.txt", "")
     state.mugs.each do |o|
-      $gtk.append_file "data/mugs.txt", "#{o.x},#{o.y},#{o.w},#{o.h}\n"
+      GTK.append_file "data/mugs.txt", "#{o.x},#{o.y},#{o.w},#{o.h}\n"
     end
 
-    $gtk.write_file("data/walls.txt", "")
+    GTK.write_file("data/walls.txt", "")
     state.walls.map do |o|
-      $gtk.append_file "data/walls.txt", "#{o.x},#{o.y},#{o.w},#{o.h}\n"
+      GTK.append_file "data/walls.txt", "#{o.x},#{o.y},#{o.w},#{o.h}\n"
     end
   end
 
@@ -562,7 +562,7 @@ class CleptoFrog
     state.walls = []
     state.mugs = []
 
-    contents = $gtk.read_file "data/mugs.txt"
+    contents = GTK.read_file "data/mugs.txt"
     if contents
       contents.each_line do |l|
         x, y, w, h = l.split(',').map(&:to_i)
@@ -574,7 +574,7 @@ class CleptoFrog
       end
     end
 
-    contents = $gtk.read_file "data/walls.txt"
+    contents = GTK.read_file "data/walls.txt"
     if contents
       contents.each_line do |l|
         x, y, w, h = l.split(',').map(&:to_i)
@@ -599,4 +599,4 @@ def tick args
   $game.tick
 end
 
-# $gtk.reset
+# GTK.reset

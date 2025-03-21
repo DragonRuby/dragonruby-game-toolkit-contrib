@@ -35,7 +35,7 @@ class PulseButton
     # calculate the percentage of the pulse animation that has completed
     # and use the percentage to compute the size and position of the button
     perc = if @clicked_at
-             easing.ease_spline @clicked_at, @tick_count, @duration, @pulse_animation_spline
+             Easing.spline @clicked_at, @tick_count, @duration, @pulse_animation_spline
            else
              0
            end
@@ -59,7 +59,7 @@ class Game
   def initialize args
     self.args = args
     @pulse_button ||= PulseButton.new({ x: 640 - 100, y: 360 - 50, w: 200, h: 100 }, 'Click Me!') do
-      $gtk.notify! "Animation complete and block invoked!"
+      GTK.notify! "Animation complete and block invoked!"
     end
   end
 

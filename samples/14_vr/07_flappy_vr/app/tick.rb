@@ -472,4 +472,4 @@ def tick_game args
   $flappy_dragon.tick
 end
 
-$gtk.reset
+GTK.reset

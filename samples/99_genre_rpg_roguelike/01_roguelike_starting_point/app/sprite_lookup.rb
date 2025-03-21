@@ -68,7 +68,7 @@ def sprite_lookup
 end
 
 def sprite key
-  $gtk.args.state.reserved.sprite_lookup[key]
+  GTK.args.state.reserved.sprite_lookup[key]
 end
 
 def member_name_as_code raw_member_name
@@ -121,4 +121,4 @@ def tile_extended x, y, w, h, r, g, b, a, tile_row_column_or_key
   }
 end
 
-$gtk.args.state.reserved.sprite_lookup = sprite_lookup
+GTK.args.state.reserved.sprite_lookup = sprite_lookup

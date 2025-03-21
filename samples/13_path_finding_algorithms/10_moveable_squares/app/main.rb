@@ -61,7 +61,7 @@ class Game
   def render
     outputs.primitives << { x: 30, y: 30.from_top, text: "+/- to increase decrease movement radius." }
     outputs.primitives << { x: 30, y: 60.from_top, text: "click to add/remove wall." }
-    outputs.primitives << { x: 30, y: 90.from_top, text: "FPS: #{$gtk.current_framerate.to_sf}" }
+    outputs.primitives << { x: 30, y: 90.from_top, text: "FPS: #{GTK.current_framerate.to_sf}" }
     if Kernel.tick_count <= 1
       outputs[:world_grid].w = 1280
       outputs[:world_grid].h = 720
@@ -216,4 +216,4 @@ def tick args
   $game.tick
 end
 
-$gtk.reset
+GTK.reset

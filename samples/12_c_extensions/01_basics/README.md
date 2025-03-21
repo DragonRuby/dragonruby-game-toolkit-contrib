@@ -187,7 +187,7 @@ On Android:
 Now, include the following snippet into the very beginning of `mygame/app/main.rb`:
 
 ```
-$gtk.ffi_misc.gtk_dlopen("ext")
+GTK.ffi_misc.gtk_dlopen("ext")
 include FFI::CExt
 puts square(11)
 ```
@@ -197,7 +197,7 @@ the console.
 
 Let's do a breakdown of each line!
 
-1. `$gtk.ffi_misc.gtk_dlopen("ext")` - DragonRuby exposes a special function
+1. `GTK.ffi_misc.gtk_dlopen("ext")` - DragonRuby exposes a special function
     called `gtk_dlopen`, you can use it to load a dynamic that holds
     the C extension code. It looks for the shared library in
     "mygame/native/$PLATFORM/ext.$PLATFORM_DLL_EXTENSION"
@@ -211,7 +211,7 @@ Now, you can call the `square` function at any place in the code. Let's see
 what's the square value of every pixel on the screen. Here is the full program:
 
 ```
-$gtk.ffi_misc.gtk_dlopen("ext")
+GTK.ffi_misc.gtk_dlopen("ext")
 include FFI::CExt
 
 def tick args

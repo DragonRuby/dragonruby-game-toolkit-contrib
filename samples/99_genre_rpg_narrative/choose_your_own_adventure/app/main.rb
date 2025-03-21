@@ -45,7 +45,7 @@ def tick args
   end
 
   if Kernel.tick_count.mod_zero? 60 # update every 60 frames
-    t = args.gtk.ffi_file.mtime GAME_FILE # mtime returns modification time for named file
+    t = GTK.ffi_file.mtime GAME_FILE # mtime returns modification time for named file
     if t != args.state.mtime
       args.state.mtime = t
       require GAME_FILE # require used to load file
@@ -129,4 +129,4 @@ def current_decision args
 end
 
 # Resets the game.
-$gtk.reset
+GTK.reset

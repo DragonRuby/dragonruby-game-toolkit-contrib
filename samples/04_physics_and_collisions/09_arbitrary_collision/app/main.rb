@@ -82,7 +82,7 @@ def render args
   bgClr = {r:10, g:10, b:200}
   bgClr = {r:255-30, g:255-30, b:255-30}
 
-  args.outputs.solids << [0, 0, $args.grid.right, $args.grid.top, bgClr[:r], bgClr[:g], bgClr[:b]];
+  args.outputs.solids << [0, 0, Grid.right, Grid.top, bgClr[:r], bgClr[:g], bgClr[:b]];
   args.outputs.borders << args.state.game_area
 
   render_instructions args
@@ -92,20 +92,20 @@ def render args
 
   #args.state.rectangle.draw args
 
-  args.outputs.sprites << [$args.grid.right-(args.state.board_width + args.grid.w / 8), 0, $args.grid.right, $args.grid.top, "sprites/square-white-2.png", 0, 255, bgClr[:r], bgClr[:g], bgClr[:b]]
-  args.outputs.sprites << [0, 0, (args.state.board_width + args.grid.w / 8), $args.grid.top, "sprites/square-white-2.png", 0, 255, bgClr[:r], bgClr[:g], bgClr[:b]]
+  args.outputs.sprites << [Grid.right-(args.state.board_width + Grid.w / 8), 0, Grid.right, Grid.top, "sprites/square-white-2.png", 0, 255, bgClr[:r], bgClr[:g], bgClr[:b]]
+  args.outputs.sprites << [0, 0, (args.state.board_width + Grid.w / 8), Grid.top, "sprites/square-white-2.png", 0, 255, bgClr[:r], bgClr[:g], bgClr[:b]]
 
 end
 
 begin :render_methods
   def render_instructions args
     #gtk.current_framerate
-    args.outputs.labels << [20, $args.grid.top-20, "FPS: " + $gtk.current_framerate.to_s]
+    args.outputs.labels << [20, Grid.top-20, "FPS: " + GTK.current_framerate.to_s]
     if (args.state.balls != nil && args.state.balls[0] != nil)
         bx =  args.state.balls[0].velocity.x
         by =  args.state.balls[0].velocity.y
         bmg = (bx**2.0 + by**2.0)**0.5
-        args.outputs.labels << [20, $args.grid.top-20-20, "V: " + bmg.to_s ]
+        args.outputs.labels << [20, Grid.top-20-20, "V: " + bmg.to_s ]
     end
 
 

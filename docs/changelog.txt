@@ -1,3 +1,90 @@
+* 6.22
+** [Pro] [Bugfix] ~Grid.allscreen_*~ properties return correct values for ~game_metadata.hd_maxscale=100-400~ plus ~game_metadata.hd_letterbox=false~.
+** [Bugfix] ~args.inputs.mouse.(held|down|up)~ forwards to ~args.inputs.mouse.key_(held|down|up).left~.
+** [Support] Added ~Geometry.vec2_(add|sub|subtract_scale)~.
+** [Support] Added ~GTK.set_window_size~, ~GTK.set_window_position~.
+   Docs have been updated with warnings about which window functions are okay to
+   use in production vs those that should only be used for development/debugging purposes.
+** [Samples] Added sample app that shows ball bouncing physics against static circular pegs.
+   Sample app location: =samples/04_physics_and_collisions/08_ball_and_peg_bouncing=
+** [Samples] Added sample app that shows how to create a camera that supports ultrawide displays (all screen mode)
+   Sample app location: =samples/07_advanced_rendering_hd/05_camera_ultrawide_allscreen=
+* 6.21
+** [Bugfix] String#split handles correctly handles empty entries between delimiters.
+* 6.20
+** [Pro] [Bugfix] [iOS] Fixed path resolutions of staging directory within iOS Wizard.
+   Regression was introduced in 6.13.
+** [Pro] [Support] Added ~Grid.native_scale~, ~Grid.render_scale~, and ~Grid.texture_scale~ to help with HD render debugging.
+** [Pro] [Support] Added support for HD rendering for 3K, 4.5K, and 6K displays.
+** [Pro] [Bugfix] Ensure pixel perfect rendering at all window sizes if ~hd_max_scale~ is set to a value other than ~0~.
+* 6.19
+** [Bugfix] Fixed in-game web server failing to start in dev mode.
+** [Bugfix] Fixed segfault that could occur if GTK.reboot is invoked with Tweetcarts.
+* 6.18
+** [mRuby] mRuby recompiled with -DMRB_UTF8_STRING=1 reverted.
+* 6.17
+** [Support] The Standard license can load C Extensions in development mode!
+   All license tiers can load C Extensions in dev mode. The Standard license does not include
+   the dependencies required to create C Extensions however.
+
+   During the publishing process, any C Extension directories will be
+   ignored during packaging and an exception will be thrown if
+   ~dlopen~ is called in Production (for Standard license only).
+
+   This gives Standard license users the ability to load/try out C Extensions in development mode.
+
+   An Indie or Pro license is required to compile C Extensions/publish games that have C Extensions.
+** [mRuby] mRuby recompiled with -DMRB_UTF8_STRING=1.
+** [Bugfix] GTK.reboot will not segfault if there is an http request in-flight during the reboot process.
+* 6.16
+** [Pro] [Support] Added ~GTK.get_dlopen_path~ which returns the search path for C Extensions.
+** [mRuby] [Bugfix] String#split results in cstrings with incorrect null termination.
+   The mRuby String#split has been reimplemented to fix this issue.
+** [Support] Added ~GTK.getenv~, ~GTK.setenv~ which can be used to retrieve and update environment variables.
+** [Support] ~Geometry::rect_center_point~ takes ~anchor_(x|y)~ into consideration.
+* 6.15
+** [Bugfix] Web builds render correctly regardless of the browser's zoom level.
+* 6.14
+** [Bugfix] Layout.rect returns correct values with ~Grid.origin_center!~.
+** [Support] Fixed numeric ~1~ glpyh in lowrez.ttf.
+** [Samples] Added simplified ramp collision sample app.
+   Sample app location: =samples/04_physics_and_collisions/12_ramp_collision_simple=
+** [Samples] Simplified Nokia Jam sample app.
+   Sample app location: =samples/99_genre_lowrez/nokia_3310=
+** [Samples] Added Nokia Jam sample app snake reference implementation.
+   Sample app location: =samples/99_genre_lowrez/nokia_3310_snake=
+* 6.13
+** [Pro] [Bugfix] [iOS] Do not reset the mouse position if VoiceOver is enabled.
+** [Pro] [iOS] Improved path resolution of game when running iOS Wizard.
+** [Samples] Added sample app that shows advanced scene management.
+   Sample app location: =samples/02_input_basics/07_managing_scenes_advanced=
+** [Samples] Added Tower of Hanoi sample app that shows advanced lerping techniques.
+   Sample app location: =samples/08_tweening_lerping_easing_functions/09_tower_of_hanoi=
+** [Support] Splash screen for html games removed (game automatically starts if able).
+   For browsers other than Chrome, the html game still needs to be served up outside of an iFrame.
+   The link that redirects the user to the game will open within the same window as opposed to a new
+   one (href's target attribute is set to "_top" instead of "_blank").
+** [Support] On Windows the game will start with focus instead of the terminal window during development mode.
+* 6.12
+** [Bugfix] Console correctly displays if the Grid's origin is center instead of bottom left.
+** [Bugfix] Corrected render locations within render targets for ~Grid.origin_center!~.
+** [Support] Better pop-out handling for html builds if Safari or mobile web is used.
+** [Support] DR will warn you if you attempt to load audio that has an invalid sample rate.
+** [Support] Increased analog stick deadzone from 3200 to 3600.
+   You can lower this via ~args.inputs.controller_(one|two|three|four).analog_dead_zone=~. Steam Deck
+   analog sticks are finicky so test thoroughly if you plan on lowering this value.
+* 6.11
+** [Bugfix] Fixed issue related to high CPU usage. Regression was introduced in 5.36.
+* 6.10
+** [Support] Added ~args.inputs.keyboard.key_repeat.KEY~.
+   Key repeat frequency is based off of OS's keyboard configuration.
+* 6.9
+** [Bugfix] For HTML builds, popout game into a new window if game is in nested iFrames.
+   Itch.io's Game Jam Submission Randomizer nests iFrames which breaks COOP/COEP. If this is
+   detected then a link will be presented that will pop the game out into a new window.
+** [Support] Increased security for ~$gtk.deserialize_state~, ~$gtk.load_state~.
+   Before state data is deserialized via ~eval~, the data is inspected to ensure that
+   it does not contain executable Ruby code outside of a Hash definition.
 * 6.8
 ** [Samples] [Pro] [C Extensions] Added sample app that shows how to create background threads with atomic read/write of variables.
 ** [Support] Added Zlib ~compress~, ~uncompress~ APIs.

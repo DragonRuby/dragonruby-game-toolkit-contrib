@@ -7,13 +7,13 @@ def try_assert_or_schedule args, assert
     end
     log_info ":try_assert_or_schedule succeeded!"
   else
-    args.gtk.schedule_callback Kernel.tick_count + 10 do
+    GTK.schedule_callback Kernel.tick_count + 10 do
       try_assert_or_schedule args, assert
     end
   end
 end
 
 def test_http args, assert
-  $result = $gtk.http_get 'http://dragonruby.org'
+  $result = GTK.http_get 'http://dragonruby.org'
   try_assert_or_schedule args, assert
 end

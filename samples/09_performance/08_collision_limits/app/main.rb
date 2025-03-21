@@ -20,7 +20,7 @@
 # which has dimensions of 1280 by 720, and also detects collisions between objects called "bodies".
 
 def body_count num
-  $gtk.args.state.other_bodies = num.map { [1280 * rand, 720 * rand, 10, 10] } # other_bodies set using num collection
+  GTK.args.state.other_bodies = num.map { [1280 * rand, 720 * rand, 10, 10] } # other_bodies set using num collection
 end
 
 def tick args
@@ -57,7 +57,7 @@ def tick args
                      b: 0 } # center body is red solid
   args.sprites  << args.state.other_bodies # other bodies are output as (black) solids, as well
 
-  args.labels  << [10, 30, args.gtk.current_framerate.to_sf] # outputs frame rate in bottom left corner
+  args.labels  << [10, 30, GTK.current_framerate.to_sf] # outputs frame rate in bottom left corner
 
   # Bodies are returned to bottom left corner if positions exceed scope of screen
   args.state.other_bodies.each do |b| # for each body in the other_bodies collection
@@ -69,4 +69,4 @@ def tick args
 end
 
 # Resets the game.
-$gtk.reset
+GTK.reset

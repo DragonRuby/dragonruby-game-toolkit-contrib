@@ -1,4 +1,4 @@
-# Layout (`args.layout`)
+# Layout
 
 Layout provides apis for placing primitives on a virtual grid that's
 within the "safe area" accross all platforms. This virtual grid is
@@ -114,3 +114,19 @@ Alias for `Grid.portrait?`.
 ## `landscape?`
 
 Alias for `Grid.landscape?`.
+
+## `row_count`
+
+Gives the number of rows in the Layout grid. In landscape mode the value is set to `12` In portrait mode the value is set to `24`.
+
+## `row_max_index`
+
+Returns the maximum row count index.
+
+## `col_count`
+
+Gives the number of columns in the Layout grid. In landscape mode the value is set to `24` In portrait mode the value is set to `12`.
+
+## `col_max_index`
+
+Returns the maximum column count index.

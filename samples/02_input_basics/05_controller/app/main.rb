@@ -130,7 +130,7 @@ end
 
 # Resets the app.
 def r
-  $gtk.reset
+  GTK.reset
 end
 
 def tick_instructions args, text, y = 715
