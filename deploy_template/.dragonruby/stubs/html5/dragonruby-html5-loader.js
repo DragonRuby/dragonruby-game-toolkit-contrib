@@ -542,73 +542,25 @@ var Module = {
     startGame();  // go go go!
   },
   startClickToPlay: function() {
-    var base64 = base64Encode(FS.readFile(GDragonRubyIcon, {}));
-    var div = document.createElement('div');
-    var leftPx = ((window.innerWidth - 640) / 2);
-    var leftPerc = Math.floor((leftPx / window.innerWidth) * 100);
-    div.id = 'clicktoplaydiv';
-    div.style.width = '50%';
-    div.style.height = '50%';
-    div.style.backgroundColor = 'rgb(40, 44, 52)';
-    div.style.position = 'absolute';
-    div.style.top = '50%';
-    div.style.left = '50%';
-    div.style.transform = 'translate(-50%, -50%)';
+    const iconBase64 = base64Encode(FS.readFile(GDragonRubyIcon, {}));
+    const iconDataUrl = 'data:image/png;base64,' + iconBase64;
 
-    var img = new Image();
-    img.onload = function() {  // once we know its size, scale it, keeping aspect ratio.
-      var pct = 30;
-      var w = img.naturalWidth;
-      var h = img.naturalHeight;
-      if (!w || !h || (w == h)) {
-        img.style.width = '' + pct + '%';
-        img.style.height = '' + pct + '%';
-      } else if (w > h) {
-        img.style.width = '' + pct + '%';
-      } else {
-        img.style.height = '' + pct + '%';
-      }
-      img.style.display = 'block';
-    }
+    const splashscreenHtmlPath = '/metadata/html5-splashscreen.html';
+    const decoder = new TextDecoder('utf-8');
 
-    img.style.display = 'none';
-    img.style.width = 'auto';
-    img.style.height = 'auto';
-    img.style.margin = 0;
-    img.style.position = 'absolute';
-    img.style.top = '50%';
-    img.style.left = '50%';
-    img.style.transform = 'translate(-50%, -50%)';
-    img.src = 'data:image/png;base64,' + base64;
-    div.appendChild(img);
+    let splashscreenHtml = decoder.decode(FS.readFile(splashscreenHtmlPath, {}));
 
+    splashscreenHtml = splashscreenHtml.replace('{{ICON_URL}}', iconDataUrl);
+    splashscreenHtml = splashscreenHtml.replace('{{GAME_TITLE}}', GDragonRubyGameTitle);
+    splashscreenHtml = splashscreenHtml.replace('{{GAME_VERSION}}', GDragonRubyGameVersion);
+    splashscreenHtml = splashscreenHtml.replace('{{DEV_TITLE}}', GDragonRubyDevTitle);
 
-    var p;
+    const splashscreen = document.createElement('div');
+    splashscreen.innerHTML = splashscreenHtml;
+    splashscreen.id = 'clicktoplaydiv';
+    splashscreen.addEventListener('click', Module.clickToPlayListener);
 
-    p = document.createElement('h1');
-    p.textContent = GDragonRubyGameTitle + " " + GDragonRubyGameVersion + " by " + GDragonRubyDevTitle;
-    p.style.textAlign = 'center';
-    p.style.color = '#FFFFFF';
-    p.style.width = '100%';
-    p.style.position = 'absolute';
-    p.style.top = '10%';
-    p.style['font-family'] = "monospace";
-    div.appendChild(p);
- 
-    p = document.createElement('p');
-    p.innerHTML = 'Click or tap here to begin.';
-    p.style['font-family'] = "monospace";
-    p.style['font-size'] = "20px";
-    p.style.textAlign = 'center';
-    p.style.backgroundColor = 'rgb(40, 44, 52)';
-    p.style.color = '#FFFFFF';
-    p.style.width = '100%';
-    p.style.position = 'absolute';
-    p.style.top = '75%';
-    div.appendChild(p);
-
-    document.body.appendChild(div);
-    div.addEventListener('click', Module.clickToPlayListener);
+    document.body.appendChild(splashscreen);
     window.gtk.play = Module.clickToPlayListener;
   },
   preRun: function() {
