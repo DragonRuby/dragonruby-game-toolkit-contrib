@@ -258,9 +258,7 @@ def render args
 
     # Which map cell the ray is currently in.
     map_x = player.x.to_i
-    # map_x += 1 if step_x.positive?
     map_y = player.y.to_i
-    # map_y += 1 if step_y.negative?
 
     # Distance to go from one x or y grid line to the next. These will be used to step to the next map edge.
     delta_dist_x = (ray_dir_x == 0) ? Float::INFINITY : (1 / ray_dir_x).abs
