@@ -22,7 +22,7 @@ def tick args
   update_player args
   update_missiles args
   update_enemies args
-  render(args)
+  render args
 
   w = args.state.camera[:screen_width]
   h = args.state.camera[:screen_height]
@@ -321,17 +321,18 @@ def render args
       texture_x = 63 - texture_x
     end
 
+    # Tint the wall strip - the further away it is, the darker, following an inverse square law.
+    euclidean_distance = (ray_dir_x**2 + ray_dir_y**2)**0.5 * camera_distance
+    # Store the game world distance for a wall hit at this angle for sprite ordering later.
+    depths << euclidean_distance
+
     next if !hit
 
     # Determine the render height for the strip proportional to the display height
     line_height = (screen_height / camera_distance)
     line_offset = ((screen_height - line_height) / 2.0)
 
-    # Tint the wall strip - the further away it is, the darker, following an inverse square law.
-    euclidean_distance = (ray_dir_x**2 + ray_dir_y**2)**0.5 * camera_distance
-    # Store the game world distance for a wall hit at this angle for sprite ordering later.
-    depths << euclidean_distance
-
+    # Light falls off in an inverse square law.
     tint = 1.0 - (euclidean_distance / light_length)**2
 
     sprites_to_draw << {
@@ -374,10 +375,12 @@ def render args
     rotated_delta_x = thing_delta_y * player_dir_x + thing_delta_x * player_dir_y
     # This is the euclidean distance to thing when thing's in front of us but it is negative when things's behind us.
     distance_to_thing = thing_delta_x * player_dir_x - thing_delta_y * player_dir_y
-    next unless distance_to_thing.positive?
+
+    next unless distance_to_thing.positive? # Don't draw things that are behind the player.
+    next if distance_to_thing == 0 # Avoid invalid Infinity/NaN calculations if the projected Y is 0.
+    next if distance_to_thing.ceil >= max_draw_distance # Don't draw things that are out of range.
 
     # The next 4 lines determine the screen x and y of (the center of) the entity, and a scale
-    next if distance_to_thing == 0 # Avoid invalid Infinity/NaN calculations if the projected Y is 0
     scale_y = screen_height / distance_to_thing
     scale_x = screen_width / (2 * distance_to_thing * camera_scale)
     screen_x = screen_width * rotated_delta_x / (2 * distance_to_thing * camera_scale) + screen_width / 2.0
@@ -386,9 +389,11 @@ def render args
 
     # Now we know the x and y on-screen for the entity, and its scale, we can draw it. Simply drawing the sprite on the
     # screen doesn't work in a raycast view because the entity might be partly obscured by a wall. Instead we draw the
-    # entity in vertical strips, skipping strips if a wall is closer to the player on that strip of the screen. To do
-    # this perfectly, you'd have to align the vertical strips with the raycast rays. This approach is a good
-    # approximation
+    # entity in vertical strips, skipping strips if a wall is closer to the player on that strip of the screen.
+    #
+    # To do this perfectly, you'd have to align the vertical strips with the raycast rays. This approach is a good
+    # approximation, but it's possible for the sprites to clip a couple pixels in front of a wall or to leave a couple
+    # pixels gap between the sprite and the wall.
 
     # Since dx stores the center x of the enemy on-screen, we start half the scale of the enemy to the left of dx
     x = screen_x - scale_x / 2
