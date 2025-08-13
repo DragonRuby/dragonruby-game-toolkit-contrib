@@ -276,7 +276,8 @@ def render args
                     (map_y + 1 - player.y) * delta_dist_y
                   end
 
-    # DDA: find the first wall hit by stepping through the map along the ray.
+    # Use DDA to find the first wall hit by stepping through the map along the ray.
+    # See https://en.wikipedia.org/wiki/Digital_differential_analyzer_(graphics_algorithm)
     hit = false
     hit_side = nil
     wall_texture = nil
