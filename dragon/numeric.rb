@@ -850,17 +850,34 @@ class Numeric
     when Float
       Kernel.rand * arg
     when Range
-      if arg.min > arg.max
-        nil
-      elsif arg.min.is_a?(Float) || arg.max.is_a?(Float)
-        min = arg.min
-        max = arg.max
+      if arg.begin.is_a?(Float) || arg.end.is_a?(Float)
+        min = arg.begin.to_f
+        max = arg.end.to_f
+
+        if arg.exclude_end?
+          # Find the previous representable float
+          ulp = if max == 0.0
+            Float::EPSILON
+          else
+            _, exp = Math.frexp(max.abs)
+            Math.ldexp(1.0, exp - Float::MANT_DIG)
+          end
+          max -= ulp
+          # Floating point equality comparison
+          return if (min - max).abs < Float::EPSILON * [min.abs, max.abs, 1.0].max
+        end
+
+        return if min > max
+
         Kernel.rand * (max - min) + min
       else
-        min = arg.min
-        max = arg.max + 1
-        diff = max - min
-        Kernel.rand(diff) + min
+        min = arg.begin
+        max = arg.end
+        max -= 1 if arg.exclude_end?
+        return if min > max
+
+        # Add 1 since Kernel#rand is exclusive
+        Kernel.rand(max - min + 1) + min
       end
     else
       raise <<-S
