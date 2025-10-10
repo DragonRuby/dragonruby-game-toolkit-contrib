@@ -244,6 +244,14 @@ def tick args
 end
 ```
 
+### `angle_vec`
+
+Given an angle in degrees, a `Hash` will be returned with `x`, `y` representing the vector components of the angle.
+
+### `angle_vec_r`
+
+Given an angle in radians, a `Hash` will be returned with `x`, `y` representing the vector components of the angle.
+
 ### `distance`
 
 Returns the distance between two points;
@@ -351,7 +359,7 @@ Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y
 
 Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`), this function will return a `Hash` with `x` and `y` keys that represents the normal of the vector.
 
-### `ve2_add`
+### `vec2_add`
 
 Given two `Hashes` with `x` and `y` keys (or an `Objects` that responds to `x` and `y`), this function will return a `Hash` with `x` and `y` keys that represents the sum of the two vectors.
 
@@ -362,6 +370,10 @@ Given two `Hashes` with `x` and `y` keys (or an `Objects` that responds to `x` a
 ### `vec2_scale`
 
 Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`) and a `Numeric` value, this function will return a `Hash` with `x` and `y` keys with each component of the vector multiplied by the scalar value.
+
+### `vec2_angle`
+
+Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y`) this function returns the angle in degrees (`0` to `359.9s`). If you want an angle in radius, use `Math.atan2(x, y)`.
 
 ## Collision Functions
 
@@ -767,7 +779,6 @@ def tick args
 end
 ```
 
-
 ### `find_intersect_rect`
 
 Given a rect and a collection of rects, `find_intersect_rect` returns the **first rect** that intersects with the the first parameter.
@@ -808,6 +819,45 @@ collisions = args.geometry.find_all_intersect_rect args.state.player, args.state
 
 ?> Function returns an empty `Array` if either parameter is `nil` (`nil` values within the collection are skipped).
 
+An optional named parameter called `using` can be included to tell the function what value contains rect information.
+
+Example:
+
+```ruby
+def tick args
+  player = {
+    name: "Hero",
+    hp: 10,
+    hitbox: {
+      x: 0, y: 0, w: 100, h: 100
+    }
+  }
+
+  enemies = [
+    {
+      name: "Enemy 1",
+      hp: 10,
+      hitbox: {
+        x: 0, y: 0, w: 100, h: 100
+      }
+    },
+    {
+      name: "Enemy 1",
+      hp: 10,
+      hitbox: {
+        x: 200, y: 200, w: 100, h: 100
+      }
+    }
+  ]
+
+  first_enemy = Geometry.find_intersect_rect(player, enemies, using: :hitbox)
+  # OR
+  first_enemy = Geometry.find_intersect_rect(player, enemies, using: ->(o) { o.hitbox })
+
+  puts first_enemy
+end
+```
+
 ### `circle_intersect_line?`
 
 The first parameters is a `Hash` with `x`, `y`, and `radius` keys (or an `Object` that responds to `x`, `y`, and `radius`).
@@ -820,11 +870,38 @@ Note: Take a look at this sample app for a non-trivial example of how to use thi
 
 ### `point_on_line?`
 
-The first parameter is a point (a `Hash` with `x` and `y` keys, or an `Object` that responds to `x` and `y`).
+The first parameter is a `point` (a `Hash` with `x` and `y` keys, or an `Object` that responds to `x` and `y`).
 
-The second parameter is a line (a `Hash` with `x`, `y`, `x2`, and `y2` keys, or an `Object` that responds to `x`, `y`, `x2`, and `y2`).
+The second parameter is a `line` (a `Hash` with `x`, `y`, `x2`, and `y2` keys, or an `Object` that responds to `x`, `y`, `x2`, and `y2`).
+
+The third parameter is optional and is a `Numeric` value representing the `tolerance` (defaulted to `0.1`).
 
 This function will return `true` if the point is on the line, and `false` if it is not.
+
+```ruby
+def tick args
+  args.state.test_line ||= { x: 0, y: 0, x2: 320, y2: 320 }
+  args.state.test_point ||= { x: 0, y: 0 }
+  args.outputs.lines << args.state.test_line
+  args.outputs.sprites << args.state.test_point.merge(path: :solid, w: 8, h: 8, anchor_x: 0.5, anchor_y: 0.5, r: 255, g: 0, b: 0)
+
+  if args.inputs.keyboard.key_down.space
+    args.state.test_point.x += 32
+
+    if args.state.test_point.x > 320
+      args.state.test_point.x = 0
+      args.state.test_point.y += 32
+    end
+
+    if args.state.test_point.y > 320
+      args.state.test_point.y = 0
+    end
+  end
+
+  args.outputs.watch args.state.test_point
+  args.outputs.watch "#{Geometry.point_on_line? args.state.test_point, args.state.test_line}"
+end
+```
 
 Note: Take a look at this sample app for a non-trivial example of how to use this function: `./samples/04_physics_and_collisions/11_bouncing_ball_with_gravity/`
 

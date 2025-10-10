@@ -1,7 +1,186 @@
+* 6.35
+** [Support] Aliased ~GTK.download_stb_rb(_raw)~ to ~GTK.download_lib(_raw)~
+** [Samples] Added toggle button sample app.
+   Sample app location: =samples/09_ui_controls/01_toggle_button=
+** [Samples] Added animated toggle switch sample app.
+   Sample app location: =samples/09_ui_controls/05_animated_toggle_switch=
+** [Samples] BASIC Gorillas sample app updated to use modern DR apis.
+   Sample app location: =samples/99_genre_platformer/gorillas_basic=
+** [Samples] Verlet physics simulation sample app updated to use modern DR apis.
+   Sample app location: =samples/04_physics_and_collisions/13_verlet_integration=
+* 6.34
+** [Samples] Added Sudoku sample app which shows how to use layout apis within a render target.
+   Sample app location: =./samples/99_genre_board_game/02_sudoku=
+** [Support] Small performance improvements to method invocation on ~Grid~ singleton.
+** [Support] Added ~Geometry::angle_vector~ to mirror ~Numeric#vector~.
+** [Support] Added ~Math::abs~ to mirror ~Numeric#abs~.
+** [Support] Test classes are automatically removed from the environment after execution.
+   This keeps them from being polluted with methods that are no longer in the test file after hot reload.
+* 6.33
+** [Pro] [Android] Native binaries (DragonRuby and SDL 2.0.20) recompiled against NDK version r28c.
+   Native libraries have been aligned to 16kb (Google Play Store compliance).
+* 6.32
+** [Pro] [Support] Updated Layout.rect apis to support layout considerations for edge to edge rendering.
+** [Samples] Added Squares arcade advanced sample app that shows multi-orientation + edge to edge rendering
+   Sample app location: =./samples/99_genre_arcade/squares_advanced_multi_orientation=
+* 6.31
+** [Samples] Added Mode 7 sample app.
+   Special thanks to mysterdip@discord for creating contributing this sample.
+   Sample app location: =samples/99_genre_3d/05_mode7=
+** [Samples] Squares arcade sample app upgraded to use modern DR apis.
+   Note: This sample app is a solid reference implementation for a non-trivial game structure.
+   Sample app location: =samples/99_genre_arcade/squares=
+** [Support] Improved recording/replay system to capture inputs live (to repro situations where a segfault occurs).
+** [Support] During dragonruby-publish, you will be warned in screaming caps if you have sprites with potentially problematic characters.
+** [Support] Disabling Controller Config Wizard in DR until we figure out how to deal with false positives.
+* 6.30
+** [Pro] [Android] [Support] Target SDK for Android bumped to API 35 (Google Play compliance). NDK dependency upgraded to r27d.
+** [Samples] Advanced Ray Caster sample app updated to remove some magic numbers
+   Special thanks to james-stocks@github for initial sample app and AlexMooney@github for further clean up.
+   Sample app location =samples/99_genre_3d/04_ray_caster_advanced=
+** [Samples] Sample app added to show how to use line achors to center a piece of text vertically
+   Sample app location =samples/01_rendering_basics/01_labels_anchors=
+** [Bugfix] Grid.allscreen_top and Grid.allscreen_right gives correct values.
+** [Support] Tests can exist under a class name that ends in Tests
+   Tests can be defined at the top level or under a class that ends in the word "Tests".
+   #+begin_src ruby
+     def test_example args, assert
+       assert.equal! 1, 1
+     end
+   #+end_src
+   Can also be written as this (to avoid polluting Object):
+   #+begin_src ruby
+     class ExampleTests
+       def test_example args, assert
+         assert.equal! 1, 1
+       end
+     end
+   #+end_src
+* 6.29
+** [Support] Setting ~args.state = {}~ within ~boot~ disables OpenEntity and Array-based primitives
+   Given ~Hash~ quack like ~attr_accessor~, the need for ~OpenEntity~
+   is significantly lessened and its improved egronomics makes
+   Array-based primitives less needed / not worth the performance overhead.
+
+   Opting into ~boot~ will prepare your game for removal of these
+   constructs in the very very far future.
+
+   Expect to see deprecation warnings over time.
+
+   Example:
+   #+begin_src ruby
+     def boot args
+       # doing this within boot will opt-into disabling OpenEntity
+       # and Array-based primitives
+       args.state = {}
+     end
+
+     def tick args
+       # this will throw an exception because player.armor hasn't been
+       # initialized to a Hash
+       args.state.player.armor.hp = 10
+
+       # this will throw an exception (convert to Hash)
+       args.outputs.sprites << [100, 100, 80, 80, "sprites/square/blue.png"]
+     end
+   #+end_src
+** [Samples] Added cooking game sample app.
+   Sample app location =samples/99_genre_crafting/cooking_game_starting_point=
+** [Samples] Camera construct within camera based sample apps has been improved.
+   Sample app locations:
+   - =samples/99_genre_platformer/map_editor=
+   - =samples/07_advanced_rendering/16_camera_space_world_space_simple=
+   - =samples/07_advanced_rendering_hd/05_camera_ultrawide_allscreen=
+** [Samples] Improved check box component sample app.
+   Sample app location: =samples/09_ui_controls/01_checkboxes=
+** [Samples] Added sample app that show particle simulation using Hooke's and Coulomb's Law
+   Sample app location: =samples/04_physics_and_collisions/14_hookes_law_coulombs_law=
+** [Support] ~args.audio~ can also be accessed via ~args.outputs.audio~.
+** [Support] ~args.audio[].path~ will be consulted if ~args.audio[].input~ is ~nil~.
+** [Support] Removed extrenous log messages for 404's within the in-game webserver.
+** [mRuby] Following patch was applied from upstream: https://github.com/mruby/mruby/commit/2d8f4fa92
+   This patch allows ~Proc~ creation within modules that are mixed-in
+   via ~prepend~.
+** [OSS] ~GTK::Runtime~ (the class that's accessed via ~$gtk~ has been open sourced).
+   Long term plan is to open source all of toolkit that's written in Ruby.
+* 6.28
+** [Samples] Fifteen Puzzle sample app cleaned up.
+   Sample app location: =samples/99_genre_board_game/01_fifteen_puzzle=
+** [Samples] "Shadows" platformer sample app cleaned up.
+   Sample app location: =samples/99_genre_platformer/shadows/app/main.rb=
+** [Support] Added ~Inputs#key_(up|held|down).(left|right|up|down)~ which inspects both ~keyboard~ and ~controller_one~.
+   Just a nice helper method if the need arises.
+   Example:
+   #+begin_src ruby
+     def tick args
+       # consults keyboard arrow keys + wasd, and controller_one's DPad and left analog
+       args.inputs.key_down.left
+     end
+   #+end_src
+** [Bugfix] Initial playtime for `args.audio[key]` is respected instead of being set to `0`.
+** [mRuby] Incorporated upstream patch for endless methods without parenthesis and heap overflow for heredocs.
+
+    commit 07c847027875a955ba64d3c84f8f456e96155b31 (HEAD)
+    Author: Yukihiro "Matz" Matsumoto <matz@ruby.or.jp>
+    Date:   Tue May 18 16:26:36 2021 +0900
+
+        parse.y: allow "command" syntax in endless method definition.
+
+        This change allows `def hello = puts "Hello"` without parentheses.
+        This syntax has been introduced since Ruby3.1.
+
+    commit c43dd75ea9e2b2f3387e40617d4f4cd86d3841dc
+    Author: Yukihiro "Matz" Matsumoto <matz@ruby.or.jp>
+    Date:   Wed Feb 3 13:04:32 2021 +0900
+
+        Avoid Heap Overflow in `heredoc_remove_indent`; fix #5316
+* 6.27
+** [Bugfix] Disallow GTK.set_window_scale values that would cause the game to be larger than the display.
+   Window size will be clamped to the display size.
+* 6.26
+** [Pro] [C Extensions] Exposed miniz string compressions functions: ~mz_compress~, ~mz_uncompress~.
+** [Samples] Added sample app that shows how you can orchestrate a cutscene (in a JRPG for example).
+   Sample app location: =samples/99_genre_jrpg/cutscenes=
+** [Samples] Added sample app that shows how to use matricies to create a rotating camera.
+   Sample app location: =samples/07_advanced_rendering/16_matrix_camera_space_with_rotation=
+** [Samples] Added sample app that shows how to use matricies to create a pinch, zoom, and pan camera.
+   Sample app location: =samples/07_advanced_rendering/16_matrix_camera_pinch_zoom_pan=
+** [Samples] Minor improvements to "cube world" sample app.
+   Sample app location: =samples/07_advanced_rendering/16_matrix_cubeworld=
+** [Support] Added class level variant for ~(Hash|Array)::all?~ and ~(Hash|Array)::any?~
+** [Support] ~Grid.origin_center~ can be supplied within the ~boot~ function.
+   If definined within ~boot~, invoking ~GTK.(reset|reboot)~ will remember the orientation used.
+** [Bugfix] ~Geometry::point_on_line?~ returns true if the point is actually on the line as opposed to just within the bounding box.
+* 6.25
+** [Bugfix] Fixed replay of input history captured via ~$recording.start~ (off by one frame errors are the worst).
+** [Bugfix] Fixed tracking speed of single touch input for mobile devices.
+** [Bugfix] ~GTK.console.*_color=~ accepts Array, or Hash.
+** [Samples] Added sample app that shows how to animate a bouncing box using ~Easing.spline~.
+   Sample app location: =samples/08_tweening_lerping_easing_functions/03_easing_using_splines_bouncing_box=
+** [Samples] Cleaned up simple collision sample app.
+   Sample app location: =samples/04_physics_and_collisions/01_simple=
+* 6.24
+** [Bugfix] [Pro] Android HTTP/POST failures fixed.
+** [Bugfix] ~Numeric.rand~ when given a Range yielding a size of zero returns ~nil~.
+** [Samples] Created sample app that shows how to use Layout extendeded parameters within a render target.
+   Sample app location: =samples/07_advanced_rendering/19_layouts_extended_parameters_in_render_target=
+** [Samples] Added sample app that shows twinstick controls using either keyboard or controller.
+   Sample app location: =samples/99_genre_arcade/twinstick_gamepad=
+** [Samples] Added sample app that shows how to create "particles" out of labels.
+   Sample app location: =samples/07_advanced_rendering/02_render_targets_label_particles=
+** [Samples] Added sample app that shows a layout for a card game with animations.
+   Sample app location: =samples/99_genre_card_game/01_board_and_card_layout=
+** [Samples] Added sample app that shows an HTTP/POST to an external endpoint.
+   Sample app location: =samples/11_http/04_http_post_external_server=
+** [Support] Added ~GTK.calcstringbox_h~ which returns the string size as a hash.
+** [Support] Added ~GTK.raise_window~ which will bring the game window to the top and make it active.
+   Method is for development/debugging purposes only and will noop in production.
+* 6.23
+** [Bugfix] Fixed regression with ~args.inputs.mouse.click=~.
 * 6.22
 ** [Pro] [Bugfix] ~Grid.allscreen_*~ properties return correct values for ~game_metadata.hd_maxscale=100-400~ plus ~game_metadata.hd_letterbox=false~.
 ** [Bugfix] ~args.inputs.mouse.(held|down|up)~ forwards to ~args.inputs.mouse.key_(held|down|up).left~.
-** [Support] Added ~Geometry.vec2_(add|sub|subtract_scale)~.
+** [Support] Added ~Geometry.vec2_(add|sub|subtract|scale)~.
 ** [Support] Added ~GTK.set_window_size~, ~GTK.set_window_position~.
    Docs have been updated with warnings about which window functions are okay to
    use in production vs those that should only be used for development/debugging purposes.

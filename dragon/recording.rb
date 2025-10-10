@@ -57,7 +57,7 @@ module GTK
       @on_recording_tick = block
     end
 
-    def start_recording seed_number = nil, rng_seed: nil, simulation_speed: nil
+    def start_recording seed_number = nil, rng_seed: nil, simulation_speed: nil, live_backup: true
       seed_number ||= rng_seed
       if !seed_number
         log <<-S
@@ -88,10 +88,15 @@ S
 
       log_info <<-S
 Recording has begun with RNG seed value set to #{seed_number}.
+#+begin_src ruby
+  GTK.start_recording rng_seed: #{seed_number},
+                      simulation_speed: #{simulation_speed || "nil"},
+                      live_backup: #{live_backup}
+#+end_src
 To stop recording use stop_recording(filename).
 The recording will stop without saving a file if a filename is nil.
 S
-      $console.set_command_extended histories: ["$recording.start #{seed_number}"],
+      $console.set_command_extended histories: ["GTK.start_recording rng_seed: #{seed_number}, simulation_speed: #{simulation_speed || "nil"}, live_backup: #{live_backup}"],
                                     command: "$recording.stop 'replay.txt'"
       @keys_to_ignore_during_recording = $console.console_toggle_keys.map { |k| k.without_ending_bang }
       @is_recording = true
@@ -99,9 +104,13 @@ S
       @seed_number = seed_number
       @runtime.simulation_speed = simulation_speed if simulation_speed
       @runtime.set_rng seed_number
+      @live_backup = live_backup
 
       @global_input_order = 1
       @input_history = []
+      if @live_backup
+        GTK.write_file "replay.temp.txt", "replay_version 2.1\nstopped_at -1\nseed #{seed_number}\nrecorded_at #{Time.now.to_s}\n"
+      end
       @runtime.notify! "Recording started. When completed, open the console to save it using $recording.stop FILE_NAME (or cancel).", 300
     end
 
@@ -159,8 +168,8 @@ S
         @input_history.each do |items|
           text << "#{items}\n"
         end
-        @runtime.write_file file_name, text
-        @runtime.write_file 'last_replay.txt', text
+        GTK.write_file file_name, text
+        GTK.write_file 'last_replay.txt', text
         log_info "The recording has been saved successfully at #{file_name}. You can use start_replay(\"#{file_name}\") to replay the recording."
       end
 
@@ -213,7 +222,7 @@ S
         return
       end
 
-      text = @runtime.read_file file_name
+      text = GTK.read_file file_name
       return false unless text
 
       replay_version = text.each_line.first.strip.gsub("replay_version ", "")
@@ -227,7 +236,8 @@ S
 
       $replay_data = {
         input_history: { },
-        stopped_at_current_tick: -1
+        stopped_at_current_tick: -1,
+        global_tick_count: Kernel.global_tick_count
       }
 
       # the replay file is a text file with the following format:
@@ -302,8 +312,8 @@ S
           value_3 = __deserialize_replay_value__ value_3
 
           # create a dictionary entry for the input
-          $replay_data[:input_history][tick_count.to_i] ||= []
-          $replay_data[:input_history][tick_count.to_i] << {
+          $replay_data[:input_history][tick_count.to_i - 1] ||= []
+          $replay_data[:input_history][tick_count.to_i - 1] << {
             id: id.to_i,
             name: name,
             value_1: value_1,
@@ -336,7 +346,7 @@ S
                                  end
 
               if scancode_value_1
-                $replay_data[:input_history][tick_count.to_i] << {
+                $replay_data[:input_history][tick_count.to_i - 1] << {
                   id: id.to_i,
                   name: scancode_name,
                   value_1: scancode_value_1,
@@ -442,7 +452,7 @@ S
     end
 
     def record_input? name, raw_key, modifier_keys
-      return false if $gtk.console.visible?
+      return false if GTK.console.visible?
       return false if @is_replaying
       return false unless @is_recording
       # do not record console activation
@@ -471,6 +481,7 @@ S
       capture_record_input_timestamps name, value_1, value_2
       return if !record_input? name, value_1, value_2
       @input_history << [name, value_1, value_2, value_count, @global_input_order, Kernel.tick_count]
+      GTK.append_file "replay.temp.txt", "#{@input_history[-1]}\n" if @live_backup
       @global_input_order += 1
     end
 
@@ -478,14 +489,16 @@ S
       capture_record_input_timestamps name, value_1, value_2
       return if !record_input? name, value_1, value_2
       @input_history << [name, value_1, value_2, value_3, 3, @global_input_order, Kernel.tick_count]
+      GTK.append_file "replay.temp.txt", "#{@input_history[-1]}\n" if @live_backup
       @global_input_order += 1
     end
 
     def stage_replay_values
       return unless @is_replaying
       return unless $replay_data
+      $replay_data[:global_tick_count] += 1 if !GTK.paused?
 
-      if ($replay_data[:stopped_at] - $replay_data[:stopped_at_current_tick]) <= 1
+      if ($replay_data[:stopped_at] != -1 && ($replay_data[:stopped_at] - $replay_data[:stopped_at_current_tick]) <= 1)
         @replay_completed_successfully = true
         log_info "Checking callback provided by ~GTK.recording.on_replay_completed_successfully(&block)~."
         if @replay_completed_successfully_block
@@ -506,12 +519,12 @@ S
       end
 
       inputs_this_tick = $replay_data[:input_history][$replay_data[:stopped_at_current_tick]]
-      if Kernel.global_tick_count.zmod?(60 * @runtime.simulation_speed)
-        calculated_tick_count = ($replay_data[:stopped_at] + @replay_started_at) - Kernel.global_tick_count
-        log_info "Replay ends in #{calculated_tick_count.idiv(60 * @runtime.simulation_speed)} second(s). (#{Kernel.global_tick_count})"
+      if $replay_data[:stopped_at] != -1 && $replay_data[:global_tick_count].zmod?(60 * @runtime.simulation_speed)
+        calculated_tick_count = ($replay_data[:stopped_at] + @replay_started_at) - $replay_data[:global_tick_count]
+        log_info "Replay ends in #{calculated_tick_count.idiv(60 * @runtime.simulation_speed)} second(s). (#{$replay_data[:global_tick_count]})"
       end
 
-      $replay_data[:stopped_at_current_tick] += 1
+      $replay_data[:stopped_at_current_tick] += 1 if !GTK.paused?
 
       return unless inputs_this_tick
 

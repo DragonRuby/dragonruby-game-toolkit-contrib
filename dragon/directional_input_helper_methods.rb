@@ -5,6 +5,8 @@
 
 module GTK
   # This is a module that contains normalization of behavior related to `up`|`down`|`left`|`right` on keyboards and controllers.
+  # NOTE: module is no longer used in Keyboard or Controller
+  #       this is kept around for backwards compatibility
   module DirectionalInputHelperMethods
     def self.included klass
       key_state_methods = [:key_held, :key_down]
@@ -29,35 +31,30 @@ S
       end
     end
 
-    # Returns a signal indicating left (`-1`), right (`1`), or neither ('0').
-    #
-    # @return [Integer]
     def left_right
-      return -1 if self.left
-      return  1 if self.right
-      return  0
+      directional_vector&.x&.sign || 0
     end
 
-    # Returns a signal indicating up (`1`), down (`-1`), or neither ('0').
-    #
-    # @return [Integer]
     def up_down
-      return  1 if self.up
-      return -1 if self.down
-      return  0
+      directional_vector&.y&.sign || 0
     end
 
-    # Returns a normal vector (in the form of a Hash with x, y keys). If no directionals are held/down, the function returns nil.
-    #
-    # The possible results are:
-    #
-    # - ~nil~ which denotes that no directional input exists.
-    # - ~[   0,    1]~ which denotes that only up is being held/pressed.
-    # - ~[   0,   -1]~ which denotes that only down is being held/pressed.
-    # - ~[-0.707,  0.707]~ which denotes that right and up are being pressed/held.
-    # - ~[-0.707, -0.707]~ which denotes that left and down are being pressed/held.
     def directional_vector
-      lr, ud = self.left_right, self.up_down
+      lr = if self.left
+             -1
+           elsif self.right
+             1
+           else
+             0
+           end
+
+      ud = if self.up
+             1
+           elsif self.down
+             -1
+           else
+             0
+           end
 
       if lr == 0 && ud == 0
         return nil

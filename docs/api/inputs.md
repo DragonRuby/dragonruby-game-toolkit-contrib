@@ -267,6 +267,49 @@ Returns `true` if the specific button was released. `args.inputs.mouse.key_up.BU
 ?> For a full demonstration of all mouse button states, refer to the
 sample app located at `./samples/02_input_basics/02_mouse_properties`
 
+### `buttons`
+
+`args.inputs.mouse.buttons` provides additional mouse properties,
+specifically for determining if a specific button is held and dragging
+vs just being clicked.
+
+Properites for `args.inputs.mouse.buttons` are:
+- `left`
+- `middle`
+- `right`
+- `x1`
+- `x2`
+
+Example:
+
+```ruby
+def tick args
+  if args.inputs.mouse.buttons.left.buffered_click
+    GTK.notify "buffered_click occurred #{args.inputs.mouse.buttons.left.id}"
+  end
+  
+  if args.inputs.mouse.buttons.left.buffered_held
+    GTK.notify "buffered_held occurred"
+  end
+end
+```
+
+Button properties:
+
+- `id`: returns `:left`, `:middle`, `:right`, `:x1`, `:x2`
+- `index`: returns `0`, `1`, `2`, `3`, `4`
+- `click`: Returns a truthy value for if button was clicked/down.
+- `click_at`: Returns `Kernel.tick_count` that button was clicked/down.
+- `global_click_at`: Returns `Kernel.global_tick_count` that button was clicked/down.
+- `up`: Returns a truthy value for if button was up/released.
+- `up_at`: Returns `Kernel.tick_count` that button was up/released.
+- `global_up_at`: Returns `Kernel.global_tick_count` that button was up/released.
+- `held`: Returns a truthy value for if button was held.
+- `held_at`: Returns `Kernel.tick_count` that button was held.
+- `global_held_at`: Returns `Kernel.global_tick_count` that button was held.
+- `buffered_click`: Returns `true` if button has been exclusively determined to be a click (and won't be considered held).
+- `buffered_held`: Returns `true` if button has been exclusively determined to be hed (and won't be considered clicked).
+
 ## Touch
 
 The following touch apis are available on touch devices (iOS, Android, Mobile Web, Surface).
@@ -392,6 +435,11 @@ the minimum threshold for the analog stick to be considered
 active. The `threshold_raw` is a number between 0 and 32,767, and the
 `threshold_perc` is a number between 0 and 1.
 
+### `(left|right)_analog_angle`
+
+Returns the angle of the analog in degrees for each analog stick. You
+can call `.to_radius` on the return value to get the angle in radians.
+
 ### `analog_dead_zone`
 
 The default value for this property is `3600`. You can set this to a
@@ -431,6 +479,36 @@ args.inputs.controller_one.key_held?(:enter)
 # key down or held
 args.inputs.controller_one.enter
 args.inputs.controller_one.key_down_or_held?(:enter)
+```
+
+## Keyboard or Controller On (`args.inputs.key_(down|up|held)`)
+
+Represents directional input that is shared between keyboard and
+controller. Useful for supporting directional input that can come from
+keyboard or controller.
+
+Shared keys:
+- `left`
+- `right`
+- `up`
+- `down`
+
+Demonstration:
+```ruby
+def tick args
+  args.outputs.watch "args.inputs.left                         #{args.inputs.left}"
+  args.outputs.watch "args.inputs.keyboard.left                #{args.inputs.keyboard.left}"
+  args.outputs.watch "args.inputs.controller_one.left          #{args.inputs.controller_one.left}"
+  args.outputs.watch "args.inputs.key_down.left                #{args.inputs.key_down.left}"
+  args.outputs.watch "args.inputs.keyboard.key_down.left       #{args.inputs.keyboard.key_down.left}"
+  args.outputs.watch "args.inputs.controller_one.key_down.left #{args.inputs.controller_one.key_down.left}"
+  args.outputs.watch "args.inputs.key_held.left                #{args.inputs.key_held.left}"
+  args.outputs.watch "args.inputs.keyboard.key_held.left       #{args.inputs.keyboard.key_held.left}"
+  args.outputs.watch "args.inputs.controller_one.key_held.left #{args.inputs.controller_one.key_held.left}"
+  args.outputs.watch "args.inputs.key_up.left                  #{args.inputs.key_up.left}"
+  args.outputs.watch "args.inputs.keyboard.key_up.left         #{args.inputs.keyboard.key_up.left}"
+  args.outputs.watch "args.inputs.controller_one.key_up.left   #{args.inputs.controller_one.key_up.left}"
+end
 ```
 
 ## Keyboard (`args.inputs.keyboard`)
@@ -652,8 +730,11 @@ end
 -   `kp_period`
 -   `kp_equals`
 -   `left_right`
+-   `last_left_right`
 -   `up_down`
+-   `last_up_down`
 -   `directional_vector` (returns normalized vector based off of WASD/arrow keys, `nil` if no keys are down/held)
+-   `last_directional_vector` (returns normalized vector based off of WASD/arrow keys, `nil` if no keys are down/held)
 -   `directional_angle` (returns angle in degrees based off of WASD/arrow keys, `nil` if no keys are down/held)
 -   `truthy_keys` (array of `Symbols`)
 

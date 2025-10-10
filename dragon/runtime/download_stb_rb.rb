@@ -38,6 +38,8 @@ module GTK
         entry_to_return
       end
 
+      alias_method :download_lib_raw, :download_stb_rb_raw
+
       def download_stb_rb url_or_user_name = nil, repo_name = nil, file_name = nil
         @download_stb_rb_requests ||= {}
         if url_or_user_name && repo_name && file_name
@@ -86,6 +88,8 @@ module GTK
 
         download_stb_rb_raw raw_content_url, save_path, metadata
       end
+
+      alias_method :download_lib, :download_stb_rb
 
       def tick_download_stb_rb
         return if !Kernel.tick_count.zmod? 60

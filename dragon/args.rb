@@ -248,7 +248,9 @@ module GTK
     end
 
     def __clear_events__
+      return if Kernel.global_tick_count < 0
       @events[:orientation_changed] = false
+      $grid.orientation_changed = false
       @events[:resize_occurred] = false
       @events[:raw].clear
     end
@@ -282,7 +284,7 @@ module GTK
         end
 
         new_audio_data.each do |k, v|
-          v[:original_source][:playtime] = 0
+          v[:original_source][:playtime] = v[:playtime]
           v[:original_source][:gain] = v[:gain]
           @runtime.update_simulation_audio_state
         end

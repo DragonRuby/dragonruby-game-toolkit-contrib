@@ -49,7 +49,7 @@ hljs.registerLanguage("typescript",function(){"use strict";return function(e){va
 hljs.registerLanguage("yaml",function(){"use strict";return function(e){var n={className:"string",relevance:0,variants:[{begin:/'/,end:/'/},{begin:/"/,end:/"/},{begin:/\S+/}],contains:[e.BACKSLASH_ESCAPE,{className:"template-variable",variants:[{begin:"{{",end:"}}"},{begin:"%{",end:"}"}]}]};return{name:"YAML",case_insensitive:!0,aliases:["yml","YAML"],contains:[{className:"attr",variants:[{begin:"\\w[\\w :\\/.-]*:(?=[ \t]|$)"},{begin:'"\\w[\\w :\\/.-]*":(?=[ \t]|$)'},{begin:"'\\w[\\w :\\/.-]*':(?=[ \t]|$)"}]},{className:"meta",begin:"^---s*$",relevance:10},{className:"string",begin:"[\\|>]([0-9]?[+-])?[ ]*\\n( *)[\\S ]+\\n(\\2[\\S ]+\\n?)*"},{begin:"<%[%=-]?",end:"[%-]?%>",subLanguage:"ruby",excludeBegin:!0,excludeEnd:!0,relevance:0},{className:"type",begin:"!"+e.UNDERSCORE_IDENT_RE},{className:"type",begin:"!!"+e.UNDERSCORE_IDENT_RE},{className:"meta",begin:"&"+e.UNDERSCORE_IDENT_RE+"$"},{className:"meta",begin:"\\*"+e.UNDERSCORE_IDENT_RE+"$"},{className:"bullet",begin:"\\-(?=[ ]|$)",relevance:0},e.HASH_COMMENT_MODE,{beginKeywords:"true false yes no null",keywords:{literal:"true false yes no null"}},{className:"number",begin:"\\b[0-9]{4}(-[0-9][0-9]){0,2}([Tt \\t][0-9][0-9]?(:[0-9][0-9]){2})?(\\.[0-9]*)?([ \\t])*(Z|[-+][0-9][0-9]?(:[0-9][0-9])?)?\\b"},{className:"number",begin:e.C_NUMBER_RE+"\\b"},n]}}}());
 
     </script>
-    <link href="docs.css?ver=1742442940" rel="stylesheet" type="text/css" media="all">
+    <link href="docs.css?ver=1760107053" rel="stylesheet" type="text/css" media="all">
     <script type="text/javascript">
 var styleElement = document.createElement('style');
 document.getElementsByTagName("head")[0].appendChild(styleElement);
@@ -79,16 +79,16 @@ document.addEventListener("animationstart", e => {
 <ul><li><a class='header-2' href='#---creating-your-game-landing-page'>Creating Your Game Landing Page</a></li></ul><ul><li><a class='header-2' href='#---update-your-game-s-metadata'>Update Your Game's Metadata</a></li></ul><ul><li><a class='header-2' href='#---building-your-game-for-distribution'>Building Your Game For Distribution</a></li></ul><ul><ul><li><a class='header-3' href='#----browser-game-settings'>Browser Game Settings</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----consider-adding-pause-when-game-is-in-background'>Consider Adding Pause When Game is In Background</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----consider-adding-a-request-to-review-your-game-in-game'>Consider Adding a Request to Review Your Game In-Game</a></li></ul></ul><li><a class='header-1' href='#--deploying-to-mobile-devices'>Deploying To Mobile Devices</a></li>
 <ul><li><a class='header-2' href='#---deploying-to-ios'>Deploying to iOS</a></li></ul><ul><li><a class='header-2' href='#---deploying-to-android'>Deploying to Android</a></li></ul><li><a class='header-1' href='#--dragonruby-s-philosophy'>DragonRuby's Philosophy</a></li>
 <ul><li><a class='header-2' href='#---challenge-the-status-quo'>Challenge The Status Quo</a></li></ul><ul><li><a class='header-2' href='#---continuity-of-design'>Continuity of Design</a></li></ul><ul><li><a class='header-2' href='#---release-early-and-often'>Release Early and Often</a></li></ul><ul><li><a class='header-2' href='#---sustainable-and-ethical-monetization'>Sustainable And Ethical Monetization</a></li></ul><ul><li><a class='header-2' href='#---sustainable-and-ethical-open-source'>Sustainable And Ethical Open Source</a></li></ul><ul><li><a class='header-2' href='#---people-over-entities'>People Over Entities</a></li></ul><ul><li><a class='header-2' href='#---building-a-game-should-be-fun-and-bring-happiness'>Building A Game Should Be Fun And Bring Happiness</a></li></ul><ul><li><a class='header-2' href='#---real-world-application-drives-features'>Real World Application Drives Features</a></li></ul><li><a class='header-1' href='#--frequently-asked-questions--comments--and-concerns'>Frequently Asked Questions, Comments, and Concerns</a></li>
-<ul><li><a class='header-2' href='#---frequently-asked-questions'>Frequently Asked Questions</a></li></ul><ul><ul><li><a class='header-3' href='#----what-is-dragonruby-llp-'>What is DragonRuby LLP?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----what-is-dragonruby-'>What is DragonRuby?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----what-does-multilevel-cross-platform-mean-'>What does Multilevel Cross-platform mean?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----how-is-dragonruby-different-than-mri-'>How is DragonRuby different than MRI?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----does-dragonruby-support-gems-'>Does DragonRuby support Gems?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----does-dragonruby-have-a-repl/irb-'>Does DragonRuby have a REPL/IRB?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----does-dragonruby-support-pry-or-have-any-other-debugging-facilities-'>Does DragonRuby support pry or have any other debugging facilities?</a></li></ul></ul><ul><li><a class='header-2' href='#---frequent-comments-about-ruby-as-a-language-choice'>Frequent Comments About Ruby as a Language Choice</a></li></ul><ul><ul><li><a class='header-3' href='#----but-ruby-is-dead-'>But Ruby is dead.</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----but-ruby-is-slow-'>But Ruby is slow.</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dynamic-languages-are-slow-'>Dynamic languages are slow.</a></li></ul></ul><ul><li><a class='header-2' href='#---frequent-concerns'>Frequent Concerns</a></li></ul><ul><ul><li><a class='header-3' href='#----dragonruby-is-not-open-source--that-s-not-right-'>DragonRuby is not open source. That's not right.</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dragonruby-is-for-pay--you-should-offer-a-free-version-'>DragonRuby is for pay. You should offer a free version.</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----what-if-i-build-something-with-dragonruby--but-dragonruby-llp-becomes-insolvent-'>What if I build something with DragonRuby, but DragonRuby LLP becomes insolvent.</a></li></ul></ul><ul><li><a class='header-2' href='#---troubleshoot-performance'>Troubleshoot Performance</a></li></ul><li><a class='header-1' href='#--recipies-'>RECIPIES:</a></li>
-<ul><li><a class='header-2' href='#---how-to-determine-what-frame-you-are-on'>How To Determine What Frame You Are On</a></li></ul><ul><li><a class='header-2' href='#---how-to-get-current-framerate'>How To Get Current Framerate</a></li></ul><ul><li><a class='header-2' href='#---how-to-render-a-sprite-using-an-array'>How To Render A Sprite Using An Array</a></li></ul><ul><li><a class='header-2' href='#---rendering-a-sprite-using-a--hash-'>Rendering a Sprite Using a <code>Hash</code></a></li></ul><ul><li><a class='header-2' href='#---how-to-render-a-label'>How To Render A Label</a></li></ul><ul><li><a class='header-2' href='#---a-colored-label'>A Colored Label</a></li></ul><ul><li><a class='header-2' href='#---extended-label-properties'>Extended Label Properties</a></li></ul><ul><li><a class='header-2' href='#---rendering-a-label-as-a--hash-'>Rendering A Label As A <code>Hash</code></a></li></ul><ul><li><a class='header-2' href='#---getting-the-size-of-a-piece-of-text'>Getting The Size Of A Piece Of Text</a></li></ul><ul><li><a class='header-2' href='#---rendering-labels-with-new-line-characters-and-wrapping'>Rendering Labels With New Line Characters And Wrapping</a></li></ul><ul><li><a class='header-2' href='#---how-to-play-a-sound'>How To Play A Sound</a></li></ul><ul><li><a class='header-2' href='#---using--args-state--to-store-your-game-state'>Using <code>args.state</code> To Store Your Game State</a></li></ul><ul><li><a class='header-2' href='#---accessing-files'>Accessing files</a></li></ul><li><a class='header-1' href='#--outputs---args-outputs--'>Outputs (<code>args.outputs</code>)</a></li>
+<ul><li><a class='header-2' href='#---frequently-asked-questions'>Frequently Asked Questions</a></li></ul><ul><ul><li><a class='header-3' href='#----what-is-dragonruby-llp-'>What is DragonRuby LLP?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----what-is-dragonruby-'>What is DragonRuby?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----what-does-multilevel-cross-platform-mean-'>What does Multilevel Cross-platform mean?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----how-is-dragonruby-different-than-mri-'>How is DragonRuby different than MRI?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----does-dragonruby-support-gems-'>Does DragonRuby support Gems?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----does-dragonruby-have-a-repl/irb-'>Does DragonRuby have a REPL/IRB?</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----does-dragonruby-support-pry-or-have-any-other-debugging-facilities-'>Does DragonRuby support pry or have any other debugging facilities?</a></li></ul></ul><ul><li><a class='header-2' href='#---frequent-comments-about-ruby-as-a-language-choice'>Frequent Comments About Ruby as a Language Choice</a></li></ul><ul><ul><li><a class='header-3' href='#----but-ruby-is-dead-'>But Ruby is dead.</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----but-ruby-is-slow-'>But Ruby is slow.</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dynamic-languages-are-slow-'>Dynamic languages are slow.</a></li></ul></ul><ul><li><a class='header-2' href='#---frequent-concerns'>Frequent Concerns</a></li></ul><ul><ul><li><a class='header-3' href='#----dragonruby-is-not-open-source--that-s-not-right-'>DragonRuby is not open source. That's not right.</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dragonruby-is-for-pay--you-should-offer-a-free-version-'>DragonRuby is for pay. You should offer a free version.</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----what-if-i-build-something-with-dragonruby--but-dragonruby-llp-becomes-insolvent-'>What if I build something with DragonRuby, but DragonRuby LLP becomes insolvent.</a></li></ul></ul><ul><li><a class='header-2' href='#---troubleshoot-performance'>Troubleshoot Performance</a></li></ul><ul><li><a class='header-2' href='#---using--args-state--to-store-your-game-state'>Using <code>args.state</code> To Store Your Game State</a></li></ul><ul><li><a class='header-2' href='#---accessing-files'>Accessing files</a></li></ul><li><a class='header-1' href='#--recipies-'>RECIPIES:</a></li>
+<ul><li><a class='header-2' href='#---how-to-determine-what-frame-you-are-on'>How To Determine What Frame You Are On</a></li></ul><ul><li><a class='header-2' href='#---how-to-get-current-framerate'>How To Get Current Framerate</a></li></ul><ul><li><a class='header-2' href='#---how-to-render-a-sprite-using-an-array'>How To Render A Sprite Using An Array</a></li></ul><ul><li><a class='header-2' href='#---rendering-a-sprite-using-a--hash-'>Rendering a Sprite Using a <code>Hash</code></a></li></ul><ul><li><a class='header-2' href='#---how-to-render-a-label'>How To Render A Label</a></li></ul><ul><li><a class='header-2' href='#---a-colored-label'>A Colored Label</a></li></ul><ul><li><a class='header-2' href='#---extended-label-properties'>Extended Label Properties</a></li></ul><ul><li><a class='header-2' href='#---rendering-a-label-as-a--hash-'>Rendering A Label As A <code>Hash</code></a></li></ul><ul><li><a class='header-2' href='#---getting-the-size-of-a-piece-of-text'>Getting The Size Of A Piece Of Text</a></li></ul><ul><li><a class='header-2' href='#---rendering-labels-with-new-line-characters-and-wrapping'>Rendering Labels With New Line Characters And Wrapping</a></li></ul><ul><li><a class='header-2' href='#---how-to-play-a-sound'>How To Play A Sound</a></li></ul><li><a class='header-1' href='#--outputs---args-outputs--'>Outputs (<code>args.outputs</code>)</a></li>
 <ul><li><a class='header-2' href='#---collection-render-orders'>Collection Render Orders</a></li></ul><ul><li><a class='header-2' href='#----primitives-'><code>primitives</code></a></li></ul><ul><li><a class='header-2' href='#----debug-'><code>debug</code></a></li></ul><ul><ul><li><a class='header-3' href='#----string-primitives'>String Primitives</a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----watch-'><code>watch</code></a></li></ul></ul><ul><li><a class='header-2' href='#----solids-'><code>solids</code></a></li></ul><ul><ul><li><a class='header-3' href='#----array-render-primitive'>Array Render Primitive</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----hash-render-primitive'>Hash Render Primitive</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----class-render-primitive'>Class Render Primitive</a></li></ul></ul><ul><li><a class='header-2' href='#----borders-'><code>borders</code></a></li></ul><ul><li><a class='header-2' href='#----sprites-'><code>sprites</code></a></li></ul><ul><ul><li><a class='header-3' href='#----properties'>Properties</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----array-render-primitive'>Array Render Primitive</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----hash-render-primitive'>Hash Render Primitive</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----class-render-primitive'>Class Render Primitive</a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----attr_sprite-'><code>attr_sprite</code></a></li></ul></ul><ul><li><a class='header-2' href='#----lines-'><code>lines</code></a></li></ul><ul><ul><li><a class='header-3' href='#----array-render-primitive'>Array Render Primitive</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----hash-render-primitive'>Hash Render Primitive</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----class-render-primitive'>Class Render Primitive</a></li></ul></ul><ul><li><a class='header-2' href='#----labels-'><code>labels</code></a></li></ul><ul><ul><li><a class='header-3' href='#----array-render-primitive'>Array Render Primitive</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----hash-render-primitive'>Hash Render Primitive</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----class-render-primitive'>Class Render Primitive</a></li></ul></ul><ul><li><a class='header-2' href='#---render-targets-------operator-'>Render Targets (<code>[]</code> operator)</a></li></ul><ul><li><a class='header-2' href='#----screenshots-'><code>screenshots</code></a></li></ul><ul><ul><li><a class='header-3' href='#----chroma-key--making-a-color-transparent-'>Chroma key (Making a color transparent)</a></li></ul></ul><ul><li><a class='header-2' href='#---shaders'>Shaders</a></li></ul><ul><ul><li><a class='header-3' href='#-----shader_path-'><code>shader_path</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----shader_uniforms-'><code>shader_uniforms</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----shader_tex-1-15--'><code>shader_tex(1-15)</code></a></li></ul></ul><li><a class='header-1' href='#--inputs---args-inputs--'>Inputs (<code>args.inputs</code>)</a></li>
-<ul><li><a class='header-2' href='#----last_active-'><code>last_active</code></a></li></ul><ul><li><a class='header-2' href='#----last_active_at-'><code>last_active_at</code></a></li></ul><ul><li><a class='header-2' href='#----last_active_global_at-'><code>last_active_global_at</code></a></li></ul><ul><li><a class='header-2' href='#----locale-'><code>locale</code></a></li></ul><ul><li><a class='header-2' href='#----up-'><code>up</code></a></li></ul><ul><li><a class='header-2' href='#----down-'><code>down</code></a></li></ul><ul><li><a class='header-2' href='#----left-'><code>left</code></a></li></ul><ul><li><a class='header-2' href='#----right-'><code>right</code></a></li></ul><ul><li><a class='header-2' href='#----left_right-'><code>left_right</code></a></li></ul><ul><li><a class='header-2' href='#----left_right_perc-'><code>left_right_perc</code></a></li></ul><ul><li><a class='header-2' href='#----left_right_directional-'><code>left_right_directional</code></a></li></ul><ul><li><a class='header-2' href='#----left_right_directional_perc-'><code>left_right_directional_perc</code></a></li></ul><ul><li><a class='header-2' href='#----up_down-'><code>up_down</code></a></li></ul><ul><li><a class='header-2' href='#----up_down_directional-'><code>up_down_directional</code></a></li></ul><ul><li><a class='header-2' href='#----up_down_perc-'><code>up_down_perc</code></a></li></ul><ul><li><a class='header-2' href='#----text-'><code>text</code></a></li></ul><ul><li><a class='header-2' href='#---mouse---args-inputs-mouse--'>Mouse (<code>args.inputs.mouse</code>)</a></li></ul><ul><ul><li><a class='header-3' href='#-----has_focus-'><code>has_focus</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----x-'><code>x</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----y-'><code>y</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----previous_x-'><code>previous_x</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----previous_y-'><code>previous_y</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----relative_x-'><code>relative_x</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----relative_y-'><code>relative_y</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----inside_rect--rect-'><code>inside_rect? rect</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----inside_circle--center_point--radius-'><code>inside_circle? center_point, radius</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----moved-'><code>moved</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----button_left-'><code>button_left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----button_middle-'><code>button_middle</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----button_right-'><code>button_right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----button_bits-'><code>button_bits</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----wheel-'><code>wheel</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----click--or--down----previous_click----up-'><code>click</code> OR <code>down</code>, <code>previous_click</code>, <code>up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_down-'><code>key_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_held-'><code>key_held</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_up-'><code>key_up</code></a></li></ul></ul><ul><li><a class='header-2' href='#---touch'>Touch</a></li></ul><ul><ul><li><a class='header-3' href='#-----args-inputs-touch-'><code>args.inputs.touch</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----args-inputs-finger_left-'><code>args.inputs.finger_left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----args-inputs-finger_right-'><code>args.inputs.finger_right</code></a></li></ul></ul><ul><li><a class='header-2' href='#---controller---args-inputs-controller_-one-four---'>Controller (<code>args.inputs.controller_(one-four)</code>)</a></li></ul><ul><ul><li><a class='header-3' href='#-----connected-'><code>connected</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----name-'><code>name</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----active-'><code>active</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----up-'><code>up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----down-'><code>down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left-'><code>left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----right-'><code>right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left_right-'><code>left_right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----up_down-'><code>up_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_x_raw-'><code>(left|right)_analog_x_raw</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_y_raw-'><code>(left|right)_analog_y_raw</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_x_perc-'><code>(left|right)_analog_x_perc</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_y_perc-'><code>(left|right)_analog_y_perc</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dpad_up----directional_up-'><code>dpad_up</code>, <code>directional_up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dpad_down----directional_down-'><code>dpad_down</code>, <code>directional_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dpad_left----directional_left-'><code>dpad_left</code>, <code>directional_left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dpad_right----directional_right-'><code>dpad_right</code>, <code>directional_right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------a-b-x-y-l1-r1-l2-r2-l3-r3-start-select--'><code>(a|b|x|y|l1|r1|l2|r2|l3|r3|start|select)</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----truthy_keys-'><code>truthy_keys</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_down-'><code>key_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_held-'><code>key_held</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_up-'><code>key_up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left_analog_active--threshold_raw---threshold_perc---'><code>left_analog_active?(threshold_raw:, threshold_perc:)</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----right_analog_active--threshold_raw---threshold_perc---'><code>right_analog_active?(threshold_raw:, threshold_perc:)</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----analog_dead_zone-'><code>analog_dead_zone</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_state--key--'><code>key_STATE?(key)</code></a></li></ul></ul><ul><li><a class='header-2' href='#---keyboard---args-inputs-keyboard--'>Keyboard (<code>args.inputs.keyboard</code>)</a></li></ul><ul><ul><li><a class='header-3' href='#-----active-'><code>active</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----has_focus-'><code>has_focus</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----up-'><code>up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----down-'><code>down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left-'><code>left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----right-'><code>right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left_right-'><code>left_right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----up_down-'><code>up_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#----keyboard-properties'>Keyboard properties</a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----keycodes-'><code>keycodes</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----char-'><code>char</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_state--key--'><code>key_STATE?(key)</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----keys-'><code>keys</code></a></li></ul></ul><li><a class='header-1' href='#--runtime---args-gtk--'>Runtime (<code>args.gtk</code>)</a></li>
-<ul><li><a class='header-2' href='#---class-macros'>Class Macros</a></li></ul><ul><ul><li><a class='header-3' href='#-----attr-'><code>attr</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----attr_gtk-'><code>attr_gtk</code></a></li></ul></ul><ul><li><a class='header-2' href='#---indie-and-pro-functions'>Indie and Pro Functions</a></li></ul><ul><ul><li><a class='header-3' href='#-----get_pixels-'><code>get_pixels</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dlopen-'><code>dlopen</code></a></li></ul></ul><ul><li><a class='header-2' href='#---environment-and-utility-functions'>Environment and Utility Functions</a></li></ul><ul><ul><li><a class='header-3' href='#-----calcstringbox-'><code>calcstringbox</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----request_quit-'><code>request_quit</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----quit_requested--'><code>quit_requested?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_window_fullscreen-'><code>set_window_fullscreen</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----window_fullscreen--'><code>window_fullscreen?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_window_scale-'><code>set_window_scale</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_window_title-'><code>set_window_title</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----platform--'><code>platform?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----production--'><code>production?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----platform_mappings-'><code>platform_mappings</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----system-'><code>system</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----exec-'><code>exec</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----show_cursor-'><code>show_cursor</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----hide_cursor-'><code>hide_cursor</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----cursor_shown--'><code>cursor_shown?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_mouse_grab-'><code>set_mouse_grab</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_system_cursor-'><code>set_system_cursor</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_cursor-'><code>set_cursor</code></a></li></ul></ul><ul><li><a class='header-2' href='#---file-io-functions'>File IO Functions</a></li></ul><ul><ul><li><a class='header-3' href='#-----list_files-'><code>list_files</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----stat_file-'><code>stat_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----read_file-'><code>read_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----write_file-'><code>write_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----append_file-'><code>append_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----delete_file-'><code>delete_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----parse_json-'><code>parse_json</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----parse_json_file-'><code>parse_json_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----parse_xml-'><code>parse_xml</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----parse_xml_file-'><code>parse_xml_file</code></a></li></ul></ul><ul><li><a class='header-2' href='#---network-io-functions'>Network IO Functions</a></li></ul><ul><ul><li><a class='header-3' href='#-----http_get-'><code>http_get</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----http_post-'><code>http_post</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----http_post_body-'><code>http_post_body</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----start_server--'><code>start_server!</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----http_get-'><code>http_get</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----http_post-'><code>http_post</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----http_post_body-'><code>http_post_body</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----start_server--'><code>start_server!</code></a></li></ul></ul><ul><li><a class='header-2' href='#---developer-support-functions'>Developer Support Functions</a></li></ul><ul><ul><li><a class='header-3' href='#-----version-'><code>version</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----version_pro--'><code>version_pro?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----game_version-'><code>game_version</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reset-'><code>reset</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reset_next_tick-'><code>reset_next_tick</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reset_sprite-'><code>reset_sprite</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reset_sprites-'><code>reset_sprites</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----calcspritebox-'><code>calcspritebox</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----current_framerate-'><code>current_framerate</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----framerate_diagnostics_primitives-'><code>framerate_diagnostics_primitives</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----warn_array_primitives--'><code>warn_array_primitives!</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----benchmark-'><code>benchmark</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----notify--'><code>notify!</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----notify_extended--'><code>notify_extended!</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----slowmo--'><code>slowmo!</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----show_console-'><code>show_console</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----hide_console-'><code>hide_console</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----enable_console-'><code>enable_console</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----disable_console-'><code>disable_console</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----disable_reset_via_ctrl_r-'><code>disable_reset_via_ctrl_r</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----disable_controller_config-'><code>disable_controller_config</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----enable_controller_config-'><code>enable_controller_config</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----start_recording-'><code>start_recording</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----stop_recording-'><code>stop_recording</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----cancel_recording-'><code>cancel_recording</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----start_replay-'><code>start_replay</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----stop_replay-'><code>stop_replay</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----get_base_dir-'><code>get_base_dir</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----get_game_dir-'><code>get_game_dir</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----get_game_dir_url-'><code>get_game_dir_url</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----open_game_dir-'><code>open_game_dir</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----write_file_root-'><code>write_file_root</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----append_file_root-'><code>append_file_root</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----argv-'><code>argv</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----cli_arguments-'><code>cli_arguments</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----download_stb_rb-_raw--'><code>download_stb_rb(_raw)</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reload_history-'><code>reload_history</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reload_history_pending-'><code>reload_history_pending</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reload_if_needed-'><code>reload_if_needed</code></a></li></ul></ul><li><a class='header-1' href='#--state---args-state--'>State (<code>args.state</code>)</a></li>
+<ul><li><a class='header-2' href='#----last_active-'><code>last_active</code></a></li></ul><ul><li><a class='header-2' href='#----last_active_at-'><code>last_active_at</code></a></li></ul><ul><li><a class='header-2' href='#----last_active_global_at-'><code>last_active_global_at</code></a></li></ul><ul><li><a class='header-2' href='#----locale-'><code>locale</code></a></li></ul><ul><li><a class='header-2' href='#----up-'><code>up</code></a></li></ul><ul><li><a class='header-2' href='#----down-'><code>down</code></a></li></ul><ul><li><a class='header-2' href='#----left-'><code>left</code></a></li></ul><ul><li><a class='header-2' href='#----right-'><code>right</code></a></li></ul><ul><li><a class='header-2' href='#----left_right-'><code>left_right</code></a></li></ul><ul><li><a class='header-2' href='#----left_right_perc-'><code>left_right_perc</code></a></li></ul><ul><li><a class='header-2' href='#----left_right_directional-'><code>left_right_directional</code></a></li></ul><ul><li><a class='header-2' href='#----left_right_directional_perc-'><code>left_right_directional_perc</code></a></li></ul><ul><li><a class='header-2' href='#----up_down-'><code>up_down</code></a></li></ul><ul><li><a class='header-2' href='#----up_down_directional-'><code>up_down_directional</code></a></li></ul><ul><li><a class='header-2' href='#----up_down_perc-'><code>up_down_perc</code></a></li></ul><ul><li><a class='header-2' href='#----text-'><code>text</code></a></li></ul><ul><li><a class='header-2' href='#---mouse---args-inputs-mouse--'>Mouse (<code>args.inputs.mouse</code>)</a></li></ul><ul><ul><li><a class='header-3' href='#-----has_focus-'><code>has_focus</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----x-'><code>x</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----y-'><code>y</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----previous_x-'><code>previous_x</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----previous_y-'><code>previous_y</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----relative_x-'><code>relative_x</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----relative_y-'><code>relative_y</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----inside_rect--rect-'><code>inside_rect? rect</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----inside_circle--center_point--radius-'><code>inside_circle? center_point, radius</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----moved-'><code>moved</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----button_left-'><code>button_left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----button_middle-'><code>button_middle</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----button_right-'><code>button_right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----button_bits-'><code>button_bits</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----wheel-'><code>wheel</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----click--or--down----previous_click----up-'><code>click</code> OR <code>down</code>, <code>previous_click</code>, <code>up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_down-'><code>key_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_held-'><code>key_held</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_up-'><code>key_up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----buttons-'><code>buttons</code></a></li></ul></ul><ul><li><a class='header-2' href='#---touch'>Touch</a></li></ul><ul><ul><li><a class='header-3' href='#-----args-inputs-touch-'><code>args.inputs.touch</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----args-inputs-finger_left-'><code>args.inputs.finger_left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----args-inputs-finger_right-'><code>args.inputs.finger_right</code></a></li></ul></ul><ul><li><a class='header-2' href='#---controller---args-inputs-controller_-one-four---'>Controller (<code>args.inputs.controller_(one-four)</code>)</a></li></ul><ul><ul><li><a class='header-3' href='#-----connected-'><code>connected</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----name-'><code>name</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----active-'><code>active</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----up-'><code>up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----down-'><code>down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left-'><code>left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----right-'><code>right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left_right-'><code>left_right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----up_down-'><code>up_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_x_raw-'><code>(left|right)_analog_x_raw</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_y_raw-'><code>(left|right)_analog_y_raw</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_x_perc-'><code>(left|right)_analog_x_perc</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_y_perc-'><code>(left|right)_analog_y_perc</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dpad_up----directional_up-'><code>dpad_up</code>, <code>directional_up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dpad_down----directional_down-'><code>dpad_down</code>, <code>directional_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dpad_left----directional_left-'><code>dpad_left</code>, <code>directional_left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dpad_right----directional_right-'><code>dpad_right</code>, <code>directional_right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------a-b-x-y-l1-r1-l2-r2-l3-r3-start-select--'><code>(a|b|x|y|l1|r1|l2|r2|l3|r3|start|select)</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----truthy_keys-'><code>truthy_keys</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_down-'><code>key_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_held-'><code>key_held</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_up-'><code>key_up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left_analog_active--threshold_raw---threshold_perc---'><code>left_analog_active?(threshold_raw:, threshold_perc:)</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----right_analog_active--threshold_raw---threshold_perc---'><code>right_analog_active?(threshold_raw:, threshold_perc:)</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#------left-right-_analog_angle-'><code>(left|right)_analog_angle</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----analog_dead_zone-'><code>analog_dead_zone</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_state--key--'><code>key_STATE?(key)</code></a></li></ul></ul><ul><li><a class='header-2' href='#---keyboard-or-controller-on---args-inputs-key_-down-up-held---'>Keyboard or Controller On (<code>args.inputs.key_(down|up|held)</code>)</a></li></ul><ul><li><a class='header-2' href='#---keyboard---args-inputs-keyboard--'>Keyboard (<code>args.inputs.keyboard</code>)</a></li></ul><ul><ul><li><a class='header-3' href='#-----active-'><code>active</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----has_focus-'><code>has_focus</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----up-'><code>up</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----down-'><code>down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left-'><code>left</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----right-'><code>right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----left_right-'><code>left_right</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----up_down-'><code>up_down</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#----keyboard-properties'>Keyboard properties</a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----keycodes-'><code>keycodes</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----char-'><code>char</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----key_state--key--'><code>key_STATE?(key)</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----keys-'><code>keys</code></a></li></ul></ul><li><a class='header-1' href='#--runtime---gtk--'>Runtime (<code>GTK</code>)</a></li>
+<ul><li><a class='header-2' href='#---class-macros'>Class Macros</a></li></ul><ul><ul><li><a class='header-3' href='#-----attr-'><code>attr</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----attr_gtk-'><code>attr_gtk</code></a></li></ul></ul><ul><li><a class='header-2' href='#---indie-and-pro-functions'>Indie and Pro Functions</a></li></ul><ul><ul><li><a class='header-3' href='#-----get_pixels-'><code>get_pixels</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----dlopen-'><code>dlopen</code></a></li></ul></ul><ul><li><a class='header-2' href='#---environment-and-utility-functions'>Environment and Utility Functions</a></li></ul><ul><ul><li><a class='header-3' href='#-----calcstringbox-'><code>calcstringbox</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----request_quit-'><code>request_quit</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----quit_requested--'><code>quit_requested?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_window_fullscreen-'><code>set_window_fullscreen</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----window_fullscreen--'><code>window_fullscreen?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_window_scale-'><code>set_window_scale</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_window_title-'><code>set_window_title</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----platform--'><code>platform?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----production--'><code>production?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----platform_mappings-'><code>platform_mappings</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----system-'><code>system</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----exec-'><code>exec</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----show_cursor-'><code>show_cursor</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----hide_cursor-'><code>hide_cursor</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----cursor_shown--'><code>cursor_shown?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_mouse_grab-'><code>set_mouse_grab</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_system_cursor-'><code>set_system_cursor</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----set_cursor-'><code>set_cursor</code></a></li></ul></ul><ul><li><a class='header-2' href='#---file-io-functions'>File IO Functions</a></li></ul><ul><ul><li><a class='header-3' href='#-----list_files-'><code>list_files</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----stat_file-'><code>stat_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----read_file-'><code>read_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----write_file-'><code>write_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----append_file-'><code>append_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----delete_file-'><code>delete_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----parse_json-'><code>parse_json</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----parse_json_file-'><code>parse_json_file</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----parse_xml-'><code>parse_xml</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----parse_xml_file-'><code>parse_xml_file</code></a></li></ul></ul><ul><li><a class='header-2' href='#---network-io-functions'>Network IO Functions</a></li></ul><ul><ul><li><a class='header-3' href='#-----http_get-'><code>http_get</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----http_post-'><code>http_post</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----http_post_body-'><code>http_post_body</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----start_server--'><code>start_server!</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----http_get-'><code>http_get</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----http_post-'><code>http_post</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----http_post_body-'><code>http_post_body</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----start_server--'><code>start_server!</code></a></li></ul></ul><ul><li><a class='header-2' href='#---developer-support-functions'>Developer Support Functions</a></li></ul><ul><ul><li><a class='header-3' href='#-----version-'><code>version</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----version_pro--'><code>version_pro?</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----game_version-'><code>game_version</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reset-'><code>reset</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reset_next_tick-'><code>reset_next_tick</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reset_sprite-'><code>reset_sprite</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reset_sprites-'><code>reset_sprites</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----calcspritebox-'><code>calcspritebox</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----current_framerate-'><code>current_framerate</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----framerate_diagnostics_primitives-'><code>framerate_diagnostics_primitives</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----warn_array_primitives--'><code>warn_array_primitives!</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----benchmark-'><code>benchmark</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----notify--'><code>notify!</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----notify_extended--'><code>notify_extended!</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----slowmo--'><code>slowmo!</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----show_console-'><code>show_console</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----hide_console-'><code>hide_console</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----enable_console-'><code>enable_console</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----disable_console-'><code>disable_console</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----disable_reset_via_ctrl_r-'><code>disable_reset_via_ctrl_r</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----disable_controller_config-'><code>disable_controller_config</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----enable_controller_config-'><code>enable_controller_config</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----start_recording-'><code>start_recording</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----stop_recording-'><code>stop_recording</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----cancel_recording-'><code>cancel_recording</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----start_replay-'><code>start_replay</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----stop_replay-'><code>stop_replay</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----get_base_dir-'><code>get_base_dir</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----get_game_dir-'><code>get_game_dir</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----get_game_dir_url-'><code>get_game_dir_url</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----open_game_dir-'><code>open_game_dir</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----write_file_root-'><code>write_file_root</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----append_file_root-'><code>append_file_root</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----argv-'><code>argv</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----cli_arguments-'><code>cli_arguments</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reload_history-'><code>reload_history</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reload_history_pending-'><code>reload_history_pending</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----reload_if_needed-'><code>reload_if_needed</code></a></li></ul></ul><li><a class='header-1' href='#--state---args-state--'>State (<code>args.state</code>)</a></li>
 <ul><li><a class='header-2' href='#----entity_id-'><code>entity_id</code></a></li></ul><ul><li><a class='header-2' href='#----entity_type-'><code>entity_type</code></a></li></ul><ul><li><a class='header-2' href='#----created_at-'><code>created_at</code></a></li></ul><ul><li><a class='header-2' href='#----created_at_elapsed-'><code>created_at_elapsed</code></a></li></ul><ul><li><a class='header-2' href='#----global_created_at-'><code>global_created_at</code></a></li></ul><ul><li><a class='header-2' href='#----global_created_at_elapsed-'><code>global_created_at_elapsed</code></a></li></ul><ul><li><a class='header-2' href='#----as_hash-'><code>as_hash</code></a></li></ul><ul><li><a class='header-2' href='#----tick_count-'><code>tick_count</code></a></li></ul><li><a class='header-1' href='#--geometry'>Geometry</a></li>
-<li><a class='header-1' href='#--cvars-/-configuration---args-cvars--'>CVars / Configuration (<code>args.cvars</code>)</a></li>
+<li><a class='header-1' href='#--cvars-/-configuration-/-game-metadata---args-cvars--'>CVars / Configuration / Game Metadata (<code>args.cvars</code>)</a></li>
 <ul><li><a class='header-2' href='#---available-configuration'>Available Configuration</a></li></ul><li><a class='header-1' href='#--layout'>Layout</a></li>
 <ul><li><a class='header-2' href='#----rect-'><code>rect</code></a></li></ul><ul><li><a class='header-2' href='#----debug_primitives-'><code>debug_primitives</code></a></li></ul><li><a class='header-1' href='#--grid'>Grid</a></li>
-<ul><li><a class='header-2' href='#----orientation-'><code>orientation</code></a></li></ul><ul><li><a class='header-2' href='#----origin_name-'><code>origin_name</code></a></li></ul><ul><li><a class='header-2' href='#----origin_bottom_left--'><code>origin_bottom_left!</code></a></li></ul><ul><li><a class='header-2' href='#----origin_center--'><code>origin_center!</code></a></li></ul><ul><li><a class='header-2' href='#----portrait--'><code>portrait?</code></a></li></ul><ul><li><a class='header-2' href='#----landscape--'><code>landscape?</code></a></li></ul><ul><li><a class='header-2' href='#---grid-property-categorizations'>Grid Property Categorizations</a></li></ul><ul><li><a class='header-2' href='#----bottom-'><code>bottom</code></a></li></ul><ul><li><a class='header-2' href='#----top-'><code>top</code></a></li></ul><ul><li><a class='header-2' href='#----left-'><code>left</code></a></li></ul><ul><li><a class='header-2' href='#----right-'><code>right</code></a></li></ul><ul><li><a class='header-2' href='#----rect-'><code>rect</code></a></li></ul><ul><li><a class='header-2' href='#----w-'><code>w</code></a></li></ul><ul><li><a class='header-2' href='#----h-'><code>h</code></a></li></ul><ul><li><a class='header-2' href='#----aspect_ratio_w-'><code>aspect_ratio_w</code></a></li></ul><ul><li><a class='header-2' href='#----aspect_ratio_h-'><code>aspect_ratio_h</code></a></li></ul><ul><li><a class='header-2' href='#---hd--highdpi--and-all-screen-modes'>HD, HighDPI, and All Screen Modes</a></li></ul><ul><ul><li><a class='header-3' href='#----all-screen-properties'>All Screen Properties</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----texture-atlases'>Texture Atlases</a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----native_scale-'><code>native_scale</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----render_scale-'><code>render_scale</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----texture_scale-'><code>texture_scale</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----texture_scale_enum-'><code>texture_scale_enum</code></a></li></ul></ul><li><a class='header-1' href='#--array'>Array</a></li>
+<ul><li><a class='header-2' href='#----orientation-'><code>orientation</code></a></li></ul><ul><li><a class='header-2' href='#----orientation_changed--'><code>orientation_changed?</code></a></li></ul><ul><li><a class='header-2' href='#----origin_name-'><code>origin_name</code></a></li></ul><ul><li><a class='header-2' href='#----origin_bottom_left--'><code>origin_bottom_left!</code></a></li></ul><ul><li><a class='header-2' href='#----origin_center--'><code>origin_center!</code></a></li></ul><ul><li><a class='header-2' href='#----portrait--'><code>portrait?</code></a></li></ul><ul><li><a class='header-2' href='#----landscape--'><code>landscape?</code></a></li></ul><ul><li><a class='header-2' href='#---grid-property-categorizations'>Grid Property Categorizations</a></li></ul><ul><li><a class='header-2' href='#----bottom-'><code>bottom</code></a></li></ul><ul><li><a class='header-2' href='#----top-'><code>top</code></a></li></ul><ul><li><a class='header-2' href='#----left-'><code>left</code></a></li></ul><ul><li><a class='header-2' href='#----right-'><code>right</code></a></li></ul><ul><li><a class='header-2' href='#----rect-'><code>rect</code></a></li></ul><ul><li><a class='header-2' href='#----w-'><code>w</code></a></li></ul><ul><li><a class='header-2' href='#----h-'><code>h</code></a></li></ul><ul><li><a class='header-2' href='#----aspect_ratio_w-'><code>aspect_ratio_w</code></a></li></ul><ul><li><a class='header-2' href='#----aspect_ratio_h-'><code>aspect_ratio_h</code></a></li></ul><ul><li><a class='header-2' href='#---hd--highdpi--and-all-screen-modes'>HD, HighDPI, and All Screen Modes</a></li></ul><ul><ul><li><a class='header-3' href='#----all-screen-properties'>All Screen Properties</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----texture-atlases'>Texture Atlases</a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----native_scale-'><code>native_scale</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----render_scale-'><code>render_scale</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----texture_scale-'><code>texture_scale</code></a></li></ul></ul><ul><ul><li><a class='header-3' href='#-----texture_scale_enum-'><code>texture_scale_enum</code></a></li></ul></ul><li><a class='header-1' href='#--array'>Array</a></li>
 <ul><li><a class='header-2' href='#----map_2d-'><code>map_2d</code></a></li></ul><ul><li><a class='header-2' href='#----include_any--'><code>include_any?</code></a></li></ul><ul><li><a class='header-2' href='#----any_intersect_rect--'><code>any_intersect_rect?</code></a></li></ul><ul><li><a class='header-2' href='#----map_2d-'><code>map_2d</code></a></li></ul><ul><li><a class='header-2' href='#----each-'><code>each</code></a></li></ul><ul><li><a class='header-2' href='#----reject_nil-'><code>reject_nil</code></a></li></ul><ul><li><a class='header-2' href='#----reject_false-'><code>reject_false</code></a></li></ul><ul><li><a class='header-2' href='#----product-'><code>product</code></a></li></ul><li><a class='header-1' href='#---numeric-'><code>Numeric</code></a></li>
 <ul><li><a class='header-2' href='#----frame_index-'><code>frame_index</code></a></li></ul><ul><li><a class='header-2' href='#----elapsed_time-'><code>elapsed_time</code></a></li></ul><ul><li><a class='header-2' href='#----elapsed--'><code>elapsed?</code></a></li></ul><ul><li><a class='header-2' href='#----to_sf-'><code>to_sf</code></a></li></ul><ul><li><a class='header-2' href='#----to_si-'><code>to_si</code></a></li></ul><ul><li><a class='header-2' href='#----new--'><code>new?</code></a></li></ul><li><a class='header-1' href='#---kernel-'><code>Kernel</code></a></li>
 <ul><li><a class='header-2' href='#----tick_count-'><code>tick_count</code></a></li></ul><ul><li><a class='header-2' href='#----global_tick_count-'><code>global_tick_count</code></a></li></ul></ul>    </div>
@@ -902,6 +902,68 @@ end
 
 args.state.fx_queue.reject! { |fx| fx.countdown &lt; 0 }
 </code></pre>
+<h2 id='---using--args-state--to-store-your-game-state'>Using <code>args.state</code> To Store Your Game State <a style='font-size: small; float: right;' href='#---using--args-state--to-store-your-game-state'>link</a></h2> 
+<p>
+<code>args.state</code> is a open data structure that allows you to define properties that are arbitrarily nested. You don't need to define any kind of <code>class</code>.
+</p>
+<p>
+To initialize your game state, use the <code>||=</code> operator. Any value on the right side of <code>||=</code> will only be assigned _once_.
+</p>
+<p>
+To assign a value every frame, just use the <code>=</code> operator, but _make sure_ you've initialized a default value.
+</p>
+<pre><code class="ruby">def tick args
+  # initialize your game state ONCE
+  args.state.player.x  ||= 0
+  args.state.player.y  ||= 0
+  args.state.player.hp ||= 100
+
+  # increment the x position of the character by one every frame
+  args.state.player.x += 1
+
+  # Render a sprite with a label above the sprite
+  args.outputs.sprites &lt;&lt; [
+    args.state.player.x,
+    args.state.player.y,
+    32, 32,
+    "player.png"
+  ]
+
+  args.outputs.labels &lt;&lt; [
+    args.state.player.x,
+    args.state.player.y - 50,
+    args.state.player.hp
+  ]
+end
+</code></pre>
+<h2 id='---accessing-files'>Accessing files <a style='font-size: small; float: right;' href='#---accessing-files'>link</a></h2> 
+<p>
+DragonRuby uses a sandboxed filesystem which will automatically read from and write to a location appropriate for your platform so you don't have to worry about theses details in your code. You can just use <code>gtk.read_file</code>, <code>gtk.write_file</code>, and <code>gtk.append_file</code> with a relative path and the engine will take care of the rest.
+</p>
+<p>
+The data directories that will be written to in a production build are:
+</p>
+<ul>
+<li>Windows: <code>C:\Users\[username]\AppData\Roaming\[devtitle]\[gametitle]</code></li>
+<li>MacOS: <code>$HOME/Library/Application Support/[gametitle]</code></li>
+<li>Linux: <code>$HOME/.local/share/[gametitle]</code></li>
+<li>HTML5: The data will be written to the browser's IndexedDB.</li>
+</ul>
+<p>
+The values in square brackets are the values you set in your <code>app/metadata/game_metadata.txt</code> file.
+</p>
+<p>
+When reading files, the engine will first look in the game's data directory and then in the game directory itself. This means that if you write a file to the data directory that already exists in your game directory, the file in the data directory will be used instead of the one that is in your game.
+</p>
+<p>
+When running a development build you will directly write to your game directory (and thus overwrite existing files). This can be useful for built-in development tools like level editors.
+</p>
+<p>
+For more details on the implementation of the sandboxed filesystem, see Ryan C. Gordon's PhysicsFS documentation: <a href='https://icculus.org/physfs/'>https://icculus.org/physfs/</a>
+</p>
+<p>
+IMPORTANT: File access functions are sandoxed and assume that the <code>dragonruby</code> binary lives alongside the game you are building. Do not expect file access functions to return correct values if you are attempting to run the <code>dragonruby</code> binary from a shared location. It's recommended that the directory structure contained in the zip is not altered and games are built using that starter template.
+</p>
 <h1 id='--recipies-'>RECIPIES: <a style='font-size: small; float: right;' href='#--recipies-'>link</a></h1> 
 <h2 id='---how-to-determine-what-frame-you-are-on'>How To Determine What Frame You Are On <a style='font-size: small; float: right;' href='#---how-to-determine-what-frame-you-are-on'>link</a></h2> 
 <p>
@@ -1139,68 +1201,6 @@ If you want to play a <code>.ogg</code> once as if it were a sound effect, you c
   end
 end
 </code></pre>
-<h2 id='---using--args-state--to-store-your-game-state'>Using <code>args.state</code> To Store Your Game State <a style='font-size: small; float: right;' href='#---using--args-state--to-store-your-game-state'>link</a></h2> 
-<p>
-<code>args.state</code> is a open data structure that allows you to define properties that are arbitrarily nested. You don't need to define any kind of <code>class</code>.
-</p>
-<p>
-To initialize your game state, use the <code>||=</code> operator. Any value on the right side of <code>||=</code> will only be assigned _once_.
-</p>
-<p>
-To assign a value every frame, just use the <code>=</code> operator, but _make sure_ you've initialized a default value.
-</p>
-<pre><code class="ruby">def tick args
-  # initialize your game state ONCE
-  args.state.player.x  ||= 0
-  args.state.player.y  ||= 0
-  args.state.player.hp ||= 100
-
-  # increment the x position of the character by one every frame
-  args.state.player.x += 1
-
-  # Render a sprite with a label above the sprite
-  args.outputs.sprites &lt;&lt; [
-    args.state.player.x,
-    args.state.player.y,
-    32, 32,
-    "player.png"
-  ]
-
-  args.outputs.labels &lt;&lt; [
-    args.state.player.x,
-    args.state.player.y - 50,
-    args.state.player.hp
-  ]
-end
-</code></pre>
-<h2 id='---accessing-files'>Accessing files <a style='font-size: small; float: right;' href='#---accessing-files'>link</a></h2> 
-<p>
-DragonRuby uses a sandboxed filesystem which will automatically read from and write to a location appropriate for your platform so you don't have to worry about theses details in your code. You can just use <code>gtk.read_file</code>, <code>gtk.write_file</code>, and <code>gtk.append_file</code> with a relative path and the engine will take care of the rest.
-</p>
-<p>
-The data directories that will be written to in a production build are:
-</p>
-<ul>
-<li>Windows: <code>C:\Users\[username]\AppData\Roaming\[devtitle]\[gametitle]</code></li>
-<li>MacOS: <code>$HOME/Library/Application Support/[gametitle]</code></li>
-<li>Linux: <code>$HOME/.local/share/[gametitle]</code></li>
-<li>HTML5: The data will be written to the browser's IndexedDB.</li>
-</ul>
-<p>
-The values in square brackets are the values you set in your <code>app/metadata/game_metadata.txt</code> file.
-</p>
-<p>
-When reading files, the engine will first look in the game's data directory and then in the game directory itself. This means that if you write a file to the data directory that already exists in your game directory, the file in the data directory will be used instead of the one that is in your game.
-</p>
-<p>
-When running a development build you will directly write to your game directory (and thus overwrite existing files). This can be useful for built-in development tools like level editors.
-</p>
-<p>
-For more details on the implementation of the sandboxed filesystem, see Ryan C. Gordon's PhysicsFS documentation: <a href='https://icculus.org/physfs/'>https://icculus.org/physfs/</a>
-</p>
-<p>
-IMPORTANT: File access functions are sandoxed and assume that the <code>dragonruby</code> binary lives alongside the game you are building. Do not expect file access functions to return correct values if you are attempting to run the <code>dragonruby</code> binary from a shared location. It's recommended that the directory structure contained in the zip is not altered and games are built using that starter template.
-</p>
 <h1 id='--outputs---args-outputs--'>Outputs (<code>args.outputs</code>) <a style='font-size: small; float: right;' href='#--outputs---args-outputs--'>link</a></h1> 
 <p>
 Outputs is how you render primitives to the screen. The minimal setup for rendering something to the screen is via a <code>tick</code> method defined in mygame/app/main.rb
@@ -2373,6 +2373,51 @@ Returns <code>true</code> if the specific button was released. <code>args.inputs
 <p>
 ?&gt; For a full demonstration of all mouse button states, refer to the sample app located at <code>./samples/02_input_basics/02_mouse_properties</code>
 </p>
+<h3 id='-----buttons-'><code>buttons</code> <a style='font-size: small; float: right;' href='#-----buttons-'>link</a></h3> 
+<p>
+<code>args.inputs.mouse.buttons</code> provides additional mouse properties, specifically for determining if a specific button is held and dragging vs just being clicked.
+</p>
+<p>
+Properites for <code>args.inputs.mouse.buttons</code> are:
+</p>
+<ul>
+<li><code>left</code></li>
+<li><code>middle</code></li>
+<li><code>right</code></li>
+<li><code>x1</code></li>
+<li><code>x2</code></li>
+</ul>
+<p>
+Example:
+</p>
+<pre><code class="ruby">def tick args
+  if args.inputs.mouse.buttons.left.buffered_click
+    GTK.notify "buffered_click occurred #{args.inputs.mouse.buttons.left.id}"
+  end
+
+  if args.inputs.mouse.buttons.left.buffered_held
+    GTK.notify "buffered_held occurred"
+  end
+end
+</code></pre>
+<p>
+Button properties:
+</p>
+<ul>
+<li><code>id</code>: returns <code>:left</code>, <code>:middle</code>, <code>:right</code>, <code>:x1</code>, <code>:x2</code></li>
+<li><code>index</code>: returns <code>0</code>, <code>1</code>, <code>2</code>, <code>3</code>, <code>4</code></li>
+<li><code>click</code>: Returns a truthy value for if button was clicked/down.</li>
+<li><code>click_at</code>: Returns <code>Kernel.tick_count</code> that button was clicked/down.</li>
+<li><code>global_click_at</code>: Returns <code>Kernel.global_tick_count</code> that button was clicked/down.</li>
+<li><code>up</code>: Returns a truthy value for if button was up/released.</li>
+<li><code>up_at</code>: Returns <code>Kernel.tick_count</code> that button was up/released.</li>
+<li><code>global_up_at</code>: Returns <code>Kernel.global_tick_count</code> that button was up/released.</li>
+<li><code>held</code>: Returns a truthy value for if button was held.</li>
+<li><code>held_at</code>: Returns <code>Kernel.tick_count</code> that button was held.</li>
+<li><code>global_held_at</code>: Returns <code>Kernel.global_tick_count</code> that button was held.</li>
+<li><code>buffered_click</code>: Returns <code>true</code> if button has been exclusively determined to be a click (and won't be considered held).</li>
+<li><code>buffered_held</code>: Returns <code>true</code> if button has been exclusively determined to be hed (and won't be considered clicked).</li>
+</ul>
 <h2 id='---touch'>Touch <a style='font-size: small; float: right;' href='#---touch'>link</a></h2> 
 <p>
 The following touch apis are available on touch devices (iOS, Android, Mobile Web, Surface).
@@ -2489,6 +2534,10 @@ Returns true if the Left Analog Stick is tilted. The <code>threshold_raw</code> 
 <p>
 Returns true if the Right Analog Stick is tilted. The <code>threshold_raw</code> and <code>threshold_perc</code> are optional parameters that can be used to set the minimum threshold for the analog stick to be considered active. The <code>threshold_raw</code> is a number between 0 and 32,767, and the <code>threshold_perc</code> is a number between 0 and 1.
 </p>
+<h3 id='------left-right-_analog_angle-'><code>(left|right)_analog_angle</code> <a style='font-size: small; float: right;' href='#------left-right-_analog_angle-'>link</a></h3> 
+<p>
+Returns the angle of the analog in degrees for each analog stick. You can call <code>.to_radius</code> on the return value to get the angle in radians.
+</p>
 <h3 id='-----analog_dead_zone-'><code>analog_dead_zone</code> <a style='font-size: small; float: right;' href='#-----analog_dead_zone-'>link</a></h3> 
 <p>
 The default value for this property is <code>3600</code>. You can set this to a lower value for a more responsive analog stick, though it's not recommended (the Steam Deck analog sticks don't always settle back to a value lower than <code>3600</code>).
@@ -2524,6 +2573,37 @@ args.inputs.controller_one.key_held?(:enter)
 # key down or held
 args.inputs.controller_one.enter
 args.inputs.controller_one.key_down_or_held?(:enter)
+</code></pre>
+<h2 id='---keyboard-or-controller-on---args-inputs-key_-down-up-held---'>Keyboard or Controller On (<code>args.inputs.key_(down|up|held)</code>) <a style='font-size: small; float: right;' href='#---keyboard-or-controller-on---args-inputs-key_-down-up-held---'>link</a></h2> 
+<p>
+Represents directional input that is shared between keyboard and controller. Useful for supporting directional input that can come from keyboard or controller.
+</p>
+<p>
+Shared keys:
+</p>
+<ul>
+<li><code>left</code></li>
+<li><code>right</code></li>
+<li><code>up</code></li>
+<li><code>down</code></li>
+</ul>
+<p>
+Demonstration:
+</p>
+<pre><code class="ruby">def tick args
+  args.outputs.watch "args.inputs.left                         #{args.inputs.left}"
+  args.outputs.watch "args.inputs.keyboard.left                #{args.inputs.keyboard.left}"
+  args.outputs.watch "args.inputs.controller_one.left          #{args.inputs.controller_one.left}"
+  args.outputs.watch "args.inputs.key_down.left                #{args.inputs.key_down.left}"
+  args.outputs.watch "args.inputs.keyboard.key_down.left       #{args.inputs.keyboard.key_down.left}"
+  args.outputs.watch "args.inputs.controller_one.key_down.left #{args.inputs.controller_one.key_down.left}"
+  args.outputs.watch "args.inputs.key_held.left                #{args.inputs.key_held.left}"
+  args.outputs.watch "args.inputs.keyboard.key_held.left       #{args.inputs.keyboard.key_held.left}"
+  args.outputs.watch "args.inputs.controller_one.key_held.left #{args.inputs.controller_one.key_held.left}"
+  args.outputs.watch "args.inputs.key_up.left                  #{args.inputs.key_up.left}"
+  args.outputs.watch "args.inputs.keyboard.key_up.left         #{args.inputs.keyboard.key_up.left}"
+  args.outputs.watch "args.inputs.controller_one.key_up.left   #{args.inputs.controller_one.key_up.left}"
+end
 </code></pre>
 <h2 id='---keyboard---args-inputs-keyboard--'>Keyboard (<code>args.inputs.keyboard</code>) <a style='font-size: small; float: right;' href='#---keyboard---args-inputs-keyboard--'>link</a></h2> 
 <p>
@@ -2744,8 +2824,11 @@ end
 <li>  <code>kp_period</code></li>
 <li>  <code>kp_equals</code></li>
 <li>  <code>left_right</code></li>
+<li>  <code>last_left_right</code></li>
 <li>  <code>up_down</code></li>
+<li>  <code>last_up_down</code></li>
 <li>  <code>directional_vector</code> (returns normalized vector based off of WASD/arrow keys, <code>nil</code> if no keys are down/held)</li>
+<li>  <code>last_directional_vector</code> (returns normalized vector based off of WASD/arrow keys, <code>nil</code> if no keys are down/held)</li>
 <li>  <code>directional_angle</code> (returns angle in degrees based off of WASD/arrow keys, <code>nil</code> if no keys are down/held)</li>
 <li>  <code>truthy_keys</code> (array of <code>Symbols</code>)</li>
 </ul>
@@ -2848,19 +2931,15 @@ Returns a <code>Hash</code> with all keys on the keyboard in their respective st
 <li>  <code>:up</code></li>
 <li>  <code>:repeat</code></li>
 </ul>
-<h1 id='--runtime---args-gtk--'>Runtime (<code>args.gtk</code>) <a style='font-size: small; float: right;' href='#--runtime---args-gtk--'>link</a></h1> 
+<h1 id='--runtime---gtk--'>Runtime (<code>GTK</code>) <a style='font-size: small; float: right;' href='#--runtime---gtk--'>link</a></h1> 
 <p>
 The <code>GTK::Runtime</code> class is the core of DragonRuby.
 </p>
 <p>
-?&gt; All functions <code>$gtk</code>, <code>GTK</code>, or inside of the <code>tick</code> method through <code>args</code>.
+?&gt; All functions <code>$gtk</code>, <code>GTK</code>, via <code>args.gtk</code> (it's recommended to use <code>GTK</code>).
 </p>
 <pre><code class="ruby">def tick args
-  args.gtk.function(...)
-
-  # OR available globally
-  $gtk.function(...)
-  # OR
+  # recommended access to GTK
   GTK.function(...)
 end
 </code></pre>
@@ -2980,7 +3059,7 @@ Here's an example of how to get the color data for a pixel:
 </p>
 <pre><code class="ruby">def tick args
   # load the pixels from the image
-  args.state.image ||= args.gtk.get_pixels "sprites/square/blue.png"
+  args.state.image ||= GTK.get_pixels "sprites/square/blue.png"
 
   # initialize state variables for the pixel coordinates
   args.state.x_px ||= 0
@@ -3040,7 +3119,7 @@ See the sample apps at <code>./samples/12_c_extensions</code> for detailed walkt
 </p>
 <h2 id='---environment-and-utility-functions'>Environment and Utility Functions <a style='font-size: small; float: right;' href='#---environment-and-utility-functions'>link</a></h2> 
 <p>
-The following functions will help in interacting with the OS and rendering pipeline.
+The following functions will help in interacting with the OS and render/execution pipeline.
 </p>
 <h3 id='-----calcstringbox-'><code>calcstringbox</code> <a style='font-size: small; float: right;' href='#-----calcstringbox-'>link</a></h3> 
 <p>
@@ -3059,7 +3138,7 @@ Returns the render width and render height as a tuple for a piece of text. The p
   font = "fonts/courier-new.ttf"
 
   # get the render width and height
-  string_w, string_h = args.gtk.calcstringbox text, size_enum, font
+  string_w, string_h = GTK.calcstringbox text, size_enum, font
 
   # render the label
   args.outputs.labels &lt;&lt; {
@@ -3086,10 +3165,10 @@ end
 <code>calcstringbox</code> also supports named parameters for <code>size_enum</code> and <code>size_px</code>.
 </p>
 <pre><code class="ruby">  # size_enum, and font named parameters
-  string_w, string_h = args.gtk.calcstringbox text, size_enum: 0, font: "fonts/example.ttf"
+  string_w, string_h = GTK.calcstringbox text, size_enum: 0, font: "fonts/example.ttf"
 
   # size_px, and font named parameters
-  string_w, string_h = args.gtk.calcstringbox text, size_px: 20, font: "fonts/example.ttf"
+  string_w, string_h = GTK.calcstringbox text, size_px: 20, font: "fonts/example.ttf"
 </code></pre>
 <h3 id='-----request_quit-'><code>request_quit</code> <a style='font-size: small; float: right;' href='#-----request_quit-'>link</a></h3> 
 <p>
@@ -3098,7 +3177,7 @@ Call this function to exit your game. You will be given one additional tick if y
 <pre><code class="ruby">def tick args
   # exit the game after 600 frames (10 seconds)
   if Kernel.tick_count == 600
-    args.gtk.request_quit
+    GTK.request_quit
   end
 end
 </code></pre>
@@ -3113,12 +3192,12 @@ This function takes in a single <code>boolean</code> parameter. <code>true</code
 <pre><code class="ruby">def tick args
   # make the game full screen after 600 frames (10 seconds)
   if Kernel.tick_count == 600
-    args.gtk.set_window_fullscreen true
+    GTK.set_window_fullscreen true
   end
 
   # return the game to windowed mode after 20 seconds
   if Kernel.tick_count == 1200
-    args.gtk.set_window_fullscreen false
+    GTK.set_window_fullscreen false
   end
 end
 </code></pre>
@@ -3166,35 +3245,35 @@ Note: The default title for your game is specified in via the <code>gametitle</c
 You can ask DragonRuby which platform your game is currently being run on. This can be useful if you want to perform different pieces of logic based on where the game is running.
 </p>
 <p>
-The raw platform string value is available via <code>args.gtk.platform</code> which takes in a <code>symbol</code> representing the platform's categorization/mapping.
+The raw platform string value is available via <code>GTK.platform</code> which takes in a <code>symbol</code> representing the platform's categorization/mapping.
 </p>
 <p>
-You can see all available platform categorizations via the <code>args.gtk.platform_mappings</code> function.
+You can see all available platform categorizations via the <code>GTK.platform_mappings</code> function.
 </p>
 <p>
-Here's an example of how to use <code>args.gtk.platform? category_symbol</code>:
+Here's an example of how to use <code>GTK.platform? category_symbol</code>:
 </p>
 <pre><code class="ruby">def tick args
   label_style = { x: 640, y: 360, anchor_x: 0.5, anchor_y: 0.5 }
-  if    args.gtk.platform? :macos
+  if    GTK.platform? :macos
     args.outputs.labels &lt;&lt; { text: "I am running on MacOS.", **label_style }
-  elsif args.gtk.platform? :win
+  elsif GTK.platform? :win
     args.outputs.labels &lt;&lt; { text: "I am running on Windows.", **label_style }
-  elsif args.gtk.platform? :linux
+  elsif GTK.platform? :linux
     args.outputs.labels &lt;&lt; { text: "I am running on Linux.", **label_style }
-  elsif args.gtk.platform? :web
+  elsif GTK.platform? :web
     args.outputs.labels &lt;&lt; { text: "I am running on a web page.", **label_style }
-  elsif args.gtk.platform? :android
+  elsif GTK.platform? :android
     args.outputs.labels &lt;&lt; { text: "I am running on Android.", **label_style }
-  elsif args.gtk.platform? :ios
+  elsif GTK.platform? :ios
     args.outputs.labels &lt;&lt; { text: "I am running on iOS.", **label_style }
-  elsif args.gtk.platform? :touch
+  elsif GTK.platform? :touch
     args.outputs.labels &lt;&lt; { text: "I am running on a device that supports touch (either iOS/Android native or mobile web).", **label_style }
-  elsif args.gtk.platform? :steam
+  elsif GTK.platform? :steam
     args.outputs.labels &lt;&lt; { text: "I am running via steam (covers both desktop and steamdeck).", **label_style }
-  elsif args.gtk.platform? :steam_deck
+  elsif GTK.platform? :steam_deck
     args.outputs.labels &lt;&lt; { text: "I am running via steam on the Steam Deck (not steam desktop).", **label_style }
-  elsif args.gtk.platform? :steam_desktop
+  elsif GTK.platform? :steam_desktop
     args.outputs.labels &lt;&lt; { text: "I am running via steam on desktop (not steam deck).", **label_style }
   end
 end
@@ -3208,7 +3287,7 @@ If you want to simulate a production build. Add an empty file called <code>drago
 </p>
 <h3 id='-----platform_mappings-'><code>platform_mappings</code> <a style='font-size: small; float: right;' href='#-----platform_mappings-'>link</a></h3> 
 <p>
-These are the current platform categorizations (<code>args.gtk.platform_mappings</code>):
+These are the current platform categorizations (<code>GTK.platform_mappings</code>):
 </p>
 <pre><code class="ruby">{
   "Mac OS X"   =&gt; [:desktop, :macos, :osx, :mac, :macosx], # may also include :steam and :steam_desktop run via steam
@@ -3221,7 +3300,7 @@ These are the current platform categorizations (<code>args.gtk.platform_mappings
 }
 </code></pre>
 <p>
-Given the mappings above, <code>args.gtk.platform? :desktop</code> would return <code>true</code> if the game is running on a player's computer irrespective of OS (MacOS, Linux, and Windows are all categorized as <code>:desktop</code> platforms).
+Given the mappings above, <code>GTK.platform? :desktop</code> would return <code>true</code> if the game is running on a player's computer irrespective of OS (MacOS, Linux, and Windows are all categorized as <code>:desktop</code> platforms).
 </p>
 <h3 id='-----system-'><code>system</code> <a style='font-size: small; float: right;' href='#-----system-'>link</a></h3> 
 <p>
@@ -3236,7 +3315,7 @@ Given an OS dependent cli command represented as a string, this function execute
 <pre><code class="ruby">def tick args
   # execute ls on the current directory in 10 seconds
   if Kernel.tick_count == 600
-    args.gtk.system "ls ."
+    GTK.system "ls ."
   end
 end
 </code></pre>
@@ -3253,7 +3332,7 @@ Given an OS dependent cli command represented as a string, this function execute
 <pre><code class="ruby">def tick args
   # execute ls on the current directory in 10 seconds
   if Kernel.tick_count == 600
-    results = args.gtk.exec "ls ."
+    results = GTK.exec "ls ."
     puts "The results of the command are:"
     puts results
   end
@@ -3292,7 +3371,7 @@ Replaces the mouse cursor with a sprite. Takes in a <code>path</code> to the spr
   if Kernel.tick_count == 0
     # assumes a sprite of size 80x80 and centers the sprite
     # relative to the cursor position.
-    args.gtk.set_cursor "sprites/square/blue.png", 40, 40
+    GTK.set_cursor "sprites/square/blue.png", 40, 40
   end
 end
 </code></pre>
@@ -3350,10 +3429,10 @@ This function takes in one parameter. The parameter is the file path and assumes
 
 def tick args
   if args.inputs.mouse.click
-    args.gtk.write_file "last-mouse-click.txt", "Mouse was clicked at #{Kernel.tick_count}."
+    GTK.write_file "last-mouse-click.txt", "Mouse was clicked at #{Kernel.tick_count}."
   end
 
-  file_info = args.gtk.stat_file "last-mouse-click.txt"
+  file_info = GTK.stat_file "last-mouse-click.txt"
 
   if file_info
     args.outputs.labels &lt;&lt; {
@@ -3382,7 +3461,7 @@ This function takes in two parameters. The first parameter is the file path and 
 </p>
 <pre><code class="ruby">def tick args
   if args.inputs.mouse.click
-    args.gtk.write_file "last-mouse-click.txt", "Mouse was clicked at #{Kernel.tick_count}."
+    GTK.write_file "last-mouse-click.txt", "Mouse was clicked at #{Kernel.tick_count}."
   end
 end
 </code></pre>
@@ -3392,8 +3471,8 @@ This function takes in two parameters. The first parameter is the file path and 
 </p>
 <pre><code class="ruby">def tick args
   if args.inputs.mouse.click
-    args.gtk.append_file "click-history.txt", "Mouse was clicked at #{Kernel.tick_count}.\n"
-    puts args.gtk.read_file("click-history.txt")
+    GTK.append_file "click-history.txt", "Mouse was clicked at #{Kernel.tick_count}.\n"
+    puts GTK.read_file("click-history.txt")
   end
 end
 </code></pre>
@@ -3422,16 +3501,16 @@ Notes:
 <pre><code class="ruby">def tick args
   if args.inputs.keyboard.key_down.w
     # press w to write file
-    args.gtk.append_file "example-file.txt", "File written at #{Kernel.tick_count}\n"
-    args.gtk.notify "File written/appended."
+    GTK.append_file "example-file.txt", "File written at #{Kernel.tick_count}\n"
+    GTK.notify "File written/appended."
   elsif args.inputs.keyboard.key_down.d
     # press d to delete file "unsafely"
-    args.gtk.delete_file "example-file.txt"
-    args.gtk.notify "File deleted."
+    GTK.delete_file "example-file.txt"
+    GTK.notify "File deleted."
   elsif args.inputs.keyboard.key_down.r
     # press r to read file
-    contents = args.gtk.read_file "example-file.txt"
-    args.gtk.notify "File contents written to console."
+    contents = GTK.read_file "example-file.txt"
+    GTK.notify "File contents written to console."
     puts contents
   end
 end
@@ -3440,7 +3519,7 @@ end
 <p>
 Given a json string, this function returns a hash representing the json data.
 </p>
-<pre><code class="ruby">hash = args.gtk.parse_json '{ "name": "John Doe", "aliases": ["JD"] }'
+<pre><code class="ruby">hash = GTK.parse_json '{ "name": "John Doe", "aliases": ["JD"] }'
 # structure of hash: { "name"=&gt;"John Doe", "aliases"=&gt;["JD"] }
 </code></pre>
 <h3 id='-----parse_json_file-'><code>parse_json_file</code> <a style='font-size: small; float: right;' href='#-----parse_json_file-'>link</a></h3> 
@@ -3471,7 +3550,7 @@ Returns an object that represents an http response which will eventually have a 
 </p>
 <pre><code class="ruby">def tick args
   # perform an http get and print the response when available
-  args.state.result ||= args.gtk.http_get "https://httpbin.org/html"
+  args.state.result ||= GTK.http_get "https://httpbin.org/html"
 
   if args.state.result &amp;&amp; args.state.result[:complete] &amp;&amp; !args.state.printed
     if args.state.result[:http_response_code] == 200
@@ -3485,7 +3564,7 @@ Returns an object that represents an http response which will eventually have a 
     args.state.printed = true
 
     # show the console
-    args.gtk.show_console
+    GTK.show_console
   end
 end
 </code></pre>
@@ -3502,7 +3581,7 @@ Returns an object that represents an http response which will eventually have a 
   # perform an http get and print the response when available
 
   args.state.form_fields ||= { "userId" =&gt; "#{Time.now.to_i}" }
-  args.state.result ||= args.gtk.http_post "http://httpbin.org/post",
+  args.state.result ||= GTK.http_post "http://httpbin.org/post",
                                            args.state.form_fields,
                                            ["Content-Type: application/x-www-form-urlencoded"]
 
@@ -3519,7 +3598,7 @@ Returns an object that represents an http response which will eventually have a 
     args.state.printed = true
 
     # show the console
-    args.gtk.show_console
+    GTK.show_console
   end
 end
 </code></pre>
@@ -3536,7 +3615,7 @@ Returns an object that represents an http response which will eventually have a 
   # perform an http get and print the response when available
 
   args.state.json ||= "{ "userId": "#{Time.now.to_i}"}"
-  args.state.result ||= args.gtk.http_post_body "http://httpbin.org/post",
+  args.state.result ||= GTK.http_post_body "http://httpbin.org/post",
                                                 args.state.json,
                                                 ["Content-Type: application/json", "Content-Length: #{args.state.json.length}"]
 
@@ -3553,7 +3632,7 @@ Returns an object that represents an http response which will eventually have a 
     args.state.printed = true
 
     # show the console
-    args.gtk.show_console
+    GTK.show_console
   end
 end
 </code></pre>
@@ -3569,7 +3648,7 @@ You can start an in-game http server in production via:
 </p>
 <pre><code class="ruby">def tick args
   # server explicitly enabled in production
-  args.gtk.start_server! port: 9001, enable_in_prod: true
+  GTK.start_server! port: 9001, enable_in_prod: true
 end
 </code></pre>
 <p>
@@ -3577,7 +3656,7 @@ Here's how you would respond to http requests:
 </p>
 <pre><code class="ruby">def tick args
   # server explicitly enabled in production
-  args.gtk.start_server! port: 9001, enable_in_prod: true
+  GTK.start_server! port: 9001, enable_in_prod: true
 
   # loop through pending requests and respond to them
   args.inputs.http_requests.each do |request|
@@ -3592,7 +3671,7 @@ Returns an object that represents an http response which will eventually have a 
 </p>
 <pre><code class="ruby">def tick args
   # perform an http get and print the response when available
-  args.state.result ||= args.gtk.http_get "https://httpbin.org/html"
+  args.state.result ||= GTK.http_get "https://httpbin.org/html"
 
   if args.state.result &amp;&amp; args.state.result[:complete] &amp;&amp; !args.state.printed
     if args.state.result[:http_response_code] == 200
@@ -3606,7 +3685,7 @@ Returns an object that represents an http response which will eventually have a 
     args.state.printed = true
 
     # show the console
-    args.gtk.show_console
+    GTK.show_console
   end
 end
 </code></pre>
@@ -3623,7 +3702,7 @@ Returns an object that represents an http response which will eventually have a 
   # perform an http get and print the response when available
 
   args.state.form_fields ||= { "userId" =&gt; "#{Time.now.to_i}" }
-  args.state.result ||= args.gtk.http_post "http://httpbin.org/post",
+  args.state.result ||= GTK.http_post "http://httpbin.org/post",
                                            args.state.form_fields,
                                            ["Content-Type: application/x-www-form-urlencoded"]
 
@@ -3640,7 +3719,7 @@ Returns an object that represents an http response which will eventually have a 
     args.state.printed = true
 
     # show the console
-    args.gtk.show_console
+    GTK.show_console
   end
 end
 </code></pre>
@@ -3657,7 +3736,7 @@ Returns an object that represents an http response which will eventually have a 
   # perform an http get and print the response when available
 
   args.state.json ||= "{ "userId": "#{Time.now.to_i}"}"
-  args.state.result ||= args.gtk.http_post_body "http://httpbin.org/post",
+  args.state.result ||= GTK.http_post_body "http://httpbin.org/post",
                                                 args.state.json,
                                                 ["Content-Type: application/json", "Content-Length: #{args.state.json.length}"]
 
@@ -3674,7 +3753,7 @@ Returns an object that represents an http response which will eventually have a 
     args.state.printed = true
 
     # show the console
-    args.gtk.show_console
+    GTK.show_console
   end
 end
 </code></pre>
@@ -3690,7 +3769,7 @@ You can start an in-game http server in production via:
 </p>
 <pre><code class="ruby">def tick args
   # server explicitly enabled in production
-  args.gtk.start_server! port: 9001, enable_in_prod: true
+  GTK.start_server! port: 9001, enable_in_prod: true
 end
 </code></pre>
 <p>
@@ -3698,7 +3777,7 @@ Here's how you would respond to http requests:
 </p>
 <pre><code class="ruby">def tick args
   # server explicitly enabled in production
-  args.gtk.start_server! port: 9001, enable_in_prod: true
+  GTK.start_server! port: 9001, enable_in_prod: true
 
   # loop through pending requests and respond to them
   args.inputs.http_requests.each do |request|
@@ -3728,7 +3807,7 @@ To get other values from <code>mygame/game_metadata.txt</code>, you can do:
 </p>
 <pre><code class="ruby">def tick args
   if Kernel.tick_count == 0
-    puts args.gtk.game_version
+    puts GTK.game_version
     args.cvars["game_metadata.version"].value
   end
 end
@@ -3793,7 +3872,7 @@ Has the same behavior as <code>reset</code> except the reset occurs before <code
 <pre><code class="ruby">def tick args
   # reset the game if "r" is pressed on the keyboard
   if args.inputs.keyboard.key_down.r
-    args.gtk.reset_next_tick # use reset_next_tick instead of reset
+    GTK.reset_next_tick # use reset_next_tick instead of reset
   end
 end
 
@@ -3810,7 +3889,7 @@ This function can also be used to delete/garbage collect render targets you are 
 </p>
 <h3 id='-----reset_sprites-'><code>reset_sprites</code> <a style='font-size: small; float: right;' href='#-----reset_sprites-'>link</a></h3> 
 <p>
-Sprites when loaded are cached. This method invalidates the cache record of all sprites so that updates on from the disk can be loaded. This function is automatically called when <code>args.gtk.reset</code> (<code>GTK.reset</code>) is invoked.
+Sprites when loaded are cached. This method invalidates the cache record of all sprites so that updates on from the disk can be loaded. This function is automatically called when <code>GTK.reset</code> is invoked.
 </p>
 <h3 id='-----calcspritebox-'><code>calcspritebox</code> <a style='font-size: small; float: right;' href='#-----calcspritebox-'>link</a></h3> 
 <p>
@@ -3829,7 +3908,7 @@ Returns a float value representing the framerate of your game. This is an approx
 <pre><code class="ruby">def tick args
   # render a label to the screen that shows the current framerate
   # formatted as a floating point number with two decimal places
-  args.outputs.labels &lt;&lt; { x: 30, y: 30.from_top, text: "#{args.gtk.current_framerate.to_sf}" }
+  args.outputs.labels &lt;&lt; { x: 30, y: 30.from_top, text: "#{GTK.current_framerate.to_sf}" }
 end
 </code></pre>
 <h3 id='-----framerate_diagnostics_primitives-'><code>framerate_diagnostics_primitives</code> <a style='font-size: small; float: right;' href='#-----framerate_diagnostics_primitives-'>link</a></h3> 
@@ -3837,7 +3916,7 @@ end
 Returns a set of primitives that can be rendered to the screen which provide more detailed information about the speed of your simulation (framerate, draw call count, mouse position, etc).
 </p>
 <pre><code class="ruby">def tick args
-  args.outputs.primitives &lt;&lt; args.gtk.framerate_diagnostics_primitives
+  args.outputs.primitives &lt;&lt; GTK.framerate_diagnostics_primitives
 end
 </code></pre>
 <h3 id='-----warn_array_primitives--'><code>warn_array_primitives!</code> <a style='font-size: small; float: right;' href='#-----warn_array_primitives--'>link</a></h3> 
@@ -3846,7 +3925,7 @@ This function helps you audit your game of usages of array-based primitives. Whi
 </p>
 <pre><code class="ruby">def tick args
   # enable array based primitives warnings
-  args.gtk.warn_array_primitives!
+  GTK.warn_array_primitives!
 
   # array-based primitive elsewhere in code
   # an log message will be posted giving the location of the array
@@ -3879,17 +3958,17 @@ If <code>seconds</code> is provided, the winner will be determined by the most c
 <pre><code class="ruby">def tick args
   # press i to run benchmark using iterations
   if args.inputs.keyboard.key_down.i
-    args.gtk.console.show
-    args.gtk.benchmark iterations: 1000, # number of iterations
+    GTK.console.show
+    GTK.benchmark iterations: 1000, # number of iterations
                        # label for experiment
-                       using_numeric_map: -&gt; () {
+                       using_numeric_map: lambda {
                          # experiment body
                          v = 100.map_with_index do |i|
                            i * 100
                          end
                        },
                        # label for experiment
-                       using_numeric_times: -&gt; () {
+                       using_numeric_times: lambda {
                          # experiment body
                          v = []
                          100.times do |i|
@@ -3900,17 +3979,17 @@ If <code>seconds</code> is provided, the winner will be determined by the most c
 
   # press s to run benchmark using seconds
   if args.inputs.keyboard.key_down.s
-    args.gtk.console.show
-    args.gtk.benchmark seconds: 1, # number of seconds to run each experiment
+    GTK.console.show
+    GTK.benchmark seconds: 1, # number of seconds to run each experiment
                        # label for experiment
-                       using_numeric_map: -&gt; () {
+                       using_numeric_map: lambda {
                          # experiment body
                          v = 100.map_with_index do |i|
                            i * 100
                          end
                        },
                        # label for experiment
-                       using_numeric_times: -&gt; () {
+                       using_numeric_times: lambda {
                          # experiment body
                          v = []
                          100.times do |i|
@@ -3929,12 +4008,12 @@ An optional parameter of duration (number value representing ticks) can also be 
 </p>
 <pre><code class="ruby">def tick args
   if args.inputs.mouse.click
-    args.gtk.notify! "Mouse was clicked!"
+    GTK.notify! "Mouse was clicked!"
   end
 
   if args.inputs.keyboard.key_down.r
     # optional duration parameter
-    args.gtk.notify! "R key was pressed!", 600 # present message for 10 seconds/600 frames
+    GTK.notify! "R key was pressed!", 600 # present message for 10 seconds/600 frames
   end
 end
 </code></pre>
@@ -3944,7 +4023,7 @@ Has similar behavior as notify! except you have additional options to show messa
 </p>
 <pre><code class="ruby">def tick args
   if args.inputs.mouse.click
-    args.gtk.notify_extended! message: "message",
+    GTK.notify_extended! message: "message",
                               duration: 300,
                               env: :prod
   end
@@ -3955,10 +4034,10 @@ end
 Given a numeric value representing the factor of 60fps. This function will bring your simulation loop down to slower rate. This method is intended to be used for debugging purposes.
 </p>
 <pre><code class="ruby">def tick args
-  # set your simulation speed to (15 fps): args.gtk.slowmo! 4
-  # set your simulation speed to (1 fps): args.gtk.slowmo! 60
+  # set your simulation speed to (15 fps): GTK.slowmo! 4
+  # set your simulation speed to (1 fps): GTK.slowmo! 60
   # set your simulation speed to (30 fps):
-  args.gtk.slowmo! 2
+  GTK.slowmo! 2
 end
 </code></pre>
 <p>
@@ -3978,7 +4057,7 @@ Enables the DragonRuby Console so that it can be presented by pressing the tilde
 </p>
 <h3 id='-----disable_console-'><code>disable_console</code> <a style='font-size: small; float: right;' href='#-----disable_console-'>link</a></h3> 
 <p>
-Disables the DragonRuby Console so that it won't show up even if you press the tilde key or call <code>args.gtk.show_console</code>.
+Disables the DragonRuby Console so that it won't show up even if you press the tilde key or call <code>GTK.show_console</code>.
 </p>
 <h3 id='-----disable_reset_via_ctrl_r-'><code>disable_reset_via_ctrl_r</code> <a style='font-size: small; float: right;' href='#-----disable_reset_via_ctrl_r-'>link</a></h3> 
 <p>
@@ -4068,35 +4147,17 @@ Returns a string representing the command line arguments passed to the DragonRub
 <p>
 Returns a <code>Hash</code> for command line arguments in the format of <code>--switch value</code> (two hyphens preceding the switch flag with the value separated by a space). This should be used for development/debugging purposes only.
 </p>
-<h3 id='-----download_stb_rb-_raw--'><code>download_stb_rb(_raw)</code> <a style='font-size: small; float: right;' href='#-----download_stb_rb-_raw--'>link</a></h3> 
-<p>
-These two functions can help facilitate the integration of external code files. OSS contributors are encouraged to create libraries that all fit in one file (lowering the barrier to entry for adoption).
-</p>
-<p>
-Examples:
-</p>
-<pre><code class="ruby">def tick args
-end
-
-# option 1:
-# source code will be downloaded from the specified GitHub url, and saved locally with a
-# predefined folder convention.
-GTK.download_stb_rb "https://github.com/xenobrain/ruby_vectormath/blob/main/vectormath_2d.rb"
-
-# option 2:
-# source code will be downloaded from the specified GitHub username, repository, and file.
-# code will be saved locally with a predefined folder convention.
-GTK.download_stb_rb "xenobrain", "ruby_vectormath", "vectormath_2d.rb"
-
-# option 3:
-# source code will be downloaded from a direct/raw url and saved to a direct/raw local path.
-GTK.download_stb_rb_raw "https://raw.githubusercontent.com/xenobrain/ruby_vectormath/main/vectormath_2d.rb",
-                         "lib/xenobrain/ruby_vectionmath/vectormath_2d.rb"
-</code></pre>
 <h3 id='-----reload_history-'><code>reload_history</code> <a style='font-size: small; float: right;' href='#-----reload_history-'>link</a></h3> 
 <p>
 Returns a <code>Hash</code> representing the code files that have be loaded for your game along with timings for the events. This should be used for development/debugging purposes only.
 </p>
+<pre><code class="ruby">def tick args
+  # every second print the reload history
+  if Kernel.tick_count % 60 == 0
+    puts GTK.reload_history
+  end
+end
+</code></pre>
 <h3 id='-----reload_history_pending-'><code>reload_history_pending</code> <a style='font-size: small; float: right;' href='#-----reload_history_pending-'>link</a></h3> 
 <p>
 Returns a <code>Hash</code> for files that have been queued for reload, but haven't been processed yet. This should be used for development/debugging purposes only.
@@ -4185,7 +4246,7 @@ You can invoke the functions above using either the mixin variant or the module 
   puts Geometry.intersect_rect?(rect_1, rect_2)
 end
 </code></pre>
-<h1 id='--cvars-/-configuration---args-cvars--'>CVars / Configuration (<code>args.cvars</code>) <a style='font-size: small; float: right;' href='#--cvars-/-configuration---args-cvars--'>link</a></h1> 
+<h1 id='--cvars-/-configuration-/-game-metadata---args-cvars--'>CVars / Configuration / Game Metadata (<code>args.cvars</code>) <a style='font-size: small; float: right;' href='#--cvars-/-configuration-/-game-metadata---args-cvars--'>link</a></h1> 
 <p>
 Hash contains metadata pulled from the files under the <code>./metadata</code> directory. To get the keys that are available type <code>$args.cvars.keys</code> in the Console. Here is an example of how to retrieve the game version number:
 </p>
@@ -4205,7 +4266,7 @@ Each CVar has the following properties <code>value</code>, <code>name</code>, <c
 ?&gt; See <code>metadata/game_metadata.txt</code> and <code>metadata/cvars.txt</code> for detailed information of all the configuration values that are supported. The following table is a high level summary of each value.
 </p>
 <p>
-| File                           | Name                       | Values                                                                       | Description                                                                                                                                                  | |--------------------------------|----------------------------|------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------| | --metadata/cvars.txt--         | <code>webserver.enabled</code>        | <code>true</code> or <code>false</code> (default is <code>false</code>)                                       | Controls whether or not the in-game web server at <code>localhost:9001</code> is enabled in dev mode. The in-game web server is primarily needed for remote-hotloading. | |                                | <code>webserver.port</code>           | Number representing a port (default is <code>9001</code>)                               | Port that the in-game web server runs on. For remote-hotloading, this value must be <code>9001</code>.                                                                  | |                                | <code>webserver.remote_clients</code> | <code>true</code> or <code>false</code> (default is <code>false</code>)                                       | Controls whether or not remote connections to the in-game web server are allowed. Must be set to <code>true</code> for remote-hotloading.                               | |                                | <code>renderer.background_sleep</code>| Number representing (default is <code>50</code>, set to <code>0</code> to disable)                 | Controls how long to wait before attempting to rendering the game when the game does not have focus (wasted CPU cycles rendering when the window isn't top). | | --metadata/game_metadata.txt-- | <code>devid</code>                    | String value                                                                 | Your Developer Id on Itch.io. | |                                | <code>devname</code>                  | String value                                                                 | Developer name/studio name. | |                                | <code>gameid</code>                   | String value                                                                 | Your Game Id on Itch.io | |                                | <code>gametitle</code>                | String value                                                                 | The title of your game. | |                                | <code>version</code>                  | String value                                                                 | <code>MAJOR</code>.<code>MINOR</code> Version number for your game. | |                                | <code>icon</code>                     | String value                                                                 | Path to your game icon. | |                                | <code>orientation</code>              | <code>landscape</code> or <code>portrait</code> (default is <code>landscape</code>)                           | Orientation for your game. | |                                | <code>orientation_ios</code>          | <code>landscape</code> or <code>portrait</code>                                                    | Overrides the default orientation on iOS. This is a Pro feature. | |                                | <code>orientation_android</code>      | <code>landscape</code> or <code>portrait</code>                                                    | Overrides the default orientation on Android. This is a Pro feature. | |                                | <code>scale_quality</code>            | <code>0</code>, <code>1</code>, or <code>2</code> (default is <code>0</code>)                                            | Specifies the render scale quality for your game (full details of what each number means in <code>metadata/game_metadata.txt</code>). | |                                | <code>ignore_directories</code>       | Comma delimited list of directories                                          | Directories to exclude when packaging your game. | |                                | <code>packageid</code>                | String in reverse domain convention                                          | Android Package Id for your game. This is a Pro feature. | |                                | <code>compile_ruby</code>             | <code>true</code> or <code>false</code> (default is <code>false</code>)                                       | Signifies if your game code will be compiled to bytecode during packaging. This is a Pro feature. | |                                | <code>hd</code>                       | <code>true</code> or <code>false</code> (default is <code>false</code>)                                       | Whether your game will be rendered in HD. This is a Pro feature. | |                                | <code>highdpi</code>                  | <code>true</code> or <code>false</code> (default is <code>false</code>)                                       | Whether your game will be rendered with High DPI. This is a Pro feature. | |                                | <code>sprites_directory</code>        | String value                                                                 | The path that DR should search for HD texture atlases. This is a Pro feature. | |                                | <code>hd_letterbox</code>             | <code>true</code> or <code>false</code> (default is <code>true</code>)                                        | Disables the letter box around your game. This is a Pro feature. | |                                | <code>hd_max_scale</code>             | <code>0</code>, <code>100</code>, <code>125</code>, <code>150</code>, <code>175</code>, <code>200</code>, <code>250</code>, <code>300</code>, <code>400</code> (default is <code>0</code>) | Signifies the max scale of your game. <code>0</code> means size to fit (full details of what each number means in <code>metadata/game_metadata.txt</code>). | | --metadata/ios_metadata.txt--  | <code>teamid</code>                   | String value                                                                 | Apple Team Id. This is a Pro feature. | |                                | <code>appid</code>                    | String value                                                                 | Apple App Id. This is a Pro feature. | |                                | <code>appname</code>                  | String value                                                                 | The name to show under the App icon. | |                                | <code>devcert</code>                  | String value                                                                 | Apple Development Certificate name used to sign your game for local device deployment. This is a Pro feature. | |                                | <code>prodcert</code>                 | String value                                                                 | Apple Distribution Certificate name used to sign your game release to the App Store. This is a Pro feature. |
+| File                           | Name                       | Values                                                                       | Description                                                                                                                                                  | |--------------------------------|----------------------------|------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------| | --metadata/cvars.txt--         | <code>webserver.enabled</code>        | <code>true</code> or <code>false</code> (default is <code>false</code>)                                       | Controls whether or not the in-game web server at <code>localhost:9001</code> is enabled in dev mode. The in-game web server is primarily needed for remote-hotloading. | |                                | <code>webserver.port</code>           | Number representing a port (default is <code>9001</code>)                               | Port that the in-game web server runs on. For remote-hotloading, this value must be <code>9001</code>.                                                                  | |                                | <code>webserver.remote_clients</code> | <code>true</code> or <code>false</code> (default is <code>false</code>)                                       | Controls whether or not remote connections to the in-game web server are allowed. Must be set to <code>true</code> for remote-hotloading.                               | |                                | <code>renderer.background_sleep</code>| Number representing (default is <code>50</code>, set to <code>0</code> to disable)                 | Controls how long to wait before attempting to rendering the game when the game does not have focus (wasted CPU cycles rendering when the window isn't top). | | --metadata/game_metadata.txt-- | <code>devid</code>                    | String value                                                                 | Your Developer Id on Itch.io. | |                                | <code>devname</code>                  | String value                                                                 | Developer name/studio name. | |                                | <code>gameid</code>                   | String value                                                                 | Your Game Id on Itch.io | |                                | <code>gametitle</code>                | String value                                                                 | The title of your game. | |                                | <code>version</code>                  | String value                                                                 | <code>MAJOR</code>.<code>MINOR</code> Version number for your game. | |                                | <code>icon</code>                     | String value                                                                 | Path to your game icon. | |                                | <code>orientation</code>              | <code>landscape</code> or <code>portrait</code> (default is <code>landscape</code>)                           | Orientation for your game. | |                                | <code>orientation_ios</code>          | <code>landscape</code> or <code>portrait</code>                                                    | Overrides the default orientation on iOS. This is a Pro feature. | |                                | <code>orientation_android</code>      | <code>landscape</code> or <code>portrait</code>                                                    | Overrides the default orientation on Android. This is a Pro feature. | |                                | <code>scale_quality</code>            | <code>0</code>, <code>1</code>, or <code>2</code> (default is <code>0</code>)                                            | Specifies the render scale quality for your game (0=nearest neighbor, 1=linear, 2=anisotropic/best). Full details of what each number means in <code>metadata/game_metadata.txt</code>. | |                                | <code>ignore_directories</code>       | Comma delimited list of directories                                          | Directories to exclude when packaging your game. | |                                | <code>packageid</code>                | String in reverse domain convention                                          | Android Package Id for your game. This is a Pro feature. | |                                | <code>compile_ruby</code>             | <code>true</code> or <code>false</code> (default is <code>false</code>)                                       | Signifies if your game code will be compiled to bytecode during packaging. This is a Pro feature. | |                                | <code>hd</code>                       | <code>true</code> or <code>false</code> (default is <code>false</code>)                                       | Whether your game will be rendered in HD. This is a Pro feature. | |                                | <code>highdpi</code>                  | <code>true</code> or <code>false</code> (default is <code>false</code>)                                       | Whether your game will be rendered with High DPI. This is a Pro feature. | |                                | <code>sprites_directory</code>        | String value                                                                 | The path that DR should search for HD texture atlases. This is a Pro feature. | |                                | <code>hd_letterbox</code>             | <code>true</code> or <code>false</code> (default is <code>true</code>)                                        | Disables the letter box around your game. This is a Pro feature. | |                                | <code>hd_max_scale</code>             | <code>0</code>, <code>100</code>, <code>125</code>, <code>150</code>, <code>175</code>, <code>200</code>, <code>250</code>, <code>300</code>, <code>400</code> (default is <code>0</code>) | Signifies the max scale of your game. <code>0</code> means size to fit (full details of what each number means in <code>metadata/game_metadata.txt</code>). | | --metadata/ios_metadata.txt--  | <code>teamid</code>                   | String value                                                                 | Apple Team Id. This is a Pro feature. | |                                | <code>appid</code>                    | String value                                                                 | Apple App Id. This is a Pro feature. | |                                | <code>appname</code>                  | String value                                                                 | The name to show under the App icon. | |                                | <code>devcert</code>                  | String value                                                                 | Apple Development Certificate name used to sign your game for local device deployment. This is a Pro feature. | |                                | <code>prodcert</code>                 | String value                                                                 | Apple Distribution Certificate name used to sign your game release to the App Store. This is a Pro feature. |
 </p>
 <h1 id='--layout'>Layout <a style='font-size: small; float: right;' href='#--layout'>link</a></h1> 
 <p>
@@ -4321,15 +4382,16 @@ Provides information about the screen and game canvas.
 ?&gt; All functions are available globally via <code>Grid.-</code>.
 </p>
 <pre><code class="ruby">def tick args
-   puts args.grid.function(...)
-
-   # OR available globally
    puts Grid.function(...)
 end
 </code></pre>
 <h2 id='----orientation-'><code>orientation</code> <a style='font-size: small; float: right;' href='#----orientation-'>link</a></h2> 
 <p>
 Returns either <code>:landscape</code> (default) or <code>:portrait</code>. The orientation of your game is set within <code>./mygame/metadata/game_metadata.txt</code>.
+</p>
+<h2 id='----orientation_changed--'><code>orientation_changed?</code> <a style='font-size: small; float: right;' href='#----orientation_changed--'>link</a></h2> 
+<p>
+Returns <code>true</code> if the orientation for your game has changed because of a window resize (or handheld device rotation). This value will only be true on the frame the orientation change occurred (and is dependent on the <code>orientation</code> value in <code>game_metadata.txt</code> having comma delimited value of <code>portrait,landscape</code> or <code>landscape,portrait</code>). See the CVars section in the docs for more information.
 </p>
 <h2 id='----origin_name-'><code>origin_name</code> <a style='font-size: small; float: right;' href='#----origin_name-'>link</a></h2> 
 <p>
@@ -4377,10 +4439,10 @@ Here's an example of what the property conventions look like:
 </p>
 <pre><code class="ruby">def tick args
   # Logical width
-  args.grid.w
+  Grid.w
 
   # Width in pixels
-  args.grid.w_px
+  Grid.w_px
 end
 </code></pre>
 <p>
@@ -4407,7 +4469,7 @@ Given that the logical canvas is <code>720p</code>, these are the values that <c
 </ul>
 <h2 id='----top-'><code>top</code> <a style='font-size: small; float: right;' href='#----top-'>link</a></h2> 
 <p>
-Returns value that represents the top of the grid.
+Returns value that represents the top of the grid (this is an alias for <code>Grid.h</code>).
 </p>
 <h2 id='----left-'><code>left</code> <a style='font-size: small; float: right;' href='#----left-'>link</a></h2> 
 <p>
@@ -4427,7 +4489,7 @@ Returns the grid's width.
 </p>
 <h2 id='----h-'><code>h</code> <a style='font-size: small; float: right;' href='#----h-'>link</a></h2> 
 <p>
-Returns the grid's width.
+Returns the grid's height.
 </p>
 <h2 id='----aspect_ratio_w-'><code>aspect_ratio_w</code> <a style='font-size: small; float: right;' href='#----aspect_ratio_w-'>link</a></h2> 
 <p>
@@ -4468,6 +4530,68 @@ When All Screen mode is enabled (<code>hd_letterbox=false</code>), you can rende
 <li>  5k: 6400x2880</li>
 </ul>
 <h3 id='----all-screen-properties'>All Screen Properties <a style='font-size: small; float: right;' href='#----all-screen-properties'>link</a></h3> 
+<p>
+?&gt; All Screen Properties are pertinent for Pro license with <code>hd_letterbox=false</code> (setting <code>hd_letterbox=false</code> allows for edge to edge screen rendering). Take a look at the following sample to see how rendering can be applied to non-standard aspect ratios <code>samples/07_advanced_rendering_hd/05_camera_ultrawide_allscreen</code>.
+</p>
+<p>
+The goal of All Screen Properties is to ensure that the safe area for your game is always centered in the display regardless of its aspect ratio.
+</p>
+<p>
+When a non-standard aspect ratio (an aspect ratio that isn't 16:9 or 9:16), All Screen Properties will reflect the "overflow" for the game window.
+</p>
+<p>
+All Screen Properties are always in --logical pixels--, you can see native pixel values - if you're curious about what they are - using the <code>_px</code> variant of All Screen Properties (they aren't really useful for rendering things on the screen since everything is in logical pixels and are there in preperation of shaders and computing UV coordinates).
+</p>
+<ul>
+<li>If your game is landscape, and your game window is wider than it is tall, then All Screen properties for height will match the logical pixels of the game. All Screen width properties for width will be different because the overflow occurs horizontally.</li>
+<li>If your game is landscape, and your game window is taller than it is wide, then All Screen properties for width will match the logical pixels of the game. All Screen width properties for height will be different because the overflow occurs vertically.</li>
+<li>If your game window is a perfect 16:9 aspect ratio (720p, 1080p, etc), then all All Screen properties will match logical pixels. There is no overflow in that case (your native scale will be a multiple of 720p).</li>
+</ul>
+<p>
+You can use the following code to view all screen properties for different sizes of the game window. Try making the window really wide, but short and really tall but thin:
+</p>
+<pre><code class="ruby">def tick args
+  # all screen rect properties
+  args.outputs.primitives &lt;&lt; {
+    x: 640, y: 390,
+    text: "allscreen_rect: #{Grid.allscreen_rect}",
+    anchor_x: 0.5, anchor_y: 0.5, size_px: 30
+  }
+
+  # all screen left, right
+  args.outputs.primitives &lt;&lt; {
+    x: 640, y: 360,
+    text: "allscreen_left: #{Grid.allscreen_left}, allscreen_right: #{Grid.allscreen_right}",
+    anchor_x: 0.5, anchor_y: 0.5, size_px: 30
+  }
+
+  # all screen bottom, top
+  args.outputs.primitives &lt;&lt; {
+    x: 640, y: 330,
+    text: "allscreen_bottom: #{Grid.allscreen_bottom}, allscreen_top: #{Grid.allscreen_top}",
+    anchor_x: 0.5, anchor_y: 0.5, size_px: 30
+  }
+
+  # mouse location
+  args.outputs.labels &lt;&lt; {
+    x: 640, y: 300,
+    text: "Mouse: #{args.inputs.mouse.x}, #{args.inputs.mouse.y}",
+    anchor_x: 0.5, anchor_y: 0.5, size_px: 30,
+  }
+
+  # edge to edge area
+  args.outputs.sprites &lt;&lt; {
+    **Grid.allscreen_rect, path: :solid,
+    r: 64, g: 64, b: 128, a: 255
+  }
+
+  # safe area
+  args.outputs.sprites &lt;&lt; {
+    x: 0, y: 0, w: 1280, h: 720, path: :solid,
+    r: 128, g: 64, b: 64, a: 255
+  }
+end
+</code></pre>
 <p>
 These properties provide dimensions of the screen outside of the 16:9 safe area as logical <code>720p</code> values.
 </p>

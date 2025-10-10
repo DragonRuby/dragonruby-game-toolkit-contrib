@@ -313,6 +313,10 @@ def tick args
 end
 ```
 
+Optionally, you can pass in a `tolerance:` named parameter. If
+provided, the value will snap to the `to` value if the difference
+between `to` and `step` is less than `tolerance`.
+
 ## `remap`
 
 Remaps a value from one range to another. Parameters are `r1_being`, `r1_end`, `r2_begin`, `r2_end`.
@@ -371,3 +375,19 @@ Essentially an alias for `5.times.map { |i| i * 2 }`.
 Converts a `Numeric` value representing seconds to number of frames/ticks.
 
 Eg `5.seconds` yields `300`.
+
+## `to_degrees`
+
+Converts the numeric value to degrees (Numeric value is assumed to be in radians).
+
+Aliases:
+
+- `to_d`
+- `to_degrees_from_radians`
+
+## `to_radians`
+
+Converts the numeric value to radians (Numeric value is assumed to be in degrees).
+
+- `to_r`
+- `to_radians_from_degrees`

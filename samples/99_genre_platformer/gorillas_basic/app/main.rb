@@ -1,5 +1,5 @@
 class YouSoBasicGorillas
-  attr_accessor :outputs, :grid, :state, :inputs
+  attr_gtk
 
   def tick
     defaults
@@ -17,7 +17,7 @@ class YouSoBasicGorillas
     state.building_heights       = [4, 4, 6, 8, 15, 20, 18]
     state.building_room_sizes    = [5, 4, 6, 7]
     state.gravity                = 0.25
-    state.first_strike         ||= :player_1
+    state.current_turn         ||= :player_1
     state.buildings            ||= []
     state.holes                ||= []
     state.player_1_score       ||= 0
@@ -37,68 +37,81 @@ class YouSoBasicGorillas
   end
 
   def render_score
-    outputs.primitives << [0, 0, 1280, 31, fancy_white].solid
-    outputs.primitives << [1, 1, 1279, 29].solid
-    outputs.labels << [  10, 25, "Score: #{state.player_1_score}", 0, 0, fancy_white]
-    outputs.labels << [1270, 25, "Score: #{state.player_2_score}", 0, 2, fancy_white]
+    outputs.primitives << { x: 0, y: 0, w: 1280, h: 31, path: :solid, **white_color }
+    outputs.primitives << { x: 1, y: 1, w: 1279, h: 29, path: :solid, r: 0, g: 0, b: 0 }
+    outputs.labels << { x: 10, y: 25, text: "Score: #{state.player_1_score}", **white_color }
+    outputs.labels << { x: 1270, y: 25, text: "Score: #{state.player_2_score}", anchor_x: 1.0, **white_color }
   end
 
   def render_wind
-    outputs.primitives << [640, 12, state.wind * 500 + state.wind * 10 * rand, 4, 35, 136, 162].solid
-    outputs.lines     <<  [640, 30, 640, 0, fancy_white]
+    outputs.primitives << { x: 640, y: 12, w: state.wind * 500 + state.wind * 10 * rand, path: :solid, h: 4, r: 35, g: 136, b: 162 }
+    outputs.lines     <<  { x: 640, y: 30, x2: 640, y2: 0, **white_color }
   end
 
   def render_game_over
-    return unless state.over
-    outputs.primitives << [grid.rect, 0, 0, 0, 200].solid
-    outputs.primitives << [640, 370, "Game Over!!", 5, 1, fancy_white].label
+    return unless state.game_over
+    outputs.primitives << { **Grid.rect, path: :solid, r: 0, g: 0, b: 0, a: 200 }
+    outputs.primitives << { x: 640, y: 370, text: "Game Over!!", size_px: 36, anchor_x: 0.5, **white_color }
     if state.winner == :player_1
-      outputs.primitives << [640, 340, "Player 1 Wins!!", 5, 1, fancy_white].label
+      outputs.primitives << { x: 640, y: 340, text: "Player 1 Wins!!", size_px: 36, anchor_x: 0.5, **white_color }
     else
-      outputs.primitives << [640, 340, "Player 2 Wins!!", 5, 1, fancy_white].label
+      outputs.primitives << { x: 640, y: 340, text: "Player 2 Wins!!", size_px: 36, anchor_x: 0.5, **white_color }
     end
   end
 
   def render_stage
-    return unless state.stage_generated
-    return if state.stage_rendered
+    return if !state.stage_generated
 
-    outputs.static_solids << [grid.rect, 33, 32, 87]
-    outputs.static_solids << state.buildings.map(&:solids)
-    state.stage_rendered = true
+    if !state.stage_rt_generated
+      outputs[:stage].w = 1280
+      outputs[:stage].h = 720
+      outputs[:stage].solids << { **Grid.rect, r: 33, g: 32, b: 87 }
+      outputs[:stage].solids << state.buildings.map(&:prefab)
+      state.stage_rt_generated = true
+    else
+      outputs.primitives << { x: 0, y: 0, w: 1280, h: 720, path: :stage }
+    end
   end
 
-  def render_gorilla gorilla, id
+  def render_gorilla gorilla, player_id, id
     return unless gorilla
-    if state.banana && state.banana.owner == gorilla
+    if state.banana && state.banana.owner == player_id
       animation_index  = state.banana.created_at.frame_index(3, 5, false)
     end
     if !animation_index
-      outputs.sprites << [gorilla.solid, "sprites/#{id}-idle.png"]
+      outputs.primitives << { **gorilla.hurt_box, path: "sprites/#{id}-idle.png" }
     else
-      outputs.sprites << [gorilla.solid, "sprites/#{id}-#{animation_index}.png"]
+      outputs.primitives << { **gorilla.hurt_box, path: "sprites/#{id}-#{animation_index}.png" }
     end
   end
 
   def render_gorillas
-    render_gorilla state.player_1, :left
-    render_gorilla state.player_2, :right
+    render_gorilla state.player_1, :player_1, :left
+    render_gorilla state.player_2, :player_2, :right
   end
 
   def render_value_insertion
     return if state.banana
-    return if state.over
+    return if state.game_over
 
-    if    state.current_turn == :player_1_angle
-      outputs.labels << [  10, 710, "Angle:    #{state.player_1_angle}_",    fancy_white]
-    elsif state.current_turn == :player_1_velocity
-      outputs.labels << [  10, 710, "Angle:    #{state.player_1_angle}",     fancy_white]
-      outputs.labels << [  10, 690, "Velocity: #{state.player_1_velocity}_", fancy_white]
-    elsif state.current_turn == :player_2_angle
-      outputs.labels << [1120, 710, "Angle:    #{state.player_2_angle}_",    fancy_white]
-    elsif state.current_turn == :player_2_velocity
-      outputs.labels << [1120, 710, "Angle:    #{state.player_2_angle}",     fancy_white]
-      outputs.labels << [1120, 690, "Velocity: #{state.player_2_velocity}_", fancy_white]
+    turn = if state.current_turn_input == :player_1_angle || state.current_turn_input == :player_1_velocity
+             "It's your turn Player 1!"
+           else
+             "It's your turn Player 2!"
+           end
+
+    outputs.labels << { x: 640, y: 720 - 22, text: turn, **white_color, anchor_x: 0.5, anchor_y: 0.5 }
+
+    if    state.current_turn_input == :player_1_angle
+      outputs.labels << { x: 10, y: 710, text: "Angle:    #{state.player_1_angle}_", **white_color }
+    elsif state.current_turn_input == :player_1_velocity
+      outputs.labels << { x: 10, y: 710, text: "Angle:    #{state.player_1_angle}",  **white_color }
+      outputs.labels << { x: 10, y: 690, text: "Velocity: #{state.player_1_velocity}_", **white_color }
+    elsif state.current_turn_input == :player_2_angle
+      outputs.labels << { x: 1120, y: 710, text: "Angle:    #{state.player_2_angle}_", **white_color }
+    elsif state.current_turn_input == :player_2_velocity
+      outputs.labels << { x: 1120, y: 710, text: "Angle:    #{state.player_2_angle}",  **white_color }
+      outputs.labels << { x: 1120, y: 690, text: "Velocity: #{state.player_2_velocity}_", **white_color }
     end
   end
 
@@ -106,16 +119,16 @@ class YouSoBasicGorillas
     return unless state.banana
     rotation = Kernel.tick_count.%(360) * 20
     rotation *= -1 if state.banana.dx > 0
-    outputs.sprites << [state.banana.x, state.banana.y, 15, 15, 'sprites/banana.png', rotation]
+    outputs.primitives << { x: state.banana.x, y: state.banana.y, w: 15, h: 15, path: "sprites/banana.png", angle: rotation }
   end
 
   def render_holes
-    outputs.sprites << state.holes.map do |s|
+    outputs.primitives << state.holes.map do |s|
       animation_index = s.created_at.frame_index(7, 3, false)
       if animation_index
-        [s.sprite, [s.sprite.rect, "sprites/explosion#{animation_index}.png" ]]
+        [s.prefab, { **s.prefab.rect, path: "sprites/explosion#{animation_index}.png" }]
       else
-        s.sprite
+        s.prefab
       end
     end
   end
@@ -123,14 +136,15 @@ class YouSoBasicGorillas
   def calc
     calc_generate_stage
     calc_current_turn
-    calc_banana
+    calc_banana 0.5
+    calc_banana 0.5
   end
 
   def calc_current_turn
-    return if state.current_turn
+    return if state.current_turn_input
 
-    state.current_turn = :player_1_angle
-    state.current_turn = :player_2_angle if state.first_strike == :player_2
+    state.current_turn_input = :player_1_angle
+    state.current_turn_input = :player_2_angle if state.current_turn == :player_2
   end
 
   def calc_generate_stage
@@ -146,62 +160,53 @@ class YouSoBasicGorillas
 
     building_two = state.buildings[1]
     state.player_1 = new_player(building_two.x + building_two.w.fdiv(2),
-                               building_two.h)
+                                building_two.h)
 
     building_nine = state.buildings[-3]
     state.player_2 = new_player(building_nine.x + building_nine.w.fdiv(2),
-                               building_nine.h)
+                                building_nine.h)
     state.stage_generated = true
     state.wind = 1.randomize(:ratio, :sign)
   end
 
   def new_player x, y
-    state.new_entity(:gorilla) do |p|
-      p.x = x - 25
-      p.y = y
-      p.solid = [p.x, p.y, 50, 50]
-    end
+    {
+      x: (x - 25),
+      y: y,
+      hurt_box: { x: x - 25, y: y, w: 50, h: 50 }
+    }
   end
 
-  def calc_banana
+  def calc_banana simulation_dt
     return unless state.banana
 
-    state.banana.x  += state.banana.dx
-    state.banana.dx += state.wind.fdiv(50)
-    state.banana.y  += state.banana.dy
-    state.banana.dy -= state.gravity
-    banana_collision = [state.banana.x, state.banana.y, 10, 10]
+    state.banana.x  += state.banana.dx * simulation_dt
+    state.banana.dx += state.wind.fdiv(50) * simulation_dt
+    state.banana.y  += state.banana.dy * simulation_dt
+    state.banana.dy -= state.gravity * simulation_dt
+    banana_collision = { x: state.banana.x, y: state.banana.y, w: 10, h: 10 }
 
-    if state.player_1 && banana_collision.intersect_rect?(state.player_1.solid)
-      state.over = true
-      if state.banana.owner == state.player_2
-        state.winner = :player_2
-      else
-        state.winner = :player_1
-      end
-
+    if state.player_1 && banana_collision.intersect_rect?(state.player_1.hurt_box)
+      state.game_over = true
+      state.winner = :player_2
       state.player_2_score += 1
-    elsif state.player_2 && banana_collision.intersect_rect?(state.player_2.solid)
-      state.over = true
-      if state.banana.owner == state.player_2
-        state.winner = :player_1
-      else
-        state.winner = :player_2
-      end
+    elsif state.player_2 && banana_collision.intersect_rect?(state.player_2.hurt_box)
+      state.game_over = true
+      state.winner = :player_1
       state.player_1_score += 1
     end
 
-    if state.over
+    if state.game_over
       place_hole
       return
     end
 
     return if state.holes.any? do |h|
-      h.sprite.scale_rect(0.8, 0.5, 0.5).intersect_rect? [state.banana.x, state.banana.y, 10, 10]
+      h.prefab.intersect_rect?(x: state.banana.x, y: state.banana.y, w: 10, h: 10, anchor_x: 0.5, anchor_y: 0.5)
     end
 
     return unless state.banana.y < 0 || state.buildings.any? do |b|
-      b.rect.intersect_rect? [state.banana.x, state.banana.y, 1, 1]
+      b.rect.intersect_rect? x: state.banana.x, y: state.banana.y, w: 1, h: 1
     end
 
     place_hole
@@ -211,7 +216,7 @@ class YouSoBasicGorillas
     return unless state.banana
 
     state.holes << state.new_entity(:banana) do |b|
-      b.sprite = [state.banana.x - 20, state.banana.y - 20, 40, 40, 'sprites/hole.png']
+      b.prefab = { x: state.banana.x, y: state.banana.y, w: 40, h: 40, path: "sprites/hole.png", anchor_x: 0.5, anchor_y: 0.5 }
     end
 
     state.banana = nil
@@ -219,32 +224,32 @@ class YouSoBasicGorillas
 
   def process_inputs_main
     return if state.banana
-    return if state.over
+    return if state.game_over
 
     if inputs.keyboard.key_down.enter
       input_execute_turn
     elsif inputs.keyboard.key_down.backspace
-      state.as_hash[state.current_turn] ||= ""
-      state.as_hash[state.current_turn]   = state.as_hash[state.current_turn][0..-2]
+      state.as_hash[state.current_turn_input] ||= ""
+      state.as_hash[state.current_turn_input]   = state.as_hash[state.current_turn_input][0..-2]
     elsif inputs.keyboard.key_down.char
-      state.as_hash[state.current_turn] ||= ""
-      state.as_hash[state.current_turn]  += inputs.keyboard.key_down.char
+      state.as_hash[state.current_turn_input] ||= ""
+      state.as_hash[state.current_turn_input]  += inputs.keyboard.key_down.char
     end
   end
 
   def process_inputs_game_over
-    return unless state.over
+    return unless state.game_over
     return unless inputs.keyboard.key_down.truthy_keys.any?
-    state.over = false
+    state.game_over = false
     outputs.static_solids.clear
     state.buildings.clear
     state.holes.clear
     state.stage_generated = false
-    state.stage_rendered = false
-    if state.first_strike == :player_1
-      state.first_strike = :player_2
+    state.stage_rt_generated = false
+    if state.current_turn == :player_1
+      state.current_turn = :player_2
     else
-      state.first_strike = :player_1
+      state.current_turn = :player_1
     end
   end
 
@@ -256,26 +261,28 @@ class YouSoBasicGorillas
   def input_execute_turn
     return if state.banana
 
-    if state.current_turn == :player_1_angle && parse_or_clear!(:player_1_angle)
-      state.current_turn = :player_1_velocity
-    elsif state.current_turn == :player_1_velocity && parse_or_clear!(:player_1_velocity)
-      state.current_turn = :player_2_angle
+    if state.current_turn_input == :player_1_angle && parse_or_clear!(:player_1_angle)
+      state.current_turn_input = :player_1_velocity
+    elsif state.current_turn_input == :player_1_velocity && parse_or_clear!(:player_1_velocity)
+      state.current_turn_input = :player_2_angle
       state.banana =
-        new_banana(state.player_1,
+        new_banana(:player_1,
                    state.player_1.x + 25,
                    state.player_1.y + 60,
                    state.player_1_angle,
                    state.player_1_velocity)
-    elsif state.current_turn == :player_2_angle && parse_or_clear!(:player_2_angle)
-      state.current_turn = :player_2_velocity
-    elsif state.current_turn == :player_2_velocity && parse_or_clear!(:player_2_velocity)
-      state.current_turn = :player_1_angle
+      state.current_turn = :player_2
+    elsif state.current_turn_input == :player_2_angle && parse_or_clear!(:player_2_angle)
+      state.current_turn_input = :player_2_velocity
+    elsif state.current_turn_input == :player_2_velocity && parse_or_clear!(:player_2_velocity)
+      state.current_turn_input = :player_1_angle
       state.banana =
-        new_banana(state.player_2,
+        new_banana(:player_2,
                    state.player_2.x + 25,
                    state.player_2.y + 60,
                    180 - state.player_2_angle,
-                   state.player_2_velocity)
+                         state.player_2_velocity)
+      state.current_turn = :player_1
     end
 
     if state.banana
@@ -295,44 +302,39 @@ class YouSoBasicGorillas
   end
 
   def random_building_color
-    [[ 99,   0, 107],
-     [ 35,  64, 124],
-     [ 35, 136, 162],
-     ].sample
+    [{ r: 99, g:   0, b: 107 },
+     { r: 35, g:  64, b: 124 },
+     { r: 35, g: 136, b: 162 }].sample
   end
 
   def random_window_color
-    [[ 88,  62, 104],
-     [253, 224, 187]].sample
+    [{ r: 88,  g: 62,  b: 104 },
+     { r: 253, g: 224, b: 187 }].sample
   end
 
   def windows_for_building starting_x, floors, rooms
     floors.-(1).combinations(rooms - 1).map do |floor, room|
-      [starting_x +
-       state.building_room_width.*(room) +
-       state.building_room_spacing.*(room + 1),
-       state.building_room_height.*(floor) +
-       state.building_room_spacing.*(floor + 1),
-       state.building_room_width,
-       state.building_room_height,
-       random_window_color]
+      { x: starting_x + (state.building_room_width * room) + (state.building_room_spacing * (room + 1)),
+        y: (state.building_room_height * floor) +
+        (state.building_room_spacing * (floor + 1)),
+        w: state.building_room_width,
+        h: state.building_room_height,
+        **random_window_color }
     end
   end
 
   def building_prefab starting_x, floors, rooms
-    state.new_entity(:building) do |b|
-      b.x      = starting_x
-      b.y      = 0
-      b.w      = state.building_room_width.*(rooms) +
-                 state.building_room_spacing.*(rooms + 1)
-      b.h      = state.building_room_height.*(floors) +
-                 state.building_room_spacing.*(floors + 1)
-      b.right  = b.x + b.w
-      b.rect   = [b.x, b.y, b.w, b.h]
-      b.solids = [[b.x - 1, b.y, b.w + 2, b.h + 1, fancy_white],
-                  [b.x, b.y, b.w, b.h, random_building_color],
-                  windows_for_building(b.x, floors, rooms)]
-    end
+    b = {}
+    b.x      = starting_x
+    b.y      = 0
+    b.w      = (state.building_room_width * rooms) + (state.building_room_spacing * (rooms + 1))
+    b.h      = (state.building_room_height * floors) + (state.building_room_spacing * (floors + 1))
+    b.right  = b.x + b.w
+    b.rect   = { x: b.x, y: b.y, w: b.w, h: b.h }
+    b.prefab = [{ x: b.x - 1, y: b.y, w: b.w + 2, h: b.h + 1, **white_color },
+                { x: b.x, y: b.y, w: b.w, h: b.h, **random_building_color },
+                windows_for_building(b.x, floors, rooms)]
+    b
   end
 
   def parse_or_clear! game_prop
@@ -346,28 +348,33 @@ class YouSoBasicGorillas
   end
 
   def new_banana owner, x, y, angle, velocity
-    state.new_entity(:banana) do |b|
-      b.owner     = owner
-      b.x         = x
-      b.y         = y
-      b.angle     = angle % 360
-      b.velocity  = velocity / 5
-      b.dx        = b.angle.vector_x(b.velocity)
-      b.dy        = b.angle.vector_y(b.velocity)
-    end
+    {
+      owner: owner,
+      x: x,
+      y: y,
+      angle: angle % 360,
+      velocity: velocity / 5,
+      dx: angle.vector_x(velocity / 5),
+      dy: angle.vector_y(velocity / 5),
+      created_at: Kernel.tick_count
+    }
   end
 
-  def fancy_white
-    [253, 252, 253]
+  def white_color
+    { r: 253, g: 252, b: 253 }
   end
 end
 
-$you_so_basic_gorillas = YouSoBasicGorillas.new
+def boot args
+  args.state = {}
+end
 
 def tick args
-  $you_so_basic_gorillas.outputs = args.outputs
-  $you_so_basic_gorillas.grid    = args.grid
-  $you_so_basic_gorillas.state    = args.state
-  $you_so_basic_gorillas.inputs  = args.inputs
-  $you_so_basic_gorillas.tick
+  $game ||= YouSoBasicGorillas.new
+  $game.args = args
+  $game.tick
+end
+
+def reset args
+  $game = nil
 end

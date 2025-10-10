@@ -901,6 +901,10 @@ S
     alias_method :w=, :width=
     alias_method :h, :height
     alias_method :h=, :height=
+
+    def audio
+      @args.audio
+    end
   end
 
   class TopLevelOutputs < Outputs

@@ -4,6 +4,8 @@ class LevelEditor
 
   def initialize
     @tilesheet_rect = { x: 0, y: 0, w: 320, h: 320 }
+    @tilesheet_metadata_has_collision_button_rect = Geometry.rect_props(x: 160, y: 320 + 8, w: 256, h: 32, anchor_x: 0.5, anchor_y: 0)
+    @tilesheet_metadata = {}
     @mode = :add
   end
 
@@ -26,16 +28,27 @@ class LevelEditor
       @mode = :remove
     end
 
+    if mouse.click && @selected_tile && mouse.intersect_rect?(@tilesheet_metadata_has_collision_button_rect)
+      tile_id = @selected_tile.id
+      @tilesheet_metadata[tile_id] ||= { has_collision: true }
+      @tilesheet_metadata[tile_id].has_collision = !@tilesheet_metadata[tile_id].has_collision
+      @selected_tile.has_collision = @tilesheet_metadata[tile_id].has_collision
+    end
+
     if mouse.intersect_rect? @tilesheet_rect
       x_ordinal = mouse.x.idiv(16)
       y_ordinal = mouse.y.idiv(16)
-      @hovered_tile = { x_ordinal: mouse.x.idiv(16),
+      tile_id = "#{x_ordinal},#{y_ordinal}"
+      @tilesheet_metadata[tile_id] ||= { has_collision: true }
+      @hovered_tile = { id: "#{x_ordinal},#{y_ordinal}",
+                        x_ordinal: mouse.x.idiv(16),
                         x: mouse.x.idiv(16) * 16,
                         y_ordinal: mouse.x.idiv(16),
                         y: mouse.y.idiv(16) * 16,
                         row: 20 - y_ordinal - 1,
                         col: x_ordinal,
                         path: tile_path(20 - y_ordinal - 1, x_ordinal, 20),
+                        has_collision: @tilesheet_metadata[tile_id].has_collision,
                         w: 16,
                         h: 16 }
     else
@@ -46,7 +59,7 @@ class LevelEditor
       @selected_tile = @hovered_tile
     end
 
-    world_mouse = Camera.to_world_space state.camera, inputs.mouse
+    world_mouse = Camera.to_world_space state.camera, inputs.mouse.rect
     ifloor_x = world_mouse.x.ifloor(16)
     ifloor_y = world_mouse.y.ifloor(16)
 
@@ -62,22 +75,24 @@ class LevelEditor
       @selected_tile.y = @mouse_world_rect.y
     end
 
-    if @mode == :remove && (mouse.click || (mouse.held && mouse.moved))
-      state.terrain.reject! { |t| t.intersect_rect? @mouse_world_rect }
-      save_terrain args
-    elsif @selected_tile && (mouse.click || (mouse.held && mouse.moved))
-      if @mode == :add
-        state.terrain.reject! { |t| t.intersect_rect? @selected_tile }
-        state.terrain << @selected_tile.copy
-      else
-        state.terrain.reject! { |t| t.intersect_rect? @selected_tile }
+    if !Geometry.intersect_rect?(mouse.rect, @tilesheet_rect) && !Geometry.intersect_rect?(mouse.rect, @tilesheet_metadata_has_collision_button_rect)
+      if @mode == :remove && (mouse.click || (mouse.held && mouse.moved))
+        state.terrain.reject! { |t| t.intersect_rect? @mouse_world_rect }
+        save_terrain args
+      elsif @selected_tile && (mouse.click || (mouse.held && mouse.moved))
+        if @mode == :add
+          state.terrain.reject! { |t| t.intersect_rect? @selected_tile }
+          state.terrain << @selected_tile.copy
+        else
+          state.terrain.reject! { |t| t.intersect_rect? @selected_tile }
+        end
+        save_terrain args
       end
-      save_terrain args
     end
   end
 
   def render
-    outputs.sprites << { x: 0, y: 0, w: 320, h: 320, path: :tilesheet }
+    outputs.sprites << { **@tilesheet_rect, path: :tilesheet }
 
     if @hovered_tile
       outputs.sprites << { x: @hovered_tile.x,
@@ -92,10 +107,24 @@ class LevelEditor
       if @mode == :remove
         outputs[:scene].sprites << (Camera.to_screen_space state.camera, @selected_tile).merge(path: :pixel, r: 255, g: 0, b: 0, a: 64)
       elsif @selected_tile
+        outputs.primitives << tilesheet_metadata_has_collision_button_rect_prefab(@selected_tile)
         outputs[:scene].sprites << (Camera.to_screen_space state.camera, @selected_tile)
         outputs[:scene].sprites << (Camera.to_screen_space state.camera, @selected_tile).merge(path: :pixel, r: 0, g: 255, b: 255, a: 64)
       end
     end
+  end
+
+  def tilesheet_metadata_has_collision_button_rect_prefab tile
+    has_collision = @tilesheet_metadata[tile.id]&.has_collision
+    text = if has_collision
+             "Collidable? Yes (click to toggle)"
+           else
+             "Collidable? No (click to toggle)"
+           end
+    [
+      { **@tilesheet_metadata_has_collision_button_rect, path: :solid, r: 255, g: 255, b: 255 },
+      { **@tilesheet_metadata_has_collision_button_rect.center, text: text, anchor_x: 0.5, anchor_y: 0.5, size_px: 16, r: 0, g: 0, b: 0 }
+    ]
   end
 
   def generate_tilesheet
@@ -139,7 +168,7 @@ class LevelEditor
 
   def save_terrain args
     contents = args.state.terrain.uniq.map do |terrain_element|
-      "#{terrain_element.x.to_i},#{terrain_element.y.to_i},#{terrain_element.w.to_i},#{terrain_element.h.to_i},#{terrain_element.path}"
+      "#{terrain_element.x.to_i},#{terrain_element.y.to_i},#{terrain_element.w.to_i},#{terrain_element.h.to_i},#{terrain_element.path},#{terrain_element.has_collision}"
     end
     File.write "data/terrain.txt", contents.join("\n")
   end
@@ -153,8 +182,13 @@ class LevelEditor
       if l.empty?
         nil
       else
-        x, y, w, h, path = l.split ","
-        { x: x.to_f, y: y.to_f, w: w.to_f, h: h.to_f, path: path }
+        x, y, w, h, path, has_collision = l.split ","
+        if has_collision.nil?
+          has_collision = true
+        else
+          has_collision = has_collision == "true"
+        end
+        { x: x.to_f, y: y.to_f, w: w.to_f, h: h.to_f, path: path, has_collision: has_collision }
       end
     end.compact.to_a.uniq
   end

@@ -91,9 +91,16 @@ class Numeric
     (self + offset) < tick_count_override
   end
 
-  def Numeric.frame_index_no_repeat start_at: 0, count: nil, frame_count: nil, hold_for: 1, tick_count_override: Kernel.tick_count, **ignored
+  def Numeric.frame_index_no_repeat(start_at: 0,
+                                    count: nil,
+                                    frame_count: nil,
+                                    hold_for: 1,
+                                    tick_count_override: Kernel.tick_count,
+                                    tick_count: nil,
+                                    **ignored)
     hold_for ||= 1
     frame_count ||= count
+    tick_count_override = tick_count || tick_count_override
 
     if !frame_count
       raise <<-S
@@ -120,9 +127,18 @@ S
     current_elapsed_time.idiv(hold_for) % frame_count
   end
 
-  def Numeric.frame_index start_at: 0, count: nil, frame_count: nil, hold_for: 1, repeat: false,  repeat_index: 0, tick_count_override: Kernel.tick_count, **ignored
+  def Numeric.frame_index(start_at: 0,
+                          count: nil,
+                          frame_count: nil,
+                          hold_for: 1,
+                          repeat: false,
+                          repeat_index: 0,
+                          tick_count: nil,
+                          tick_count_override: Kernel.tick_count,
+                          **ignored)
     hold_for ||= 1
     frame_count ||= count
+    tick_count_override = tick_count || tick_count_override
     if !frame_count
       raise <<-S
 * ERROR:
@@ -179,7 +195,7 @@ S
       frame_count         = frame_count_or_hash[:frame_count] || frame_count_or_hash[:count]
       hold_for            = frame_count_or_hash[:hold_for]
       repeat              = frame_count_or_hash[:repeat]
-      tick_count_override = frame_count_or_hash[:tick_count_override]
+      tick_count_override = frame_count_or_hash[:tick_count] || frame_count_or_hash[:tick_count_override]
       repeat_index        = frame_count_or_hash[:repeat_index]
     else
       frame_count = frame_count_or_hash
@@ -338,10 +354,16 @@ S
     self * Math::PI.fdiv(180)
   end
 
+  alias_method :to_radians_from_degrees, :to_radians
+  alias_method :to_r, :to_radians
+
   # Converts a number representing an angle in radians to degrees.
   def to_degrees
     self / Math::PI.fdiv(180)
   end
+
+  alias_method :to_degrees_from_radians, :to_degrees
+  alias_method :to_d, :to_degrees
 
   # Given `self`, a rectangle primitive is returned.
   #
@@ -446,8 +468,13 @@ S
     return self + magnitude
   end
 
-  def lerp to, step
-    self + step * (to - self)
+  def lerp to, step, tolerance: 0
+    diff = (to - self)
+    if diff.abs < tolerance
+      return to
+    else
+      self + step * (to - self)
+    end
   end
 
   def remap r1_begin, r1_end, r2_begin, r2_end
@@ -742,8 +769,12 @@ class Fixnum
     Math.tan self
   end
 
-  def to_sf
-    "%.2f" % self
+  def to_sf(decimal_places: 2, include_sign: false)
+    if include_sign
+      "%+.#{decimal_places}f" % self
+    else
+      "%.#{decimal_places}f" % self
+    end
   end
 
   def to_si
@@ -781,8 +812,12 @@ class Float
     return  scalar if self > 0
   end
 
-  def to_sf
-    "%.2f" % self
+  def to_sf(decimal_places: 2, include_sign: false)
+    if include_sign
+      "%+.#{decimal_places}f" % self
+    else
+      "%.#{decimal_places}f" % self
+    end
   end
 
   def ifloor int
@@ -838,6 +873,10 @@ class Integer
   def center other
     (self - other).abs.fdiv(2)
   end
+
+  def to_sf
+    "#{self}"
+  end
 end
 
 class Numeric
@@ -850,7 +889,9 @@ class Numeric
     when Float
       Kernel.rand * arg
     when Range
-      if arg.min > arg.max
+      if arg.size == 0
+        nil
+      elsif arg.min > arg.max
         nil
       elsif arg.min.is_a?(Float) || arg.max.is_a?(Float)
         min = arg.min

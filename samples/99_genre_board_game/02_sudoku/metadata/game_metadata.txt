@@ -1,0 +1,11 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=sample-app
+gametitle=Sudoku
+version=1.0
+icon=metadata/icon.png
+# HD and High DPI available via the Pro License
+hd=true
+highdpi=true
+hd_letter_box=false
+hd_max_scale=400

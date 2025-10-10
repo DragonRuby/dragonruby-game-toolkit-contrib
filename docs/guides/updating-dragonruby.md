@@ -18,13 +18,9 @@ you are working on using the following steps:
 ## Option 2 (Advanced)
 
 If you are comfortable in the terminal, a script such as the following
-can be created:
+can be created.
 
-?> The following script assumes that you got DragonRuby from
-Itch.io. For Indie and Pro License holders, use
-https://dragonruby.org/api to retrieve the zip.
-
-### Windows
+### Windows (Standard License)
 
 ```powershell
 # delete wget artifact
@@ -56,7 +52,28 @@ Remove-Item -Path dragonruby-tmp\dragonruby-windows-amd64\mygame -Recurse -Force
 Copy-Item -Path .\dragonruby-tmp\dragonruby-windows-amd64\* -Destination $INSTALLDIR -Recurse
 ```
 
-### MacOS
+### Windows (Indie/Pro License)
+
+```powershell
+# Retrieve zip
+Invoke-RestMethod -Uri 'https://dragonruby.org/api/download_pro_subscription_windows' -Credential (Get-Credential) -OutFile 'dragonruby.zip'
+# Invoke-RestMethod -Uri 'https://dragonruby.org/api/download_indie_subscription_windows' -Credential (Get-Credential) -OutFile 'dragonruby.zip'
+
+# Create staging directory
+Remove-Item -Path './upgrade-working-directory' -Recurse -Force -ErrorAction SilentlyContinue
+New-Item -Path './upgrade-working-directory' -ItemType Directory -Force
+
+# Unzip binary
+Expand-Archive -Path './dragonruby.zip' -DestinationPath './upgrade-working-directory'
+
+# Sync all files except for the mygame directory using robocopy
+$source = './upgrade-working-directory/dragonruby-macos/'
+$destination = './'
+$excludeDir = 'mygame'
+robocopy $source $destination /MIR /XD $excludeDir
+```
+
+### MacOS (Standard License)
 
 ```sh
 # delete wget artifact
@@ -88,7 +105,25 @@ rm -rf ./dragonruby-tmp/dragonruby-macos/mygame
 cp -R ./dragonruby-tmp/dragonruby-macos/* $INSTALLDIR
 ```
 
-### Linux
+### MacOS (Indie/Pro License)
+
+```sh
+# retrieve zip
+wget "$(curl -u USERNAME:PASSWORD https://dragonruby.org/api/download_pro_subscription_mac)" -O dragonruby.zip
+# wget "$(curl -u USERNAME:PASSWORD https://dragonruby.org/api/download_indie_subscription_mac)" -O dragonruby.zip
+
+# create staging directory
+rm -rf ./upgrade-working-directory
+mkdir -p ./upgrade-working-directory
+
+# unzip binary
+unzip ./dragonruby.zip -d ./upgrade-working-directory
+
+# sync all files except for the mygame directory using rsync
+rsync -av --exclude='mygame' ./upgrade-working-directory/dragonruby-macos/ ./
+```
+
+### Linux (Standard License)
 
 ```sh
 # delete wget artifact
@@ -118,4 +153,22 @@ rm -rf ./dragonruby-tmp/dragonruby-linux-amd64/mygame
 
 # copy all files recursively to install directory
 cp -R ./dragonruby-tmp/dragonruby-linux-amd64/* $INSTALLDIR
+```
+
+### Linux (Indie/Pro License)
+
+```sh
+# retrieve zip
+wget "$(curl -u USERNAME:PASSWORD https://dragonruby.org/api/download_pro_subscription_linux)" -O dragonruby.zip
+# wget "$(curl -u USERNAME:PASSWORD https://dragonruby.org/api/download_indie_subscription_linux)" -O dragonruby.zip
+
+# create staging directory
+rm -rf ./upgrade-working-directory
+mkdir -p ./upgrade-working-directory
+
+# unzip binary
+unzip ./dragonruby.zip -d ./upgrade-working-directory
+
+# sync all files except for the mygame directory using rsync
+rsync -av --exclude='mygame' ./upgrade-working-directory/dragonruby-macos/ ./
 ```

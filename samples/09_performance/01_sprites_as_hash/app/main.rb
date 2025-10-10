@@ -1,37 +1,40 @@
-
 # Sprites represented as Hashes using the queue ~args.outputs.sprites~
 # code up, but are the "slowest" to render.
 # The reason for this is the access of the key in the Hash and also
 # because the data args.outputs.sprites is cleared every tick.
-def random_x args
-  (args.grid.w.randomize :ratio) * -1
+def random_x
+  rand * Grid.w * -1
 end
 
-def random_y args
-  (args.grid.h.randomize :ratio) * -1
+def random_y
+  rand * Grid.h * -1
 end
 
 def random_speed
-  1 + (4.randomize :ratio)
+  1 + 4 * rand
 end
 
 def new_star args
   {
-    x: (random_x args),
-    y: (random_y args),
+    x: random_x,
+    y: random_y,
     w: 4, h: 4, path: 'sprites/tiny-star.png',
     s: random_speed
   }
 end
 
-def move_star args, star
-  star.x += star[:s]
-  star.y += star[:s]
-  if star.x > args.grid.w || star.y > args.grid.h
-    star.x = (random_x args)
-    star.y = (random_y args)
-    star[:s] = random_speed
+def move_star star
+  star.x += star.s
+  star.y += star.s
+  if star.x > Grid.w || star.y > Grid.h
+    star.x = random_x
+    star.y = random_y
+    star.s = random_speed
   end
+end
+
+def boot args
+  args.state = {}
 end
 
 def tick args
@@ -57,7 +60,7 @@ def tick args
   end
 
   # update
-  args.state.stars.each { |s| move_star args, s }
+  args.state.stars.each { |s| move_star s }
 
   # render
   args.outputs.sprites << args.state.stars
@@ -69,4 +72,5 @@ end
 def reset_with count: count
   GTK.reset
   GTK.args.state.star_count = count
+  GTK.args.state.stars = GTK.args.state.star_count.map { |i| new_star GTK.args }
 end

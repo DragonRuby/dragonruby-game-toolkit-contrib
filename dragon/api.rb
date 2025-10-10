@@ -245,10 +245,6 @@ S
     end
 
     def get_not_found args, req
-      puts("METHOD: #{req.method}");
-      puts("URI: #{req.uri}");
-      puts("HEADERS:");
-      req.headers.each { |k,v| puts("  #{k}: #{v}") }
       req.respond 404, "not found: #{req.uri}", { }
     end
 

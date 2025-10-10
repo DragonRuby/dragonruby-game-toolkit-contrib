@@ -16,6 +16,7 @@ module GTK
     def tick_after left, bottom, w, h, aspect_ratio_w, aspect_ratio_h, orientation, origin_name
       if @grid_origin_name != origin_name
         @debug_primitives = nil
+        @debug_primitives_allscreen = nil
       end
 
       @left = left
@@ -31,6 +32,7 @@ module GTK
     def reinitialize w, h, aspect_ratio_w, aspect_ratio_h, orientation
       @grid_origin_name = :bottom_left
       @debug_primitives = nil
+      @debug_primitives_allscreen = nil
       @left = 0
       @bottom = 0
       @w = w
@@ -71,16 +73,19 @@ module GTK
       @safe_area_bottom_right_dy = (h - rect(row: 0, col: 0, w: 1, h: @row_count).h).idiv(2) - @gutter
     end
 
-    def rect(*ignore_splat, row: 0, col: 0,
+    def rect(*ignore_splat,
+             row: 0, col: 0,
              w: 1, h: 1,
              row_from_bottom: nil,
              col_from_right: nil,
              max_width: nil, max_height: nil,
              dx: 0, dy: 0,
              include_row_gutter: false, include_col_gutter: false,
-             merge: nil, origin: :top_left, safe_area: true, **ignore_kwargs)
+             merge: nil, origin: :top_left, safe_area: true, layout_h: nil,
+             allscreen: false, **ignore_kwargs)
       opts_col        = col || 0
       opts_row        = row || 0
+      opts_allscreen  = allscreen
 
       if opts_col.is_a?(Array) && opts_col.length == 2
         # eg rect(row: [3, 18])
@@ -113,6 +118,11 @@ module GTK
       opts_dx         = dx || 0
       opts_dy         = dy || 0
 
+      if opts_allscreen
+        opts_dx += Grid.allscreen_offset_x
+        opts_dy += Grid.allscreen_offset_y
+      end
+
       opts_h = max_height if opts_h > opts_max_height
       opts_w = max_width  if opts_w > opts_max_width
 
@@ -125,8 +135,10 @@ module GTK
         opts_col = col_count - opts_col - opts_w
       end
 
+      layout_h ||= @h
+
       rect_x = @left + @gutter_left + @gutter * opts_col + @cell_size * opts_col
-      rect_y = @bottom + @h - @gutter_top - (@gutter * opts_row) - (@cell_size * opts_row) - (@cell_size * opts_h) - (@gutter * opts_h - 1)
+      rect_y = @bottom + layout_h - @gutter_top - (@gutter * opts_row) - (@cell_size * opts_row) - (@cell_size * opts_h) - (@gutter * opts_h - 1)
       rect_w = @gutter * (opts_w - 1) + (@cell_size * opts_w)
       rect_h = @gutter * (opts_h - 1) + (@cell_size * opts_h)
 
@@ -456,37 +468,39 @@ module GTK
       { x: target.x - delta_x, y: target.y - delta_y, w: reference.w, h: reference.h }
     end
 
-    def __debug_primitives_crosshair__
+    def __debug_primitives_crosshair__(allscreen:)
+      dx = allscreen ? Grid.allscreen_offset_x : 0
+      dy = allscreen ? Grid.allscreen_offset_y : 0
       [
         {
           id: :crosshair_diagonal_top_left_to_bottom_right,
-          x: @left + Grid.w / 2,
-          y: @bottom + Grid.h / 2,
+          x: @left + Grid.w / 2 + dx,
+          y: @bottom + Grid.h / 2 + dy,
           w: gutter,
-          h: Grid.allscreen_h * 2,
+          h: Grid.h * 2,
           angle: 45,
           anchor_x: 0.5,
           anchor_y: 0.5,
-          r: 232, g: 232, b: 232,
+          r: 200, g: 200, b: 200,
           path: :solid,
         },
         {
           id: :crosshair_diagonal_bottom_left_to_top_right,
-          x: @left + Grid.w / 2,
-          y: @bottom + Grid.h / 2,
-          w: Grid.allscreen_w * 2,
+          x: @left + Grid.w / 2 + dx,
+          y: @bottom + Grid.h / 2 + dy,
+          w: Grid.w * 2,
           h: gutter,
           angle: 45,
           anchor_x: 0.5,
           anchor_y: 0.5,
-          r: 232, g: 232, b: 232,
+          r: 200, g: 200, b: 200,
           path: :solid,
         },
         {
           id: :crosshair_left,
-          x: @left + 0,
-          y: @bottom + Grid.h / 2,
-          h: Grid.allscreen_h,
+          x: @left + 0 + dx,
+          y: @bottom + Grid.h / 2 + dy,
+          h: Grid.h,
           w: gutter,
           anchor_x: 0.5,
           anchor_y: 0.5,
@@ -495,9 +509,9 @@ module GTK
         },
         {
           id: :crosshair_right,
-          x: @left + Grid.w,
-          y: @bottom + Grid.h / 2,
-          h: Grid.allscreen_h,
+          x: @left + Grid.w + dx,
+          y: @bottom + Grid.h / 2 + dy,
+          h: Grid.h,
           w: gutter,
           anchor_x: 0.5,
           anchor_y: 0.5,
@@ -506,10 +520,10 @@ module GTK
         },
         {
           id: :crosshair_bottom,
-          x: @left + Grid.w / 2,
-          y: @bottom + 0,
+          x: @left + Grid.w / 2 + dx,
+          y: @bottom + 0 + dy,
           h: gutter,
-          w: Grid.allscreen_w,
+          w: Grid.w,
           anchor_x: 0.5,
           anchor_y: 0.5,
           path: :solid,
@@ -517,8 +531,8 @@ module GTK
         },
         {
           id: :crosshair_top,
-          x: @left + Grid.w / 2,
-          y: @bottom + Grid.h,
+          x: @left + Grid.w / 2 + dx,
+          y: @bottom + Grid.h + dy,
           h: gutter,
           w: Grid.allscreen_w,
           anchor_x: 0.5,
@@ -529,27 +543,29 @@ module GTK
       ]
     end
 
-    def __debug_primitives_seperators__
+    def __debug_primitives_seperators__(allscreen:)
+      dx          = allscreen ? Grid.allscreen_offset_x : 0
+      dy          = allscreen ? Grid.allscreen_offset_y : 0
       single_cell = rect row: row_count - 1, col: 0, w: 1, h: 1
       double_cell = rect row: row_count - 1, col: 0, w: 2, h: 2
-      single_row = rect row: 0, col: 0, w: col_count, h: 1
-      single_col = rect row: 0, col: 0, w: 1, h: row_count
-      safe_area = rect row: 0, col: 0, w: col_count, h: row_count, include_row_gutter: true, include_col_gutter: true
-      bg_rect = rect(row: 0, col: 1, w: col_count, h: 1).merge(w: Grid.w - gutter)
+      single_row  = rect row: 0, col: 0, w: col_count, h: 1
+      single_col  = rect row: 0, col: 0, w: 1, h: row_count
+      safe_area   = rect row: 0, col: 0, w: col_count, h: row_count, include_row_gutter: true, include_col_gutter: true
+      bg_rect     = rect(row: 0, col: 1, w: col_count, h: 1).merge(w: Grid.w - gutter)
 
       one_quarter_vertical   = { id: :one_quarter_vertical,
-                                 x: Layout.rect(col: @col_count.idiv(4)).x - @gutter / 2,
-                                 y: safe_area.y,
+                                 x: Layout.rect(col: @col_count.idiv(4), dx: dx).x - @gutter / 2,
+                                 y: safe_area.y + dy,
                                  w: gutter,
                                  h: safe_area.h,
                                  path: :pixel,
-                                 r: 232,
-                                 g: 232,
-                                 b: 232,
+                                 r: 200,
+                                 g: 200,
+                                 b: 200,
                                  anchor_x: 0.5 }
       two_quarter_vertical   = { id: :two_quarter_vertical,
-                                 x: Layout.rect(col: @col_count.idiv(4) * 2).x - @gutter / 2,
-                                 y: safe_area.y,
+                                 x: Layout.rect(col: @col_count.idiv(4) * 2, dx: dx).x - @gutter / 2,
+                                 y: safe_area.y + dy,
                                  w: gutter,
                                  h: safe_area.h,
                                  path: :pixel,
@@ -558,30 +574,30 @@ module GTK
                                  b: 128,
                                  anchor_x: 0.5 }
       three_quarter_vertical = { id: :three_quarter_vertical,
-                                 x: Layout.rect(col: @col_count.idiv(4) * 3).x - @gutter / 2,
-                                 y: safe_area.y,
+                                 x: Layout.rect(col: @col_count.idiv(4) * 3, dx: dx).x - @gutter / 2,
+                                 y: safe_area.y + dy,
                                  w: gutter,
                                  h: safe_area.h,
                                  path: :pixel,
-                                 r: 232,
-                                 g: 232,
-                                 b: 232,
+                                 r: 200,
+                                 g: 200,
+                                 b: 200,
                                  anchor_x: 0.5}
 
       one_quarter_horizontal = { id: :one_quarter_horizontal,
-                                 x: safe_area.x,
-                                 y: Layout.rect(row: @row_count.idiv(4) * 1 - 1).y - @gutter / 2,
+                                 x: safe_area.x + dx,
+                                 y: Layout.rect(row: @row_count.idiv(4) * 1 - 1, dy: dy).y - @gutter / 2,
                                  w: safe_area.w,
                                  h: gutter,
                                  path: :pixel,
-                                 r: 232,
-                                 g: 232,
-                                 b: 232,
+                                 r: 200,
+                                 g: 200,
+                                 b: 200,
                                  anchor_y: 0.5 }
 
       two_quarter_horizontal = { id: :two_quarter_horizontal,
-                                 x: safe_area.x,
-                                 y: Layout.rect(row: @row_count.idiv(2) - 1).y - @gutter / 2,
+                                 x: safe_area.x + dx,
+                                 y: Layout.rect(row: @row_count.idiv(2) - 1, dy: dy).y - @gutter / 2,
                                  w: safe_area.w,
                                  h: gutter,
                                  path: :pixel,
@@ -591,21 +607,23 @@ module GTK
                                  anchor_y: 0.5 }
 
       three_quarter_horizontal = { id: :three_quarter_horizontal,
-                                   x: safe_area.x,
-                                   y: Layout.rect(row: @row_count.idiv(4) * 3 - 1).y - @gutter / 2,
+                                   x: safe_area.x + dx,
+                                   y: Layout.rect(row: @row_count.idiv(4) * 3 - 1, dy: dy).y - @gutter / 2,
                                    w: safe_area.w,
                                    h: gutter,
                                    path: :pixel,
-                                   r: 232,
-                                   g: 232,
-                                   b: 232,
+                                   r: 200,
+                                   g: 200,
+                                   b: 200,
                                    anchor_y: 0.5 }
 
       single_cell_border = { id: :single_cell_border, **safe_area, primitive_marker: :border }
+      single_cell_border.x += dx
+      single_cell_border.y += dy
 
       single_cell_bg = { id: :single_cell_bg,
-                         x: safe_area.center.x,
-                         y: @bottom + @h - 14,
+                         x: safe_area.center.x + dx,
+                         y: @bottom + @h - 14 + dy,
                          anchor_x: 0.5,
                          anchor_y: 0.5,
                          h: 24,
@@ -617,8 +635,8 @@ module GTK
                          a: 255 }
 
       single_cell_bg_bottom = { id: :single_cell_bg_bottom,
-                                x: safe_area.center.x,
-                                y: @bottom + 0 + 14,
+                                x: safe_area.center.x + dx,
+                                y: @bottom + 0 + 14 + dy,
                                 anchor_x: 0.5,
                                 anchor_y: 0.5,
                                 h: 24,
@@ -637,8 +655,8 @@ module GTK
       ]
 
       single_cell_label = { id: :single_cell_label,
-                            x: safe_area.center.x,
-                            y: @bottom + @h - 14,
+                            x: safe_area.center.x + dx,
+                            y: @bottom + @h - 14 + dy,
                             text: values.join(" "),
                             anchor_x: 0.5,
                             anchor_y: 0.5,
@@ -646,8 +664,8 @@ module GTK
                             size_px: 18 }
 
       single_cell_label_bottom = { id: :single_cell_label_bottom,
-                                   x: safe_area.center.x,
-                                   y: @bottom + 0 + 14,
+                                   x: safe_area.center.x + dx,
+                                   y: @bottom + 0 + 14 + dy,
                                    text: "To invert colors use Layout.debug_primitives(invert_colors: true)",
                                    anchor_x: 0.5,
                                    anchor_y: 0.5,
@@ -667,10 +685,12 @@ module GTK
        single_cell_label_bottom]
     end
 
-    def __debug_primitives_cell_prefabs__(color:)
+    def __debug_primitives_cell_prefabs__(color:, allscreen:)
       col_count.map_with_index do |col|
         row_count.map_with_index do |row|
-          cell   = rect row: row, col: col
+          dx = allscreen ? Grid.allscreen_offset_x : 0
+          dy = allscreen ? Grid.allscreen_offset_y : 0
+          cell   = rect row: row, col: col, dx: dx, dy: dy
           center = Geometry.rect_center_point cell
           [
             cell.copy
@@ -709,13 +729,13 @@ module GTK
       end.flatten
     end
 
-    def __debug_primitives__(color:)
-      __debug_primitives_cell_prefabs__(color: color) +
-      __debug_primitives_crosshair__ +
-      __debug_primitives_seperators__
+    def __debug_primitives__(color:, allscreen:)
+      __debug_primitives_cell_prefabs__(color: color, allscreen: allscreen) +
+      __debug_primitives_crosshair__(allscreen: allscreen) +
+      __debug_primitives_seperators__(allscreen: allscreen)
     end
 
-    def debug_primitives(invert_colors: false)
+    def debug_primitives(invert_colors: false, allscreen: false)
       color = if invert_colors
                 { r: 255, g: 255, b: 255 }
               else
@@ -726,10 +746,18 @@ module GTK
 
       if @debug_primitives_colors != color
         @debug_primitives = nil
+        @debug_primitives_allscreen = nil
         @debug_primitives_colors = color
       end
 
-      @debug_primitives ||= __debug_primitives__(color: color)
+      @debug_primitives ||= __debug_primitives__(color: color, allscreen: false)
+      @debug_primitives_allscreen ||= __debug_primitives__(color: color, allscreen: true)
+
+      if allscreen
+        @debug_primitives_allscreen
+      else
+        @debug_primitives
+      end
     end
 
     def serialize

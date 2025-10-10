@@ -85,13 +85,13 @@ class Game
     # capture the direction the player is facing
     # (this is used to determine the horizontal flip of the
     # sprite
-    entity.orientation = if left_right == -1
-                           :left
-                         elsif left_right == 1
-                           :right
-                         else
-                           entity.orientation
-                         end
+    entity.facing = if left_right == -1
+                      :left
+                    elsif left_right == 1
+                      :right
+                    else
+                      entity.facing
+                    end
 
     # if the fall_through (down) input was requested,
     # and if they are on a platform...
@@ -243,11 +243,13 @@ class Game
     entity.prev_rect = entity.rect.merge x: entity.x - entity.dx,
                                          y: entity.y - entity.dy
     orientation_shift = 0
-    if entity.orientation == :right
-      orientation_shift = entity.rect.w.half
+
+    if entity.facing == :right
+      orientation_shift = entity.rect.w  / 2
     end
+
     entity.hurt_rect  = entity.rect.merge y: entity.rect.y + entity.h * 0.33,
-                                          x: entity.rect.x - entity.rect.w.half + orientation_shift,
+                                          x: entity.rect.x - (entity.rect.w / 2) + orientation_shift,
                                           h: entity.rect.h * 0.33
   end
 
@@ -392,8 +394,8 @@ class Game
       ds = new_w - s.w
       s.w = new_w
       s.h = new_w
-      s.x -= ds.half
-      s.y -= ds.half
+      s.x -= ds / 2
+      s.y -= ds / 2
       s.a = s.a * 0.97 ** 5
     end
 
@@ -433,8 +435,8 @@ class Game
 
     # if it's a game over, fade out all current entities in play
     if state.game_over
-      state.game_over_render_queue.concat shadows.map { |s| s.sprite.merge(a: 255) }
-      state.game_over_render_queue << player.sprite.merge(a: 255)
+      state.game_over_render_queue.concat shadows.map { |s| { **entity_prefab(s), a: 255 } }
+      state.game_over_render_queue << { **entity_prefab(player), a: 255 }
       state.game_over_render_queue << state.light_crystal.merge(a: 255, path: 'sprites/light.png', b: 128)
     end
   end
@@ -474,8 +476,8 @@ class Game
     # of what the current light meter value is (which increases
     # when a crystal is collected and decreses a little bit every
     # frame
-    meter_perc = state.light_meter.fdiv(6000) + (0.002 * rand)
-    light_w = (1280 * meter_perc).round
+    meter_perc = state.light_meter.fdiv(6000)
+    light_w = (1280 * meter_perc)
     dark_w  = 1280 - light_w
 
     # once the light and dark partitions have been computed
@@ -554,11 +556,11 @@ class Game
   end
 
   def render_entities
-    render_entity player, r: 0, g: 0, b: 0
-    shadows.each { |shadow| render_entity shadow, g: 0, b: 0 }
+    outputs.sprites << entity_prefab(player, r: 0, g: 0, b: 0)
+    outputs.sprites << shadows.map { |shadow| entity_prefab shadow, g: 0, b: 0 }
   end
 
-  def render_entity entity, r: 255, g: 255, b: 255;
+  def entity_prefab entity, r: 255, g: 255, b: 255;
     # this is essentially the entity "prefab"
     # the current action of the entity is consulted to
     # determine what sprite should be rendered
@@ -566,21 +568,16 @@ class Game
     # of the sprite animation should be presented
     a = 255
 
-    entity.sprite = nil
-
     if entity.activate_at
-      activation_elapsed_time = state.clock - entity.activate_at
+      activation_elapsed_time = entity.activate_at.elapsed_time(state.clock)
       if entity.activate_at > state.clock
-        entity.sprite = { x: entity.initial_x + 5 * rand,
-                          y: entity.initial_y + 5 * rand,
-                          w: 64 + 5 * rand,
-                          h: 64 + 5 * rand,
-                          path: "sprites/light.png",
-                          g: 0, b: 0,
-                          a: a }
-
-        outputs.sprites << entity.sprite
-        return
+        return { x: entity.initial_x + 5 * rand,
+                 y: entity.initial_y + 5 * rand,
+                 w: 64 + 5 * rand,
+                 h: 64 + 5 * rand,
+                 path: "sprites/light.png",
+                 g: 0, b: 0,
+                 a: 255 }
       elsif !entity.activated
         entity.activated = true
         state.jitter_fade_out_render_queue << { x: entity.initial_x + 5 * rand,
@@ -595,38 +592,36 @@ class Game
     if entity.action == :standing
       path = "sprites/player/stand.png"
     elsif entity.action == :running
-      sprint_index = entity.action_at
-                           .frame_index count: 4,
-                                        hold_for: 8,
-                                        repeat: true,
-                                        tick_count_override: entity.clock
+      sprint_index = Numeric.frame_index start_at: entity.action_at,
+                                         count: 4,
+                                         hold_for: 8,
+                                         repeat: true,
+                                         tick_count: entity.clock
       path = "sprites/player/run-#{sprint_index}.png"
     elsif entity.action == :first_jump
-      sprint_index = entity.action_at
-                           .frame_index count: 2,
-                                        hold_for: 8,
-                                        repeat: false,
-                                        tick_count_override: entity.clock
+      sprint_index = Numeric.frame_index start_at: entity.action_at,
+                                         count: 2,
+                                         hold_for: 8,
+                                         repeat: false,
+                                         tick_count: entity.clock
       path = "sprites/player/jump-#{sprint_index || 1}.png"
     elsif entity.action == :midair_jump
-      sprint_index = entity.action_at
-                           .frame_index count: state.midair_jump_frame_count,
-                                        hold_for: state.midair_jump_hold_for,
-                                        repeat: false,
-                                        tick_count_override: entity.clock
+      sprint_index = Numeric.frame_index start_at: entity.action_at,
+                                         count: state.midair_jump_frame_count,
+                                         hold_for: state.midair_jump_hold_for,
+                                         repeat: false,
+                                         tick_count: entity.clock
       path = "sprites/player/midair-jump-#{sprint_index || 8}.png"
     elsif entity.action == :falling
       path = "sprites/player/falling.png"
     end
 
-    flip_horizontally = true if entity.orientation == :left
-    entity.sprite = entity.render_rect.merge path: path,
-                                             a: a,
-                                             r: r,
-                                             g: g,
-                                             b: b,
-                                             flip_horizontally: flip_horizontally
-    outputs.sprites << entity.sprite
+    entity.render_rect.merge path: path,
+                             a: a,
+                             r: r,
+                             g: g,
+                             b: b,
+                             flip_horizontally: entity.facing == :left
   end
 
   def new_game
@@ -645,21 +640,21 @@ class Game
 
     # hard coded collision tiles
     state.tiles                   = [
-      { impassable: true, x: 0, y: 0, w: 1280, h: 8, path: :pixel, r: 0, g: 0, b: 0 },
-      { impassable: true, x: 0, y: 0, w: 8, h: 1500, path: :pixel, r: 0, g: 0, b: 0 },
-      { impassable: true, x: 1280 - 8, y: 0, w: 8, h: 1500, path: :pixel, r: 0, g: 0, b: 0 },
+      { x: 0,                        y: 0,   w: 1280, h: 8,    path: :pixel, r: 0, g: 0, b: 0, impassable: true },
+      { x: 0,                        y: 0,   w: 8,    h: 1500, path: :pixel, r: 0, g: 0, b: 0, impassable: true },
+      { x: 1280 - 8,                 y: 0,   w: 8,    h: 1500, path: :pixel, r: 0, g: 0, b: 0, impassable: true },
 
-      { x: 80 + 320 + 80,            y: 128, w: 320, h: 8, path: :pixel, r: 0, g: 0, b: 0 },
-      { x: 80 + 320 + 80 + 320 + 80, y: 192, w: 320, h: 8, path: :pixel, r: 0, g: 0, b: 0 },
+      { x: 80 + 320 + 80,            y: 128, w: 320,  h: 8,    path: :pixel, r: 0, g: 0, b: 0 },
+      { x: 80 + 320 + 80 + 320 + 80, y: 192, w: 320,  h: 8,    path: :pixel, r: 0, g: 0, b: 0 },
 
-      { x: 160,                      y: 320, w: 400, h: 8, path: :pixel, r: 0, g: 0, b: 0 },
-      { x: 160 + 400 + 160,          y: 400, w: 400, h: 8, path: :pixel, r: 0, g: 0, b: 0 },
+      { x: 160,                      y: 320, w: 400,  h: 8,    path: :pixel, r: 0, g: 0, b: 0 },
+      { x: 160 + 400 + 160,          y: 400, w: 400,  h: 8,    path: :pixel, r: 0, g: 0, b: 0 },
 
-      { x: 320,                      y: 600, w: 320, h: 8, path: :pixel, r: 0, g: 0, b: 0 },
+      { x: 320,                      y: 600, w: 320,  h: 8,    path: :pixel, r: 0, g: 0, b: 0 },
 
-      { x: 8, y: 500, w: 100, h: 8, path: :pixel, r: 0, g: 0, b: 0 },
+      { x: 8,                        y: 500, w: 100,  h: 8,    path: :pixel, r: 0, g: 0, b: 0 },
 
-      { x: 8, y: 60, w: 100, h: 8, path: :pixel, r: 0, g: 0, b: 0 },
+      { x: 8,                        y: 60,  w: 100,  h: 8,    path: :pixel, r: 0, g: 0, b: 0 },
     ]
 
     state.player                = new_entity
@@ -704,29 +699,28 @@ class Game
     state.input_timeline.find { |t| t.at <= at && t.k == key }.v
   end
 
-  def new_entity from_entity: nil
-    # these are all the properties of an entity
-    # an optional from_entity can be passed in
-    # for "cloning" an entity/setting an entities
-    # starting state
-    pe = state.new_entity(:body)
-    pe.w                  = 96
-    pe.h                  = 96
-    pe.jump_power         = 12
-    pe.y                  = 500
-    pe.x                  = 640 - 8
-    pe.initial_x          = pe.x
-    pe.initial_y          = pe.y
-    pe.dy                 = 0
-    pe.dx                 = 0
-    pe.jumped_down_at     = 0
-    pe.jumped_at          = 0
-    pe.jump_count         = 0
-    pe.clock              = state.clock
-    pe.orientation        = :right
-    pe.action             = :falling
-    pe.action_at          = state.clock
-    pe.left_right         = 0
+def new_entity from_entity: nil
+  # these are all the properties of an entity
+  # an optional from_entity can be passed in
+  # for "cloning" an entity/setting an entities
+  # starting state
+  pe = { type: :body,
+         w: 96,
+         h: 96,
+         jump_power: 12,
+         y: 500,
+         x: 640 - 8,
+         dy: 0,
+         dx: 0,
+         jumped_down_at: 0,
+         jumped_at: 0,
+         jump_count: 0,
+         clock: state.clock,
+         orientation: :right,
+         action: :falling,
+         action_at: state.clock,
+         left_right: 0 }
+
     if from_entity
       pe.w              = from_entity.w
       pe.h              = from_entity.h
@@ -784,18 +778,21 @@ class Game
 end
 
 def boot args
-  # initialize the game on boot
-  $game = Game.new
+  # initialize state to an empty Hash on boot
+  args.state = {}
 end
 
 def tick args
   # tick the game class after setting .args
   # (which is provided by the engine)
+  $game ||= Game.new
   $game.args = args
   $game.tick
 end
 
 # debug function for resetting the game if requested
 def reset args
-  $game = Game.new
+  $game = nil
 end
+
+GTK.reset_and_replay "replay.txt", speed: 1

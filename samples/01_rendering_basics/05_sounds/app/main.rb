@@ -22,7 +22,7 @@
 # Runs all the methods necessary for the game to function properly.
 def tick args
   args.outputs.labels << [640, 360, "Click anywhere to play a random sound.", 0, 1]
-  args.state.notes ||= [:C3, :D3, :E3, :F3, :G3, :A3, :B3, :C4]
+  args.state.notes ||= [:c3, :d3, :e3, :f3, :g3, :a3, :b3, :c4]
 
   if args.inputs.mouse.click
     # Play a sound by adding a string to args.outputs.sounds

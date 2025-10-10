@@ -37,11 +37,14 @@ module GTK
           time_ms: (elapsed_time * 1000).to_i }
       end
 
-      def benchmark opts = {}
-        if opts.iterations
-          benchmark_iterations opts
-        elsif opts.seconds
-          benchmark_seconds opts
+      def benchmark(opts = nil, **kwargs)
+        # !!! NOTE: Ruby 3.1 breaks the duality of being able to pass in
+        #           a hash or kwargs. This null check + kwargs assignment is added
+        #           for backwards compat
+        if kwargs.iterations
+          benchmark_iterations(opts, **kwargs)
+        elsif kwargs.seconds
+          benchmark_seconds(opts, **kwargs)
         else
           raise <<-S
 * ERROR:
@@ -49,18 +52,22 @@ Runtime#benchmark must be given either ~iterations~ or ~seconds~
 
 Example:
 #+begin_src
-  GTK::benchmark iterations: 10_000, variation_1: -> () { }, variation_2: -> () { }
+  GTK.benchmark iterations: 10_000, variation_1: lambda { }, variation_2: lambda { }
   # OR
-  GTK::benchmark seconds: 10, variation_1: -> () { }, variation_2: -> () { }
+  GTK.benchmark seconds: 10, variation_1: lambda { }, variation_2: lambda { }
 #+end_src
 S
         end
       end
 
-      def benchmark_seconds opts = {}
-        seconds = opts.seconds || 5
+      def benchmark_seconds(opts = nil, **kwargs)
+        # !!! NOTE: Ruby 3.1 breaks the duality of being able to pass in
+        #           a hash or kwargs. This null check + kwargs assignment is added
+        #           for backwards compat
+        kwargs = opts if opts
+        seconds = kwargs.seconds || 5
 
-        procs = opts.find_all { |k, v| v.respond_to? :call }
+        procs = kwargs.find_all { |k, v| v.respond_to? :call }
 
         iterations = procs.map do |(name, proc)|
           benchmark_seconds_single seconds, name, proc
@@ -89,7 +96,7 @@ S
         summary = <<-S
 * BENCHMARK WINNER: #{first_place.name}
 ** Caller:         #{(caller || []).first}
-** Duration:       #{opts.seconds}s
+** Duration:       #{kwargs.seconds}s
 S
         too_small_to_measure = false
         if (first_place.iterations + second_place.iterations) == 0
@@ -141,9 +148,13 @@ S
         r
       end
 
-      def benchmark_iterations  opts = {}
-        iterations = opts.iterations
-        procs = opts.find_all { |k, v| v.respond_to? :call }
+      def benchmark_iterations(opts = nil, **kwargs)
+        # !!! NOTE: Ruby 3.1 breaks the duality of being able to pass in
+        #           a hash or kwargs. This null check + kwargs assignment is added
+        #           for backwards compat
+        kwargs = opts if opts
+        iterations = kwargs.iterations
+        procs = kwargs.find_all { |k, v| v.respond_to? :call }
 
         times = procs.map do |(name, proc)|
           benchmark_iterations_single iterations, name, proc

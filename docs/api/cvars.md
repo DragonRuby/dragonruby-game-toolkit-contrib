@@ -1,4 +1,4 @@
-# CVars / Configuration (`args.cvars`)
+# CVars / Configuration / Game Metadata (`args.cvars`)
 
 Hash contains metadata pulled from the files under the `./metadata` directory. To get the keys that are available type `$args.cvars.keys` in the Console. Here is an example of how to retrieve the game version number:
 
@@ -34,7 +34,7 @@ is a high level summary of each value.
 |                                | `orientation`              | `landscape` or `portrait` (default is `landscape`)                           | Orientation for your game. |
 |                                | `orientation_ios`          | `landscape` or `portrait`                                                    | Overrides the default orientation on iOS. This is a Pro feature. |
 |                                | `orientation_android`      | `landscape` or `portrait`                                                    | Overrides the default orientation on Android. This is a Pro feature. |
-|                                | `scale_quality`            | `0`, `1`, or `2` (default is `0`)                                            | Specifies the render scale quality for your game (full details of what each number means in `metadata/game_metadata.txt`). |
+|                                | `scale_quality`            | `0`, `1`, or `2` (default is `0`)                                            | Specifies the render scale quality for your game (0=nearest neighbor, 1=linear, 2=anisotropic/best). Full details of what each number means in `metadata/game_metadata.txt`. |
 |                                | `ignore_directories`       | Comma delimited list of directories                                          | Directories to exclude when packaging your game. |
 |                                | `packageid`                | String in reverse domain convention                                          | Android Package Id for your game. This is a Pro feature. |
 |                                | `compile_ruby`             | `true` or `false` (default is `false`)                                       | Signifies if your game code will be compiled to bytecode during packaging. This is a Pro feature. |

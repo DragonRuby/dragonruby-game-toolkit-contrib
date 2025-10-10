@@ -46,17 +46,18 @@ class RootScene
     state.gravity ||= 0.25
     calc_camera
     calc_physics
-    outputs[:scene].w = 1500
-    outputs[:scene].h = 1500
+    outputs[:scene].w = Camera.viewport_w
+    outputs[:scene].h = Camera.viewport_h
     outputs[:scene].background_color = [0, 0, 0, 0]
-    outputs[:scene].lines << { x: 0, y: 0, x2: 1500, y2: 1500, r: 255, g: 255, b: 255, a: 255 }
-    outputs[:scene].lines << { x: 0, y: 1500, x2: 1500, y2: 0, r: 255, g: 255, b: 255, a: 255 }
-    outputs[:scene].sprites << player_prefab
+    outputs[:scene].lines << { x: 0, y: 0, x2: Camera.viewport_w, y2: Camera.viewport_h, r: 255, g: 255, b: 255, a: 255 }
+    outputs[:scene].lines << { x: 0, y: Camera.viewport_h, x2: Camera.viewport_w, y2: 0, r: 255, g: 255, b: 255, a: 255 }
 
     terrain_to_render = Camera.find_all_intersect_viewport(state.camera, state.terrain)
     outputs[:scene].sprites << terrain_to_render.map do |m|
       Camera.to_screen_space(state.camera, m)
     end
+
+    outputs[:scene].sprites << player_prefab
 
     outputs.sprites << { **Camera.viewport, path: :scene }
 
@@ -98,7 +99,7 @@ class RootScene
   def calc_physics
     player.x += player.dx
     collision = state.terrain.find do |t|
-      t.intersect_rect? player
+      t.intersect_rect?(player) && t.has_collision
     end
 
     if collision
@@ -120,7 +121,7 @@ class RootScene
     player.on_ground = false
 
     collision = state.terrain.find do |t|
-      t.intersect_rect? player
+      t.intersect_rect?(player) && t.has_collision
     end
 
     if collision

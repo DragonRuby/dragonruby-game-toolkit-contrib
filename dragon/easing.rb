@@ -15,7 +15,7 @@ module GTK
     end
 
     def self.ease_extended start_tick, current_tick, end_tick, default_before, default_after, *definitions
-      log_once :consider_smooth!, "Easing::ease can be expensive to invoke, consider using Easing.smooth_(start|stop|step) instead."
+      log_once :consider_smooth!, "Easing::ease can be expensive to invoke, consider using Easing.smooth_(start|stop|step) instead.", include_caller: true
       definitions.flatten!
       definitions = [:identity] if definitions.length == 0
       duration = end_tick - start_tick

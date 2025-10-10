@@ -122,6 +122,8 @@ class String
 
   # !!! FIXME: Strange bug where garbage bytes are still left over after a strip for a string.
   alias_method :__original_strip__, :strip unless String.instance_methods.include?(:__original_strip__)
+
+  # might not be needed given: 78ed497c9ae5fb10b8fe084b5cc73c9e6ad160d6
   def strip
     "#{__original_strip__}"
   end
@@ -148,6 +150,31 @@ class String
       self
     else
       (padstr * (count - self.length)) + self
+    end
+  end
+
+  def self.line_anchors line_count
+    line_count = line_count.to_i
+    results = []
+    if line_count % 2 == 0
+      above_below_count = (line_count).idiv(2)
+      above_below_count.times do |i|
+        results << 1.0 - (above_below_count - i) * 1.0
+      end
+      above_below_count.times do |i|
+        results << 0.0 + (i + 1) * 1.0
+      end
+      return results
+    else
+      above_below_count = (line_count - 1).idiv(2)
+      above_below_count.times do |i|
+        results << 0.5 - (above_below_count - i) * 1.0
+      end
+      results << 0.5
+      above_below_count.times do |i|
+        results << 0.5 + (i + 1) * 1.0
+      end
+      return results
     end
   end
 end

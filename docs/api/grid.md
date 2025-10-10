@@ -5,9 +5,6 @@ Provides information about the screen and game canvas.
 ?> All functions are available globally via `Grid.*`.
 ```ruby
 def tick args
-   puts args.grid.function(...)
-
-   # OR available globally
    puts Grid.function(...)
 end
 ```
@@ -15,6 +12,12 @@ end
 ## `orientation`
 
 Returns either `:landscape` (default) or `:portrait`. The orientation of your game is set within `./mygame/metadata/game_metadata.txt`.
+
+## `orientation_changed?`
+
+Returns `true` if the orientation for your game has changed because of a window resize (or handheld device rotation). This
+value will only be true on the frame the orientation change occurred (and is dependent on the `orientation` value in `game_metadata.txt`
+having comma delimited value of `portrait,landscape` or `landscape,portrait`). See the CVars section in the docs for more information.
 
 ## `origin_name`
 
@@ -61,10 +64,10 @@ Here's an example of what the property conventions look like:
 ```ruby
 def tick args
   # Logical width
-  args.grid.w
+  Grid.w
 
   # Width in pixels
-  args.grid.w_px
+  Grid.w_px
 end
 ```
 
@@ -86,7 +89,7 @@ Given that the logical canvas is `720p`, these are the values that
 
 ## `top`
 
-Returns value that represents the top of the grid.
+Returns value that represents the top of the grid (this is an alias for `Grid.h`).
 
 ## `left`
 
@@ -106,7 +109,7 @@ Returns the grid's width.
 
 ## `h`
 
-Returns the grid's width.
+Returns the grid's height.
 
 ## `aspect_ratio_w`
 
@@ -148,6 +151,66 @@ closest/best-fit resolutions.
 -   5k: 6400x2880
 
 ### All Screen Properties
+
+?> All Screen Properties are pertinent for Pro license with `hd_letterbox=false` (setting `hd_letterbox=false` allows for edge to edge screen rendering). Take a look at the following sample to see how rendering can be applied to non-standard aspect ratios `samples/07_advanced_rendering_hd/05_camera_ultrawide_allscreen`.
+
+The goal of All Screen Properties is to ensure that the safe area for your game is always centered in the display regardless of its aspect ratio.
+
+When a non-standard aspect ratio (an aspect ratio that isn't 16:9 or 9:16), All Screen Properties will reflect the "overflow" for the game window.
+
+All Screen Properties are always in **logical pixels**, you can see native pixel values - if you're curious about what they are - using the `_px` variant of All Screen Properties (they aren't really useful for rendering things on the screen since everything is in logical pixels and are there in preperation of shaders and computing UV coordinates).
+
+- If your game is landscape, and your game window is wider than it is tall, then All Screen properties for height will match the logical pixels of the game. All Screen width properties for width will be different because the overflow occurs horizontally.
+
+- If your game is landscape, and your game window is taller than it is wide, then All Screen properties for width will match the logical pixels of the game. All Screen width properties for height will be different because the overflow occurs vertically.
+
+- If your game window is a perfect 16:9 aspect ratio (720p, 1080p, etc), then all All Screen properties will match logical pixels. There is no overflow in that case (your native scale will be a multiple of 720p).
+
+You can use the following code to view all screen properties for different sizes of the game window. Try making the window really wide, but short and really tall but thin:
+
+```ruby
+def tick args
+  # all screen rect properties
+  args.outputs.primitives << {
+    x: 640, y: 390,
+    text: "allscreen_rect: #{Grid.allscreen_rect}",
+    anchor_x: 0.5, anchor_y: 0.5, size_px: 30
+  }
+
+  # all screen left, right
+  args.outputs.primitives << {
+    x: 640, y: 360,
+    text: "allscreen_left: #{Grid.allscreen_left}, allscreen_right: #{Grid.allscreen_right}",
+    anchor_x: 0.5, anchor_y: 0.5, size_px: 30
+  }
+
+  # all screen bottom, top
+  args.outputs.primitives << {
+    x: 640, y: 330,
+    text: "allscreen_bottom: #{Grid.allscreen_bottom}, allscreen_top: #{Grid.allscreen_top}",
+    anchor_x: 0.5, anchor_y: 0.5, size_px: 30
+  }
+
+  # mouse location
+  args.outputs.labels << {
+    x: 640, y: 300,
+    text: "Mouse: #{args.inputs.mouse.x}, #{args.inputs.mouse.y}",
+    anchor_x: 0.5, anchor_y: 0.5, size_px: 30,
+  }
+
+  # edge to edge area
+  args.outputs.sprites << {
+    **Grid.allscreen_rect, path: :solid,
+    r: 64, g: 64, b: 128, a: 255
+  }
+
+  # safe area
+  args.outputs.sprites << {
+    x: 0, y: 0, w: 1280, h: 720, path: :solid,
+    r: 128, g: 64, b: 64, a: 255
+  }
+end
+```
 
 These properties provide dimensions of the screen outside of the 16:9
 safe area as logical `720p` values.

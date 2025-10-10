@@ -309,6 +309,44 @@ S
         end
       end
 
+      def __shape_type__ shape
+        if shape.radius
+          :circle
+        elsif shape.x2 && shape.y2
+          :line
+        elsif shape.w && shape.h
+          :rect
+        elsif shape.x && shape.y
+          :point
+        else
+          nil
+        end
+      end
+
+      def __shape_to_rect__ shape
+        type = __shape_type__ shape
+        case type
+        when :circle
+          circle_to_rect shape
+        when :line
+          line_to_rect shape
+        when :rect
+          shape
+        when :point
+          { x: shape.x, y: shape.y, w: 0, h: 0 }
+        else
+          raise <<-S
+* ERROR: ~Geometry::__shape_to_rect__~
+  The shape #{shape} does not have enough information to be converted to a rectangle.
+  It must have at least one of the following:
+  - ~x~, ~y~, ~radius~ (circle)
+  - ~x~, ~y~, ~w~, ~h~ (rectangle)
+  - ~x~, ~y~, ~x2~, ~y2~ (line)
+  - ~x~, ~y~ (point)
+S
+        end
+      end
+
       def line_to_rect line, min_w: 0, min_h: 0
         line_rect line, min_w: min_w, min_h: min_h
       end
@@ -484,30 +522,66 @@ S
         return nil if !inner_rect
         return nil if !outer_rect
 
-        inner_rect_anchor_x = 0
-        inner_rect_anchor_x = inner_rect.anchor_x || 0 if inner_rect.respond_to?(:anchor_x)
-
-        inner_rect_anchor_y = 0
-        inner_rect_anchor_y = inner_rect.anchor_y || 0 if inner_rect.respond_to?(:anchor_y)
-
-        outer_rect_anchor_x = 0
-        outer_rect_anchor_x = outer_rect.anchor_x || 0 if outer_rect.respond_to?(:anchor_x)
-
-        outer_rect_anchor_y = 0
-        outer_rect_anchor_y = outer_rect.anchor_y || 0 if outer_rect.respond_to?(:anchor_y)
-
-        inner_rect_x = inner_rect.x - inner_rect_anchor_x * inner_rect.w
-        inner_rect_y = inner_rect.y - inner_rect_anchor_y * inner_rect.h
-
-        outer_rect_x = outer_rect.x - outer_rect_anchor_x * outer_rect.w
-        outer_rect_y = outer_rect.y - outer_rect_anchor_y * outer_rect.h
-
-        inner_rect_x     + tolerance >= outer_rect_x     - tolerance &&
-          (inner_rect_x + inner_rect.w) - tolerance <= (outer_rect_x + outer_rect.w) + tolerance &&
-          inner_rect.y     + tolerance >= outer_rect_y     - tolerance &&
-          (inner_rect.y + inner_rect.h) - tolerance <= (outer_rect_y + outer_rect.h) + tolerance
+        __inside_rect__? inner_rect, outer_rect, tolerance
       rescue Exception => e
         raise e, ":inside_rect? failed for inner_rect: #{inner_rect} outer_rect: #{outer_rect}.\n#{e}"
+      end
+
+      def intersect_bounding_box? inner_shape, outer_shape, tolerance = 0.0
+        return nil if !inner_shape
+        return nil if !outer_shape
+        intersect_rect? __shape_to_rect__(inner_shape),
+                        __shape_to_rect__(outer_shape),
+                        tolerance
+      rescue Exception => e
+        raise e, <<-S
+* ERROR:
+Geometry::intersect_bounding_box? for inner_shape #{inner_shape}, inner_shape #{outer_shape}.
+#{e}
+S
+      end
+
+      def inside_bounding_box? inner_shape, outer_shape, tolerance = 0.0
+        return nil if !inner_shape
+        return nil if !outer_shape
+        __inside_rect__? __shape_to_rect__(inner_shape),
+                         __shape_to_rect__(outer_shape),
+                         tolerance
+      rescue Exception => e
+        raise e, <<-S
+* ERROR:
+Geometry::inside_bounding_box? for inner_shape #{inner_shape}, outer_shape #{outer_shape}.
+#{e}
+S
+      end
+
+      def __inside_rect__?(inner_rect, outer_rect, tolerance = 0.0)
+        inner_rect_anchor_x = 0
+        inner_rect_anchor_x = inner_rect.anchor_x || 0 if inner_rect.is_a?(Hash) || inner_rect.respond_to?(:anchor_x)
+
+        inner_rect_anchor_y = 0
+        inner_rect_anchor_y = inner_rect.anchor_y || 0 if inner_rect.is_a?(Hash) || inner_rect.respond_to?(:anchor_y)
+
+        outer_rect_anchor_x = 0
+        outer_rect_anchor_x = outer_rect.anchor_x || 0 if outer_rect.is_a?(Hash) || outer_rect.respond_to?(:anchor_x)
+
+        outer_rect_anchor_y = 0
+        outer_rect_anchor_y = outer_rect.anchor_y || 0 if outer_rect.is_a?(Hash) || outer_rect.respond_to?(:anchor_y)
+
+        inner_rect_w = inner_rect.w || 0
+        inner_rect_h = inner_rect.h || 0
+        inner_rect_x = inner_rect.x - inner_rect_anchor_x * inner_rect_w
+        inner_rect_y = inner_rect.y - inner_rect_anchor_y * inner_rect_h
+
+        outer_rect_w = outer_rect.w || 0
+        outer_rect_h = outer_rect.h || 0
+        outer_rect_x = outer_rect.x - outer_rect_anchor_x * outer_rect_w
+        outer_rect_y = outer_rect.y - outer_rect_anchor_y * outer_rect_h
+
+        inner_rect_x     + tolerance >= outer_rect_x     - tolerance &&
+        (inner_rect_x + inner_rect_w) - tolerance <= (outer_rect_x + outer_rect_w) + tolerance &&
+        inner_rect_y     + tolerance >= outer_rect_y     - tolerance &&
+        (inner_rect_y + inner_rect_h) - tolerance <= (outer_rect_y + outer_rect_h) + tolerance
       end
 
       def scale_rect_extended rect,
@@ -645,6 +719,16 @@ Geometry::vec2_dot_product for v1 #{v1} v2: #{v2}.
 S
       end
 
+      def vec2_angle v
+        (Math.atan2(v.y, v.x).to_degrees + 360) % 360
+      rescue Exception => e
+        raise e, <<-S
+* ERROR:
+Geometry::vec2_angle for v #{v}.
+#{e}
+S
+      end
+
       def vec2_add v1, v2
         { x: v1.x + v2.x, y: v1.y + v2.y }
       rescue Exception => e
@@ -735,7 +819,7 @@ S
         closest_point = line_normal line, center
         result = distance_squared(center, closest_point) <= circle.radius**2
         return false if !result
-        return true if point_on_line? closest_point, line
+        return true if inside_bounding_box? closest_point, line
         distance_to_start = distance_squared center, { x: line.x, y: line.y }
         distance_to_end = distance_squared center, { x: line.x2, y: line.y2 }
         return true if distance_to_start <= circle.radius**2
@@ -813,8 +897,28 @@ S
         raise e, <<-S
 * ERROR:
 Geometry::rect? for shape #{shape}.
+
+An object is considered a rectangle if it responds to the following methods:
+- ~x~
+- ~y~
+- ~w~
+- ~h~
+- ~anchor_x~
+- ~anchor_y~
+
 #{e}
 S
+      end
+
+      def line? shape
+        if shape.is_a? Hash
+          shape.x2 && shape.y2
+        else
+          shape.respond_to?(:x) &&
+          shape.respond_to?(:y) &&
+          shape.respond_to?(:x2) &&
+          shape.respond_to?(:y2)
+        end
       end
 
       def circle? shape
@@ -837,16 +941,23 @@ Geometry::intersect_circle? for circle_one #{circle_one} and circle_two #{circle
 S
       end
 
-      def point_on_line? point, line
-        line_vec   = line_vec2 line
-        line_vec_normalized = vec2_normalize line_vec
-        point_vec = { x: point.x - line.x, y: point.y - line.y }
-        product = vec2_dot_product line_vec_normalized, point_vec
-        product >= 0 && product <= vec2_magnitude(line_vec)
+      def point_on_line? point, line, tolerance = 0.1
+        x = point.x
+        y = point.y
+        x1 = line.x
+        y1 = line.y
+        x2 = line.x2
+        y2 = line.y2
+
+        line_length = Math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+        distance_point_to_x1_y1 = Math.sqrt((x - x1)**2 + (y - y1)**2)
+        distance_point_to_x2_y2 = Math.sqrt((x - x2)**2 + (y - y2)**2)
+
+        (distance_point_to_x1_y1 + distance_point_to_x2_y2 - line_length).abs < tolerance
       rescue Exception => e
         raise e, <<-S
 * ERROR:
-Geometry::point_on_line? for line #{line} and point #{point}.
+Geometry::point_on_line? for point #{point}, line #{line}, tolerance #{tolerance}.
 #{e}
 S
       end
@@ -1019,10 +1130,27 @@ S
         closest_entry.item
       end
 
+      def angle_vector angle
+        angle_r = angle * Math::PI.fdiv(180)
+
+        {
+          x: Math.cos(angle_r),
+          y: Math.sin(angle_r)
+        }
+      end
+
+      def angle_vector_r angle_in_radians
+        {
+          x: Math.cos(angle_in_radians),
+          y: Math.sin(angle_in_radians)
+        }
+      end
+
       def rect_navigate rect:, rects:, left_right: nil, up_down: nil, directional_vector: nil, wrap_x: true, wrap_y: true, using: nil
         directional_vector ||= { x: 0, y: 0 }
         left_right ||= directional_vector.x.sign
         up_down ||= directional_vector.y.sign
+        rect ||= rects.first
         original_rect = rect
         current_rect = rect
         current_rect = rect_navigate_left_right rect: current_rect,

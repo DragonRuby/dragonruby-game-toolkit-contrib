@@ -1,0 +1,13 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=sample-app
+gametitle=Square Fall
+version=1.0
+icon=metadata/icon.png
+# HD and High DPI available via the Pro License
+hd=true
+highdpi=true
+hd_letterbox=false
+orientation=landscape,portrait
+orientation_ios=portrait,landscape
+orientation_android=portrait,landscape

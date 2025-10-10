@@ -14,6 +14,12 @@
   <!-- Prism JS (light + dark) -->
   <link rel="stylesheet" media="(prefers-color-scheme: dark)" href="/public/prism-one-dark.min.css">
   <link rel="stylesheet" media="(prefers-color-scheme: light)" href="/public/prism-one-light.min.css">
+  <style>
+   :root {
+     --code-font-size: 14px;
+     --content-max-width: 61em;
+   }
+  </style>
 </head>
 <body>
   <div id="app">
@@ -70,13 +76,6 @@
   <script src="/public/search.min.js"></script>
   <script src="/public/docsify-copy-code.min.js"></script>
 
-  <!-- Mermaid Diagrams -->
-  <script type="module">
-    import mermaid from "/public/mermaid@10/dist/mermaid.esm.min.mjs";
-    mermaid.initialize({ startOnLoad: true });
-    window.mermaid = mermaid;
-  </script>
-  <script src="/public/docsify-mermaid.js"></script>
   <script src="/public/version.js"></script>
 </body>
 </html>

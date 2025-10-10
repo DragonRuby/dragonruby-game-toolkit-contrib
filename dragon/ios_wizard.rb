@@ -232,9 +232,10 @@ class IOSWizard < Wizard
     @app_version = opts[:version]
     @app_version = "1.0" if @opts[:env] == :dev && !@app_version
     init_wizard_status
-    log_info "Starting iOS Wizard with #{@opts}"
+    $console.set_command_silent "Starting iOS Wizard with #{@opts}, please wait..."
     GTK.on_tick_count Kernel.tick_count + 30 do
       execute_steps get_steps_to_execute
+      $console.set_command_silent ""
     end
     nil
   end

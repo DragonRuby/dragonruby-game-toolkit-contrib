@@ -66,6 +66,11 @@ module GTK
         @ffi_draw.move_window_to_next_display
       end
 
+      def raise_window
+        return if production?
+        @ffi_draw.raise_window
+      end
+
       def maximize_window
         return if !can_resize_window?
         @ffi_draw.maximize_window

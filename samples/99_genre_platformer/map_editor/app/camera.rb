@@ -1,35 +1,109 @@
 class Camera
-  SCREEN_WIDTH = 1280
-  SCREEN_HEIGHT = 720
-  WORLD_SIZE = 1500
-  WORLD_SIZE_HALF = WORLD_SIZE / 2
-  OFFSET_X = (SCREEN_WIDTH - WORLD_SIZE) / 2
-  OFFSET_Y = (SCREEN_HEIGHT - WORLD_SIZE) / 2
-
   class << self
+    def viewport_w
+      Grid.allscreen_w
+    end
+
+    def viewport_h
+      Grid.allscreen_h
+    end
+
+    def viewport_w_half
+      if Grid.origin_center?
+        0
+      else
+        Grid.allscreen_w.fdiv(2).ceil
+      end
+    end
+
+    def viewport_h_half
+      if Grid.origin_center?
+        0
+      else
+        Grid.allscreen_h.fdiv(2).ceil
+      end
+    end
+
+    def viewport_offset_x
+      if Grid.origin_center?
+        0
+      else
+        Grid.allscreen_x
+      end
+    end
+
+    def viewport_offset_y
+      if Grid.origin_center?
+        0
+      else
+        Grid.allscreen_y
+      end
+    end
+
+    def __to_world_space__ camera, rect
+      return nil if !rect
+
+      x = (rect.x - viewport_w_half + camera.x * camera.scale - viewport_offset_x) / camera.scale
+      y = (rect.y - viewport_h_half + camera.y * camera.scale - viewport_offset_y) / camera.scale
+
+      if rect.w
+        w = rect.w / camera.scale
+        h = rect.h / camera.scale
+        { **rect, x: x, y: y, w: w, h: h }
+      else
+        { **rect, x: x, y: y }
+      end
+    end
+
     def to_world_space camera, rect
-      x = (rect.x - WORLD_SIZE_HALF + camera.x * camera.scale - OFFSET_X) / camera.scale
-      y = (rect.y - WORLD_SIZE_HALF + camera.y * camera.scale - OFFSET_Y) / camera.scale
-      w = rect.w / camera.scale
-      h = rect.h / camera.scale
-      rect.merge x: x, y: y, w: w, h: h
+      if rect.is_a? Array
+        rect.map { |r| to_world_space camera, rect }
+      else
+        __to_world_space__ camera, rect
+      end
+    end
+
+    def __to_screen_space__ camera, rect
+      return nil if !rect
+
+      x = rect.x * camera.scale - camera.x * camera.scale + viewport_w_half
+      y = rect.y * camera.scale - camera.y * camera.scale + viewport_h_half
+
+      if rect.w
+        w = rect.w * camera.scale
+        h = rect.h * camera.scale
+        { **rect, x: x, y: y, w: w, h: h }
+      else
+        { **rect, x: x, y: y }
+      end
     end
 
     def to_screen_space camera, rect
-      x = rect.x * camera.scale - camera.x * camera.scale + WORLD_SIZE_HALF
-      y = rect.y * camera.scale - camera.y * camera.scale + WORLD_SIZE_HALF
-      w = rect.w * camera.scale
-      h = rect.h * camera.scale
-      rect.merge x: x, y: y, w: w, h: h
+      if rect.is_a? Array
+        rect.map { |r| to_screen_space camera, r }
+      else
+        __to_screen_space__ camera, rect
+      end
     end
 
     def viewport
-      {
-        x: OFFSET_X,
-        y: OFFSET_Y,
-        w: 1500,
-        h: 1500
-      }
+      if Grid.origin_center?
+        {
+          x: viewport_offset_x,
+          y: viewport_offset_y,
+          w: viewport_w,
+          h: viewport_h,
+          anchor_x: 0.5,
+          anchor_y: 0.5
+        }
+      else
+        {
+          x: viewport_offset_x,
+          y: viewport_offset_y,
+          w: viewport_w,
+          h: viewport_h,
+        }
+      end
     end
 
     def viewport_world camera

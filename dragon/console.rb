@@ -53,7 +53,7 @@ module GTK
       # these are the colors for text at various log levels.
       @spam_color = Color.new [160, 160, 160]
       @debug_color = Color.new [0, 255, 0]
-      @text_color = Color.new [255, 255, 255]
+      @text_color = Color.new [232, 232, 232]
       @warn_color = Color.new [255, 255, 0]
       @error_color = Color.new [255, 80, 80]
       @unfiltered_color = Color.new [0, 255, 255]
@@ -61,6 +61,66 @@ module GTK
       @clear_logs_request_queue = []
 
       load_history
+    end
+
+    def __to_color_or_raise__ m, value
+      if value.is_a?(Array) && value.all? { |i| i.is_a? Numeric } && value.length == 3
+        Color.new value
+      elsif value.is_a?(Hash) && value[:r] && value[:g] && value[:b] && value.values.all? { |i| i.is_a? Numeric }
+        Color.new [value[:r], value[:g], value[:b]]
+      elsif value.is_a? Color
+        value
+      else
+        raise <<~S
+          * ERROR: Invalid argument #{value} for ~Console##{m}=~
+          Example:
+          #+begin_src
+            GTK.console.#{m} = [30, 30, 30] # Array[r, g, b]
+            GTK.console.#{m} = { r: 30, g: 30, b: 30 } # Hash
+            GTK.console.#{m} = GTK::Console::Color.new([30, 30, 30])
+          #+end_src
+        S
+      end
+    end
+
+    def background_color= value
+      @background_color = __to_color_or_raise__ :background_color, value
+    end
+
+    def spam_color= value
+      @spam_color = __to_color_or_raise__ :spam_color, value
+    end
+
+    def text_color= value
+      @text_color = __to_color_or_raise__ :text_color, value
+    end
+
+    def warn_color= value
+      @warn_color = __to_color_or_raise__ :warn_color, value
+    end
+
+    def error_color= value
+      @error_color = __to_color_or_raise__ :error_color, value
+    end
+
+    def header_color= value
+      @header_color = __to_color_or_raise__ :header_color, value
+    end
+
+    def code_color= value
+      @code_color = __to_color_or_raise__ :code_color, value
+    end
+
+    def comment_color= value
+      @comment_color = __to_color_or_raise__ :comment_color, value
+    end
+
+    def debug_color= value
+      @debug_color = __to_color_or_raise__ :debug_color, value
+    end
+
+    def unfiltered_color= value
+      @unfiltered_color = __to_color_or_raise__ :unfiltered_color, value
     end
 
     def console_text_width
@@ -803,9 +863,16 @@ S
 
     def set_command_extended opts
       opts = defaults_set_command_extended.merge opts
-      @command_history.concat opts[:histories]
-      @command_history << opts[:command]  if @command_history[-1] != opts[:command]
-      self.current_input_str = opts[:command] if @command_set_at != Kernel.global_tick_count || opts[:force]
+      (opts[:histories] || []).reverse.each do |h|
+        @command_history.push_front h
+      end
+
+      if @command_set_at != Kernel.global_tick_count || opts[:force]
+        self.current_input_str = opts[:command]
+      elsif @command_history[0] != opts[:command]
+        @command_history.push_front opts[:command]
+      end
+
       @command_set_at = Kernel.global_tick_count
       @command_history_index = -1
       save_history
@@ -997,9 +1064,9 @@ S
     def slide_progress
       return 0 if !@toggled_at
       if visible?
-        @slide_progress = Easing.ease @toggled_at, Kernel.global_tick_count, @animation_duration, :flip, :quint, :flip
+        @slide_progress = Easing.smooth_stop start_at: @toggled_at, tick_count: Kernel.global_tick_count, duration: @animation_duration, power: 5
       else
-        @slide_progress = Easing.ease @toggled_at, Kernel.global_tick_count, @animation_duration, :flip, :quint
+        @slide_progress = Easing.smooth_stop start_at: @toggled_at, tick_count: Kernel.global_tick_count, duration: @animation_duration, power: 5, flip: true
       end
       @slide_progress
     end

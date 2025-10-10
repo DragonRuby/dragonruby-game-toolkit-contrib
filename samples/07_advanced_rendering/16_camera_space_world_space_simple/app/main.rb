@@ -38,7 +38,7 @@ def tick args
   # if mouse is clicked
   if args.inputs.mouse.click
     # convert the mouse to world space and delete any objects that intersect with the mouse
-    rect = Camera.to_world_space args.state.camera, args.inputs.mouse
+    rect = Camera.to_world_space args.state.camera, args.inputs.mouse.rect
     args.state.objects.reject! { |o| rect.intersect_rect? o }
   end
 
@@ -48,13 +48,13 @@ def tick args
   end
 
   # define scene
-  args.outputs[:scene].w = Camera::WORLD_SIZE
-  args.outputs[:scene].h = Camera::WORLD_SIZE
+  args.outputs[:scene].w = Camera.viewport_w
+  args.outputs[:scene].h = Camera.viewport_h
 
   # render diagonals and background of scene
-  args.outputs[:scene].lines << { x: 0, y: 0, x2: 1500, y2: 1500, r: 0, g: 0, b: 0, a: 255 }
-  args.outputs[:scene].lines << { x: 0, y: 1500, x2: 1500, y2: 0, r: 0, g: 0, b: 0, a: 255 }
-  args.outputs[:scene].solids << { x: 0, y: 0, w: 1500, h: 1500, a: 128 }
+  args.outputs[:scene].lines << { x: 0, y: 0, x2: Camera.viewport_w, y2: Camera.viewport_h, r: 0, g: 0, b: 0, a: 255 }
+  args.outputs[:scene].lines << { x: 0, y: Camera.viewport_h, x2: Camera.viewport_w, y2: 0, r: 0, g: 0, b: 0, a: 255 }
+  args.outputs[:scene].solids << { x: 0, y: 0, w: Camera.viewport_w, h: Camera.viewport_w, a: 128 }
 
   # find all objects to render
   objects_to_render = Camera.find_all_intersect_viewport args.state.camera, args.state.objects
@@ -70,61 +70,122 @@ def tick args
   label_style = { r: 255, g: 255, b: 255, anchor_y: 0.5 }
   args.outputs.labels << { x: 30, y: 30.from_top, text: "Arrow keys to move around. I and O Keys to zoom in and zoom out (0 to reset camera, R to reset everything).", **label_style }
   args.outputs.labels << { x: 30, y: 60.from_top, text: "Click square to remove from world.", **label_style }
-  args.outputs.labels << { x: 30, y: 90.from_top, text: "Mouse locationin world: #{(Camera.to_world_space args.state.camera, args.inputs.mouse).to_sf}", **label_style }
+  args.outputs.labels << { x: 30, y: 90.from_top, text: "Mouse locationin world: #{(Camera.to_world_space args.state.camera, args.inputs.mouse.rect).to_sf}", **label_style }
 end
 
 # helper methods to create a camera and go to and from screen space and world space
 class Camera
-  SCREEN_WIDTH = 1280
-  SCREEN_HEIGHT = 720
-  WORLD_SIZE = 1500
-  WORLD_SIZE_HALF = WORLD_SIZE / 2
-  OFFSET_X = (SCREEN_WIDTH - WORLD_SIZE) / 2
-  OFFSET_Y = (SCREEN_HEIGHT - WORLD_SIZE) / 2
-
   class << self
-    # given a rect in screen space, converts the rect to world space
+    def viewport_w
+      Grid.allscreen_w
+    end
+
+    def viewport_h
+      Grid.allscreen_h
+    end
+
+    def viewport_w_half
+      if Grid.origin_center?
+        0
+      else
+        Grid.allscreen_w.fdiv(2).ceil
+      end
+    end
+
+    def viewport_h_half
+      if Grid.origin_center?
+        0
+      else
+        Grid.allscreen_h.fdiv(2).ceil
+      end
+    end
+
+    def viewport_offset_x
+      if Grid.origin_center?
+        0
+      else
+        Grid.allscreen_x
+      end
+    end
+
+    def viewport_offset_y
+      if Grid.origin_center?
+        0
+      else
+        Grid.allscreen_y
+      end
+    end
+
+    def __to_world_space__ camera, rect
+      return nil if !rect
+
+      x = (rect.x - viewport_w_half + camera.x * camera.scale - viewport_offset_x) / camera.scale
+      y = (rect.y - viewport_h_half + camera.y * camera.scale - viewport_offset_y) / camera.scale
+
+      if rect.w
+        w = rect.w / camera.scale
+        h = rect.h / camera.scale
+        { **rect, x: x, y: y, w: w, h: h }
+      else
+        { **rect, x: x, y: y }
+      end
+    end
+
     def to_world_space camera, rect
-      rect_x = rect.x
-      rect_y = rect.y
-      rect_w = rect.w || 0
-      rect_h = rect.h || 0
-      x = (rect_x - WORLD_SIZE_HALF + camera.x * camera.scale - OFFSET_X) / camera.scale
-      y = (rect_y - WORLD_SIZE_HALF + camera.y * camera.scale - OFFSET_Y) / camera.scale
-      w = rect_w / camera.scale
-      h = rect_h / camera.scale
-      rect.merge x: x, y: y, w: w, h: h
+      if rect.is_a? Array
+        rect.map { |r| to_world_space camera, rect }
+      else
+        __to_world_space__ camera, rect
+      end
     end
 
-    # given a rect in world space, converts the rect to screen space
+    def __to_screen_space__ camera, rect
+      return nil if !rect
+
+      x = rect.x * camera.scale - camera.x * camera.scale + viewport_w_half
+      y = rect.y * camera.scale - camera.y * camera.scale + viewport_h_half
+
+      if rect.w
+        w = rect.w * camera.scale
+        h = rect.h * camera.scale
+        { **rect, x: x, y: y, w: w, h: h }
+      else
+        { **rect, x: x, y: y }
+      end
+    end
+
     def to_screen_space camera, rect
-      rect_x = rect.x
-      rect_y = rect.y
-      rect_w = rect.w || 0
-      rect_h = rect.h || 0
-      x = rect_x * camera.scale - camera.x * camera.scale + WORLD_SIZE_HALF
-      y = rect_y * camera.scale - camera.y * camera.scale + WORLD_SIZE_HALF
-      w = rect_w * camera.scale
-      h = rect_h * camera.scale
-      rect.merge x: x, y: y, w: w, h: h
+      if rect.is_a? Array
+        rect.map { |r| to_screen_space camera, r }
+      else
+        __to_screen_space__ camera, rect
+      end
     end
 
-    # viewport of the scene
     def viewport
-      {
-        x: OFFSET_X,
-        y: OFFSET_Y,
-        w: 1500,
-        h: 1500
-      }
+      if Grid.origin_center?
+        {
+          x: viewport_offset_x,
+          y: viewport_offset_y,
+          w: viewport_w,
+          h: viewport_h,
+          anchor_x: 0.5,
+          anchor_y: 0.5
+        }
+      else
+        {
+          x: viewport_offset_x,
+          y: viewport_offset_y,
+          w: viewport_w,
+          h: viewport_h,
+        }
+      end
     end
 
-    # viewport in the context of the world
     def viewport_world camera
       to_world_space camera, viewport
     end
 
-    # helper method to find objects within viewport
     def find_all_intersect_viewport camera, os
       Geometry.find_all_intersect_rect viewport_world(camera), os
     end

@@ -16,56 +16,79 @@ module GTK
       @inconclusive = []
     end
 
-    def run_test m
+    def run_test target_and_m
       $serialize_state_serialization_too_large = false
       GTK::Entity.__reset_id__!
       args = Args.new $gtk, nil
       assert = Assert.new
       begin
-        log_test_running m
-        send(m, args, assert)
+        log_test_running target_and_m
+        target_and_m.target.send(target_and_m.m, args, assert)
         if !assert.assertion_performed
-          log_inconclusive m
+          log_inconclusive target_and_m
         else
-          log_passed m
+          log_passed target_and_m
         end
       rescue Exception => e
-        if test_signature_invalid_exception? e, m
-          log_test_signature_incorrect m
+        if test_signature_invalid_exception? e, target_and_m
+          log_test_signature_incorrect target_and_m
         else
-          mark_test_failed m, e
+          mark_test_failed target_and_m, e
         end
       end
     end
 
     def test_methods_focused
-      Object.methods.find_all { |m| m.start_with?( "focus_test_") }
+      test_classes.flat_map do |klass|
+        klass.instance_methods(false)
+             .find_all { |m| m.start_with?("focus_test_") }
+             .map { |m| { target: klass.new, m: m } }
+      end
     end
 
     def test_methods
-      Object.methods.find_all { |m| m.start_with? "test_" }
+      test_classes.flat_map do |klass|
+        klass.instance_methods(false)
+             .find_all { |m| m.start_with?("test_") }
+             .map { |m| { target: klass.new, m: m } }
+      end
+    end
+
+    def test_classes
+      Object.constants
+            .find_all { |constant| constant.to_s.end_with?("Tests") || constant.to_s == "Object" }
+            .map { |constant| Object.const_get constant }
     end
 
     def start
       log "* TEST: gtk.test.start has been invoked."
       if test_methods_focused.length != 0
         @is_running = true
-        test_methods_focused.each { |m| run_test m }
+        test_methods_focused.each { |target_and_m| run_test target_and_m }
         print_summary
         @is_running = false
       elsif test_methods.length == 0
         log_no_tests_found
       else
         @is_running = true
-        test_methods.each { |m| run_test m }
+        test_methods.each { |target_and_m| run_test target_and_m }
         print_summary
         @is_running = false
       end
+
+      test_classes = test_methods_focused.map { |t| t.target.class } + test_methods.map { |t| t.target.class }
+      test_classes.reject! { |c| c == Object }
+      test_classes.uniq!
+      test_classes.each do |klass|
+        if Object.const_defined? klass.name.intern
+          Object.remove_const klass.name.intern
+        end
+      end
     end
 
-    def mark_test_failed m, e
+    def mark_test_failed target_and_m, e
       message = "Failed."
-      self.failed << { m: m, e: e }
+      self.failed << { **target_and_m, e: e }
       log message
     end
 
@@ -73,13 +96,13 @@ module GTK
       @is_running
     end
 
-    def log_inconclusive m
-      self.inconclusive << {m: m}
+    def log_inconclusive target_and_m
+      self.inconclusive << target_and_m
       log "Inconclusive."
     end
 
-    def log_passed m
-      self.passed << {m: m}
+    def log_passed target_and_m
+      self.passed << target_and_m
       log "Passed."
     end
 
@@ -95,21 +118,21 @@ end
 S
     end
 
-    def log_test_running m
-      log "** Running: #{m}"
+    def log_test_running target_and_m
+      log "** Running: #{target_and_m.target.class}##{target_and_m.m}"
     end
 
-    def test_signature_invalid_exception? e, m
-      error_message = "'#{m.to_s}': wrong number of arguments"
+    def test_signature_invalid_exception? e, target_and_m
+      error_message = "'#{target_and_m.m.to_s}': wrong number of arguments"
       e.to_s.start_with?(error_message)
     end
 
-    def log_test_signature_incorrect m
+    def log_test_signature_incorrect target_and_m
       log "TEST METHOD INVALID:", <<-S
-I found a test method called :#{m}. But it needs to have
+I found a test method called #{target_and_m.target.class}##{target_and_m.m}. But it needs to have
 the following method signature:
 #+begin_src
-def #{m} args, assert
+def #{target_and_m.m} args, assert
 
 end
 #+end_src
@@ -129,7 +152,7 @@ S
       log "** Summary"
       log "*** Passed"
       log "#{self.passed.length} test(s) passed."
-      self.passed.each { |h| log "**** :#{h[:m]}" }
+      self.passed.each { |h| log "**** #{h.target.class}##{h.m}" }
       log "*** Inconclusive"
       if self.inconclusive.length > 0
         log_once :assertion_ok_note, <<-S
@@ -138,11 +161,11 @@ Add assert.ok! at the end of the test if you are using your own assertions.
 S
       end
       log "#{self.inconclusive.length} test(s) inconclusive."
-      self.inconclusive.each { |h| log "**** :#{h[:m]}" }
+      self.inconclusive.each { |h| log "**** #{h.target.class}##{h.m}" }
       log "*** Failed"
       log "#{self.failed.length} test(s) failed."
       self.failed.each do |h|
-        log "**** Test name: :#{h[:m]}"
+        log "**** Test name: #{h.target.class}##{h.m}"
         log "#{h[:e].to_s.gsub("* ERROR:", "").strip}\n#{h[:e].__backtrace_to_org__}"
       end
     end

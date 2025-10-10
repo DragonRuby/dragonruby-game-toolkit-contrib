@@ -138,7 +138,7 @@ module GTK
       nil
     end
 
-    def self.puts_once *ids, message
+    def self.puts_once *ids, message, include_caller: false
       id = "#{ids}"
       @once ||= {}
       return if @once[id]
@@ -151,22 +151,25 @@ module GTK
       write_to_log_and_puts ""
       write_to_log_and_puts "[Message ID: #{id}]"
       write_to_log_and_puts ""
+      write_to_log_and_puts caller.join("\n") if include_caller
     end
 
-    def self.puts_once_important *ids, message
+    def self.puts_once_important *ids, message, include_caller: false
       id = "#{ids}"
       @once ||= {}
       return if @once[id]
       @once[id] = id
       puts_important "#{message}", message_code: id
+      puts_important caller.join("\n") if include_caller
     end
 
-    def self.puts_once_info *ids, message
+    def self.puts_once_info *ids, message, include_caller: false
       id = "#{ids}"
       @once ||= {}
       return if @once[id]
       @once[id] = id
       log_info message
+      log_info caller.join("\n") if include_caller
     end
 
     def self.print *args
@@ -297,15 +300,15 @@ class Object
     GTK::Log.puts_info(*args)
   end
 
-  def log_once *ids, message
-    GTK::Log.puts_once(*ids, message)
+  def log_once(*ids, message, include_caller: false)
+    GTK::Log.puts_once(*ids, message, include_caller: include_caller)
   end
 
-  def log_once_important *ids, message
-    GTK::Log.puts_once_important(*ids, message)
+  def log_once_important(*ids, message, include_caller: false)
+    GTK::Log.puts_once_important(*ids, message, include_caller: include_caller)
   end
 
-  def log_once_info *ids, message
-    GTK::Log.puts_once_info(*ids, message)
+  def log_once_info(*ids, message, include_caller: false)
+    GTK::Log.puts_once_info(*ids, message, include_caller: include_caller)
   end
 end

@@ -73,8 +73,8 @@ class Game
   def render
     outputs.background_color = [0, 0, 0]
 
-    outputs[:scene].w = Camera.world_w
-    outputs[:scene].h = Camera.world_h
+    outputs[:scene].w = Camera.viewport_w
+    outputs[:scene].h = Camera.viewport_h
     outputs[:scene].background_color = [0, 0, 0]
 
     outputs[:scene].primitives << Camera.find_all_intersect_viewport(state.camera, state.boxes)
@@ -108,60 +108,118 @@ class Game
                         r: 255,
                         g: 255,
                         b: 255 }
+
+    outputs.watch "Mouse Screen Space: #{inputs.mouse.rect}"
+    outputs.watch "Mouse World Space: #{Camera.to_world_space state.camera, inputs.mouse.rect}"
   end
 end
 
 class Camera
   class << self
-    def world_w
+    def viewport_w
       Grid.allscreen_w
     end
 
-    def world_h
+    def viewport_h
       Grid.allscreen_h
     end
 
-    def world_size_w_half
-      Grid.allscreen_w / 2
+    def viewport_w_half
+      if Grid.origin_center?
+        0
+      else
+        Grid.allscreen_w.fdiv(2).ceil
+      end
     end
 
-    def world_size_h_half
-      Grid.allscreen_h / 2
+    def viewport_h_half
+      if Grid.origin_center?
+        0
+      else
+        Grid.allscreen_h.fdiv(2).ceil
+      end
     end
 
-    def offset_x
-      Grid.allscreen_x
+    def viewport_offset_x
+      if Grid.origin_center?
+        0
+      else
+        Grid.allscreen_x
+      end
     end
 
-    def offset_y
-      Grid.allscreen_y
+    def viewport_offset_y
+      if Grid.origin_center?
+        0
+      else
+        Grid.allscreen_y
+      end
+    end
+
+    def __to_world_space__ camera, rect
+      return nil if !rect
+
+      x = (rect.x - viewport_w_half + camera.x * camera.scale - viewport_offset_x) / camera.scale
+      y = (rect.y - viewport_h_half + camera.y * camera.scale - viewport_offset_y) / camera.scale
+
+      if rect.w
+        w = rect.w / camera.scale
+        h = rect.h / camera.scale
+        { **rect, x: x, y: y, w: w, h: h }
+      else
+        { **rect, x: x, y: y }
+      end
     end
 
     def to_world_space camera, rect
+      if rect.is_a? Array
+        rect.map { |r| to_world_space camera, rect }
+      else
+        __to_world_space__ camera, rect
+      end
+    end
+
+    def __to_screen_space__ camera, rect
       return nil if !rect
-      x = (rect.x - world_size_w_half + camera.x * camera.scale - offset_x) / camera.scale
-      y = (rect.y - world_size_h_half + camera.y * camera.scale - offset_y) / camera.scale
-      w = rect.w / camera.scale
-      h = rect.h / camera.scale
-      rect.merge x: x, y: y, w: w, h: h
+
+      x = rect.x * camera.scale - camera.x * camera.scale + viewport_w_half
+      y = rect.y * camera.scale - camera.y * camera.scale + viewport_h_half
+
+      if rect.w
+        w = rect.w * camera.scale
+        h = rect.h * camera.scale
+        { **rect, x: x, y: y, w: w, h: h }
+      else
+        { **rect, x: x, y: y }
+      end
     end
 
     def to_screen_space camera, rect
-      return nil if !rect
-      x = rect.x * camera.scale - camera.x * camera.scale + world_size_w_half
-      y = rect.y * camera.scale - camera.y * camera.scale + world_size_h_half
-      w = rect.w * camera.scale
-      h = rect.h * camera.scale
-      rect.merge x: x, y: y, w: w, h: h
+      if rect.is_a? Array
+        rect.map { |r| to_screen_space camera, r }
+      else
+        __to_screen_space__ camera, rect
+      end
     end
 
     def viewport
-      {
-        x: offset_x,
-        y: offset_y,
-        w: world_w,
-        h: world_h,
-      }
+      if Grid.origin_center?
+        {
+          x: viewport_offset_x,
+          y: viewport_offset_y,
+          w: viewport_w,
+          h: viewport_h,
+          anchor_x: 0.5,
+          anchor_y: 0.5
+        }
+      else
+        {
+          x: viewport_offset_x,
+          y: viewport_offset_y,
+          w: viewport_w,
+          h: viewport_h,
+        }
+      end
     end
 
     def viewport_world camera

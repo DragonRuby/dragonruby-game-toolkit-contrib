@@ -27,15 +27,19 @@ module GTK
 
     attr :right, :right_px
 
-    attr :center_x, :center_x_px
+    attr :center_x
 
-    attr :center_y, :center_y_px
+    attr :center_y
 
-    attr :center, :center_px
+    attr :center
 
-    attr :origin_x, :origin_x_px
+    attr :origin_x
 
-    attr :origin_y, :origin_y_px
+    attr :origin_y
+
+    attr :render_origin_x
+
+    attr :render_origin_y
 
     attr :allscreen_left, :allscreen_left_px
 
@@ -59,6 +63,12 @@ module GTK
 
     attr :high_dpi_scale
 
+    attr :orientation_changed
+
+    def orientation_changed?
+      @orientation_changed
+    end
+
     def initialize runtime
       @runtime = runtime
       @ffi_draw = runtime.ffi_draw
@@ -70,19 +80,19 @@ module GTK
     end
 
     def transform_x x
-      @origin_x + x
+      @render_origin_x + x
     end
 
     def untransform_x x
-      x - @origin_x
+      x - @render_origin_x
     end
 
     def transform_y y
-      @origin_y + y * SCREEN_Y_DIRECTION
+      @render_origin_y + y * SCREEN_Y_DIRECTION
     end
 
     def untransform_y y
-      @origin_y + y * SCREEN_Y_DIRECTION
+      @render_origin_y + y * SCREEN_Y_DIRECTION
     end
 
     def ffi_draw
@@ -111,12 +121,14 @@ module GTK
       @rect        = { x: @left, y: @bottom, w: @w, h: @h }
       @center      = { x: @center_x, y: @center_y }
       @origin_x    = 0.0
-      @origin_y    = @runtime.logical_height
+      @origin_y    = 0.0
+      @render_origin_x = 0.0
+      @render_origin_y = @runtime.logical_height
     end
 
     def origin_bottom_left!(force: false)
       __origin_bottom_left__!(force: force)
-      @ffi_draw.set_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
+      @ffi_draw.set_grid @render_origin_x, @render_origin_y, SCREEN_Y_DIRECTION
     end
 
     def origin_center!(force: false)
@@ -136,9 +148,11 @@ module GTK
       @center_y    = 0.0
       @rect        = { x: @left, y: @bottom, w: @runtime.logical_width, h: @runtime.logical_height }
       @center      = { x: @center_x, y: @center_y, w: 0, h: 0 }
-      @origin_x    = @runtime.logical_width.half
-      @origin_y    = @runtime.logical_height.half
-      @ffi_draw.set_grid @origin_x, @origin_y, SCREEN_Y_DIRECTION
+      @origin_x    = 0.0
+      @origin_y    = 0.0
+      @render_origin_x = @runtime.logical_width.half
+      @render_origin_y = @runtime.logical_height.half
+      @ffi_draw.set_grid @render_origin_x, @render_origin_y, SCREEN_Y_DIRECTION
     end
 
     def x
@@ -217,6 +231,14 @@ module GTK
       @runtime.orientation == :portrait
     end
 
+    def origin_center?
+      @origin_name == :center
+    end
+
+    def origin_bottom_left?
+      @origin_name == :bottom_left
+    end
+
     def aspect_ratio_w
       landscape? ? 16 : 9
     end
@@ -238,6 +260,85 @@ module GTK
     alias_method :highdpi, :highdpi?
 
     class << self
+      def origin_name = $grid.origin_name
+      def x = $grid.x
+      def x_px = $grid.x_px
+      def y = $grid.y
+      def y_px = $grid.y_px
+      def w = $grid.w
+      def w_px = $grid.w_px
+      def h = $grid.h
+      def h_px = $grid.h_px
+      def bottom = $grid.bottom
+      def bottom_px = $grid.bottom_px
+      def top = $grid.top
+      def top_px = $grid.top_px
+      def left = $grid.left
+      def left_px = $grid.left_px
+      def right = $grid.right
+      def right_px = $grid.right_px
+      def center_x = $grid.center_x
+      def center_y = $grid.center_y
+      def center = $grid.center
+      def origin_x = $grid.origin_x
+      def origin_y = $grid.origin_y
+      def render_origin_x = $grid.render_origin_x
+      def render_origin_y = $grid.render_origin_y
+      def allscreen_left = $grid.allscreen_left
+      def allscreen_left_px = $grid.allscreen_left_px
+      def allscreen_right = $grid.allscreen_right
+      def allscreen_right_px = $grid.allscreen_right_px
+      def allscreen_top = $grid.allscreen_top
+      def allscreen_top_px = $grid.allscreen_top_px
+      def allscreen_bottom = $grid.allscreen_bottom
+      def allscreen_bottom_px = $grid.allscreen_bottom_px
+      def allscreen_w = $grid.allscreen_w
+      def allscreen_w_px = $grid.allscreen_w_px
+      def allscreen_w_pt = $grid.allscreen_w_pt
+      def allscreen_h = $grid.allscreen_h
+      def allscreen_h_px = $grid.allscreen_h_px
+      def allscreen_h_pt = $grid.allscreen_h_pt
+      def allscreen_offset_x = $grid.allscreen_offset_x
+      def allscreen_offset_x_px = $grid.allscreen_offset_x_px
+      def allscreen_offset_y = $grid.allscreen_offset_y
+      def allscreen_offset_y_px = $grid.allscreen_offset_y_px
+      def native_scale = $grid.native_scale
+      def render_scale = $grid.render_scale
+      def texture_scale = $grid.texture_scale
+      def texture_scale_enum = $grid.texture_scale_enum
+      def high_dpi_scale = $grid.high_dpi_scale
+      def orientation_changed = $grid.orientation_changed
+      def orientation_changed? = $grid.orientation_changed?
+      def orientation = $grid.orientation
+      def origin_bottom_left!(force: false) = $grid.origin_bottom_left!(force: force)
+      def origin_center!(force: false) = $grid.origin_center!(force: force)
+      def x = $grid.x
+      def x_px = $grid.x_px
+      def y = $grid.y
+      def y_px = $grid.y_px
+      def allscreen_x = $grid.allscreen_x
+      def allscreen_x_px = $grid.allscreen_x_px
+      def allscreen_y = $grid.allscreen_y
+      def allscreen_y_px = $grid.allscreen_y_px
+      def w_half = $grid.w_half
+      def h_half = $grid.h_half
+      def rect = $grid.rect
+      def rect_px = $grid.rect_px
+      def allscreen_rect = $grid.allscreen_rect
+      def allscreen_rect_px = $grid.allscreen_rect_px
+      def letterbox? = $grid.letterbox?
+      def letterbox = $grid.letterbox
+      def landscape? = $grid.landscape?
+      def portrait? = $grid.portrait?
+      def origin_center? = $grid.origin_center?
+      def origin_bottom_left? = $grid.origin_bottom_left?
+      def aspect_ratio_w = $grid.aspect_ratio_w
+      def aspect_ratio_h = $grid.aspect_ratio_h
+      def hd? = $grid.hd?
+      def hd = $grid.hd
+      def highdpi? = $grid.highdpi?
+      def highdpi = $grid.highdpi
+
       def method_missing(m, *args, &block)
         if $grid.respond_to? m
           define_singleton_method(m) do |*args, &block|

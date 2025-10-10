@@ -767,6 +767,81 @@ Do:
   args.state.fx_queue.reject! { |fx| fx.countdown < 0 }
 #+end_src
 
+** Using ~args.state~ To Store Your Game State
+
+~args.state~ is a open data structure that allows you to define
+properties that are arbitrarily nested. You don't need to define any kind of
+~class~.
+
+To initialize your game state, use the ~||=~ operator. Any value on
+the right side of ~||=~ will only be assigned _once_.
+
+To assign a value every frame, just use the ~=~ operator, but _make
+sure_ you've initialized a default value.
+
+#+begin_src
+  def tick args
+    # initialize your game state ONCE
+    args.state.player.x  ||= 0
+    args.state.player.y  ||= 0
+    args.state.player.hp ||= 100
+
+    # increment the x position of the character by one every frame
+    args.state.player.x += 1
+
+    # Render a sprite with a label above the sprite
+    args.outputs.sprites << [
+      args.state.player.x,
+      args.state.player.y,
+      32, 32,
+      "player.png"
+    ]
+
+    args.outputs.labels << [
+      args.state.player.x,
+      args.state.player.y - 50,
+      args.state.player.hp
+    ]
+  end
+#+end_src
+
+** Accessing files
+
+DragonRuby uses a sandboxed filesystem which will automatically read from and
+write to a location appropriate for your platform so you don't have to worry
+about theses details in your code. You can just use ~gtk.read_file~,
+~gtk.write_file~, and ~gtk.append_file~ with a relative path and the engine
+will take care of the rest.
+
+The data directories that will be written to in a production build are:
+
+- Windows: ~C:\Users\[username]\AppData\Roaming\[devtitle]\[gametitle]~
+- MacOS: ~$HOME/Library/Application Support/[gametitle]~
+- Linux: ~$HOME/.local/share/[gametitle]~
+- HTML5: The data will be written to the browser's IndexedDB.
+
+The values in square brackets are the values you set in your
+~app/metadata/game_metadata.txt~ file.
+
+When reading files, the engine will first look in the game's data directory
+and then in the game directory itself. This means that if you write a file
+to the data directory that already exists in your game directory, the file
+in the data directory will be used instead of the one that is in your game.
+
+When running a development build you will directly write to your game
+directory (and thus overwrite existing files). This can be useful for built-in
+development tools like level editors.
+
+For more details on the implementation of the sandboxed filesystem, see Ryan
+C. Gordon's PhysicsFS documentation: [[https://icculus.org/physfs/]]
+
+IMPORTANT: File access functions are sandoxed and assume that the
+~dragonruby~ binary lives alongside the game you are building. Do not
+expect file access functions to return correct values if you are attempting
+to run the ~dragonruby~ binary from a shared location. It's
+recommended that the directory structure contained in the zip is not
+altered and games are built using that starter template.
+
 * RECIPIES:
 ** How To Determine What Frame You Are On
 
@@ -1033,81 +1108,6 @@ If you want to play a ~.ogg~ once as if it were a sound effect, you can do:
     end
   end
 #+end_src
-
-** Using ~args.state~ To Store Your Game State
-
-~args.state~ is a open data structure that allows you to define
-properties that are arbitrarily nested. You don't need to define any kind of
-~class~.
-
-To initialize your game state, use the ~||=~ operator. Any value on
-the right side of ~||=~ will only be assigned _once_.
-
-To assign a value every frame, just use the ~=~ operator, but _make
-sure_ you've initialized a default value.
-
-#+begin_src
-  def tick args
-    # initialize your game state ONCE
-    args.state.player.x  ||= 0
-    args.state.player.y  ||= 0
-    args.state.player.hp ||= 100
-
-    # increment the x position of the character by one every frame
-    args.state.player.x += 1
-
-    # Render a sprite with a label above the sprite
-    args.outputs.sprites << [
-      args.state.player.x,
-      args.state.player.y,
-      32, 32,
-      "player.png"
-    ]
-
-    args.outputs.labels << [
-      args.state.player.x,
-      args.state.player.y - 50,
-      args.state.player.hp
-    ]
-  end
-#+end_src
-
-** Accessing files
-
-DragonRuby uses a sandboxed filesystem which will automatically read from and
-write to a location appropriate for your platform so you don't have to worry
-about theses details in your code. You can just use ~gtk.read_file~,
-~gtk.write_file~, and ~gtk.append_file~ with a relative path and the engine
-will take care of the rest.
-
-The data directories that will be written to in a production build are:
-
-- Windows: ~C:\Users\[username]\AppData\Roaming\[devtitle]\[gametitle]~
-- MacOS: ~$HOME/Library/Application Support/[gametitle]~
-- Linux: ~$HOME/.local/share/[gametitle]~
-- HTML5: The data will be written to the browser's IndexedDB.
-
-The values in square brackets are the values you set in your
-~app/metadata/game_metadata.txt~ file.
-
-When reading files, the engine will first look in the game's data directory
-and then in the game directory itself. This means that if you write a file
-to the data directory that already exists in your game directory, the file
-in the data directory will be used instead of the one that is in your game.
-
-When running a development build you will directly write to your game
-directory (and thus overwrite existing files). This can be useful for built-in
-development tools like level editors.
-
-For more details on the implementation of the sandboxed filesystem, see Ryan
-C. Gordon's PhysicsFS documentation: [[https://icculus.org/physfs/]]
-
-IMPORTANT: File access functions are sandoxed and assume that the
-~dragonruby~ binary lives alongside the game you are building. Do not
-expect file access functions to return correct values if you are attempting
-to run the ~dragonruby~ binary from a shared location. It's
-recommended that the directory structure contained in the zip is not
-altered and games are built using that starter template.
 
 * Outputs (~args.outputs~)
 
@@ -2357,6 +2357,49 @@ Returns ~true~ if the specific button was released. ~args.inputs.mouse.key_up.BU
 ?> For a full demonstration of all mouse button states, refer to the
 sample app located at ~./samples/02_input_basics/02_mouse_properties~
 
+*** ~buttons~
+
+~args.inputs.mouse.buttons~ provides additional mouse properties,
+specifically for determining if a specific button is held and dragging
+vs just being clicked.
+
+Properites for ~args.inputs.mouse.buttons~ are:
+- ~left~
+- ~middle~
+- ~right~
+- ~x1~
+- ~x2~
+
+Example:
+
+#+begin_src ruby
+  def tick args
+    if args.inputs.mouse.buttons.left.buffered_click
+      GTK.notify "buffered_click occurred #{args.inputs.mouse.buttons.left.id}"
+    end
+  
+    if args.inputs.mouse.buttons.left.buffered_held
+      GTK.notify "buffered_held occurred"
+    end
+  end
+#+end_src
+
+Button properties:
+
+- ~id~: returns ~:left~, ~:middle~, ~:right~, ~:x1~, ~:x2~
+- ~index~: returns ~0~, ~1~, ~2~, ~3~, ~4~
+- ~click~: Returns a truthy value for if button was clicked/down.
+- ~click_at~: Returns ~Kernel.tick_count~ that button was clicked/down.
+- ~global_click_at~: Returns ~Kernel.global_tick_count~ that button was clicked/down.
+- ~up~: Returns a truthy value for if button was up/released.
+- ~up_at~: Returns ~Kernel.tick_count~ that button was up/released.
+- ~global_up_at~: Returns ~Kernel.global_tick_count~ that button was up/released.
+- ~held~: Returns a truthy value for if button was held.
+- ~held_at~: Returns ~Kernel.tick_count~ that button was held.
+- ~global_held_at~: Returns ~Kernel.global_tick_count~ that button was held.
+- ~buffered_click~: Returns ~true~ if button has been exclusively determined to be a click (and won't be considered held).
+- ~buffered_held~: Returns ~true~ if button has been exclusively determined to be hed (and won't be considered clicked).
+
 ** Touch
 
 The following touch apis are available on touch devices (iOS, Android, Mobile Web, Surface).
@@ -2482,6 +2525,11 @@ the minimum threshold for the analog stick to be considered
 active. The ~threshold_raw~ is a number between 0 and 32,767, and the
 ~threshold_perc~ is a number between 0 and 1.
 
+*** ~(left|right)_analog_angle~
+
+Returns the angle of the analog in degrees for each analog stick. You
+can call ~.to_radius~ on the return value to get the angle in radians.
+
 *** ~analog_dead_zone~
 
 The default value for this property is ~3600~. You can set this to a
@@ -2521,6 +2569,36 @@ Here's how each of these methods are equivalent to key-based methods:
   # key down or held
   args.inputs.controller_one.enter
   args.inputs.controller_one.key_down_or_held?(:enter)
+#+end_src
+
+** Keyboard or Controller On (~args.inputs.key_(down|up|held)~)
+
+Represents directional input that is shared between keyboard and
+controller. Useful for supporting directional input that can come from
+keyboard or controller.
+
+Shared keys:
+- ~left~
+- ~right~
+- ~up~
+- ~down~
+
+Demonstration:
+#+begin_src ruby
+  def tick args
+    args.outputs.watch "args.inputs.left                         #{args.inputs.left}"
+    args.outputs.watch "args.inputs.keyboard.left                #{args.inputs.keyboard.left}"
+    args.outputs.watch "args.inputs.controller_one.left          #{args.inputs.controller_one.left}"
+    args.outputs.watch "args.inputs.key_down.left                #{args.inputs.key_down.left}"
+    args.outputs.watch "args.inputs.keyboard.key_down.left       #{args.inputs.keyboard.key_down.left}"
+    args.outputs.watch "args.inputs.controller_one.key_down.left #{args.inputs.controller_one.key_down.left}"
+    args.outputs.watch "args.inputs.key_held.left                #{args.inputs.key_held.left}"
+    args.outputs.watch "args.inputs.keyboard.key_held.left       #{args.inputs.keyboard.key_held.left}"
+    args.outputs.watch "args.inputs.controller_one.key_held.left #{args.inputs.controller_one.key_held.left}"
+    args.outputs.watch "args.inputs.key_up.left                  #{args.inputs.key_up.left}"
+    args.outputs.watch "args.inputs.keyboard.key_up.left         #{args.inputs.keyboard.key_up.left}"
+    args.outputs.watch "args.inputs.controller_one.key_up.left   #{args.inputs.controller_one.key_up.left}"
+  end
 #+end_src
 
 ** Keyboard (~args.inputs.keyboard~)
@@ -2742,8 +2820,11 @@ Here is an example showing all the ways to access a key's state:
 -   ~kp_period~
 -   ~kp_equals~
 -   ~left_right~
+-   ~last_left_right~
 -   ~up_down~
+-   ~last_up_down~
 -   ~directional_vector~ (returns normalized vector based off of WASD/arrow keys, ~nil~ if no keys are down/held)
+-   ~last_directional_vector~ (returns normalized vector based off of WASD/arrow keys, ~nil~ if no keys are down/held)
 -   ~directional_angle~ (returns angle in degrees based off of WASD/arrow keys, ~nil~ if no keys are down/held)
 -   ~truthy_keys~ (array of ~Symbols~)
 
@@ -2846,18 +2927,14 @@ Returns a ~Hash~ with all keys on the keyboard in their respective state. The ~H
 -   ~:down_or_held~
 -   ~:up~
 -   ~:repeat~
-* Runtime (~args.gtk~)
+* Runtime (~GTK~)
 
 The ~GTK::Runtime~ class is the core of DragonRuby.
 
-?> All functions ~$gtk~, ~GTK~, or inside of the ~tick~ method through ~args~.
+?> All functions ~$gtk~, ~GTK~, via ~args.gtk~ (it's recommended to use ~GTK~).
 #+begin_src ruby
   def tick args
-    args.gtk.function(...)
-  
-    # OR available globally
-    $gtk.function(...)
-    # OR
+    # recommended access to GTK
     GTK.function(...)
   end
 #+end_src
@@ -2975,14 +3052,17 @@ The following functions are only available at the Indie and Pro License tiers.
 
 *** ~get_pixels~
 
-Given a ~file_path~ to a sprite, this function returns a ~Hash~ with ~w~, ~h~, and ~pixels~. The ~pixels~ key contains an array of hexadecimal values representing the ABGR of each pixel in a sprite with item ~0~ representing the top left corner of the ~png~.
+Given a ~file_path~ to a sprite, this function returns a ~Hash~ with
+~w~, ~h~, and ~pixels~. The ~pixels~ key contains an array of
+hexadecimal values representing the ABGR of each pixel in a sprite
+with item ~0~ representing the top left corner of the ~png~.
 
 Here's an example of how to get the color data for a pixel:
 
 #+begin_src ruby
   def tick args
     # load the pixels from the image
-    args.state.image ||= args.gtk.get_pixels "sprites/square/blue.png"
+    args.state.image ||= GTK.get_pixels "sprites/square/blue.png"
   
     # initialize state variables for the pixel coordinates
     args.state.x_px ||= 0
@@ -3044,7 +3124,7 @@ compile C Extensions/publish games that have C Extensions.
 
 ** Environment and Utility Functions
 
-The following functions will help in interacting with the OS and rendering pipeline.
+The following functions will help in interacting with the OS and render/execution pipeline.
 
 *** ~calcstringbox~
 
@@ -3063,7 +3143,7 @@ Returns the render width and render height as a tuple for a piece of text. The p
     font = "fonts/courier-new.ttf"
   
     # get the render width and height
-    string_w, string_h = args.gtk.calcstringbox text, size_enum, font
+    string_w, string_h = GTK.calcstringbox text, size_enum, font
   
     # render the label
     args.outputs.labels << {
@@ -3091,10 +3171,10 @@ Returns the render width and render height as a tuple for a piece of text. The p
 
 #+begin_src ruby
     # size_enum, and font named parameters
-    string_w, string_h = args.gtk.calcstringbox text, size_enum: 0, font: "fonts/example.ttf"
+    string_w, string_h = GTK.calcstringbox text, size_enum: 0, font: "fonts/example.ttf"
   
     # size_px, and font named parameters
-    string_w, string_h = args.gtk.calcstringbox text, size_px: 20, font: "fonts/example.ttf"
+    string_w, string_h = GTK.calcstringbox text, size_px: 20, font: "fonts/example.ttf"
 #+end_src
 
 *** ~request_quit~
@@ -3105,7 +3185,7 @@ Call this function to exit your game. You will be given one additional tick if y
   def tick args
     # exit the game after 600 frames (10 seconds)
     if Kernel.tick_count == 600
-      args.gtk.request_quit
+      GTK.request_quit
     end
   end
 #+end_src
@@ -3122,12 +3202,12 @@ This function takes in a single ~boolean~ parameter. ~true~ to make the game ful
   def tick args
     # make the game full screen after 600 frames (10 seconds)
     if Kernel.tick_count == 600
-      args.gtk.set_window_fullscreen true
+      GTK.set_window_fullscreen true
     end
   
     # return the game to windowed mode after 20 seconds
     if Kernel.tick_count == 1200
-      args.gtk.set_window_fullscreen false
+      GTK.set_window_fullscreen false
     end
   end
 #+end_src
@@ -3179,34 +3259,34 @@ Note: The default title for your game is specified in via the ~gametitle~ proper
 
 You can ask DragonRuby which platform your game is currently being run on. This can be useful if you want to perform different pieces of logic based on where the game is running.
 
-The raw platform string value is available via ~args.gtk.platform~ which takes in a ~symbol~ representing the platform's categorization/mapping.
+The raw platform string value is available via ~GTK.platform~ which takes in a ~symbol~ representing the platform's categorization/mapping.
 
-You can see all available platform categorizations via the ~args.gtk.platform_mappings~ function.
+You can see all available platform categorizations via the ~GTK.platform_mappings~ function.
 
-Here's an example of how to use ~args.gtk.platform? category_symbol~:
+Here's an example of how to use ~GTK.platform? category_symbol~:
 
 #+begin_src ruby
   def tick args
     label_style = { x: 640, y: 360, anchor_x: 0.5, anchor_y: 0.5 }
-    if    args.gtk.platform? :macos
+    if    GTK.platform? :macos
       args.outputs.labels << { text: "I am running on MacOS.", **label_style }
-    elsif args.gtk.platform? :win
+    elsif GTK.platform? :win
       args.outputs.labels << { text: "I am running on Windows.", **label_style }
-    elsif args.gtk.platform? :linux
+    elsif GTK.platform? :linux
       args.outputs.labels << { text: "I am running on Linux.", **label_style }
-    elsif args.gtk.platform? :web
+    elsif GTK.platform? :web
       args.outputs.labels << { text: "I am running on a web page.", **label_style }
-    elsif args.gtk.platform? :android
+    elsif GTK.platform? :android
       args.outputs.labels << { text: "I am running on Android.", **label_style }
-    elsif args.gtk.platform? :ios
+    elsif GTK.platform? :ios
       args.outputs.labels << { text: "I am running on iOS.", **label_style }
-    elsif args.gtk.platform? :touch
+    elsif GTK.platform? :touch
       args.outputs.labels << { text: "I am running on a device that supports touch (either iOS/Android native or mobile web).", **label_style }
-    elsif args.gtk.platform? :steam
+    elsif GTK.platform? :steam
       args.outputs.labels << { text: "I am running via steam (covers both desktop and steamdeck).", **label_style }
-    elsif args.gtk.platform? :steam_deck
+    elsif GTK.platform? :steam_deck
       args.outputs.labels << { text: "I am running via steam on the Steam Deck (not steam desktop).", **label_style }
-    elsif args.gtk.platform? :steam_desktop
+    elsif GTK.platform? :steam_desktop
       args.outputs.labels << { text: "I am running via steam on desktop (not steam deck).", **label_style }
     end
   end
@@ -3220,7 +3300,7 @@ If you want to simulate a production build. Add an empty file called ~dragonruby
 
 *** ~platform_mappings~
 
-These are the current platform categorizations (~args.gtk.platform_mappings~):
+These are the current platform categorizations (~GTK.platform_mappings~):
 
 #+begin_src ruby
   {
@@ -3234,7 +3314,7 @@ These are the current platform categorizations (~args.gtk.platform_mappings~):
   }
 #+end_src
 
-Given the mappings above, ~args.gtk.platform? :desktop~ would return ~true~ if the game is running on a player's computer irrespective of OS (MacOS, Linux, and Windows are all categorized as ~:desktop~ platforms).
+Given the mappings above, ~GTK.platform? :desktop~ would return ~true~ if the game is running on a player's computer irrespective of OS (MacOS, Linux, and Windows are all categorized as ~:desktop~ platforms).
 
 
 *** ~system~
@@ -3249,7 +3329,7 @@ Given an OS dependent cli command represented as a string, this function execute
   def tick args
     # execute ls on the current directory in 10 seconds
     if Kernel.tick_count == 600
-      args.gtk.system "ls ."
+      GTK.system "ls ."
     end
   end
 #+end_src
@@ -3266,7 +3346,7 @@ Given an OS dependent cli command represented as a string, this function execute
   def tick args
     # execute ls on the current directory in 10 seconds
     if Kernel.tick_count == 600
-      results = args.gtk.exec "ls ."
+      results = GTK.exec "ls ."
       puts "The results of the command are:"
       puts results
     end
@@ -3306,7 +3386,7 @@ Replaces the mouse cursor with a sprite. Takes in a ~path~ to the sprite, and op
     if Kernel.tick_count == 0
       # assumes a sprite of size 80x80 and centers the sprite
       # relative to the cursor position.
-      args.gtk.set_cursor "sprites/square/blue.png", 40, 40
+      GTK.set_cursor "sprites/square/blue.png", 40, 40
     end
   end
 #+end_src
@@ -3361,10 +3441,10 @@ This function takes in one parameter. The parameter is the file path and assumes
   
   def tick args
     if args.inputs.mouse.click
-      args.gtk.write_file "last-mouse-click.txt", "Mouse was clicked at #{Kernel.tick_count}."
+      GTK.write_file "last-mouse-click.txt", "Mouse was clicked at #{Kernel.tick_count}."
     end
   
-    file_info = args.gtk.stat_file "last-mouse-click.txt"
+    file_info = GTK.stat_file "last-mouse-click.txt"
   
     if file_info
       args.outputs.labels << {
@@ -3395,7 +3475,7 @@ This function takes in two parameters. The first parameter is the file path and 
 #+begin_src ruby
   def tick args
     if args.inputs.mouse.click
-      args.gtk.write_file "last-mouse-click.txt", "Mouse was clicked at #{Kernel.tick_count}."
+      GTK.write_file "last-mouse-click.txt", "Mouse was clicked at #{Kernel.tick_count}."
     end
   end
 #+end_src
@@ -3407,8 +3487,8 @@ This function takes in two parameters. The first parameter is the file path and 
 #+begin_src ruby
   def tick args
     if args.inputs.mouse.click
-      args.gtk.append_file "click-history.txt", "Mouse was clicked at #{Kernel.tick_count}.\n"
-      puts args.gtk.read_file("click-history.txt")
+      GTK.append_file "click-history.txt", "Mouse was clicked at #{Kernel.tick_count}.\n"
+      puts GTK.read_file("click-history.txt")
     end
   end
 #+end_src
@@ -3435,16 +3515,16 @@ Notes:
   def tick args
     if args.inputs.keyboard.key_down.w
       # press w to write file
-      args.gtk.append_file "example-file.txt", "File written at #{Kernel.tick_count}\n"
-      args.gtk.notify "File written/appended."
+      GTK.append_file "example-file.txt", "File written at #{Kernel.tick_count}\n"
+      GTK.notify "File written/appended."
     elsif args.inputs.keyboard.key_down.d
       # press d to delete file "unsafely"
-      args.gtk.delete_file "example-file.txt"
-      args.gtk.notify "File deleted."
+      GTK.delete_file "example-file.txt"
+      GTK.notify "File deleted."
     elsif args.inputs.keyboard.key_down.r
       # press r to read file
-      contents = args.gtk.read_file "example-file.txt"
-      args.gtk.notify "File contents written to console."
+      contents = GTK.read_file "example-file.txt"
+      GTK.notify "File contents written to console."
       puts contents
     end
   end
@@ -3456,7 +3536,7 @@ Notes:
 Given a json string, this function returns a hash representing the json data.
 
 #+begin_src 
-  hash = args.gtk.parse_json '{ "name": "John Doe", "aliases": ["JD"] }'
+  hash = GTK.parse_json '{ "name": "John Doe", "aliases": ["JD"] }'
   # structure of hash: { "name"=>"John Doe", "aliases"=>["JD"] }
 #+end_src
 
@@ -3491,7 +3571,7 @@ Returns an object that represents an http response which will eventually have a 
 #+begin_src ruby
   def tick args
     # perform an http get and print the response when available
-    args.state.result ||= args.gtk.http_get "https://httpbin.org/html"
+    args.state.result ||= GTK.http_get "https://httpbin.org/html"
   
     if args.state.result && args.state.result[:complete] && !args.state.printed
       if args.state.result[:http_response_code] == 200
@@ -3505,7 +3585,7 @@ Returns an object that represents an http response which will eventually have a 
       args.state.printed = true
   
       # show the console
-      args.gtk.show_console
+      GTK.show_console
     end
   end
 #+end_src
@@ -3523,7 +3603,7 @@ Returns an object that represents an http response which will eventually have a 
     # perform an http get and print the response when available
   
     args.state.form_fields ||= { "userId" => "#{Time.now.to_i}" }
-    args.state.result ||= args.gtk.http_post "http://httpbin.org/post",
+    args.state.result ||= GTK.http_post "http://httpbin.org/post",
                                              args.state.form_fields,
                                              ["Content-Type: application/x-www-form-urlencoded"]
   
@@ -3540,7 +3620,7 @@ Returns an object that represents an http response which will eventually have a 
       args.state.printed = true
   
       # show the console
-      args.gtk.show_console
+      GTK.show_console
     end
   end
 #+end_src
@@ -3558,7 +3638,7 @@ Returns an object that represents an http response which will eventually have a 
     # perform an http get and print the response when available
   
     args.state.json ||= "{ "userId": "#{Time.now.to_i}"}"
-    args.state.result ||= args.gtk.http_post_body "http://httpbin.org/post",
+    args.state.result ||= GTK.http_post_body "http://httpbin.org/post",
                                                   args.state.json,
                                                   ["Content-Type: application/json", "Content-Length: #{args.state.json.length}"]
   
@@ -3575,7 +3655,7 @@ Returns an object that represents an http response which will eventually have a 
       args.state.printed = true
   
       # show the console
-      args.gtk.show_console
+      GTK.show_console
     end
   end
 #+end_src
@@ -3591,7 +3671,7 @@ You can start an in-game http server in production via:
 #+begin_src ruby
   def tick args
     # server explicitly enabled in production
-    args.gtk.start_server! port: 9001, enable_in_prod: true
+    GTK.start_server! port: 9001, enable_in_prod: true
   end
 #+end_src
 
@@ -3600,7 +3680,7 @@ Here's how you would respond to http requests:
 #+begin_src ruby
   def tick args
     # server explicitly enabled in production
-    args.gtk.start_server! port: 9001, enable_in_prod: true
+    GTK.start_server! port: 9001, enable_in_prod: true
   
     # loop through pending requests and respond to them
     args.inputs.http_requests.each do |request|
@@ -3617,7 +3697,7 @@ Returns an object that represents an http response which will eventually have a 
 #+begin_src ruby
   def tick args
     # perform an http get and print the response when available
-    args.state.result ||= args.gtk.http_get "https://httpbin.org/html"
+    args.state.result ||= GTK.http_get "https://httpbin.org/html"
   
     if args.state.result && args.state.result[:complete] && !args.state.printed
       if args.state.result[:http_response_code] == 200
@@ -3631,7 +3711,7 @@ Returns an object that represents an http response which will eventually have a 
       args.state.printed = true
   
       # show the console
-      args.gtk.show_console
+      GTK.show_console
     end
   end
 #+end_src
@@ -3649,7 +3729,7 @@ Returns an object that represents an http response which will eventually have a 
     # perform an http get and print the response when available
   
     args.state.form_fields ||= { "userId" => "#{Time.now.to_i}" }
-    args.state.result ||= args.gtk.http_post "http://httpbin.org/post",
+    args.state.result ||= GTK.http_post "http://httpbin.org/post",
                                              args.state.form_fields,
                                              ["Content-Type: application/x-www-form-urlencoded"]
   
@@ -3666,7 +3746,7 @@ Returns an object that represents an http response which will eventually have a 
       args.state.printed = true
   
       # show the console
-      args.gtk.show_console
+      GTK.show_console
     end
   end
 #+end_src
@@ -3684,7 +3764,7 @@ Returns an object that represents an http response which will eventually have a 
     # perform an http get and print the response when available
   
     args.state.json ||= "{ "userId": "#{Time.now.to_i}"}"
-    args.state.result ||= args.gtk.http_post_body "http://httpbin.org/post",
+    args.state.result ||= GTK.http_post_body "http://httpbin.org/post",
                                                   args.state.json,
                                                   ["Content-Type: application/json", "Content-Length: #{args.state.json.length}"]
   
@@ -3701,7 +3781,7 @@ Returns an object that represents an http response which will eventually have a 
       args.state.printed = true
   
       # show the console
-      args.gtk.show_console
+      GTK.show_console
     end
   end
 #+end_src
@@ -3717,7 +3797,7 @@ You can start an in-game http server in production via:
 #+begin_src ruby
   def tick args
     # server explicitly enabled in production
-    args.gtk.start_server! port: 9001, enable_in_prod: true
+    GTK.start_server! port: 9001, enable_in_prod: true
   end
 #+end_src
 
@@ -3726,7 +3806,7 @@ Here's how you would respond to http requests:
 #+begin_src ruby
   def tick args
     # server explicitly enabled in production
-    args.gtk.start_server! port: 9001, enable_in_prod: true
+    GTK.start_server! port: 9001, enable_in_prod: true
   
     # loop through pending requests and respond to them
     args.inputs.http_requests.each do |request|
@@ -3757,7 +3837,7 @@ To get other values from ~mygame/game_metadata.txt~, you can do:
 #+begin_src ruby
   def tick args
     if Kernel.tick_count == 0
-      puts args.gtk.game_version
+      puts GTK.game_version
       args.cvars["game_metadata.version"].value
     end
   end
@@ -3828,7 +3908,7 @@ Has the same behavior as ~reset~ except the reset occurs before ~tick~ is execut
   def tick args
     # reset the game if "r" is pressed on the keyboard
     if args.inputs.keyboard.key_down.r
-      args.gtk.reset_next_tick # use reset_next_tick instead of reset
+      GTK.reset_next_tick # use reset_next_tick instead of reset
     end
   end
   
@@ -3845,7 +3925,7 @@ This function can also be used to delete/garbage collect render targets you are 
 
 *** ~reset_sprites~
 
-Sprites when loaded are cached. This method invalidates the cache record of all sprites so that updates on from the disk can be loaded. This function is automatically called when ~args.gtk.reset~ (~GTK.reset~) is invoked.
+Sprites when loaded are cached. This method invalidates the cache record of all sprites so that updates on from the disk can be loaded. This function is automatically called when ~GTK.reset~ is invoked.
 
 *** ~calcspritebox~
 
@@ -3863,7 +3943,7 @@ Returns a float value representing the framerate of your game. This is an approx
   def tick args
     # render a label to the screen that shows the current framerate
     # formatted as a floating point number with two decimal places
-    args.outputs.labels << { x: 30, y: 30.from_top, text: "#{args.gtk.current_framerate.to_sf}" }
+    args.outputs.labels << { x: 30, y: 30.from_top, text: "#{GTK.current_framerate.to_sf}" }
   end
 #+end_src
 
@@ -3873,7 +3953,7 @@ Returns a set of primitives that can be rendered to the screen which provide mor
 
 #+begin_src ruby
   def tick args
-    args.outputs.primitives << args.gtk.framerate_diagnostics_primitives
+    args.outputs.primitives << GTK.framerate_diagnostics_primitives
   end
 #+end_src
 
@@ -3884,7 +3964,7 @@ This function helps you audit your game of usages of array-based primitives. Whi
 #+begin_src ruby
   def tick args
     # enable array based primitives warnings
-    args.gtk.warn_array_primitives!
+    GTK.warn_array_primitives!
   
     # array-based primitive elsewhere in code
     # an log message will be posted giving the location of the array
@@ -3916,17 +3996,17 @@ If ~seconds~ is provided, the winner will be determined by the most completed it
   def tick args
     # press i to run benchmark using iterations
     if args.inputs.keyboard.key_down.i
-      args.gtk.console.show
-      args.gtk.benchmark iterations: 1000, # number of iterations
+      GTK.console.show
+      GTK.benchmark iterations: 1000, # number of iterations
                          # label for experiment
-                         using_numeric_map: -> () {
+                         using_numeric_map: lambda {
                            # experiment body
                            v = 100.map_with_index do |i|
                              i * 100
                            end
                          },
                          # label for experiment
-                         using_numeric_times: -> () {
+                         using_numeric_times: lambda {
                            # experiment body
                            v = []
                            100.times do |i|
@@ -3937,17 +4017,17 @@ If ~seconds~ is provided, the winner will be determined by the most completed it
   
     # press s to run benchmark using seconds
     if args.inputs.keyboard.key_down.s
-      args.gtk.console.show
-      args.gtk.benchmark seconds: 1, # number of seconds to run each experiment
+      GTK.console.show
+      GTK.benchmark seconds: 1, # number of seconds to run each experiment
                          # label for experiment
-                         using_numeric_map: -> () {
+                         using_numeric_map: lambda {
                            # experiment body
                            v = 100.map_with_index do |i|
                              i * 100
                            end
                          },
                          # label for experiment
-                         using_numeric_times: -> () {
+                         using_numeric_times: lambda {
                            # experiment body
                            v = []
                            100.times do |i|
@@ -3967,12 +4047,12 @@ An optional parameter of duration (number value representing ticks) can also be 
 #+begin_src ruby
   def tick args
     if args.inputs.mouse.click
-      args.gtk.notify! "Mouse was clicked!"
+      GTK.notify! "Mouse was clicked!"
     end
   
     if args.inputs.keyboard.key_down.r
       # optional duration parameter
-      args.gtk.notify! "R key was pressed!", 600 # present message for 10 seconds/600 frames
+      GTK.notify! "R key was pressed!", 600 # present message for 10 seconds/600 frames
     end
   end
 #+end_src
@@ -3984,7 +4064,7 @@ Has similar behavior as notify! except you have additional options to show messa
 #+begin_src ruby
   def tick args
     if args.inputs.mouse.click
-      args.gtk.notify_extended! message: "message",
+      GTK.notify_extended! message: "message",
                                 duration: 300,
                                 env: :prod
     end
@@ -3997,10 +4077,10 @@ Given a numeric value representing the factor of 60fps. This function will bring
 
 #+begin_src ruby
   def tick args
-    # set your simulation speed to (15 fps): args.gtk.slowmo! 4
-    # set your simulation speed to (1 fps): args.gtk.slowmo! 60
+    # set your simulation speed to (15 fps): GTK.slowmo! 4
+    # set your simulation speed to (1 fps): GTK.slowmo! 60
     # set your simulation speed to (30 fps):
-    args.gtk.slowmo! 2
+    GTK.slowmo! 2
   end
 #+end_src
 
@@ -4020,7 +4100,7 @@ Enables the DragonRuby Console so that it can be presented by pressing the tilde
 
 *** ~disable_console~
 
-Disables the DragonRuby Console so that it won't show up even if you press the tilde key or call ~args.gtk.show_console~.
+Disables the DragonRuby Console so that it won't show up even if you press the tilde key or call ~GTK.show_console~.
 
 *** ~disable_reset_via_ctrl_r~
 
@@ -4110,35 +4190,19 @@ Returns a string representing the command line arguments passed to the DragonRub
 
 Returns a ~Hash~ for command line arguments in the format of ~--switch value~ (two hyphens preceding the switch flag with the value separated by a space). This should be used for development/debugging purposes only.
 
-*** ~download_stb_rb(_raw)~
-
-These two functions can help facilitate the integration of external code files. OSS contributors are encouraged to create libraries that all fit in one file (lowering the barrier to entry for adoption).
-
-Examples:
-
-#+begin_src ruby
-  def tick args
-  end
-  
-  # option 1:
-  # source code will be downloaded from the specified GitHub url, and saved locally with a
-  # predefined folder convention.
-  GTK.download_stb_rb "https://github.com/xenobrain/ruby_vectormath/blob/main/vectormath_2d.rb"
-  
-  # option 2:
-  # source code will be downloaded from the specified GitHub username, repository, and file.
-  # code will be saved locally with a predefined folder convention.
-  GTK.download_stb_rb "xenobrain", "ruby_vectormath", "vectormath_2d.rb"
-  
-  # option 3:
-  # source code will be downloaded from a direct/raw url and saved to a direct/raw local path.
-  GTK.download_stb_rb_raw "https://raw.githubusercontent.com/xenobrain/ruby_vectormath/main/vectormath_2d.rb",
-                           "lib/xenobrain/ruby_vectionmath/vectormath_2d.rb"
-#+end_src
 
 *** ~reload_history~
 
 Returns a ~Hash~ representing the code files that have be loaded for your game along with timings for the events. This should be used for development/debugging purposes only.
+
+#+begin_src ruby
+  def tick args
+    # every second print the reload history
+    if Kernel.tick_count % 60 == 0
+      puts GTK.reload_history
+    end
+  end
+#+end_src
 
 *** ~reload_history_pending~
 
@@ -4267,7 +4331,7 @@ You can invoke the functions above using either the mixin variant or the module 
 
 
 
-* CVars / Configuration (~args.cvars~)
+* CVars / Configuration / Game Metadata (~args.cvars~)
 
 Hash contains metadata pulled from the files under the ~./metadata~ directory. To get the keys that are available type ~$args.cvars.keys~ in the Console. Here is an example of how to retrieve the game version number:
 
@@ -4303,7 +4367,7 @@ is a high level summary of each value.
 |                                | ~orientation~              | ~landscape~ or ~portrait~ (default is ~landscape~)                           | Orientation for your game. |
 |                                | ~orientation_ios~          | ~landscape~ or ~portrait~                                                    | Overrides the default orientation on iOS. This is a Pro feature. |
 |                                | ~orientation_android~      | ~landscape~ or ~portrait~                                                    | Overrides the default orientation on Android. This is a Pro feature. |
-|                                | ~scale_quality~            | ~0~, ~1~, or ~2~ (default is ~0~)                                            | Specifies the render scale quality for your game (full details of what each number means in ~metadata/game_metadata.txt~). |
+|                                | ~scale_quality~            | ~0~, ~1~, or ~2~ (default is ~0~)                                            | Specifies the render scale quality for your game (0=nearest neighbor, 1=linear, 2=anisotropic/best). Full details of what each number means in ~metadata/game_metadata.txt~. |
 |                                | ~ignore_directories~       | Comma delimited list of directories                                          | Directories to exclude when packaging your game. |
 |                                | ~packageid~                | String in reverse domain convention                                          | Android Package Id for your game. This is a Pro feature. |
 |                                | ~compile_ruby~             | ~true~ or ~false~ (default is ~false~)                                       | Signifies if your game code will be compiled to bytecode during packaging. This is a Pro feature. |
@@ -4433,9 +4497,6 @@ Provides information about the screen and game canvas.
 ?> All functions are available globally via ~Grid.-~.
 #+begin_src ruby
   def tick args
-     puts args.grid.function(...)
-  
-     # OR available globally
      puts Grid.function(...)
   end
 #+end_src
@@ -4443,6 +4504,12 @@ Provides information about the screen and game canvas.
 ** ~orientation~
 
 Returns either ~:landscape~ (default) or ~:portrait~. The orientation of your game is set within ~./mygame/metadata/game_metadata.txt~.
+
+** ~orientation_changed?~
+
+Returns ~true~ if the orientation for your game has changed because of a window resize (or handheld device rotation). This
+value will only be true on the frame the orientation change occurred (and is dependent on the ~orientation~ value in ~game_metadata.txt~
+having comma delimited value of ~portrait,landscape~ or ~landscape,portrait~). See the CVars section in the docs for more information.
 
 ** ~origin_name~
 
@@ -4495,10 +4562,10 @@ Here's an example of what the property conventions look like:
 #+begin_src ruby
   def tick args
     # Logical width
-    args.grid.w
+    Grid.w
   
     # Width in pixels
-    args.grid.w_px
+    Grid.w_px
   end
 #+end_src
 
@@ -4522,7 +4589,7 @@ Given that the logical canvas is ~720p~, these are the values that
 
 ** ~top~
 
-Returns value that represents the top of the grid.
+Returns value that represents the top of the grid (this is an alias for ~Grid.h~).
 
 ** ~left~
 
@@ -4542,7 +4609,7 @@ Returns the grid's width.
 
 ** ~h~
 
-Returns the grid's width.
+Returns the grid's height.
 
 ** ~aspect_ratio_w~
 
@@ -4586,6 +4653,66 @@ closest/best-fit resolutions.
 -   5k: 6400x2880
 
 *** All Screen Properties
+
+?> All Screen Properties are pertinent for Pro license with ~hd_letterbox=false~ (setting ~hd_letterbox=false~ allows for edge to edge screen rendering). Take a look at the following sample to see how rendering can be applied to non-standard aspect ratios ~samples/07_advanced_rendering_hd/05_camera_ultrawide_allscreen~.
+
+The goal of All Screen Properties is to ensure that the safe area for your game is always centered in the display regardless of its aspect ratio.
+
+When a non-standard aspect ratio (an aspect ratio that isn't 16:9 or 9:16), All Screen Properties will reflect the "overflow" for the game window.
+
+All Screen Properties are always in --logical pixels--, you can see native pixel values - if you're curious about what they are - using the ~_px~ variant of All Screen Properties (they aren't really useful for rendering things on the screen since everything is in logical pixels and are there in preperation of shaders and computing UV coordinates).
+
+- If your game is landscape, and your game window is wider than it is tall, then All Screen properties for height will match the logical pixels of the game. All Screen width properties for width will be different because the overflow occurs horizontally.
+
+- If your game is landscape, and your game window is taller than it is wide, then All Screen properties for width will match the logical pixels of the game. All Screen width properties for height will be different because the overflow occurs vertically.
+
+- If your game window is a perfect 16:9 aspect ratio (720p, 1080p, etc), then all All Screen properties will match logical pixels. There is no overflow in that case (your native scale will be a multiple of 720p).
+
+You can use the following code to view all screen properties for different sizes of the game window. Try making the window really wide, but short and really tall but thin:
+
+#+begin_src ruby
+  def tick args
+    # all screen rect properties
+    args.outputs.primitives << {
+      x: 640, y: 390,
+      text: "allscreen_rect: #{Grid.allscreen_rect}",
+      anchor_x: 0.5, anchor_y: 0.5, size_px: 30
+    }
+  
+    # all screen left, right
+    args.outputs.primitives << {
+      x: 640, y: 360,
+      text: "allscreen_left: #{Grid.allscreen_left}, allscreen_right: #{Grid.allscreen_right}",
+      anchor_x: 0.5, anchor_y: 0.5, size_px: 30
+    }
+  
+    # all screen bottom, top
+    args.outputs.primitives << {
+      x: 640, y: 330,
+      text: "allscreen_bottom: #{Grid.allscreen_bottom}, allscreen_top: #{Grid.allscreen_top}",
+      anchor_x: 0.5, anchor_y: 0.5, size_px: 30
+    }
+  
+    # mouse location
+    args.outputs.labels << {
+      x: 640, y: 300,
+      text: "Mouse: #{args.inputs.mouse.x}, #{args.inputs.mouse.y}",
+      anchor_x: 0.5, anchor_y: 0.5, size_px: 30,
+    }
+  
+    # edge to edge area
+    args.outputs.sprites << {
+      **Grid.allscreen_rect, path: :solid,
+      r: 64, g: 64, b: 128, a: 255
+    }
+  
+    # safe area
+    args.outputs.sprites << {
+      x: 0, y: 0, w: 1280, h: 720, path: :solid,
+      r: 128, g: 64, b: 64, a: 255
+    }
+  end
+#+end_src
 
 These properties provide dimensions of the screen outside of the 16:9
 safe area as logical ~720p~ values.

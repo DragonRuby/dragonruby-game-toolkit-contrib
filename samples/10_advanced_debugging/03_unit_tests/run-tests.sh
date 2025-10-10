@@ -1,5 +1,5 @@
 : <<'COMMENT'
-fswatch ./samples/10_advanced_debugging/03_unit_tests/string_split_tests.rb | xargs -n1 -I{} sh ./samples/10_advanced_debugging/03_unit_tests/run-tests.sh
+fswatch ./samples/10_advanced_debugging/03_unit_tests/enumerable_class_function_tests.rb | xargs -n1 -I{} sh ./samples/10_advanced_debugging/03_unit_tests/run-tests.sh
 set -e
 rake
 COMMENT
@@ -21,7 +21,7 @@ rake
 # ./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/fn_tests.rb
 # ./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/pretty_format_test.rb
 # ./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/benchmark_api_tests.rb
-# ./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/enumerable_class_function_tests.rb
+./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/enumerable_class_function_tests.rb
 # ./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/numeric_rand_tests.rb
 # ./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/eval_hash_tests.rb
-./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/string_split_tests.rb
+# ./dragonruby mygame --test samples/10_advanced_debugging/03_unit_tests/string_split_tests.rb

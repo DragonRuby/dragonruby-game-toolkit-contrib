@@ -71,6 +71,47 @@ def tick args
 end
 ```
 
+This example will show random labels fading in and fading out over 60 seconds (the same technique can be used to create notifications):
+
+```ruby
+def tick args
+  args.state.toast_queue ||= []
+  args.state.spline_definition = [
+    [0.0, 0.0,  0.66, 1.0],
+    [1.0, 1.0,  1.0,  1.0],
+    [1.0, 0.33, 0.0,  0.0]
+  ]
+  args.state.spline_duration ||= 60
+
+
+  if args.inputs.keyboard.key_down.space
+    args.state.toast_queue << {
+      x: rand(1280),
+      y: rand(720),
+      at: Kernel.tick_count, text: "message toasted at #{Kernel.tick_count}"
+    }
+  end
+
+  args.state.toast_queue.each do |t|
+    current_progress = Easing.spline t.at,
+                                     Kernel.tick_count,
+                                     args.state.spline_duration,
+                                     args.state.spline_definition
+
+    args.outputs.labels << { x: t.x,
+                             y: t.y,
+                             text: t.text,
+                             anchor_x: 0.5,
+                             anchor_y: 0.5,
+                             a: current_progress * 255 }
+  end
+
+  args.state.toast_queue.reject! { |t| t.at.elapsed_time > args.state.spline_duration }
+end
+
+GTK.reset
+```
+
 ## `smooth_start`
 
 The `smooth_start`, `smooth_stop`, and `smooth_step` functions have the following

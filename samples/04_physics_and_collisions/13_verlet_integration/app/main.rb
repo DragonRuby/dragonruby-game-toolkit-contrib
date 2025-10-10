@@ -1,65 +1,102 @@
-# https://www.youtube.com/watch?v=D2M8jTtKi44
+# https://www.youtube.com/watch?v=-GWTDhOQU6M
+class Square
+  attr :x, :y, :w, :h,
+       :prev_x, :prev_y,
+       :acceleration_x, :acceleration_y,
+       :drag_x, :drag_y,
+       :radius,
+       :dx, :dy, :path, :start_acceleration_x, :start_acceleration_y
+
+  def initialize(x:, y:, w:, h:, radius:, start_acceleration_x:, start_acceleration_y:, drag_x:, drag_y:)
+    @x = x
+    @y = y
+    @w = w
+    @h = h
+    @radius = radius
+    @start_acceleration_x = start_acceleration_x
+    @start_acceleration_y = start_acceleration_y
+    @acceleration_x = nil
+    @acceleration_y = nil
+    @drag_x = drag_x
+    @drag_y = drag_y
+    @path = "sprites/square/blue.png"
+  end
+
+  def tick dt
+    @prev_x ||= @x
+    @prev_y ||= @y
+    if !@acceleration_x
+      @acceleration_x = @start_acceleration_x
+    else
+      @acceleration_x = 0
+    end
+
+    if !@acceleration_y
+      @acceleration_y = @start_acceleration_y
+    else
+      @acceleration_y = -0.25 * dt
+    end
+
+    if @y < 0
+      @y = 0
+    end
+
+    if @x < 0
+      @x = 0
+    elsif (@x + @w) > 1280
+      @x = 1280 - @w
+    end
+
+    dx = @x - @prev_x
+    dy = @y - @prev_y
+    dx += @acceleration_x * dt
+    dy += @acceleration_y * dt
+    dx *= @drag_x ** dt
+    dy *= @drag_y ** dt
+
+    @prev_x = @x
+    @prev_y = @y
+    @x += dx
+    @y += dy
+  end
+
+  def prefab
+    {x: @x, y: @y, w: @w, h: @h, path: @path,}
+  end
+
+  def center_x
+    @x + @radius
+  end
+
+  def center_y
+    @y + @radius
+  end
+end
 
 class Game
   attr_gtk
 
   def initialize
-  end
-
-  def defaults
-    state.objects ||= []
+    @squares = []
   end
 
   def render
-    outputs.watch "#{GTK.current_framerate} FPS"
-    outputs.watch "#{state.objects.length}"
-    outputs.primitives << state.objects
+    outputs.watch "FPS: #{GTK.current_framerate}"
+    outputs.watch "Squares: #{@squares.length}"
+    outputs.background_color = [30, 30, 30]
+    outputs.primitives << @squares.map(&:prefab)
   end
 
   def calc_dt dt
-    state.objects.each do |object|
-      object.prev_x ||= object.x
-      object.prev_y ||= object.y
-      if !object.acceleration_x
-        object.acceleration_x = object.start_acceleration_x
-      else
-        object.acceleration_x = 0
-      end
-
-      if !object.acceleration_y
-        object.acceleration_y = object.start_acceleration_y
-      else
-        object.acceleration_y = -0.25 * dt
-      end
-
-      if object.y < 0
-        object.y = 0
-      end
-
-      if object.x < 0
-        object.x = 0
-      elsif (object.x + object.w) > 1280
-        object.x = 1280 - object.w
-      end
-
-      dx = object.x - object.prev_x
-      dy = object.y - object.prev_y
-      dx += object.acceleration_x * dt
-      dy += object.acceleration_y * dt
-      dx *= object.drag_x ** dt
-      dy *= object.drag_y ** dt
-
-      object.prev_x = object.x
-      object.prev_y = object.y
-      object.x += dx
-      object.y += dy
+    Array.each(@squares) do |object|
+      object.tick dt
     end
 
-    Geometry.each_intersect_rect(state.objects, state.objects) do |o_1, o_2|
-      o_1_center_x = o_1.x + o_1.radius
-      o_1_center_y = o_1.y + o_1.radius
-      o_2_center_x = o_2.x + o_2.radius
-      o_2_center_y = o_2.y + o_2.radius
+    Geometry.each_intersect_rect(@squares, @squares) do |o_1, o_2|
+      o_1_center_x = o_1.center_x
+      o_1_center_y = o_1.center_y
+      o_2_center_x = o_2.center_x
+      o_2_center_y = o_2.center_y
 
       distance_x = o_1_center_x - o_2_center_x
       distance_y = o_1_center_y - o_2_center_y
@@ -84,38 +121,23 @@ class Game
   end
 
   def calc
-    if inputs.mouse.held || state.objects.length < 100
+    if (inputs.mouse.click || inputs.mouse.held)
+      mouse_x = inputs.mouse.x
+      mouse_y = inputs.mouse.y
+
       angle = rand(360)
       acc_x = angle.vector_x * 20
       acc_y = angle.vector_y * 20
-      mouse_x = if inputs.mouse.click || inputs.mouse.held
-                  inputs.mouse.x
-                else
-                  640
-                end
 
-      mouse_y = if inputs.mouse.click || inputs.mouse.held
-                  inputs.mouse.y
-                else
-                  540
-                end
-
-      color = [:red, :blue].sample
-
-      state.objects << {
-        x: mouse_x - 8,
-        y: mouse_y - 8,
-        w: 16,
-        h: 16,
-        radius: 8,
-        path: "sprites/square/#{color}.png",
-        start_acceleration_x: acc_x,
-        start_acceleration_y: acc_y,
-        acceleration_x: nil,
-        acceleration_y: nil,
-        drag_x: 0.95,
-        drag_y: 0.99
-      }
+      @squares << Square.new(x: mouse_x - 8,
+                             y: mouse_y - 8,
+                             w: 16,
+                             h: 16,
+                             radius: 8,
+                             start_acceleration_x: acc_x,
+                             start_acceleration_y: acc_y,
+                             drag_x: 0.95,
+                             drag_y: 0.99)
     end
 
     calc_dt 0.5
@@ -123,7 +145,6 @@ class Game
   end
 
   def tick
-    defaults
     calc
     render
   end

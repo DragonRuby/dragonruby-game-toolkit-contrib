@@ -25,6 +25,8 @@ module GTK
 
     attr :connected
 
+    attr :last_directional_vector
+
     def initialize
       @key_down = Controller::Keys.new
       @key_up   = Controller::Keys.new
@@ -146,7 +148,58 @@ module GTK
       key_up.activate(key)
     end
 
-    include DirectionalInputHelperMethods
+    def left_right
+      directional_vector&.x&.sign || 0
+    end
+
+    def last_left_right
+      last_directional_vector&.x&.sign || 0
+    end
+
+    def up_down
+      directional_vector&.y&.sign || 0
+    end
+
+    def last_up_down
+      last_directional_vector&.y&.sign || 0
+    end
+
+    def directional_vector
+      lr = if self.left && self.right && self.last_left_right != 0
+             last_left_right
+           elsif self.left
+             -1
+           elsif self.right
+             1
+           else
+             0
+           end
+
+      ud = if self.up && self.down && last_up_down != 0
+             last_up_down
+           elsif self.up
+             1
+           elsif self.down
+             -1
+           else
+             0
+           end
+
+      if lr == 0 && ud == 0
+        return nil
+      elsif lr.abs == ud.abs
+        return { x: 45.vector_x * lr.sign, y: 45.vector_y * ud.sign }
+      else
+        return { x: lr, y: ud }
+      end
+    end
+
+    def directional_angle
+      return nil unless directional_vector
+
+      Math.atan2(up_down, left_right).to_degrees
+    end
+
 
     def method_missing m, *args
       define_singleton_method(m) do

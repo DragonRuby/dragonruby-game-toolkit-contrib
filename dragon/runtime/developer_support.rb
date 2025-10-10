@@ -164,7 +164,7 @@ S
         category ||= block.source_location.join(":")
 
         if @production
-          block.call
+          result = block.call
         else
           @capture_timings_invoked = true
           @capture_timings_data[category] ||= { color: color, entries: [] }
@@ -173,12 +173,12 @@ S
           end
 
           before = Time.now
-          block.call
+          result = block.call
           after = Time.now
           @capture_timings_data[category][:color] = color
-          @capture_timings_data[category][:entries] << { at: Kernel.tick_count,
-                                                         ms_elapsed: ((after.to_f - before.to_f)) }
+          @capture_timings_data[category][:entries] << { at: Kernel.tick_count, ms_elapsed: ((after.to_f - before.to_f)) }
         end
+        result
       end
 
       def tick_capture_timings_before
@@ -219,9 +219,23 @@ S
         @current_scale ||= 40000
         @target_scale  = 40000
 
+        timing_prefab_w = 720
+        timing_prefab_h = 720
         @args.outputs[:__timing_prefab__].background_color = [0, 0, 0, 0]
-        @args.outputs[:__timing_prefab__].w = 720
-        @args.outputs[:__timing_prefab__].h = 720
+        @args.outputs[:__timing_prefab__].w = timing_prefab_w
+        @args.outputs[:__timing_prefab__].h = timing_prefab_h
+        timing_prefab_left = if Grid.origin_name == :bottom_left
+                               0
+                             else
+                               -360
+                             end
+
+        timing_prefab_bottom = if Grid.origin_name == :bottom_left
+                                 0
+                               else
+                                 -360
+                               end
+
 
         r = @capture_timings_data.map do |category, v|
           max_ms_elapsed = v[:entries].map { |t| t.ms_elapsed }.max
@@ -235,50 +249,50 @@ S
         @current_scale = @current_scale.lerp(@target_scale, 0.1)
 
         @args.outputs[:__timing_prefab__].primitives << {
-          x: 0,
-          y: 0.016 * @current_scale,
-          x2: 720,
-          y2: 0.016 * @current_scale,
+          x: timing_prefab_left,
+          y: timing_prefab_bottom + 0.016 * @current_scale,
+          x2: timing_prefab_left + 720,
+          y2: timing_prefab_bottom + 0.016 * @current_scale,
           r: 255,
           g: 0,
           b: 0
         }
 
         @args.outputs[:__timing_prefab__].primitives << {
-          x: 0,
-          y: 0.012 * @current_scale,
-          x2: 720,
-          y2: 0.012 * @current_scale,
+          x: timing_prefab_left + 0,
+          y: timing_prefab_bottom + 0.012 * @current_scale,
+          x2: timing_prefab_left + 720,
+          y2: timing_prefab_bottom + 0.012 * @current_scale,
           r: 0,
           g: 128,
           b: 0
         }
 
         @args.outputs[:__timing_prefab__].primitives << {
-          x: 0,
-          y: 0.008 * @current_scale,
-          x2: 720,
-          y2: 0.008 * @current_scale,
+          x: timing_prefab_left + 0,
+          y: timing_prefab_bottom + 0.008 * @current_scale,
+          x2: timing_prefab_left + 720,
+          y2: timing_prefab_bottom + 0.008 * @current_scale,
           r: 0,
           g: 255,
           b: 0
         }
 
         @args.outputs[:__timing_prefab__].primitives << {
-          x: 0,
-          y: 0.004 * @current_scale,
-          x2: 720,
-          y2: 0.004 * @current_scale,
+          x: timing_prefab_left + 0,
+          y: timing_prefab_bottom + 0.004 * @current_scale,
+          x2: timing_prefab_left + 720,
+          y2: timing_prefab_bottom + 0.004 * @current_scale,
           r: 0,
           g: 128,
           b: 0
         }
 
         @args.outputs[:__timing_prefab__].primitives << {
-          x: 0,
-          y: 1,
-          x2: 720,
-          y2: 1,
+          x: timing_prefab_left + 0,
+          y: timing_prefab_bottom + 1,
+          x2: timing_prefab_left + 720,
+          y2: timing_prefab_bottom + 1,
           r: 0,
           g: 255,
           b: 0
@@ -291,16 +305,16 @@ S
           color_i += 1
 
           @args.outputs[:__timing_prefab__].primitives << {
-            x: 8 + 1,
-            y: 720 - 80 - 1,
+            x: timing_prefab_left + 8 + 1,
+            y: timing_prefab_bottom + 720 - 80 - 1,
             text: category,
             r: 0, g: 0, b: 0,
             anchor_y: i + 0.5,
           }
 
           @args.outputs[:__timing_prefab__].primitives << {
-            x: 8,
-            y: 720 - 80,
+            x: timing_prefab_left + 8,
+            y: timing_prefab_bottom + 720 - 80,
             text: category,
             **color,
             anchor_y: i + 0.5,
@@ -309,8 +323,8 @@ S
           @args.outputs[:__timing_prefab__].primitives << timings.map_with_index do |timing, i|
             [
               {
-                x: 3 * i,
-                y: timing.ms_elapsed * @current_scale,
+                x: timing_prefab_left + 3 * i,
+                y: timing_prefab_bottom + timing.ms_elapsed * @current_scale,
                 w: 4,
                 h: 4,
                 anchor_x: 0.5,
@@ -319,8 +333,8 @@ S
                 r: 0, g: 0, b: 0, a: 255
               },
               {
-                x: 3 * i,
-                y: timing.ms_elapsed * @current_scale,
+                x: timing_prefab_left + 3 * i,
+                y: timing_prefab_bottom + timing.ms_elapsed * @current_scale,
                 w: 2,
                 h: 2,
                 anchor_x: 0.5,
@@ -338,8 +352,8 @@ S
           end
         end
 
-        args.outputs.debug << { x: Grid.w / 2,
-                                y: Grid.h / 2,
+        args.outputs.debug << { x: Grid.x + Grid.w / 2,
+                                y: Grid.y + Grid.h / 2,
                                 w: 720,
                                 h: 720,
                                 path: :__timing_prefab__,

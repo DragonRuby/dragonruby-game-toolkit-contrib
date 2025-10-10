@@ -139,12 +139,12 @@ module GTK
         @held_point = nil
       elsif click_occurred_last_frame && !up_occurred_after_click
         @held_point = MousePoint.new @x, @y
-        @held_point.created_at = @click.created_at + 1
-        @held_point.global_created_at = @click.global_created_at + 1
+        @held_point.created_at = @click_at + 1
+        @held_point.global_created_at = @global_click_at + 1
       elsif !up_occurred_after_click
         @held_point ||= MousePoint.new @x, @y
-        @held_point.created_at ||= @click.created_at + 1
-        @held_point.global_created_at ||= @click.global_created_at + 1
+        @held_point.created_at = @click_at + 1
+        @held_point.global_created_at = @global_click_at + 1
         @held_point.x = @x
         @held_point.y = @y
       else

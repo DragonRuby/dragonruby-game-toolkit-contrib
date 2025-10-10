@@ -69,6 +69,12 @@ module GTK
         end
         @args.inputs.last_active = :mouse
 
+        if @args.inputs.touch.length == 0
+          @args.inputs.mouse_touch.tracking_speed = 1.0
+        elsif @args.inputs.touch.length > 1
+          @args.inputs.mouse_touch.tracking_speed = 0.1
+        end
+
         __simulate_mouse_move_for_touches__(touch_count_before)
 
         if @args.inputs.touch.length == 1
@@ -98,20 +104,19 @@ module GTK
 
         if @args.inputs.touch.length == 1
           if touch_count_before == 0
-            @args.inputs.touch_center.x = transform_x
-            @args.inputs.touch_center.y = transform_y
+            @args.inputs.mouse_touch.x = transform_x
+            @args.inputs.mouse_touch.y = transform_y
           else
-            @args.inputs.touch_center.x = @args.inputs.touch_center.x.lerp(transform_x, 0.1)
-            @args.inputs.touch_center.y = @args.inputs.touch_center.y.lerp(transform_y, 0.1)
+            @args.inputs.mouse_touch.x = @args.inputs.mouse_touch.x.lerp(transform_x, @args.inputs.mouse_touch.tracking_speed)
+            @args.inputs.mouse_touch.y = @args.inputs.mouse_touch.y.lerp(transform_y, @args.inputs.mouse_touch.tracking_speed)
           end
         else
-          @args.inputs.touch_center.x = @args.inputs.touch_center.x.lerp(transform_x, 0.1)
-          @args.inputs.touch_center.y = @args.inputs.touch_center.y.lerp(transform_y, 0.1)
+          @args.inputs.mouse_touch.x = @args.inputs.mouse_touch.x.lerp(transform_x, @args.inputs.mouse_touch.tracking_speed)
+          @args.inputs.mouse_touch.y = @args.inputs.mouse_touch.y.lerp(transform_y, @args.inputs.mouse_touch.tracking_speed)
         end
 
-        mouse_move @args.inputs.touch_center.x, @args.inputs.touch_center.y
+        mouse_move @args.inputs.mouse_touch.x, @args.inputs.mouse_touch.y
       end
-
 
       # WARNING: do not update this function signature or you'll break replays. create a new function instead
       def finger_move touchid, touchx, touchy, sender = false
@@ -146,6 +151,10 @@ module GTK
           @args.inputs.finger_one = finger
         elsif finger.touch_order == 1
           @args.inputs.finger_two = finger
+        end
+
+        if @args.inputs.touch.length <= 1
+          @args.inputs.mouse_touch.tracking_speed = @args.inputs.mouse_touch.tracking_speed.lerp(1.0, 0.1)
         end
 
         if touchx < Grid.w / 2
@@ -580,7 +589,8 @@ module GTK
       # WARNING: do not update this function signature or you'll break replays. create a new function instead
       def key_down_raw raw_key, modifier, sender = false
         return if @slowmo_factor_debounce
-        if self.recording.is_replaying? && sender != :replay
+        is_replaying_and_not_console_visible = self.recording.is_replaying? && !GTK.console.visible?
+        if is_replaying_and_not_console_visible && sender != :replay
           char = KeyboardKeys.char_with_shift raw_key, modifier
           first_name = KeyboardKeys.char_to_method(char, raw_key).first
           first_name = "#{first_name}!".to_sym if first_name
@@ -597,13 +607,15 @@ module GTK
 
       # WARNING: do not update this function signature or you'll break replays. create a new function instead
       def key_up_raw raw_key, modifier, sender = false
-        return if self.recording.is_replaying? && sender != :replay
+        is_replaying_and_not_console_visible = self.recording.is_replaying? && !GTK.console.visible?
+        return if is_replaying_and_not_console_visible && sender != :replay
         self.record_input_history :key_up_raw, raw_key, modifier, 2
         key_up_in_game raw_key.to_i, modifier
       end
 
       def scancode_up_raw raw_scancode, modifier, sender = false
-        return if self.recording.is_replaying? && sender != :replay
+        is_replaying_and_not_console_visible = self.recording.is_replaying? && !GTK.console.visible?
+        return if is_replaying_and_not_console_visible && sender != :replay
         self.record_input_history :scancode_up_raw, raw_scancode, modifier, 2
         scancode_method = KeyboardKeys.scancode_to_method_hash[raw_scancode]
         if scancode_method
@@ -1072,6 +1084,7 @@ module GTK
         # indicates that orientation was changed
         if orientation_w != g.w
           @args.events[:orientation_changed] = true
+          Grid.orientation_changed = true
           if @orientation == :landscape
             @orientation = :portrait
             @logical_width, @logical_height = @logical_height, @logical_width
@@ -1141,17 +1154,19 @@ module GTK
           g.bottom              -= (g.h / 2).ceil
         end
 
-        g.allscreen_right_px    = g.allscreen_left_px   + g.allscreen_w_px + g.allscreen_offset_x_px
-        g.allscreen_top_px      = g.allscreen_bottom_px + g.allscreen_h_px + g.allscreen_offset_y_px
+        g.allscreen_right_px    = g.allscreen_left_px   + g.allscreen_w_px
+        g.allscreen_top_px      = g.allscreen_bottom_px + g.allscreen_h_px
 
-        g.allscreen_right       = g.allscreen_left      + g.allscreen_w    + g.allscreen_offset_x
-        g.allscreen_top         = g.allscreen_bottom    + g.allscreen_h    + g.allscreen_offset_y
+        g.allscreen_right       = g.allscreen_left      + g.allscreen_w
+        g.allscreen_top         = g.allscreen_bottom    + g.allscreen_h
 
         g.right_px              = g.left_px + g.w_px
         g.top_px                = g.bottom_px + g.h_px
 
         g.right                 = g.left + g.w
         g.top                   = g.bottom + g.h
+
+        $layout.reset
 
         @args.events[:resize_occurred] = true
       end

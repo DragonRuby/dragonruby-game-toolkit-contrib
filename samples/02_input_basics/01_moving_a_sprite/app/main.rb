@@ -1,3 +1,8 @@
+def boot args
+  # initialize state to an empty top level hash on boot
+  args.state = {}
+end
+
 def tick args
   # Create a player and set default values
   # NOTE: args.state is a construct that lets you define properties on the fly

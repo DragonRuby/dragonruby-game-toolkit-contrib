@@ -3,9 +3,9 @@
 APIs that haven't been encountered in a previous sample apps:
 
 - args.inputs.mouse.click: This property will be set if the mouse was clicked.
-- args.inputs.mouse.click.point.(x|y): The x and y location of the mouse.
-- args.inputs.mouse.click.point.created_at: The frame the mouse click occurred in.
-- args.inputs.mouse.click.point.created_at_elapsed: How many frames have passed
+- args.inputs.mouse.click.(x|y): The x and y location of the mouse.
+- args.inputs.mouse.click.created_at: The frame the mouse click occurred in.
+- args.inputs.mouse.click.created_at_elapsed: How many frames have passed
   since the click event.
 
 Reminder:
@@ -25,8 +25,8 @@ Reminder:
 # Which returns a boolean
 
 # To see where a mouse click occurred
-# Use args.inputs.mouse.click.point.x AND
-# args.inputs.mouse.click.point.y
+# Use args.inputs.mouse.click.x AND
+# args.inputs.mouse.click.y
 
 # To see which frame the click occurred
 # Use args.inputs.mouse.click.created_at
@@ -42,9 +42,8 @@ def tick args
                            anchor_x: 0.5,
                            anchor_y: 0.5,
                            text: "Sample app shows how mouse events are registered and how to measure elapsed time." }
-  x = 460
 
-  args.outputs.labels << small_label(args, x, 11, "Mouse input: args.inputs.mouse")
+  args.outputs.labels << { x: 640, y: 540, text: "Mouse input: args.inputs.mouse", anchor_x: 0.5, anchor_y: 0.5 }
 
   if args.inputs.mouse.click
     args.state.last_mouse_click = args.inputs.mouse.click
@@ -52,17 +51,11 @@ def tick args
 
   if args.state.last_mouse_click
     click = args.state.last_mouse_click
-    args.outputs.labels << small_label(args, x, 12, "Mouse click happened at: #{click.created_at}")
-    args.outputs.labels << small_label(args, x, 13, "Mouse clicked #{click.created_at_elapsed} ticks ago")
-    args.outputs.labels << small_label(args, x, 14, "Mouse click location: #{click.point.x}, #{click.point.y}")
+    args.outputs.labels << { x: 640, y: 360, text: "Mouse click happened at: #{click.created_at}", anchor_x: 0.5, anchor_y: 0.5 - 1 }
+    args.outputs.labels << { x: 640, y: 360, text: "Mouse clicked #{click.created_at_elapsed} ticks ago", anchor_x: 0.5, anchor_y: 0.5 }
+    args.outputs.labels << { x: 640, y: 360, text: "Mouse click location: #{click.x}, #{click.y}", anchor_x: 0.5, anchor_y: 0.5 + 1 }
   else
-    args.outputs.labels << small_label(args, x, 12, "Mouse click has not occurred yet.")
-    args.outputs.labels << small_label(args, x, 13, "Please click mouse.")
+    args.outputs.labels << { x: 640, y: 360, text: "Mouse click has not occurred yet.", anchor_x: 0.5, anchor_y: 0.5 - 0.5 }
+    args.outputs.labels << { x: 640, y: 360, text: "Please click mouse.", anchor_x: 0.5, anchor_y: 0.5 + 0.5 }
   end
-end
-
-def small_label args, x, row, message
-  { x: x,
-    y: 720 - 5 - 20 * row,
-    text: message }
 end

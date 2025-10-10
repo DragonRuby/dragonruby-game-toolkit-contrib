@@ -119,7 +119,7 @@ def tick args
     new_background_music[:input] = if current_bg_music.input == "sounds/bg-1.ogg"
                                      "sounds/bg-2.ogg"
                                    else
-                                     "sounds/bg-2.ogg"
+                                     "sounds/bg-1.ogg"
                                    end
 
     # bg music audio entry
