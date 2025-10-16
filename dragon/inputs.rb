@@ -237,11 +237,11 @@ module GTK
       def right = @inputs.keyboard.key_down.right || @inputs.keyboard.key_down.d_scancode  || @inputs.controller_one.key_down.right
       def directional_vector = @inputs.keyboard.key_down.directional_vector || @inputs.controller_one.key_down.directional_vector
       def last_directional_vector = @inputs.keyboard.key_down.last_directional_vector || @inputs.controller_one.key_down.last_directional_vector
-      def directional_angle = directional_vector&.x&.sign || 0
-      def left_right = directional_vector&.x&.sign || 0
-      def last_left_right = last_directional_vector&.x&.sign || 0
-      def up_down = directional_vector&.y&.sign || 0
-      def last_up_down = last_directional_vector&.y&.sign || 0
+      def directional_angle = @inputs.keyboard.key_down.directional_angle || @inputs.controller_one.key_down.directional_angle
+      def left_right = @inputs.keyboard.key_down.directional_vector&.x&.sign || @inputs.controller_one.key_down.directional_vector&.x&.sign || 0
+      def last_left_right = @inputs.keyboard.key_down.last_directional_vector&.x&.sign || @inputs.controller_one.key_down.last_directional_vector&.x&.sign || 0
+      def up_down = @inputs.keyboard.key_down.directional_vector&.y&.sign || @inputs.controller_one.key_down.directional_vector&.y&.sign || 0
+      def last_up_down = @inputs.keyboard.key_down.last_directional_vector&.y&.sign || @inputs.controller_one.key_down.last_directional_vector&.y&.sign || 0
     end
 
     class KeyboardOrControllerKeyUp
@@ -252,11 +252,11 @@ module GTK
       def right = @inputs.keyboard.key_up.right || @inputs.keyboard.key_up.d_scancode || @inputs.controller_one.key_up.right
       def directional_vector = @inputs.keyboard.key_up.directional_vector || @inputs.controller_one.key_up.directional_vector
       def last_directional_vector = @inputs.keyboard.key_up.last_directional_vector || @inputs.controller_one.key_up.last_directional_vector
-      def directional_angle = directional_vector&.x&.sign || 0
-      def left_right = directional_vector&.x&.sign || 0
-      def last_left_right = last_directional_vector&.x&.sign || 0
-      def up_down = directional_vector&.y&.sign || 0
-      def last_up_down = last_directional_vector&.y&.sign || 0
+      def directional_angle = @inputs.keyboard.key_up.directional_angle || @inputs.controller_one.key_up.directional_angle
+      def left_right = @inputs.keyboard.key_up.directional_vector&.x&.sign || @inputs.controller_one.key_up.directional_vector&.x&.sign || 0
+      def last_left_right = @inputs.keyboard.key_up.last_directional_vector&.x&.sign || @inputs.controller_one.key_up.last_directional_vector&.x&.sign || 0
+      def up_down = @inputs.keyboard.key_up.directional_vector&.y&.sign || @inputs.controller_one.key_up.directional_vector&.y&.sign || 0
+      def last_up_down = @inputs.keyboard.key_up.last_directional_vector&.y&.sign || @inputs.controller_one.key_up.last_directional_vector&.y&.sign || 0
     end
 
     class KeyboardOrControllerKeyHeld
@@ -267,11 +267,11 @@ module GTK
       def right = @inputs.keyboard.key_held.right || @inputs.keyboard.key_held.d_scancode || @inputs.controller_one.key_held.right
       def directional_vector = @inputs.keyboard.key_held.directional_vector || @inputs.controller_one.key_held.directional_vector
       def last_directional_vector = @inputs.keyboard.key_held.last_directional_vector || @inputs.controller_one.key_held.last_directional_vector
-      def directional_angle = directional_vector&.x&.sign || 0
-      def left_right = directional_vector&.x&.sign || 0
-      def last_left_right = last_directional_vector&.x&.sign || 0
-      def up_down = directional_vector&.y&.sign || 0
-      def last_up_down = last_directional_vector&.y&.sign || 0
+      def directional_angle = @inputs.keyboard.key_held.directional_angle || @inputs.controller_one.key_held.directional_angle
+      def left_right = @inputs.keyboard.key_held.directional_vector&.x&.sign || @inputs.controller_one.key_held.directional_vector&.x&.sign || 0
+      def last_left_right = @inputs.keyboard.key_held.last_directional_vector&.x&.sign || @inputs.controller_one.key_held.last_directional_vector&.x&.sign || 0
+      def up_down = @inputs.keyboard.key_held.directional_vector&.y&.sign || @inputs.controller_one.key_held.directional_vector&.y&.sign || 0
+      def last_up_down = @inputs.keyboard.key_held.last_directional_vector&.y&.sign || @inputs.controller_one.key_held.last_directional_vector&.y&.sign || 0
     end
   end
 end

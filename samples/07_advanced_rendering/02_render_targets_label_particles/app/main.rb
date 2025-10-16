@@ -4,30 +4,20 @@ class Game
   def initialize
     # keeps track of particle states
     @particles ||= []
-
-    # keeps track of whether a render target for the specific number
-    # has been created already
-    @created_prefabs ||= {}
   end
 
   def create_particle_rt! number
-    # if the render target for the number has already been created
-    # (and cached). return/exit early since we don't want to bust the
-    # texture that's already been created for us
-    return @created_prefabs[number] if @created_prefabs[number]
-    path = number.to_s
-
-    # if it hasn't been created, then create a RT with the name equal to
-    # to the number. add it to the lookup of created_prefabs
-    @created_prefabs[number] = path
+    # if the render target status is queued then return nil until it's ready (a queued render target
+    # means that a request has been made to generate the texture, but it hasn't been created yet/isn't ready)
+    return outputs.render_targets[number].path if outputs.render_targets.queued? number
 
     # set RT properties
-    outputs[path].w = 30
-    outputs[path].h = 30
-    outputs[path].background_color = [0, 0, 0, 0]
+    outputs[number].w = 30
+    outputs[number].h = 30
+    outputs[number].background_color = [0, 0, 0, 0]
 
     # add the label to the render target
-    outputs[path].labels << {
+    outputs[number].labels << {
       x: 15,
       y: 15,
       text: number.to_s,
@@ -43,11 +33,9 @@ class Game
     # has already been created)
     path = create_particle_rt! particle.number
 
-    # if the particle was created this frame, skip its render
-    # since the RT won't be processed until the next tick
-    if particle.created_at == Kernel.tick_count
-      nil
-    else
+    # query args.outputs.render_targets to get the current status of the texture
+    # if it's ready then send it out to draw
+    if outputs.render_targets.ready? path
       # return a prefab that represents the RT/label as a sprite
       { x: particle.x,
         y: particle.y,
@@ -76,7 +64,7 @@ class Game
         x: inputs.mouse.x,
         y: inputs.mouse.y,
         created_at: Kernel.tick_count,
-        number: Numeric.rand(0..100),
+        number: Numeric.rand(1..100),
         a: 255,
         angle: 0
       }

@@ -141,13 +141,33 @@ module GTK
       end
 
       if !@render_targets[name]
-        @render_targets[name] = RenderTargetOutputs.new(args: self, target: name, background_color_override: [255, 255, 255, 0])
+        render_target_data = {
+          id: name,
+          initial_position: @outputs.render_targets.__data__.size,
+          path: name,
+          ready: false,
+          ready_at: Kernel.tick_count + 1,
+          global_created_at: Kernel.global_tick_count + 1,
+          updated_at: Kernel.tick_count ,
+          global_updated_at: Kernel.global_tick_count,
+          w: @render_target_sizes[name]&.w || @grid.w,
+          h: @render_target_sizes[name]&.h || @grid.h,
+        }
+        @outputs.render_targets.__data__[name] = render_target_data
+        @render_targets[name] = RenderTargetOutputs.new(args: self,
+                                                        target: name,
+                                                        background_color_override: [255, 255, 255, 0],
+                                                        render_target_data: render_target_data)
         if @render_target_sizes[name]
           @render_targets[name].w = @render_target_sizes[name].w
           @render_targets[name].h = @render_target_sizes[name].h
         end
         @passes << @render_targets[name]
       end
+
+      @outputs.render_targets.__data__[name].updated_at = Kernel.tick_count
+      @outputs.render_targets.__data__[name].global_updated_at = Kernel.global_tick_count
+
       @render_targets[name]
     end
 
@@ -288,6 +308,10 @@ module GTK
           v[:original_source][:gain] = v[:gain]
           @runtime.update_simulation_audio_state
         end
+      end
+
+      @outputs.render_targets.__data__.each do |k, v|
+        v[:ready] = true
       end
     end
 

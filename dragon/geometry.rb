@@ -649,6 +649,7 @@ S
         end
       end
 
+
       def rect_props r
         x = r.x || 0
         y = r.y || 0
@@ -672,7 +673,9 @@ Geometry.rect_props for rect #{r}
 S
       end
 
+
       alias_method :rect_normalize, :rect_props
+      alias_method :rect, :rect_props
 
       def line_horizontal? line
         angle = line_angle line
@@ -969,6 +972,11 @@ S
         left_right ||= 0
         return rect if left_right == 0
 
+        if using.is_a? Symbol
+          m = using
+          using = ->(r) { r.send m }
+        end
+
         using      ||= ->(r) { r }
         subject_normalized_r = Geometry::rect_normalize(using.call(rect))
         subject = {
@@ -1091,6 +1099,10 @@ S
         return rect if rects.length == 0
         return rect if up_down == 0
 
+        if using.is_a? Symbol
+          m = using
+          using = ->(r) { r.send m }
+        end
         using      ||= ->(r) { r }
         subject = { item: rect, center: Geometry::rect_normalize(using.call(rect)).center }
         rect_entries = rects.map do |r|

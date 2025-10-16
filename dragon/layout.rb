@@ -81,6 +81,7 @@ module GTK
              max_width: nil, max_height: nil,
              dx: 0, dy: 0,
              include_row_gutter: false, include_col_gutter: false,
+             include_gutter: false,
              merge: nil, origin: :top_left, safe_area: true, layout_h: nil,
              allscreen: false, **ignore_kwargs)
       opts_col        = col || 0
@@ -161,12 +162,12 @@ module GTK
         end
       end
 
-      if include_col_gutter
+      if include_col_gutter || include_gutter
         rect_x -= @gutter
         rect_w += @gutter * 2
       end
 
-      if include_row_gutter
+      if include_row_gutter || include_gutter
         rect_y -= @gutter
         rect_h += @gutter * 2
       end

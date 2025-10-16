@@ -575,6 +575,8 @@ end
 
 Add primitives to this collection to render a label.
 
+!> The default anchor for labels is top left. If you want bottom left anchoring then be sure to set `anchor_x` to `0` and `anchor_y` to `0`.
+
 ### Array Render Primitive
 
 Labels represented as Arrays/Tuples:

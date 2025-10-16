@@ -53,7 +53,7 @@
  - args.inputs.keyboard.key_up.KEY: The value of the properties will be set
    to the frame  that the key_up event occurred (the frame correlates
    to Kernel.tick_count).
-   For more information about the keyboard, go to mygame/documentation/06-keyboard.md.
+   For more information about the keyboard, go to docs/api/inputs.md.
 
  - args.state.labels:
    The parameters for a label are

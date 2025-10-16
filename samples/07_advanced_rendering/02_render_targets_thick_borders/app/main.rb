@@ -7,13 +7,10 @@ def boot args
 end
 
 def tick args
-  # create a value in state that stores border_cache information
-  args.state.border_cache ||= {}
-
   args.outputs.background_color = [80, 80, 80]
 
   # render a thick border
-  args.outputs.primitives << thick_border_prefab(args.outputs, args.state.border_cache,
+  args.outputs.primitives << thick_border_prefab(args.outputs,
                                                  { x: 640,
                                                    y: 360,
                                                    w: 100,
@@ -26,7 +23,7 @@ def tick args
                                                    anchor_x: 0.5,
                                                    anchor_y: 0.5 })
 
-  args.outputs.primitives << thick_border_prefab(args.outputs, args.state.border_cache,
+  args.outputs.primitives << thick_border_prefab(args.outputs,
                                                  { x: 640,
                                                    y: 360,
                                                    w: 50,
@@ -41,13 +38,14 @@ def tick args
                                                    anchor_y: 0.5 })
 end
 
-def thick_border_prefab outputs, cache, border
+def thick_border_prefab outputs, border
   # a texture/render target will be create for each border profile
   # the key/path for the render target uses the border width, height, and thickness
   name = "thick-border-sprite-#{border.w.to_i}-#{border.h.to_i}-#{border.thickness.to_i}"
 
-  # look into the cache and see if the texture/render target has already been created
-  if cache[name]
+  # query args.outputs.render_targets to get the current status of the texture
+  # if it's ready then send it out to draw
+  if outputs.render_targets.ready? name
     # if so, then return a sprite to the render target,
     # default values for the texture are a black border in the bottom left,
     # those values are then overriden with the values in border (via ** splat args)
@@ -55,9 +53,9 @@ def thick_border_prefab outputs, cache, border
     return { r: 0, g: 0, b: 0, a: 255, **border, path: name }
   end
 
-  # if the cache entry doesn't exist, then store a record,
-  # and then generate the texture
-  cache[name] = { path: name, create_at: Kernel.tick_count }
+  # if the render target status is queued then return nil until it's ready (a queued render target
+  # means that a request has been made to generate the texture, but it hasn't been created yet/isn't ready)
+  return nil if outputs.render_targets.queued? name
 
   # the texture's width and height will be that of the border
   outputs[name].w = border.w.to_i
@@ -94,10 +92,7 @@ def thick_border_prefab outputs, cache, border
     }
   ]
 
-  # after the cache entry is created,
-  # call thick_border_prefab again (recursive call which will
-  # resolve because the cache entry is now there)
-  thick_border_prefab outputs, cache, border
+  thick_border_prefab outputs, border
 end
 
 GTK.reset

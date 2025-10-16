@@ -1,3 +1,18 @@
+* 6.37
+** [Bugfix] Fixed bug ~inputs.(key_down|key_up|key_held).up_down~ reporting the wrong value.
+   Regression was introduced in 6.29.
+* 6.36
+** [Samples] Updated sounds sample app to leverage moder DR apis.
+   Sample app location: =01_rendering_basics/05_sounds=
+** [Samples] Added advanced menu navigation sample app.
+   Sample app resembles the inventory screen of Legend of Zelda: LttP
+   Sample app location: =09_ui_controls/02_menu_navigation_advanced=
+** [Support] ~Layout.rect~ accepts ~include_gutter~ kwarg.
+   This will set both ~include_row_gutter~ and ~include_col_gutter~ to true.
+** [Support] ~Geometry.rect_navigate~ can take either a ~Symbol~ or ~lambda~ for ~using~ kwarg.
+** [Support] Added ~GTK.get_sprite_rect~ and ~GTK.get_string_rect~.
+   These are like ~GTK.calcspritebox~ and ~GTK.calcstringbox~, but you get
+   a fully formed ~Rect~ (which makes it simpler to merge into other ~Hashes~).
 * 6.35
 ** [Support] Aliased ~GTK.download_stb_rb(_raw)~ to ~GTK.download_lib(_raw)~
 ** [Samples] Added toggle button sample app.

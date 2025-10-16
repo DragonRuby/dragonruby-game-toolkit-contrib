@@ -355,6 +355,20 @@ If you have multiple monitors, this function can be used to move the
 game to the next monitor. The function will cycle back to the first
 monitor if needed. 
 
+```ruby
+def boot args
+  if !GTK.production?
+    GTK.move_window_to_next_display
+  end
+end
+
+def tick args
+  if args.inputs.keyboard.key_down.zero && !GTK.production?
+    GTK.move_window_to_next_display
+  end
+end
+```
+
 ### `maximize_window`
 
 If `can_resize_window?` returns `true`, this functions will maximize the game window.
@@ -509,6 +523,10 @@ end
 ### `calcstringbox_h`
 
 Performs the same function as `calcstringbox`, but returns a `Hash` with keys `w`, and `h`.
+
+### `get_string_rect`
+
+Performs the same function as `calcstringbox`, but returns a `Hash` with keys `x` (always `0`), `y` (always `0`), `w`, `h`, and `center` (`Hash` with `x`, `y`).
 
 ### `get_pixels`
 
@@ -1220,6 +1238,10 @@ Sprites when loaded are cached. This method invalidates the cache record of all 
 !> This method should be used for development purposes only and is expensive to call every frame. Do not use this method to set the size of sprite when rendering (hard code those values since you know what they are beforehand).
 
 Given a path to a sprite, this method returns the `width` and `height` of a sprite as a tuple.
+
+### `get_sprite_rect`
+
+Performs the same function as `calcspritebox`, but returns a `Hash` with keys `x` (always `0`), `y` (always `0`), `w`, `h`, and `center` (`Hash` with `x`, `y`).
 
 ### `current_framerate`
 

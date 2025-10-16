@@ -95,6 +95,16 @@ S
         @ffi_misc.calcspritebox str
       end
 
+      def get_string_rect  str, sz_enum = 0, fnt = "font.ttf", size_enum: nil, size_px: nil, font: nil
+        w, h = calcstringbox str, size_enum, fnt, size_enum: size_enum, size_px: size_px, font: font
+        Geometry.rect_props(x: 0, y: 0, w: w, h: h)
+      end
+
+      def get_sprite_rect path
+        w, h = @ffi_misc.calcspritebox path
+        Geometry.rect_props(x: 0, y: 0, w: w, h: h)
+      end
+
       def warn_array_primitives!
         $warn_array_primitives = true
       end

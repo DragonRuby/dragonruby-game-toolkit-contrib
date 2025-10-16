@@ -280,6 +280,29 @@ class ClassLevelEnumerableTests
     assert.equal! result_expected, result_actual
   end
 
+  def test_array_transpose args, assert
+    sz = 1024
+    a = sz.map do |row|
+      sz.map do |col|
+        col * 10
+      end
+    end
+
+    instance_before = Time.now
+    result_expected = a.transpose
+    instance_after = Time.now
+    instance_duration = instance_after - instance_before
+    puts instance_duration
+
+    class_before = Time.now
+    result_actual = Array.transpose a
+    class_after = Time.now
+    class_duration = class_after - class_before
+    puts class_duration
+    assert.equal! result_expected, result_actual
+    assert.true! class_duration < instance_duration, "Class method should be faster than instance method, but was #{class_duration} vs #{instance_duration}"
+  end
+
   def test_zz_bench args, assert
     ary_numbers = 100.map { |i| i }.reverse.to_a
     ary_even_numbers = 1000.map { |i| 2 }.to_a

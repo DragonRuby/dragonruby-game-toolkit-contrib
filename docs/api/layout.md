@@ -19,7 +19,8 @@ For reference implementations, take a look at the following sample apps:
 
 -   `./samples/07_advanced_rendering/18_layouts`
 -   `./samples/07_advanced_rendering_hd/04_layouts_and_portrait_mode`
--   `./samples/99_genre_rpg_turn_based/turn_based_battle`
+-   `./samples/99_genre_jrpg/turn_based_battle`
+-   `./samples/09_ui_controls/02_menu_navigation_advanced`
 
 The following example creates two menu items and updates a label with the button that was clicked:
 

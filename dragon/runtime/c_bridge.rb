@@ -530,6 +530,8 @@ module GTK
         keys_currently_held = @args.inputs.keyboard.key_held.truthy_keys
         keys_to_set = names - keys_currently_held
         keys_to_set.uniq!
+
+        Array.compact! keys_to_set
         @args.inputs.keyboard.active = Kernel.tick_count
         @args.inputs.keyboard.key_down.char    = KeyboardKeys.char_with_shift(raw_key, modifier)
         @args.inputs.keyboard.key_down.raw_key = raw_key
@@ -563,6 +565,7 @@ module GTK
           names += unshifted_keys
           names -= KeyboardKeys.sdl_modifier_key_methods modifier
         end
+        Array.compact! names
         @args.inputs.keyboard.active = Kernel.tick_count
         @args.inputs.keyboard.key_up.char    = KeyboardKeys.char_with_shift(raw_key, modifier)
         @args.inputs.keyboard.key_up.raw_key = raw_key

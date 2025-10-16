@@ -120,6 +120,7 @@ level.
 - `compact!`
 - `filter_map`
 - `flat_map`
+- `transpose`
 
 Usage example. Instead of:
 

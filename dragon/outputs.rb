@@ -907,6 +907,33 @@ S
     end
   end
 
+  class RenderTargets
+    include Enumerable
+
+    attr_reader :__data__
+
+    def initialize args
+      @args = args
+      @__data__ = {}
+    end
+
+    def [](value)
+      @__data__[value.to_s]
+    end
+
+    def queued? value
+      !!@__data__[value.to_s]
+    end
+
+    def ready? value
+      @__data__[value.to_s]&.ready || false
+    end
+
+    def each(&block)
+      @___data__.each(&data)
+    end
+  end
+
   class TopLevelOutputs < Outputs
     # bug repro if the background_color override didn't exist
     # #+begin_src
@@ -929,6 +956,13 @@ S
     #     end
     #   end
     # #+end_src
+
+    def render_targets
+      @render_targets ||= RenderTargets.new @args
+    end
+
+    alias_method :rts, :render_targets
+
     def background_color= value
       super
       @background_color_as_hash[:a] = nil
@@ -937,9 +971,43 @@ S
   end
 
   class RenderTargetOutputs < Outputs
-    def initialize(...)
-      super(...)
+    def initialize(opts)
+      super(opts)
+      @rt_data = opts[:render_target_data]
       @transient = true
+    end
+
+    def w= value
+      @width = value
+      @rt_data[:w] = value
+      @width
+    end
+
+    def width= value
+      @width = value
+      @rt_data[:h] = value
+      @width
+    end
+
+    def h= value
+      @height = value
+      @rt_data[:h] = value
+      @height
+    end
+
+    def height= value
+      @height = value
+      @rt_data[:h] = value
+      @height
+    end
+
+    def data
+      @rt_data
+    end
+
+    def reset
+      super
+      @render_targets.clear
     end
   end
 end

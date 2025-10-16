@@ -22,13 +22,13 @@ APIs listing that haven't been encountered in a previous sample apps:
 #      y: 640,
 #      text: "Text",
 #      font: "fonts/font.ttf",
-#      anchor_x: 0.5, # or alignment_enum: 0, 1, or 2
-#      anchor_y: 0.5, # or vertical_alignment_enum: 0, 1, or 2
+#      anchor_x: 0.5,
+#      anchor_y: 0.5,
 #      r: 0,
 #      g: 0,
 #      b: 0,
 #      a: 255,
-#      size_px: 20,   # or size_enum: -10 to 10 (0 means "ledgible on small devices" ie: 20px)
+#      size_px: 20,
 #      blendmode_enum: 1 }
 
 
@@ -63,10 +63,10 @@ def tick args
   # size_enum of  0 is equivalent to using size_px: 22
   args.outputs.labels << { x: 175 + 150, y: 550 - 50, text: "Medium label.",   size_enum:  0 }
 
-  # size_enum of  0 is equivalent to using size_px: 24
+  # size_enum of  1 is equivalent to using size_px: 24
   args.outputs.labels << { x: 175 + 150, y: 520 - 50, text: "Large label.",    size_enum:  1 }
 
-  # size_enum of  0 is equivalent to using size_px: 26
+  # size_enum of  2 is equivalent to using size_px: 26
   args.outputs.labels << { x: 175 + 150, y: 490 - 50, text: "Larger label.",   size_enum:  2 }
 
   # Demonstration of the Align Parameter
@@ -74,6 +74,7 @@ def tick args
 
   # alignment_enum: 0 is equivalent to anchor_x: 0
   # vertical_alignment_enum: 1 is equivalent to anchor_y: 0.5
+  # IMPORTANT: the default anchoring for labels is TOP LEFT
   args.outputs.labels << { x: 175 + 150, y: 360 - 50, text: "Left aligned.",   alignment_enum: 0, vertical_alignment_enum: 1 }
   args.outputs.labels << { x: 175 + 150, y: 342 - 50, text: "Left aligned.",   anchor_x: 0, anchor_y: 0.5 }
 

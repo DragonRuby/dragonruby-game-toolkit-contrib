@@ -6,9 +6,7 @@ def tick args
     pixel_array = GTK.get_pixels 'sprites/square/blue.png'
     args.pixel_array(:square).w = pixel_array.w
     args.pixel_array(:square).h = pixel_array.h
-    pixel_array.pixels.each_with_index do |p, i|
-      args.pixel_array(:square).pixels[i] = p
-    end
+    args.pixel_array(:square).pixels = pixel_array.pixels
   end
 
   w = 100

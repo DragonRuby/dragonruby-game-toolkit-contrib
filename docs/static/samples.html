@@ -49,7 +49,7 @@ hljs.registerLanguage("typescript",function(){"use strict";return function(e){va
 hljs.registerLanguage("yaml",function(){"use strict";return function(e){var n={className:"string",relevance:0,variants:[{begin:/'/,end:/'/},{begin:/"/,end:/"/},{begin:/\S+/}],contains:[e.BACKSLASH_ESCAPE,{className:"template-variable",variants:[{begin:"{{",end:"}}"},{begin:"%{",end:"}"}]}]};return{name:"YAML",case_insensitive:!0,aliases:["yml","YAML"],contains:[{className:"attr",variants:[{begin:"\\w[\\w :\\/.-]*:(?=[ \t]|$)"},{begin:'"\\w[\\w :\\/.-]*":(?=[ \t]|$)'},{begin:"'\\w[\\w :\\/.-]*':(?=[ \t]|$)"}]},{className:"meta",begin:"^---s*$",relevance:10},{className:"string",begin:"[\\|>]([0-9]?[+-])?[ ]*\\n( *)[\\S ]+\\n(\\2[\\S ]+\\n?)*"},{begin:"<%[%=-]?",end:"[%-]?%>",subLanguage:"ruby",excludeBegin:!0,excludeEnd:!0,relevance:0},{className:"type",begin:"!"+e.UNDERSCORE_IDENT_RE},{className:"type",begin:"!!"+e.UNDERSCORE_IDENT_RE},{className:"meta",begin:"&"+e.UNDERSCORE_IDENT_RE+"$"},{className:"meta",begin:"\\*"+e.UNDERSCORE_IDENT_RE+"$"},{className:"bullet",begin:"\\-(?=[ ]|$)",relevance:0},e.HASH_COMMENT_MODE,{beginKeywords:"true false yes no null",keywords:{literal:"true false yes no null"}},{className:"number",begin:"\\b[0-9]{4}(-[0-9][0-9]){0,2}([Tt \\t][0-9][0-9]?(:[0-9][0-9]){2})?(\\.[0-9]*)?([ \\t])*(Z|[-+][0-9][0-9]?(:[0-9][0-9])?)?\\b"},{className:"number",begin:e.C_NUMBER_RE+"\\b"},n]}}}());
 
     </script>
-    <link href="docs.css?ver=1760107054" rel="stylesheet" type="text/css" media="all">
+    <link href="docs.css?ver=1760622390" rel="stylesheet" type="text/css" media="all">
     <script type="text/javascript">
 var styleElement = document.createElement('style');
 document.getElementsByTagName("head")[0].appendChild(styleElement);
@@ -74,7 +74,7 @@ document.addEventListener("animationstart", e => {
 <h1>Table Of Contents</h1>
 <ul>
 <li><a class='header-1' href='#--samples'>Samples</a></li>
-<ul><li><a class='header-2' href='#---rendering-basics'>Rendering Basics</a></li></ul><ul><ul><li><a class='header-3' href='#----labels---main-rb'>Labels - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----labels-anchors---main-rb'>Labels Anchors - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----labels-text-wrapping---main-rb'>Labels Text Wrapping - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----lines---main-rb'>Lines - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----solids-borders---main-rb'>Solids Borders - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----sprites---main-rb'>Sprites - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----sounds---main-rb'>Sounds - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---input-basics'>Input Basics</a></li></ul><ul><ul><li><a class='header-3' href='#----keyboard---main-rb'>Keyboard - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----moving-a-sprite---main-rb'>Moving A Sprite - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse---main-rb'>Mouse - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse-properties---main-rb'>Mouse Properties - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse-point-to-rect---main-rb'>Mouse Point To Rect - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse-drag-and-drop---main-rb'>Mouse Drag And Drop - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse-rect-to-rect---main-rb'>Mouse Rect To Rect - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----controller---main-rb'>Controller - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----touch---main-rb'>Touch - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----managing-scenes---main-rb'>Managing Scenes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----managing-scenes-advanced---main-rb'>Managing Scenes Advanced - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---rendering-sprites'>Rendering Sprites</a></li></ul><ul><ul><li><a class='header-3' href='#----animation-using-separate-pngs---main-rb'>Animation Using Separate Pngs - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----animation-using-sprite-sheet---main-rb'>Animation Using Sprite Sheet - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----animation-states-1---main-rb'>Animation States 1 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----animation-states-2---main-rb'>Animation States 2 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----animation-states-3---main-rb'>Animation States 3 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----color-and-rotation---main-rb'>Color And Rotation - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----particles---main-rb'>Particles - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---physics-and-collisions'>Physics And Collisions</a></li></ul><ul><ul><li><a class='header-3' href='#----simple---main-rb'>Simple - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----simple-aabb-collision---main-rb'>Simple Aabb Collision - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----simple-aabb-collision-moving-walls---main-rb'>Simple Aabb Collision Moving Walls - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----simple-aabb-collision-with-map-editor---main-rb'>Simple Aabb Collision With Map Editor - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----moving-objects---main-rb'>Moving Objects - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----entities---main-rb'>Entities - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----box-collision---main-rb'>Box Collision - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----box-collision-2---main-rb'>Box Collision 2 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----box-collision-3---main-rb'>Box Collision 3 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----jump-physics---main-rb'>Jump Physics - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----ball-and-peg-bouncing---main-rb'>Ball And Peg Bouncing - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arbitrary-collision---ball-rb'>Arbitrary Collision - ball.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arbitrary-collision---blocks-rb'>Arbitrary Collision - blocks.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arbitrary-collision---linear_collider-rb'>Arbitrary Collision - linear_collider.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arbitrary-collision---main-rb'>Arbitrary Collision - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arbitrary-collision---paddle-rb'>Arbitrary Collision - paddle.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arbitrary-collision---rectangle-rb'>Arbitrary Collision - rectangle.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arbitrary-collision---square_collider-rb'>Arbitrary Collision - square_collider.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arbitrary-collision---vector2d-rb'>Arbitrary Collision - vector2d.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-with-object-removal---ball-rb'>Collision With Object Removal - ball.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-with-object-removal---linear_collider-rb'>Collision With Object Removal - linear_collider.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-with-object-removal---main-rb'>Collision With Object Removal - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-with-object-removal---paddle-rb'>Collision With Object Removal - paddle.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-with-object-removal---tests-rb'>Collision With Object Removal - tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-with-object-removal---vector2d-rb'>Collision With Object Removal - vector2d.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----bouncing-ball-with-gravity---main-rb'>Bouncing Ball With Gravity - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----ramp-collision---main-rb'>Ramp Collision - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----ramp-collision-simple---main-rb'>Ramp Collision Simple - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----verlet-integration---main-rb'>Verlet Integration - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----hookes-law-coulombs-law---main-rb'>Hookes Law Coulombs Law - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---mouse'>Mouse</a></li></ul><ul><ul><li><a class='header-3' href='#----mouse-click---main-rb'>Mouse Click - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse-move---main-rb'>Mouse Move - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse-move-paint-app---main-rb'>Mouse Move Paint App - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----coordinate-systems---main-rb'>Coordinate Systems - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----clicking-buttons---main-rb'>Clicking Buttons - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---save-load'>Save Load</a></li></ul><ul><ul><li><a class='header-3' href='#----save-load-game---main-rb'>Save Load Game - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---advanced-audio'>Advanced Audio</a></li></ul><ul><ul><li><a class='header-3' href='#----audio-mixer---main-rb'>Audio Mixer - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----sound-synthesis---main-rb'>Sound Synthesis - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rhythm-game-calibration---main-rb'>Rhythm Game Calibration - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---advanced-rendering'>Advanced Rendering</a></li></ul><ul><ul><li><a class='header-3' href='#----render-targets-clip-area---main-rb'>Render Targets Clip Area - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-targets-combining-sprites---main-rb'>Render Targets Combining Sprites - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----simple-render-targets---main-rb'>Simple Render Targets - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----coordinate-systems-and-render-targets---main-rb'>Coordinate Systems And Render Targets - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-targets-label-particles---main-rb'>Render Targets Label Particles - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-targets-repeating-texture---main-rb'>Render Targets Repeating Texture - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-targets-thick-borders---main-rb'>Render Targets Thick Borders - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-targets-thick-lines---main-rb'>Render Targets Thick Lines - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-targets-with-tile-manipulation---main-rb'>Render Targets With Tile Manipulation - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-target-viewports---main-rb'>Render Target Viewports - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-primitive-hierarchies---main-rb'>Render Primitive Hierarchies - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-primitives-as-hash---main-rb'>Render Primitives As Hash - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----buttons-as-render-targets---main-rb'>Buttons As Render Targets - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----pixel-arrays---main-rb'>Pixel Arrays - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----pixel-arrays-from-file---main-rb'>Pixel Arrays From File - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----shake-camera---main-rb'>Shake Camera - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----simple-camera---main-rb'>Simple Camera - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----simple-camera-multiple-targets---main-rb'>Simple Camera Multiple Targets - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----splitscreen-camera---main-rb'>Splitscreen Camera - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----z-targeting-camera---main-rb'>Z Targeting Camera - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----camera-and-large-map---main-rb'>Camera And Large Map - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----camera-and-large-sprites---main-rb'>Camera And Large Sprites - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----blend-modes---main-rb'>Blend Modes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----blend-modes-additive-modulo---main-rb'>Blend Modes Additive Modulo - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-target-noclear---main-rb'>Render Target Noclear - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----lighting---main-rb'>Lighting - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----triangles---main-rb'>Triangles - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----triangles-trapezoid---main-rb'>Triangles Trapezoid - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----camera-space-world-space-simple---main-rb'>Camera Space World Space Simple - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----camera-space-world-space-simple-grid-map---main-rb'>Camera Space World Space Simple Grid Map - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----matrix-and-triangles-2d---main-rb'>Matrix And Triangles 2d - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----matrix-and-triangles-3d---main-rb'>Matrix And Triangles 3d - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----matrix-camera-pinch-zoom-pan---main-rb'>Matrix Camera Pinch Zoom Pan - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----matrix-camera-space-with-rotation---main-rb'>Matrix Camera Space With Rotation - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----matrix-camera-space-world-space---main-rb'>Matrix Camera Space World Space - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----matrix-cubeworld---main-rb'>Matrix Cubeworld - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----matrix-cubeworld---modeling-api-rb'>Matrix Cubeworld - modeling-api.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----override-core-rendering---main-rb'>Override Core Rendering - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----layouts---main-rb'>Layouts - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----19-layouts-extended-parameters---main-rb'>19 Layouts Extended Parameters - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----19-layouts-extended-parameters-in-render-target---main-rb'>19 Layouts Extended Parameters In Render Target - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---advanced-rendering-hd'>Advanced Rendering Hd</a></li></ul><ul><ul><li><a class='header-3' href='#----hd-labels---main-rb'>Hd Labels - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----texture-atlases---main-rb'>Texture Atlases - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----allscreen-properties---main-rb'>Allscreen Properties - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----layouts-and-portrait-mode---main-rb'>Layouts And Portrait Mode - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----camera-ultrawide-allscreen---main-rb'>Camera Ultrawide Allscreen - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---tweening-lerping-easing-functions'>Tweening Lerping Easing Functions</a></li></ul><ul><ul><li><a class='header-3' href='#----easing-functions---main-rb'>Easing Functions - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----cubic-bezier---main-rb'>Cubic Bezier - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----easing-using-spline---main-rb'>Easing Using Spline - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----easing-using-splines-bouncing-box---main-rb'>Easing Using Splines Bouncing Box - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----pulsing-button---main-rb'>Pulsing Button - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----scene-transitions---main-rb'>Scene Transitions - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----animation-queues---main-rb'>Animation Queues - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----animation-queues-advanced---main-rb'>Animation Queues Advanced - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----tower-of-hanoi---main-rb'>Tower Of Hanoi - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---performance'>Performance</a></li></ul><ul><ul><li><a class='header-3' href='#----sprites-as-hash---main-rb'>Sprites As Hash - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----sprites-as-classes---main-rb'>Sprites As Classes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----static-sprites-as-classes---main-rb'>Static Sprites As Classes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----static-sprites-as-classes-with-custom-drawing---main-rb'>Static Sprites As Classes With Custom Drawing - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-limits---main-rb'>Collision Limits - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-limits-aabb---main-rb'>Collision Limits Aabb - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-limits-find-single---main-rb'>Collision Limits Find Single - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-limits-many-to-many---main-rb'>Collision Limits Many To Many - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---ui-controls'>Ui Controls</a></li></ul><ul><ul><li><a class='header-3' href='#----checkboxes---main-rb'>Checkboxes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----toggle-button---main-rb'>Toggle Button - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----menu-navigation---main-rb'>Menu Navigation - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----radial-menu---main-rb'>Radial Menu - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----scroll-view---main-rb'>Scroll View - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----accessiblity-for-the-blind---main-rb'>Accessiblity For The Blind - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----animated-toggle-switch---main-rb'>Animated Toggle Switch - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---advanced-debugging'>Advanced Debugging</a></li></ul><ul><ul><li><a class='header-3' href='#----unit-tests---main-rb'>Unit Tests - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---benchmark_api_tests-rb'>Unit Tests - benchmark_api_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---enumerable_class_function_tests-rb'>Unit Tests - enumerable_class_function_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---eval_hash_tests-rb'>Unit Tests - eval_hash_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---exception_raising_tests-rb'>Unit Tests - exception_raising_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---fn_tests-rb'>Unit Tests - fn_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---gen_docs-rb'>Unit Tests - gen_docs.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---geometry_tests-rb'>Unit Tests - geometry_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---http_tests-rb'>Unit Tests - http_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---input_emulation_tests-rb'>Unit Tests - input_emulation_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---nil_coercion_tests-rb'>Unit Tests - nil_coercion_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---numeric_rand_tests-rb'>Unit Tests - numeric_rand_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---object_to_primitive_tests-rb'>Unit Tests - object_to_primitive_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---parsing_tests-rb'>Unit Tests - parsing_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---pretty_format_tests-rb'>Unit Tests - pretty_format_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---require_tests-rb'>Unit Tests - require_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---serialize_deserialize_tests-rb'>Unit Tests - serialize_deserialize_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---state_serialization_experimental_tests-rb'>Unit Tests - state_serialization_experimental_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---string_split_tests-rb'>Unit Tests - string_split_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---suggest_autocompletion_tests-rb'>Unit Tests - suggest_autocompletion_tests.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---http'>Http</a></li></ul><ul><ul><li><a class='header-3' href='#----retrieve-images---main-rb'>Retrieve Images - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----in-game-web-server-http-get---main-rb'>In Game Web Server Http Get - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----in-game-web-server-http-post---main-rb'>In Game Web Server Http Post - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----http-post-external-server---main-rb'>Http Post External Server - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---c-extensions'>C Extensions</a></li></ul><ul><ul><li><a class='header-3' href='#----basics---main-rb'>Basics - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----intermediate---main-rb'>Intermediate - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----native-pixel-arrays---main-rb'>Native Pixel Arrays - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----handcrafted-extension---main-rb'>Handcrafted Extension - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----handcrafted-extension-advanced---main-rb'>Handcrafted Extension Advanced - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----ios-main-rb'>Ios main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----handcrafted-mac-extension---main-rb'>Handcrafted Mac Extension - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----handcrafted-steam-extensions---main-rb'>Handcrafted Steam Extensions - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----handcrafted-android-extension---main-rb'>Handcrafted Android Extension - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----handcrafted-threads---main-rb'>Handcrafted Threads - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---path-finding-algorithms'>Path Finding Algorithms</a></li></ul><ul><ul><li><a class='header-3' href='#----breadth-first-search---main-rb'>Breadth First Search - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----detailed-breadth-first-search---main-rb'>Detailed Breadth First Search - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----breadcrumbs---main-rb'>Breadcrumbs - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----early-exit---main-rb'>Early Exit - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dijkstra---main-rb'>Dijkstra - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----heuristic---main-rb'>Heuristic - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----heuristic-with-walls---main-rb'>Heuristic With Walls - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----a-star---main-rb'>A Star - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----tower-defense---main-rb'>Tower Defense - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----moveable-squares---main-rb'>Moveable Squares - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---vr'>Vr</a></li></ul><ul><ul><li><a class='header-3' href='#----skybox---main-rb'>Skybox - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----skybox---tick-rb'>Skybox - tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----top-down-rpg---main-rb'>Top Down Rpg - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----top-down-rpg---tick-rb'>Top Down Rpg - tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----space-invaders---main-rb'>Space Invaders - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----space-invaders---tick-rb'>Space Invaders - tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----let-there-be-light---main-rb'>Let There Be Light - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----let-there-be-light---tick-rb'>Let There Be Light - tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----draw-a-cube---main-rb'>Draw A Cube - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----draw-a-cube---tick-rb'>Draw A Cube - tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----draw-a-cube-with-triangles---main-rb'>Draw A Cube With Triangles - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----draw-a-cube-with-triangles---tick-rb'>Draw A Cube With Triangles - tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----gimbal-lock---main-rb'>Gimbal Lock - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----gimbal-lock---tick-rb'>Gimbal Lock - tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----citadels---main-rb'>Citadels - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----citadels---tick-rb'>Citadels - tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----flappy-main-rb'>Flappy main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----flappy-tick-rb'>Flappy tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----cubeworld-main-rb'>Cubeworld main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----cubeworld-tick-rb'>Cubeworld tick.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-3d'>Genre 3d</a></li></ul><ul><ul><li><a class='header-3' href='#----3d-cube---main-rb'>3d Cube - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----wireframe---main-rb'>Wireframe - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----yaw-pitch-roll---main-rb'>Yaw Pitch Roll - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----ray-caster---main-rb'>Ray Caster - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----ray-caster-advanced---main-rb'>Ray Caster Advanced - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mode7---main-rb'>Mode7 - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-arcade'>Genre Arcade</a></li></ul><ul><ul><li><a class='header-3' href='#----bullet-heaven---main-rb'>Bullet Heaven - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----bullet-hell---main-rb'>Bullet Hell - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dueling-starships---main-rb'>Dueling Starships - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade/flappy-dragon/main-rb'>arcade/flappy dragon/main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----pong---main-rb'>Pong - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----solar-system---main-rb'>Solar System - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----sound-golf---main-rb'>Sound Golf - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----squares---main-rb'>Squares - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----squares-advanced-multi-orientation---main-rb'>Squares Advanced Multi Orientation - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----twinstick---main-rb'>Twinstick - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----twinstick-gamepad---main-rb'>Twinstick Gamepad - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-board-game'>Genre Board Game</a></li></ul><ul><ul><li><a class='header-3' href='#----fifteen-puzzle---main-rb'>Fifteen Puzzle - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----sudoku---main-rb'>Sudoku - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----sudoku---tests---sudoku_tests-rb'>Sudoku - Tests - sudoku_tests.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-boss-battle'>Genre Boss Battle</a></li></ul><ul><ul><li><a class='header-3' href='#----boss-battle-game-jam---main-rb'>Boss Battle Game Jam - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-card-game'>Genre Card Game</a></li></ul><ul><ul><li><a class='header-3' href='#----board-and-card-layout---main-rb'>Board And Card Layout - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-crafting'>Genre Crafting</a></li></ul><ul><ul><li><a class='header-3' href='#----alchemy-game-starting-point---main-rb'>Alchemy Game Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----cooking-game-starting-point---main-rb'>Cooking Game Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----craft-game-starting-point---main-rb'>Craft Game Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----farming-game-starting-point---main-rb'>Farming Game Starting Point - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-dev-tools'>Genre Dev Tools</a></li></ul><ul><ul><li><a class='header-3' href='#----add-buttons-to-console---main-rb'>Add Buttons To Console - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----animation-creator-starting-point---main-rb'>Animation Creator Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----frame-by-frame---main-rb'>Frame By Frame - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-dungeon-crawl'>Genre Dungeon Crawl</a></li></ul><ul><ul><li><a class='header-3' href='#----classics-jam---main-rb'>Classics Jam - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-fighting'>Genre Fighting</a></li></ul><ul><ul><li><a class='header-3' href='#----special-move-inputs---main-rb'>Special Move Inputs - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-jrpg'>Genre Jrpg</a></li></ul><ul><ul><li><a class='header-3' href='#----cutscenes---main-rb'>Cutscenes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----turn-based-battle---main-rb'>Turn Based Battle - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-lowrez'>Genre Lowrez</a></li></ul><ul><ul><li><a class='header-3' href='#----nokia-3310---main-rb'>Nokia 3310 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----nokia-3310---nokia_emulation-rb'>Nokia 3310 - nokia_emulation.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----nokia-33snake---main-rb'>Nokia 33snake - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----nokia-33snake---nokia_emulation-rb'>Nokia 33snake - nokia_emulation.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----resolution-64x64---lowrez-rb'>Resolution 64x64 - lowrez.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----resolution-64x64---main-rb'>Resolution 64x64 - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-mario'>Genre Mario</a></li></ul><ul><ul><li><a class='header-3' href='#----jumping---main-rb'>Jumping - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----jumping-and-collisions---main-rb'>Jumping And Collisions - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-platformer'>Genre Platformer</a></li></ul><ul><ul><li><a class='header-3' href='#----clepto-frog---main-rb'>Clepto Frog - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----gorillas-basic---main-rb'>Gorillas Basic - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----map-editor---camera-rb'>Map Editor - camera.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----map-editor---level_editor-rb'>Map Editor - level_editor.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----map-editor---main-rb'>Map Editor - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----map-editor---root_scene-rb'>Map Editor - root_scene.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----shadows---main-rb'>Shadows - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----the-little-probe---main-rb'>The Little Probe - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-rpg-narrative'>Genre Rpg Narrative</a></li></ul><ul><ul><li><a class='header-3' href='#----choose-your-own-adventure---decision-rb'>Choose Your Own Adventure - decision.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----choose-your-own-adventure---main-rb'>Choose Your Own Adventure - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---lowrez_simulator-rb'>Return Of Serenity - lowrez_simulator.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---main-rb'>Return Of Serenity - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---require-rb'>Return Of Serenity - require.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline-rb'>Return Of Serenity - storyline.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_anka-rb'>Return Of Serenity - storyline_anka.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_blinking_light-rb'>Return Of Serenity - storyline_blinking_light.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_day_one-rb'>Return Of Serenity - storyline_day_one.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_final_decision-rb'>Return Of Serenity - storyline_final_decision.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_final_message-rb'>Return Of Serenity - storyline_final_message.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_serenity_alive-rb'>Return Of Serenity - storyline_serenity_alive.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_serenity_bio-rb'>Return Of Serenity - storyline_serenity_bio.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_serenity_introduction-rb'>Return Of Serenity - storyline_serenity_introduction.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_speed_of_light-rb'>Return Of Serenity - storyline_speed_of_light.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-rpg-roguelike'>Genre Rpg Roguelike</a></li></ul><ul><ul><li><a class='header-3' href='#----roguelike-starting-point---main-rb'>Roguelike Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----roguelike-line-of-sight---main-rb'>Roguelike Line Of Sight - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-rpg-tactical'>Genre Rpg Tactical</a></li></ul><ul><ul><li><a class='header-3' href='#----hexagonal-grid---main-rb'>Hexagonal Grid - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----isometric-grid---main-rb'>Isometric Grid - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-rpg-topdown'>Genre Rpg Topdown</a></li></ul><ul><ul><li><a class='header-3' href='#----topdown-casino---main-rb'>Topdown Casino - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----topdown-starting-point---main-rb'>Topdown Starting Point - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-simulation'>Genre Simulation</a></li></ul><ul><ul><li><a class='header-3' href='#----sand-main-rb'>Sand main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-twenty-second-games'>Genre Twenty Second Games</a></li></ul><ul><ul><li><a class='header-3' href='#----twenty-second-starting-point---main-rb'>Twenty Second Starting Point - main.rb</a></li></ul></ul></ul>    </div>
+<ul><li><a class='header-2' href='#---rendering-basics'>Rendering Basics</a></li></ul><ul><ul><li><a class='header-3' href='#----labels---main-rb'>Labels - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----labels-anchors---main-rb'>Labels Anchors - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----labels-text-wrapping---main-rb'>Labels Text Wrapping - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----lines---main-rb'>Lines - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----solids-borders---main-rb'>Solids Borders - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----sprites---main-rb'>Sprites - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----sounds---main-rb'>Sounds - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---input-basics'>Input Basics</a></li></ul><ul><ul><li><a class='header-3' href='#----keyboard---main-rb'>Keyboard - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----moving-a-sprite---main-rb'>Moving A Sprite - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse---main-rb'>Mouse - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse-properties---main-rb'>Mouse Properties - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse-point-to-rect---main-rb'>Mouse Point To Rect - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse-drag-and-drop---main-rb'>Mouse Drag And Drop - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse-rect-to-rect---main-rb'>Mouse Rect To Rect - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----controller---main-rb'>Controller - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----touch---main-rb'>Touch - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----managing-scenes---main-rb'>Managing Scenes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----managing-scenes-advanced---main-rb'>Managing Scenes Advanced - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---rendering-sprites'>Rendering Sprites</a></li></ul><ul><ul><li><a class='header-3' href='#----animation-using-separate-pngs---main-rb'>Animation Using Separate Pngs - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----animation-using-sprite-sheet---main-rb'>Animation Using Sprite Sheet - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----animation-states-1---main-rb'>Animation States 1 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----animation-states-2---main-rb'>Animation States 2 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----animation-states-3---main-rb'>Animation States 3 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----color-and-rotation---main-rb'>Color And Rotation - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----particles---main-rb'>Particles - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---physics-and-collisions'>Physics And Collisions</a></li></ul><ul><ul><li><a class='header-3' href='#----simple---main-rb'>Simple - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----simple-aabb-collision---main-rb'>Simple Aabb Collision - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----simple-aabb-collision-moving-walls---main-rb'>Simple Aabb Collision Moving Walls - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----simple-aabb-collision-with-map-editor---main-rb'>Simple Aabb Collision With Map Editor - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----moving-objects---main-rb'>Moving Objects - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----entities---main-rb'>Entities - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----box-collision---main-rb'>Box Collision - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----box-collision-2---main-rb'>Box Collision 2 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----box-collision-3---main-rb'>Box Collision 3 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----jump-physics---main-rb'>Jump Physics - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----ball-and-peg-bouncing---main-rb'>Ball And Peg Bouncing - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arbitrary-collision---ball-rb'>Arbitrary Collision - ball.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arbitrary-collision---blocks-rb'>Arbitrary Collision - blocks.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arbitrary-collision---linear_collider-rb'>Arbitrary Collision - linear_collider.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arbitrary-collision---main-rb'>Arbitrary Collision - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arbitrary-collision---paddle-rb'>Arbitrary Collision - paddle.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arbitrary-collision---rectangle-rb'>Arbitrary Collision - rectangle.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arbitrary-collision---square_collider-rb'>Arbitrary Collision - square_collider.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arbitrary-collision---vector2d-rb'>Arbitrary Collision - vector2d.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-with-object-removal---ball-rb'>Collision With Object Removal - ball.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-with-object-removal---linear_collider-rb'>Collision With Object Removal - linear_collider.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-with-object-removal---main-rb'>Collision With Object Removal - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-with-object-removal---paddle-rb'>Collision With Object Removal - paddle.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-with-object-removal---tests-rb'>Collision With Object Removal - tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-with-object-removal---vector2d-rb'>Collision With Object Removal - vector2d.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----bouncing-ball-with-gravity---main-rb'>Bouncing Ball With Gravity - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----ramp-collision---main-rb'>Ramp Collision - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----ramp-collision-simple---main-rb'>Ramp Collision Simple - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----verlet-integration---main-rb'>Verlet Integration - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----hookes-law-coulombs-law---main-rb'>Hookes Law Coulombs Law - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---mouse'>Mouse</a></li></ul><ul><ul><li><a class='header-3' href='#----mouse-click---main-rb'>Mouse Click - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse-move---main-rb'>Mouse Move - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mouse-move-paint-app---main-rb'>Mouse Move Paint App - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----coordinate-systems---main-rb'>Coordinate Systems - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----clicking-buttons---main-rb'>Clicking Buttons - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---save-load'>Save Load</a></li></ul><ul><ul><li><a class='header-3' href='#----save-load-game---main-rb'>Save Load Game - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---advanced-audio'>Advanced Audio</a></li></ul><ul><ul><li><a class='header-3' href='#----audio-mixer---main-rb'>Audio Mixer - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----sound-synthesis---main-rb'>Sound Synthesis - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----rhythm-game-calibration---main-rb'>Rhythm Game Calibration - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---advanced-rendering'>Advanced Rendering</a></li></ul><ul><ul><li><a class='header-3' href='#----render-targets-clip-area---main-rb'>Render Targets Clip Area - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-targets-combining-sprites---main-rb'>Render Targets Combining Sprites - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----simple-render-targets---main-rb'>Simple Render Targets - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----coordinate-systems-and-render-targets---main-rb'>Coordinate Systems And Render Targets - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-targets-label-particles---main-rb'>Render Targets Label Particles - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-targets-repeating-texture---main-rb'>Render Targets Repeating Texture - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-targets-thick-borders---main-rb'>Render Targets Thick Borders - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-targets-thick-lines---main-rb'>Render Targets Thick Lines - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-targets-with-tile-manipulation---main-rb'>Render Targets With Tile Manipulation - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-target-viewports---main-rb'>Render Target Viewports - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-primitive-hierarchies---main-rb'>Render Primitive Hierarchies - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-primitives-as-hash---main-rb'>Render Primitives As Hash - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----buttons-as-render-targets---main-rb'>Buttons As Render Targets - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----pixel-arrays---main-rb'>Pixel Arrays - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----pixel-arrays-from-file---main-rb'>Pixel Arrays From File - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----shake-camera---main-rb'>Shake Camera - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----simple-camera---main-rb'>Simple Camera - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----simple-camera-multiple-targets---main-rb'>Simple Camera Multiple Targets - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----splitscreen-camera---main-rb'>Splitscreen Camera - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----z-targeting-camera---main-rb'>Z Targeting Camera - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----camera-and-large-map---main-rb'>Camera And Large Map - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----camera-and-large-sprites---main-rb'>Camera And Large Sprites - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----blend-modes---main-rb'>Blend Modes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----blend-modes-additive-modulo---main-rb'>Blend Modes Additive Modulo - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----render-target-noclear---main-rb'>Render Target Noclear - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----lighting---main-rb'>Lighting - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----triangles---main-rb'>Triangles - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----triangles-trapezoid---main-rb'>Triangles Trapezoid - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----camera-space-world-space-simple---main-rb'>Camera Space World Space Simple - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----camera-space-world-space-simple-grid-map---main-rb'>Camera Space World Space Simple Grid Map - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----matrix-and-triangles-2d---main-rb'>Matrix And Triangles 2d - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----matrix-and-triangles-3d---main-rb'>Matrix And Triangles 3d - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----matrix-camera-pinch-zoom-pan---main-rb'>Matrix Camera Pinch Zoom Pan - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----matrix-camera-space-with-rotation---main-rb'>Matrix Camera Space With Rotation - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----matrix-camera-space-world-space---main-rb'>Matrix Camera Space World Space - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----matrix-cubeworld---main-rb'>Matrix Cubeworld - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----matrix-cubeworld---modeling-api-rb'>Matrix Cubeworld - modeling-api.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----override-core-rendering---main-rb'>Override Core Rendering - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----layouts---main-rb'>Layouts - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----19-layouts-extended-parameters---main-rb'>19 Layouts Extended Parameters - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----19-layouts-extended-parameters-in-render-target---main-rb'>19 Layouts Extended Parameters In Render Target - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---advanced-rendering-hd'>Advanced Rendering Hd</a></li></ul><ul><ul><li><a class='header-3' href='#----hd-labels---main-rb'>Hd Labels - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----texture-atlases---main-rb'>Texture Atlases - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----allscreen-properties---main-rb'>Allscreen Properties - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----layouts-and-portrait-mode---main-rb'>Layouts And Portrait Mode - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----camera-ultrawide-allscreen---main-rb'>Camera Ultrawide Allscreen - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---tweening-lerping-easing-functions'>Tweening Lerping Easing Functions</a></li></ul><ul><ul><li><a class='header-3' href='#----easing-functions---main-rb'>Easing Functions - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----cubic-bezier---main-rb'>Cubic Bezier - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----easing-using-spline---main-rb'>Easing Using Spline - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----easing-using-splines-bouncing-box---main-rb'>Easing Using Splines Bouncing Box - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----pulsing-button---main-rb'>Pulsing Button - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----scene-transitions---main-rb'>Scene Transitions - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----animation-queues---main-rb'>Animation Queues - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----animation-queues-advanced---main-rb'>Animation Queues Advanced - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----tower-of-hanoi---main-rb'>Tower Of Hanoi - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---performance'>Performance</a></li></ul><ul><ul><li><a class='header-3' href='#----sprites-as-hash---main-rb'>Sprites As Hash - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----sprites-as-classes---main-rb'>Sprites As Classes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----static-sprites-as-classes---main-rb'>Static Sprites As Classes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----static-sprites-as-classes-with-custom-drawing---main-rb'>Static Sprites As Classes With Custom Drawing - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-limits---main-rb'>Collision Limits - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-limits-aabb---main-rb'>Collision Limits Aabb - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-limits-find-single---main-rb'>Collision Limits Find Single - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----collision-limits-many-to-many---main-rb'>Collision Limits Many To Many - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---ui-controls'>Ui Controls</a></li></ul><ul><ul><li><a class='header-3' href='#----checkboxes---main-rb'>Checkboxes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----toggle-button---main-rb'>Toggle Button - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----menu-navigation---main-rb'>Menu Navigation - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----menu-navigation-advanced---main-rb'>Menu Navigation Advanced - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----radial-menu---main-rb'>Radial Menu - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----scroll-view---main-rb'>Scroll View - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----accessiblity-for-the-blind---main-rb'>Accessiblity For The Blind - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----animated-toggle-switch---main-rb'>Animated Toggle Switch - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---advanced-debugging'>Advanced Debugging</a></li></ul><ul><ul><li><a class='header-3' href='#----unit-tests---main-rb'>Unit Tests - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---benchmark_api_tests-rb'>Unit Tests - benchmark_api_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---enumerable_class_function_tests-rb'>Unit Tests - enumerable_class_function_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---eval_hash_tests-rb'>Unit Tests - eval_hash_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---exception_raising_tests-rb'>Unit Tests - exception_raising_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---fn_tests-rb'>Unit Tests - fn_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---gen_docs-rb'>Unit Tests - gen_docs.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---geometry_tests-rb'>Unit Tests - geometry_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---http_tests-rb'>Unit Tests - http_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---input_emulation_tests-rb'>Unit Tests - input_emulation_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---nil_coercion_tests-rb'>Unit Tests - nil_coercion_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---numeric_rand_tests-rb'>Unit Tests - numeric_rand_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---object_to_primitive_tests-rb'>Unit Tests - object_to_primitive_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---parsing_tests-rb'>Unit Tests - parsing_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---pretty_format_tests-rb'>Unit Tests - pretty_format_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---require_tests-rb'>Unit Tests - require_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---serialize_deserialize_tests-rb'>Unit Tests - serialize_deserialize_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---state_serialization_experimental_tests-rb'>Unit Tests - state_serialization_experimental_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---string_split_tests-rb'>Unit Tests - string_split_tests.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----unit-tests---suggest_autocompletion_tests-rb'>Unit Tests - suggest_autocompletion_tests.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---http'>Http</a></li></ul><ul><ul><li><a class='header-3' href='#----retrieve-images---main-rb'>Retrieve Images - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----in-game-web-server-http-get---main-rb'>In Game Web Server Http Get - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----in-game-web-server-http-post---main-rb'>In Game Web Server Http Post - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----http-post-external-server---main-rb'>Http Post External Server - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---c-extensions'>C Extensions</a></li></ul><ul><ul><li><a class='header-3' href='#----basics---main-rb'>Basics - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----intermediate---main-rb'>Intermediate - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----native-pixel-arrays---main-rb'>Native Pixel Arrays - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----handcrafted-extension---main-rb'>Handcrafted Extension - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----handcrafted-extension-advanced---main-rb'>Handcrafted Extension Advanced - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----ios-main-rb'>Ios main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----handcrafted-mac-extension---main-rb'>Handcrafted Mac Extension - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----handcrafted-steam-extensions---main-rb'>Handcrafted Steam Extensions - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----handcrafted-android-extension---main-rb'>Handcrafted Android Extension - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----handcrafted-threads---main-rb'>Handcrafted Threads - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---path-finding-algorithms'>Path Finding Algorithms</a></li></ul><ul><ul><li><a class='header-3' href='#----breadth-first-search---main-rb'>Breadth First Search - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----detailed-breadth-first-search---main-rb'>Detailed Breadth First Search - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----breadcrumbs---main-rb'>Breadcrumbs - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----early-exit---main-rb'>Early Exit - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dijkstra---main-rb'>Dijkstra - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----heuristic---main-rb'>Heuristic - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----heuristic-with-walls---main-rb'>Heuristic With Walls - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----a-star---main-rb'>A Star - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----tower-defense---main-rb'>Tower Defense - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----moveable-squares---main-rb'>Moveable Squares - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---vr'>Vr</a></li></ul><ul><ul><li><a class='header-3' href='#----skybox---main-rb'>Skybox - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----skybox---tick-rb'>Skybox - tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----top-down-rpg---main-rb'>Top Down Rpg - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----top-down-rpg---tick-rb'>Top Down Rpg - tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----space-invaders---main-rb'>Space Invaders - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----space-invaders---tick-rb'>Space Invaders - tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----let-there-be-light---main-rb'>Let There Be Light - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----let-there-be-light---tick-rb'>Let There Be Light - tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----draw-a-cube---main-rb'>Draw A Cube - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----draw-a-cube---tick-rb'>Draw A Cube - tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----draw-a-cube-with-triangles---main-rb'>Draw A Cube With Triangles - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----draw-a-cube-with-triangles---tick-rb'>Draw A Cube With Triangles - tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----gimbal-lock---main-rb'>Gimbal Lock - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----gimbal-lock---tick-rb'>Gimbal Lock - tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----citadels---main-rb'>Citadels - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----citadels---tick-rb'>Citadels - tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----flappy-main-rb'>Flappy main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----flappy-tick-rb'>Flappy tick.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----cubeworld-main-rb'>Cubeworld main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----cubeworld-tick-rb'>Cubeworld tick.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-3d'>Genre 3d</a></li></ul><ul><ul><li><a class='header-3' href='#----3d-cube---main-rb'>3d Cube - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----wireframe---main-rb'>Wireframe - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----yaw-pitch-roll---main-rb'>Yaw Pitch Roll - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----ray-caster---main-rb'>Ray Caster - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----ray-caster-advanced---main-rb'>Ray Caster Advanced - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----mode7---main-rb'>Mode7 - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-arcade'>Genre Arcade</a></li></ul><ul><ul><li><a class='header-3' href='#----bullet-heaven---main-rb'>Bullet Heaven - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----bullet-hell---main-rb'>Bullet Hell - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----dueling-starships---main-rb'>Dueling Starships - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----arcade/flappy-dragon/main-rb'>arcade/flappy dragon/main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----pong---main-rb'>Pong - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----solar-system---main-rb'>Solar System - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----sound-golf---main-rb'>Sound Golf - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----squares---main-rb'>Squares - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----squares-advanced-multi-orientation---main-rb'>Squares Advanced Multi Orientation - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----twinstick---main-rb'>Twinstick - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----twinstick-gamepad---main-rb'>Twinstick Gamepad - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-board-game'>Genre Board Game</a></li></ul><ul><ul><li><a class='header-3' href='#----fifteen-puzzle---main-rb'>Fifteen Puzzle - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----sudoku---main-rb'>Sudoku - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----sudoku---tests---sudoku_tests-rb'>Sudoku - Tests - sudoku_tests.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-boss-battle'>Genre Boss Battle</a></li></ul><ul><ul><li><a class='header-3' href='#----boss-battle-game-jam---main-rb'>Boss Battle Game Jam - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-card-game'>Genre Card Game</a></li></ul><ul><ul><li><a class='header-3' href='#----board-and-card-layout---main-rb'>Board And Card Layout - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-crafting'>Genre Crafting</a></li></ul><ul><ul><li><a class='header-3' href='#----alchemy-game-starting-point---main-rb'>Alchemy Game Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----cooking-game-starting-point---main-rb'>Cooking Game Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----craft-game-starting-point---main-rb'>Craft Game Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----farming-game-starting-point---main-rb'>Farming Game Starting Point - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-dev-tools'>Genre Dev Tools</a></li></ul><ul><ul><li><a class='header-3' href='#----add-buttons-to-console---main-rb'>Add Buttons To Console - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----animation-creator-starting-point---main-rb'>Animation Creator Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----frame-by-frame---main-rb'>Frame By Frame - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-dungeon-crawl'>Genre Dungeon Crawl</a></li></ul><ul><ul><li><a class='header-3' href='#----classics-jam---main-rb'>Classics Jam - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-fighting'>Genre Fighting</a></li></ul><ul><ul><li><a class='header-3' href='#----special-move-inputs---main-rb'>Special Move Inputs - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-jrpg'>Genre Jrpg</a></li></ul><ul><ul><li><a class='header-3' href='#----cutscenes---main-rb'>Cutscenes - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----turn-based-battle---main-rb'>Turn Based Battle - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-lowrez'>Genre Lowrez</a></li></ul><ul><ul><li><a class='header-3' href='#----nokia-3310---main-rb'>Nokia 3310 - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----nokia-3310---nokia_emulation-rb'>Nokia 3310 - nokia_emulation.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----nokia-33snake---main-rb'>Nokia 33snake - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----nokia-33snake---nokia_emulation-rb'>Nokia 33snake - nokia_emulation.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----resolution-64x64---lowrez-rb'>Resolution 64x64 - lowrez.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----resolution-64x64---main-rb'>Resolution 64x64 - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-mario'>Genre Mario</a></li></ul><ul><ul><li><a class='header-3' href='#----jumping---main-rb'>Jumping - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----jumping-and-collisions---main-rb'>Jumping And Collisions - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-platformer'>Genre Platformer</a></li></ul><ul><ul><li><a class='header-3' href='#----clepto-frog---main-rb'>Clepto Frog - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----gorillas-basic---main-rb'>Gorillas Basic - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----map-editor---camera-rb'>Map Editor - camera.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----map-editor---level_editor-rb'>Map Editor - level_editor.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----map-editor---main-rb'>Map Editor - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----map-editor---root_scene-rb'>Map Editor - root_scene.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----shadows---main-rb'>Shadows - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----the-little-probe---main-rb'>The Little Probe - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-rpg-narrative'>Genre Rpg Narrative</a></li></ul><ul><ul><li><a class='header-3' href='#----choose-your-own-adventure---decision-rb'>Choose Your Own Adventure - decision.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----choose-your-own-adventure---main-rb'>Choose Your Own Adventure - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---lowrez_simulator-rb'>Return Of Serenity - lowrez_simulator.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---main-rb'>Return Of Serenity - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---require-rb'>Return Of Serenity - require.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline-rb'>Return Of Serenity - storyline.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_anka-rb'>Return Of Serenity - storyline_anka.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_blinking_light-rb'>Return Of Serenity - storyline_blinking_light.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_day_one-rb'>Return Of Serenity - storyline_day_one.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_final_decision-rb'>Return Of Serenity - storyline_final_decision.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_final_message-rb'>Return Of Serenity - storyline_final_message.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_serenity_alive-rb'>Return Of Serenity - storyline_serenity_alive.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_serenity_bio-rb'>Return Of Serenity - storyline_serenity_bio.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_serenity_introduction-rb'>Return Of Serenity - storyline_serenity_introduction.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----return-of-serenity---storyline_speed_of_light-rb'>Return Of Serenity - storyline_speed_of_light.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-rpg-roguelike'>Genre Rpg Roguelike</a></li></ul><ul><ul><li><a class='header-3' href='#----roguelike-starting-point---main-rb'>Roguelike Starting Point - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----roguelike-line-of-sight---main-rb'>Roguelike Line Of Sight - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-rpg-tactical'>Genre Rpg Tactical</a></li></ul><ul><ul><li><a class='header-3' href='#----hexagonal-grid---main-rb'>Hexagonal Grid - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----isometric-grid---main-rb'>Isometric Grid - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-rpg-topdown'>Genre Rpg Topdown</a></li></ul><ul><ul><li><a class='header-3' href='#----topdown-casino---main-rb'>Topdown Casino - main.rb</a></li></ul></ul><ul><ul><li><a class='header-3' href='#----topdown-starting-point---main-rb'>Topdown Starting Point - main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-simulation'>Genre Simulation</a></li></ul><ul><ul><li><a class='header-3' href='#----sand-main-rb'>Sand main.rb</a></li></ul></ul><ul><li><a class='header-2' href='#---genre-twenty-second-games'>Genre Twenty Second Games</a></li></ul><ul><ul><li><a class='header-3' href='#----twenty-second-starting-point---main-rb'>Twenty Second Starting Point - main.rb</a></li></ul></ul></ul>    </div>
     <div id='content'>
 <h1 id='--samples'>Samples <a style='font-size: small; float: right;' href='#--samples'>link</a></h1> 
 <p>
@@ -107,13 +107,13 @@ APIs listing that haven't been encountered in a previous sample apps:
 #      y: 640,
 #      text: "Text",
 #      font: "fonts/font.ttf",
-#      anchor_x: 0.5, # or alignment_enum: 0, 1, or 2
-#      anchor_y: 0.5, # or vertical_alignment_enum: 0, 1, or 2
+#      anchor_x: 0.5,
+#      anchor_y: 0.5,
 #      r: 0,
 #      g: 0,
 #      b: 0,
 #      a: 255,
-#      size_px: 20,   # or size_enum: -10 to 10 (0 means "ledgible on small devices" ie: 20px)
+#      size_px: 20,
 #      blendmode_enum: 1 }
 
 
@@ -148,10 +148,10 @@ def tick args
   # size_enum of  0 is equivalent to using size_px: 22
   args.outputs.labels &lt;&lt; { x: 175 + 150, y: 550 - 50, text: "Medium label.",   size_enum:  0 }
 
-  # size_enum of  0 is equivalent to using size_px: 24
+  # size_enum of  1 is equivalent to using size_px: 24
   args.outputs.labels &lt;&lt; { x: 175 + 150, y: 520 - 50, text: "Large label.",    size_enum:  1 }
 
-  # size_enum of  0 is equivalent to using size_px: 26
+  # size_enum of  2 is equivalent to using size_px: 26
   args.outputs.labels &lt;&lt; { x: 175 + 150, y: 490 - 50, text: "Larger label.",   size_enum:  2 }
 
   # Demonstration of the Align Parameter
@@ -159,6 +159,7 @@ def tick args
 
   # alignment_enum: 0 is equivalent to anchor_x: 0
   # vertical_alignment_enum: 1 is equivalent to anchor_y: 0.5
+  # IMPORTANT: the default anchoring for labels is TOP LEFT
   args.outputs.labels &lt;&lt; { x: 175 + 150, y: 360 - 50, text: "Left aligned.",   alignment_enum: 0, vertical_alignment_enum: 1 }
   args.outputs.labels &lt;&lt; { x: 175 + 150, y: 342 - 50, text: "Left aligned.",   anchor_x: 0, anchor_y: 0.5 }
 
@@ -603,27 +604,24 @@ end
    In this sample app, the target note is set by taking a sample from the collection
    of available notes.
 
- Reminders:
-
  - String interpolation: Uses #{} syntax; everything between the #{ and the } is evaluated
    as Ruby code, and the placeholder is replaced with its corresponding value or result.
 
- - args.outputs.labels: An array. The values generate a label.
-   The parameters are [X, Y, TEXT, SIZE, ALIGNMENT, RED, GREEN, BLUE, ALPHA, FONT STYLE]
-   For more information about labels, go to mygame/documentation/02-labels.md.
+ - Mouse click is provided through args.inputs.mouse.click (or args.inputs.mouse.key_down.left)
+
+ - Mouse right click is provided through args.inputs.mouse.key_down.right
 =end
-
-# This sample app allows users to test their musical skills by matching the piano sound that plays in each
-# level to the correct note.
-
-# Runs all the methods necessary for the game to function properly.
 def tick args
-  args.outputs.labels &lt;&lt; [640, 360, "Click anywhere to play a random sound.", 0, 1]
+  args.outputs.labels &lt;&lt; { x: 640, y: 360, text: "Click anywhere to play a random sound.", anchor_x: 0.5, anchor_y: 0.5 }
+  args.outputs.labels &lt;&lt; { x: 640, y: 360, text: "Right Click anywhere to play a random sound at 10% volume.", anchor_x: 0.5, anchor_y: 1.5 }
   args.state.notes ||= [:c3, :d3, :e3, :f3, :g3, :a3, :b3, :c4]
 
   if args.inputs.mouse.click
     # Play a sound by adding a string to args.outputs.sounds
     args.outputs.sounds &lt;&lt; "sounds/#{args.state.notes.sample}.wav" # sound of target note is output
+  elsif args.inputs.mouse.key_down.right
+    # specifying volume of sound
+    args.outputs.sounds &lt;&lt; { path: "sounds/#{args.state.notes.sample}.wav", gain: 0.1 }
   end
 end
 
@@ -638,7 +636,7 @@ APIs listing that haven't been encountered in a previous sample apps:
 - args.inputs.keyboard.key_up.KEY: The value of the properties will be set
   to the frame  that the key_up event occurred (the frame correlates
   to Kernel.tick_count). Otherwise the value will be nil. For a
-  full listing of keys, take a look at mygame/documentation/06-keyboard.md.
+  full listing of keys, take a look at docs/api/inputs.md.
 - args.state.PROPERTY: The state property on args is a dynamic
   structure. You can define ANY property here with ANY type of
   arbitrary nesting. Properties defined on args.state will be retained
@@ -11299,30 +11297,20 @@ class Game
   def initialize
     # keeps track of particle states
     @particles ||= []
-
-    # keeps track of whether a render target for the specific number
-    # has been created already
-    @created_prefabs ||= {}
   end
 
   def create_particle_rt! number
-    # if the render target for the number has already been created
-    # (and cached). return/exit early since we don't want to bust the
-    # texture that's already been created for us
-    return @created_prefabs[number] if @created_prefabs[number]
-    path = number.to_s
-
-    # if it hasn't been created, then create a RT with the name equal to
-    # to the number. add it to the lookup of created_prefabs
-    @created_prefabs[number] = path
+    # if the render target status is queued then return nil until it's ready (a queued render target
+    # means that a request has been made to generate the texture, but it hasn't been created yet/isn't ready)
+    return outputs.render_targets[number].path if outputs.render_targets.queued? number
 
     # set RT properties
-    outputs[path].w = 30
-    outputs[path].h = 30
-    outputs[path].background_color = [0, 0, 0, 0]
+    outputs[number].w = 30
+    outputs[number].h = 30
+    outputs[number].background_color = [0, 0, 0, 0]
 
     # add the label to the render target
-    outputs[path].labels &lt;&lt; {
+    outputs[number].labels &lt;&lt; {
       x: 15,
       y: 15,
       text: number.to_s,
@@ -11338,11 +11326,9 @@ class Game
     # has already been created)
     path = create_particle_rt! particle.number
 
-    # if the particle was created this frame, skip its render
-    # since the RT won't be processed until the next tick
-    if particle.created_at == Kernel.tick_count
-      nil
-    else
+    # query args.outputs.render_targets to get the current status of the texture
+    # if it's ready then send it out to draw
+    if outputs.render_targets.ready? path
       # return a prefab that represents the RT/label as a sprite
       { x: particle.x,
         y: particle.y,
@@ -11371,7 +11357,7 @@ class Game
         x: inputs.mouse.x,
         y: inputs.mouse.y,
         created_at: Kernel.tick_count,
-        number: Numeric.rand(0..100),
+        number: Numeric.rand(1..100),
         a: 255,
         angle: 0
       }
@@ -11486,13 +11472,10 @@ def boot args
 end
 
 def tick args
-  # create a value in state that stores border_cache information
-  args.state.border_cache ||= {}
-
   args.outputs.background_color = [80, 80, 80]
 
   # render a thick border
-  args.outputs.primitives &lt;&lt; thick_border_prefab(args.outputs, args.state.border_cache,
+  args.outputs.primitives &lt;&lt; thick_border_prefab(args.outputs,
                                                  { x: 640,
                                                    y: 360,
                                                    w: 100,
@@ -11505,7 +11488,7 @@ def tick args
                                                    anchor_x: 0.5,
                                                    anchor_y: 0.5 })
 
-  args.outputs.primitives &lt;&lt; thick_border_prefab(args.outputs, args.state.border_cache,
+  args.outputs.primitives &lt;&lt; thick_border_prefab(args.outputs,
                                                  { x: 640,
                                                    y: 360,
                                                    w: 50,
@@ -11520,13 +11503,14 @@ def tick args
                                                    anchor_y: 0.5 })
 end
 
-def thick_border_prefab outputs, cache, border
+def thick_border_prefab outputs, border
   # a texture/render target will be create for each border profile
   # the key/path for the render target uses the border width, height, and thickness
   name = "thick-border-sprite-#{border.w.to_i}-#{border.h.to_i}-#{border.thickness.to_i}"
 
-  # look into the cache and see if the texture/render target has already been created
-  if cache[name]
+  # query args.outputs.render_targets to get the current status of the texture
+  # if it's ready then send it out to draw
+  if outputs.render_targets.ready? name
     # if so, then return a sprite to the render target,
     # default values for the texture are a black border in the bottom left,
     # those values are then overriden with the values in border (via ** splat args)
@@ -11534,9 +11518,9 @@ def thick_border_prefab outputs, cache, border
     return { r: 0, g: 0, b: 0, a: 255, **border, path: name }
   end
 
-  # if the cache entry doesn't exist, then store a record,
-  # and then generate the texture
-  cache[name] = { path: name, create_at: Kernel.tick_count }
+  # if the render target status is queued then return nil until it's ready (a queued render target
+  # means that a request has been made to generate the texture, but it hasn't been created yet/isn't ready)
+  return nil if outputs.render_targets.queued? name
 
   # the texture's width and height will be that of the border
   outputs[name].w = border.w.to_i
@@ -11573,10 +11557,7 @@ def thick_border_prefab outputs, cache, border
     }
   ]
 
-  # after the cache entry is created,
-  # call thick_border_prefab again (recursive call which will
-  # resolve because the cache entry is now there)
-  thick_border_prefab outputs, cache, border
+  thick_border_prefab outputs, border
 end
 
 GTK.reset
@@ -11586,40 +11567,35 @@ GTK.reset
 <pre><code class="ruby"># ./samples/07_advanced_rendering/02_render_targets_thick_lines/app/main.rb
 # Sample app shows how you can use render targets to create arbitrary shapes like a thicker line
 def tick args
-  args.state.line_cache ||= {}
-  args.outputs.primitives &lt;&lt; thick_line(args,
-                                        args.state.line_cache,
-                                        x: 0, y: 0, x2: 640, y2: 360, thickness: 3).merge(r: 0, g: 0, b: 0)
+  args.outputs.primitives &lt;&lt; thick_line(args, x: 0, y: 0, x2: 640, y2: 360, thickness: 3)&amp;.merge(r: 0, g: 0, b: 0)
 end
 
-def thick_line args, cache, line
+def thick_line args, line
   line_length = Math.sqrt((line.x2 - line.x)**2 + (line.y2 - line.y)**2)
   name = "line-sprite-#{line_length}-#{line.thickness}"
-  cached_line = cache[name]
   line_angle = Math.atan2(line.y2 - line.y, line.x2 - line.x) * 180 / Math::PI
-  if cached_line
+
+  # query args.outputs.render_targets to get the current status of the texture
+  # if it's ready then send it out to draw
+  if args.outputs.render_targets.ready? name
     perpendicular_angle = (line_angle + 90) % 360
-    return cached_line.sprite.merge(x: line.x - perpendicular_angle.vector_x * (line.thickness / 2),
-                                    y: line.y - perpendicular_angle.vector_y * (line.thickness / 2),
-                                    angle: line_angle)
+    return args.outputs
+               .render_targets[name]
+               .merge(x: line.x - perpendicular_angle.vector_x * (line.thickness / 2),
+                      y: line.y - perpendicular_angle.vector_y * (line.thickness / 2),
+                      anchor_x: 0,
+                      anchor_y: 0,
+                      angle: line_angle)
   end
 
-  cache[name] = {
-    line: line,
-    thickness: line.thickness,
-    sprite: {
-      w: line_length,
-      h: line.thickness,
-      path: name,
-      angle_anchor_x: 0,
-      angle_anchor_y: 0
-    }
-  }
+  # if the render target status is queued then return nil until it's ready (a queued render target
+  # means that a request has been made to generate the texture, but it hasn't been created yet/isn't ready)
+  return nil if args.outputs.render_targets.queued? name
 
   args.outputs[name].w = line_length
   args.outputs[name].h = line.thickness
   args.outputs[name].solids &lt;&lt; { x: 0, y: 0, w: line_length, h: line.thickness, r: 255, g: 255, b: 255 }
-  return thick_line args, cache, line
+  return thick_line args, line
 end
 
 </code></pre>
@@ -11779,7 +11755,7 @@ end
  - args.inputs.keyboard.key_up.KEY: The value of the properties will be set
    to the frame  that the key_up event occurred (the frame correlates
    to Kernel.tick_count).
-   For more information about the keyboard, go to mygame/documentation/06-keyboard.md.
+   For more information about the keyboard, go to docs/api/inputs.md.
 
  - args.state.labels:
    The parameters for a label are
@@ -12672,9 +12648,7 @@ def tick args
     pixel_array = GTK.get_pixels 'sprites/square/blue.png'
     args.pixel_array(:square).w = pixel_array.w
     args.pixel_array(:square).h = pixel_array.h
-    pixel_array.pixels.each_with_index do |p, i|
-      args.pixel_array(:square).pixels[i] = p
-    end
+    args.pixel_array(:square).pixels = pixel_array.pixels
   end
 
   w = 100
@@ -19681,6 +19655,184 @@ end
 GTK.reset
 
 </code></pre>
+<h3 id='----menu-navigation-advanced---main-rb'>Menu Navigation Advanced - main.rb <a style='font-size: small; float: right;' href='#----menu-navigation-advanced---main-rb'>link</a></h3> 
+<pre><code class="ruby"># ./samples/09_ui_controls/02_menu_navigation_advanced/app/main.rb
+class Game
+  attr_gtk
+
+  def initialize
+    # items to render within the menu
+    @items = [
+      { id: :bow, },
+      { id: :boomerang, },
+      { id: :hookshot, },
+      { id: :bomb, },
+      { id: :powder, },
+      { id: :pot_1, },
+      { id: :fire_rod, },
+      { id: :ice_rod, },
+      { id: :ether, },
+      { id: :quake, },
+      { id: :bombos, },
+      { id: :pot_2, },
+      { id: :lantern, },
+      { id: :hammer, },
+      { id: :flute, },
+      { id: :net, },
+      { id: :mudora, },
+      { id: :pot_3, },
+      { id: :shovel, },
+      { id: :somaria, },
+      { id: :bryna, },
+      { id: :cape, },
+      { id: :mirror, },
+      { id: :pot3, },
+      { id: :boots, },
+      { id: :mitt, },
+      { id: :flippers, },
+      { id: :pearl, },
+    ]
+
+    # compute the menu location for each item and capture the rect
+    # along with generating the prefab
+    @items.each_with_index do |item, i|
+      row = i.idiv(6)
+      col = i % 6
+      item.click_box = Layout.rect(row: 1 + row * 2, col: 0.50 + col * 2.5, w: 2, h: 2)
+      item.prefab = [
+        item.click_box.merge(path: :solid, r: 0, g: 0, b: 0),
+        item.click_box.center.merge(text: "#{item.id}", r: 255, g: 255, b: 255, anchor_x: 0.5, anchor_y: 0.5)
+      ]
+    end
+  end
+
+  def tick
+    calc
+    render
+  end
+
+  def calc
+    # set the hovered item to the first item
+    @hovered_item ||= @items.first
+
+    if inputs.last_active == :mouse
+      # if the mouse is used, then recompute the hovered item
+      # using the mouse location
+      moused_item = @items.find { |item| Geometry.inside_rect? inputs.mouse, item.click_box }
+
+      # if the mouse is over an item, then set it
+      # as the new hovered item, otherwise keep the current selection
+      @hovered_item = moused_item || @hovered_item
+
+      # if mouse is clicked then select the item
+      if inputs.mouse.click
+        item_selected! @hovered_item
+      end
+    else
+      # if controller or keyboard is the last active input
+      # then use Geometry.rect_navigate to select the item
+      @hovered_item = Geometry.rect_navigate(rect: @hovered_item,
+                                             rects: @items,
+                                             left_right: inputs.key_down.left_right,
+                                             up_down: inputs.key_down.up_down,
+                                             using: :click_box)
+
+      # if enter (keyboard) or A (controller) is pressed, then select the item
+      if inputs.keyboard.key_down.enter || inputs.controller_one.key_down.a
+        item_selected! @hovered_item
+      end
+    end
+  end
+
+  # item selection logic would go here
+  def item_selected! item
+    GTK.notify "#{item.id} was selected."
+  end
+
+  def render
+    outputs.background_color = [30, 30, 30]
+
+    # Layout apis used to create the item menu
+    # main items section
+    outputs[:items_popup].primitives &lt;&lt; Layout.rect(row: 0, col: 0, w: 15.5, h: 12)
+                                              .merge(path: :solid, r: 255, g: 255, b: 255, a: 128)
+    outputs[:items_popup].primitives &lt;&lt; Layout.rect(row: 0, col: 0, w: 15, h: 1)
+                                              .center
+                                              .merge(text: "Items",
+                                                     anchor_x: 0.5,
+                                                     anchor_y: 0.5,
+                                                     size_px: 48)
+
+    outputs[:items_popup].primitives &lt;&lt; @items.map(&amp;:prefab)
+
+    # example of using Layout to create other sections
+    outputs[:items_popup].primitives &lt;&lt; Layout.rect(row: 0, col: 15.5, w: 8.5, h: 3)
+                                              .merge(path: :solid, r: 255, g: 255, b: 255, a: 128)
+    outputs[:items_popup].primitives &lt;&lt; Layout.rect(row: 0, col: 15.5, w: 8.5, h: 1)
+                                              .center
+                                              .merge(text: "Pendants",
+                                                     anchor_x: 0.5,
+                                                     anchor_y: 0.5,
+                                                     size_px: 48)
+
+    # example of using Layout to create other sections
+    outputs[:items_popup].primitives &lt;&lt; Layout.rect(row: 3, col: 15.5, w: 8.5, h: 3)
+                                              .merge(path: :solid, r: 255, g: 255, b: 255, a: 128)
+    outputs[:items_popup].primitives &lt;&lt; Layout.rect(row: 3, col: 15.5, w: 8.5, h: 1)
+                                              .center
+                                              .merge(text: "Crystals",
+                                                     anchor_x: 0.5,
+                                                     anchor_y: 0.5,
+                                                     size_px: 48)
+
+    # example of using Layout to create other sections
+    outputs[:items_popup].primitives &lt;&lt; Layout.rect(row: 6, col: 15.5, w: 8.5, h: 6)
+                                              .merge(path: :solid, r: 255, g: 255, b: 255, a: 128)
+    outputs[:items_popup].primitives &lt;&lt; Layout.rect(row: 6, col: 15.5, w: 8.5, h: 1)
+                                              .center
+                                              .merge(text: "Equipment",
+                                                     anchor_x: 0.5,
+                                                     anchor_y: 0.5,
+                                                     size_px: 48)
+
+    # render the current hovered item indicator and label
+    outputs[:items_popup].primitives &lt;&lt; @hovered_item.click_box.merge(path: :solid, r: 0, g: 160, b: 0, a: 128)
+    outputs[:items_popup].primitives &lt;&lt; Layout.rect(row: 11, col: 0, w: 15.5, h: 1)
+                                              .center
+                                              .merge(text: "Hovered Item: #{@hovered_item.id}", anchor_x: 0.5, anchor_y: 0.5)
+
+    # fade and slide in animation
+    perc = Easing.smooth_stop(start_at: 0,
+                              duration: 90,
+                              tick_count: Kernel.tick_count,
+                              power: 3)
+
+    outputs.primitives &lt;&lt; { x: 0,
+                            y: (1 - perc) * 1280,
+                            w: 1280,
+                            h: 720,
+                            a: 255 * perc,
+                            path: :items_popup }
+  end
+end
+
+def boot args
+  args.state = {}
+end
+
+def tick args
+  $game ||= Game.new
+  $game.args = args
+  $game.tick
+end
+
+def reset args
+  $game = nil
+end
+
+GTK.reset
+
+</code></pre>
 <h3 id='----radial-menu---main-rb'>Radial Menu - main.rb <a style='font-size: small; float: right;' href='#----radial-menu---main-rb'>link</a></h3> 
 <pre><code class="ruby"># ./samples/09_ui_controls/03_radial_menu/app/main.rb
 class Game
@@ -20707,6 +20859,29 @@ class ClassLevelEnumerableTests
     result_actual = []
     Array.each_with_index a do |(x, y), i| result_actual &lt;&lt; x + y + i end
     assert.equal! result_expected, result_actual
+  end
+
+  def test_array_transpose args, assert
+    sz = 1024
+    a = sz.map do |row|
+      sz.map do |col|
+        col * 10
+      end
+    end
+
+    instance_before = Time.now
+    result_expected = a.transpose
+    instance_after = Time.now
+    instance_duration = instance_after - instance_before
+    puts instance_duration
+
+    class_before = Time.now
+    result_actual = Array.transpose a
+    class_after = Time.now
+    class_duration = class_after - class_before
+    puts class_duration
+    assert.equal! result_expected, result_actual
+    assert.true! class_duration &lt; instance_duration, "Class method should be faster than instance method, but was #{class_duration} vs #{instance_duration}"
   end
 
   def test_zz_bench args, assert

@@ -28,13 +28,13 @@ Follows is a source code listing for all files that have been open sourced. This
   #      y: 640,
   #      text: "Text",
   #      font: "fonts/font.ttf",
-  #      anchor_x: 0.5, # or alignment_enum: 0, 1, or 2
-  #      anchor_y: 0.5, # or vertical_alignment_enum: 0, 1, or 2
+  #      anchor_x: 0.5,
+  #      anchor_y: 0.5,
   #      r: 0,
   #      g: 0,
   #      b: 0,
   #      a: 255,
-  #      size_px: 20,   # or size_enum: -10 to 10 (0 means "ledgible on small devices" ie: 20px)
+  #      size_px: 20,
   #      blendmode_enum: 1 }
   
   
@@ -69,10 +69,10 @@ Follows is a source code listing for all files that have been open sourced. This
     # size_enum of  0 is equivalent to using size_px: 22
     args.outputs.labels << { x: 175 + 150, y: 550 - 50, text: "Medium label.",   size_enum:  0 }
   
-    # size_enum of  0 is equivalent to using size_px: 24
+    # size_enum of  1 is equivalent to using size_px: 24
     args.outputs.labels << { x: 175 + 150, y: 520 - 50, text: "Large label.",    size_enum:  1 }
   
-    # size_enum of  0 is equivalent to using size_px: 26
+    # size_enum of  2 is equivalent to using size_px: 26
     args.outputs.labels << { x: 175 + 150, y: 490 - 50, text: "Larger label.",   size_enum:  2 }
   
     # Demonstration of the Align Parameter
@@ -80,6 +80,7 @@ Follows is a source code listing for all files that have been open sourced. This
   
     # alignment_enum: 0 is equivalent to anchor_x: 0
     # vertical_alignment_enum: 1 is equivalent to anchor_y: 0.5
+    # IMPORTANT: the default anchoring for labels is TOP LEFT
     args.outputs.labels << { x: 175 + 150, y: 360 - 50, text: "Left aligned.",   alignment_enum: 0, vertical_alignment_enum: 1 }
     args.outputs.labels << { x: 175 + 150, y: 342 - 50, text: "Left aligned.",   anchor_x: 0, anchor_y: 0.5 }
   
@@ -536,27 +537,24 @@ Follows is a source code listing for all files that have been open sourced. This
      In this sample app, the target note is set by taking a sample from the collection
      of available notes.
   
-   Reminders:
-  
    - String interpolation: Uses #{} syntax; everything between the #{ and the } is evaluated
      as Ruby code, and the placeholder is replaced with its corresponding value or result.
   
-   - args.outputs.labels: An array. The values generate a label.
-     The parameters are [X, Y, TEXT, SIZE, ALIGNMENT, RED, GREEN, BLUE, ALPHA, FONT STYLE]
-     For more information about labels, go to mygame/documentation/02-labels.md.
+   - Mouse click is provided through args.inputs.mouse.click (or args.inputs.mouse.key_down.left)
+  
+   - Mouse right click is provided through args.inputs.mouse.key_down.right
   =end
-  
-  # This sample app allows users to test their musical skills by matching the piano sound that plays in each
-  # level to the correct note.
-  
-  # Runs all the methods necessary for the game to function properly.
   def tick args
-    args.outputs.labels << [640, 360, "Click anywhere to play a random sound.", 0, 1]
+    args.outputs.labels << { x: 640, y: 360, text: "Click anywhere to play a random sound.", anchor_x: 0.5, anchor_y: 0.5 }
+    args.outputs.labels << { x: 640, y: 360, text: "Right Click anywhere to play a random sound at 10% volume.", anchor_x: 0.5, anchor_y: 1.5 }
     args.state.notes ||= [:c3, :d3, :e3, :f3, :g3, :a3, :b3, :c4]
   
     if args.inputs.mouse.click
       # Play a sound by adding a string to args.outputs.sounds
       args.outputs.sounds << "sounds/#{args.state.notes.sample}.wav" # sound of target note is output
+    elsif args.inputs.mouse.key_down.right
+      # specifying volume of sound
+      args.outputs.sounds << { path: "sounds/#{args.state.notes.sample}.wav", gain: 0.1 }
     end
   end
 
@@ -573,7 +571,7 @@ Follows is a source code listing for all files that have been open sourced. This
   - args.inputs.keyboard.key_up.KEY: The value of the properties will be set
     to the frame  that the key_up event occurred (the frame correlates
     to Kernel.tick_count). Otherwise the value will be nil. For a
-    full listing of keys, take a look at mygame/documentation/06-keyboard.md.
+    full listing of keys, take a look at docs/api/inputs.md.
   - args.state.PROPERTY: The state property on args is a dynamic
     structure. You can define ANY property here with ANY type of
     arbitrary nesting. Properties defined on args.state will be retained
@@ -11356,30 +11354,20 @@ Follows is a source code listing for all files that have been open sourced. This
     def initialize
       # keeps track of particle states
       @particles ||= []
-  
-      # keeps track of whether a render target for the specific number
-      # has been created already
-      @created_prefabs ||= {}
     end
   
     def create_particle_rt! number
-      # if the render target for the number has already been created
-      # (and cached). return/exit early since we don't want to bust the
-      # texture that's already been created for us
-      return @created_prefabs[number] if @created_prefabs[number]
-      path = number.to_s
-  
-      # if it hasn't been created, then create a RT with the name equal to
-      # to the number. add it to the lookup of created_prefabs
-      @created_prefabs[number] = path
+      # if the render target status is queued then return nil until it's ready (a queued render target
+      # means that a request has been made to generate the texture, but it hasn't been created yet/isn't ready)
+      return outputs.render_targets[number].path if outputs.render_targets.queued? number
   
       # set RT properties
-      outputs[path].w = 30
-      outputs[path].h = 30
-      outputs[path].background_color = [0, 0, 0, 0]
+      outputs[number].w = 30
+      outputs[number].h = 30
+      outputs[number].background_color = [0, 0, 0, 0]
   
       # add the label to the render target
-      outputs[path].labels << {
+      outputs[number].labels << {
         x: 15,
         y: 15,
         text: number.to_s,
@@ -11395,11 +11383,9 @@ Follows is a source code listing for all files that have been open sourced. This
       # has already been created)
       path = create_particle_rt! particle.number
   
-      # if the particle was created this frame, skip its render
-      # since the RT won't be processed until the next tick
-      if particle.created_at == Kernel.tick_count
-        nil
-      else
+      # query args.outputs.render_targets to get the current status of the texture
+      # if it's ready then send it out to draw
+      if outputs.render_targets.ready? path
         # return a prefab that represents the RT/label as a sprite
         { x: particle.x,
           y: particle.y,
@@ -11428,7 +11414,7 @@ Follows is a source code listing for all files that have been open sourced. This
           x: inputs.mouse.x,
           y: inputs.mouse.y,
           created_at: Kernel.tick_count,
-          number: Numeric.rand(0..100),
+          number: Numeric.rand(1..100),
           a: 255,
           angle: 0
         }
@@ -11547,13 +11533,10 @@ Follows is a source code listing for all files that have been open sourced. This
   end
   
   def tick args
-    # create a value in state that stores border_cache information
-    args.state.border_cache ||= {}
-  
     args.outputs.background_color = [80, 80, 80]
   
     # render a thick border
-    args.outputs.primitives << thick_border_prefab(args.outputs, args.state.border_cache,
+    args.outputs.primitives << thick_border_prefab(args.outputs,
                                                    { x: 640,
                                                      y: 360,
                                                      w: 100,
@@ -11566,7 +11549,7 @@ Follows is a source code listing for all files that have been open sourced. This
                                                      anchor_x: 0.5,
                                                      anchor_y: 0.5 })
   
-    args.outputs.primitives << thick_border_prefab(args.outputs, args.state.border_cache,
+    args.outputs.primitives << thick_border_prefab(args.outputs,
                                                    { x: 640,
                                                      y: 360,
                                                      w: 50,
@@ -11581,13 +11564,14 @@ Follows is a source code listing for all files that have been open sourced. This
                                                      anchor_y: 0.5 })
   end
   
-  def thick_border_prefab outputs, cache, border
+  def thick_border_prefab outputs, border
     # a texture/render target will be create for each border profile
     # the key/path for the render target uses the border width, height, and thickness
     name = "thick-border-sprite-#{border.w.to_i}-#{border.h.to_i}-#{border.thickness.to_i}"
   
-    # look into the cache and see if the texture/render target has already been created
-    if cache[name]
+    # query args.outputs.render_targets to get the current status of the texture
+    # if it's ready then send it out to draw
+    if outputs.render_targets.ready? name
       # if so, then return a sprite to the render target,
       # default values for the texture are a black border in the bottom left,
       # those values are then overriden with the values in border (via ** splat args)
@@ -11595,9 +11579,9 @@ Follows is a source code listing for all files that have been open sourced. This
       return { r: 0, g: 0, b: 0, a: 255, **border, path: name }
     end
   
-    # if the cache entry doesn't exist, then store a record,
-    # and then generate the texture
-    cache[name] = { path: name, create_at: Kernel.tick_count }
+    # if the render target status is queued then return nil until it's ready (a queued render target
+    # means that a request has been made to generate the texture, but it hasn't been created yet/isn't ready)
+    return nil if outputs.render_targets.queued? name
   
     # the texture's width and height will be that of the border
     outputs[name].w = border.w.to_i
@@ -11634,10 +11618,7 @@ Follows is a source code listing for all files that have been open sourced. This
       }
     ]
   
-    # after the cache entry is created,
-    # call thick_border_prefab again (recursive call which will
-    # resolve because the cache entry is now there)
-    thick_border_prefab outputs, cache, border
+    thick_border_prefab outputs, border
   end
   
   GTK.reset
@@ -11649,40 +11630,35 @@ Follows is a source code listing for all files that have been open sourced. This
   # ./samples/07_advanced_rendering/02_render_targets_thick_lines/app/main.rb
   # Sample app shows how you can use render targets to create arbitrary shapes like a thicker line
   def tick args
-    args.state.line_cache ||= {}
-    args.outputs.primitives << thick_line(args,
-                                          args.state.line_cache,
-                                          x: 0, y: 0, x2: 640, y2: 360, thickness: 3).merge(r: 0, g: 0, b: 0)
+    args.outputs.primitives << thick_line(args, x: 0, y: 0, x2: 640, y2: 360, thickness: 3)&.merge(r: 0, g: 0, b: 0)
   end
   
-  def thick_line args, cache, line
+  def thick_line args, line
     line_length = Math.sqrt((line.x2 - line.x)**2 + (line.y2 - line.y)**2)
     name = "line-sprite-#{line_length}-#{line.thickness}"
-    cached_line = cache[name]
     line_angle = Math.atan2(line.y2 - line.y, line.x2 - line.x) * 180 / Math::PI
-    if cached_line
+  
+    # query args.outputs.render_targets to get the current status of the texture
+    # if it's ready then send it out to draw
+    if args.outputs.render_targets.ready? name
       perpendicular_angle = (line_angle + 90) % 360
-      return cached_line.sprite.merge(x: line.x - perpendicular_angle.vector_x * (line.thickness / 2),
-                                      y: line.y - perpendicular_angle.vector_y * (line.thickness / 2),
-                                      angle: line_angle)
+      return args.outputs
+                 .render_targets[name]
+                 .merge(x: line.x - perpendicular_angle.vector_x * (line.thickness / 2),
+                        y: line.y - perpendicular_angle.vector_y * (line.thickness / 2),
+                        anchor_x: 0,
+                        anchor_y: 0,
+                        angle: line_angle)
     end
   
-    cache[name] = {
-      line: line,
-      thickness: line.thickness,
-      sprite: {
-        w: line_length,
-        h: line.thickness,
-        path: name,
-        angle_anchor_x: 0,
-        angle_anchor_y: 0
-      }
-    }
+    # if the render target status is queued then return nil until it's ready (a queued render target
+    # means that a request has been made to generate the texture, but it hasn't been created yet/isn't ready)
+    return nil if args.outputs.render_targets.queued? name
   
     args.outputs[name].w = line_length
     args.outputs[name].h = line.thickness
     args.outputs[name].solids << { x: 0, y: 0, w: line_length, h: line.thickness, r: 255, g: 255, b: 255 }
-    return thick_line args, cache, line
+    return thick_line args, line
   end
 
 #+end_src
@@ -11846,7 +11822,7 @@ Follows is a source code listing for all files that have been open sourced. This
    - args.inputs.keyboard.key_up.KEY: The value of the properties will be set
      to the frame  that the key_up event occurred (the frame correlates
      to Kernel.tick_count).
-     For more information about the keyboard, go to mygame/documentation/06-keyboard.md.
+     For more information about the keyboard, go to docs/api/inputs.md.
   
    - args.state.labels:
      The parameters for a label are
@@ -12749,9 +12725,7 @@ Follows is a source code listing for all files that have been open sourced. This
       pixel_array = GTK.get_pixels 'sprites/square/blue.png'
       args.pixel_array(:square).w = pixel_array.w
       args.pixel_array(:square).h = pixel_array.h
-      pixel_array.pixels.each_with_index do |p, i|
-        args.pixel_array(:square).pixels[i] = p
-      end
+      args.pixel_array(:square).pixels = pixel_array.pixels
     end
   
     w = 100
@@ -19861,6 +19835,186 @@ Follows is a source code listing for all files that have been open sourced. This
 
 #+end_src
 
+*** Menu Navigation Advanced - main.rb
+#+begin_src ruby
+  # ./samples/09_ui_controls/02_menu_navigation_advanced/app/main.rb
+  class Game
+    attr_gtk
+  
+    def initialize
+      # items to render within the menu
+      @items = [
+        { id: :bow, },
+        { id: :boomerang, },
+        { id: :hookshot, },
+        { id: :bomb, },
+        { id: :powder, },
+        { id: :pot_1, },
+        { id: :fire_rod, },
+        { id: :ice_rod, },
+        { id: :ether, },
+        { id: :quake, },
+        { id: :bombos, },
+        { id: :pot_2, },
+        { id: :lantern, },
+        { id: :hammer, },
+        { id: :flute, },
+        { id: :net, },
+        { id: :mudora, },
+        { id: :pot_3, },
+        { id: :shovel, },
+        { id: :somaria, },
+        { id: :bryna, },
+        { id: :cape, },
+        { id: :mirror, },
+        { id: :pot3, },
+        { id: :boots, },
+        { id: :mitt, },
+        { id: :flippers, },
+        { id: :pearl, },
+      ]
+  
+      # compute the menu location for each item and capture the rect
+      # along with generating the prefab
+      @items.each_with_index do |item, i|
+        row = i.idiv(6)
+        col = i % 6
+        item.click_box = Layout.rect(row: 1 + row * 2, col: 0.50 + col * 2.5, w: 2, h: 2)
+        item.prefab = [
+          item.click_box.merge(path: :solid, r: 0, g: 0, b: 0),
+          item.click_box.center.merge(text: "#{item.id}", r: 255, g: 255, b: 255, anchor_x: 0.5, anchor_y: 0.5)
+        ]
+      end
+    end
+  
+    def tick
+      calc
+      render
+    end
+  
+    def calc
+      # set the hovered item to the first item
+      @hovered_item ||= @items.first
+  
+      if inputs.last_active == :mouse
+        # if the mouse is used, then recompute the hovered item
+        # using the mouse location
+        moused_item = @items.find { |item| Geometry.inside_rect? inputs.mouse, item.click_box }
+  
+        # if the mouse is over an item, then set it
+        # as the new hovered item, otherwise keep the current selection
+        @hovered_item = moused_item || @hovered_item
+  
+        # if mouse is clicked then select the item
+        if inputs.mouse.click
+          item_selected! @hovered_item
+        end
+      else
+        # if controller or keyboard is the last active input
+        # then use Geometry.rect_navigate to select the item
+        @hovered_item = Geometry.rect_navigate(rect: @hovered_item,
+                                               rects: @items,
+                                               left_right: inputs.key_down.left_right,
+                                               up_down: inputs.key_down.up_down,
+                                               using: :click_box)
+  
+        # if enter (keyboard) or A (controller) is pressed, then select the item
+        if inputs.keyboard.key_down.enter || inputs.controller_one.key_down.a
+          item_selected! @hovered_item
+        end
+      end
+    end
+  
+    # item selection logic would go here
+    def item_selected! item
+      GTK.notify "#{item.id} was selected."
+    end
+  
+    def render
+      outputs.background_color = [30, 30, 30]
+  
+      # Layout apis used to create the item menu
+      # main items section
+      outputs[:items_popup].primitives << Layout.rect(row: 0, col: 0, w: 15.5, h: 12)
+                                                .merge(path: :solid, r: 255, g: 255, b: 255, a: 128)
+      outputs[:items_popup].primitives << Layout.rect(row: 0, col: 0, w: 15, h: 1)
+                                                .center
+                                                .merge(text: "Items",
+                                                       anchor_x: 0.5,
+                                                       anchor_y: 0.5,
+                                                       size_px: 48)
+  
+      outputs[:items_popup].primitives << @items.map(&:prefab)
+  
+      # example of using Layout to create other sections
+      outputs[:items_popup].primitives << Layout.rect(row: 0, col: 15.5, w: 8.5, h: 3)
+                                                .merge(path: :solid, r: 255, g: 255, b: 255, a: 128)
+      outputs[:items_popup].primitives << Layout.rect(row: 0, col: 15.5, w: 8.5, h: 1)
+                                                .center
+                                                .merge(text: "Pendants",
+                                                       anchor_x: 0.5,
+                                                       anchor_y: 0.5,
+                                                       size_px: 48)
+  
+      # example of using Layout to create other sections
+      outputs[:items_popup].primitives << Layout.rect(row: 3, col: 15.5, w: 8.5, h: 3)
+                                                .merge(path: :solid, r: 255, g: 255, b: 255, a: 128)
+      outputs[:items_popup].primitives << Layout.rect(row: 3, col: 15.5, w: 8.5, h: 1)
+                                                .center
+                                                .merge(text: "Crystals",
+                                                       anchor_x: 0.5,
+                                                       anchor_y: 0.5,
+                                                       size_px: 48)
+  
+      # example of using Layout to create other sections
+      outputs[:items_popup].primitives << Layout.rect(row: 6, col: 15.5, w: 8.5, h: 6)
+                                                .merge(path: :solid, r: 255, g: 255, b: 255, a: 128)
+      outputs[:items_popup].primitives << Layout.rect(row: 6, col: 15.5, w: 8.5, h: 1)
+                                                .center
+                                                .merge(text: "Equipment",
+                                                       anchor_x: 0.5,
+                                                       anchor_y: 0.5,
+                                                       size_px: 48)
+  
+      # render the current hovered item indicator and label
+      outputs[:items_popup].primitives << @hovered_item.click_box.merge(path: :solid, r: 0, g: 160, b: 0, a: 128)
+      outputs[:items_popup].primitives << Layout.rect(row: 11, col: 0, w: 15.5, h: 1)
+                                                .center
+                                                .merge(text: "Hovered Item: #{@hovered_item.id}", anchor_x: 0.5, anchor_y: 0.5)
+  
+      # fade and slide in animation
+      perc = Easing.smooth_stop(start_at: 0,
+                                duration: 90,
+                                tick_count: Kernel.tick_count,
+                                power: 3)
+  
+      outputs.primitives << { x: 0,
+                              y: (1 - perc) * 1280,
+                              w: 1280,
+                              h: 720,
+                              a: 255 * perc,
+                              path: :items_popup }
+    end
+  end
+  
+  def boot args
+    args.state = {}
+  end
+  
+  def tick args
+    $game ||= Game.new
+    $game.args = args
+    $game.tick
+  end
+  
+  def reset args
+    $game = nil
+  end
+  
+  GTK.reset
+
+#+end_src
+
 *** Radial Menu - main.rb
 #+begin_src ruby
   # ./samples/09_ui_controls/03_radial_menu/app/main.rb
@@ -20900,6 +21054,29 @@ Follows is a source code listing for all files that have been open sourced. This
       result_actual = []
       Array.each_with_index a do |(x, y), i| result_actual << x + y + i end
       assert.equal! result_expected, result_actual
+    end
+  
+    def test_array_transpose args, assert
+      sz = 1024
+      a = sz.map do |row|
+        sz.map do |col|
+          col * 10
+        end
+      end
+  
+      instance_before = Time.now
+      result_expected = a.transpose
+      instance_after = Time.now
+      instance_duration = instance_after - instance_before
+      puts instance_duration
+  
+      class_before = Time.now
+      result_actual = Array.transpose a
+      class_after = Time.now
+      class_duration = class_after - class_before
+      puts class_duration
+      assert.equal! result_expected, result_actual
+      assert.true! class_duration < instance_duration, "Class method should be faster than instance method, but was #{class_duration} vs #{instance_duration}"
     end
   
     def test_zz_bench args, assert

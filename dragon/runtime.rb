@@ -1153,9 +1153,9 @@ S
       current_down_char = @args.inputs.keyboard.key_down.char
       if !@slowmo_factor_debounce
         @args.inputs.keyboard.last_directional_vector = @args.inputs.keyboard.directional_vector
-        @args.inputs.keyboard.key_down.last_directional_vector = @args.inputs.keyboard.key_down.directional_vector
+        @args.inputs.keyboard.key_down.last_directional_vector = nil
         @args.inputs.keyboard.key_held.last_directional_vector = @args.inputs.keyboard.key_held.directional_vector
-        @args.inputs.keyboard.key_up.last_directional_vector = @args.inputs.keyboard.key_up.directional_vector
+        @args.inputs.keyboard.key_up.last_directional_vector = nil
         @args.inputs.keyboard.key_down.set all_down_keys, nil
         @args.inputs.keyboard.key_held.set all_down_keys, Kernel.tick_count
         @args.inputs.keyboard.key_up.clear
@@ -1216,27 +1216,27 @@ S
       @reloaded_files.clear
       return if @slowmo_factor_debounce
       @args.inputs.controller_one.last_directional_vector = @args.inputs.controller_one.directional_vector
-      @args.inputs.controller_one.key_down.last_directional_vector = @args.inputs.controller_one.key_down.directional_vector
+      @args.inputs.controller_one.key_down.last_directional_vector = nil
       @args.inputs.controller_one.key_held.last_directional_vector = @args.inputs.controller_one.key_held.directional_vector
-      @args.inputs.controller_one.key_up.last_directional_vector = @args.inputs.controller_one.key_up.directional_vector
+      @args.inputs.controller_one.key_up.last_directional_vector = nil
       @args.inputs.controller_one.key_down.clear
       @args.inputs.controller_one.key_up.clear
       @args.inputs.controller_two.last_directional_vector = @args.inputs.controller_two.directional_vector
-      @args.inputs.controller_two.key_down.last_directional_vector = @args.inputs.controller_two.key_down.directional_vector
+      @args.inputs.controller_two.key_down.last_directional_vector = nil
       @args.inputs.controller_two.key_held.last_directional_vector = @args.inputs.controller_two.key_held.directional_vector
-      @args.inputs.controller_two.key_up.last_directional_vector = @args.inputs.controller_two.key_up.directional_vector
+      @args.inputs.controller_two.key_up.last_directional_vector = nil
       @args.inputs.controller_two.key_down.clear
       @args.inputs.controller_two.key_up.clear
       @args.inputs.controller_three.last_directional_vector = @args.inputs.controller_three.directional_vector
-      @args.inputs.controller_three.key_down.last_directional_vector = @args.inputs.controller_three.key_down.directional_vector
+      @args.inputs.controller_three.key_down.last_directional_vector = nil
       @args.inputs.controller_three.key_held.last_directional_vector = @args.inputs.controller_three.key_held.directional_vector
-      @args.inputs.controller_three.key_up.last_directional_vector = @args.inputs.controller_three.key_up.directional_vector
+      @args.inputs.controller_three.key_up.last_directional_vector = nil
       @args.inputs.controller_three.key_down.clear
       @args.inputs.controller_three.key_up.clear
       @args.inputs.controller_four.last_directional_vector = @args.inputs.controller_four.directional_vector
-      @args.inputs.controller_four.key_down.last_directional_vector = @args.inputs.controller_four.key_down.directional_vector
+      @args.inputs.controller_four.key_down.last_directional_vector = nil
       @args.inputs.controller_four.key_held.last_directional_vector = @args.inputs.controller_four.key_held.directional_vector
-      @args.inputs.controller_four.key_up.last_directional_vector = @args.inputs.controller_four.key_up.directional_vector
+      @args.inputs.controller_four.key_up.last_directional_vector = nil
       @args.inputs.controller_four.key_down.clear
       @args.inputs.controller_four.key_up.clear
       @args.inputs.mouse.clear

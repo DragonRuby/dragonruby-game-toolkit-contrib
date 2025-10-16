@@ -493,7 +493,7 @@ S
       l = left_arrow  || a_scancode || false
       r = right_arrow || d_scancode || false
       u = up_arrow    || w_scancode || false
-      d = down_arrow  || d_scancode || false
+      d = down_arrow  || s_scancode || false
 
       # if both left right keys are held, then return last left right key
       lr = if l && r && last_left_right != 0
@@ -510,9 +510,9 @@ S
       ud = if u && d && last_up_down != 0
              last_up_down
            elsif u
-             -1
-           elsif d
              1
+           elsif d
+             -1
            else
              0
            end
@@ -528,6 +528,12 @@ S
 
     def left_with_wasd
       @left || @a_scancode || nil
+    end
+
+    def directional_angle
+      return nil unless directional_vector
+
+      Math.atan2(up_down, left_right).to_degrees
     end
   end
 end
