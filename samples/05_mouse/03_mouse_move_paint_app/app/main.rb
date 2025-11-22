@@ -198,7 +198,6 @@ class PaintApp
     if inputs.mouse.click && inputs.mouse.click.point.inside_rect?(state.clear_button.border)
       state.clear_button.clicked_at = inputs.mouse.click.created_at # time (frame) the click occurred
       state.filled_squares.clear
-      inputs.mouse.previous_click = nil
     end
 
     outputs.labels << state.clear_button.label
