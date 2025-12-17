@@ -28,9 +28,9 @@
    In this sample app, new_entity is used to create a new button that clears the grid.
    (Remember, you can use state to define ANY property and it will be retained across frames.)
 
- - args.inputs.mouse.click.point.(x|y): The x and y location of the mouse.
+ - args.inputs.mouse.click.(x|y): The x and y location of the mouse.
 
- - args.inputs.mouse.click.point.created_at: The frame the mouse click occurred in.
+ - args.inputs.mouse.click.created_at: The frame the mouse click occurred in.
 
  - args.outputs.labels: An array. The values in the array generate a label.
    The parameters are [X, Y, TEXT, SIZE, ALIGN, RED, GREEN, BLUE, ALPHA, FONT STYLE]
@@ -138,17 +138,17 @@ class PaintApp
 
     if state.mouse_held &&    # mouse needs to be down
       !inputs.mouse.click &&     # must not be first click
-      ((inputs.mouse.previous_click.point.x - inputs.mouse.position.x).abs > 15) # Need to move 15 pixels before "drag"
+      ((inputs.mouse.previous_click.x - inputs.mouse.x).abs > 15) # Need to move 15 pixels before "drag"
       state.mouse_dragging = true
     end
 
     # If the user clicks their mouse inside the grid, the search_lines method is called with a click input type.
-    if ((inputs.mouse.click) && (inputs.mouse.click.point.inside_rect? state.grid_border))
-      search_lines(inputs.mouse.click.point, :click)
+    if ((inputs.mouse.click) && (inputs.mouse.click.inside_rect? state.grid_border))
+      search_lines(inputs.mouse.click, :click)
 
     # If the user drags their mouse inside the grid, the search_lines method is called with a drag input type.
-    elsif ((state.mouse_dragging) && (inputs.mouse.position.inside_rect? state.grid_border))
-      search_lines(inputs.mouse.position, :drag)
+    elsif ((state.mouse_dragging) && (inputs.mouse.inside_rect? state.grid_border))
+      search_lines(inputs.mouse, :drag)
     end
   end
 
@@ -195,10 +195,9 @@ class PaintApp
 
     # If the mouse is clicked inside the borders of the clear button,
     # the filled_squares collection is emptied and the squares are cleared.
-    if inputs.mouse.click && inputs.mouse.click.point.inside_rect?(state.clear_button.border)
+    if inputs.mouse.click && inputs.mouse.click.inside_rect?(state.clear_button.border)
       state.clear_button.clicked_at = inputs.mouse.click.created_at # time (frame) the click occurred
       state.filled_squares.clear
-      inputs.mouse.previous_click = nil
     end
 
     outputs.labels << state.clear_button.label
