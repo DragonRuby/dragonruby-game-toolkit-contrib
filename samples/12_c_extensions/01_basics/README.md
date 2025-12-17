@@ -95,7 +95,7 @@ Run the following command from Linux/macOS terminal:
 Or from Windows Powershell:
 
 ```
-> .\dragobruby-bind.exe --output=mygame\ext-bind.c mygame\ext.c
+> .\dragonruby-bind.exe --output=mygame\ext-bind.c mygame\ext.c
 ```
 
 With the `ext-bind.c` in place you can compile your C extension into a dynamic
