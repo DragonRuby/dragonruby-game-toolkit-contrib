@@ -56,13 +56,15 @@ module GTK
     include Notify
     include ProcessARGSV
     include AutoTest
+    include Logging
 
     attr_accessor :argv,
                   :required_files, :files_reloaded, :paused, :time_per_tick, :reloaded_files,
                   :scheduled_callbacks,
                   :suppress_hotload,
                   :reload_list_history, :simulation_speed, :started_at, :production,
-                  :__state_assigned_to_hash_on_boot__, :rng_seed, :hotload_global_at
+                  :__state_assigned_to_hash_on_boot__, :rng_seed, :hotload_global_at,
+                  :__sdl_tick_too_early_count__
 
 
     attr_reader :ffi_file, :ffi_mrb, :ffi_misc, :input_history, :recording, :console, :reserved_primitives,
@@ -73,6 +75,8 @@ module GTK
                 :debug_require, :remote_hotload_enabled, :current_thermal_state, :reboot_requested, :capture_timings_data
 
     def initialize platform, production, vrmode, logical_width, logical_height, argv, binary_path, y_offset, orientation, remote_hotload_enabled, a11y_enabled
+      @__sdl_tick_too_early_count__ = 0
+      @__pending_log_entry_count__ = 0
       @core_modules = []
       @user_modules = []
       if !production
@@ -358,43 +362,6 @@ module GTK
         super(message)
         @path = path
         @inner_exception = inner_exception
-      end
-    end
-
-    def log_spam str, subsystem = nil
-      __log__ subsystem, 0, str
-    end
-
-    def log_debug str, subsystem = nil
-      __log__ subsystem, 1, str
-    end
-
-    def log_info str, subsystem = nil
-      __log__ subsystem, 2, str
-    end
-
-    def log_warn str, subsystem = nil
-      __log__ subsystem, 3, str
-    end
-
-    def log_error str, subsystem = nil
-      __log__ subsystem, 4, str
-    end
-
-    def log_unfiltered str, subsystem = nil
-      __log__ subsystem, 0x7FFFFFFE, str
-    end
-
-    def __log__ subsystem, log_enum, str
-      str = str.to_s.gsub "\000", ""
-      @ffi_misc.log subsystem, log_enum, str
-    end
-
-    def log obj, sender = nil, subsystem=nil
-      if sender == Log && @log_level == :on
-        log_info(obj, subsystem)
-      elsif !sender
-        log_info(obj, subsystem)
       end
     end
 
@@ -829,7 +796,7 @@ S
           end
         end
         if include_sprites
-          reset_sprites suppress_logging: true
+          reset_sprites log: false
         end
       end
 
@@ -933,15 +900,7 @@ S
     # !!! FIXED: sound api for one-time sounds should still be supported. looping sound has been removed.
     def dequeue_sounds pass
       pass.sounds.each do |s|
-        if s.path.end_with? ".wav"
-          queue_sound s.path, s.gain
-        elsif s.path.end_with? ".ogg"
-          log_once_important :use_audio_for_looping_tracks, Messages.messages_looping_sounds_behavior_change
-          queue_sound s.path, s.gain
-        elsif s.path.end_with? ".mp3"
-          log_once_important :use_audio_for_looping_tracks, Messages.messages_looping_sounds_behavior_change
-          queue_sound s.path, s.gain
-        end
+        queue_sound s.path, s.gain
       end
       pass.sounds.clear
     end
@@ -1810,7 +1769,11 @@ S
       @sdl_tick = sdl_tick
       # in the event of a slowdown, sdl attempts to catch up the simulation
       # this prevents the simulation from running too fast
-      return if (sdl_tick - @last_sdl_tick) < 16
+      if (sdl_tick - @last_sdl_tick) < 16
+        @__sdl_tick_too_early_count__ += 1
+        return
+      end
+
       @last_sdl_tick = sdl_tick
 
       tick_argv

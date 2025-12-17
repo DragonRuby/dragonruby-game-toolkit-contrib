@@ -153,6 +153,33 @@ def tick args
 end
 ```
 
+## `frame`
+
+Similiar to `Numeric.frame_index` except additional information about
+frame data is returned that can be helpful for creating an animation
+state machine.
+
+`Numeric.frame` takes in the same parameters as `Numeric.frame_index`
+and returns a `Hash` with the following information (as opposed to
+just a `Integer`:
+
+- `frame_index`: The same `Integer` (or nil) value that
+  `Numeric.frame_index` returns.
+- `frame_count`: The `frame_count` argument that was passed into the
+  function.
+- `frames_left`: The number of frames left before the `frame_index`
+  would return `nil`.
+- `started`: `true` or `false` representing if the animation has
+  stared (`frame_index` returns `nil` if the animation hasn't been
+  started yet).
+- `completed`: `true` or `false` representing if the animation has
+  completed (`frame_index` returns `nil` if the animation has
+  completed and it's not a repeating animation).
+- `elapsed_time`: How many ticks have elapsed since the animation was started.  
+- `frame_elapsed_time`: How many ticks have elapsed for the current `frame_index`.  
+- `duration`: Length of animation in ticks given the values of
+  `frame_count`, and `hold_for` that were passed into the function.
+  
 ## `elapsed?`
 
 Returns true if `Numeric#elapsed_time` is greater than the number. An optional parameter can be passed into `elapsed?` which is added to the number before evaluating whether `elapsed?` is true.

@@ -12,6 +12,7 @@ module GTK
       end
 
       def new_log_entry level, ticks, subsystem, str
+        @__pending_log_entry_count__ = 0
         @console.add_text str, level
       end
 

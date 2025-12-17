@@ -127,6 +127,73 @@ S
     current_elapsed_time.idiv(hold_for) % frame_count
   end
 
+  def Numeric.frame(start_at: 0,
+                    count: nil,
+                    frame_count: nil,
+                    hold_for: 1,
+                    repeat: false,
+                    repeat_index: 0,
+                    tick_count: nil,
+                    tick_count_override: Kernel.tick_count,
+                    metadata: nil,
+                    **ignored)
+    frame_index = Numeric.frame_index(start_at: start_at,
+                                      count: count,
+                                      frame_count: frame_count,
+                                      hold_for: hold_for,
+                                      repeat: repeat,
+                                      repeat_index: repeat_index,
+                                      tick_count: tick_count,
+                                      tick_count_override: tick_count_override)
+    frame_count ||= count
+    tick_count ||= tick_count_override
+    duration = hold_for * frame_count
+    elapsed_time = tick_count - start_at
+    frame_elapsed_time = if frame_index
+                           (elapsed_time % duration) - (frame_index * hold_for)
+                         else
+                           nil
+                         end
+
+    if start_at > tick_count
+      {
+        frame_index: nil,
+        frame_count: frame_count,
+        frames_left: frame_count,
+        started: false,
+        completed: false,
+        elapsed_time: elapsed_time,
+        frame_elapsed_time: frame_elapsed_time,
+        duration: duration,
+        metadata: metadata,
+      }
+    elsif !frame_index
+      {
+        frame_index: nil,
+        frame_count: frame_count,
+        frames_left: 0,
+        started: true,
+        completed: true,
+        elapsed_time: elapsed_time,
+        frame_elapsed_time: frame_elapsed_time,
+        duration: duration,
+        metadata: metadata,
+      }
+    else
+      {
+        frame_index: frame_index,
+        frame_count: frame_count,
+        frames_left: frame_count - frame_index,
+        started: true,
+        completed: false,
+        duration: duration,
+        elapsed_time: elapsed_time,
+        frame_elapsed_time: frame_elapsed_time,
+        metadata: metadata,
+      }
+    end
+  end
+
   def Numeric.frame_index(start_at: 0,
                           count: nil,
                           frame_count: nil,

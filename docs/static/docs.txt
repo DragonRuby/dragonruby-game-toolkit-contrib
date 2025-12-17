@@ -767,29 +767,80 @@ Do:
   args.state.fx_queue.reject! { |fx| fx.countdown < 0 }
 #+end_src
 
-* RECIPIES:
-** How To Determine What Frame You Are On
+** Using ~args.state~ To Store Your Game State
 
-There is a property on ~state~ called ~tick_count~ that is incremented
-by DragonRuby every time the ~tick~ method is called. The following
-code renders a label that displays the current ~tick_count~.
+~args.state~ is a open data structure that allows you to define
+properties that are arbitrarily nested. You don't need to define any kind of
+~class~.
 
-#+begin_src ruby
+To initialize your game state, use the ~||=~ operator. Any value on
+the right side of ~||=~ will only be assigned _once_.
+
+To assign a value every frame, just use the ~=~ operator, but _make
+sure_ you've initialized a default value.
+
+#+begin_src
   def tick args
-    args.outputs.labels << [10, 670, "\#{Kernel.tick_count}"]
+    # initialize your game state ONCE
+    args.state.player.x  ||= 0
+    args.state.player.y  ||= 0
+    args.state.player.hp ||= 100
+
+    # increment the x position of the character by one every frame
+    args.state.player.x += 1
+
+    # Render a sprite with a label above the sprite
+    args.outputs.sprites << [
+      args.state.player.x,
+      args.state.player.y,
+      32, 32,
+      "player.png"
+    ]
+
+    args.outputs.labels << [
+      args.state.player.x,
+      args.state.player.y - 50,
+      args.state.player.hp
+    ]
   end
 #+end_src
 
-** How To Get Current Framerate
+** Accessing files
 
-Current framerate is a top level property on the Game Toolkit Runtime
-and is accessible via ~args.gtk.current_framerate~.
+DragonRuby uses a sandboxed filesystem which will automatically read from and
+write to a location appropriate for your platform so you don't have to worry
+about theses details in your code. You can just use ~gtk.read_file~,
+~gtk.write_file~, and ~gtk.append_file~ with a relative path and the engine
+will take care of the rest.
 
-#+begin_src ruby
-  def tick args
-    args.outputs.labels << [10, 710, "framerate: \#{args.gtk.current_framerate.round}"]
-  end
-#+end_src
+The data directories that will be written to in a production build are:
+
+- Windows: ~C:\Users\[username]\AppData\Roaming\[devtitle]\[gametitle]~
+- MacOS: ~$HOME/Library/Application Support/[gametitle]~
+- Linux: ~$HOME/.local/share/[gametitle]~
+- HTML5: The data will be written to the browser's IndexedDB.
+
+The values in square brackets are the values you set in your
+~app/metadata/game_metadata.txt~ file.
+
+When reading files, the engine will first look in the game's data directory
+and then in the game directory itself. This means that if you write a file
+to the data directory that already exists in your game directory, the file
+in the data directory will be used instead of the one that is in your game.
+
+When running a development build you will directly write to your game
+directory (and thus overwrite existing files). This can be useful for built-in
+development tools like level editors.
+
+For more details on the implementation of the sandboxed filesystem, see Ryan
+C. Gordon's PhysicsFS documentation: [[https://icculus.org/physfs/]]
+
+IMPORTANT: File access functions are sandoxed and assume that the
+~dragonruby~ binary lives alongside the game you are building. Do not
+expect file access functions to return correct values if you are attempting
+to run the ~dragonruby~ binary from a shared location. It's
+recommended that the directory structure contained in the zip is not
+altered and games are built using that starter template.
 
 ** How To Render A Sprite Using An Array
 
@@ -869,6 +920,65 @@ You can represent a sprite as a ~Hash~:
 
 The ~blendmode_enum~ value can be set to ~0~ (no blending), ~1~ (alpha blending),
 ~2~ (additive blending), ~3~ (modulo blending), ~4~ (multiply blending).
+
+* RECIPIES:
+** How To Determine What Frame You Are On
+
+There is a property on ~state~ called ~tick_count~ that is incremented
+by DragonRuby every time the ~tick~ method is called. The following
+code renders a label that displays the current ~tick_count~.
+
+#+begin_src ruby
+  def tick args
+    args.outputs.labels << [10, 670, "\#{Kernel.tick_count}"]
+  end
+#+end_src
+
+** How To Get Current Framerate
+
+Current framerate is a top level property on the Game Toolkit Runtime
+and is accessible via ~args.gtk.current_framerate~.
+
+#+begin_src ruby
+  def tick args
+    args.outputs.labels << [10, 710, "framerate: \#{args.gtk.current_framerate.round}"]
+  end
+#+end_src
+
+** How To Play A Sound
+
+Sounds that end ~.wav~ will play once:
+
+#+begin_src ruby
+  def tick args
+    # Play a sound every second
+    if (Kernel.tick_count % 60) == 0
+      args.outputs.sounds << 'something.wav'
+    end
+  end
+#+end_src
+
+Sounds that end ~.ogg~ is considered background music and will loop:
+
+#+begin_src ruby
+  def tick args
+    # Start a sound loop at the beginning of the game
+    if Kernel.tick_count == 0
+      args.outputs.sounds << 'background_music.ogg'
+    end
+  end
+#+end_src
+
+If you want to play a ~.ogg~ once as if it were a sound effect, you can do:
+
+#+begin_src ruby
+  def tick args
+    # Play a sound every second
+    if (Kernel.tick_count % 60) == 0
+      args.gtk.queue_sound 'some-ogg.ogg'
+    end
+  end
+#+end_src
 
 ** How To Render A Label
 
@@ -999,116 +1109,6 @@ You can use a strategy like the following to create multiple labels from a Strin
   end
 #+end_src
 
-** How To Play A Sound
-
-Sounds that end ~.wav~ will play once:
-
-#+begin_src ruby
-  def tick args
-    # Play a sound every second
-    if (Kernel.tick_count % 60) == 0
-      args.outputs.sounds << 'something.wav'
-    end
-  end
-#+end_src
-
-Sounds that end ~.ogg~ is considered background music and will loop:
-
-#+begin_src ruby
-  def tick args
-    # Start a sound loop at the beginning of the game
-    if Kernel.tick_count == 0
-      args.outputs.sounds << 'background_music.ogg'
-    end
-  end
-#+end_src
-
-If you want to play a ~.ogg~ once as if it were a sound effect, you can do:
-
-#+begin_src ruby
-  def tick args
-    # Play a sound every second
-    if (Kernel.tick_count % 60) == 0
-      args.gtk.queue_sound 'some-ogg.ogg'
-    end
-  end
-#+end_src
-
-** Using ~args.state~ To Store Your Game State
-
-~args.state~ is a open data structure that allows you to define
-properties that are arbitrarily nested. You don't need to define any kind of
-~class~.
-
-To initialize your game state, use the ~||=~ operator. Any value on
-the right side of ~||=~ will only be assigned _once_.
-
-To assign a value every frame, just use the ~=~ operator, but _make
-sure_ you've initialized a default value.
-
-#+begin_src
-  def tick args
-    # initialize your game state ONCE
-    args.state.player.x  ||= 0
-    args.state.player.y  ||= 0
-    args.state.player.hp ||= 100
-
-    # increment the x position of the character by one every frame
-    args.state.player.x += 1
-
-    # Render a sprite with a label above the sprite
-    args.outputs.sprites << [
-      args.state.player.x,
-      args.state.player.y,
-      32, 32,
-      "player.png"
-    ]
-
-    args.outputs.labels << [
-      args.state.player.x,
-      args.state.player.y - 50,
-      args.state.player.hp
-    ]
-  end
-#+end_src
-
-** Accessing files
-
-DragonRuby uses a sandboxed filesystem which will automatically read from and
-write to a location appropriate for your platform so you don't have to worry
-about theses details in your code. You can just use ~gtk.read_file~,
-~gtk.write_file~, and ~gtk.append_file~ with a relative path and the engine
-will take care of the rest.
-
-The data directories that will be written to in a production build are:
-
-- Windows: ~C:\Users\[username]\AppData\Roaming\[devtitle]\[gametitle]~
-- MacOS: ~$HOME/Library/Application Support/[gametitle]~
-- Linux: ~$HOME/.local/share/[gametitle]~
-- HTML5: The data will be written to the browser's IndexedDB.
-
-The values in square brackets are the values you set in your
-~app/metadata/game_metadata.txt~ file.
-
-When reading files, the engine will first look in the game's data directory
-and then in the game directory itself. This means that if you write a file
-to the data directory that already exists in your game directory, the file
-in the data directory will be used instead of the one that is in your game.
-
-When running a development build you will directly write to your game
-directory (and thus overwrite existing files). This can be useful for built-in
-development tools like level editors.
-
-For more details on the implementation of the sandboxed filesystem, see Ryan
-C. Gordon's PhysicsFS documentation: [[https://icculus.org/physfs/]]
-
-IMPORTANT: File access functions are sandoxed and assume that the
-~dragonruby~ binary lives alongside the game you are building. Do not
-expect file access functions to return correct values if you are attempting
-to run the ~dragonruby~ binary from a shared location. It's
-recommended that the directory structure contained in the zip is not
-altered and games are built using that starter template.
-
 * Outputs (~args.outputs~)
 
 Outputs is how you render primitives to the screen. The minimal setup for
@@ -1170,6 +1170,23 @@ For example, you can render a ~solid~ above a ~sprite~:
   
     # line
     args.outputs.primitives << { x: 100, y: 100, x2: 150, y2: 150 }
+  end
+#+end_src
+
+** ~background_color~
+
+~args.outputs.background_color~ accepts either an ~Array~ or ~Hash~
+(with an integer value between ~0~ and ~255~ representing the RGB
+color) for the top-level screen or Render Target (see the Render
+Targets section for details their usage).
+
+#+begin_src ruby
+  def tick args
+    # sets the background color to red
+    args.outputs.background_color = [255, 0, 0]
+  
+    # OR
+    args.outputs.background_color = { r: 255, g: 0, b: 0 }
   end
 #+end_src
 
@@ -3923,9 +3940,17 @@ Has the same behavior as ~reset~ except the reset occurs before ~tick~ is execut
 
 *** ~reset_sprite~
 
-Sprites when loaded are cached. Given a string parameter, this method invalidates the cache record of a sprite so that updates on from the disk can be loaded.
+Sprites when loaded are cached. Given a string parameter, this method
+invalidates the cache record of a sprite so that updates on from the
+disk can be loaded (this can also be used to reduce VRAM usage for
+sprites you no longer need).
 
-This function can also be used to delete/garbage collect render targets you are no longer using.
+This function can also be used to delete/garbage collect render
+targets you are no longer using.
+
+~reset_sprite~ and ~reset_sprites~ takes in an optional argument
+~log~. Setting ~log: false~ will supress logging of sprites paths that
+were reset (default value for ~log:~ is ~true~).
 
 *** ~reset_sprites~
 

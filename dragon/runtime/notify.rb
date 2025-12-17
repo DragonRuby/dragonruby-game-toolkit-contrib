@@ -40,6 +40,8 @@ module GTK
       @console.add_text "* NOTIFY: #{message}" if message.strip.length > 0
     end
 
+    alias notify_extended notify_extended!
+
     def tick_notification
       return if Kernel.tick_count <= -1
       @notification_max_alpha ||= 255

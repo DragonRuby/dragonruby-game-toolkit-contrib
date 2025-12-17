@@ -62,6 +62,23 @@ def tick args
 end
 ```
 
+## `background_color`
+
+`args.outputs.background_color` accepts either an `Array` or `Hash`
+(with an integer value between `0` and `255` representing the RGB
+color) for the top-level screen or Render Target (see the Render
+Targets section for details their usage).
+
+```ruby
+def tick args
+  # sets the background color to red
+  args.outputs.background_color = [255, 0, 0]
+
+  # OR
+  args.outputs.background_color = { r: 255, g: 0, b: 0 }
+end
+```
+
 ## `debug`
 
 `args.outputs.debug` will not render in production mode and behaves like `args.outputs.primitives`. Objects in this collection

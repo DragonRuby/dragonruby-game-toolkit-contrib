@@ -14,7 +14,7 @@ end
 
 ## `spline`
 
-Given a start, current, duration, and a multiple bezier values, this function returns a number between 0 and 1 that represents the progress of an easing function.
+Given a start, current, duration, and multiple 4-point bezier values, this function returns a number on the bezier curve that represents the progress of an easing function.
 
 This example will move a box at a linear speed from 0 to 1280 and then back to 0 using two bezier definitions (represented as an array with four values).
 

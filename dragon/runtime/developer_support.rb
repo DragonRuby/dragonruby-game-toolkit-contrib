@@ -30,8 +30,11 @@ module GTK
         @ffi_draw.unload_sprite path
       end
 
-      def reset_sprites directory: nil, indentation: 1, suppress_logging: false
+      def reset_sprites directory: nil, indentation: 1, log: true, suppress_logging: false
         return if Kernel.global_tick_count <= 0
+
+        # suppress_logging arg is deprecated (and hard to spell)
+        log = false if suppress_logging
 
         if @args.cvars["game_metadata.sprites_directory"]
           directory ||= @args.cvars["game_metadata.sprites_directory"].value
@@ -58,7 +61,7 @@ S
 
         indentation_prefix = "*" * indentation
         indentation_padding_prefix = " " * indentation
-        if !suppress_logging
+        if log
           puts "#{indentation_prefix} Resetting sprites in directory =#{directory}="
         end
         files = list_files directory
@@ -77,7 +80,7 @@ S
           path = File.join directory, f
           stat = stat_file path
           if stat.file_type == :regular && f.end_with?(".png")
-            if !suppress_logging
+            if log
               puts "#{indentation_padding_prefix} - #{f}"
             end
             reset_sprite path
@@ -85,7 +88,7 @@ S
             directory_path = File.join directory, f
             reset_sprites directory: directory_path,
                           indentation: indentation + 1,
-                          suppress_logging: suppress_logging
+                          log: log
           end
         end
         nil

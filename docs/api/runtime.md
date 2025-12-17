@@ -1225,9 +1225,17 @@ GTK.reset_and_replay "replay.txt", speed: 1
 
 ### `reset_sprite`
 
-Sprites when loaded are cached. Given a string parameter, this method invalidates the cache record of a sprite so that updates on from the disk can be loaded.
+Sprites when loaded are cached. Given a string parameter, this method
+invalidates the cache record of a sprite so that updates on from the
+disk can be loaded (this can also be used to reduce VRAM usage for
+sprites you no longer need). 
 
-This function can also be used to delete/garbage collect render targets you are no longer using.
+This function can also be used to delete/garbage collect render
+targets you are no longer using. 
+
+`reset_sprite` and `reset_sprites` takes in an optional argument
+`log`. Setting `log: false` will supress logging of sprites paths that
+were reset (default value for `log:` is `true`). 
 
 ### `reset_sprites`
 

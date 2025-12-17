@@ -1,940 +1,127 @@
-# Contributors outside of DragonRuby who also hold Copyright:
+# https://www.redblobgames.com/pathfinding/a-star/introduction.html
+# Contributors
 # - Sujay Vadlakonda: https://github.com/sujayvadlakonda
+class PriorityQueue
+  attr :ary
 
-# This program is inspired by https://www.redblobgames.com/pathfinding/a-star/introduction.html
+  def initialize &has_priority_block
+    @ary = []
+    @has_priority_block = has_priority_block
+  end
 
-# The A* Search works by incorporating both the distance from the starting point
-# and the distance from the target in its heurisitic.
+  def heapify n, i
+    top_priority = i
+    l = 2 * i + 1
+    r = 2 * i + 2
 
-# It tends to find the correct (shortest) path even when the Greedy Best-First Search does not,
-# and it explores less of the grid, and is therefore faster, than Dijkstra's Search.
+    top_priority = l if l < n && @has_priority_block.call(@ary[l], @ary[top_priority])
+    top_priority = r if r < n && @has_priority_block.call(@ary[r], @ary[top_priority])
 
-class A_Star_Algorithm
-  attr_gtk
+    return if top_priority == i
+
+    @ary[i], @ary[top_priority] = @ary[top_priority], @ary[i]
+    heapify n, top_priority
+  end
+
+  def insert n
+    @ary.push_back n
+    current = @ary.length - 1
+    while current > 0
+      parent = (current - 1) >> 1
+      if @has_priority_block.call(@ary[current], @ary[parent])
+        @ary[current], @ary[parent] = @ary[parent], @ary[current]
+        current = parent
+      else
+        break
+      end
+    end
+  end
+
+  def extract
+    l = @ary.length
+    @ary[0], @ary[l - 1] = @ary[l - 1], @ary[0]
+    result = @ary.pop_back
+    heapify @ary.length, 0 if 0 < @ary.length
+    result
+  end
+
+  def empty? = @ary.empty?
+end
+
+class AStar
+  attr :frontier, :came_from, :path, :cost, :status,
+       :start_location, :end_location, :walls
+
+  def initialize(start_location:, end_location:, walls:, grid_size:)
+    @grid_size = grid_size
+    @start_location = start_location.slice(:ordinal_x, :ordinal_y)
+    @end_location = end_location.slice(:ordinal_x, :ordinal_y)
+    @walls = walls.map do |w|
+      [w.slice(:ordinal_x, :ordinal_y), true ]
+    end.to_h
+
+    @directions = [
+      { ordinal_x:  1, ordinal_y:  0 },
+      { ordinal_x: -1, ordinal_y:  0 },
+      { ordinal_x:  0, ordinal_y:  1 },
+      { ordinal_x:  0, ordinal_y: -1 }
+    ]
+
+    @came_from = {}
+    @path = []
+    @cost = {}
+    @status = :ready
+    @frontier = PriorityQueue.new do |a, b|
+      a_result = [@cost[a] + greedy_heuristic(a), proximity_to_start_location(a)]
+      b_result = [@cost[b] + greedy_heuristic(b), proximity_to_start_location(b)]
+      (a_result <=> b_result) == -1
+    end
+  end
+
+  def start!
+    @status = :solving
+    @came_from[@start_location] = nil
+    @cost[@start_location] = 0
+    @frontier.insert @start_location
+  end
 
   def tick
-    defaults
-    render
-    input
-
-    if dijkstra.came_from.empty?
-      calc_searches
-    end
+    tick_solve
+    tick_generate_path
   end
 
-  def defaults
-    # Variables to edit the size and appearance of the grid
-    # Freely customizable to user's liking
-    grid.width     ||= 15
-    grid.height    ||= 15
-    grid.cell_size ||= 27
-    grid.rect      ||= [0, 0, grid.width, grid.height]
+  def tick_solve
+    return if @status != :solving
 
-    grid.star      ||= [0, 2]
-    grid.target    ||= [11, 13]
-    grid.walls     ||= {
-      [2, 2] => true,
-      [3, 2] => true,
-      [4, 2] => true,
-      [5, 2] => true,
-      [6, 2] => true,
-      [7, 2] => true,
-      [8, 2] => true,
-      [9, 2] => true,
-      [10, 2] => true,
-      [11, 2] => true,
-      [12, 2] => true,
-      [12, 3] => true,
-      [12, 4] => true,
-      [12, 5] => true,
-      [12, 6] => true,
-      [12, 7] => true,
-      [12, 8] => true,
-      [12, 9] => true,
-      [12, 10] => true,
-      [12, 11] => true,
-      [12, 12] => true,
-      [5, 12] => true,
-      [6, 12] => true,
-      [7, 12] => true,
-      [8, 12] => true,
-      [9, 12] => true,
-      [10, 12] => true,
-      [11, 12] => true,
-      [12, 12] => true
-    }
+    current_frontier = @frontier.extract
+    new_locations = adjacent_locations(current_frontier)
 
-    # What the user is currently editing on the grid
-    # We store this value, because we want to remember the value even when
-    # the user's cursor is no longer over what they're interacting with, but
-    # they are still clicking down on the mouse.
-    state.user_input ||= :none
-
-    # These variables allow the breadth first search to take place
-    # Came_from is a hash with a key of a cell and a value of the cell that was expanded from to find the key.
-    # Used to prevent searching cells that have already been found
-    # and to trace a path from the target back to the starting point.
-    # Frontier is an array of cells to expand the search from.
-    # The search is over when there are no more cells to search from.
-    # Path stores the path from the target to the star, once the target has been found
-    # It prevents calculating the path every tick.
-    dijkstra.came_from   ||= {}
-    dijkstra.cost_so_far ||= {}
-    dijkstra.frontier    ||= []
-    dijkstra.path        ||= []
-
-    greedy.came_from ||= {}
-    greedy.frontier  ||= []
-    greedy.path      ||= []
-
-    a_star.frontier    ||= []
-    a_star.came_from   ||= {}
-    a_star.path        ||= []
-    a_star.cost_so_far ||= {}
-  end
-
-  # All methods with render draw stuff on the screen
-  # UI has buttons, the slider, and labels
-  # The search specific rendering occurs in the respective methods
-  def render
-    render_labels
-    render_dijkstra
-    render_greedy
-    render_a_star
-  end
-
-  def render_labels
-    outputs.labels << [150, 450, "Dijkstra's"]
-    outputs.labels << [550, 450, "Greedy Best-First"]
-    outputs.labels << [1025, 450, "A* Search"]
-  end
-
-  def render_dijkstra
-    render_dijkstra_grid
-    render_dijkstra_star
-    render_dijkstra_target
-    render_dijkstra_visited
-    render_dijkstra_walls
-    render_dijkstra_path
-  end
-
-  def render_greedy
-    render_greedy_grid
-    render_greedy_star
-    render_greedy_target
-    render_greedy_visited
-    render_greedy_walls
-    render_greedy_path
-  end
-
-  def render_a_star
-    render_a_star_grid
-    render_a_star_star
-    render_a_star_target
-    render_a_star_visited
-    render_a_star_walls
-    render_a_star_path
-  end
-
-  # This method handles user input every tick
-  def input
-    # If the mouse was lifted this tick
-    if inputs.mouse.up
-      # Set current input to none
-      state.user_input = :none
+    new_locations.find_all do |loc|
+      !@came_from[loc] && !@walls[loc]
+    end.each do |loc|
+      @came_from[loc] = current_frontier
+      @cost[loc] = (@cost[current_frontier] || 0) + 1
+      @frontier.insert loc
     end
 
-    # If the mouse was clicked this tick
-    if inputs.mouse.down
-      # Determine what the user is editing and appropriately edit the state.user_input variable
-      determine_input
-    end
-
-    # Process user input based on user_input variable and current mouse position
-    process_input
-  end
-
-  # Determines what the user is editing
-  # This method is called when the mouse is clicked down
-  def determine_input
-    # If the mouse is over the star in the first grid
-    if dijkstra_mouse_over_star?
-      # The user is editing the star from the first grid
-      state.user_input = :dijkstra_star
-    # If the mouse is over the star in the second grid
-    elsif greedy_mouse_over_star?
-      # The user is editing the star from the second grid
-      state.user_input = :greedy_star
-    # If the mouse is over the star in the third grid
-    elsif a_star_mouse_over_star?
-      # The user is editing the star from the third grid
-      state.user_input = :a_star_star
-    # If the mouse is over the target in the first grid
-    elsif dijkstra_mouse_over_target?
-      # The user is editing the target from the first grid
-      state.user_input = :dijkstra_target
-    # If the mouse is over the target in the second grid
-    elsif greedy_mouse_over_target?
-      # The user is editing the target from the second grid
-      state.user_input = :greedy_target
-    # If the mouse is over the target in the third grid
-    elsif a_star_mouse_over_target?
-      # The user is editing the target from the third grid
-      state.user_input = :a_star_target
-    # If the mouse is over a wall in the first grid
-    elsif dijkstra_mouse_over_wall?
-      # The user is removing a wall from the first grid
-      state.user_input = :dijkstra_remove_wall
-    # If the mouse is over a wall in the second grid
-    elsif greedy_mouse_over_wall?
-      # The user is removing a wall from the second grid
-      state.user_input = :greedy_remove_wall
-    # If the mouse is over a wall in the third grid
-    elsif a_star_mouse_over_wall?
-      # The user is removing a wall from the third grid
-      state.user_input = :a_star_remove_wall
-    # If the mouse is over the first grid
-    elsif dijkstra_mouse_over_grid?
-      # The user is adding a wall from the first grid
-      state.user_input = :dijkstra_add_wall
-    # If the mouse is over the second grid
-    elsif greedy_mouse_over_grid?
-      # The user is adding a wall from the second grid
-      state.user_input = :greedy_add_wall
-    # If the mouse is over the third grid
-    elsif a_star_mouse_over_grid?
-      # The user is adding a wall from the third grid
-      state.user_input = :a_star_add_wall
-    end
-  end
-
-  # Processes click and drag based on what the user is currently dragging
-  def process_input
-    if state.user_input == :dijkstra_star
-      process_input_dijkstra_star
-    elsif state.user_input == :greedy_star
-      process_input_greedy_star
-    elsif state.user_input == :a_star_star
-      process_input_a_star_star
-    elsif state.user_input == :dijkstra_target
-      process_input_dijkstra_target
-    elsif state.user_input == :greedy_target
-      process_input_greedy_target
-    elsif state.user_input == :a_star_target
-      process_input_a_star_target
-    elsif state.user_input == :dijkstra_remove_wall
-      process_input_dijkstra_remove_wall
-    elsif state.user_input == :greedy_remove_wall
-      process_input_greedy_remove_wall
-    elsif state.user_input == :a_star_remove_wall
-      process_input_a_star_remove_wall
-    elsif state.user_input == :dijkstra_add_wall
-      process_input_dijkstra_add_wall
-    elsif state.user_input == :greedy_add_wall
-      process_input_greedy_add_wall
-    elsif state.user_input == :a_star_add_wall
-      process_input_a_star_add_wall
-    end
-  end
-
-  def render_dijkstra_grid
-    # A large rect the size of the grid
-    outputs.solids << dijkstra_scale_up(grid.rect).merge(default_color)
-
-    outputs.lines << (0..grid.width).map { |x| dijkstra_vertical_line(x) }
-    outputs.lines << (0..grid.height).map { |y| dijkstra_horizontal_line(y) }
-  end
-
-  def render_greedy_grid
-    # A large rect the size of the grid
-    outputs.solids << greedy_scale_up(grid.rect).merge(default_color)
-
-    outputs.lines << (0..grid.width).map { |x| greedy_vertical_line(x) }
-    outputs.lines << (0..grid.height).map { |y| greedy_horizontal_line(y) }
-  end
-
-  def render_a_star_grid
-    # A large rect the size of the grid
-    outputs.solids << a_star_scale_up(grid.rect).merge(default_color)
-
-    outputs.lines << (0..grid.width).map { |x| a_star_vertical_line(x) }
-    outputs.lines << (0..grid.height).map { |y| a_star_horizontal_line(y) }
-  end
-
-  # Returns a vertical line for a column of the first grid
-  def dijkstra_vertical_line x
-    line = { x: x, y: 0, w: 0, h: grid.height }
-    line.transform_values { |v| v * grid.cell_size }
-  end
-
-  # Returns a horizontal line for a column of the first grid
-  def dijkstra_horizontal_line y
-    line = { x: 0, y: y, w: grid.width, h: 0 }
-    line.transform_values { |v| v * grid.cell_size }
-  end
-
-  # Returns a vertical line for a column of the second grid
-  def greedy_vertical_line x
-    dijkstra_vertical_line(x + grid.width + 1)
-  end
-
-  # Returns a horizontal line for a column of the second grid
-  def greedy_horizontal_line y
-    line = { x: grid.width + 1, y: y, w: grid.width, h: 0 }
-    line.transform_values { |v| v * grid.cell_size }
-  end
-
-  # Returns a vertical line for a column of the third grid
-  def a_star_vertical_line x
-    dijkstra_vertical_line(x + grid.width + 1 + grid.width + 1)
-  end
-
-  # Returns a horizontal line for a column of the third grid
-  def a_star_horizontal_line y
-    line = { x: grid.width + 1 + grid.width + 1, y: y, w: grid.width, h: 0 }
-    line.transform_values { |v| v * grid.cell_size }
-  end
-
-  # Renders the star on the first grid
-  def render_dijkstra_star
-    outputs.sprites << dijkstra_scale_up(grid.star).merge({ path: 'star.png' })
-  end
-
-  # Renders the star on the second grid
-  def render_greedy_star
-    outputs.sprites << greedy_scale_up(grid.star).merge({ path: 'star.png' })
-  end
-
-  # Renders the star on the third grid
-  def render_a_star_star
-    outputs.sprites << a_star_scale_up(grid.star).merge({ path: 'star.png' })
-  end
-
-  # Renders the target on the first grid
-  def render_dijkstra_target
-    outputs.sprites << dijkstra_scale_up(grid.target).merge({ path: 'target.png' })
-  end
-
-  # Renders the target on the second grid
-  def render_greedy_target
-    outputs.sprites << greedy_scale_up(grid.target).merge({ path: 'target.png' })
-  end
-
-  # Renders the target on the third grid
-  def render_a_star_target
-    outputs.sprites << a_star_scale_up(grid.target).merge({ path: 'target.png' })
-  end
-
-  # Renders the walls on the first grid
-  def render_dijkstra_walls
-    outputs.solids << grid.walls.map do |key, value|
-      dijkstra_scale_up(key).merge(wall_color)
-    end
-  end
-
-  # Renders the walls on the second grid
-  def render_greedy_walls
-    outputs.solids << grid.walls.map do |key, value|
-      greedy_scale_up(key).merge(wall_color)
-    end
-  end
-
-  # Renders the walls on the third grid
-  def render_a_star_walls
-    outputs.solids << grid.walls.map do |key, value|
-      a_star_scale_up(key).merge(wall_color)
-    end
-  end
-
-  # Renders the visited cells on the first grid
-  def render_dijkstra_visited
-    outputs.solids << dijkstra.came_from.map do |key, value|
-      dijkstra_scale_up(key).merge(visited_color)
-    end
-  end
-
-  # Renders the visited cells on the second grid
-  def render_greedy_visited
-    outputs.solids << greedy.came_from.map do |key, value|
-      greedy_scale_up(key).merge(visited_color)
-    end
-  end
-
-  # Renders the visited cells on the third grid
-  def render_a_star_visited
-    outputs.solids << a_star.came_from.map do |key, value|
-      a_star_scale_up(key).merge(visited_color)
-    end
-  end
-
-  # Renders the path found by the breadth first search on the first grid
-  def render_dijkstra_path
-    outputs.solids << dijkstra.path.map do |path|
-      dijkstra_scale_up(path).merge(path_color)
-    end
-  end
-
-  # Renders the path found by the greedy search on the second grid
-  def render_greedy_path
-    outputs.solids << greedy.path.map do |path|
-      greedy_scale_up(path).merge(path_color)
-    end
-  end
-
-  # Renders the path found by the a_star search on the third grid
-  def render_a_star_path
-    outputs.solids << a_star.path.map do |path|
-      a_star_scale_up(path).merge(path_color)
-    end
-  end
-
-  # Returns the rect for the path between two cells based on their relative positions
-  def get_path_between(cell_one, cell_two)
-    path = []
-
-    # If cell one is above cell two
-    if cell_one.x == cell_two.x && cell_one.y > cell_two.y
-      # Path starts from the center of cell two and moves upward to the center of cell one
-      path = [cell_two.x + 0.3, cell_two.y + 0.3, 0.4, 1.4]
-    # If cell one is below cell two
-    elsif cell_one.x == cell_two.x && cell_one.y < cell_two.y
-      # Path starts from the center of cell one and moves upward to the center of cell two
-      path = [cell_one.x + 0.3, cell_one.y + 0.3, 0.4, 1.4]
-    # If cell one is to the left of cell two
-    elsif cell_one.x > cell_two.x && cell_one.y == cell_two.y
-      # Path starts from the center of cell two and moves rightward to the center of cell one
-      path = [cell_two.x + 0.3, cell_two.y + 0.3, 1.4, 0.4]
-    # If cell one is to the right of cell two
-    elsif cell_one.x < cell_two.x && cell_one.y == cell_two.y
-      # Path starts from the center of cell one and moves rightward to the center of cell two
-      path = [cell_one.x + 0.3, cell_one.y + 0.3, 1.4, 0.4]
-    end
-
-    path
-  end
-
-  # In code, the cells are represented as 1x1 rectangles
-  # When drawn, the cells are larger than 1x1 rectangles
-  # This method is used to scale up cells, and lines
-  # Objects are scaled up according to the grid.cell_size variable
-  # This allows for easy customization of the visual scale of the grid
-  # This method scales up cells for the first grid
-  def dijkstra_scale_up(cell)
-    x = cell.x * grid.cell_size
-    y = cell.y * grid.cell_size
-    w = cell.w.zero? ? grid.cell_size : cell.w * grid.cell_size
-    h = cell.h.zero? ? grid.cell_size : cell.h * grid.cell_size
-    {x: x, y: y, w: w, h: h}
-  end
-
-  # Translates the given cell grid.width + 1 to the right and then scales up
-  # Used to draw cells for the second grid
-  # This method does not work for lines,
-  # so separate methods exist for the grid lines
-  def greedy_scale_up(cell)
-    # Prevents the original value of cell from being edited
-    cell = cell.clone
-    # Translates the cell to the second grid equivalent
-    cell.x += grid.width + 1
-    # Proceeds as if scaling up for the first grid
-    dijkstra_scale_up(cell)
-  end
-
-  # Translates the given cell (grid.width + 1) * 2 to the right and then scales up
-  # Used to draw cells for the third grid
-  # This method does not work for lines,
-  # so separate methods exist for the grid lines
-  def a_star_scale_up(cell)
-    # Prevents the original value of cell from being edited
-    cell = cell.clone
-    # Translates the cell to the second grid equivalent
-    cell.x += grid.width + 1
-    # Translates the cell to the third grid equivalent
-    cell.x += grid.width + 1
-    # Proceeds as if scaling up for the first grid
-    dijkstra_scale_up(cell)
-  end
-
-  # Signal that the user is going to be moving the star from the first grid
-  def dijkstra_mouse_over_star?
-    inputs.mouse.point.inside_rect?(dijkstra_scale_up(grid.star))
-  end
-
-  # Signal that the user is going to be moving the star from the second grid
-  def greedy_mouse_over_star?
-    inputs.mouse.point.inside_rect?(greedy_scale_up(grid.star))
-  end
-
-  # Signal that the user is going to be moving the star from the third grid
-  def a_star_mouse_over_star?
-    inputs.mouse.point.inside_rect?(a_star_scale_up(grid.star))
-  end
-
-  # Signal that the user is going to be moving the target from the first grid
-  def dijkstra_mouse_over_target?
-    inputs.mouse.point.inside_rect?(dijkstra_scale_up(grid.target))
-  end
-
-  # Signal that the user is going to be moving the target from the second grid
-  def greedy_mouse_over_target?
-    inputs.mouse.point.inside_rect?(greedy_scale_up(grid.target))
-  end
-
-  # Signal that the user is going to be moving the target from the third grid
-  def a_star_mouse_over_target?
-    inputs.mouse.point.inside_rect?(a_star_scale_up(grid.target))
-  end
-
-  # Signal that the user is going to be removing walls from the first grid
-  def dijkstra_mouse_over_wall?
-    grid.walls.each_key do | wall |
-      return true if inputs.mouse.point.inside_rect?(dijkstra_scale_up(wall))
-    end
-
-    false
-  end
-
-  # Signal that the user is going to be removing walls from the second grid
-  def greedy_mouse_over_wall?
-    grid.walls.each_key do | wall |
-      return true if inputs.mouse.point.inside_rect?(greedy_scale_up(wall))
-    end
-
-    false
-  end
-
-  # Signal that the user is going to be removing walls from the third grid
-  def a_star_mouse_over_wall?
-    grid.walls.each_key do | wall |
-      return true if inputs.mouse.point.inside_rect?(a_star_scale_up(wall))
-    end
-
-    false
-  end
-
-  # Signal that the user is going to be adding walls from the first grid
-  def dijkstra_mouse_over_grid?
-    inputs.mouse.point.inside_rect?(dijkstra_scale_up(grid.rect))
-  end
-
-  # Signal that the user is going to be adding walls from the second grid
-  def greedy_mouse_over_grid?
-    inputs.mouse.point.inside_rect?(greedy_scale_up(grid.rect))
-  end
-
-  # Signal that the user is going to be adding walls from the third grid
-  def a_star_mouse_over_grid?
-    inputs.mouse.point.inside_rect?(a_star_scale_up(grid.rect))
-  end
-
-  # Moves the star to the cell closest to the mouse in the first grid
-  # Only resets the search if the star changes position
-  # Called whenever the user is editing the star (puts mouse down on star)
-  def process_input_dijkstra_star
-    old_star = grid.star.clone
-    unless dijkstra_cell_closest_to_mouse == grid.target
-      grid.star = dijkstra_cell_closest_to_mouse
-    end
-    unless old_star == grid.star
-      reset_searches
-    end
-  end
-
-  # Moves the star to the cell closest to the mouse in the second grid
-  # Only resets the search if the star changes position
-  # Called whenever the user is editing the star (puts mouse down on star)
-  def process_input_greedy_star
-    old_star = grid.star.clone
-    unless greedy_cell_closest_to_mouse == grid.target
-      grid.star = greedy_cell_closest_to_mouse
-    end
-    unless old_star == grid.star
-      reset_searches
-    end
-  end
-
-  # Moves the star to the cell closest to the mouse in the third grid
-  # Only resets the search if the star changes position
-  # Called whenever the user is editing the star (puts mouse down on star)
-  def process_input_a_star_star
-    old_star = grid.star.clone
-    unless a_star_cell_closest_to_mouse == grid.target
-      grid.star = a_star_cell_closest_to_mouse
-    end
-    unless old_star == grid.star
-      reset_searches
-    end
-  end
-
-  # Moves the target to the grid closest to the mouse in the first grid
-  # Only reset_searchess the search if the target changes position
-  # Called whenever the user is editing the target (puts mouse down on target)
-  def process_input_dijkstra_target
-    old_target = grid.target.clone
-    unless dijkstra_cell_closest_to_mouse == grid.star
-      grid.target = dijkstra_cell_closest_to_mouse
-    end
-    unless old_target == grid.target
-      reset_searches
-    end
-  end
-
-  # Moves the target to the cell closest to the mouse in the second grid
-  # Only reset_searchess the search if the target changes position
-  # Called whenever the user is editing the target (puts mouse down on target)
-  def process_input_greedy_target
-    old_target = grid.target.clone
-    unless greedy_cell_closest_to_mouse == grid.star
-      grid.target = greedy_cell_closest_to_mouse
-    end
-    unless old_target == grid.target
-      reset_searches
-    end
-  end
-
-  # Moves the target to the cell closest to the mouse in the third grid
-  # Only reset_searchess the search if the target changes position
-  # Called whenever the user is editing the target (puts mouse down on target)
-  def process_input_a_star_target
-    old_target = grid.target.clone
-    unless a_star_cell_closest_to_mouse == grid.star
-      grid.target = a_star_cell_closest_to_mouse
-    end
-    unless old_target == grid.target
-      reset_searches
-    end
-  end
-
-  # Removes walls in the first grid that are under the cursor
-  def process_input_dijkstra_remove_wall
-    # The mouse needs to be inside the grid, because we only want to remove walls
-    # the cursor is directly over
-    # Recalculations should only occur when a wall is actually deleted
-    if dijkstra_mouse_over_grid?
-      if grid.walls.has_key?(dijkstra_cell_closest_to_mouse)
-        grid.walls.delete(dijkstra_cell_closest_to_mouse)
-        reset_searches
+    if @frontier.empty? || @came_from[@end_location]
+      if @came_from[@end_location]
+        @status = :calculating_path
+        @current_path_location = @end_location
+      else
+        @status = :complete
       end
     end
   end
 
-  # Removes walls in the second grid that are under the cursor
-  def process_input_greedy_remove_wall
-    # The mouse needs to be inside the grid, because we only want to remove walls
-    # the cursor is directly over
-    # Recalculations should only occur when a wall is actually deleted
-    if greedy_mouse_over_grid?
-      if grid.walls.key?(greedy_cell_closest_to_mouse)
-        grid.walls.delete(greedy_cell_closest_to_mouse)
-        reset_searches
-      end
-    end
+  def greedy_heuristic(loc)
+    (@end_location.ordinal_x - loc.ordinal_x).abs +
+    (@end_location.ordinal_y - loc.ordinal_y).abs
   end
 
-  # Removes walls in the third grid that are under the cursor
-  def process_input_a_star_remove_wall
-    # The mouse needs to be inside the grid, because we only want to remove walls
-    # the cursor is directly over
-    # Recalculations should only occur when a wall is actually deleted
-    if a_star_mouse_over_grid?
-      if grid.walls.key?(a_star_cell_closest_to_mouse)
-        grid.walls.delete(a_star_cell_closest_to_mouse)
-        reset_searches
-      end
-    end
-  end
-
-  # Adds a wall in the first grid in the cell the mouse is over
-  def process_input_dijkstra_add_wall
-    if dijkstra_mouse_over_grid?
-      unless grid.walls.key?(dijkstra_cell_closest_to_mouse)
-        grid.walls[dijkstra_cell_closest_to_mouse] = true
-        reset_searches
-      end
-    end
-  end
-
-  # Adds a wall in the second grid in the cell the mouse is over
-  def process_input_greedy_add_wall
-    if greedy_mouse_over_grid?
-      unless grid.walls.key?(greedy_cell_closest_to_mouse)
-        grid.walls[greedy_cell_closest_to_mouse] = true
-        reset_searches
-      end
-    end
-  end
-
-  # Adds a wall in the third grid in the cell the mouse is over
-  def process_input_a_star_add_wall
-    if a_star_mouse_over_grid?
-      unless grid.walls.key?(a_star_cell_closest_to_mouse)
-        grid.walls[a_star_cell_closest_to_mouse] = true
-        reset_searches
-      end
-    end
-  end
-
-  # When the user grabs the star and puts their cursor to the far right
-  # and moves up and down, the star is supposed to move along the grid as well
-  # Finding the cell closest to the mouse helps with this
-  def dijkstra_cell_closest_to_mouse
-    # Closest cell to the mouse in the first grid
-    x = (inputs.mouse.point.x / grid.cell_size).to_i
-    y = (inputs.mouse.point.y / grid.cell_size).to_i
-    # Bound x and y to the grid
-    x = grid.width - 1 if x > grid.width - 1
-    y = grid.height - 1 if y > grid.height - 1
-    # Return closest cell
-    [x, y]
-  end
-
-  # When the user grabs the star and puts their cursor to the far right
-  # and moves up and down, the star is supposed to move along the grid as well
-  # Finding the cell closest to the mouse in the second grid helps with this
-  def greedy_cell_closest_to_mouse
-    # Closest cell grid to the mouse in the second
-    x = (inputs.mouse.point.x / grid.cell_size).to_i
-    y = (inputs.mouse.point.y / grid.cell_size).to_i
-    # Translate the cell to the first grid
-    x -= grid.width + 1
-    # Bound x and y to the first grid
-    x = 0 if x < 0
-    y = 0 if y < 0
-    x = grid.width - 1 if x > grid.width - 1
-    y = grid.height - 1 if y > grid.height - 1
-    # Return closest cell
-    [x, y]
-  end
-
-  # When the user grabs the star and puts their cursor to the far right
-  # and moves up and down, the star is supposed to move along the grid as well
-  # Finding the cell closest to the mouse in the third grid helps with this
-  def a_star_cell_closest_to_mouse
-    # Closest cell grid to the mouse in the second
-    x = (inputs.mouse.point.x / grid.cell_size).to_i
-    y = (inputs.mouse.point.y / grid.cell_size).to_i
-    # Translate the cell to the first grid
-    x -= (grid.width + 1) * 2
-    # Bound x and y to the first grid
-    x = 0 if x < 0
-    y = 0 if y < 0
-    x = grid.width - 1 if x > grid.width - 1
-    y = grid.height - 1 if y > grid.height - 1
-    # Return closest cell
-    [x, y]
-  end
-
-  def reset_searches
-    # Reset the searches
-    dijkstra.came_from      = {}
-    dijkstra.cost_so_far    = {}
-    dijkstra.frontier       = []
-    dijkstra.path           = []
-
-    greedy.came_from = {}
-    greedy.frontier  = []
-    greedy.path      = []
-    a_star.came_from = {}
-    a_star.frontier  = []
-    a_star.path      = []
-  end
-
-  def calc_searches
-    calc_dijkstra
-    calc_greedy
-    calc_a_star
-    # Move the searches forward to the current step
-    # state.current_step.times { move_searches_one_step_forward }
-  end
-
-  def calc_dijkstra
-    # Sets up the search to begin from the star
-    dijkstra.frontier << grid.star
-    dijkstra.came_from[grid.star] = nil
-    dijkstra.cost_so_far[grid.star] = 0
-
-    # Until the target is found or there are no more cells to explore from
-    until dijkstra.came_from.key?(grid.target) or dijkstra.frontier.empty?
-      # Take the next frontier cell. The first element is the cell, the second is the priority.
-      new_frontier = dijkstra.frontier.shift#[0]
-      # For each of its neighbors
-      adjacent_neighbors(new_frontier).each do | neighbor |
-        # That have not been visited and are not walls
-        unless dijkstra.came_from.key?(neighbor) or grid.walls.key?(neighbor)
-          # Add them to the frontier and mark them as visited
-          dijkstra.frontier << neighbor
-          dijkstra.came_from[neighbor] = new_frontier
-          dijkstra.cost_so_far[neighbor] = dijkstra.cost_so_far[new_frontier] + 1
-        end
-      end
-
-      # Sort the frontier so that cells that are in a zigzag pattern are prioritized over those in an line
-      # Comment this line and let a path generate to see the difference
-      dijkstra.frontier = dijkstra.frontier.sort_by {| cell | proximity_to_star(cell) }
-      dijkstra.frontier = dijkstra.frontier.sort_by {| cell | dijkstra.cost_so_far[cell] }
-    end
-
-
-    # If the search found the target
-    if dijkstra.came_from.key?(grid.target)
-      # Calculate the path between the target and star
-      dijkstra_calc_path
-    end
-  end
-
-  def calc_greedy
-    # Sets up the search to begin from the star
-    greedy.frontier << grid.star
-    greedy.came_from[grid.star] = nil
-
-    # Until the target is found or there are no more cells to explore from
-    until greedy.came_from.key?(grid.target) or greedy.frontier.empty?
-      # Take the next frontier cell
-      new_frontier = greedy.frontier.shift
-      # For each of its neighbors
-      adjacent_neighbors(new_frontier).each do | neighbor |
-        # That have not been visited and are not walls
-        unless greedy.came_from.key?(neighbor) or grid.walls.key?(neighbor)
-          # Add them to the frontier and mark them as visited
-          greedy.frontier << neighbor
-          greedy.came_from[neighbor] = new_frontier
-        end
-      end
-      # Sort the frontier so that cells that are in a zigzag pattern are prioritized over those in an line
-      # Comment this line and let a path generate to see the difference
-      greedy.frontier = greedy.frontier.sort_by {| cell | proximity_to_star(cell) }
-      # Sort the frontier so cells that are close to the target are then prioritized
-      greedy.frontier = greedy.frontier.sort_by {| cell | greedy_heuristic(cell)  }
-    end
-
-
-    # If the search found the target
-    if greedy.came_from.key?(grid.target)
-      # Calculate the path between the target and star
-      greedy_calc_path
-    end
-  end
-
-  def calc_a_star
-    # Setup the search to start from the star
-    a_star.came_from[grid.star] = nil
-    a_star.cost_so_far[grid.star] = 0
-    a_star.frontier << grid.star
-
-    # Until there are no more cells to explore from or the search has found the target
-    until a_star.frontier.empty? or a_star.came_from.key?(grid.target)
-      # Get the next cell to expand from
-      current_frontier = a_star.frontier.shift
-
-      # For each of that cells neighbors
-      adjacent_neighbors(current_frontier).each do | neighbor |
-        # That have not been visited and are not walls
-        unless a_star.came_from.key?(neighbor) or grid.walls.key?(neighbor)
-          # Add them to the frontier and mark them as visited
-          a_star.frontier << neighbor
-          a_star.came_from[neighbor] = current_frontier
-          a_star.cost_so_far[neighbor] = a_star.cost_so_far[current_frontier] + 1
-        end
-      end
-
-      # Sort the frontier so that cells that are in a zigzag pattern are prioritized over those in an line
-      # Comment this line and let a path generate to see the difference
-      a_star.frontier = a_star.frontier.sort_by {| cell | proximity_to_star(cell) }
-      a_star.frontier = a_star.frontier.sort_by {| cell | a_star.cost_so_far[cell] + greedy_heuristic(cell) }
-    end
-
-    # If the search found the target
-    if a_star.came_from.key?(grid.target)
-      # Calculate the path between the target and star
-      a_star_calc_path
-    end
-  end
-
-  # Calculates the path between the target and star for the breadth first search
-  # Only called when the breadth first search finds the target
-  def dijkstra_calc_path
-    # Start from the target
-    endpoint = grid.target
-    # And the cell it came from
-    next_endpoint = dijkstra.came_from[endpoint]
-    while endpoint && next_endpoint
-      # Draw a path between these two cells and store it
-      path = get_path_between(endpoint, next_endpoint)
-      dijkstra.path << path
-      # And get the next pair of cells
-      endpoint = next_endpoint
-      next_endpoint = dijkstra.came_from[endpoint]
-      # Continue till there are no more cells
-    end
-  end
-
-  # Returns one-dimensional absolute distance between cell and target
-  # Returns a number to compare distances between cells and the target
-  def greedy_heuristic(cell)
-    (grid.target.x - cell.x).abs + (grid.target.y - cell.y).abs
-  end
-
-  # Calculates the path between the target and star for the greedy search
-  # Only called when the greedy search finds the target
-  def greedy_calc_path
-    # Start from the target
-    endpoint = grid.target
-    # And the cell it came from
-    next_endpoint = greedy.came_from[endpoint]
-    while endpoint && next_endpoint
-      # Draw a path between these two cells and store it
-      path = get_path_between(endpoint, next_endpoint)
-      greedy.path << path
-      # And get the next pair of cells
-      endpoint = next_endpoint
-      next_endpoint = greedy.came_from[endpoint]
-      # Continue till there are no more cells
-    end
-  end
-
-  # Calculates the path between the target and star for the a_star search
-  # Only called when the a_star search finds the target
-  def a_star_calc_path
-    # Start from the target
-    endpoint = grid.target
-    # And the cell it came from
-    next_endpoint = a_star.came_from[endpoint]
-
-    while endpoint && next_endpoint
-      # Draw a path between these two cells and store it
-      path = get_path_between(endpoint, next_endpoint)
-      a_star.path << path
-      # And get the next pair of cells
-      endpoint = next_endpoint
-      next_endpoint = a_star.came_from[endpoint]
-      # Continue till there are no more cells
-    end
-  end
-
-  # Returns a list of adjacent cells
-  # Used to determine what the next cells to be added to the frontier are
-  def adjacent_neighbors(cell)
-    neighbors = []
-
-    # Gets all the valid neighbors into the array
-    # From southern neighbor, clockwise
-    neighbors << [cell.x    , cell.y - 1] unless cell.y == 0
-    neighbors << [cell.x - 1, cell.y    ] unless cell.x == 0
-    neighbors << [cell.x    , cell.y + 1] unless cell.y == grid.height - 1
-    neighbors << [cell.x + 1, cell.y    ] unless cell.x == grid.width - 1
-
-    neighbors
-  end
-
-  # Finds the vertical and horizontal distance of a cell from the star
-  # and returns the larger value
-  # This method is used to have a zigzag pattern in the rendered path
-  # A cell that is [5, 5] from the star,
-  # is explored before over a cell that is [0, 7] away.
-  # So, if possible, the search tries to go diagonal (zigzag) first
-  def proximity_to_star(cell)
-    distance_x = (grid.star.x - cell.x).abs
-    distance_y = (grid.star.y - cell.y).abs
+  def proximity_to_start_location(loc)
+    distance_x = (@start_location.ordinal_x - loc.ordinal_x).abs
+    distance_y = (@start_location.ordinal_y - loc.ordinal_y).abs
 
     if distance_x > distance_y
       return distance_x
@@ -943,64 +130,387 @@ class A_Star_Algorithm
     end
   end
 
-  # Methods that allow code to be more concise. Subdivides args.state, which is where all variables are stored.
-  def grid
-    state.grid
+  def tick_generate_path
+    return if @status != :calculating_path
+    @path << @current_path_location
+    @current_path_location = @came_from[@current_path_location]
+    if @current_path_location == @start_location
+      @path << @current_path_location
+      @status = :complete
+    elsif !@current_path_location
+      @status = :complete
+    end
   end
 
-  def dijkstra
-    state.dijkstra
+  def adjacent_locations(location)
+    @directions.map do |dir|
+      {
+        ordinal_x: location.ordinal_x + dir.ordinal_x,
+        ordinal_y: location.ordinal_y + dir.ordinal_y
+      }
+    end.find_all do |loc|
+      loc.ordinal_x.between?(0, @grid_size - 1) &&
+      loc.ordinal_y.between?(0, @grid_size - 1)
+    end
   end
 
-  def greedy
-    state.greedy
-  end
-
-  def a_star
-    state.a_star
-  end
-
-  # Descriptive aliases for colors
-  def default_color
-    { r: 221, g: 212, b: 213 }
-  end
-
-  def wall_color
-    { r: 134, g: 134, b: 120 }
-  end
-
-  def visited_color
-    { r: 204, g: 191, b: 179 }
-  end
-
-  def path_color
-    { r: 231, g: 230, b: 228 }
-  end
-
-  def button_color
-    [190, 190, 190] # Gray
+  def path_found?
+    !@path.empty?
   end
 end
 
+class Game
+  attr_gtk
 
-# Method that is called by DragonRuby periodically
-# Used for updating animations and calculations
+  def initialize
+    @grid_size = 16
+    @tile_size = 720 / @grid_size
+
+    @walls = []
+    @available_spots = @grid_size.flat_map do |ordinal_x|
+      @grid_size.map do |ordinal_y|
+        new_wall(ordinal_x: ordinal_x, ordinal_y: ordinal_y)
+      end
+    end
+
+    @mode = :place_walls
+
+    @buttons = [
+      Layout.rect(row: 10, col: 14, w: 2, h: 2)
+            .merge(mode: :place_walls, text: "place walls", m: :place_wall_clicked),
+      Layout.rect(row: 10, col: 16, w: 2, h: 2)
+            .merge(mode: :place_start_location, text: "set start location", m: :place_start_location_clicked),
+      Layout.rect(row: 10, col: 18, w: 2, h: 2)
+            .merge(mode: :place_end_location, text: "set end location", m: :place_end_location_clicked),
+      Layout.rect(row: 10, col: 20, w: 2, h: 2)
+            .merge(mode: :solving, text: "solve!", m: :solve_clicked),
+      Layout.rect(row: 10, col: 22, w: 2, h: 2)
+            .merge(mode: :reset, text: "reset!", m: :reset_clicked),
+    ]
+  end
+
+  def new_wall(ordinal_x:, ordinal_y:)
+    Geometry.rect_props(x: ordinal_x * @tile_size, y: ordinal_y * @tile_size, w: @tile_size, h: @tile_size)
+            .merge(ordinal_x: ordinal_x, ordinal_y: ordinal_y)
+  end
+
+  def editing_disabled?
+    return true if @mode == :solving
+    return true if @mode == :complete
+    return false
+  end
+
+  def place_wall_clicked
+    return if editing_disabled?
+    @mode = :place_walls
+  end
+
+  def place_start_location_clicked
+    return if editing_disabled?
+    @mode = :place_start_location
+  end
+
+  def place_end_location_clicked
+    return if editing_disabled?
+    @mode = :place_end_location
+  end
+
+  def solve_clicked
+    return if editing_disabled?
+
+    if !@start_location
+      GTK.notify "Please set a start location"
+      return
+    elsif !@end_location
+      GTK.notify "Please set an end location"
+      return
+    end
+
+    @mode = :solving
+    @astar ||= AStar.new(start_location: @start_location,
+                          end_location: @end_location,
+                          walls: @walls,
+                          grid_size: @grid_size)
+
+    @astar.start!
+  end
+
+  def reset_clicked
+    return if @mode == :reset
+
+    if @astar
+      @astar = nil
+    else
+      @walls = []
+      @start_location = nil
+      @end_location = nil
+    end
+
+    @mode = :reset
+
+    GTK.on_tick_count Kernel.tick_count + 15 do
+      @mode = :place_walls
+    end
+  end
+
+  def tick_solve
+    return if @mode != :solving
+
+    if inputs.keyboard.key_repeat.j
+      @astar.tick
+    end
+
+    if @astar.status == :complete
+      @mode = :complete
+    end
+  end
+
+  def tick
+    tick_buttons
+    tick_place_walls
+    tick_place_start_location
+    tick_place_end_location
+    tick_solve
+    render
+  end
+
+  def tick_buttons
+    return if !inputs.mouse.key_down.left
+
+    button = @buttons.find do |b|
+      Geometry.inside_rect?(inputs.mouse.rect, b)
+    end
+
+    send button.m if button
+  end
+
+  def wall_under_mouse
+    @walls.find do |wall|
+      Geometry.inside_rect?(inputs.mouse.rect, wall)
+    end
+  end
+
+  def spot_under_mouse
+    @available_spots.find do |spot|
+      Geometry.inside_rect?(inputs.mouse.rect, spot)
+    end
+  end
+
+  def tick_place_start_location
+    return if @mode != :place_start_location
+    return if !inputs.mouse.key_down.left
+
+    clicked_wall = wall_under_mouse
+    clicked_spot = spot_under_mouse
+
+    if clicked_wall
+      @walls.delete(clicked_wall)
+    elsif @end_location && Geometry.inside_rect?(inputs.mouse.rect, @end_location)
+      @end_location = nil
+    elsif clicked_spot
+      @start_location = { **clicked_spot }
+    end
+  end
+
+  def tick_place_end_location
+    return if @mode != :place_end_location
+    return if !inputs.mouse.key_down.left
+
+    clicked_wall = wall_under_mouse
+    clicked_spot = spot_under_mouse
+
+    if clicked_wall
+      @walls.delete(clicked_wall)
+    elsif @start_location && Geometry.inside_rect?(inputs.mouse.rect, @start_location)
+      @start_location = nil
+    elsif clicked_spot
+      @end_location = { **clicked_spot }
+    end
+  end
+
+  def tick_place_walls
+    return if @mode != :place_walls
+    return if !inputs.mouse.key_down.left
+
+    clicked_wall = wall_under_mouse
+    clicked_spot = spot_under_mouse
+
+    if clicked_wall
+      @walls.delete(clicked_wall)
+    elsif @start_location && Geometry.inside_rect?(inputs.mouse.rect, @start_location)
+      @start_location = nil
+    elsif @end_location && Geometry.inside_rect?(inputs.mouse.rect, @end_location)
+      @end_location = nil
+    elsif clicked_spot
+      @walls << { **clicked_spot }
+    end
+  end
+
+  def mode_label
+    text = case @mode
+           when :place_walls
+             "place walls"
+           when :place_start_location
+             "set start location"
+           when :place_end_location
+             "set end location"
+           when :solving
+             "solving mode (hold the J key)"
+           when :complete
+             "complete! path found? #{@astar.path_found?}"
+           when :reset
+             "resetting..."
+           else
+             "unknown mode #{@mode}"
+           end
+
+    Layout.rect(row: [0, 1], col: [14, 23])
+          .center
+          .merge(text: text, anchor_x: 0.5, anchor_y: 0.5, size_px: 32, r: 255, g: 255, b: 255)
+  end
+
+  def button_prefab button
+    selection_rect = if button.mode == @mode
+                       {
+                         **button.center,
+                         w: button.w - 8,
+                         h: button.h - 8,
+                         anchor_x: 0.5,
+                         anchor_y: 0.5,
+                         path: :solid,
+                         r: 0,
+                         b: 0,
+                         g: 200,
+                         a: 128
+                       }
+                     else
+                       nil
+                     end
+
+    lines = String.wrapped_lines button.text, 9
+
+    labels = String.line_anchors(lines.length)
+                   .map_with_index do |anchor_y, line_index|
+                     {
+                       **button.center,
+                       text: lines[line_index],
+                       anchor_x: 0.5,
+                       anchor_y: anchor_y
+                     }
+                   end
+
+    [
+      {
+        **button,
+        path: :solid,
+        r: 255,
+        g: 255,
+        b: 255,
+        a: 255,
+        primitive_marker: :sprite
+      },
+      selection_rect,
+      labels
+    ]
+  end
+
+  def cell_prefab(cell:, r:, g:, b:, a: 255, text: nil)
+    {
+      **cell.center,
+      w: cell.w - 4,
+      h: cell.h - 4,
+      path: :solid,
+      r: r,
+      g: g,
+      b: b,
+      a: a,
+      anchor_x: 0.5,
+      anchor_y: 0.5,
+    }
+  end
+
+  def render_map
+    outputs.primitives << @available_spots.map do |spot|
+      cell_prefab(cell: spot, r: 128, g: 128, b: 128, a: 128)
+    end
+
+    outputs.primitives << @walls.map do |wall|
+      cell_prefab(cell: wall, r: 200, g: 96, b: 96, a: 255,)
+    end
+
+  end
+
+  def render_ui
+    outputs.primitives << mode_label
+
+    outputs.primitives << @buttons.map do |button|
+      button_prefab(button)
+    end
+  end
+
+  def render_astar
+    return if !@astar
+
+    outputs.primitives << @astar.cost.map do |loc, cost|
+      rect = Geometry.rect(x: loc.ordinal_x * @tile_size,
+                           y: loc.ordinal_y * @tile_size,
+                           w: @tile_size,
+                           h: @tile_size)
+      [
+        { **rect.center, w: rect.w - 4, h: rect.h - 4,
+          anchor_x: 0.5, anchor_y: 0.5,
+          r: 232, g: 232, b: 232, path: :solid },
+        { **rect.center, text: "#{cost.to_s}",
+          anchor_x: 0.5, anchor_y: 0.5, size_px: 14 },
+      ]
+    end
+
+    outputs.primitives << @astar.path.map do |loc|
+      rect = Geometry.rect(x: loc.ordinal_x * @tile_size,
+                           y: loc.ordinal_y * @tile_size,
+                           w: @tile_size,
+                           h: @tile_size)
+      { **rect, r: 200, g: 200, b: 0, a: 128, path: :solid }
+    end
+  end
+
+  def render
+    outputs.background_color = [30, 30, 30]
+    render_map
+    render_ui
+    render_astar
+    render_start_and_end_locations
+  end
+
+  def render_start_and_end_locations
+    if @start_location
+      outputs.primitives << cell_prefab(cell: @start_location,
+                                        r: 96, g: 96, b: 200, a: 255)
+    end
+
+    if @end_location
+      outputs.primitives << cell_prefab(cell: @end_location,
+                                        r: 96, g: 200, b: 96, a: 255)
+    end
+  end
+
+end
+
+
+def boot args
+  args.state = {}
+end
+
 def tick args
-
-  # Pressing r will reset the application
-  if args.inputs.keyboard.key_down.r
-    GTK.reset
-    reset
-    return
-  end
-
-  # Every tick, new args are passed, and the Breadth First Search tick is called
-  $a_star_algorithm ||= A_Star_Algorithm.new
-  $a_star_algorithm.args = args
-  $a_star_algorithm.tick
+  $game ||= Game.new
+  $game.args = args
+  $game.tick
 end
 
-
-def reset
-  $a_star_algorithm = nil
+def reset args
+  $game = nil
 end
+
+# GTK.reset
+
+GTK.reset_and_replay "replay.txt", speed: 5

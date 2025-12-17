@@ -1,3 +1,28 @@
+* 6.41
+** [Bugfix] Splash screen reintroduced so that sounds play on iOS web builds.
+   User interaction is required for audio initialization on iOS.
+** [Bugfix] Fullscreen mode works correctly on Windows running Chrome.
+   Why does Windows + Chrome require a separate code path for full
+   screen resizing of the game when all other platforms fullscreen on
+   Chrome correctly? The world may never know. Let's just be thankful
+   that Windows, Chrome, and iOS haven't joined forces.
+* 6.40
+** [Samples] Added Bust A Move sample app.
+   Sample app location: =samples/99_genre_arcade/bust-a-move=
+** [Support] Added 8BitDo Ultimate 2C mappings.
+** [Support] Numeric#frame includes ~frame_elapsed_time~.
+* 6.39
+** [Support] Added ~Numeric.frame~
+   Mirrors ~Numeric.frame_index~ but provides additional information about the animation progress (see docs for details).
+** [Support] ~puts~ will flush to the log file if too many entries queue up.
+   This will give you logging information even if your game is stuck in an infinite loop.
+** [Samples] Added Guess the Word in 6 tries sample app.
+   Sample app location: =samples/99_genre_board_game/03_word_game=
+** [Samples] Updated A Star path finding sample app to use a Priority Queue (cleaned up code).
+   Sample app location: =samples/13_path_finding_algorithms/08_a_star=
+* 6.38
+** [Pro] [Support] Performance improvements retrieving texture atlases for HD Mode.
+** [Support] Improved performance of web-builds running on Windows.
 * 6.37
 ** [Bugfix] Fixed bug ~inputs.(key_down|key_up|key_held).up_down~ reporting the wrong value.
    Regression was introduced in 6.29.
@@ -1154,7 +1179,7 @@
 ** [Support] Added ~Geometry::find_all_intersect_rect_quad_tree~.
    Function is useful if ~Geometry::find_all_intersect_rect~ doesn't meet performance needs
    and if the rectangles that are checked do not change every frame. See docs for usage example.
-** [Support] Better handling of full screen mode for web builds.
+** [Support] Better handling of fullscreen mode for web builds.
 ** [Bugfix] [mRuby] ~Hash~ double-splat format in mRuby 3.0 changed the original Hash. This has been fixed.
    Special thanks to Sophira@discord and Pineapple@discord for finding and bumping the fix of this issue.
 *** Repro:
