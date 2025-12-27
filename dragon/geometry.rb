@@ -818,7 +818,10 @@ S
       end
 
       def circle_intersect_line? circle, line
-        center = { x: circle.x, y: circle.y }
+        center    = { x: circle.x + circle.radius, y: circle.y + circle.radius }
+        center.x -= circle.anchor_x * circle.w if circle.respond_to?(:anchor_x) && circle.anchor_x
+        center.y -= circle.anchor_y * circle.h if circle.respond_to?(:anchor_y) && circle.anchor_y
+
         closest_point = line_normal line, center
         result = distance_squared(center, closest_point) <= circle.radius**2
         return false if !result
@@ -853,26 +856,31 @@ S
       end
 
       def rect_to_circle rect
+        x = y = w = h = radius = nil
+
         if circle? rect
-          rect
+          radius = rect.radius
+          w = h = radius * 2
         elsif rect? rect
-          x = rect.x
-          y = rect.y
-          anchor_shift_x = 0.5 - (rect.anchor_x || 0)
-          anchor_shift_y = 0.5 - (rect.anchor_y || 0)
-          x += rect.w * anchor_shift_x
-          y += rect.h * anchor_shift_y
-          radius = if rect.w <= rect.h
-                     rect.w / 2
+          w = rect.w
+          h = rect.h
+          radius = if w <= h
+                     w / 2
                    else
-                     rect.h / 2
+                     h / 2
                    end
-          { x: x, y: y, radius: radius }
         else
           raise <<-S
 Parameter provided returned false for both Geometry::circle? and Geometry::rect?.
 S
         end
+
+        x = rect.x
+        y = rect.y
+        x -= rect.anchor_x * w if rect.respond_to?(:anchor_x) && rect.anchor_x
+        y -= rect.anchor_y * h if rect.respond_to?(:anchor_y) && rect.anchor_y
+
+        { x: x, y: y, w: w, h: h, radius: radius }
       rescue Exception => e
         raise e, <<-S
 * ERROR:
@@ -880,22 +888,15 @@ Geometry::rect_to_circle for rect #{rect}.
 #{e}
 Make sure the parameter adheres to one of the following:
 - A ~Hash~ with ~x~, ~y~, and ~radius~ (or an object that responds to ~x~, ~y~, and ~radius~).
-- A ~Hash~ with ~x~, ~y~, ~w~, ~h~, ~anchor_x~, and ~anchor_y~ (or an object that responds to ~x~, ~y~, ~w~, ~h~, ~anchor_x~, and ~anchor_y~).
-  If the parameter is a ~Hash~, ~anchor_x~ and ~anchor_y~ are optional and default to ~0~.
+- A ~Hash~ with ~x~, ~y~, ~w~, and ~h~ (or an object that responds to ~x~, ~y~, ~w~, and ~h~).
 S
       end
 
       def rect? shape
-        if shape.is_a? Hash
-          shape.w && shape.h
-        else
-          shape.respond_to?(:x) &&
-          shape.respond_to?(:y) &&
-          shape.respond_to?(:w) &&
-          shape.respond_to?(:h) &&
-          shape.respond_to?(:anchor_x) &&
-          shape.respond_to?(:anchor_y)
-        end
+        shape.respond_to?(:x) &&
+        shape.respond_to?(:y) &&
+        shape.respond_to?(:w) &&
+        shape.respond_to?(:h)
       rescue Exception => e
         raise e, <<-S
 * ERROR:
@@ -925,22 +926,35 @@ S
       end
 
       def circle? shape
-        if shape.is_a?(Hash)
-          !!shape.radius
-        else
-          shape.respond_to?(:radius)
-        end
+        shape.respond_to?(:x) &&
+        shape.respond_to?(:y) &&
+        shape.respond_to?(:radius)
+      rescue Exception => e
+        raise e, <<-S
+* ERROR:
+Geometry::circle? for shape #{shape}.
+#{e}
+S
       end
 
       def intersect_circle? circle_one, circle_two
         resolved_circle_one = rect_to_circle circle_one
         resolved_circle_two = rect_to_circle circle_two
-        distance_squared(circle_one, circle_two) <= (circle_one.radius + circle_two.radius)**2
+
+        circle_one_center = { x: resolved_circle_one.x + resolved_circle_one.radius,
+                              y: resolved_circle_one.y + resolved_circle_one.radius }
+        circle_two_center = { x: resolved_circle_two.x + resolved_circle_two.radius,
+                              y: resolved_circle_two.y + resolved_circle_two.radius }
+
+        distance_squared(circle_one_center, circle_two_center) <= (resolved_circle_one.radius + resolved_circle_two.radius)**2
       rescue Exception => e
         raise e, <<-S
 * ERROR:
 Geometry::intersect_circle? for circle_one #{circle_one} and circle_two #{circle_two}.
 #{e}
+Make sure the parameters adhere to one of the following:
+- A ~Hash~ with ~x~, ~y~, and ~radius~ (or an object that responds to ~x~, ~y~, and ~radius~).
+- A ~Hash~ with ~x~, ~y~, ~w~, and ~h~ (or an object that responds to ~x~, ~y~, ~w~, and ~h~).
 S
       end
 
