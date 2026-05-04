@@ -168,7 +168,7 @@ class LevelEditor
 
   def save_terrain args
     contents = args.state.terrain.uniq.map do |terrain_element|
-      "#{terrain_element.x.to_i},#{terrain_element.y.to_i},#{terrain_element.w.to_i},#{terrain_element.h.to_i},#{terrain_element.path},#{terrain_element.has_collision}"
+      "#{terrain_element.x.to_i},#{terrain_element.y.to_i},#{terrain_element.w.to_i},#{terrain_element.h.to_i},#{terrain_element.has_collision},#{terrain_element.path}"
     end
     File.write "data/terrain.txt", contents.join("\n")
   end
@@ -182,7 +182,7 @@ class LevelEditor
       if l.empty?
         nil
       else
-        x, y, w, h, path, has_collision = l.split ","
+        x, y, w, h, has_collision, path = l.split ","
         if has_collision.nil?
           has_collision = true
         else
