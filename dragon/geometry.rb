@@ -3,6 +3,10 @@
 # MIT License
 # geometry.rb has been released under MIT (*only this file*).
 
+# Contributors outside of DragonRuby who also hold Copyright:
+# - Lucas Haley: https://github.com/lucashaley
+
+
 module GTK
   module Geometry
     def inside_rect? outer, tolerance = 0.0
@@ -935,7 +939,7 @@ S
       def intersect_circle? circle_one, circle_two
         resolved_circle_one = rect_to_circle circle_one
         resolved_circle_two = rect_to_circle circle_two
-        distance_squared(circle_one, circle_two) <= (circle_one.radius + circle_two.radius)**2
+        distance_squared(resolved_circle_one, resolved_circle_two) <= (resolved_circle_one.radius + resolved_circle_two.radius)**2
       rescue Exception => e
         raise e, <<-S
 * ERROR:
