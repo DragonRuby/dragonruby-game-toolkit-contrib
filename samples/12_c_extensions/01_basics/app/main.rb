@@ -1,4 +1,4 @@
-GTK.ffi_misc.gtk_dlopen("ext")
+DR.ffi_misc.gtk_dlopen("ext")
 include FFI::CExt
 
 def tick args

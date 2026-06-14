@@ -2,15 +2,42 @@
 
 The `Numeric` class has been extend to provide methods that will help in common game development tasks.
 
+## `frame`
+
+Similiar to `Numeric.frame_index` except additional information about
+frame data is returned that can be helpful for creating an animation
+state machine.
+
+`Numeric.frame` takes in the same parameters as `Numeric.frame_index`
+and returns a `Hash` with the following information (as opposed to
+just a `Integer`:
+
+- `frame_index`: The same `Integer` (or nil) value that
+  `Numeric.frame_index` returns.
+- `frame_count`: The `frame_count` argument that was passed into the
+  function.
+- `frames_left`: The number of frames left before the `frame_index`
+  would return `nil`.
+- `started`: `true` or `false` representing if the animation has
+  stared (`frame_index` returns `nil` if the animation hasn't been
+  started yet).
+- `completed`: `true` or `false` representing if the animation has
+  completed (`frame_index` returns `nil` if the animation has
+  completed and it's not a repeating animation).
+- `elapsed_time`: How many ticks have elapsed since the animation was started.  
+- `frame_elapsed_time`: How many ticks have elapsed for the current `frame_index`.  
+- `duration`: Length of animation in ticks given the values of
+  `frame_count`, and `hold_for` that were passed into the function.
+
 ## `frame_index`
 
 This function is helpful for determining the index of frame-by-frame sprite animation. The numeric value `self` represents the moment the animation started.
 
 `frame_index` takes three additional parameters:
 
--   How many frames exist in the sprite animation.
--   How long to hold each animation for.
--   Whether the animation should repeat.
+- How many frames exist in the sprite animation.
+- How long to hold each animation for.
+- Whether the animation should repeat.
 
 `frame_index` will return `nil` if the time for the animation is out of bounds of the parameter specification.
 
@@ -110,6 +137,31 @@ def tick args
 end
 ```
 
+## `rand`
+
+Numeric has an expanded `rand` implementation that supports `Range` arguments.
+
+Example usage:
+
+```ruby
+def tick args
+  # print a random number within range every second
+  if Kernel.tick_count.zmod?(60)
+    random_number = Numeric.rand(-10..10)
+    puts "Random number is: #{random_number}"
+  end
+end
+```
+
+Parameter variants:
+
+- No arguments: `Numeric.rand()` will return a random `float` between 0.0 and 1.0.
+- Numeric argument: `Numeric.rand(10)` will return a random `integer` between 0 and 10 (exclusive).
+- Range argument (integer values): `Numeric.rand(1..10)` will return a random `integer` between 1 and 10 (inclusive).
+- Range argument (integer values): `Numeric.rand(-10..10)` will return a random `integer` between -10 and 10 (inclusive).
+- Range argument (float values): `Numeric.rand(1.0..10.0)` will return a random `float` between 1.0 and 10.0.
+- Range argument (float values): `Numeric.rand(-10.0..10.0)` will return a random `float` between -10.0 and 10.0.
+
 ## `elapsed_time`
 
 For a given number, the elapsed frames since that number is returned. `Kernel.tick_count` is used to determine how many frames have elapsed. An optional numeric argument can be passed in which will be used instead of `Kernel.tick_count`.
@@ -153,33 +205,6 @@ def tick args
 end
 ```
 
-## `frame`
-
-Similiar to `Numeric.frame_index` except additional information about
-frame data is returned that can be helpful for creating an animation
-state machine.
-
-`Numeric.frame` takes in the same parameters as `Numeric.frame_index`
-and returns a `Hash` with the following information (as opposed to
-just a `Integer`:
-
-- `frame_index`: The same `Integer` (or nil) value that
-  `Numeric.frame_index` returns.
-- `frame_count`: The `frame_count` argument that was passed into the
-  function.
-- `frames_left`: The number of frames left before the `frame_index`
-  would return `nil`.
-- `started`: `true` or `false` representing if the animation has
-  stared (`frame_index` returns `nil` if the animation hasn't been
-  started yet).
-- `completed`: `true` or `false` representing if the animation has
-  completed (`frame_index` returns `nil` if the animation has
-  completed and it's not a repeating animation).
-- `elapsed_time`: How many ticks have elapsed since the animation was started.  
-- `frame_elapsed_time`: How many ticks have elapsed for the current `frame_index`.  
-- `duration`: Length of animation in ticks given the values of
-  `frame_count`, and `hold_for` that were passed into the function.
-  
 ## `elapsed?`
 
 Returns true if `Numeric#elapsed_time` is greater than the number. An optional parameter can be passed into `elapsed?` which is added to the number before evaluating whether `elapsed?` is true.
@@ -253,31 +278,6 @@ Returns a "string float" representation of a number with two decimal places. eg:
 ## `to_si`
 
 Returns a "string int" representation of a number with underscores for thousands separator. eg: `50000.8778` will be shown as `50_000`.
-
-## `rand`
-
-Numeric has an expanded `rand` implementation that supports `Range` arguments.
-
-Example usage:
-
-```ruby
-def tick args
-  # print a random number within range every second
-  if Kernel.tick_count.zmod?(60)
-    random_number = Numeric.rand(-10..10)
-    puts "Random number is: #{random_number}"
-  end
-end
-```
-
-Parameter variants:
-
-- No arguments: `Numeric.rand()` will return a random `float` between 0.0 and 1.0.
-- Numeric argument: `Numeric.rand(10)` will return a random `integer` between 0 and 10 (exclusive).
-- Range argument (integer values): `Numeric.rand(1..10)` will return a random `integer` between 1 and 10 (inclusive).
-- Range argument (integer values): `Numeric.rand(-10..10)` will return a random `integer` between -10 and 10 (inclusive).
-- Range argument (float values): `Numeric.rand(1.0..10.0)` will return a random `float` between 1.0 and 10.0.
-- Range argument (float values): `Numeric.rand(-10.0..10.0)` will return a random `float` between -10.0 and 10.0.
 
 ## `vector_x`
 
@@ -383,6 +383,74 @@ the minimum and maximum values.
 
 Eg: `100.clamp_wrap(0, 50) # result: 49`
 
+## `mid`,`min`,`max`, `between?`
+
+These functions are similar to `clamp`. Given two `Numeric` parameters
+`l:` (left) and `r:` (right), `mid` will either return the original
+number, `l`, or `r` depending on which value is in the acceptable
+range.
+
+### Invocation Variants
+
+Here are examples of using `mid`, with named parameters (each variant
+below returns `5` as the answer given the parameters that are passed in): 
+
+```ruby
+  5.mid(l:  0, r: 10)    # result: 5
+ 10.mid(l:  0, r:  5)    # result: 5
+-10.mid(l:  5, r: 10)    # result: 5
+ 10.mid(r:  5)           # result: 5
+  5.mid(r: 10)           # result: 5
+  5.mid(l:  0)           # result: 5
+  0.mid(l:  5)           # result: 5
+  5.mid(l: 10, r:  0)    # result: 5
+```
+
+Here are examples of using `mid` with implicit parameters:
+
+```ruby
+  5.mid(  0, 10)    # result: 5
+ 10.mid(  0,  5)    # result: 5
+-10.mid(  5, 10)    # result: 5
+ 10.mid(nil,  5)    # result: 5
+  5.mid(nil, 10)    # result: 5
+  5.mid(  0)        # result: 5
+  0.mid(  5)        # result: 5
+  5.mid( 10,  0)    # result: 5
+```
+
+And using `Numeric.mid` (note the additional `m` "middle" parameter):
+
+```ruby
+Numeric.mid(l:  0, m:   5, r: 10)    # result: 5
+Numeric.mid(l:  0, m:  10, r:  5)    # result: 5
+Numeric.mid(l:  5, m: -10, r: 10)    # result: 5
+Numeric.mid(r:  5, m:  10)           # result: 5
+Numeric.mid(r: 10, m:   5)           # result: 5
+Numeric.mid(l:  0, m:   5)           # result: 5
+Numeric.mid(l:  5, m:   0)           # result: 5
+Numeric.mid(l: 10, m:   5, r:  0)    # result: 5
+```
+
+Here's `min`, `max` usage:
+
+```ruby
+10.min(5)    # result: 5
+ 0.max(5)    # result: 5
+```
+
+And `between?`, `mid?` usage:
+```ruby
+10.mid?(l: 0, r: 5)    # false
+10.mid?(l: 5, r: 0)    # false
+10.mid?(   0,    5)    # false
+10.mid?(   5,    0)    # false
+ 3.mid?(l: 0, r: 5)    # true
+ 3.mid?(l: 5, r: 0)    # true
+ 3.mid?(   0,    5)    # true
+ 3.mid?(   5,    0)    # true
+```
+
 ## `times`
 
 Executes a block of code a number of times equal to the numeric value.
@@ -418,3 +486,76 @@ Converts the numeric value to radians (Numeric value is assumed to be in degrees
 
 - `to_r`
 - `to_radians_from_degrees`
+
+## `compose_blendmode`
+
+This function is used when rendering primitives to a render
+target. See section Outputs (`args.outputs`) for information on how to
+create render targets.
+
+For examples of using custom blendmodes see:
+- `samples/07_advanced_rendering/20_rings`
+- `samples/07_advanced_rendering/21_line_of_sight`
+
+A blend mode controls how the pixels from a drawing operation (source)
+get combined with the pixels from the render target
+(destination). First, the components of the source and destination
+pixels get multiplied with their blend factors. Then, the blend
+operation takes the two products and calculates the result that will
+get stored in the render target. 
+
+Expressed in pseudocode, it would look like this:
+
+```
+dstRGB = colorOperation(srcRGB * srcColorFactor, dstRGB * dstColorFactor);
+dstA = alphaOperation(srcA * srcAlphaFactor, dstA * dstAlphaFactor);
+```
+
+Where the functions `colorOperation(src, dst)` and `alphaOperation(src, dst)` can return one of the following:
+
+```
+src + dst
+src - dst
+dst - src
+min(src, dst)
+max(src, dst)
+```
+
+The red, green, and blue components are always multiplied with the
+first, second, and third components of the `BLENDFACTOR_`,
+respectively. The fourth component is not used.
+
+The alpha component is always multiplied with the fourth component of
+`BLENDFACTOR_`. The other components are not used in the alpha
+calculation. 
+
+These are the predefined constants that are available:
+
+- `BLENDOPERATION_ADD`
+- `BLENDOPERATION_SUBTRACT`
+- `BLENDOPERATION_REV_SUBTRACT`
+- `BLENDOPERATION_MINIMUM`
+- `BLENDOPERATION_MAXIMUM`
+- `BLENDFACTOR_ZERO`
+- `BLENDFACTOR_ONE`
+- `BLENDFACTOR_SRC_COLOR`
+- `BLENDFACTOR_ONE_MINUS_SRC_COLOR`
+- `BLENDFACTOR_SRC_ALPHA`
+- `BLENDFACTOR_ONE_MINUS_SRC_ALPHA`
+- `BLENDFACTOR_DST_COLOR`
+- `BLENDFACTOR_ONE_MINUS_DST_COLOR`
+- `BLENDFACTOR_DST_ALPHA`
+- `BLENDFACTOR_ONE_MINUS_DST_ALPHA`
+
+
+Here is an example of creating a blendmode that performs a "holepunch"
+within a render target:
+
+```ruby
+HOLE_PUNCH_BLENDMODE = Numeric.compose_blendmode(BLENDFACTOR_ZERO,
+                                                 BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+                                                 BLENDOPERATION_ADD,
+                                                 BLENDFACTOR_ZERO,
+                                                 BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+                                                 BLENDOPERATION_ADD)
+```

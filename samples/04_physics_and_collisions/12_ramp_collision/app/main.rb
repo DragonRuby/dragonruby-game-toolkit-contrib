@@ -2,7 +2,7 @@
 # based off of the writeup here:
 # http://higherorderfun.com/blog/2012/05/20/the-guide-to-implementing-2d-platformers/
 
-# NOTE: at the bottom of the file you'll find GTK.reset_and_replay "replay.txt"
+# NOTE: at the bottom of the file you'll find DR.reset_and_replay "replay.txt"
 #       whenever you make changes to this file, a replay will automatically run so you can
 #       see how your changes affected the game. Comment out the line at the bottom if you
 #       don't want the replay to autmatically run.
@@ -543,4 +543,4 @@ def grid_aligned_rect point, size
   { x: grid_aligned_x.to_i, y: grid_aligned_y.to_i, w: size.to_i, h: size.to_i }
 end
 
-GTK.reset_and_replay "replay.txt", speed: 2
+DR.reset_and_replay "replay.txt", speed: 2

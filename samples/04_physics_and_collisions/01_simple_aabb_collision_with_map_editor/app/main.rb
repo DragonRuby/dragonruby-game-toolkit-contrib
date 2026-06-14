@@ -125,13 +125,13 @@ end
 
 def read_terrain_data args
   # create the terrain data file if it doesn't exist
-  contents = GTK.read_file "data/terrain.txt"
+  contents = DR.read_file "data/terrain.txt"
   if !contents
-    GTK.write_file "data/terrain.txt", ""
+    DR.write_file "data/terrain.txt", ""
   end
 
   # read the terrain data from disk which is a csv
-  GTK.read_file('data/terrain.txt').split("\n").map do |line|
+  DR.read_file('data/terrain.txt').split("\n").map do |line|
     x, y, w, h = line.split(',').map(&:to_i)
     { x: x, y: y, w: w, h: h, path: 'sprites/square/blue.png' }
   end
@@ -139,5 +139,5 @@ end
 
 def write_terrain_data args
   terrain_csv = args.state.terrain.map { |t| "#{t.x},#{t.y},#{t.w},#{t.h}" }.join "\n"
-  GTK.write_file 'data/terrain.txt', terrain_csv
+  DR.write_file 'data/terrain.txt', terrain_csv
 end

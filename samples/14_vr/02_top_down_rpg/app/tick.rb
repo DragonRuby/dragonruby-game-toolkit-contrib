@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   def tick
     outputs.background_color = [0, 0, 0]
@@ -105,4 +105,4 @@ def tick_game args
   $game.tick
 end
 
-GTK.reset
+DR.reset

@@ -1,10 +1,10 @@
 class Game
-  attr_gtk
+  attr_dr
 
   def tick
     if Kernel.tick_count == 0
       # set window to an ultra wide aspect ratio for the demonstration
-      GTK.set_window_scale(1.0, 32, 9)
+      DR.set_window_scale(1.0, 32, 9)
     end
 
     state.player ||= {
@@ -173,7 +173,7 @@ class Camera
 
     def to_world_space camera, rect
       if rect.is_a? Array
-        rect.map { |r| to_world_space camera, rect }
+        rect.map { |r| to_world_space camera, r }
       else
         __to_world_space__ camera, rect
       end
@@ -246,4 +246,4 @@ def reset args
   $game = nil
 end
 
-GTK.reset
+DR.reset

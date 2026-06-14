@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   def initialize
     # rng is sent to Random so that everyone gets the same levels
@@ -373,4 +373,4 @@ def reset args
   args.state = {}
 end
 
-# GTK.reset
+# DR.reset

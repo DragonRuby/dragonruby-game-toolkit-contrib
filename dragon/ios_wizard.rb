@@ -60,6 +60,7 @@ class IOSWizard < Wizard
       :check_for_xcode,
       :check_for_brew,
       :check_for_certs,
+      :check_for_imagemagick,
     ]
   end
 
@@ -75,8 +76,10 @@ class IOSWizard < Wizard
     [
       *prerequisite_steps,
 
+      :check_for_icon_ios,
       :check_for_device,
       :check_for_dev_profile,
+      :determine_app_version,
 
       *app_metadata_retrieval_steps,
       :determine_devcert,
@@ -87,6 +90,7 @@ class IOSWizard < Wizard
       :development_write_info_plist,
 
       :write_entitlements_plist,
+      :stage_icons,
       :compile_icons,
       :clear_payload_directory,
 
@@ -103,8 +107,10 @@ class IOSWizard < Wizard
     [
       *prerequisite_steps,
 
+      :check_for_icon_ios,
       :check_for_device,
       :check_for_dev_profile,
+      :determine_app_version,
 
       *app_metadata_retrieval_steps,
       :determine_devcert,
@@ -115,6 +121,7 @@ class IOSWizard < Wizard
       :development_write_info_plist,
 
       :write_entitlements_plist,
+      :stage_icons,
       :compile_icons,
       :clear_payload_directory,
 
@@ -130,7 +137,9 @@ class IOSWizard < Wizard
   def steps_sim_build
     [
       *prerequisite_steps,
+
       :install_simulator_if_needed,
+      :determine_app_version,
 
       *app_metadata_retrieval_steps,
       :determine_devcert,
@@ -147,7 +156,6 @@ class IOSWizard < Wizard
       :create_sim_payload_directory,
 
       :create_payload,
-      :code_sign_binary,
       :create_ipa,
       :deploy_to_sim
     ]
@@ -157,6 +165,7 @@ class IOSWizard < Wizard
     [
       *prerequisite_steps,
 
+      :check_for_icon_ios,
       :check_for_distribution_profile,
       :determine_app_version,
 
@@ -169,6 +178,7 @@ class IOSWizard < Wizard
       :production_write_info_plist,
 
       :write_entitlements_plist,
+      :stage_icons,
       :compile_icons,
       :clear_payload_directory,
 
@@ -212,10 +222,10 @@ class IOSWizard < Wizard
     @build_type == :hotload || sim_build?
   end
 
-  def start opts = nil
-    @opts = opts || {}
+  def start(env: nil, uninstall: true, version: nil)
+    @opts = { env: env, version: version, uninstall: uninstall }
 
-    if !(@opts.is_a? Hash) || !($gtk.args.fn.eq_any? @opts[:env], :dev, :prod, :hotload, :sim, :test)
+    if !(@opts.is_a? Hash) || !([:dev, :prod, :hotload, :sim, :test].include?(@opts[:env]))
       process_wizard_exception WizardException.new(
                                  "* $wizards.ios.start needs to be provided an ~env:~ option.",
                                  "** To deploy your app to an iOS device connected to your computer:\n   $wizards.ios.start env: :dev",
@@ -229,10 +239,10 @@ class IOSWizard < Wizard
     @should_uninstall = @opts[:uninstall]
     @build_type = @opts[:env]
     @certificate_name = nil
-    @app_version = opts[:version]
+    @app_version = @opts[:version]
     @app_version = "1.0" if @opts[:env] == :dev && !@app_version
     init_wizard_status
-    $console.set_command_silent "Starting iOS Wizard with #{@opts}, please wait..."
+    $console.set_command_silent "* INFO - Starting iOS Wizard with env: ~#{env}~, uninstall: ~#{uninstall}~. Please wait..."
     GTK.on_tick_count Kernel.tick_count + 30 do
       execute_steps get_steps_to_execute
       $console.set_command_silent ""
@@ -274,6 +284,41 @@ class IOSWizard < Wizard
         "** 2. Copy the command that starts with `/bin/bash -c` on the site.",
         "** 3. Open Terminal and run the command you copied from the website.",
         { w: 700, h: 99, path: get_reserved_sprite("terminal.png") },
+      )
+    end
+
+    :success
+  end
+
+  def check_for_imagemagick
+    if !cli_app_exist?('magick')
+      raise WizardException.new(
+        "* You need to install ImageMagick.",
+        "** 1. Open Terminal.",
+        { w: 700, h: 99, path: get_reserved_sprite("terminal.png") },
+        "** 2. Run: `brew install imagemagick`."
+      )
+    end
+
+    :success
+  end
+
+  def check_for_icon_ios
+    icon_path = "#{game_dir}/metadata/icon_ios.png"
+
+    if !$gtk.stat_file('metadata/icon_ios.png')
+      raise WizardException.new(
+        "* I didn't find metadata/icon_ios.png.",
+        "** Create metadata/icon_ios.png with a resolution of 1024x1024."
+      )
+    end
+
+    dimensions = `magick identify -format "%wx%h" "#{icon_path}"`.strip
+    if dimensions != "1024x1024"
+      raise WizardException.new(
+        "* metadata/icon_ios.png is not the correct resolution.",
+        "** metadata/icon_ios.png must be 1024x1024.",
+        "** The current resolution is: #{dimensions}."
       )
     end
 
@@ -716,8 +761,12 @@ S
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
     <dict>
+        <key>LSSupportsGameMode</key>
+        <true/>
         <key>BuildMachineOSBuild</key>
         <string>20D91</string>
+        <key>NSBluetoothPeripheralUsageDescription</key>
+        <string>Allow Bluetooth access to use wireless game controllers and gamepads. Without this permission, only touch controls will be available.</string>
         <key>CFBundleDevelopmentRegion</key>
         <string>en</string>
         <key>CFBundleDisplayName</key>
@@ -835,6 +884,7 @@ XML
 
     info_plist_string.gsub!(":app_name", @app_name)
     info_plist_string.gsub!(":app_id", @app_id)
+    info_plist_string.gsub!(":app_version", @app_version)
 
     $gtk.write_file_root "tmp/ios/#{@app_name}.app/Info.plist", info_plist_string.strip
     $gtk.write_file_root "tmp/ios/Info.txt", info_plist_string.strip
@@ -851,8 +901,12 @@ XML
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+        <key>LSSupportsGameMode</key>
+        <true/>
         <key>BuildMachineOSBuild</key>
         <string>20D91</string>
+        <key>NSBluetoothPeripheralUsageDescription</key>
+        <string>Allow Bluetooth access to use wireless game controllers and gamepads. Without this permission, only touch controls will be available.</string>
         <key>CFBundleDevelopmentRegion</key>
         <string>en</string>
         <key>CFBundleDisplayName</key>
@@ -994,7 +1048,7 @@ XML
   end
 
   def clear_payload_directory
-    sh %Q[rm "#{@app_name}".ipa]
+    sh %Q[rm -f "#{@app_name}".ipa]
     sh %Q[rm -rf "#{app_path}/app"]
     sh %Q[rm -rf "#{app_path}/sounds"]
     sh %Q[rm -rf "#{app_path}/sprites"]
@@ -1004,11 +1058,14 @@ XML
     :success
   end
 
+  def ignored_directories
+    Cvars["game_metadata.ignore_directories"].value
+                                             .split(",")
+                                             .reject { |d| d.strip.length == 0 }
+  end
+
   def root_folder_directories
     directories = $gtk.list_files ""
-    ignored_directories = Cvars["game_metadata.ignore_directories"].value
-                                                                   .split(",")
-                                                                   .reject { |d| d.strip.length == 0 }
     directories.reject { |d| ignored_directories.include? d }
   end
 
@@ -1017,9 +1074,10 @@ XML
     sh "mkdir -p #{tmp_directory}"
     sh "cp -R #{root_dir}/dragonruby-ios.app/ \"#{tmp_directory}/#{@app_name}.app/\""
     sh "mv \"#{tmp_directory}/#{@app_name}.app/Runtime\" \"#{tmp_directory}/#{@app_name}.app/#{@app_name}\""
-    root_folder_directories.each do |d|
-      sh %Q[cp -r "#{game_dir}/#{d}/" "#{app_path}/#{d}/"]
-    end
+    exclude_string = ignored_directories.map do |d|
+      %Q[--exclude="#{d}"]
+    end.join(" ")
+    sh %Q[rsync -a #{exclude_string} "#{game_dir}/." "#{app_path}/"]
     :success
   end
 
@@ -1029,9 +1087,10 @@ XML
     sh "mkdir -p #{tmp_directory}"
     sh "cp -R #{root_dir}/dragonruby-ios-simulator.app/ \"#{tmp_directory}/#{@app_name}.app/\""
     sh "mv \"#{tmp_directory}/#{@app_name}.app/Runtime\" \"#{tmp_directory}/#{@app_name}.app/#{@app_name}\""
-    root_folder_directories.each do |d|
-      sh %Q[cp -r "#{game_dir}/#{d}/" "#{app_path}/#{d}/"]
-    end
+    exclude_string = ignored_directories.map do |d|
+      %Q[--exclude="#{d}"]
+    end.join(" ")
+    sh %Q[rsync -a #{exclude_string} "#{game_dir}/." "#{app_path}/"]
     :success
   end
 
@@ -1082,7 +1141,7 @@ XML
 
   def create_prod_payload_directory
     # production builds does not hotload ip address
-    sh %Q[rm "#{game_dir}/app/server_ip_address.txt"]
+    sh %Q[rm -f "#{game_dir}/app/server_ip_address.txt"]
 
     embed_mobileprovision
     stage_ios_app
@@ -1094,7 +1153,6 @@ XML
   end
 
   def create_sim_payload_directory
-    embed_mobileprovision
     clear_payload_directory
     stage_sim_app
     write_server_ip_address
@@ -1123,18 +1181,40 @@ SCRIPT
 
   def sh cmd
     log_info cmd.strip
-    result = `#{cmd} 2>&1`.strip.each_line.map(&:strip).join("\n")
-    if result.strip.length > 0
-      log_info result
-      __puts__ result
+    result = IO.popen("#{cmd} 2>&1") do |io|
+      io.read.strip
     end
+    if result.length > 0
+      __puts__ result
+      log_info result
+    end
+    if $? != 0
+      raise WizardException.new("* ERROR - sh invocation returned a non-zero exit code.",
+                                cmd,
+                                result,
+                                *caller)
+    end
+
     result
   end
 
   def deploy_to_device
-    sh "ideviceinstaller --uninstall #{@app_id}" if @should_uninstall
-    sh "ideviceinstaller -i \"#{tmp_directory}/#{@app_name}.ipa\""
-    log_info "Check your device!!"
+    version = `ideviceinstaller --version`.strip.split(" ").last
+    if version.start_with?("1.1")
+      sh "ideviceinstaller --uninstall #{@app_id}" if @should_uninstall
+      sh "ideviceinstaller -i \"#{tmp_directory}/#{@app_name}.ipa\""
+    else
+      sh "ideviceinstaller uninstall #{@app_id}" if @should_uninstall
+      sh "ideviceinstaller install \"#{tmp_directory}/#{@app_name}.ipa\""
+    end
+
+    begin
+      launch_app_on_devices
+      log_info "* INFO - =#{@app_name}= has been launched."
+    rescue Exception => e
+      log_info "* WARNING - =#{@app_name}= successfully installed, but failed to automatically launch (launch it manually)\n#{e}"
+    end
+
     :success
   end
 
@@ -1239,7 +1319,7 @@ SCRIPT
       device_id = simctl_iphone_device_id_max_version
     end
 
-    sh "xcrun simctl boot #{device_id}"
+    sh "xcrun simctl list devices | grep -q \"#{device_id}.*Booted\" || xcrun simctl boot #{device_id}"
     sh "open -a Simulator"
     sh "xcrun simctl uninstall #{device_id} #{@app_id}"
     sh "xcrun simctl install #{device_id} \"#{tmp_directory}/#{@app_name}.app\""
@@ -1281,6 +1361,33 @@ SCRIPT
                                                             "#{app_path}/Assets.xcassets"
 S
     sh cmd
+    :success
+  end
+
+  def stage_icons
+    icon_src = "#{game_dir}/metadata/icon_ios.png"
+    icon_dir = "#{app_path}/Assets.xcassets/AppIcon.appiconset"
+    icon_1024 = "#{icon_dir}/icon-1024.png"
+
+    sh "cp \"#{icon_src}\" \"#{icon_1024}\""
+
+    [
+      [152, "icon-152.png"],
+      [167, "icon-167.png"],
+      [20,  "icon-20.png"],
+      [40,  "icon-40.png"],
+      [60,  "icon-60.png"],
+      [29,  "icon-29.png"],
+      [58,  "icon-58.png"],
+      [87,  "icon-87.png"],
+      [80,  "icon-80.png"],
+      [120, "icon-120.png"],
+      [180, "icon-180.png"],
+      [76,  "icon-76.png"],
+    ].each do |size, filename|
+      sh "magick \"#{icon_1024}\" -resize #{size}x#{size} -alpha remove \"#{icon_dir}/#{filename}\""
+    end
+
     :success
   end
 
@@ -1339,6 +1446,47 @@ S
       steps_prod_build
     else
       []
+    end
+  end
+
+  def launch_app_on_devices
+    connected_devices.each do |device_id|
+      launch_app_on_device device_id
+    end
+  end
+
+  def launch_app_on_device device_id
+    sh <<-S
+xcrun devicectl device process launch --device #{device_id} #{@app_id}
+S
+  end
+
+  def get_app_pid_on_device device_id
+    app_name = (ios_metadata.appname || "").strip
+    app_path = "#{app_name}.app/#{app_name}"
+    pid = sh <<-S.strip
+xcrun devicectl device info processes --device #{device_id} | grep #{app_path} | cut -d' ' -f1
+S
+
+    if pid.empty?
+      nil
+    else
+      pid
+    end
+  end
+
+  def terminate_app_on_device device_id, pid
+    sh <<-S
+xcrun devicectl device process terminate --device #{device_id} --pid #{pid}
+S
+  end
+
+  def terminate_app_on_devices
+    connected_devices.each do |device_id|
+     pid = get_app_pid_on_device(device_id)
+     if pid
+       terminate_app_on_device device_id, pid
+     end
     end
   end
 end

@@ -290,9 +290,11 @@ module GTK
 
     def toggle
       if !@visible
+        DR.start_text_input
         @cursor_visibilty_before_show = $gtk.cursor_shown?
         $gtk.show_cursor
       else
+        DR.stop_text_input
         if @cursor_visibilty_before_show == false
           $gtk.hide_cursor
         end
@@ -380,36 +382,6 @@ S
       args.inputs.keyboard.key_down.any? console_toggle_keys
     end
 
-    def try_search_docs exception
-      string_e = "#{exception}"
-      @last_command_errored = true
-
-      if (string_e.include? "wrong number of arguments")
-        method_name = ((string_e.split ":")[0].gsub "'", "")
-        if !(method_name.include? " ")
-          results = (Kernel.__docs_search_results__ method_name)
-          if !results.include? "* No results found."
-            puts (results.join "\n")
-            puts <<-S
-* INFO: #{results.length} matches(s) found in DOCS for ~#{method_name}~ (see above).
-You can search the documentation yourself using the following command in the Console:
-#+begin_src ruby
-  docs_search \"#{method_name}\"
-#+end_src
-S
-            log_once_info :exported_search_results, "The search results above has been seen in logs/puts.txt and docs/search_results.txt."
-          end
-        end
-      end
-    rescue Exception => se
-      puts <<-S
-* FATAL: ~GTK::Console#try_search_docs~
-There was an exception searching for docs (~GTK::Console#try_search_docs~). You might want to let DragonRuby know about this.
-** INNER EXCEPTION
-#{se}
-S
-    end
-
     def eval_the_set_command
       cmd = current_input_str.strip
       if cmd.length != 0
@@ -454,7 +426,6 @@ S
 
             @last_command_errored = false
           rescue Exception => e
-            try_search_docs e
             # if an exception is thrown and the bactrace includes something helpful, then show it
             if (e.backtrace || []).first && (e.backtrace.first.include? "(eval)")
               puts  "* EXCEPTION: #{e}"
@@ -562,8 +533,8 @@ S
 
     def process_inputs args
       if console_toggle_key_down? args
-        args.inputs.text.clear
         toggle
+        args.inputs.clear_text
         args.inputs.keyboard.clear if !@visible
       end
 
@@ -893,7 +864,7 @@ S
     end
 
     def set_system_command command, show_reason = nil
-      if $gtk.platform == "Mac OS X"
+      if $gtk.platform == "Mac OS X" || $gtk.platform == "macOS"
         set_command_silent "$gtk.system \"open #{command}\""
       else
         set_command_silent "$gtk.system \"start #{command}\""
@@ -901,7 +872,7 @@ S
     end
 
     def system_command
-      if $gtk.platform == "Mac OS X"
+      if $gtk.platform == "Mac OS X" || $gtk.platform == "macOS"
         "open"
       else
         "start"

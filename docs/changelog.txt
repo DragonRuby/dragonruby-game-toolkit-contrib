@@ -1,3 +1,722 @@
+* 7.9
+** [Bugfix] ~looping~ property is respected objects sent to ~args.audio~.
+* 7.8
+** [Pro] [News] Experimental release of new shader capabilities queued for the first week of July.
+** [Support] Increased max limit of texture entries to 2048.
+   More textures will be cached behind the scenes before cache ejection occurs.
+** [Support] Improved audio playback synchronization/performance.
+   Machinery moved to C. Removed unnecessary resynchronization calls
+   during ~tick~.
+** [Support] Added warning + backtrace for audio references that are already playing.
+   Warning message about queueing a ~Hash~ reference that's already
+   playing will print the callstack before skipping the queue request.
+** [Bugfix] Audio playtime now returns the correct value for the seek head.
+** [Support] Added ~Grid#refresh_rate~.
+** [Bugfix] Fixed high CPU usage while waiting for export of render primitives.
+   Displays with high refresh rates (mobile devices specifically) had
+   high CPU usage while waiting for what to render next. Regression
+   was introduced in 6.51.
+* 7.7
+** [Bugfix] Fixed HTTP apis for web builds.
+   Emscripten 5 changed ~Module.HEAPU8.set~ to ~HEAPU8.set~.
+** [Bugfix] Fixed framerate drops on Steam Deck (Linux x86_64).
+** [Bugfix] Fixed audio playback for web builds.
+   Cause was uninitialized pointer in PHYSFS (audio playback
+   accidentally worked if stack was aligned).
+
+   I asked Ryan when we were going to rewrite everything in Rust. He muted me.
+** [Supported] Updated Linux SDL builds to include Wayland.
+* 7.6
+** [Pro] [Support] [iOS] Added entitlements explaining that bluetooth is required for gamepads.
+** [Pro] [Support] [iOS] Improvements to IOSWizard.
+   - Checks to see if imagemagick is installed.
+   - Icons for all devices sizes are generated automatically off of =./metadata/icon_ios.png=.
+   - Game will auto launch after installation.
+** [Support] ~dragonruby-publish~ now warns if audio files are not encoded correctly.
+** [Support] ~dragonruby-publish~ warning messages moved as a summary after build is completed.
+   Summary includes warnings about audio encoding, and warnings about file names with spaces and/or capital letters.
+** [Support] Removed warning message when ctrl+r shortcut is used to reset the game.
+** [Support] Improved invalidation of cached textures and render targets when reset occurs.
+** [Support] libSDL recompiled without camera apis.
+** [Support] RNG stable for replays regardless of whether it's started from CLI or through HUD.
+** [Bugfix] Fixed ~mouse.(relative_x|relative_y)~ to report correct values on monitors with high refresh rates.
+** [Bugfix] Fixed game focus issue when game is started up in dev mode on MacOS.
+** [Bugfix] Game's window size starts up at a logical 720p on Windows for any combination of hd/highdpi.
+** [Bugfix] Terminal on Windows correctly redirects logs to standard out instead of giving a blank screen.
+   Special thanks to RedComputer@discord, Lucas@discord, red_garuda@discord, redbeehive@discord,
+   Trevor@discord, and Null@discord for reporting/testing bugs that Ryan introduced.
+* 7.5
+** [Bugfix] Fixed allocator failures in ~Zlib.(compress|uncompress)~
+   Regression was introduced in 7.0.
+** [Bugfix] =./docs/version.txt= was not being updated on deployments. This has been fixed.
+   Regression was introduced in 7.4 (this was definitely Ryan's fault).
+* 7.4
+** [Support] [Pro] [iOS] iOS Wizard improved.
+   Better error messages (fixed silent failures). Game is uninstalled before deploying a new version.
+** [Support] [Pro] [iOS] Updated entitlements so that Game Mode is enabled by default.
+   This tells the device to give a larger share of resources to the game.
+** [Bugfix] [Support] New functions on ~Numeric~ ~(mid|mid?|between?|min|max)~.
+   See docs for more details.
+** [Bugfix] Fixed Geometry#intersect_circle? to use the correct primitive when testing for intersection.
+** [Bugfix] Keyboard#truthy_keys scrubbed for attr_readers that aren't directly associated with a key on the keyboard.
+** [Support] New ~Controller~ apis added.
+   - Added button aliases for ~y~, ~a~, ~b~, ~x~ -> ~n~/~north~, ~s~/~south~, ~e~/~east~, ~w~/~west~.
+   - Added button ~accept~ and ~cancel~ which contextually maps to A (east) for Switch Controller, X (south) for PS5, and A (south) for Xbox.
+   - ~directional_vector_left~ will give you DPAD + Left Analog
+   - ~directional_vector_right~ will give you Buttons + Right Analog (helpful for twin stick shooters).
+** [Support] ~Main~ module quacks like ~attr_dr~.
+   - ~args~ no longer needs to be passed in to top level functions.
+   - ~args~, ~inputs~, ~outputs~, ~state~, ~events~, and ~audio~ are directly accessible from any function defined in ~Main~.
+   - ~start~ function added to ~Main~ which will run before ~tick~ when ~Kernel.tick_count == 0~.
+
+   Example of new ~Main~ capabilities:
+
+   #+begin_src
+     module Main
+       def boot
+         # invoked once when the game boots
+         puts "boot: #{Kernel.tick_count}"
+       end
+
+       def start
+         # invoked on Kernel.tick_count == 0 before tick is invoked
+         puts "start: #{Kernel.tick_count}"
+         state.some_variable = 0
+       end
+
+       def tick
+         # invoked at 60hz
+         if Kernel.tick_count.zmod?(30)
+           # state top level function
+           state.some_variable += 1
+           puts "state.some_variable: #{state.some_variable}"
+         end
+
+         if Kernel.tick_count.zmod?(60)
+           puts "tick: #{Kernel.tick_count}"
+         end
+
+         # inputs top level function
+         if inputs.keyboard.key_down.enter
+           puts "inputs.keyboard.key_down.enter #{Kernel.tick_count}"
+         end
+
+         # outputs top level function
+         outputs.background_color = [30, 30, 30]
+       end
+
+       def reset
+         # invoked before reset occurs
+         puts "reset #{Kernel.tick_count}"
+       end
+
+       def did_reset
+         # invoked after reset occurs
+         puts "did_reset #{Kernel.tick_count}"
+       end
+
+       def shutdown
+         # invoked once before game exits
+         puts "shutdown #{Kernel.tick_count}"
+       end
+     end
+
+     DR.reset
+   #+end_src
+* 7.3
+** [Bugfix] Ensure that ~hd=true~ is respected in Standard and Indie license tiers.
+** [Support] [Pro] Added ~DR.start_text_input~ and ~DR.stop_text_input~ which will show a virtual keyboard on mobile devices.
+   ~DR.start_text_input~ must be called for ~args.inputs.text~ property
+   to be populated (on touch devices, this will bring up the on-screen
+   keyboard). To dismiss the on-screen keyboard/exit keyboard input, you
+   must call ~DR.stop_text_input~. If ~args.inputs.text~ is consulted in
+   your code, then a warning message will be printed and ~DR.start_text_input~
+   will be called on your behalf.
+
+   =./oss/dragon/console.rb= now leverages these functions.
+** [Known Issues] Synthesis not working on web builds.
+** [Known Issues] Scaling issues for Windows + Chrome + Page Magnification != 100%.
+* 7.2
+** [Bugfix] Reverted ~Geometry#find_collisions~.
+   The change made in 6.47 were incorrectly implemented and changed the original behavior of this function.
+** [Docs] Docs updated for ~Geometry#find_collisions~ to clarify its behavior.
+** [Support] ~Geometry#each_intersect_rect's~ second parameter is optional.
+** [Support] Updated ~Geometry#find_collisions~ to accept an optional second parameter.
+** [Samples] Updated unit tests for ~Geometry~ functions.
+   Sample app location: =samples/10_advanced_debugging/03_unit_tests=
+* 7.1
+** [Bugfix] Ensure that SDL_HINT_MAC_PRESS_AND_HOLD is set to 0.
+** [Bugfix] Fixed mouse location for non-standard aspect ratios when hd=false.
+** [Bugfix] Ensure sprite path's c pointer is exported correctly when sending to the render pipeline.
+* 7.0
+** [IMPORTANT] This release does NOT contain breaking changes. This is an epoch version bump.
+   - DragonRuby is now powered with SDL3 release-3.4.4.
+   - DragonRuby Web Builds now target Emscripten 5.0.4.
+   - Keep an eye out for a devlog entry on Itch about what's coming next (hint: shaders).
+   - NOTE: C-extensions will need to be recompiled (let us know if you have any issues).
+** [Pro] [C Extensions] SDL2 thread and atomic APIs are available as backward-compatible polyfills.
+   The following SDL2 APIs are forwarded to their SDL3 equivalents via =dragonruby.h=:
+   - ~SDL_atomic_t~ (forwards to ~SDL_AtomicInt~)
+   - ~SDL_AtomicSet~ (forwards to ~SDL_SetAtomicInt~)
+   - ~SDL_AtomicGet~ (forwards to ~SDL_GetAtomicInt~)
+   - ~SDL_CreateThread~ (forwards to ~SDL_CreateThreadRuntime~, works on all platforms including Windows)
+   - ~SDL_WaitThread~ (unchanged)
+** [Pro] [Samples] Updated =samples/12_c_extensions/09_handcrafted_thread= to use new SDL3 apis.
+** [Samples] Updated =samples/99_genre_simulation/sand_simulation= to use modern DR apis.
+   It's a much fancier demo than what was previously there.
+** [Samples] Updated =samples/99_genre_simulation/sand_simulation= to use modern DR apis.
+** [Support] HD mode is now available at all license tiers (just a reminder).
+** [Support] The ~scale_quality~ config value in ~metadata/game_metadata.txt~ now supports Pixel Art scaling.
+   - Demo of Pixel Art Scaling: [https://youtu.be/tnHYzaX9y3o]
+   - See cvars docs section and sample located at =samples/01_rendering_basics/06_scale_quality_game_metadata=.
+** [Support] Sprite primitives can accept ~scale_quality_enum~ value ~3~ (which represents Pixel Art scaling).
+** [Support] Label primitives can now accept ~scale_quality_enum~.
+** [Support] Added ~boot~, ~reset~, ~did_reset~, and ~tick~ hook functions to =./docs/oss/dragon/runtime/tick.rb=
+   Reference code can be added to the top of =main.rb= in case you want to change internal behavior of
+   these functions... update at your own risk ;-)
+** [Performance] Small performance improvements to glyph caching for fonts/labels.
+** [Performance] Prioritize ~draw_override~ over ~attr_sprite~ when exporting primitives to the render pipeline.
+** [Bugfix] Audio queue safely handles re-assignment of a new audio to a key that already has audio playing.
+* 6.58
+** [Bugfix] Ensure that string values sent to rendering always have C strings that are null terminated.
+   Regression was introduced in version 6.45.
+** [Samples] Updated Twin Stick sample app to support multi-platform input (keyboard, gamepad, and touch).
+   Sample app location: =samples/99_genre_arcade/twinstick=
+** [Samples] Added sample app that helps in starting a low rez game.
+   Sample app location: =samples/99_genre_lowrez/00_lowrez_starting_point=
+** [Samples] Added sample app that shows how to do grid aligned movement with collision (such as in games like Factorio)
+   Sample app location: =samples/04_physics_and_collisions/01_simple_aabb_grid_aligned_movement_advanced=
+** [Support] ~Geometry.vec2_normalize~ returns ~nil~ instead of ~Hash[x: NaN, y: NaN]~.
+   This mirrors the behavior of ~args.inputs.directional_vector~.
+** [Support] Added ~.directional_vector~ variants to Keyboard, and Controller for finer grained control.
+   - ~Controller#directional_vector_dpad~
+   - ~Controller#directional_vector_left_analog~
+   - ~Controller#directional_vector_left_analog_cardinal~
+   - ~Controller#directional_vector_right_analog~
+   - ~Controller#directional_vector_right_analog_cardinal~
+   - ~Keyboard#directional_vector_wasd~
+   - ~Keyboard#directional_vector_arrow~
+* 6.57
+** [Bugfix] Fixed render artifacts produced by double buffering.
+** [Support] Partial re-introduction of frame smoothing logic from 6.49.
+   We are still finding the best balance in rendering for lowend/highend hardware.
+   Let us know if you see frame stuttering on Windows.
+* 6.56
+** [Support] HD mode is now available at all license tiers.
+   New project template's =./mygame/metadata/game_metadata.txt= has the following properties enabled by default:
+
+   #+begin_src
+     hd=true
+     scale_quality=2
+   #+end_src
+
+   NOTE: High DPI, Texture Atlases, and All Screen mode still requires a Pro license.
+** [Bugfix] Reusing a byref ~Hash~ in ~args.audio~ no longer causes a segfault.
+** [Support] The default hello world app that ships with DR has been updated to use ~Main~ module.
+** [Support] Rendering pipeline now double buffers.
+   This will hopefully smooth out any stuttering during render for fast animations on Windows.
+   Frame smoothing was removed in 6.50, if you're still seeing shuddering on your hardware, let us know.
+** [Samples] Updated =samples/05_mouse/03_mouse_move_paint_app= to use modern DR Apis.
+   Special thanks to lyniat@discord for PR/updates.
+* 6.55
+** [Samples] Added sample app that shows how to do grid aligned movement (like in pacman).
+   Sample app location: =samples/04_physics_and_collisions/01_simple_aabb_grid_aligned_movement=
+** [Samples] Removed =99_genre_rpg_narrative/return_of_serenity= sample app.
+   The code in the sample app was horrible and not worth salvaging. Yes, it was that bad.
+** [Support] Added custom blendmode support to Triangle primitives.
+   See the following sample app for example usage: =./samples/07_advanced_rendering/20_rings=
+** [Support] Using the ~Main~ module automatically disables ~OpenEntity~ and ~Array~ primitives.
+   IMPORTANT: ~OpenEntity~ and ~Array~ primitives are both deprecated. It's strongly encouraged
+              that you start using ~Main~ and define ~def tick args~ within there.
+
+   Before this version, disabling ~OpenEntity~ and ~Array~ primitives was done by doing the following:
+   #+begin_src ruby
+     def boot args
+       # signifies that ~OpenEntity~ should be disabled,
+       # and ~Array~ primitives should be disabled:
+       args.state = {} # not very intuitive
+     end
+
+     def tick args
+     end
+   #+end_src
+
+   You can now do get the same behavior by doing:
+   #+begin_src ruby
+     module Main
+       def tick args
+       end
+     end
+   #+end_src
+** [Support] The default hello world app that ships with DR has been updated to use ~Main~ module.
+   Getting started guide has also been updated to use ~Main~ module.
+   IMPORTANT: ~OpenEntity~ and ~Array~ primitives are both deprecated. It's strongly encouraged
+              that you start using ~Main~ and define ~def tick args~ within there.
+* 6.54
+** [Samples] Added Advanced A* path finding sample app.
+   Sample app location: =./samples/13_path_finding_algorithms/08_a_star_advanced~
+** [Support] ~dragonruby-publish~ always packages ~./app~ and ~./metadata~.
+** [Support] Disable hotload if ~DR.production?~ is true.
+** [Support] Added ~attr_dr~ to mirror the GTK to DR change in the previous release.
+** [Docs] Occurrences of ~GTK~ replaced with ~DR~. Occurrences of ~attr_gtk~ replaced with ~attr_dr~.
+   You can still use ~GTK~/~$gtk~ and ~attr_gtk~ if you want (they won't be removed).
+* 6.53
+** [Samples] Added sample app that shows how to build a c-extension that uses SQLite.
+   Sample app location: =./samples/12_c_extensions/10_sqlite3=
+** [Samples] Updated cubic bezier sample app with drag/adjustments of curves.
+   Sample app location: =./samples/08_tweening_lerping_easing_functions/02_cubic_bezier=
+** [Support] Aliased ~GTK~ to ~DR~ because GTK get's confused with the the cross platform widget toolkit.
+   Eventually all sample apps and docs will use ~DR~ over ~$gtk~ and ~GTK~. These older aliases will not be removed so
+   you can continue using them if that's what you're used to.
+** [Support] Ensure that ~mrb_close~ and ~def shutdown args~ is invoked during ~DR.reboot~ and when exiting the game completely.
+** [Support] Added ~Geometry#cubic_bezier_vec2~.
+** [Support] Addeed ~Main~ module for better control/scoping of DR's entry point.
+
+   Defining the following will be detected by DR as a ~tick~ entry point:
+
+   #+begin_src ruby
+     module Main
+       def tick args
+       end
+
+       # other top level functions will also be detected: boot, reset, did_reset, shutdown
+     end
+   #+end_src
+
+   The module declaration will take precedence over ~self~ defined ~tick~:
+
+   #+begin_src ruby
+     def self.tick args
+     end
+   #+end_src
+
+   Which takes precidence over ~Object~ defined ~tick~:
+
+   #+begin_src ruby
+     def tick args
+     end
+   #+end_src
+
+   More complex reference implementations/samples will begin to
+   use ~Main~ (where it's most useful to leverage).
+* 6.52
+** [Samples] Added sample app that shows how to create an onscreen joystick.
+   Sample app location: =./samples/02_input_basics/06_touch_onscreen_joystick=
+** [Performance] Added finer grained usage of GC arena save/restore.
+   Overall GC pressure reduction for FFI functions, before tick entry, and after tick completion.
+
+   Thank you to xenobrain@discord and redbeehive@dicord for kicking the tires on this change.
+** [Support] Added ~Geometry.angle_cardinal_vec2~
+   Function returns a vector for angle snapped to the nearest 45 degree direction.
+** [Support] Updated isometric sprites within the deploy template to be a ratio of 2:1.
+* 6.51
+** [Bugfix] Reverted GC arena changes in 6.50 until we can ensure that there aren't any memory leaks with the new approach.
+* 6.50
+** [Performance] Added more fine grained usage of GC arena save and restoration for actions that occur before and after ~tick~.
+   This should yield lower memory usage and GC pressure overall.
+** [Performance] Removed FPS smoothing logic within the render thread, allowing the render pass to be closer to the monitor's refresh rate.
+   Please let us know if things look better if you have a high refresh rate monitor.
+** [Performance] Doubled MRB_HEAP_PAGE_SIZE from 4KB to 8KB.
+** [Support] Remove once required files from hotload list if they are later deleted.
+** [Support] Shortend "add :serialize to object" warning during exception export.
+   Scrolling up to see the exception was annoying.
+** [Support] DR no longer pre-defines an empty `def tick args` function.
+   To avoid polluting ~Object~, DR no longer defines ~def tick args~ on initialization.
+   This gives you the option to define the ~tick~ function on ~Object~:
+
+   #+begin_src ruby
+     def boot args
+     end
+
+     def tick args
+     end
+
+     def reset args
+     end
+   #+end_src
+
+   OR scope ~tick~ to only ~top level~:
+
+   #+begin_src ruby
+      def self.boot args
+      end
+
+      def self.tick args
+      end
+
+      def self.reset args
+      end
+   #+end_src
+
+   Using the latter approach avoids polluting ~Object~ with ~boot~,
+   ~tick~, ~reset~, etc (at the expense of needing a deeper/more
+   nuanced understanding of Ruby...).
+** [Support] GTK is now aware of ~did_reset~ defined on ~top level~.
+   Function will be invoked after DR's internal reset has completed.
+** [Support] Added ~FFI::Draw#draw_sprite_ivar~ which can be leveraged
+   within primitives that implement ~draw_override~.
+   See sample for usages: =./samples/09_performance/07_static_sprites_as_classes_with_custom_drawing=.
+
+   Note: DO NOT prematurely optimize your primitive rendering usages
+   with ~draw_override~ or default to using ~outputs.static_*~. Unless
+   you are needing extremely fast rendering (eg you are rendering a
+   10,000+ sprites), the cognotive overhead and boiler plate isn't
+   worth the effort.
+* 6.49
+** [Pro] [Android] [Bugfix] Fixed 16-bit alignment issue that occurs for only some bundle sizes.
+* 6.48
+** [Support] ~AttrSprite~ implements serialize.
+** [Support] Cleaned up logic for determining what is considered a primitive(s).
+   An object sent to ~args.outputs.*~ is considered a primitive if ANY of the following are true:
+   - Object is a ~Hash~
+   - Object is an ~AttrSprite~
+   - Object responds to ~primitive_marker~ and returns either ~:solid~, ~:label~, ~:sprite~, ~:line~, or ~:border~.
+   - Object responds to to ~:x~, and ~:path~.
+   - Object responds to ~:x~, and ~:text~.
+   - Object responds to ~:to_a~ (collection of primitives).
+   - Object responds to ~draw_override~.
+
+*** Note on ~draw_override~
+    ~draw_override~ was introduced six years ago in version 1.0 to address performance concerns/gives you the ability
+    to be "as close to the metal as possible" (at the expense of a less ergonomic API). Around that time, ~Hash~ based
+    rendering limits were ~1k sprites at 60 fps. The current ~Hash~ based render limit is ~35k. Deprecation of this
+    function is being taken into consideration and it's recommended that you avoid using this behavior.
+
+*** Note on ~to_a~ as an implicit conversion:
+   It was proposed that ~render~ plus a ~Renderable~ construct should be added as another means
+   of implicit conversion. Here are the reasons why this was not added:
+   - The properties on ~args.outputs~ are all collections/queues. ~to_a~ (ie another collection) is "near"
+     the types on ~args.outputs~ (specifically because of ~args.outputs~ capability of accepting jagged
+     arrays of primitives)
+   - Using core Ruby classes and core functions protects the dev from taking on dependencies of the engine. ~args.outputs~
+     tries to rely only on the shape of an object and what it responds to as opposed to an engine specific type (I want to avoid hard
+     dependencies such as "all objects must inherit from MonoBehavior").
+   - Having an implicit conversion based on an object responding to ~render~ overloads an extremely common method game devs use
+     for their own constructs (and as stated earlier, creating an engine centric module that scopes the use of the ~render~ function
+     forces the dev to take on a hard dependency on the engine).
+   - Wrt hard dependencies on an engine: ~AttrSprite~ can be considered as one, but it's a data object/"plain old ruby object"
+     that can be reconstructed trivially.
+   - An additional reason ~draw_override~ is considered for deprecation: it's the only primitives behavior that
+     isn't data-oriented (relies on side-effects from invoking ffi methods).
+
+*** Implementation options
+    While ~to_a~ may not be the best name, its benefits are: it's a core Ruby function; it's consistent with what ~args.outputs~
+    accepts (jagged collections of primitives); it does not introduce an engine centric type; it doesn't "take away" a common function
+    game devs naturally use (eg ~render~).
+
+    Here are the options available to you:
+
+    Assume a ~Player~ class:
+
+    #+begin_src ruby
+      class Player
+        attr :x, :y, :name
+
+        def initialize(x, y, name)
+          @x = x
+          @y = y
+          @name = name
+        end
+      end
+    #+end_src
+
+    Option - Pure, stateless function:
+
+    #+begin_src
+      module PlayerRenderable
+        def self.for(player)
+          [
+            { x: player.x, y: player.y, w: 32, h: 32, path: :solid, r: 255, g: 0, b: 0 },
+            { x: player.x, y: player.y, text: player.name }
+          ]
+        end
+      end
+
+      def tick args
+        args.state.player ||= Player.new(0, 0, "Player1")
+        args.outputs.primitives << PlayerRenderable.for(args.state.player)
+      end
+    #+end_src
+
+    Option - Player is responsible for providing primitives:
+
+    #+begin_src ruby
+      class Player
+        def primitives
+          [
+            { x: @x, y: @y, w: 32, h: 32, path: :solid, r: 255, g: 0, b: 0 },
+            { x: @x, y: @y, text: @name }
+          ]
+        end
+      end
+
+      def tick args
+        args.state.player ||= Player.new(100, 100, "Player1")
+        args.outputs.sprites << args.state.player.primitives
+      end
+    #+end_src
+
+    Option - Opt into implicit conversion by aliasing ~to_a~:
+
+    #+begin_src ruby
+      class Renderable
+        def to_a = render
+      end
+
+      class PlayerRenderable < Renderable
+        def initialize(player)
+          @player = player
+        end
+
+        def render
+          [
+            { x: @player.x, y: @player.y, w: 32, h: 32, path: :solid, r: 255, g: 0, b: 0 },
+            { x: @player.x, y: @player.y, text: @player.name }
+          ]
+        end
+      end
+
+      def tick args
+        args.state.player ||= Player.new(100, 100, "Player1")
+        args.outputs.sprites << PlayerRenderable.render(args.state.player)
+      end
+    #+end_src
+
+    Option - Leverage built-in/core ~Enumerable~ module:
+
+    #+begin_src ruby
+      class PlayerRenderable
+        include Enumerable
+
+        def initialize(player)
+          @player = player
+        end
+
+        def each
+          yield({ x: @player.x, y: @player.y, w: 32, h: 32, path: :solid, r: 255, g: 0, b: 0 })
+          yield({ x: @player.x, y: @player.y, text: @player.name })
+        end
+      end
+
+      def tick args
+        args.state.player ||= Player.new(0, 0, "Player1")
+        args.outputs.primitives << PlayerRenderable.new(args.state.player)
+      end
+    #+end_src
+
+    As for which option you should choose:
+    - Do the minimum needed to vet your game/prototype.
+    - Let patterns for your game emerge as you build.
+    - Refactor/consolidate once you see a repeating/common structure.
+* 6.47
+** [Bugfix] Fixed segfault with ~Geometry.find_collisions~.
+** [Support] Added perlin noise functions (stb_perlin).
+   - ~Geometry.perlin_noise~
+   - ~Geometry.perlin_noise_seed~
+   - ~Geometry.perlin_ridge_noise~
+   - ~Geometry.perlin_fbm_noise~
+   - ~Geometry.perlin_turbulence_noise~
+
+   See docs for details of how to use these functions.
+** [Support] Added ./sprites/circle/solid.png as a default texture.
+   It's a solid white circle that you can use to render a circle to
+   the screen (and change its color by providing rgb to the sprite
+   primitive).
+** [Samples] Added perlin noise sample app.
+   Sample app demonstrates the generation of various perlin noise functions.
+   Sample app location: =./samples/08_procgen/01_perlin_noise=
+** [Samples] Added sample app showing how to create a clipped circular minimap.
+   Sample app location: =./samples/07_advanced_rendering/22_circular_minimap_clip_area=
+** [Samples] Added sample app that shows an RTS starting point.
+   Sample app locaiton: =./samples/99_genre_rts/01_rts_starting_point=
+* 6.46
+** [Pro] [Support] Added ~Layout.allscreen_rect~.
+   Function provides correct Grid alignment within render targets when ~hd_letterbox=false~.
+** [Samples] Added sample app that shows how to combine easing and lerping functions for visual effects.
+   Sample app location: =samples/08_tweening_lerping_easing_functions/02_easing_and_lerping_combined=
+** [Samples] Added sample app/reference implementation that shows multi orientation, multi platform scene management.
+   Sample app location: =./samples/07_advanced_rendering_hd/06_multi_platform_multi_orientation=
+** [Support] ~Mouse#rect~ accepts ~offset:~ optional parameter for (convenience function).
+   This is helpful when determing mouse position within a render target (offset is added to x, y of rect).
+** [Support] ~Geometry.rect_props~ moved to a C implementation.
+   Re-implemented in C because it's a commonly used method across ~Geometry~.
+** [Support] ~Geometry.zoom_rect~ added.
+   Function rescales rect that's passed in while retaining location.
+** [Support] ~Geometry.lerp_rect~ added (convenience function).
+   Handles the lerping of all rect properties.
+** [Support] Added support for using ~it~ within a block.
+   mRuby patch added to ./docs/oss/mruby
+
+   Usage:
+   #+begin_src ruby
+     10.times do |index|
+       puts index
+     end
+
+     # OR
+
+     10.times do
+       puts _1
+     end
+
+     # OR
+
+     10.times do
+       puts it
+     end
+   #+end_src
+** [Support] Incorporated cRuby's pretty print implementation.
+   ~Object#pretty_inspect~ added and ~pp~ is available at the top level.
+
+   Example:
+   #+begin_src ruby
+     def tick args
+       args.state.rects ||= 10.map do
+         {
+           x: rand(100),
+           y: rand(100),
+           w: rand(100),
+           h: rand(100)
+         }
+       end
+
+       if args.inputs.keyboard.key_down.enter
+         pp args.state.rects
+         puts args.state.rects.pretty_inspect
+       end
+
+       args.outputs.watch args.state.rects.pretty_inspect
+     end
+   #+end_src
+
+   - Modified source is located under ./docs/oss/dragon/vendor.
+   - open-source-licenses.txt updated to include pp and pretty_print.
+   - Fn (args.fn) experimental pretty print constructs removed.
+* 6.45
+** [Moved My Cheese] Fixed Itch.io butler auto download.
+** [Samples] Added line of sight sample app.
+   Sample app location: ./samples/07_advanced_rendering/21_line_of_sight
+** [Support] Added `Geometry.rect_to_lines`.
+** [Support] Added `Geometry.line_to_points`.
+** [Support] Added `Geometry.points_to_line`.
+** [Support] Added `Numeric.compose_blendmode`.
+** [Bugfix] `Geometry.angle_turn_direction` returns correct value for 360 degrees.
+* 6.44
+** [Pro] [iOS] [Samples] Updated iOS C extensions sample app for Xcode 26.
+** [Samples] Thick lines sample app reworked/simplified.
+   Sample app location: =samples/07_advanced_rendering/02_thick_lines=
+** [Samples] Minor bug fix in sample apps that use ~Camera~.
+   Sample app locations:
+   - =samples/07_advanced_rendering/16_camera_space_world_space_simple=
+   - =samples/07_advanced_rendering_hd/05_camera_ultrawide_allscreen=
+   - =samples/99_genre_platformer/map_editor=
+** [Support] Geometry.line_angle returns negative angles as opposed to sorting the points to always be positive.
+** [Support] Removed DR's override to ~String#split~.
+   Behavior reverted back to mRuby's default. ~String::split~ and ~String#__original_split__~ still exist
+   for backwards compatability.
+* 6.43
+** [Samples] Added sample app that shows how to create a circle using sprites.
+   Sample app location: =samples/07_advanced_rendering/20_circles=
+** [Samples] Added sample app that shows how to create a ring using sprites plus custom blend modes.
+   Sample app location: =samples/07_advanced_rendering/20_rings=
+** [Samples] Added sample app that shows how to create a progress bar.
+   Sample app location: =samples/09_ui_controls/07_progress_bar=
+** [Support] ~sprite~ primitives now support ~blendmode~.
+   If both ~blendmode_enum~ and ~blendmode~ are given, ~blendmode~
+   will take precedence. Valid options are ~0~: no blending, ~1~:
+   default/alpha blending, ~2~: additive blending, ~4~: modulo blending,
+   ~8~: multiply blending.
+
+   #+begin_src ruby
+     def tick args
+       args.outputs.background_color = [255, 0, 0]
+       args.outputs.sprites << {
+         x: 640 - 50, y: 60 - 50, w: 100, h: 100,
+         path: :solid,
+         blendmode: 0,
+         r: 0, g: 0, b: 255, a: 128
+       }
+       args.outputs.sprites << {
+         x: 640 - 50, y: 160 - 50, w: 100, h: 100,
+         path: :solid,
+         blendmode: 1,
+         r: 0, g: 0, b: 255, a: 128
+       }
+       args.outputs.sprites << {
+         x: 640 - 50, y: 260 - 50, w: 100, h: 100,
+         path: :solid,
+         blendmode: 2,
+         r: 0, g: 0, b: 255, a: 128
+       }
+       args.outputs.sprites << {
+         x: 640 - 50, y: 360 - 50, w: 100, h: 100,
+         path: :solid,
+         blendmode: 4,
+         r: 0, g: 0, b: 255, a: 128
+       }
+       args.outputs.sprites << {
+         x: 640 - 50, y: 460 - 50, w: 100, h: 100,
+         path: :solid,
+         blendmode: 8,
+         r: 0, g: 0, b: 255, a: 128
+       }
+     end
+   #+end_src
+
+   The new ~blendmode~ property allows you to compose a custom blend
+   mode outside of the defaults listed above. Here is an example
+   function that codifies the construction of a custom blendmode:
+
+   #+begin_src ruby
+     BLENDOPERATION_ADD              = 0x1
+     BLENDOPERATION_SUBTRACT         = 0x2
+     BLENDOPERATION_REV_SUBTRACT     = 0x3
+     BLENDOPERATION_MINIMUM          = 0x4
+     BLENDOPERATION_MAXIMUM          = 0x5
+     BLENDFACTOR_ZERO                = 0x1
+     BLENDFACTOR_ONE                 = 0x2
+     BLENDFACTOR_SRC_COLOR           = 0x3
+     BLENDFACTOR_ONE_MINUS_SRC_COLOR = 0x4
+     BLENDFACTOR_SRC_ALPHA           = 0x5
+     BLENDFACTOR_ONE_MINUS_SRC_ALPHA = 0x6
+     BLENDFACTOR_DST_COLOR           = 0x7
+     BLENDFACTOR_ONE_MINUS_DST_COLOR = 0x8
+     BLENDFACTOR_DST_ALPHA           = 0x9
+     BLENDFACTOR_ONE_MINUS_DST_ALPHA = 0xA
+
+     def compose_blendmode(src_color_factor, dst_color_factor, color_operation,
+                           src_alpha_factor, dst_alpha_factor, alpha_operation)
+       (color_operation  << 0)  |
+       (src_color_factor << 4)  |
+       (dst_color_factor << 8)  |
+       (alpha_operation  << 16) |
+       (src_alpha_factor << 20) |
+       (dst_alpha_factor << 24)
+     end
+   #+end_src
+* 6.42
+** [Pro] [Android] Updated Android C Extensions sample app's compilation instructions to Android SDK 35.
+** [Pro] [iOS] Updated ~$wizards.ios.start env: :dev~ takes into consideration new cli parameters of ideviceinstaller v1.2.0.
+** [Support] ~args.inputs.keyboard.key_(down|up|held).truthy_keys~ excludes ~:raw_key~, and ~:char~.
+** [Samples] Added sample app that shows how to remap controller and keyboard input.
+   Sample app location: =samples/09_ui_controls/06_input_remapping=
+** [Support] Added ~args.outputs[].set~:
+   The following:
+   #+being_src ruby
+     def tick args
+       args.outputs[:scene].w = 1280
+       args.outputs[:scene].h = 720
+       args.outputs[:scene].background_color = [0, 0, 0, 0]
+     end
+   #+end_src
+   Can now be written as:
+   #+being_src ruby
+     def tick args
+       args.outputs[:scene].set w: 1280,
+                                h: 720,
+                                background_color: [0, 0, 0, 0]
+     end
+   #+end_src
 * 6.41
 ** [Bugfix] Splash screen reintroduced so that sounds play on iOS web builds.
    User interaction is required for audio initialization on iOS.

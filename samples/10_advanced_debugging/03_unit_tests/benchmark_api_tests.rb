@@ -1,5 +1,5 @@
 def test_benchmark_api args, assert
-  result = GTK.benchmark iterations: 100,
+  result = DR.benchmark iterations: 100,
                          only_one: -> () {
                            r = 0
                            (1..100).each do |i|
@@ -9,7 +9,7 @@ def test_benchmark_api args, assert
 
   assert.equal! result.first_place.name, :only_one
 
-  result = GTK.benchmark iterations: 100,
+  result = DR.benchmark iterations: 100,
                          iterations_100: -> () {
                            r = 0
                            (1..100).each do |i|
@@ -25,7 +25,7 @@ def test_benchmark_api args, assert
 
   assert.equal! result.first_place.name, :iterations_50
 
-  result = GTK.benchmark iterations: 1,
+  result = DR.benchmark iterations: 1,
                          iterations_100: -> () {
                            r = 0
                            (1..100).each do |i|

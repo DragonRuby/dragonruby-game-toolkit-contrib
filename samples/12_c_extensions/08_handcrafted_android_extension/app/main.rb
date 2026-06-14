@@ -3,7 +3,7 @@ end
 
 def tick args
   if args.inputs.mouse.click && !@dl_opened
-    GTK.dlopen("ext")
+    DR.dlopen("ext")
     @dl_opened = true
   elsif args.inputs.mouse.click
     h = UserDefaults.new

@@ -74,14 +74,14 @@ class Square
 end
 
 class Game
-  attr_gtk
+  attr_dr
 
   def initialize
     @squares = []
   end
 
   def render
-    outputs.watch "FPS: #{GTK.current_framerate}"
+    outputs.watch "FPS: #{DR.current_framerate}"
     outputs.watch "Squares: #{@squares.length}"
     outputs.background_color = [30, 30, 30]
     outputs.primitives << @squares.map(&:prefab)
@@ -163,4 +163,4 @@ def reset args
   $game = nil
 end
 
-GTK.reset
+DR.reset

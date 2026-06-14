@@ -21,11 +21,11 @@ def assert_completion source, *expected
 end
 
 def test_args_completion args, assert
-  GTK.write_file_root "autocomplete.txt", (GTK.suggest_autocompletion text: <<-S, index: 128).join("\n")
+  DR.write_file_root "autocomplete.txt", (DR.suggest_autocompletion text: <<-S, index: 128).join("\n")
 require 'app/game.rb'
 
 def tick args
-  GTK.suppress_mailbox = false
+  DR.suppress_mailbox = false
   $game ||= Game.new
   $game.args = args
   $game.args.
@@ -34,5 +34,5 @@ end
 S
 
   puts "contents:"
-  puts (GTK.read_file "autocomplete.txt")
+  puts (DR.read_file "autocomplete.txt")
 end

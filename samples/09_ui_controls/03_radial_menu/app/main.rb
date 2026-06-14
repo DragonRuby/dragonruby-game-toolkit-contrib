@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   def tick
     defaults
@@ -53,7 +53,7 @@ class Game
     end
 
     if state.menu_status == :shown && state.hovered_menu_item && (inputs.mouse.click || inputs.controller_one.key_down.a)
-      GTK.notify! "You selected #{state.hovered_menu_item[:text]}"
+      DR.notify! "You selected #{state.hovered_menu_item[:text]}"
     elsif show_menu_requested
       state.menu_status = :shown
       state.menu_status_at = Kernel.tick_count
@@ -178,4 +178,4 @@ def reset
   $game = nil
 end
 
-GTK.reset
+DR.reset

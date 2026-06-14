@@ -6,7 +6,7 @@ def assert_hash assert, hash_or_string, expected
            end
 
   begin
-    result = GTK::Codegen.eval_hash h_to_s
+    result = DR::Codegen.eval_hash h_to_s
   rescue Exception => e
     result = e
   end

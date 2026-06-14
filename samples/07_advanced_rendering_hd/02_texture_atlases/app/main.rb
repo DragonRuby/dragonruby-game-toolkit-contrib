@@ -39,10 +39,10 @@ def tick args
   args.outputs.sprites << { x:  640 - 50, y:         -100, w: 100, h: 100, path: "sprites/square.png" }
 
   if args.inputs.keyboard.key_down.right_arrow
-    GTK.set_window_scale 1, 9, 16
+    DR.set_window_scale 1, 9, 16
   elsif args.inputs.keyboard.key_down.left_arrow
-    GTK.set_window_scale 1, 32, 9
+    DR.set_window_scale 1, 32, 9
   elsif args.inputs.keyboard.key_down.up_arrow
-    GTK.toggle_window_fullscreen
+    DR.toggle_window_fullscreen
   end
 end

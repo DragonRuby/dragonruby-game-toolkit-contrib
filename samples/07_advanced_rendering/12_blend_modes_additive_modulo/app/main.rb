@@ -37,7 +37,7 @@ def tick args
       anchor_x: 0.5,
       anchor_y: 0.5,
       path: 'sprites/mask.png', # <-- sprite representing the "reveal shape"
-      blendmode_enum: 2,        # <-- important (2 means additive blending)
+      blendmode: 2,             # <-- important (2 means additive blending)
       r: 255, g: 255, b: 255    # <-- important (white color)
     }
   end
@@ -53,7 +53,7 @@ def tick args
   args.outputs.sprites << {
     x: 0, y: 0, w: 1280, h: 720,
     path: :mask,
-    blendmode_enum: 3 # <-- important (3 means modulo blending)
+    blendmode: 4 # <-- important (4 means modulo blending)
   }
 
   # render mouse overlay

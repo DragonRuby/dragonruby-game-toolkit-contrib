@@ -1,192 +1,234 @@
+# this class encapsulates the Game and shows
+# how to manage animations states. The components
+# that control animation states are action, action_at, and Numeric.frame
 class Game
-  attr_gtk
+  # expose player and enemies as public properties
+  # from the Console you can see their values via $game.player and $game.enemies
+  attr :player, :enemies
 
-  def defaults
-    state.show_debug_layer = true if Kernel.tick_count == 0
+  # DragonRuby class macro that allows you to access inputs, outputs, state, etc
+  # without passing args everywhere
+  attr_dr
 
-    state.player ||= {
-      tile_size: 64,
+  def initialize
+    # when the game is constructed, create the player at the center of the screen
+    @player = {
       speed: 3,
-      slash_frames: 15,
-      x: 50,
-      y: 400,
-      dir_x: 1,
-      dir_y: -1,
-      is_moving: false
+      x: 640,
+      y: 360,
+      w: 64,
+      h: 64,
+      x_dir: 1, # the direction the player is facing
+      action: :idle, # set the player's current action to :idle
+      action_at: 0,  # set the player's action timestamp to 0
+      action_lookup: { # frame data for each action
+        # when player is standing still
+        idle: {
+          path: "sprites/horizontal-stand.png",
+          hold_for: 3,
+          frame_count: 1,
+          repeat: true
+        },
+        # when player is moving
+        run: {
+          path: "sprites/horizontal-run.png",
+          hold_for: 3,
+          frame_count: 6,
+          repeat: true
+        },
+        # when player is attacking
+        slash: {
+          path: "sprites/horizontal-slash.png",
+          hold_for: 3,
+          frame_count: 5,
+          repeat: false
+        }
+      }
     }
 
-    state.enemies ||= []
+    # collection of enemies
+    @enemies = []
   end
 
+  def player_current_action_lookup
+    @player.action_lookup[@player.action]
+  end
+
+  def player_frame
+    # get the frame data for the current action the player is in
+    action_lookup = player_current_action_lookup
+
+    # Numeric.frame returns the following hash
+    # For example, this would be the frame data for performing an attack
+    # {
+    #   frame_index: 3,
+    #   frame_count: 5,
+    #   frames_left: 2,
+    #   started: true,
+    #   completed: false,
+    #   duration: 15,
+    #   elapsed_time: 10,
+    #   frame_elapsed_time: 1
+    # }
+    Numeric.frame(start_at: @player.action_at,
+                  frame_count: action_lookup.frame_count,
+                  hold_for: action_lookup.hold_for,
+                  repeat: action_lookup.repeat)
+  end
+
+  # function adds an enemy to the enemies collection
   def add_enemy
-    state.enemies << {
+    @enemies << {
       x: 1200 * rand,
       y: 600 * rand,
       w: 64,
       h: 64,
       anchor_x: 0.5,
       anchor_y: 0.5,
-      path: 'sprites/enemy.png'
     }
   end
 
-  def sprite_horizontal_run
-    tile_index = 0.frame_index(6, 3, true)
-    tile_index = 0 if !player.is_moving
+  # return the sprite to display based on the players current action
+  def player_prefab
+    # first get the action frame data for the player's current action
+    # the lookup contains the sprite to display
+    lookup = player_current_action_lookup
+
+    # then get the frame information
+    frame = player_frame
 
     {
-      x: player.x,
-      y: player.y,
-      w: player.tile_size,
-      h: player.tile_size,
-      anchor_x: 0.5,
-      anchor_y: 0.5,
-      path: 'sprites/horizontal-run.png',
-      tile_x: 0 + (tile_index * player.tile_size),
-      tile_y: 0,
-      tile_w: player.tile_size,
-      tile_h: player.tile_size,
-      flip_horizontally: player.dir_x > 0,
-    }
-  end
-
-  def sprite_horizontal_stand
-    {
-      x: player.x,
-      y: player.y,
-      w: player.tile_size,
-      h: player.tile_size,
-      anchor_x: 0.5,
-      anchor_y: 0.5,
-      path: 'sprites/horizontal-stand.png',
-      flip_horizontally: player.dir_x > 0,
-    }
-  end
-
-  def sprite_horizontal_slash
-    tile_index   = player.slash_at.frame_index(5, player.slash_frames.idiv(5), false) || 0
-
-    {
-      x: player.x + player.dir_x.sign * 9.25,
-      y: player.y + 9.25,
-      w: 165,
-      h: 165,
-      anchor_x: 0.5,
-      anchor_y: 0.5,
-      path: 'sprites/horizontal-slash.png',
-      tile_x: 0 + (tile_index * 128),
+      x: @player.x,
+      y: @player.y,
+      w: 128,
+      h: 128,
+      path: lookup.path, # lookup path
+      tile_x: 128 * frame.frame_index, # the pngs are tile sheets, so we offset the tile_x by the frame index
       tile_y: 0,
       tile_w: 128,
       tile_h: 128,
-      flip_horizontally: player.dir_x > 0
+      anchor_x: 0.5,
+      anchor_y: 0.5,
+      flip_horizontally: @player.x_dir == 1
     }
   end
 
-  def render_player
-    if player.slash_at
-      outputs.sprites << sprite_horizontal_slash
-    elsif player.is_moving
-      outputs.sprites << sprite_horizontal_run
-    else
-      outputs.sprites << sprite_horizontal_stand
-    end
+  # return the representation of an enemy (int this case it's just a solid box)
+  def enemy_prefab enemy
+    { **enemy, path: :solid, r: 0, g: 0, b: 0, a: 128 }
   end
 
-  def render_enemies
-    outputs.borders << state.enemies
-  end
-
-  def render_debug_layer
-    return if !state.show_debug_layer
-    outputs.borders << player.slash_collision_rect
-  end
-
-  def slash_initiate?
-    inputs.controller_one.key_down.a || inputs.keyboard.key_down.j
-  end
-
-  def input
-    # player movement
-    if slash_complete? && (vector = inputs.directional_vector)
-      player.x += vector.x * player.speed
-      player.y += vector.y * player.speed
-    end
-    player.slash_at = slash_initiate? if slash_initiate?
-  end
-
-  def calc_movement
-    # movement
-    if vector = inputs.directional_vector
-      state.debug_label = vector
-      player.dir_x = vector.x if vector.x != 0
-      player.dir_y = vector.y if vector.y != 0
-      player.is_moving = true
-    else
-      state.debug_label = vector
-      player.is_moving = false
-    end
-  end
-
-  def calc_slash
-    player.slash_collision_rect = {
-      x: player.x + player.dir_x.sign * 52,
+  # this represents the rectang for the player's sword
+  def player_slash_rect
+    {
+      x: player.x + player.x_dir * 40,
       y: player.y,
       w: 40,
       h: 20,
       anchor_x: 0.5,
       anchor_y: 0.5,
-      path: "sprites/debug-slash.png"
+      path: :solid,
+      r: 0, g: 0, b: 0
     }
-
-    # recalc sword's slash state
-    player.slash_at = nil if slash_complete?
-
-    # determine collision if the sword is at it's point of damaging
-    return unless slash_can_damage?
-
-    state.enemies.reject! { |e| e.intersect_rect? player.slash_collision_rect }
   end
 
-  def slash_complete?
-    !player.slash_at || player.slash_at.elapsed?(player.slash_frames)
+  # slash is requested if controller's A is pressed,
+  # J is pressed on the keyboard,
+  # or enter is pressed on the keyboard
+  def player_slash_requested?
+    inputs.controller_one.key_down.a ||
+    inputs.keyboard.key_down.j       ||
+    inputs.keyboard.key_down.enter
   end
 
-  def slash_can_damage?
-    # damage occurs half way into the slash animation
-    return false if slash_complete?
-    return false if (player.slash_at + player.slash_frames.idiv(2)) != Kernel.tick_count
-    return true
+  # the slash of the player can damage an enemy
+  # when the animation first transitions to frame index 2
+  def player_slash_can_damage?
+    @player.action == :slash &&
+    player_frame.frame_index == 2 &&
+    player_frame.frame_elapsed_time == 0
   end
 
-  def calc
-    # generate an enemy if there aren't any on the screen
-    add_enemy if state.enemies.length == 0
-    calc_movement
-    calc_slash
+  def player_action! action
+    # set the player action and the timestamp for the action
+    # if the player isn't already in that action
+    return if @player.action == action
+    @player.action = action
+    @player.action_at = Kernel.tick_count
   end
 
-  # source is at http://github.com/amirrajan/dragonruby-link-to-the-past
   def tick
-    defaults
-    render_enemies
-    render_player
-    outputs.labels << [30, 30, "Gamepad: D-Pad to move. B button to attack."]
-    outputs.labels << [30, 52, "Keyboard: WASD/Arrow keys to move. J to attack."]
-    render_debug_layer
-    input
-    calc
-  end
+    # if no enemies exist in the enemies collection,
+    # add an enemy at a random location
+    add_enemy if @enemies.length == 0
 
-  def player
-    state.player
+    # if slash is requested, then put the player in the :slash action
+    if player_slash_requested?
+      player_action! :slash
+    end
+
+    # if :slash is completed, then move the player back to idle
+    if @player.action == :slash
+      if player_frame.completed
+        player_action! :idle
+      end
+    else
+      # get the directional vector for the player
+      vec = inputs.directional_vector
+
+      # if WASD/arrow keys/DPAD is being activated
+      if vec
+        # increment player's x by the vector x multiplied by speed
+        @player.x += @player.speed * vec.x
+
+        # increment player's y by the vector y multiplied by speed
+        @player.y += @player.speed * vec.y
+
+        # set the player's facing direction equal to vec.x's sign if vec.x is not zero
+        if vec.x != 0
+          @player.x_dir = vec.x.sign
+        end
+
+        # set the player action to run
+        player_action! :run
+      else
+        # if no directional vector is being pressed then set the player to idle
+        player_action! :idle
+      end
+    end
+
+    # if the player can damage an enemy
+    if player_slash_can_damage?
+      # delete all enemies that intersect with the player's sword
+      @enemies.reject! { |e| Geometry.intersect_rect? e, player_slash_rect }
+    end
+
+    outputs.watch "player action: #{@player.action}: #{@player.action_at}"
+    outputs.watch "player frame data: #{pretty_format player_frame}"
+
+    # render the player, they sword collision rect, and enemies
+    outputs.primitives << player_slash_rect
+    outputs.primitives << player_prefab
+    outputs.primitives << @enemies.map { |e| enemy_prefab e }
   end
 end
 
-$game = Game.new
+def boot args
+  args.state = {}
+end
 
 def tick args
+  # new up the game if it hasn't been initialized
+  $game ||= Game.new
+  # set args on the game
   $game.args = args
+  # run tick
   $game.tick
 end
 
-GTK.reset
+# if reset is called, then set the game to nil so that it can be initialized again
+def reset args
+  $game = nil
+end
+
+DR.reset

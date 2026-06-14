@@ -610,4 +610,4 @@ def render_debug args
   }.label!
 end
 
-GTK.reset
+DR.reset

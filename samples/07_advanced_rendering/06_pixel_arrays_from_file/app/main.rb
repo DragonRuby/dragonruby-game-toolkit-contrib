@@ -3,7 +3,7 @@ def tick args
 
   # on load, get pixels from png and load it into a pixel array
   if Kernel.tick_count == 0
-    pixel_array = GTK.get_pixels 'sprites/square/blue.png'
+    pixel_array = DR.get_pixels 'sprites/square/blue.png'
     args.pixel_array(:square).w = pixel_array.w
     args.pixel_array(:square).h = pixel_array.h
     args.pixel_array(:square).pixels = pixel_array.pixels
@@ -18,7 +18,7 @@ def tick args
   args.outputs.primitives << { x: x, y: y, w: w, h: h, path: :square, angle: args.state.rotation }
   args.state.rotation += 1
 
-  args.outputs.primitives << GTK.current_framerate_primitives
+  args.outputs.primitives << DR.current_framerate_primitives
 end
 
-GTK.reset
+DR.reset

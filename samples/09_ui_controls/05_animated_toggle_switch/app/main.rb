@@ -87,18 +87,18 @@ class ToggleSwitch
 end
 
 class Game
-  attr_gtk
+  attr_dr
 
   def initialize
     @slide_toggle_buttons = [
       ToggleSwitch.new(row: 0,
                       col: 0,
                       toggle_state: :right,
-                      on_click: lambda { |toggle_state| GTK.notify "toggle 1 toggled to #{toggle_state}!" }),
+                      on_click: lambda { |toggle_state| DR.notify "toggle 1 toggled to #{toggle_state}!" }),
       ToggleSwitch.new(row: 1,
                       col: 0,
                       toggle_state: :left,
-                      on_click: lambda { |toggle_state| GTK.notify "toggle 2 toggled to #{toggle_state}!" }),
+                      on_click: lambda { |toggle_state| DR.notify "toggle 2 toggled to #{toggle_state}!" }),
     ]
   end
 
@@ -122,4 +122,4 @@ def reset args
   $game = nil
 end
 
-GTK.reset
+DR.reset

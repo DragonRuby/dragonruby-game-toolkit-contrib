@@ -1,15 +1,15 @@
-// https://wiki.libsdl.org/SDL2/SDL_CreateThread
-// https://wiki.libsdl.org/SDL2/SDL_WaitThread
-// https://wiki.libsdl.org/SDL2/SDL_AtomicSet
-// https://wiki.libsdl.org/SDL2/SDL_AtomicGet
+// https://wiki.libsdl.org/SDL3/SDL_CreateThread
+// https://wiki.libsdl.org/SDL3/SDL_WaitThread
+// https://wiki.libsdl.org/SDL3/SDL_SetAtomicInt
+// https://wiki.libsdl.org/SDL3/SDL_GetAtomicInt
 #include <dragonruby.h>
 static struct drb_api_t *drb;
 static SDL_Thread *thread;
-static SDL_atomic_t atomic_printing;
+static SDL_AtomicInt atomic_printing;
 
 static int background_print(void *unused)
 {
-  while (drb->SDL_AtomicGet(&atomic_printing)) {
+  while (drb->SDL_GetAtomicInt(&atomic_printing)) {
     drb->drb_log_write("Game", 2, "* INFO - Hello from the Worker class!");
     drb->SDL_Delay(1000);
   }
@@ -20,29 +20,29 @@ static int background_print(void *unused)
 static mrb_value start_printing_m(mrb_state *mrb, mrb_value self)
 {
   drb->drb_log_write("Game", 2, "* INFO - Starting printing invoked");
-  int printing = drb->SDL_AtomicGet(&atomic_printing);
+  int printing = drb->SDL_GetAtomicInt(&atomic_printing);
 
   char log_message[256] = {0};
   sprintf(log_message, "* INFO - printing: %d", printing);
   drb->drb_log_write("Game", 2, log_message);
 
   if (printing) return mrb_nil_value();
+  drb->SDL_SetAtomicInt(&atomic_printing, 1);
   thread = drb->SDL_CreateThread(background_print, "background_print", NULL);
-  drb->SDL_AtomicSet(&atomic_printing, 1);
 
   return drb->mrb_nil_value();
 }
 
 static mrb_value printing_q_m(mrb_state *mrb, mrb_value self)
 {
-  int printing = drb->SDL_AtomicGet(&atomic_printing);
+  int printing = drb->SDL_GetAtomicInt(&atomic_printing);
   return printing ? mrb_true_value() : mrb_false_value();
 }
 
 static mrb_value stop_printing_m(mrb_state *mrb, mrb_value self)
 {
   drb->drb_log_write("Game", 2, "* INFO - Stopping printing invoked");
-  drb->SDL_AtomicSet(&atomic_printing, 0);
+  drb->SDL_SetAtomicInt(&atomic_printing, 0);
   drb->SDL_WaitThread(thread, NULL);
   return drb->mrb_nil_value();
 }
@@ -54,7 +54,7 @@ void drb_register_c_extensions_with_api(mrb_state *mrb, struct drb_api_t *drb_lo
   drb->drb_log_write("Game", 2, "* INFO - Registering C extension");
 
   drb->drb_log_write("Game", 2, "* INFO - Initializing atomic_printing to 0");
-  drb->SDL_AtomicSet(&atomic_printing, 0);
+  drb->SDL_SetAtomicInt(&atomic_printing, 0);
 
   drb->drb_log_write("Game", 2, "* INFO - Registering Worker class");
   struct RClass *worker_class = drb->mrb_define_class(mrb, "Worker", mrb->object_class);

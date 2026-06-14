@@ -1,10 +1,10 @@
 def test_parse_json args, assert
-  result = GTK.parse_json '{ "name": "John Doe", "aliases": ["JD"] }'
+  result = DR.parse_json '{ "name": "John Doe", "aliases": ["JD"] }'
   assert.equal! result, { "name"=>"John Doe", "aliases"=>["JD"] }, "Parsing JSON failed."
 end
 
 def test_parse_xml args, assert
-  result = GTK.parse_xml <<-S
+  result = DR.parse_xml <<-S
 <Person id="100">
   <Name>John Doe</Name>
 </Person>

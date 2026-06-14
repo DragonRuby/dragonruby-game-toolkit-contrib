@@ -5,6 +5,7 @@
 
 class String
   include ValueType
+  alias_method(:__original_split__, :split) unless method_defined?(:__original_split__)
 
   def char_byte
     return nil if self.length == 0
@@ -176,5 +177,9 @@ class String
       end
       return results
     end
+  end
+
+  def self.split(s, *args)
+    s.split(*args)
   end
 end

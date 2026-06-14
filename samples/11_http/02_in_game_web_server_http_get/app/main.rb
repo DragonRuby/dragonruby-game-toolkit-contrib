@@ -4,7 +4,7 @@ def tick args
   # to enable the http server in a production build you need to:
   # - update metadata/cvars.txt
   # - manually start the server up with enable_in_prod set to true:
-  GTK.start_server! port: 3000, enable_in_prod: true
+  DR.start_server! port: 3000, enable_in_prod: true
   args.outputs.background_color = [0, 0, 0]
   args.outputs.labels << { x: 640,
                            y: 360,
@@ -21,7 +21,7 @@ def tick args
                            anchor_y: 1.5 }
 
   if Kernel.tick_count == 1
-    GTK.openurl "http://localhost:3000"
+    DR.openurl "http://localhost:3000"
   end
 
   args.inputs.http_requests.each { |req|
@@ -36,7 +36,7 @@ def tick args
       #  "text/html; charset=utf-8".
       # Don't set Content-Length; we'll ignore it and calculate it for you
       args.state.reqnum += 1
-      req.respond 200, "<html><head><title>hello</title></head><body><h1>This #{req.method} was request number #{args.state.reqnum}!</h1></body></html>\n", { 'X-DRGTK-header' => 'Powered by DragonRuby!' }
+      req.respond 200, "<html><head><title>hello</title></head><body><h1>This #{req.method} was request number #{args.state.reqnum}!</h1></body></html>\n", { 'X-DRDR-header' => 'Powered by DragonRuby!' }
     else
       req.reject
     end

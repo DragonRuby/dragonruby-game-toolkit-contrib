@@ -1,5 +1,5 @@
 class CleptoFrog
-  attr_gtk
+  attr_dr
 
   def tick
     defaults
@@ -546,14 +546,14 @@ class CleptoFrog
   end
 
   def save
-    GTK.write_file("data/mugs.txt", "")
+    DR.write_file("data/mugs.txt", "")
     state.mugs.each do |o|
-      GTK.append_file "data/mugs.txt", "#{o.x},#{o.y},#{o.w},#{o.h}\n"
+      DR.append_file "data/mugs.txt", "#{o.x},#{o.y},#{o.w},#{o.h}\n"
     end
 
-    GTK.write_file("data/walls.txt", "")
+    DR.write_file("data/walls.txt", "")
     state.walls.map do |o|
-      GTK.append_file "data/walls.txt", "#{o.x},#{o.y},#{o.w},#{o.h}\n"
+      DR.append_file "data/walls.txt", "#{o.x},#{o.y},#{o.w},#{o.h}\n"
     end
   end
 
@@ -562,7 +562,7 @@ class CleptoFrog
     state.walls = []
     state.mugs = []
 
-    contents = GTK.read_file "data/mugs.txt"
+    contents = DR.read_file "data/mugs.txt"
     if contents
       contents.each_line do |l|
         x, y, w, h = l.split(',').map(&:to_i)
@@ -574,7 +574,7 @@ class CleptoFrog
       end
     end
 
-    contents = GTK.read_file "data/walls.txt"
+    contents = DR.read_file "data/walls.txt"
     if contents
       contents.each_line do |l|
         x, y, w, h = l.split(',').map(&:to_i)
@@ -599,4 +599,4 @@ def tick args
   $game.tick
 end
 
-# GTK.reset
+# DR.reset

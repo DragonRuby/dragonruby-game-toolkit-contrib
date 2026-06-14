@@ -1,6 +1,6 @@
 def tick args
   if args.state.should_reset_framerate_calculation
-    GTK.reset_framerate_calculation
+    DR.reset_framerate_calculation
     args.state.should_reset_framerate_calculation = nil
   end
 
@@ -105,5 +105,5 @@ def render_instructions args
   args.outputs.labels << { x: 10, y: 10.from_top, r: 255, g: 255, b: 255, size_enum: -2, text: "Click to add 10,000 random rects. Tab to change collision algorithm." }
   args.outputs.labels << { x: 10, y: 40.from_top, r: 255, g: 255, b: 255, size_enum: -2, text: "Algorithm: #{args.state.collision_type}" }
   args.outputs.labels << { x: 10, y: 55.from_top, r: 255, g: 255, b: 255, size_enum: -2, text: "Rect Count: #{args.state.rects.length}" }
-  args.outputs.labels << { x: 10, y: 70.from_top, r: 255, g: 255, b: 255, size_enum: -2, text: "FPS: #{GTK.current_framerate.to_sf}" }
+  args.outputs.labels << { x: 10, y: 70.from_top, r: 255, g: 255, b: 255, size_enum: -2, text: "FPS: #{DR.current_framerate.to_sf}" }
 end

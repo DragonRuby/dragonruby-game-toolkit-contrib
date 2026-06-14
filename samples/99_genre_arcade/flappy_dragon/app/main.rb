@@ -58,7 +58,7 @@ class FlappyDragon
     outputs.labels << { x: 10, y: 100, text: "Code:   @amirrajan",     **white }
     outputs.labels << { x: 10, y:  80, text: "Art:    @mobypixel",     **white }
     outputs.labels << { x: 10, y:  60, text: "Music:  @mobypixel",     **white }
-    outputs.labels << { x: 10, y:  40, text: "Engine: DragonRuby GTK", **white }
+    outputs.labels << { x: 10, y:  40, text: "Engine: DragonRuby DR", **white }
   end
 
   def render_overlay

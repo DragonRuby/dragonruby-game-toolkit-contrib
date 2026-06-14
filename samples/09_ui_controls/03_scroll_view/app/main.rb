@@ -1,5 +1,5 @@
 class ScrollView
-  attr_gtk
+  attr_dr
 
   attr :y_offset, :rect, :clicked_items, :target_y_offset
 
@@ -202,7 +202,7 @@ class ScrollView
 end
 
 class Game
-  attr_gtk
+  attr_dr
 
   attr :scroll_view
 
@@ -253,4 +253,4 @@ def reset args
   $game = nil
 end
 
-GTK.reset
+DR.reset

@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   def tick
     grid.origin_center!

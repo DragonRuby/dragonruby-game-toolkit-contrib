@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   def initialize
     @player = {
@@ -97,7 +97,7 @@ class Game
   end
 
   def render
-    outputs.watch GTK.current_framerate
+    outputs.watch DR.current_framerate
     outputs.watch "#{@mouse_in_world.x}, #{@mouse_in_world.y}"
     outputs[:scene].w = Grid.allscreen_w
     outputs[:scene].h = Grid.allscreen_h
@@ -183,4 +183,4 @@ def reset args
   $game = nil
 end
 
-GTK.reset
+DR.reset

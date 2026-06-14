@@ -3,7 +3,7 @@ DESTINATION_TILE_SIZE = 16
 TILE_SHEET_SIZE = 256
 
 class Game
-  attr_gtk
+  attr_dr
 
   # this is the mapping of ascii characters to locations on the tile sheet
   def sprite_lookup
@@ -288,4 +288,4 @@ def reset args
   $game = nil
 end
 
-GTK.reset
+DR.reset

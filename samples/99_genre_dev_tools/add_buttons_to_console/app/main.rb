@@ -1,5 +1,5 @@
 # You can customize the buttons that show up in the Console.
-class GTK::Console::Menu
+class DR::Console::Menu
   # STEP 1: Override the custom_buttons function.
   def custom_buttons
     [
@@ -33,7 +33,7 @@ class GTK::Console::Menu
   def custom_button_also_clicked
     log "* INFO: Custom Button Clicked at #{Kernel.global_tick_count}!"
 
-    all_buttons_as_string = GTK.console.menu.buttons.map do |b|
+    all_buttons_as_string = DR.console.menu.buttons.map do |b|
       <<-S.strip
 ** id: #{b[:id]}
 :PROPERTIES:

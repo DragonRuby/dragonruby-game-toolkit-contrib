@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   def tick
     outputs.labels << { x: 30, y: 30.from_top,

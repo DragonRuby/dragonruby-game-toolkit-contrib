@@ -2,7 +2,7 @@
 # Hold space to shake and release to stop
 
 class ScreenShake
-  attr_gtk
+  attr_dr
 
   def tick
     defaults

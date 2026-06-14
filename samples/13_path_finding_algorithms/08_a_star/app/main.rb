@@ -160,7 +160,7 @@ class AStar
 end
 
 class Game
-  attr_gtk
+  attr_dr
 
   def initialize
     @grid_size = 16
@@ -219,10 +219,10 @@ class Game
     return if editing_disabled?
 
     if !@start_location
-      GTK.notify "Please set a start location"
+      DR.notify "Please set a start location"
       return
     elsif !@end_location
-      GTK.notify "Please set an end location"
+      DR.notify "Please set an end location"
       return
     end
 
@@ -248,7 +248,7 @@ class Game
 
     @mode = :reset
 
-    GTK.on_tick_count Kernel.tick_count + 15 do
+    DR.on_tick_count Kernel.tick_count + 15 do
       @mode = :place_walls
     end
   end
@@ -511,6 +511,6 @@ def reset args
   $game = nil
 end
 
-# GTK.reset
+# DR.reset
 
-GTK.reset_and_replay "replay.txt", speed: 5
+DR.reset_and_replay "replay.txt", speed: 5

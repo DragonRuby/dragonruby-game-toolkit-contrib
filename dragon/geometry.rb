@@ -3,6 +3,12 @@
 # MIT License
 # geometry.rb has been released under MIT (*only this file*).
 
+module Math
+  def self.pow base, exponent
+    base ** exponent
+  end
+end
+
 module GTK
   module Geometry
     def inside_rect? outer, tolerance = 0.0
@@ -144,8 +150,7 @@ module GTK
         new_rect
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-center_inside_rect for self #{self} and other_rect #{other_rect}.\n#{e}.
+* ERROR: center_inside_rect for self #{self} and other_rect #{other_rect}.\n#{e}.
 S
       end
 
@@ -157,8 +162,7 @@ S
         new_rect
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-center_inside_rect_x for self #{self} and other_rect #{other_rect}.\n#{e}.
+* ERROR: center_inside_rect_x for self #{self} and other_rect #{other_rect}.\n#{e}.
 S
       end
 
@@ -170,8 +174,7 @@ S
         new_rect
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-center_inside_rect_y for self #{self} and other_rect #{other_rect}.\n#{e}.
+* ERROR: center_inside_rect_y for self #{self} and other_rect #{other_rect}.\n#{e}.
 S
       end
 
@@ -206,7 +209,7 @@ S
         line.y - line_slope(line, replace_infinity: replace_infinity) * line.x
       rescue Exception => e
         raise <<-S
-* ERROR: ~Geometry::line_y_intercept~
+* ERROR: Geometry::line_y_intercept
 The following exception was thrown for line: #{line}
 #{e}
 
@@ -243,7 +246,7 @@ S
 
         if line.y == line.y2 && line.x == line.x2
           raise <<-S
-* ERROR: ~Geometry::line_slope~
+* ERROR: Geometry::line_slope
   I was given a line with zero length and can't compute its slope:
   #{line}
 S
@@ -261,8 +264,7 @@ S
                           .replace_infinity(replace_infinity)
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::line_slope for v1 #{line} replace_infinity: #{replace_infinity}.
+* ERROR: Geometry::line_slope for v1 #{line} replace_infinity: #{replace_infinity}.
 #{e}
 S
       end
@@ -336,7 +338,7 @@ S
           { x: shape.x, y: shape.y, w: 0, h: 0 }
         else
           raise <<-S
-* ERROR: ~Geometry::__shape_to_rect__~
+* ERROR: Geometry::__shape_to_rect__
   The shape #{shape} does not have enough information to be converted to a rectangle.
   It must have at least one of the following:
   - ~x~, ~y~, ~radius~ (circle)
@@ -354,7 +356,7 @@ S
       def line_rect line, min_w: 0, min_h: 0
         if min_w < 0 || min_h < 0
           raise <<-S
-* ERROR: ~Geometry::line_rect~
+* ERROR: Geometry::line_rect
   ~min_w~ and ~min_h~ must be greater than min
   line:  #{line}
   min_w: #{min_w}
@@ -426,8 +428,7 @@ S
 
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::ray_intersect for line_one #{line_one}, line_two #{line_two}.
+* ERROR: Geometry::ray_intersect for line_one #{line_one}, line_two #{line_two}.
 #{e}
 S
       end
@@ -442,8 +443,7 @@ S
         end
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::line_intersect for line_one #{line_one}, line_two #{line_two}.
+* ERROR: Geometry::line_intersect for line_one #{line_one}, line_two #{line_two}.
 
 ** NOTE:
 As of DragonRuby version 5.17, Geometry::line_intersect treats lines as line
@@ -486,7 +486,7 @@ S
       def angle_turn_direction angle, target_angle
         turn_direction = (target_angle % 360) - (angle % 360)
         if turn_direction.abs > 180
-          turn_direction = turn_direction - 360
+          turn_direction += (turn_direction < 0 ? 360 : -360)
         end
         turn_direction.sign
       end
@@ -494,7 +494,7 @@ S
       def angle start_point, end_point
         d_y = start_point.y - end_point.y
         d_x = start_point.x - end_point.x
-        Math::PI.+(Math.atan2(d_y, d_x)).to_degrees % 360
+        (Math::PI + Math.atan2(d_y, d_x)).to_degrees % 360
       rescue Exception => e
         raise e, ":angle failed for start_point: #{start_point} end_point: #{end_point}.\n#{e}"
       end
@@ -535,8 +535,7 @@ S
                         tolerance
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::intersect_bounding_box? for inner_shape #{inner_shape}, inner_shape #{outer_shape}.
+* ERROR: Geometry::intersect_bounding_box? for inner_shape #{inner_shape}, inner_shape #{outer_shape}.
 #{e}
 S
       end
@@ -549,8 +548,7 @@ S
                          tolerance
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::inside_bounding_box? for inner_shape #{inner_shape}, outer_shape #{outer_shape}.
+* ERROR: Geometry::inside_bounding_box? for inner_shape #{inner_shape}, outer_shape #{outer_shape}.
 #{e}
 S
       end
@@ -639,6 +637,11 @@ S
 
       def line_length line
         Math.sqrt((line.x2 - line.x)**2 + (line.y2 - line.y)**2)
+      rescue Exception => e
+        raise e, <<-S
+* ERROR: Geometry.line_length for line x: #{line.x || "nil"}, x2: #{line.x2 || "nil"}, y: #{line.y || "nil"}, y2: #{line.y2 || "nil"}
+#{e}
+S
       end
 
       def center rect
@@ -649,26 +652,11 @@ S
         end
       end
 
-
       def rect_props r
-        x = r.x || 0
-        y = r.y || 0
-        w = r.w || 0
-        h = r.h || 0
-        anchor_x = r.anchor_x || 0
-        anchor_y = r.anchor_y || 0
-        normalized_rect = {
-          x: x - w * anchor_x,
-          y: y - h * anchor_y,
-          w: w,
-          h: h
-        }
-        normalized_rect.center = __rect_center_point_normalized_rect__(normalized_rect)
-        normalized_rect
+        rect_props_ffi r
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry.rect_props for rect #{r}
+* ERROR: Geometry.rect_props for rect: #{r || "nil"}.
 #{e}
 S
       end
@@ -682,8 +670,7 @@ S
         angle == 0 || angle == 180
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::line_horizontal? for line #{line}.
+* ERROR: Geometry::line_horizontal? for line #{line}.
 #{e}
 S
       end
@@ -693,21 +680,16 @@ S
         angle == 90 || angle == 270
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::line_vertical? for line #{line}.
+* ERROR: Geometry::line_vertical? for line #{line}.
 #{e}
 S
       end
 
       def line_angle line
-        slope = line_slope line
-        return 90 if slope == Float::INFINITY
-        return 270 if slope == -Float::INFINITY
-        Math.atan(slope).to_degrees
+        Math.atan2(line.y2 - line.y, line.x2 - line.x) * 180 / Math::PI
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::line_angle for line #{line}.
+* ERROR: Geometry.line_angle for line x: #{line.x || "nil"}, x2: #{line.x2 || "nil"}, y: #{line.y || "nil"}, y2: #{line.y2 || "nil"}
 #{e}
 S
       end
@@ -716,8 +698,7 @@ S
         v1.x * v2.x + v1.y * v2.y
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::vec2_dot_product for v1 #{v1} v2: #{v2}.
+* ERROR: Geometry::vec2_dot_product for v1 #{v1} v2: #{v2}.
 #{e}
 S
       end
@@ -726,8 +707,7 @@ S
         (Math.atan2(v.y, v.x).to_degrees + 360) % 360
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::vec2_angle for v #{v}.
+* ERROR: Geometry::vec2_angle for v #{v}.
 #{e}
 S
       end
@@ -736,8 +716,7 @@ S
         { x: v1.x + v2.x, y: v1.y + v2.y }
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::vec2_add for v1 #{v1} and v2 #{v2}.
+* ERROR: Geometry::vec2_add for v1 #{v1} and v2 #{v2}.
 #{e}
 S
       end
@@ -746,8 +725,7 @@ S
         { x: v1.x - v2.x, y: v1.y - v2.y }
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::vec2_subtract for v1 #{v1} and v2 #{v2}.
+* ERROR: Geometry::vec2_subtract for v1 #{v1} and v2 #{v2}.
 #{e}
 S
       end
@@ -756,11 +734,14 @@ S
 
       def vec2_normalize v
         magnitude = vec2_magnitude v
-        { x: v.x / magnitude, y: v.y / magnitude }
+        if magnitude == 0
+          nil
+        else
+          { x: v.x / magnitude, y: v.y / magnitude }
+        end
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::vec2_normalize for v #{v}.
+* ERROR: Geometry::vec2_normalize for v #{v}.
 #{e}
 S
       end
@@ -769,8 +750,7 @@ S
         { x: v.x * scalar, y: v.y * scalar }
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::vec2_scale for v #{v} and scalar #{scalar}.
+* ERROR: Geometry::vec2_scale for v #{v} and scalar #{scalar}.
 #{e}
 S
       end
@@ -779,8 +759,7 @@ S
         { x: line.x2 - line.x, y: line.y2 - line.y }
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::line_vec2 for line #{line}.
+* ERROR: Geometry::line_vec2 for line #{line}.
 #{e}.
 S
       end
@@ -791,8 +770,7 @@ S
         (v.x**2 + v.y**2)**0.5
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::vec2_magnitude for v #{v}.
+* ERROR: Geometry::vec2_magnitude for v #{v}.
 #{e}.
 S
       end
@@ -801,8 +779,7 @@ S
         (p1.x - p2.x)**2 + (p1.y - p2.y)**2
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::distance_squared for p1 #{p1} and p2 #{p2}.
+* ERROR: Geometry::distance_squared for p1 #{p1} and p2 #{p2}.
 #{e}.
 S
       end
@@ -811,8 +788,7 @@ S
         { x: -v.y, y: v.x }
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::vec2_normal for v #{v}.
+* ERROR: Geometry::vec2_normal for v #{v}.
 #{e}
 S
       end
@@ -830,8 +806,7 @@ S
         return false
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::circle_intersect_line? for circle #{circle} and line #{line}.
+* ERROR: Geometry::circle_intersect_line? for circle #{circle} and line #{line}.
 #{e}
 S
       end
@@ -846,8 +821,7 @@ S
           y: line.y + line_vec_normalized.y * dot_product }
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::line_normal for line #{line} and point #{point}.
+* ERROR: Geometry::line_normal for line #{line} and point #{point}.
 #{e}
 S
       end
@@ -875,13 +849,11 @@ S
         end
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::rect_to_circle for rect #{rect}.
+* ERROR: Geometry::rect_to_circle for rect #{rect}.
 #{e}
 Make sure the parameter adheres to one of the following:
-- A ~Hash~ with ~x~, ~y~, and ~radius~ (or an object that responds to ~x~, ~y~, and ~radius~).
-- A ~Hash~ with ~x~, ~y~, ~w~, ~h~, ~anchor_x~, and ~anchor_y~ (or an object that responds to ~x~, ~y~, ~w~, ~h~, ~anchor_x~, and ~anchor_y~).
-  If the parameter is a ~Hash~, ~anchor_x~ and ~anchor_y~ are optional and default to ~0~.
+- A Hash[x:, y:, radius:] (or an object that responds to :x, :y, :radius).
+- A Hash[x:, y:, w:, h:, anchor_x: 0, anchor_y: 0] (or an object that responds to :x, :y, :w, :h, :anchor_x, :anchor_y).
 S
       end
 
@@ -898,8 +870,7 @@ S
         end
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::rect? for shape #{shape}.
+* ERROR: Geometry::rect? for shape #{shape}.
 
 An object is considered a rectangle if it responds to the following methods:
 - ~x~
@@ -935,11 +906,10 @@ S
       def intersect_circle? circle_one, circle_two
         resolved_circle_one = rect_to_circle circle_one
         resolved_circle_two = rect_to_circle circle_two
-        distance_squared(circle_one, circle_two) <= (circle_one.radius + circle_two.radius)**2
+        distance_squared(circle_one, circle_two) <= (resolved_circle_one.radius + resolved_circle_two.radius)**2
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::intersect_circle? for circle_one #{circle_one} and circle_two #{circle_two}.
+* ERROR: Geometry::intersect_circle? for circle_one #{circle_one} and circle_two #{circle_two}.
 #{e}
 S
       end
@@ -959,8 +929,7 @@ S
         (distance_point_to_x1_y1 + distance_point_to_x2_y2 - line_length).abs < tolerance
       rescue Exception => e
         raise e, <<-S
-* ERROR:
-Geometry::point_on_line? for point #{point}, line #{line}, tolerance #{tolerance}.
+* ERROR: Geometry::point_on_line? for point #{point}, line #{line}, tolerance #{tolerance}.
 #{e}
 S
       end
@@ -1142,7 +1111,7 @@ S
         closest_entry.item
       end
 
-      def angle_vector angle
+      def angle_vec2 angle
         angle_r = angle * Math::PI.fdiv(180)
 
         {
@@ -1151,11 +1120,34 @@ S
         }
       end
 
-      def angle_vector_r angle_in_radians
+
+      def angle_vec2_r angle_in_radians
         {
           x: Math.cos(angle_in_radians),
           y: Math.sin(angle_in_radians)
         }
+      end
+
+      alias_method :angle_vector, :angle_vec2
+      alias_method :angle_vector_r, :angle_vec2_r
+
+      def angle_cardinal_vec2 angle
+        directions = [
+          { x: 1, y: 0 },
+          { x: Math.sqrt(2).fdiv(2), y: Math.sqrt(2).fdiv(2) },
+          { x: 0, y: 1 },
+          { x: -Math.sqrt(2).fdiv(2), y: Math.sqrt(2).fdiv(2) },
+          { x: -1, y: 0 },
+          { x: -Math.sqrt(2).fdiv(2), y: -Math.sqrt(2).fdiv(2) },
+          { x: 0, y: -1 },
+          { x: Math.sqrt(2).fdiv(2), y: -Math.sqrt(2).fdiv(2) },
+        ]
+
+        directions.max_by { |d| Geometry.vec2_dot_product(angle_vec2(angle), d) }
+      end
+
+      def angle_cardinal_vec2_r angle_in_radians
+        angle_cardinal_vector angle_in_radians * 180 / Math::PI
       end
 
       def rect_navigate rect:, rects:, left_right: nil, up_down: nil, directional_vector: nil, wrap_x: true, wrap_y: true, using: nil
@@ -1186,6 +1178,126 @@ S
                                              using: using
 
         current_rect
+      end
+
+      def rect_to_lines rect
+        rect_p = rect_props rect
+        [
+          { x: rect_p.x, y: rect_p.y, x2: rect_p.x + rect_p.w, y2: rect_p.y },
+          { x: rect_p.x + rect_p.w, y: rect_p.y, x2: rect_p.x + rect_p.w, y2: rect_p.y + rect_p.h },
+          { x: rect_p.x + rect_p.w, y: rect_p.y + rect_p.h, x2: rect_p.x, y2: rect_p.y + rect_p.h },
+          { x: rect_p.x, y: rect_p.y + rect_p.h, x2: rect_p.x, y2: rect_p.y }
+        ]
+      end
+
+      def line_to_points line
+        [
+          { x: line.x, y: line.y },
+          { x: line.x2, y: line.y2 }
+        ]
+      end
+
+      def points_to_line p1, p2
+        { x: p1.x, y: p1.y, x2: p2.x, y2: p2.y }
+      end
+
+      def line_midpoint line
+        mid_x = (line.x + line.x2) * 0.5
+        mid_y = (line.y + line.y2) * 0.5
+        { x: mid_x, y: mid_y }
+      end
+
+      def zoom_rect(rect:,
+                    ratio: nil, w_ratio: nil, h_ratio: nil,
+                    px: nil, w_px: nil, h_px: nil, **ignore)
+
+        px_provided = px || w_px || h_px
+        ratio_provided = ratio || w_ratio || h_ratio
+
+        if (!px_provided && !ratio_provided) || (px_provided && ratio_provided)
+          raise <<~S
+                * ERROR: Geometry::zoom_rect failed to resolve parameters.
+                You must provide EITHER ~ratio:~, ~w_ratio:~, ~h_ratio:~ OR ~px:~, ~w_px:~, ~h_px:~.
+                - ratio: #{ratio}
+                - w_ratio: #{w_ratio}
+                - h_ratio: #{h_ratio}
+                - px: #{px}
+                - w_px: #{w_px}
+                - h_px: #{h_px}
+                S
+        end
+
+        begin
+          r_p = rect_props rect
+          r_p_x = r_p.x
+          r_p_y = r_p.y
+          r_p_w = r_p.w
+          r_p_h = r_p.h
+
+          if ratio_provided
+            resolved_w_ratio = w_ratio || ratio || 1
+            resolved_w_ratio = 0 if resolved_w_ratio && resolved_w_ratio < 0
+            resolved_h_ratio = h_ratio || ratio || 1
+            resolved_h_ratio = 0 if resolved_h_ratio && resolved_h_ratio < 0
+
+            resolved_w_px = r_p_w * resolved_w_ratio - r_p_w
+            resolved_h_px = r_p_h * resolved_h_ratio - r_p_h
+          else
+            resolved_w_px = w_px || px || 0
+            resolved_h_px = h_px || px || 0
+          end
+
+          resolved_w = r_p_w + resolved_w_px
+          resolved_w = 0 if resolved_w < 0
+          resolved_h = r_p_h + resolved_h_px
+          resolved_h = 0 if resolved_h < 0
+
+          rect_props(x: r_p_x - resolved_w_px / 2,
+                     y: r_p_y - resolved_h_px / 2,
+                     w: resolved_w,
+                     h: resolved_h)
+        rescue Exception => e
+          raise e, <<~S
+                   * ERROR: Geometry::zoom_rect
+                   - rect:    #{rect || "nil"}
+                   - ratio:   #{ratio || "nil"}
+                   - w_ratio: #{w_ratio || "nil"}
+                   - h_ratio: #{h_ratio || "nil"}
+                   - px:      #{px || "nil"}
+                   - w_px:    #{w_px || "nil"}
+                   - h_px:    #{h_px || "nil"}
+                   #{e}
+                   S
+        end
+      end
+
+      def lerp_rect from, to, step, tolerance: 0
+        from = rect_props from
+        to = rect_props to
+
+        rect_props x: from.x.lerp(to.x, step, tolerance: tolerance),
+                   y: from.y.lerp(to.y, step, tolerance: tolerance),
+                   w: from.w.lerp(to.w, step, tolerance: tolerance),
+                   h: from.h.lerp(to.h, step, tolerance: tolerance)
+      rescue Exception => e
+        raise e, <<~S
+                 * ERROR: Geometry::lerp_rect for from: #{from} to: #{to} step: #{step} tolerance: #{tolerance}.
+                 #{e}
+                 S
+      end
+
+      def cubic_bezier_vec2 p0, p1, p2, p3, t
+        {
+          x: cubic_bezier_scalar(p0.x, p1.x, p2.x, p3.x, t),
+          y: cubic_bezier_scalar(p0.y, p1.y, p2.y, p3.y, t),
+        }
+      end
+
+      def cubic_bezier_scalar v0, v1, v2, v3, t
+        Math.pow(1 - t, 3) * v0 +
+        3 * Math.pow(1 - t, 2) * t * v1 +
+        3 * (1 - t) * Math.pow(t, 2) * v2 +
+        Math.pow(t, 3) * v3
       end
     end # end class << self
   end # module Geometry

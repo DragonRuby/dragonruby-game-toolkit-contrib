@@ -43,7 +43,7 @@
 
 # This sample app is a classic game of Tic Tac Toe.
 class TicTacToe
-  attr_gtk # class macro that adds outputs, inputs, state, etc to class
+  attr_dr # class macro that adds outputs, inputs, state, etc to class
 
   def tick
     init_new_game

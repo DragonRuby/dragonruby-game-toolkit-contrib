@@ -96,8 +96,8 @@ module GTK
           acc
         end
 
-        center.x /= touch_points.count
-        center.y /= touch_points.count
+        center.x = center.x / touch_points.count
+        center.y = center.y / touch_points.count
 
         # simulate mouse move
         transform_x = @args.grid.transform_x(center.x)
@@ -261,8 +261,15 @@ module GTK
       def __mouse_move_relative_with_untransformed_points_ mousex, mousey, relative_x, relative_y, sender = false
         @args.inputs.mouse.active = Kernel.tick_count
         @args.inputs.mouse.moved = MousePoint.new mousex, mousey
-        @args.inputs.mouse.previous_x = @args.inputs.mouse.x
-        @args.inputs.mouse.previous_y = @args.inputs.mouse.y
+        # NOTE: SDL3 can send multiple mouse move events on monitors with high refresh rates,
+        # so we only want to set the previous_x, previous_y the "first" time the mouse move event is recieved
+        if Kernel.tick_count < 0
+          @args.inputs.mouse.previous_x = @args.inputs.mouse.x
+          @args.inputs.mouse.previous_y = @args.inputs.mouse.y
+        elsif @args.inputs.mouse.global_moved_at != Kernel.global_tick_count
+          @args.inputs.mouse.previous_x = @args.inputs.mouse.x
+          @args.inputs.mouse.previous_y = @args.inputs.mouse.y
+        end
         @args.inputs.mouse.x = mousex
         @args.inputs.mouse.y = mousey
 
@@ -511,6 +518,9 @@ module GTK
       def textinput str, sender = false
         return if self.recording.is_replaying? && sender != :replay
         self.record_input_history :textinput, str, 0, 1
+        if !@text_input_enabled
+          DR.start_text_input
+        end
         @args.inputs.text << str
       end
 
@@ -528,7 +538,7 @@ module GTK
           end
         end
 
-        keys_currently_held = @args.inputs.keyboard.key_held.truthy_keys
+        keys_currently_held = @args.inputs.keyboard.key_held.__truthy_keys_including_raw_key_and_char__
         keys_to_set = names - keys_currently_held
         keys_to_set.uniq!
 
@@ -552,14 +562,14 @@ module GTK
         return unless names
         if KeyboardKeys.sdl_modifier_key? raw_key
           if KeyboardKeys.sdl_shift_key? raw_key
-            currently_held_keys = @args.inputs.keyboard.key_held.truthy_keys
+            currently_held_keys = @args.inputs.keyboard.key_held.__truthy_keys_including_raw_key_and_char__
             shifted_keys = currently_held_keys.map do |key|
               KeyboardKeys.char_to_shift_char_hash[key]
             end
             names += shifted_keys
           end
         else
-          currently_held_keys = @args.inputs.keyboard.key_held.truthy_keys
+          currently_held_keys = @args.inputs.keyboard.key_held.__truthy_keys_including_raw_key_and_char__
           unshifted_keys = currently_held_keys.map do |key|
             KeyboardKeys.shift_char_to_char_hash[key]
           end
@@ -665,7 +675,17 @@ module GTK
         when :key_down
           controller.activate_down(label)
         when :key_held
-          controller.activate_held(label)
+          # handle the scenario where key_down and key_held are sent on the same frame
+          if !controller.key_held.send(label)
+            # this means that key_held event from sdl is coming in on
+            # the same simulation frame as key_down. if that happens,
+            # resend key_down again
+            if controller.key_down.send(label) == Kernel.tick_count
+              controller.activate_down(label)
+            else
+              controller.activate_held(label)
+            end
+          end
         when :key_up
           controller.activate_up(label)
         else
@@ -696,11 +716,19 @@ module GTK
       end
 
       def window_keyboard_focus_changed gained
-        @args.inputs.keyboard.has_focus = gained
+        if platform?(:mobile)
+          @args.inputs.keyboard.has_focus = true
+        else
+          @args.inputs.keyboard.has_focus = gained
+        end
       end
 
       def window_mouse_focus_changed gained
-        @args.inputs.mouse.has_focus = gained
+        if platform?(:mobile)
+          @args.inputs.mouse.has_focus = true
+        else
+          @args.inputs.mouse.has_focus = gained
+        end
       end
 
       def analog_to_perc value
@@ -1082,7 +1110,7 @@ module GTK
                                    allscreen_w_px, allscreen_h_px,
                                    allscreen_offset_x_px, allscreen_offset_y_px,
                                    native_scale, texture_scale_enum, render_scale,
-                                   high_dpi_scale
+                                   high_dpi_scale, refresh_rate
         g = @args.grid
 
         # indicates that orientation was changed
@@ -1111,6 +1139,7 @@ module GTK
         g.native_scale          = native_scale
         g.render_scale          = render_scale
         g.high_dpi_scale        = high_dpi_scale
+        g.refresh_rate          = refresh_rate
         g.texture_scale_enum    = texture_scale_enum
         g.texture_scale         = texture_scale_enum.fdiv(100)
 
@@ -1172,7 +1201,7 @@ module GTK
 
         $layout.reset
 
-        @args.events[:resize_occurred] = true
+        @args.events[:resize_occurred] = true if Kernel.tick_count > 0
       end
 
       def raw_event event

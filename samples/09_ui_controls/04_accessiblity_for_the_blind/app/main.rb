@@ -45,8 +45,8 @@ def tick args
   # beind the scenes)
 
   # =======================================
-  # from the Console run GTK.a11y_enable!
-  # ctrl+r will disable a11y (or you can run GTK.a11y_disable! in the console)
+  # from the Console run DR.a11y_enable!
+  # ctrl+r will disable a11y (or you can run DR.a11y_disable! in the console)
   # =======================================
 
   # with the a11y emulation enabled, you can only use left arrow, right arrow, and enter
@@ -89,7 +89,7 @@ def tick args
 
   # flash a notification for each respective button
   if args.inputs.mouse.click && args.inputs.mouse.inside_rect?(args.state.button_1)
-    GTK.notify_extended! message: "Button 1 clicked", a: 255
+    DR.notify_extended! message: "Button 1 clicked", a: 255
     # you can use a11y to speak information
     args.outputs.a11y["notify button clicked"] = {
       a11y_text: "button 1 clicked",
@@ -98,11 +98,11 @@ def tick args
   end
 
   if args.inputs.mouse.click && args.inputs.mouse.inside_rect?(args.state.button_2)
-    GTK.notify_extended! message: "Button 2 clicked", a: 255
+    DR.notify_extended! message: "Button 2 clicked", a: 255
   end
 
   if args.inputs.mouse.click && args.inputs.mouse.inside_rect?(args.state.button_3)
-    GTK.notify_extended! message: "Button 3 clicked", a: 255
+    DR.notify_extended! message: "Button 3 clicked", a: 255
     # you can also use a11y to redirect focus to another control
     args.outputs.a11y["notify button clicked"] = {
       a11y_trait: :notification,
@@ -111,4 +111,4 @@ def tick args
   end
 end
 
-GTK.reset
+DR.reset

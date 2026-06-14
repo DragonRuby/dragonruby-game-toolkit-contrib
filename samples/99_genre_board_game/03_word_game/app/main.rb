@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   GREEN = { r: 98, g: 140, b: 84 }
   YELLOW = { r: 177, g: 159, b: 54 }
@@ -7,18 +7,18 @@ class Game
 
   def initialize
     # get the list of words that can be inputed
-    @valid_words = GTK.read_file("data/valid.txt")
+    @valid_words = DR.read_file("data/valid.txt")
                       .each_line
                       .map { |l| l.strip }
                       .reject { |l| l.length == 0 }
 
     # get the list of words that will be picked from
-    @play_words = GTK.read_file("data/play.txt")
+    @play_words = DR.read_file("data/play.txt")
                       .each_line
                       .map { |l| l.strip }
                       .reject { |l| l.length == 0 }
 
-    @player_progress = (GTK.read_file("user-data/progress.txt") || "")
+    @player_progress = (DR.read_file("user-data/progress.txt") || "")
                          .each_line
                          .map { |l| l.strip }
                          .reject { |l| l.length == 0 }
@@ -58,7 +58,7 @@ class Game
       "#{h.word},#{h.result}"
     end.join "\n"
 
-    GTK.write_file "user-data/progress.txt", content
+    DR.write_file "user-data/progress.txt", content
   end
 
   def new_game!
@@ -516,4 +516,4 @@ def reset args
   $game = nil
 end
 
-GTK.reset
+DR.reset

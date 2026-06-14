@@ -131,33 +131,6 @@ You can display these diagnostics using:
   end
 #+end_src
 
-** Draw Calls: ~<<~ Invocation Perf Counter
-Here is how many times ~args.outputs.PRIMITIVE_ARRAY <<~ was called:
-
-  #{$perf_counter_outputs_push_count} times invoked.
-
-If the number above is high, consider batching primitives so you can lower the invocation of ~<<~. For example.
-
-Instead of:
-
-#+begin_src
-  args.state.enemies.map do |e|
-    e.alpha = 128
-    args.outputs.sprites << e # <-- ~args.outputs.sprites <<~ is invoked a lot
-  end
-#+end_src
-
-Do this:
-
-#+begin_src
-  args.outputs.sprites << args.state
-                              .enemies
-                              .map do |e| # <-- ~args.outputs.sprites <<~ is only invoked once.
-    e.alpha = 128
-    e
-  end
-#+end_src
-
 ** Array Primitives
 ~Primitives~ represented as an ~Array~ (~Tuple~) are great for prototyping, but are not as performant as using a ~Hash~.
 
@@ -233,7 +206,7 @@ S
 
       def framerate_diagnostics_primitives
         [
-          { x: 0, y: 93.from_top, w: 500, h: 93, a: 128 }.solid!,
+          { x: 0, y: 72.from_top, w: 500, h: 72, r: 0, g: 0, b: 0, a: 128, path: :solid },
           {
             x: 5,
             y: 5.from_top,
@@ -242,7 +215,7 @@ S
             g: 255,
             b: 255,
             size_enum: -2
-          }.label!,
+          },
           {
             x: 5,
             y: 20.from_top,
@@ -251,34 +224,25 @@ S
             g: 255,
             b: 255,
             size_enum: -2
-          }.label!,
+          },
           {
             x: 5,
             y: 35.from_top,
-            text: "Draw Calls: #{$perf_counter_outputs_push_count}",
-            r: 255,
-            g: 255,
-            b: 255,
-            size_enum: -2
-          }.label!,
-          {
-            x: 5,
-            y: 50.from_top,
             text: "Array Primitives: #{$perf_counter_primitive_is_array}",
             r: 255,
             g: 255,
             b: 255,
             size_enum: -2
-          }.label!,
+          },
           {
             x: 5,
-            y: 65.from_top,
+            y: 50.from_top,
             text: "Mouse: #{@args.inputs.mouse.point}",
             r: 255,
             g: 255,
             b: 255,
             size_enum: -2
-          }.label!,
+          },
         ]
       end
     end # module Framerate

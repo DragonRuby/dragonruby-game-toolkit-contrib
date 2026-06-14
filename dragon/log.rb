@@ -41,7 +41,7 @@ module GTK
       return if $gtk.production
       $gtk.append_file_root 'logs/all.log', args.join("\n")
       if message_code
-        $gtk.notify! "An important notification occurred. Open Console to see details. #{message_code}"
+        $gtk.notify! "[#{message_code}] An important notification occurred. Open Console to see details."
       else
         $gtk.notify! "An important notification occurred. Open Console to see details."
       end
@@ -184,7 +184,12 @@ class Object
   end
 
   def log_important *args
-    GTK::Log.puts_important(*args)
+    message_code = args.first
+    if message_code.is_a? Symbol
+      GTK::Log.puts_important(*args, message_code: args.first)
+    else
+      GTK::Log.puts_important(*args)
+    end
   end
 
   def log *args
@@ -300,8 +305,12 @@ class Object
     GTK::Log.puts_info(*args)
   end
 
-  def log_once(*ids, message, include_caller: false)
-    GTK::Log.puts_once(*ids, message, include_caller: include_caller)
+  def log_once(*ids, message, include_caller: false, raise_if: false)
+    if raise_if
+      raise message
+    else
+      GTK::Log.puts_once(*ids, message, include_caller: include_caller)
+    end
   end
 
   def log_once_important(*ids, message, include_caller: false)

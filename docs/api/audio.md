@@ -165,7 +165,7 @@ def tick args
     args.state.playlist.each_cons(2) do |c, n|
       # create a unique id for the current song
       # (this will be the key for the audio hash)
-      c.id = GTK.create_uuid
+      c.id = DR.create_uuid
       # set the next song for the current song
       c.next_song = n
     end
@@ -230,16 +230,32 @@ def tick args
 end
 ```
 
-## Audio encoding trouble shooting
+## Trouble Shooting Audio encoding trouble shooting
 
 If audio doesn't seem to be working, try re-encoding it via `ffmpeg`:
 
-```sh
-# re-encode ogg
-ffmpeg -i ./mygame/sounds/SOUND.ogg -ac 2 -b:a 160k -ar 44100 -acodec libvorbis ./mygame/sounds/SOUND-converted.ogg
+### Re-encode `ogg`
 
-# convert wav to ogg
-ffmpeg -i ./mygame/sounds/SOUND.wav -ac 2 -b:a 160k -ar 44100 -acodec libvorbis ./mygame/sounds/SOUND-converted.ogg
+```
+ffmpeg -i ./mygame/sounds/SOUND.ogg -c:a vorbis -strict -2 -b:a 160k -ar 44100 -ac 2 ./mygame/sounds/SOUND-converted.ogg
+mv ./mygame/sounds/SOUND-converted.ogg ./mygame/sounds/SOUND.ogg
+
+# OR
+
+ffmpeg -i ./mygame/sounds/SOUND.ogg -ac 2 -b:a 160k -ar 44100 -acodec libvorbis ./mygame/sounds/SOUND-converted.ogg
+mv ./mygame/sounds/SOUND-converted.ogg ./mygame/sounds/SOUND.ogg
+```
+
+### Convert `wav` to `ogg`
+
+```
+ffmpeg -i ./mygame/sounds/SOUND.wav -c:a vorbis -strict -2 -b:a 160k -ar 44100 -ac 2 ./mygame/sounds/SOUND-converted.ogg
+mv ./mygame/sounds/SOUND-converted.ogg ./mygame/sounds/SOUND.ogg
+
+# OR
+
+ffmpeg -i ./mygame/sounds/SOUND.wav -ac 2 -b:a 160k -ar 44100 -acodec libvorbis ./mygame/sounds/SOUND.ogg
+mv ./mygame/sounds/SOUND-converted.ogg ./mygame/sounds/SOUND.ogg
 ```
 
 ## Sound Synthesis

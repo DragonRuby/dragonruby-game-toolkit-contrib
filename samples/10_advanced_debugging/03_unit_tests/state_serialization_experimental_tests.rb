@@ -7,7 +7,7 @@ end
 
 def partition target
   return [] unless needs_partitioning? target
-  if target[:value].is_a? GTK::OpenEntity
+  if target[:value].is_a? DR::OpenEntity
     target[:value] = target[:value].hash
   end
 
@@ -62,7 +62,7 @@ def state_from_string string
     puts "todo: #{l}"
   end
 
-  GTK::OpenEntity.parse_from_hash $load_data
+  DR::OpenEntity.parse_from_hash $load_data
 end
 
 def test_save_and_load args, assert

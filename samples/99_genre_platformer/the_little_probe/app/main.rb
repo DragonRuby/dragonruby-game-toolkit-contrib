@@ -1,5 +1,5 @@
 class FallingCircle
-  attr_gtk
+  attr_dr
 
   def tick
     fiddle
@@ -844,17 +844,17 @@ class FallingCircle
   end
 end
 
-# GTK.reset
+# DR.reset
 
 def tick args
   args.outputs.background_color = [0, 0, 0]
   if args.inputs.keyboard.r
-    GTK.reset
+    DR.reset
     return
   end
   # uncomment the line below to slow down the game so you
   # can see each tick as it passes
-  # GTK.slowmo! 30
+  # DR.slowmo! 30
   $game ||= FallingCircle.new
   $game.args = args
   $game.tick

@@ -39,4 +39,4 @@ def bounce_prefab box
             h: box.w - 40 * perc)
 end
 
-GTK.reset
+DR.reset

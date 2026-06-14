@@ -19,11 +19,11 @@ Here, we're going to be programming in a language called "Ruby." In the interest
 
 Here's the most important thing you should know: Ruby lets you do some complicated things really easily, and you can learn that stuff later. I'm going to show you one or two cool tricks, but that's all.
 
-Do you know what an if statement is? A for-loop? An array? That's all you'll need to start.
+Do you know what an if statement is? A for-loop? An hash? That's all you'll need to start.
 
 ## The Game Loop
 
-Ok, here are few rules with regards to game development with GTK:
+Ok, here are few rules with regards to game development with DragonRuby:
 
 * Your game is all going to happen under one function ...
 * that runs 60 times a second ...
@@ -34,8 +34,10 @@ That's an entire video game in one run-on sentence.
 Here's that function. You're going to want to put this in mygame/app/main.rb, because that's where we'll look for it by default. Load it up in your favorite text editor.
 
 ```ruby
-def tick args
-  args.outputs.labels << [580, 400, 'Hello World!']
+module Main
+  def tick args
+    args.outputs.labels << { x: 580, y: 400, text: 'Hello World!' }
+  end
 end
 ```
 
@@ -48,24 +50,25 @@ Now run dragonruby ...did you get a window with "Hello World!" written in it? Go
 ```ruby
 # This "def"ines a function, named "tick," which takes a single argument
 # named "args". DragonRuby looks for this function and calls it every
-# frame, 60 times a second. "args" is a magic structure with lots of
+# frame, 60 times a second. "args" is a structure provided by DragonRuby with lots of
 # information in it. You can set variables in there for your own game state,
 # and every frame it will updated if keys are pressed, joysticks moved,
 # mice clicked, etc.
-def tick args
-
-  # One of the things in "args" is the "outputs" object that your game uses
-  # to draw things. Afraid of rendering APIs? No problem. In DragonRuby,
-  # you use arrays to draw things and we figure out the details.
-  # If you want to draw text on the screen, you give it an array (the thing
-  # in the [ brackets ]), with an X and Y coordinate and the text to draw.
-  # The "<<" thing says "append this array onto the list of them at
-  # args.outputs.labels)
-  args.outputs.labels << [580, 400, 'Hello World!']
+module Main
+  def tick args
+    # One of the things in "args" is the "outputs" object that your game uses
+    # to draw things. Afraid of rendering APIs? No problem. In DragonRuby,
+    # you use hashes to draw things and we figure out the details.
+    # If you want to draw text on the screen, you give it a Hash (the thing
+    # in the { brackets }), with an X and Y coordinate and the text to draw.
+    # The "<<" thing says "append this hash onto the list of them at
+    # args.outputs.labels)
+    args.outputs.labels << { x: 580, y: 400, text: 'Hello World!' }
+  end
 end
 ```
 
-Once your `tick` function finishes, we look at all the arrays you made and figure out how to draw it. You don't need to know about graphics APIs. You're just setting up some arrays! DragonRuby clears out these arrays every frame, so you just need to add what you need _right now_ each time.
+Once your `tick` function finishes, we look at all the things in `args.outputs` and figure out how to draw it. You don't need to know about graphics APIs. You're just setting up some hashes! DragonRuby clears out `args.outputs` every frame, so you just need to add what you need _right now_ each time.
 
 ## Rendering A Sprite
 
@@ -76,9 +79,11 @@ We're going to add some graphics. Each 2D image in DragonRuby is called a "sprit
 There's a "dragonruby.png" file included, just to get you started. Let's have it draw every frame with our text:
 
 ```ruby
-def tick args
-  args.outputs.labels  << [580, 400, 'Hello World!']
-  args.outputs.sprites << [576, 100, 128, 101, 'dragonruby.png']
+module Main
+  def tick args
+    args.outputs.labels  << { x: 580, y: 400, text: 'Hello World!' }
+    args.outputs.sprites << { x: 576, y: 100, w: 128, h: 101, path: 'dragonruby.png' }
+  end
 end
 ```
 
@@ -95,11 +100,13 @@ Also: your game screen is _always_ 1280x720 pixels. If you resize the window, we
 Ok, now we have an image on the screen, let's animate it:
 
 ```ruby
-def tick args
-  args.state.rotation  ||= 0
-  args.outputs.labels  << [580, 400, 'Hello World!' ]
-  args.outputs.sprites << [576, 100, 128, 101, 'dragonruby.png', args.state.rotation]
-  args.state.rotation  -= 1
+module Main
+  def tick args
+    args.state.rotation  ||= 0
+    args.outputs.labels  << { x: 580, y: 400, text: 'Hello World!' }
+    args.outputs.sprites << { x: 576, y: 100, w: 128, h: 101, path: 'dragonruby.png', angle: args.state.rotation }
+    args.state.rotation  -= 1
+  end
 end
 ```
 
@@ -111,7 +118,7 @@ Here's a fun Ruby thing: `args.state.rotation ||= 0` is shorthand for "if args.s
 
 `args.state` is a place you can hang your own data. It's an open data structure that allows you to define properties that are arbitrarily nested. You don't need to define any kind of class.
 
-In this case, the current rotation of our sprite, which is happily spinning at 60 frames per second. If you don't specify rotation (or alpha, or color modulation, or a source rectangle, etc), DragonRuby picks a reasonable default, and the array is ordered by the most likely things you need to tell us: position, size, name.
+In this case, the current rotation of our sprite, which is happily spinning at 60 frames per second. If you don't specify rotation (or alpha, or color modulation, or a source rectangle, etc), DragonRuby picks a reasonable default.
 
 ## There Is No Delta Time
 
@@ -119,52 +126,42 @@ One thing we decided to do in DragonRuby is not make you worry about delta time:
 
 Since we didn't make you worry about delta time, you can just move the rotation by 1 every time and it works without you having to keep track of time and math. Want it to move faster? Subtract 2.
 
+?> DragonRuby's simulation loop runs on a seperate thread and is
+_completely_ independent of the refresh rate of the display. It
+executes at a fixed 60hz (60 times per second). All of [the pitfalls of delta time](https://www.youtube.com/watch?v=yGhfUcPjXuE) are
+eliminated because of this. Here are [additional benefits/rationale](https://medium.com/@tglaiel/how-to-make-your-game-run-at-60fps-24c61210fe75)
+(specifically the "Decoupled Rendering" section).
+
 ## Handling User Input
 
 Now, let's move that image around.
 
 ```ruby
-def tick args
-  args.state.rotation ||= 0
-  args.state.x ||= 576
-  args.state.y ||= 100
-
-  if args.inputs.mouse.click
-    args.state.x = args.inputs.mouse.click.point.x - 64
-    args.state.y = args.inputs.mouse.click.point.y - 50
+module Main
+  def tick args
+    args.state.rotation ||= 0
+    args.state.x ||= 576
+    args.state.y ||= 100
+  
+    if args.inputs.mouse.click
+      args.state.x = args.inputs.mouse.click.point.x - 64
+      args.state.y = args.inputs.mouse.click.point.y - 50
+    end
+  
+    args.outputs.labels  << { x: 580, y: 400, text: 'Hello World!' }
+    args.outputs.sprites << { x: args.state.x,
+                              y: args.state.y,
+                              w: 128,
+                              h: 101,
+                              path: 'dragonruby.png',
+                              angle: args.state.rotation }
+  
+    args.state.rotation -= 1
   end
-
-  args.outputs.labels  << [580, 400, 'Hello World!']
-  args.outputs.sprites << [args.state.x,
-                           args.state.y,
-                           128,
-                           101,
-                           'dragonruby.png',
-                           args.state.rotation]
-
-  args.state.rotation -= 1
 end
 ```
 
 Everywhere you click your mouse, the image moves there. We set a default location for it with `args.state.x ||= 576`, and then we change those variables when we see the mouse button in action. You can get at the keyboard and game controllers in similar ways.
-
-## Coding On A Raspberry Pi
-
-We have only tested DragonRuby on a Raspberry Pi 3, Models B and B+, but we believe it _should_ work on any model with comparable specs.
-
-If you're running DragonRuby Game Toolkit on a Raspberry Pi, or trying to run a game made with the Toolkit on a Raspberry Pi, and it's really really slow-- like one frame every few seconds--then there's likely a simple fix.
-
-You're probably running a desktop environment: menus, apps, web browsers, etc. This is okay! Launch the terminal app and type:
-
-```bash
-do raspi-config
-```
-
-It'll ask you for your password (if you don't know, try "raspberry"), and then give you a menu of options. Find your way to "Advanced Options", then "GL Driver", and change this to "GL (Full KMS)" ... not "fake KMS," which is also listed there. Save and reboot. In theory, this should fix the problem.
-
-If you're _still_ having problems and have a Raspberry Pi 2 or better, go back to raspi-config and head over to "Advanced Options", "Memory split," and give the GPU 256 megabytes. You might be able to avoid this for simple games, as this takes RAM away from the system and reserves it for graphics. You can also try 128 megabytes as a gentler option.
-
-Note that you can also run DragonRuby without X11 at all: if you run it from a virtual terminal it will render fullscreen and won't need the "Full KMS" option. This might be attractive if you want to use it as a game console sort of thing, or develop over ssh, or launch it from RetroPie, etc.
 
 ## Conclusion
 

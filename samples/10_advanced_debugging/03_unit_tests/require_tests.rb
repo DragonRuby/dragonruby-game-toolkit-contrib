@@ -1,5 +1,5 @@
 def write_src path, src
-  GTK.write_file path, src
+  DR.write_file path, src
 end
 
 write_src 'app/unit_testing_game.rb', <<-S
@@ -31,8 +31,8 @@ def test_require args, assert
   UnitTesting::Game.new
   UnitTesting::Lib.new
   UnitTesting::Nested.new
-  GTK.exec 'rm ./mygame/app/unit_testing_game.rb'
-  GTK.exec 'rm ./mygame/app/nested/unit_testing_nested.rb'
-  GTK.exec 'rm ./mygame/lib/unit_testing_lib.rb'
+  DR.exec 'rm ./mygame/app/unit_testing_game.rb'
+  DR.exec 'rm ./mygame/app/nested/unit_testing_nested.rb'
+  DR.exec 'rm ./mygame/lib/unit_testing_lib.rb'
   assert.ok!
 end

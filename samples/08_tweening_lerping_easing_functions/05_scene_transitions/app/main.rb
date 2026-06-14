@@ -6,7 +6,7 @@
 # 5. When the player presses enter again, the scene transitions to Scene 1 (fades out Scene 2 over half a second, then fades in Scene 1 over half a second).
 # 6. During the fade transitions, spamming the enter key is ignored (scenes don't accept a transition/respond to the enter key until the current transition is completed).
 class SceneOne
-  attr_gtk
+  attr_dr
 
   def tick
     outputs[:scene].labels << { x: 640,
@@ -20,7 +20,7 @@ class SceneOne
 end
 
 class SceneTwo
-  attr_gtk
+  attr_dr
 
   def tick
     outputs[:scene].labels << { x: 640,
@@ -34,7 +34,7 @@ class SceneTwo
 end
 
 class RootScene
-  attr_gtk
+  attr_dr
 
   def initialize
     @scene_one = SceneOne.new

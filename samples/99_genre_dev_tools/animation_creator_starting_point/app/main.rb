@@ -1,5 +1,5 @@
 class OneBitLowrezPaint
-  attr_gtk
+  attr_dr
 
   def tick
     outputs.background_color = [0, 0, 0]
@@ -443,4 +443,4 @@ def tick args
   $game.tick
 end
 
-# GTK.reset
+# DR.reset

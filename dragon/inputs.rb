@@ -117,12 +117,13 @@ module GTK
     alias_method :left_right_with_wasd, :left_right
 
     def left_right_arrow
-      return -1 if keyboard.left_arrow || (controller_one && controller_one.directional_left)
-      return  1 if keyboard.right_arrow || (controller_one && controller_one.directional_right)
+      return -1 if keyboard.left_arrow || (controller_one && controller_one.left_dpad)
+      return  1 if keyboard.right_arrow || (controller_one && controller_one.right_dpad)
       return  0
     end
 
     alias_method :left_right_directional, :left_right_arrow
+    alias_method :left_right_dpad, :left_right_arrow
 
     def left_right_perc
       if controller_one && controller_one.left_analog_x_perc != 0
@@ -142,6 +143,8 @@ module GTK
       end
     end
 
+    alias_method :left_right_perc_dpad, :left_right_directional_perc
+
     def up_down
       directional_vector&.y&.sign || 0
     end
@@ -153,8 +156,8 @@ module GTK
     alias_method :up_down_with_wasd, :up_down
 
     def up_down_arrow
-      return  1 if keyboard.up_arrow || (controller_one && controller_one.directional_up)
-      return -1 if keyboard.down_arrow || (controller_one && controller_one.directional_down)
+      return  1 if keyboard.up_arrow || (controller_one && controller_one.up_dpad)
+      return -1 if keyboard.down_arrow || (controller_one && controller_one.down_dpad)
       return  0
     end
 
@@ -220,13 +223,29 @@ module GTK
         controller_four: controller_four.serialize,
         keyboard: keyboard.serialize,
         mouse: mouse.serialize,
-        text: text.serialize,
         application_control: application_control.serialize
       }
     end
 
     def touch_enabled?
       @touch_enabled
+    end
+
+    def clear_text
+      @text.clear
+    end
+
+    def text
+      if !$dr.text_input_enabled
+        log_once_important :start_text_input,
+                           <<~S
+                           * WARNING: You must call DR.start_text_input for ~args.inputs.text~ to be populated.
+                           When you no longer need to query ~args.inputs.text~, call ~DR.stop_text_input~.
+                           #{caller.join "\n"}"
+                           S
+        DR.start_text_input
+      end
+      @text
     end
 
     class KeyboardOrControllerKeyDown

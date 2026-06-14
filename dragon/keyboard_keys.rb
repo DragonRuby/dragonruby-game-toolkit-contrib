@@ -4,7 +4,7 @@
 # keyboard_keys.rb has been released under MIT (*only this file*).
 module GTK
   class KeyboardKeys
-    attr :last_directional_vector
+    attr :last_directional_vector, :last_directional_vector_arrow, :last_directional_vector_wasd
 
     def self.sdl_shift_key? raw_key
       sdl_lshift_key?(raw_key) || sdl_rshift_key?(raw_key)
@@ -337,9 +337,68 @@ module GTK
     end
 
     def clear
-      set truthy_keys, nil
+      set __truthy_keys_including_raw_key_and_char__, nil
       @keycodes.clear
       @scrubbed_ivars = nil
+    end
+
+    def __directional_vector__ l, r, u, d, last_lr, last_ud
+      # if both left right keys are held, then return last left right key
+      lr = if l && r && last_lr != 0
+             last_lr
+           elsif l
+             -1
+           elsif r
+             1
+           else
+             0
+           end
+
+      # if both up down keys are held, then return last up down key
+      ud = if u && d && last_ud != 0
+             last_ud
+           elsif u
+             1
+           elsif d
+             -1
+           else
+             0
+           end
+
+      if lr == 0 && ud == 0
+        return nil
+      elsif lr.abs == ud.abs
+        return { x: 45.vector_x * lr.sign, y: 45.vector_y * ud.sign }
+      else
+        return { x: lr, y: ud }
+      end
+    end
+
+    def directional_vector
+      __directional_vector__ left_arrow  || a_scancode || false,
+                             right_arrow || d_scancode || false,
+                             up_arrow    || w_scancode || false,
+                             down_arrow  || s_scancode || false,
+                             last_left_right,
+                             last_up_down
+    end
+
+    def directional_vector_arrow
+      __directional_vector__ left_arrow  || false,
+                             right_arrow || false,
+                             up_arrow    || false,
+                             down_arrow  || false,
+                             last_left_right_wasd,
+                             last_up_down_wasd
+    end
+
+    def directional_vector_wasd
+      __directional_vector__ a_scancode || false,
+                             d_scancode || false,
+                             w_scancode || false,
+                             s_scancode || false,
+                             last_left_right_wasd,
+                             last_up_down_wasd
     end
 
     def left_right
@@ -350,6 +409,14 @@ module GTK
       self&.last_directional_vector&.x&.sign || 0
     end
 
+    def last_left_right_wasd
+      self&.last_directional_vector_wasd&.x&.sign || 0
+    end
+
+    def last_left_right_arrow
+      self&.last_directional_vector_arrow&.x&.sign || 0
+    end
+
     def up_down
       directional_vector&.y&.sign || 0
     end
@@ -358,9 +425,22 @@ module GTK
       self&.last_directional_vector&.y&.sign || 0
     end
 
-    def truthy_keys
+    def last_up_down_wasd
+      self&.last_directional_vector_wasd&.y&.sign || 0
+    end
+
+    def last_up_down_arrow
+      self&.last_directional_vector_arrow&.y&.sign || 0
+    end
+
+    def __truthy_keys_including_raw_key_and_char__
       get(all).find_all { |_, v| v }
               .map { |k, _| k.to_sym }
+    end
+
+    def truthy_keys
+      get(all).find_all { |_, v| v }
+              .map { |k, _| k.to_sym } - [:raw_key, :char]
     end
 
     def all? keys
@@ -399,8 +479,16 @@ module GTK
     end
 
     def all
+      deny_list = [:@all,
+                   :@scrubbed_ivars,
+                   :@keycodes,
+                   :@last_directional_vector,
+                   :@last_directional_vector,
+                   :@last_directional_vector_arrow,
+                   :@raw_key,
+                   :@last_directional_vector_wasd]
       @scrubbed_ivars ||= self.instance_variables
-                              .reject { |i| i == :@all || i == :@scrubbed_ivars || i == :@keycodes || i == :@last_directional_vector }
+                              .reject { |i| deny_list.include? i }
                               .map { |i| i.to_s.gsub("@", "") }
 
       get(@scrubbed_ivars).map { |k, _| k }
@@ -487,43 +575,6 @@ S
 
     def ctrl= value
       @control = value
-    end
-
-    def directional_vector
-      l = left_arrow  || a_scancode || false
-      r = right_arrow || d_scancode || false
-      u = up_arrow    || w_scancode || false
-      d = down_arrow  || s_scancode || false
-
-      # if both left right keys are held, then return last left right key
-      lr = if l && r && last_left_right != 0
-             last_left_right
-           elsif l
-             -1
-           elsif r
-             1
-           else
-             0
-           end
-
-      # if both up down keys are held, then return last up down key
-      ud = if u && d && last_up_down != 0
-             last_up_down
-           elsif u
-             1
-           elsif d
-             -1
-           else
-             0
-           end
-
-      if lr == 0 && ud == 0
-        return nil
-      elsif lr.abs == ud.abs
-        return { x: 45.vector_x * lr.sign, y: 45.vector_y * ud.sign }
-      else
-        return { x: lr, y: ud }
-      end
     end
 
     def left_with_wasd

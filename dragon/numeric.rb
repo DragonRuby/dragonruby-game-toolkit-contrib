@@ -3,6 +3,22 @@
 # MIT License
 # numeric.rb has been released under MIT (*only this file*).
 
+BLENDOPERATION_ADD              = 0x1
+BLENDOPERATION_SUBTRACT         = 0x2
+BLENDOPERATION_REV_SUBTRACT     = 0x3
+BLENDOPERATION_MINIMUM          = 0x4
+BLENDOPERATION_MAXIMUM          = 0x5
+BLENDFACTOR_ZERO                = 0x1
+BLENDFACTOR_ONE                 = 0x2
+BLENDFACTOR_SRC_COLOR           = 0x3
+BLENDFACTOR_ONE_MINUS_SRC_COLOR = 0x4
+BLENDFACTOR_SRC_ALPHA           = 0x5
+BLENDFACTOR_ONE_MINUS_SRC_ALPHA = 0x6
+BLENDFACTOR_DST_COLOR           = 0x7
+BLENDFACTOR_ONE_MINUS_DST_COLOR = 0x8
+BLENDFACTOR_DST_ALPHA           = 0x9
+BLENDFACTOR_ONE_MINUS_DST_ALPHA = 0xA
+
 class Numeric
   include ValueType
   include NumericDeprecated
@@ -309,20 +325,14 @@ S
 
   def shift_left i
     shift_right(i * -1)
-  rescue Exception => e
-    raise_immediately e, :shift_left, i
   end
 
   def shift_up i
     self + i
-  rescue Exception => e
-    raise_immediately e, :shift_up, i
   end
 
   def shift_down i
     shift_up(i * -1)
-  rescue Exception => e
-    raise_immediately e, :shift_down, i
   end
 
   def randomize *definitions
@@ -442,11 +452,13 @@ S
 
   # Returns a normal vector for a number that represents an angle in degrees.
   def vector max_value = 1
-    log_once :consider_to_vector!, <<-S
-* WARNGING: ~Numeric#vector~ is deprecated. Use ~Numeric#to_vector~.
-~Numeric#to_vector~ is more preformant and returns a ~Hash~ containing the keys ~x~ and ~y~ as opposed
-to an ~Array~ of ~[x, y]~. Please note that you will lose the ability to destucture the values of a ~Hash~.
+    log_once :consider_to_vector!, <<-S, include_caller: true, raise_if: $disable_array_primitives
+* WARNING: ~Numeric#vector~ is deprecated. Use ~Numeric#to_vector~.
+~Numeric#to_vector~ is more preformant and returns ~Hash[x:, y:]~ as opposed to ~Array[x, y]~.
 
+** NOTE:
+- Because ~to_vector~ returns a ~Hash~, you won't be able to destructure the values directly:
+  ~x, y = ANGLE.vector~ will need to be changed to ~x, y = ANGLE.to_vector.values~
 S
     [vector_x(max_value), vector_y(max_value)]
   end
@@ -573,8 +585,6 @@ S
       x_i += 1
     end
     results
-  rescue Exception => e
-    raise_immediately e, :map_with_ys, [self, ys]
   end
 
   def combinations other_int
@@ -593,16 +603,6 @@ S
   def cap_min_max min, max
     return min if self < min
     return max if self > max
-    self
-  end
-
-  def lesser other
-    return other if other < self
-    self
-  end
-
-  def greater other
-    return other if other > self
     self
   end
 
@@ -743,12 +743,83 @@ S
   end
 
   def self.clamp n, min, max
+    return nil if !n
     n.clamp min, max
   end
 
-  def mid? l, r
-    (between? l, r) || (between? r, l)
+  def self.min n = nil, v = nil
+    return nil if !v && !n
+    return v if v && !n
+    return n if n && !v
+    return n if n < v
+    return v
+ end
+
+  def self.max n = nil, v = nil
+    return nil if !v && !n
+    return v if v && !n
+    return n if n && !v
+    return n if n > v
+    return v
   end
+
+  def self.mid(l: nil, m: nil, r: nil)
+    return nil if !m
+    l, r = r, l if l && r && r < l
+    return l if l && m < l
+    return r if r && m > r
+    return m
+  end
+
+  def mid(*lr, l: nil, r: nil)
+    # puts Numeric.mid l: 10, m: nil, r:  0 # nil
+    # puts Numeric.mid l:  0, m:   5, r: 10 # 5
+    # puts Numeric.mid l:  0, m:  10, r:  5 # 5
+    # puts Numeric.mid l:  5, m: -10, r: 10 # 5
+    # puts Numeric.mid r:  5, m:  10        # 5
+    # puts Numeric.mid r: 10, m:   5        # 5
+    # puts Numeric.mid l:  0, m:   5        # 5
+    # puts Numeric.mid l:  5, m:   0        # 5
+    # puts Numeric.mid l: 10, m:   5, r:  0 # 5
+    # puts      10.min 5                    # 5
+    # puts       0.max 5                    # 5
+    # puts       5.mid l:  0, r: 10         # 5
+    # puts      10.mid l:  0, r:  5         # 5
+    # puts     -10.mid l:  5, r: 10         # 5
+    # puts      10.mid r:  5                # 5
+    # puts       5.mid r: 10                # 5
+    # puts       5.mid l:  0                # 5
+    # puts       0.mid l:  5                # 5
+    # puts       5.mid l: 10, r:  0         # 5
+    # puts       5.mid     0,    10         # 5
+    # puts      10.mid     0,     5         # 5
+    # puts     -10.mid     5,    10         # 5
+    # puts      10.mid   nil,     5         # 5
+    # puts       5.mid   nil,    10         # 5
+    # puts       5.mid     0                # 5
+    # puts       0.mid     5                # 5
+    # puts       5.mid    10,     0         # 5
+    # puts      10.mid? l: 0,  r: 5         # false
+    # puts      10.mid? l: 5,  r: 0         # false
+    # puts      10.mid?    0,     5         # false
+    # puts      10.mid?    5,     0         # false
+    # puts       3.mid? l: 0,  r: 5         # true
+    # puts       3.mid? l: 5,  r: 0         # true
+    # puts       3.mid?    0,     5         # true
+    # puts       3.mid?    5,     0         # true
+
+    splat_l, splat_r = lr
+    l ||= splat_l
+    r ||= splat_r
+    Numeric.mid l: l, m: self, r: r
+  end
+
+  def mid?(*lr, l: nil, r: nil) = mid(*lr, l: l, r: r) == self
+  def between?(*lr, l: nil, r: nil) = mid(*lr, l: l, r: r) == self
+  def max(n = nil) = Numeric.max(self, n)
+  def greater(n = nil) = Numeric.max(self, n)
+  def min(n = nil) = Numeric.min(self, n)
+  def lesser(n = nil) = Numeric.min(self, n)
 
   def self.from_left n
     return n unless $gtk
@@ -982,6 +1053,15 @@ class Numeric
 - Range argument (float values): ~Numeric.rand(-10.0..10.0)~ will return a random float between -10.0 and 10.0.
 S
     end
+  end
+
+  def self.compose_blendmode src_color_factor, dst_color_factor, color_operation, src_alpha_factor, dst_alpha_factor, alpha_operation
+    (color_operation  << 0)  |
+    (src_color_factor << 4)  |
+    (dst_color_factor << 8)  |
+    (alpha_operation  << 16) |
+    (src_alpha_factor << 20) |
+    (dst_alpha_factor << 24)
   end
 end
 

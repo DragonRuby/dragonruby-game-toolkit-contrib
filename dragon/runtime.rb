@@ -64,7 +64,7 @@ module GTK
                   :suppress_hotload,
                   :reload_list_history, :simulation_speed, :started_at, :production,
                   :__state_assigned_to_hash_on_boot__, :rng_seed, :hotload_global_at,
-                  :__sdl_tick_too_early_count__
+                  :__sdl_tick_too_early_count__, :text_input_enabled, :text_input_enabled_global_at
 
 
     attr_reader :ffi_file, :ffi_mrb, :ffi_misc, :input_history, :recording, :console, :reserved_primitives,
@@ -85,6 +85,7 @@ module GTK
         end
       end
       $gtk = self if $gtk.nil?
+      $dr = self if $dr.nil?
       $runtime = self if $runtime.nil?
       @binary_path = binary_path.strip
       @log_level = :on
@@ -168,7 +169,6 @@ module GTK
       $geometry  ||= GTK::Geometry
       $tests     ||= @tests
       $wizards   ||= @args.wizards
-      $fn        ||= @args.fn
       $api       ||= @api
       $layout    ||= @args.layout
       $log       ||= GTK::Log
@@ -774,6 +774,7 @@ S
       end
 
       @render_targets_to_reset.clear
+      @args.outputs.render_targets.__data__.clear
     end
 
     def __reset__ rng_override = nil, seed: nil, include_sprites: true
@@ -788,15 +789,15 @@ S
       pin_root_values
 
       if @args
-        if $top_level.respond_to? :reset
-          if $top_level.method(:reset).parameters.length == 1
-            $top_level.reset @args
-          else
-            $top_level.reset
-          end
-        end
-        if include_sprites
-          reset_sprites log: false
+        reset_core
+
+        # only reset_texture_cache if Kernel.global_tick_count > 1.
+        # doing this for frame count 0 or 1 would invalidate any render targets
+        # that were initialized on frame zero.
+        # proof: word_game sample app breaks if replay is kicked off via cli
+        if include_sprites && Kernel.global_tick_count > 1
+          puts "#{Kernel.global_tick_count}"
+          @ffi_draw.reset_texture_cache
         end
       end
 
@@ -830,6 +831,67 @@ S
       @scheduled_callbacks = {}
       reset_framerate_calculation
       Entity.__reset_id__!
+
+      if @args
+        did_reset_core
+      end
+
+      warn_tick_definitions!
+    end
+
+    def warn_tick_definitions!
+      tick_responses = [
+        {
+          o: Main,
+          name: "Main",
+          has_tick: Main.instance_methods(false).include?(:tick)
+        },
+        {
+          o: $main,
+          name: "self",
+          has_tick: $main.methods(false).include?(:tick)
+        },
+        {
+          o: Object,
+          name: "Object",
+          has_tick: Object.instance_methods(false).include?(:tick)
+        },
+      ]
+
+      if tick_responses.find_all { |tr| tr[:has_tick] }.length > 1
+        tick_report = tick_responses.map { |tr| "- #{tr[:name]} ~respond_to?(:tick)~: #{tr[:has_tick]}" }
+
+        log_important :multiple_tick_methods_defined, <<~S
+            * WARNING - Multiple top level constructs ~respond_to?(:tick)~.
+            If you've recently made changes to top level ~tick~ behavior,
+            Consider invoking ~GTK.reboot~ from the Console (or pressing shift+ctrl+r).
+
+            #{tick_report.join "\n"}
+
+            The following is the execution precedence for ~tick~:
+            #+begin_src
+              # HIGEST PRECEDENCE
+              module Main
+                def tick args
+                end
+              end
+            #+end_src
+
+            Which takes take precedence over:
+            #+begin_src
+              # NEXT PRECEDENCE
+              def self.tick args
+              end
+            #+end_src
+
+            Which takes take precedence over:
+            #+begin_src
+              # LOWEST PRECEDENCE
+              def tick args
+              end
+            #+end_src
+            S
+      end
     end
 
     def last_reset_global_at
@@ -1076,8 +1138,6 @@ S
             (r_key_down_or_held && meta_key_down_or_held && shift_key_down_or_held))
           reboot
         elsif r_key_down_or_held && ctrl_key_down_or_held
-          log_once_important :reset_via_ctrl_r, Messages.messages_reset_via_ctrl_r
-
           # reset right away or next tick depending on if the console is visible or not
           # note: this is done before tick_console because tick console clears out keyboard input so that
           # it isn't sent to the game
@@ -1108,31 +1168,7 @@ S
     end
 
     def inputs_tick_after
-      all_down_keys = @args.inputs.keyboard.key_down.truthy_keys
-      current_down_char = @args.inputs.keyboard.key_down.char
-      if !@slowmo_factor_debounce
-        @args.inputs.keyboard.last_directional_vector = @args.inputs.keyboard.directional_vector
-        @args.inputs.keyboard.key_down.last_directional_vector = nil
-        @args.inputs.keyboard.key_held.last_directional_vector = @args.inputs.keyboard.key_held.directional_vector
-        @args.inputs.keyboard.key_up.last_directional_vector = nil
-        @args.inputs.keyboard.key_down.set all_down_keys, nil
-        @args.inputs.keyboard.key_held.set all_down_keys, Kernel.tick_count
-        @args.inputs.keyboard.key_up.clear
-
-        # manage keycodes
-        # remove all nil values first
-        @args.inputs.keyboard.key_down.keycodes.reject! {|k,v| !v}
-        @args.inputs.keyboard.key_held.keycodes.reject! {|k,v| !v}
-        @args.inputs.keyboard.key_up.keycodes.reject!   {|k,v| !v}
-
-        # for all key_down keycodes, transition them to key_held
-        @args.inputs.keyboard.key_down.keycodes.each do |k,v|
-          @args.inputs.keyboard.key_held.keycodes[k] = Kernel.tick_count
-        end
-        @args.inputs.keyboard.key_down.keycodes.clear
-        @args.inputs.keyboard.key_repeat.clear
-      end
-      @args.inputs.keyboard.key_held.char = current_down_char
+      @args.inputs.keyboard.key_held.char = @args.inputs.keyboard.key_down.char
 
       @args.outputs.tick_a11y
       @a11y_emulation.tick_after
@@ -1147,8 +1183,8 @@ S
           acc
         end
 
-        center.x /= touch_points.count
-        center.y /= touch_points.count
+        center.x = center.x / touch_points.count
+        center.y = center.y / touch_points.count
 
         # simulate mouse move
         transform_x = @args.grid.transform_x(center.x)
@@ -1174,6 +1210,39 @@ S
       @files_reloaded.clear
       @reloaded_files.clear
       return if @slowmo_factor_debounce
+      @args.inputs.keyboard.last_directional_vector = @args.inputs.keyboard.directional_vector
+      @args.inputs.keyboard.key_down.last_directional_vector = nil
+      @args.inputs.keyboard.key_held.last_directional_vector = @args.inputs.keyboard.key_held.directional_vector
+      @args.inputs.keyboard.key_up.last_directional_vector = nil
+
+      @args.inputs.keyboard.last_directional_vector_wasd = @args.inputs.keyboard.directional_vector_wasd
+      @args.inputs.keyboard.key_down.last_directional_vector_wasd = nil
+      @args.inputs.keyboard.key_held.last_directional_vector_wasd = @args.inputs.keyboard.key_held.directional_vector_wasd
+      @args.inputs.keyboard.key_up.last_directional_vector_wasd = nil
+
+      @args.inputs.keyboard.last_directional_vector_arrow = @args.inputs.keyboard.directional_vector_arrow
+      @args.inputs.keyboard.key_down.last_directional_vector_arrow = nil
+      @args.inputs.keyboard.key_held.last_directional_vector_arrow = @args.inputs.keyboard.key_held.directional_vector_arrow
+      @args.inputs.keyboard.key_up.last_directional_vector_arrow = nil
+
+      all_down_keys = @args.inputs.keyboard.key_down.__truthy_keys_including_raw_key_and_char__
+      @args.inputs.keyboard.key_down.set all_down_keys, nil
+      @args.inputs.keyboard.key_held.set all_down_keys, Kernel.tick_count
+      @args.inputs.keyboard.key_up.clear
+
+      # manage keycodes
+      # remove all nil values first
+      @args.inputs.keyboard.key_down.keycodes.reject! {|k,v| !v}
+      @args.inputs.keyboard.key_held.keycodes.reject! {|k,v| !v}
+      @args.inputs.keyboard.key_up.keycodes.reject!   {|k,v| !v}
+
+      # for all key_down keycodes, transition them to key_held
+      @args.inputs.keyboard.key_down.keycodes.each do |k,v|
+        @args.inputs.keyboard.key_held.keycodes[k] = Kernel.tick_count
+      end
+
+      @args.inputs.keyboard.key_down.keycodes.clear
+      @args.inputs.keyboard.key_repeat.clear
       @args.inputs.controller_one.last_directional_vector = @args.inputs.controller_one.directional_vector
       @args.inputs.controller_one.key_down.last_directional_vector = nil
       @args.inputs.controller_one.key_held.last_directional_vector = @args.inputs.controller_one.key_held.directional_vector
@@ -1199,7 +1268,7 @@ S
       @args.inputs.controller_four.key_down.clear
       @args.inputs.controller_four.key_up.clear
       @args.inputs.mouse.clear
-      @args.inputs.text.clear
+      @args.inputs.clear_text
       @args.inputs.http_requests.clear
       @args.inputs.keyboard.active = false
       @args.inputs.controller_one.active = false
@@ -1317,18 +1386,25 @@ S
       # on this for interaction/"ticking"
       if @load_status == :ready || @load_status == :main_rb_load_error_shown
         Kernel.global_tick_count += 1
-        # mRuby has a bug in String#split. A corrected version of the function
-        # is monkey patched in after DR source code has been initialized/loaded.
-        String.class_eval do
-          alias_method(:__original_split__, :split) unless method_defined?(:__original_split__)
-
-          define_method(:split) do |*args|
-            String.split(self, *args)
-          end
-        end
       end
 
       tick_console
+
+      # if a replay switch is passed in via startup,
+      # then capture the value in @argsv_replay_args so that it can
+      # be executed at the same point in time that a replay would occur if started
+      # from the console. We need to do this so that RNG is reset the same way
+      # regardless of if replay was kicked off from the console or from cli.
+      # proof: shadows sample app generates lights in a different place if we kick the
+      #        replay off via the cli (vs doing it via the console)
+      if @argsv_replay_args && Kernel.global_tick_count >= 0
+        argsv_replay_args_replay = @argsv_replay_args[:replay]
+        argsv_replay_args_simulation_speed = @argsv_replay_args[:simulation_speed]
+        @argsv_replay_args = nil
+        log_info "--replay switch found. Replay will be started using file [#{argsv_replay_args_replay}] (--replay FILENAME) with replay speed [#{argsv_replay_args_simulation_speed}] (--speed SPEED)."
+        start_replay argsv_replay_args_replay, speed: argsv_replay_args_simulation_speed
+      end
+
       tick_notification
       tick_download_stb_rb
       # !!! FIXME: we are getting false positives for unrecognized controllers, disabling this feature for now
@@ -1357,6 +1433,13 @@ S
       end
 
       tick_capture_timings_before
+
+      @args.layout.tick_before @args.grid.x, @args.grid.y,
+                               @args.grid.w, @args.grid.h,
+                               @args.grid.aspect_ratio_w,
+                               @args.grid.aspect_ratio_h,
+                               @args.grid.orientation,
+                               @args.grid.origin_name
     end
 
     def unpause_if_needed
@@ -1398,7 +1481,7 @@ S
       @current_thermal_state = @ffi_misc.get_thermal_state
       if @current_thermal_state == :serious || @current_thermal_state == :critical
         notify! "* IMPORTANT: Thermal state for device is [#{@current_thermal_state}]!"
-        log_once_important :check_thermal_state, Messages.messages_check_thermal_state
+        log_important :check_thermal_state, Messages.messages_check_thermal_state
       end
     end
 
@@ -1447,13 +1530,6 @@ S
 
       a11y_tick_gtk_engine_after
       tick_capture_timings_after
-
-      @args.layout.tick_after @args.grid.x, @args.grid.y,
-                              @args.grid.w, @args.grid.h,
-                              @args.grid.aspect_ratio_w,
-                              @args.grid.aspect_ratio_h,
-                              @args.grid.orientation,
-                              @args.grid.origin_name
     end
 
     def a11y_logical_to_points logical
@@ -1503,7 +1579,6 @@ S
       return if skip_tick_usr_engine?
       @slowmo_was_invoked = false
       @speedup_was_invoked = false
-      $perf_counter_outputs_push_count = 0
       $perf_counter_primitive_is_array = 0
 
       if @reset_next_tick_flag
@@ -1619,77 +1694,6 @@ S
       end
     end
 
-    def __nil_state_migration_message__
-<<-S
-* INFO - ~args.state~ was initialized to ~nil~. This experimental behavior has been changed.
-~args.state~ will be initialized to an empty ~Hash~ instead.
-
-** Migration instructions:
-*** 1. Change boot function and initialize ~args.state~ to an empty ~Hash~ instead of ~nil~.
-The following:
-
-#+begin_src
-  def boot args
-    args.state = nil
-  end
-#+end_src
-
-Needs to be changed to:
-
-#+begin_src
-  def boot args
-    args.state = {}
-  end
-#+end_src
-
-*** 2. Update your game state initialization.
-The following example initialization:
-
-#+begin_src ruby
-  def tick args
-    # this expression will not be invoked since
-    # args.state will always be a non nil value
-    args.state ||= { x: 0, y: 0 }
-  end
-#+end_src
-
-Needs to be changed to:
-
-#+begin_src ruby
-  def tick args
-    # args.state will always be a non nil value
-    # each top-level property needs to be initialized seperately
-    args.state.x ||= 0
-    args.state.y ||= 0
-
-    # OR
-
-    # create a containing hash for top-level properties
-    # and update call sites to use containing hash
-    args.state.player ||= { x: 0, y: 0 }
-  end
-#+end_src
-S
-    end
-
-    def __invalid_state_type_message__
-<<-S
-* WARNING - ~args.state~ was initialized to something other than ~Hash~ during ~boot~. Ignoring initialization and using ~OpenEntity~.
-You may only do:
-#+begin_src
-  def boot args
-    # args.state will be hydrated with a ~Hash~ and nil punning will be disabled.
-    args.state = {}
-  end
-
-  def tick args
-    # args.state will be an empty Hash instead of an OpenEntity
-    args.state.player ||= { ... }
-  end
-#+end_src
-S
-    end
-
     def __sdl_tick__simulation__
       $state = @args.state
       $grid = @args.grid
@@ -1713,30 +1717,32 @@ S
         Grid.letterbox = @args.cvars["game_metadata.hd_letterbox"].value
         $gtk.write_file_root (File.join Backup.backup_directory, "boot.txt"), Time.now.to_i.to_s
         @load_status = :ready
-        $top_level.boot @args if $top_level.respond_to? :boot
+        $main.define_helper_methods!
+        boot_core
         @grid_origin_on_boot = Grid.origin_name
 
-        if @args.state && @args.state.is_a?(OpenEntity)
-          # noop: @args.state was not changed during boot
-          @__state_assigned_to_hash_on_boot__ = false
+        should_disable_nil_punning = false
+        should_disable_nil_punning_message = ""
+
+        if Main.instance_methods(false).include?(:tick)
+          should_disable_nil_punning = true
+          should_disable_nil_punning_message = nil
         elsif @args.state && @args.state.is_a?(Hash)
+          should_disable_nil_punning = true
+          should_disable_nil_punning_message = "* INFO - ~args.state~ was initialized to ~Hash~ during ~boot~. ~nil~ punning has been disabled."
+        end
+
+        if should_disable_nil_punning
           @__state_assigned_to_hash_on_boot__ = true
           $disable_array_primitives = true
+          if @args.state.is_a?(OpenEntity)
+            @args.state = {}
+          end
           @args.temp_state = {}
           disable_nil_punning!
-          log "* INFO - ~args.state~ was initialized to ~Hash~ during ~boot~. ~nil~ punning has been disabled."
-        elsif !@args.state
-          @__state_assigned_to_hash_on_boot__ = true
-          $disable_array_primitives = true
-          @args.state = {}
-          @args.temp_state = {}
-          disable_nil_punning!
-          log __nil_state_migration_message__
-        else
+          log should_disable_nil_punning_message if should_disable_nil_punning_message
+        elsif should_disable_nil_punning
           @__state_assigned_to_hash_on_boot__ = false
-          @args.state = OpenEntity.new
-          @args.temp_state = OpenEntity.new
-          log __invalid_state_type_message__
         end
 
         @args.state.tick_count = -1
@@ -1785,18 +1791,18 @@ S
       should_set_speedup_factor = @speedup_factor && @speedup_factor > 1
       @simulation_speed = @speedup_factor if should_set_speedup_factor
 
-      if (@simulation_speed && @simulation_speed != 1)
+      render_targets_updated = @args.outputs.render_targets.global_last_changed_at == Kernel.global_tick_count
+
+      if (@simulation_speed && @simulation_speed != 1 && !render_targets_updated)
         (@simulation_speed - 1).abs.times do
           __sdl_tick__simulation__
           # one time RT may be generated within a tick, explicitly execute "draw" to export args.outputs
           @ffi_draw.draw
         end
       end
-
-      update_simulation_audio_state
     rescue Exception => e
-      if $top_level.respond_to? :unhandled_exception
-        $top_level.unhandled_exception args, e
+      if $main.respond_to? :unhandled_exception
+        $main.unhandled_exception args, e
       else
         unhandled_exception e
       end
@@ -1844,10 +1850,11 @@ S
       self.show_console console_show_reason
 
       if self.console.command_set_at != Kernel.global_tick_count
-        self.console.set_command "$gtk.reset seed: #{self.rng_seed}", console_show_reason
-        if e.to_s.include?("** docs:")
-          docs_command = (e.to_s.split("** docs: ")[1] || "").strip
-          self.console.set_command docs_command, console_show_reason if docs_command.length > 0
+        if e.to_s.include? "superclass mismatch for class"
+          self.console.set_command "GTK.reboot", console_show_reason
+        elsif e.to_s.include? "Undefined method tick for main."
+        else
+          self.console.set_command "GTK.reset seed: #{self.rng_seed}", console_show_reason
         end
       end
     rescue Exception => e
@@ -2340,7 +2347,7 @@ S
     end
 
     def quit
-      $top_level.shutdown @args if $top_level.respond_to? :shutdown
+      shutdown_core
     end
 
     def benchmark(opts = nil, **kwargs)
@@ -2358,6 +2365,17 @@ S
 
     def create_uuid
       @ffi_misc.create_uuid
+    end
+
+    def start_text_input
+      @text_input_enabled = true
+      @text_input_enabled_global_at = Kernel.global_tick_count
+      @ffi_draw.start_text_input
+    end
+
+    def stop_text_input
+      @text_input_enabled = false
+      @ffi_draw.stop_text_input
     end
   end # end Runtime
 end # end GTK
@@ -2408,3 +2426,5 @@ module GTK
     end
   end
 end
+
+DR = GTK

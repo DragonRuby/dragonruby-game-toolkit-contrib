@@ -1,0 +1,10 @@
+devid=dragonruby
+devtitle=DragonRuby LLC
+gameid=sample-app
+gametitle=Sample App
+version=1.0
+icon=metadata/icon.png
+# HD and High DPI available via the Pro License
+scale_quality=2
+hd=true
+highdpi=true

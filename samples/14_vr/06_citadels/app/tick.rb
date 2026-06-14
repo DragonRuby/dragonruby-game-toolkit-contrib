@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   def citadel x, y, z
     angle = Kernel.tick_count.idiv(10) % 360
@@ -100,4 +100,4 @@ def tick_game args
   $game.tick
 end
 
-GTK.reset
+DR.reset

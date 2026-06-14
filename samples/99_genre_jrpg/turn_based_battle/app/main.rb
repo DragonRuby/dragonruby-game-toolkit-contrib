@@ -165,4 +165,4 @@ def render_hero_statuses args
   args.outputs.borders << Layout.rect(row: 8, col: 4, w: 20, h: 4, include_col_gutter: true, include_row_gutter: true)
 end
 
-GTK.reset
+DR.reset

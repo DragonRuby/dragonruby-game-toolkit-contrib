@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   def tick
     defaults
@@ -103,4 +103,4 @@ def tick args
   $game.tick
 end
 
-GTK.reset
+DR.reset

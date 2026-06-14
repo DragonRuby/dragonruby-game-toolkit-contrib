@@ -10,6 +10,8 @@ module GTK
     attr_accessor :key_repeat
     attr_accessor :has_focus
     attr :last_directional_vector
+    attr :last_directional_vector_wasd
+    attr :last_directional_vector_arrow
 
     attr :active
 
@@ -18,7 +20,7 @@ module GTK
       @key_held    = KeyboardKeys.new
       @key_down    = KeyboardKeys.new
       @key_repeat  = KeyboardKeys.new
-      @has_focus   = false
+      @has_focus   = true
     end
 
     def key_down? key
@@ -53,6 +55,10 @@ module GTK
       @key_down.left || @key_held.left || nil
     end
 
+    def left_wasd
+      a_scancode
+    end
+
     def right
       @key_down.right || @key_held.right || d_scancode || nil
     end
@@ -61,12 +67,24 @@ module GTK
       @key_down.right || @key_held.right || nil
     end
 
+    def right_wasd
+      d_scancode
+    end
+
     def up
       @key_down.up || @key_held.up || w_scancode || nil
     end
 
     def up_arrow
       @key_down.up || @key_held.up || nil
+    end
+
+    def up_wasd
+      w_scancode
+    end
+
+    def down_wasd
+      s_scancode
     end
 
     def down
@@ -132,38 +150,6 @@ module GTK
       last_directional_vector&.y&.sign || 0
     end
 
-    def directional_vector
-      # if both left right keys are held, then return last left right key
-      lr = if self.left && self.right && last_left_right != 0
-             last_left_right
-           elsif self.left
-             -1
-           elsif self.right
-             1
-           else
-             0
-           end
-
-      # if both up down keys are held, then return last up down key
-      ud = if self.up && self.down && last_up_down != 0
-             last_up_down
-           elsif self.up
-             1
-           elsif self.down
-             -1
-           else
-             0
-           end
-
-      if lr == 0 && ud == 0
-        return nil
-      elsif lr.abs == ud.abs
-        return { x: 45.vector_x * lr.sign, y: 45.vector_y * ud.sign }
-      else
-        return { x: lr, y: ud }
-      end
-    end
-
     def directional_angle
       return nil unless directional_vector
 
@@ -206,6 +192,102 @@ module GTK
 
         return send(m)
       end
+    end
+
+    def __directional_vector__ l, r, u, d, last_lr, last_ud
+      # if both left right keys are held, then return last left right key
+      lr = if l && r && last_lr != 0
+             last_lr
+           elsif l
+             -1
+           elsif r
+             1
+           else
+             0
+           end
+
+      # if both up down keys are held, then return last up down key
+      ud = if u && d && last_ud != 0
+             last_ud
+           elsif u
+             1
+           elsif d
+             -1
+           else
+             0
+           end
+
+      if lr == 0 && ud == 0
+        return nil
+      elsif lr.abs == ud.abs
+        return { x: 45.vector_x * lr.sign, y: 45.vector_y * ud.sign }
+      else
+        return { x: lr, y: ud }
+      end
+    end
+
+    def directional_vector_arrow
+      __directional_vector__ self.left_arrow,
+                             self.right_arrow,
+                             self.up_arrow,
+                             self.down_arrow,
+                             self.last_left_right_arrow,
+                             self.last_up_down_arrow
+    end
+
+    def directional_vector_wasd
+      __directional_vector__ self.left_wasd,
+                             self.right_wasd,
+                             self.up_wasd,
+                             self.down_wasd,
+                             self.last_left_right_wasd,
+                             self.last_up_down_wasd
+    end
+
+    def directional_vector
+      __directional_vector__ self.left,
+                             self.right,
+                             self.up,
+                             self.down,
+                             self.last_left_right,
+                             self.last_up_down
+    end
+
+    def last_up_down_arrow
+      last_directional_vector_arrow&.y&.sign || 0
+    end
+
+    def last_up_down_wasd
+      last_directional_vector_wasd&.y&.sign || 0
+    end
+
+    def up_down_arrow
+      directional_vector_arrow&.y&.sign || 0
+    end
+
+    def up_down_wasd
+      directional_vector_wasd&.y&.sign || 0
+    end
+
+    def left_right_arrow
+      directional_vector_arrow&.x&.sign || 0
+    end
+
+    def left_right_wasd
+      directional_vector_wasd&.x&.sign || 0
+    end
+
+    def last_left_right_arrow
+      last_directional_vector_arrow&.x&.sign || 0
+    end
+
+    def last_left_right_wasd
+      last_directional_vector_wasd&.x&.sign || 0
+    end
+
+    def has_focus
+      return true if $gtk.platform?(:mobile)
+      @has_focus
     end
   end
 end

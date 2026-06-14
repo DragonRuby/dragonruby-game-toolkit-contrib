@@ -7,7 +7,7 @@
 # The turrets shoot bullets at the closest tank. The bullets are heat-seeking
 
 def tick args
-  GTK.reset if args.inputs.keyboard.key_down.r
+  DR.reset if args.inputs.keyboard.key_down.r
   defaults args
   render args
   calc args

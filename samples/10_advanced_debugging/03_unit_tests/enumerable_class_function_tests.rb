@@ -345,19 +345,19 @@ class ClassLevelEnumerableTests
         fh[:target].send(fh[:name], class_numbers, &fh[:m])
       }
 
-      results = GTK.benchmark(**h)
+      results = DR.benchmark(**h)
       assert.true! results.first_place.name.to_s.start_with?("class_"), "Class method #{fh[:name]} on #{fh[:target]} is faster"
     end
 
     self_numbers = ary_numbers.dup
     class_numbers = ary_numbers.dup
-    results = GTK.benchmark iterations: 5000,
+    results = DR.benchmark iterations: 5000,
                             self_each: -> () { self_numbers.each { |i| i } },
                             class_each: -> () { Array.each(class_numbers) { |i| i } }
 
     self_flat_map = ary_flat_map.dup
     class_flat_map = ary_flat_map.dup
-    results = GTK.benchmark iterations: 5000,
+    results = DR.benchmark iterations: 5000,
                             self_flat_map: -> () { self_flat_map.flat_map { |i| i } },
                             class_flat_map: -> () { Array.flat_map(class_flat_map) { |i| i } }
 

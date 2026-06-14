@@ -128,12 +128,12 @@ def save_checkbox_state checkboxes
   end.join "\n"
 
   # write the contents to data/checkbox-state.txt
-  GTK.write_file "data/checkbox-state.txt", content
+  DR.write_file "data/checkbox-state.txt", content
 end
 
 def load_checkbox_state checkboxes
   # read the save file
-  content = GTK.read_file "data/checkbox-state.txt"
+  content = DR.read_file "data/checkbox-state.txt"
 
   # if it doesn't exist then return
   return if !content

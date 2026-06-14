@@ -31,7 +31,7 @@ class PulseButton
   end
 
   # this function returns an array of primitives that can be rendered
-  def prefab easing
+  def primitives
     # calculate the percentage of the pulse animation that has completed
     # and use the percentage to compute the size and position of the button
     perc = if @clicked_at
@@ -47,25 +47,25 @@ class PulseButton
 
     point = { x: @rect.x + @rect.w / 2, y: @rect.y + @rect.h / 2 }
     [
-      { **rect, path: :pixel },
+      { **rect, path: :solid },
       { **point, text: @text, size_px: 32, anchor_x: 0.5, anchor_y: 0.5 }
     ]
   end
 end
 
 class Game
-  attr_gtk
+  attr_dr
 
   def initialize args
     self.args = args
     @pulse_button ||= PulseButton.new({ x: 640 - 100, y: 360 - 50, w: 200, h: 100 }, 'Click Me!') do
-      GTK.notify! "Animation complete and block invoked!"
+      DR.notify! "Animation complete and block invoked!"
     end
   end
 
   def tick
     @pulse_button.tick Kernel.tick_count, inputs.mouse
-    outputs.primitives << @pulse_button.prefab(easing)
+    outputs.primitives << @pulse_button.primitives
   end
 end
 

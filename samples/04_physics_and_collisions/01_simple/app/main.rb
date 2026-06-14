@@ -108,4 +108,4 @@ def determine_collision_center_box args
   end
 end
 
-GTK.reset
+DR.reset

@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   def request_action name, at: nil
     at ||= Kernel.tick_count
@@ -398,4 +398,4 @@ def tick args
   $game.tick
 end
 
-GTK.reset
+DR.reset

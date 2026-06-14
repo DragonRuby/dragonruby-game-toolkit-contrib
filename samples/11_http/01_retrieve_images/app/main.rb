@@ -1,4 +1,4 @@
-GTK.register_cvar 'app.warn_seconds', "seconds to wait before starting", :uint, 6
+DR.register_cvar 'app.warn_seconds', "seconds to wait before starting", :uint, 6
 
 def tick args
   args.outputs.background_color = [0, 0, 0]
@@ -24,7 +24,7 @@ def tick args
     if args.state.download_debounce > 0
       args.state.download_debounce -= 1
     else
-      args.state.download = GTK.http_get 'https://picsum.photos/200/300.jpg'
+      args.state.download = DR.http_get 'https://picsum.photos/200/300.jpg'
     end
   end
 
@@ -32,7 +32,7 @@ def tick args
     if args.state.download[:complete]
       if args.state.download[:http_response_code] == 200
         fname = "sprites/#{args.state.photos.length}.jpg"
-        GTK.write_file fname, args.state.download[:response_data]
+        DR.write_file fname, args.state.download[:response_data]
         args.state.photos << { x: Numeric.rand(100..1180),
                                y: Numeric.rand(150..570),
                                path: fname,

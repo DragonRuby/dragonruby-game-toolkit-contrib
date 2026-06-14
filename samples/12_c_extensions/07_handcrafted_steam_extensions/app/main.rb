@@ -1,5 +1,5 @@
 def boot args
-  GTK.dlopen 'ext'
+  DR.dlopen 'ext'
   $steam = Steam.new
   $steam.init_api
 end

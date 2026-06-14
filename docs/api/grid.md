@@ -154,19 +154,39 @@ closest/best-fit resolutions.
 
 ?> All Screen Properties are pertinent for Pro license with `hd_letterbox=false` (setting `hd_letterbox=false` allows for edge to edge screen rendering). Take a look at the following sample to see how rendering can be applied to non-standard aspect ratios `samples/07_advanced_rendering_hd/05_camera_ultrawide_allscreen`.
 
-The goal of All Screen Properties is to ensure that the safe area for your game is always centered in the display regardless of its aspect ratio.
+The goal of All Screen Properties is to ensure that the safe area for
+your game is always centered in the display regardless of its aspect
+ratio.
 
-When a non-standard aspect ratio (an aspect ratio that isn't 16:9 or 9:16), All Screen Properties will reflect the "overflow" for the game window.
+When a non-standard aspect ratio (an aspect ratio that isn't 16:9 or
+9:16), All Screen Properties will reflect the "overflow" for the game
+window.
 
-All Screen Properties are always in **logical pixels**, you can see native pixel values - if you're curious about what they are - using the `_px` variant of All Screen Properties (they aren't really useful for rendering things on the screen since everything is in logical pixels and are there in preperation of shaders and computing UV coordinates).
+All Screen Properties are always in **logical pixels**, you can see
+native pixel values - if you're curious about what they are - using
+the `_px` variant of All Screen Properties (they aren't really useful
+for rendering things on the screen since everything is in logical
+pixels and are there in preperation of shaders and computing UV
+coordinates).
 
-- If your game is landscape, and your game window is wider than it is tall, then All Screen properties for height will match the logical pixels of the game. All Screen width properties for width will be different because the overflow occurs horizontally.
+- If your game is landscape, and your game window is wider than it is
+  tall, then All Screen properties for height will match the logical
+  pixels of the game. All Screen width properties for width will be
+  different because the overflow occurs horizontally.
 
-- If your game is landscape, and your game window is taller than it is wide, then All Screen properties for width will match the logical pixels of the game. All Screen width properties for height will be different because the overflow occurs vertically.
+- If your game is landscape, and your game window is taller than it is
+  wide, then All Screen properties for width will match the logical
+  pixels of the game. All Screen width properties for height will be
+  different because the overflow occurs vertically.
 
-- If your game window is a perfect 16:9 aspect ratio (720p, 1080p, etc), then all All Screen properties will match logical pixels. There is no overflow in that case (your native scale will be a multiple of 720p).
+- If your game window is a perfect 16:9 aspect ratio (720p, 1080p,
+  etc), then all All Screen properties will match logical
+  pixels. There is no overflow in that case (your native scale will be
+  a multiple of 720p).
 
-You can use the following code to view all screen properties for different sizes of the game window. Try making the window really wide, but short and really tall but thin:
+You can use the following code to view all screen properties for
+different sizes of the game window. Try making the window really wide,
+but short and really tall but thin: 
 
 ```ruby
 def tick args
@@ -215,14 +235,16 @@ end
 These properties provide dimensions of the screen outside of the 16:9
 safe area as logical `720p` values.
 
-- `allscreen_left`
-- `allscreen_right`
+- `allscreen_left`, `allscreen_x`
+- `allscreen_right`, `allscreen_y`
 - `allscreen_top`
 - `allscreen_bottom`
 - `allscreen_w`
 - `allscreen_h`
+- `allscreen_rect`
 - `allscreen_offset_x`
 - `allscreen_offset_y`
+- `allscreen_offset`
 
 !> With the main canvas being centered in the screen, `allscreen_left`
 and `allscreen_bottom` may return negative numbers for origin
@@ -231,7 +253,8 @@ and `allscreen_bottom` may return negative numbers for origin
 !> It is strongly recommended that you don't use All Screen properties
 for any elements the player would interact with (eg buttons in an
 options menu) as they could get rendered underneath a "notch" on a
-mobile device or at the far edge of an ultrawide display.
+mobile device or at the far edge of an ultrawide display. Use the
+`Layout` apis to position UI components within the safe area of the device.
 
 #### Logical, Point, Pixel Category Value Comparisons
 
@@ -350,3 +373,7 @@ automatically handled if a sprite with naming convention isn't found):
 -   1880p: `sprites/player@250.png` (250x250)
 -   4k: `sprites/player@300.png` (300x300)
 -   5k: `sprites/player@400.png` (400x400)
+
+### `refresh_rate`
+
+Returns the refresh rate of the current device/window the game is running on.

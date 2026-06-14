@@ -7,7 +7,7 @@
 # To run the test: ./dragonruby mygame --eval app/tests.rb --no-tick
 
 class MySuperHappyFunGame
-  attr_gtk
+  attr_dr
 
   def tick
     outputs.solids << [100, 100, 300, 300]
@@ -24,6 +24,6 @@ def test_universe args, assert
 end
 
 puts "running tests"
-GTK.reset 100
-GTK.log_level = :off
-GTK.tests.start
+DR.reset 100
+DR.log_level = :off
+DR.tests.start

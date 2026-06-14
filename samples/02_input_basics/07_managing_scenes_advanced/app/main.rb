@@ -226,4 +226,4 @@ def reset args
   $root_scene = nil
 end
 
-GTK.reset
+DR.reset

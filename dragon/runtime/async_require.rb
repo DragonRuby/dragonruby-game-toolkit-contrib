@@ -87,7 +87,7 @@ module GTK
         $layout.reset if $layout
         $gtk.reset_framerate_calculation
 
-        main_rb_loaded!
+        process_main_rb_load_status!
       end
 
       def on_file_reloaded file
@@ -102,10 +102,6 @@ module GTK
                 @reload_list_history['app/main.rbc'][:history].find { |h| h[:event] == :reload_completed })
       end
 
-      def main_rb_loaded!
-        process_load_status
-      end
-
       def important_instance_methods
         Object.instance_methods + dollar_sign_game_methods
       end
@@ -115,7 +111,11 @@ module GTK
         return $game.class.instance_methods
       end
 
-      def process_load_status
+      def process_main_rb_load_status!
+        if $main.respond_to?(:tick)
+          @tick_method = $main.method(:tick)
+        end
+
         return if @load_status == :ready || @load_status == :boot
         return if pending_reload?
 
@@ -163,7 +163,7 @@ module GTK
 
         if okay
           add_to_require_queue file
-          log_debug "Reloaded #{file}. (#{Kernel.global_tick_count})", subsystem="Engine"
+          log_debug "* INFO - Reloaded #{file}. (#{Kernel.global_tick_count})", subsystem="Engine"
           $gtk.reset_framerate_calculation
           notify_subdued! if @global_notification_at != Kernel.global_tick_count
           return true

@@ -91,7 +91,7 @@ class Sudoku
 end
 
 class Game
-  attr_gtk
+  attr_dr
 
   attr :sudoku
 
@@ -319,4 +319,4 @@ def reset args
   $game = nil
 end
 
-GTK.reset
+DR.reset

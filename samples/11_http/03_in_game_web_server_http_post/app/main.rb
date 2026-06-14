@@ -3,7 +3,7 @@ def tick args
   # to enable the http server in a production build you need to:
   # - update metadata/cvars.txt
   # - manually start the server up with enable_in_prod set to true:
-  GTK.start_server! port: $cvars["webserver.port"].value, enable_in_prod: true
+  DR.start_server! port: $cvars["webserver.port"].value, enable_in_prod: true
 
   # defaults
   args.state.post_button      = Layout.rect(row: 0, col: 0, w: 5, h: 1).merge(text: "execute http_post")
@@ -37,11 +37,11 @@ def tick args
       form_fields = { "userId" => "#{Time.now.to_i}" }
       # ==================================
 
-      GTK.http_post "http://localhost:9001/testing",
+      DR.http_post "http://localhost:9001/testing",
                          form_fields,
                          ["Content-Type: application/x-www-form-urlencoded"]
 
-      GTK.notify! "http_post"
+      DR.notify! "http_post"
     end
 
     # ============= HTTP_POST_BODY =============
@@ -50,11 +50,11 @@ def tick args
       json = "{ \"userId\": \"#{Time.now.to_i}\"}"
       # ==================================
 
-      GTK.http_post_body "http://localhost:9001/testing",
+      DR.http_post_body "http://localhost:9001/testing",
                               json,
                               ["Content-Type: application/json", "Content-Length: #{json.length}"]
 
-      GTK.notify! "http_post_body"
+      DR.notify! "http_post_body"
     end
   end
 

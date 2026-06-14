@@ -247,3 +247,29 @@ repl do
   # => [[0, :a], [0, :b], [1, :a], [1, :b]]
 end
 ```
+
+## `Array` Class Methods
+
+Consider using `class` level variants for `Array` (you may find them to be
+a bit faster). Here are the methods that are available at the class
+level.
+
+!> These methods assume that you are not mutating the collection during iteration.
+
+- `all?`
+- `any?`
+- `compact!`
+- `compact`
+- `each`
+- `each_with_index`
+- `filter_map`
+- `find_all`
+- `flat_map`
+- `map!`
+- `map`
+- `map_with_index`
+- `reject!`
+- `reject`
+- `select!`
+- `select`
+- `transpose`

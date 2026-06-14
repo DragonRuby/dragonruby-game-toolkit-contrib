@@ -66,4 +66,4 @@ def tick args
   args.outputs.primitives << args.state.particle_queue
 end
 
-GTK.reset
+DR.reset

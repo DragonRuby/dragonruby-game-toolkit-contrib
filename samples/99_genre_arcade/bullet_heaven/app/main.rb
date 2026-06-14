@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   def initialize
     @level_scene = LevelScene.new
@@ -47,7 +47,7 @@ class Game
 end
 
 class ShopScene
-  attr_gtk
+  attr_dr
 
   def activate
     state.module_selected = nil
@@ -155,7 +155,7 @@ class ShopScene
 end
 
 class LevelScene
-  attr_gtk
+  attr_dr
 
   def tick
     if inputs.keyboard.key_down.g
@@ -165,18 +165,18 @@ class LevelScene
       roll = rand
       if roll < 0.33
         state.bullet_damage += 1
-        GTK.notify_extended! message: "bullet damage increased: #{state.bullet_damage}", env: :prod
+        DR.notify_extended! message: "bullet damage increased: #{state.bullet_damage}", env: :prod
       elsif roll < 0.66
         if state.blaster_rate > 3
           state.blaster_rate = (state.blaster_rate * 0.85).to_i
           state.blaster_rate = 3 if state.blaster_rate < 3
-          GTK.notify_extended! message: "blaster rate upgraded: #{state.blaster_rate}", env: :prod
+          DR.notify_extended! message: "blaster rate upgraded: #{state.blaster_rate}", env: :prod
         else
-          GTK.notify_extended! message: "blaster rate already at fastest.", env: :prod
+          DR.notify_extended! message: "blaster rate already at fastest.", env: :prod
         end
       else
         state.blaster_spread += 2
-        GTK.notify_extended! message: "blaster spread increased: #{state.blaster_spread}", env: :prod
+        DR.notify_extended! message: "blaster spread increased: #{state.blaster_spread}", env: :prod
       end
     end
 
@@ -337,4 +337,4 @@ def reset
   $game = nil
 end
 
-GTK.reset
+DR.reset

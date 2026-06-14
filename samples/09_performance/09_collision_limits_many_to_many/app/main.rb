@@ -67,7 +67,7 @@ def tick args
   end
 
   args.outputs.background_color = [0, 0, 0]
-  args.outputs.watch "FPS: #{GTK.current_framerate.to_sf}"
+  args.outputs.watch "FPS: #{DR.current_framerate.to_sf}"
   args.outputs.watch "Square Count: #{args.state.square_count.to_i}"
   args.outputs.watch "Instructions: click to add squares."
 end

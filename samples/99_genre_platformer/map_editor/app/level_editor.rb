@@ -1,5 +1,5 @@
 class LevelEditor
-  attr_gtk
+  attr_dr
   attr :mode, :hovered_tile, :selected_tile, :tilesheet_rect
 
   def initialize

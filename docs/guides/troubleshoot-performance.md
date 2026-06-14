@@ -2,7 +2,7 @@
 
 ## Benchmark
 
-To benchmark variations of a method you can use `GTK.benchmark` (see
+To benchmark variations of a method you can use `DR.benchmark` (see
 `Runtime` docs for details).
 
 ## Recursion
@@ -69,7 +69,7 @@ end
 - If you're using `Arrays` for values passed into `Geometry` functions
   such as `intersect_rect?`, use `Hash` instead.
 - You can audit your codebase for usages of `Array` primitives by
-  adding `GTK.warn_array_primitives!` at the top of your `tick` method.
+  adding `DR.warn_array_primitives!` at the top of your `tick` method.
 
 ## Array Manipulation
 
@@ -100,26 +100,30 @@ Do:
   args.state.fx_queue.reject! { |fx| fx.countdown < 0 }
   ```
 
+## `Array` Class Methods
+
 Consider using `class` level variants for `Array` (you may find them to be
 a bit faster). Here are the methods that are available at the class
 level.
 
 !> These methods assume that you are not mutating the collection during iteration.
 
-- `map`
-- `map!`
-- `map_with_index`
+- `all?`
+- `any?`
+- `compact!`
+- `compact`
 - `each`
 - `each_with_index`
-- `reject`
-- `reject!`
-- `find_all`
-- `select`
-- `select!`
-- `compact`
-- `compact!`
 - `filter_map`
+- `find_all`
 - `flat_map`
+- `map!`
+- `map`
+- `map_with_index`
+- `reject!`
+- `reject`
+- `select!`
+- `select`
 - `transpose`
 
 Usage example. Instead of:

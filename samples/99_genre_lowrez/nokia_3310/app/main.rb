@@ -536,8 +536,8 @@ class Game
   end
 end
 
-# GTK.reset will reset your entire game
+# DR.reset will reset your entire game
 # it's useful for debugging and starting fresh
 # comment this line out if you want to retain your
 # current game state in between hot reloads
-GTK.reset
+DR.reset

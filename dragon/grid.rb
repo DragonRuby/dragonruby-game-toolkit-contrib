@@ -57,7 +57,7 @@ module GTK
 
     attr :allscreen_offset_y, :allscreen_offset_y_px
 
-    attr :native_scale, :render_scale
+    attr :native_scale, :render_scale, :refresh_rate
 
     attr :texture_scale, :texture_scale_enum
 
@@ -203,6 +203,14 @@ module GTK
       { x: @left_px, y: @bottom_px, w: @w_px, h: @h_px }
     end
 
+    def allscreen_offset
+      { x: @allscreen_offset_x, y: @allscreen_offset_y }
+    end
+
+    def allscreen_offset_px
+      { x: @allscreen_offset_x_px, y: @allscreen_offset_y_px }
+    end
+
     def allscreen_rect
       { x: @allscreen_left, y: @allscreen_bottom, w: @allscreen_w, h: @allscreen_h }
     end
@@ -304,6 +312,7 @@ module GTK
       def allscreen_offset_y_px = $grid.allscreen_offset_y_px
       def native_scale = $grid.native_scale
       def render_scale = $grid.render_scale
+      def refresh_rate = $grid.refresh_rate
       def texture_scale = $grid.texture_scale
       def texture_scale_enum = $grid.texture_scale_enum
       def high_dpi_scale = $grid.high_dpi_scale
@@ -326,6 +335,8 @@ module GTK
       def rect_px = $grid.rect_px
       def allscreen_rect = $grid.allscreen_rect
       def allscreen_rect_px = $grid.allscreen_rect_px
+      def allscreen_offset = $grid.allscreen_offset
+      def allscreen_offset_px = $grid.allscreen_offset_px
       def letterbox? = $grid.letterbox?
       def letterbox = $grid.letterbox
       def landscape? = $grid.landscape?

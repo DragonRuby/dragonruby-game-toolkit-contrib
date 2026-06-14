@@ -14,7 +14,6 @@ module GTK
     attr_accessor :grid
     attr_accessor :recording
     attr_accessor :geometry
-    attr_accessor :fn
     attr_accessor :state
     attr_accessor :temp_state
     attr_accessor :runtime
@@ -49,7 +48,6 @@ module GTK
       @pixel_arrays = {}
       @all_tests = []
       @geometry = GTK::Geometry
-      @fn = GTK::Fn
       @render_targets_render_at = {}
       @wizards = Wizards.new
       ratio_w = 16
@@ -141,6 +139,13 @@ module GTK
       end
 
       if !@render_targets[name]
+        render_target_entry = @outputs.render_targets.__data__[name]
+        if !render_target_entry
+          @outputs.render_targets.global_last_changed_at = Kernel.global_tick_count
+        elsif (Kernel.global_tick_count - render_target_entry.global_updated_at) != 1
+          @outputs.render_targets.global_last_changed_at = Kernel.global_tick_count
+        end
+
         render_target_data = {
           id: name,
           initial_position: @outputs.render_targets.__data__.size,
@@ -260,11 +265,10 @@ module GTK
     end
 
     def autocomplete_methods
-      [:inputs, :outputs, :gtk, :state, :geometry, :audio, :grid, :layout, :fn]
+      [:inputs, :outputs, :gtk, :state, :geometry, :audio, :grid, :layout]
     end
 
     def tick_before
-      @current_audio_object_ids = @audio.values.map { |v| v.object_id }
     end
 
     def __clear_events__
@@ -279,36 +283,6 @@ module GTK
       @inputs.touch.each { |k, v| v.first_tick_down = false }
       @temp_state.clear!
       __clear_events__
-
-      new_audio_data = {}
-
-      new_audio_object_ids = @audio.find_all do |k, v|
-        !@current_audio_object_ids.include?(v.object_id)
-      end.map { |k, v| v.object_id }
-
-      new_audio_object_ids.each do |id|
-        _, audio_v = @audio.find { |k, v| v.object_id == id }
-        if audio_v
-          new_audio_data[id] = {
-            gain: audio_v[:gain] || 1.0,
-            playtime: audio_v[:playtime] || 0.0,
-            original_source: audio_v
-          }
-          audio_v[:gain] = 0
-        end
-      end
-
-      if new_audio_data.length > 0
-        new_audio_data.each do |k, v|
-          @runtime.update_simulation_audio_state
-        end
-
-        new_audio_data.each do |k, v|
-          v[:original_source][:playtime] = v[:playtime]
-          v[:original_source][:gain] = v[:gain]
-          @runtime.update_simulation_audio_state
-        end
-      end
 
       @outputs.render_targets.__data__.each do |k, v|
         v[:ready] = true
@@ -330,7 +304,7 @@ module GTK
     def method_missing name, *args, &block
       if (args.length <= 1) && (@state.as_hash.key? name)
         raise <<-S
-* ERROR - :#{name} method missing on ~#{self.class.name}~.
+* ERROR: :#{name} method missing on ~#{self.class.name}~.
 The method
   :#{name}
 with args
@@ -347,6 +321,8 @@ S
 end
 
 class AudioHash < Hash
+  alias_method :__original_indexor_set__, :[]= if !AudioHash.instance_methods.include?(:__original_indexor_set__)
+
   def volume
     @volume ||= if $gtk.platform?(:ios)
                   0.4
@@ -378,5 +354,35 @@ class AudioHash < Hash
   def sync!
     GTK.update_simulation_audio_state
   end
-end
 
+  def []= key, value
+    if value && !value.is_a?(Hash)
+      raise <<-S
+
+* ERROR: ~args.audio~ only accepts instances of type ~Hash~.
+The value you are attempting to send to ~args.audio~ has
+an instance type of ~#{value.class.name}~.
+S
+    elsif value && value[:cptr]
+      log_important :audio_queue_request_skipped, <<-S
+
+* WARNING: ~Hash~ sent to ~args.audio~ has been ignored.
+The value you are trying to send to ~args.audio~ has been previously
+queued and cannot be reused. If you want to queue this audio again, then
+clone the ~Hash~ first.
+** IMPORTANT:
+The cloned instance **must exclude the ~:cptr~ key**.
+** Key: #{key}
+** Value:
+#{value.pretty_inspect}
+** All Audio Entries
+#{pretty_inspect}
+** Backtrace:
+#{caller.join "\n"}
+S
+      return value
+    else
+      super
+    end
+  end
+end

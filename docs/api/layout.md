@@ -8,9 +8,6 @@ configuration screens, etc).
 ?> All functions are available globally via `Layout.*`.
 ```ruby
 def tick args
-   puts args.layout.function(...)
-
-   # OR available globally
    puts Layout.function(...)
 end
 ```
@@ -26,18 +23,18 @@ The following example creates two menu items and updates a label with the button
 
 ```ruby
 def tick args
-  # render debug_primitives of args.layout for help with placement
-  # args.outputs.primitives << args.layout.debug_primitives
+  # render debug_primitives of Layout for help with placement
+  # args.outputs.primitives << Layout.debug_primitives
 
   # capture the location for a label centered at the top
-  args.state.label_rect ||= args.layout.rect(row: 0, col: 10, w: 4, h: 1)
+  args.state.label_rect ||= Layout.rect(row: 0, col: 10, w: 4, h: 1)
   # state variable to hold the current click status
   args.state.label_message ||= "click a menu item"
 
   # capture the location of two menu items positioned in the center
   # with a cell width of 4 and cell height of 2
-  args.state.menu_item_1_rect ||= args.layout.rect(row: 1, col: 10, w: 4, h: 2)
-  args.state.menu_item_2_rect ||= args.layout.rect(row: 3, col: 10, w: 4, h: 2)
+  args.state.menu_item_1_rect ||= Layout.rect(row: 1, col: 10, w: 4, h: 2)
+  args.state.menu_item_2_rect ||= Layout.rect(row: 3, col: 10, w: 4, h: 2)
 
   # render the label at the center of the label_rect
   args.outputs.labels << args.state.label_rect.center.merge(text: args.state.label_message,
@@ -82,7 +79,26 @@ end
 
 ## `rect`
 
-Given a `row:`, `col:`, `w:`, `h:`, returns a `Hash` with properties `x`, `y`, `w`, `h`, and `center` (which contains a `Hash` with `x`, `y`). The virtual grid is 12 rows by 24 columns (or 24 columns by 12 rows in portrait mode).
+Given a `row:`, `col:`, `w:`, `h:`, returns a `Hash` with properties
+`x`, `y`, `w`, `h`, and `center` (which contains a `Hash` with `x`,
+`y`). The virtual grid is 12 rows by 24 columns (or 24 columns by 12
+rows in portrait mode).
+
+An optional parameter of `allscreen` can be passed in with a value of
+`true`. Doing this will align the returned rects to
+`Grid.allscreen_rect`. This optional parameter is useful when doing
+layouts within a Render Target and `hd_letterbox=false` within
+`./metadata/game_metadata.txt` (All Screen Mode is a Pro feature).
+
+`Layout.allscreen_rect` accepts the same parameters of `Layout.rect`
+and serves as a passthrough function with `allscreen: true` as the
+default (ie: `Layout.allscreen_rect(...)` is the same as `Layout.rect(..., allscreen: true)`).
+
+For non-trivial usage of `Layout.allscreen_rect` see:
+
+- `./samples/99_genre_arcade/squares_advanced_multi_orientation`
+- `./samples/07_advanced_rendering/19_layouts_extended_parameters_in_render_target`
+- `./samples/07_advanced_rendering/19_layouts_extended_parameters_in_render_target_buttons`
 
 ## `debug_primitives`
 

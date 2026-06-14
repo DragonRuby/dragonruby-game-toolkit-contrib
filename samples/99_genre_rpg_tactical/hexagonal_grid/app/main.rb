@@ -1,5 +1,5 @@
 class HexagonTileGame
-  attr_gtk
+  attr_dr
 
   def defaults
     state.tile_scale      = 1.3
@@ -65,4 +65,4 @@ def tick args
   $game.tick
 end
 
-GTK.reset
+DR.reset

@@ -191,4 +191,4 @@ def label_color
   { r: 0, g: 0, b: 0 }
 end
 
-GTK.reset
+DR.reset

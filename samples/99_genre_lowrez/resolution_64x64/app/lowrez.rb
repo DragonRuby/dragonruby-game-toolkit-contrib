@@ -119,7 +119,7 @@ class LowrezOutputs
   end
 end
 
-class GTK::Args
+class DR::Args
   def init_lowrez
     return if @lowrez
     @lowrez = LowrezOutputs.new self
@@ -130,7 +130,7 @@ class GTK::Args
   end
 end
 
-module GTK
+module DR
   class Runtime
     alias_method :__original_tick_core__, :tick_core unless Runtime.instance_methods.include?(:__original_tick_core__)
 

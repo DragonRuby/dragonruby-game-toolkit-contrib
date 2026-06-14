@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   # get solution for hanoi tower
   # https://youtu.be/rf6uf3jNjbo
@@ -460,7 +460,7 @@ class Game
       outputs.primitives << button_prefab(state.undo_button_rect, "U: Undo")
       outputs.primitives << button_prefab(state.auto_solve_button_rect, "Space: Auto Solve")
     else
-      action_text = if GTK.platform?(:touch)
+      action_text = if DR.platform?(:touch)
                       "Tap"
                     else
                       "Click"
@@ -510,4 +510,4 @@ def reset args
   $game = nil
 end
 
-GTK.reset
+DR.reset

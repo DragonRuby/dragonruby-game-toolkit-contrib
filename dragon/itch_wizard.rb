@@ -170,7 +170,7 @@ S
 
   def deploy
     log_info "* Running dragonruby-publish: #{package_command}"
-    $gtk.openurl "http://itch.io/dashboard" if $gtk.platform == "Mac OS X"
+    $gtk.openurl "http://itch.io/dashboard" if $gtk.platform == "Mac OS X" || $gtk.platform == "macOS"
     if $gtk.platform? :mac
       $gtk.exec "rm -rf ./builds"
     end

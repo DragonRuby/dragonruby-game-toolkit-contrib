@@ -1,149 +1,296 @@
-def tick args
-  args.state.player         ||= {x: 600, y: 320, w: 80, h: 80, path: 'sprites/circle-white.png', vx: 0, vy: 0, health: 10, cooldown: 0, score: 0}
-  args.state.enemies        ||= []
-  args.state.player_bullets ||= []
-  spawn_enemies args
-  kill_enemies args
-  move_enemies args
-  move_bullets args
-  move_player args
-  fire_player args
-  args.state.player[:r] = args.state.player[:g] = args.state.player[:b] = (args.state.player[:health] * 25.5).clamp(0, 255)
-  label_color           = args.state.player[:health] <= 5 ? 255 : 0
-  args.outputs.labels << [
-      {
-          x: args.state.player.x + 40, y: args.state.player.y + 60, alignment_enum: 1, text: "#{args.state.player[:health]} HP",
-          r: label_color, g: label_color, b: label_color
-      }, {
-          x: args.state.player.x + 40, y: args.state.player.y + 40, alignment_enum: 1, text: "#{args.state.player[:score]} PTS",
-          r: label_color, g: label_color, b: label_color, size_enum: 2 - args.state.player[:score].to_s.length,
-      }
-  ]
-  args.outputs.sprites << [args.state.player, args.state.enemies, args.state.player_bullets]
-  args.state.clear! if args.state.player[:health] < 0 # Reset the game if the player's health drops below zero
-end
+class Game
+  attr_gtk
 
-def spawn_enemies args
-  # Spawn enemies more frequently as the player's score increases.
-  if rand < (100+args.state.player[:score])/(10000 + args.state.player[:score]) || Kernel.tick_count.zero?
-    theta = rand * Math::PI * 2
-    args.state.enemies << {
-        x: 600 + Math.cos(theta) * 800, y: 320 + Math.sin(theta) * 800, w: 80, h: 80, path: 'sprites/circle-white.png',
-        r: (256 * rand).floor, g: (256 * rand).floor, b: (256 * rand).floor
-    }
+  def initialize args
+    @on_screen_gamepad_left = OnScreenGamepad.new args.inputs, side: :left
+    @on_screen_gamepad_right = OnScreenGamepad.new args.inputs, side: :right
+    reset_game
   end
-end
 
-def kill_enemies args
-  args.state.enemies.reject! do |enemy|
-    # Check if enemy and player are within 80 pixels of each other (i.e. overlapping)
-    if 6400 > (enemy.x - args.state.player.x) ** 2 + (enemy.y - args.state.player.y) ** 2
-      # Enemy is touching player. Kill enemy, and reduce player HP by 1.
-      args.state.player[:health] -= 1
-    else
-      args.state.player_bullets.any? do |bullet|
-        # Check if enemy and bullet are within 50 pixels of each other (i.e. overlapping)
-        if 2500 > (enemy.x - bullet.x + 30) ** 2 + (enemy.y - bullet.y + 30) ** 2
-          # Increase player health by one for each enemy killed by a bullet after the first enemy, up to a maximum of 10 HP
-          args.state.player[:health] += 1 if args.state.player[:health] < 10 && bullet[:kills] > 0
-          # Keep track of how many enemies have been killed by this particular bullet
-          bullet[:kills]             += 1
-          # Earn more points by killing multiple enemies with one shot.
-          args.state.player[:score]  += bullet[:kills]
-        end
-      end
+  def reset_game
+    @player = { x: 600, y: 320, w: 80, h: 80,
+                path: 'sprites/circle/solid.png',
+                vx: 0,
+                vy: 0,
+                health: 10,
+                health_perc: 1.0,
+                cooldown: 0,
+                score: 0 }
+    @spawn_timer = 120
+    @enemies = []
+    @bullets = []
+  end
+
+  def tick
+    @on_screen_gamepad_left.tick
+    @on_screen_gamepad_right.tick
+    spawn_enemies
+    kill_enemies
+    move_enemies
+    move_bullets
+    move_player
+    fire_player
+    render
+    calc_game_over
+  end
+
+  def calc_game_over
+    if @player.health < 0
+      reset_game
     end
   end
-end
 
-def move_enemies args
-  args.state.enemies.each do |enemy|
-    # Get the angle from the enemy to the player
-    theta   = Math.atan2(enemy.y - args.state.player.y, enemy.x - args.state.player.x)
-    # Convert the angle to a vector pointing at the player
-    dx, dy  = theta.to_degrees.vector 5
-    # Move the enemy towards thr player
-    enemy.x -= dx
-    enemy.y -= dy
+  def render
+    outputs.background_color = [30, 30, 30]
+
+    outputs.primitives << [@player, @enemies, @bullets]
+
+    progress_bar = Geometry.rect(
+      x: @player.x + 40,
+      y: @player.y + 80 + 32,
+      w: 256,
+      h: 32,
+      anchor_x: 0.5,
+      anchor_y: 0.5,
+    ).merge(r: 0, g: 0, b: 0, path: :solid)
+
+    health_area = Geometry.zoom_rect(rect: progress_bar, px: -8)
+    current_health = { **health_area, w: health_area.w * @player.health_perc }
+
+    outputs.primitives << progress_bar
+    outputs.primitives << health_area.merge(r: 255, g: 255, b: 255, path: :solid)
+    outputs.primitives << current_health.merge(r: 80, g: 155, b: 80, path: :solid)
+
+    if DR.platform?(:touch)
+      outputs.primitives << { x: 640, y: 720, text: "Finger on left side of screen to move. Finger on right side of screen to shoot.", anchor_x: 0.5, anchor_y: 1.5, r: 255, g: 255, b: 255 }
+    elsif inputs.last_active == :keyboard || inputs.last_active == :mouse
+      outputs.primitives << { x: 640, y: 720, text: "WASD to move, Arrow Keys to shoot.", anchor_x: 0.5, anchor_y: 1.5, r: 255, g: 255, b: 255 }
+    elsif inputs.last_active == :controller
+      outputs.primitives << { x: 640, y: 720, text: "Left Analog to move, Right Analog to shoot.", anchor_x: 0.5, anchor_y: 1.5, r: 255, g: 255, b: 255 }
+    end
+
+    outputs.primitives << @on_screen_gamepad_left.primitives
+    outputs.primitives << @on_screen_gamepad_right.primitives
   end
-end
 
-def move_bullets args
-  args.state.player_bullets.each do |bullet|
-    # Move the bullets according to the bullet's velocity
-    bullet.x += bullet[:vx]
-    bullet.y += bullet[:vy]
+  def health_progress_bar_primitives
+
   end
-  args.state.player_bullets.reject! do |bullet|
-    # Despawn bullets that are outside the screen area
-    bullet.x < -20 || bullet.y < -20 || bullet.x > 1300 || bullet.y > 740
-  end
-end
 
-def move_player args
-  # Get the currently held direction.
-  dx, dy                 = move_directional_vector args
-  # Take the weighted average of the old velocities and the desired velocities. 
-  # Since move_directional_vector returns values between -1 and 1, 
-  #   and we want to limit the speed to 7.5, we multiply dx and dy by 7.5*0.1 to get 0.75
-  args.state.player[:vx] = args.state.player[:vx] * 0.9 + dx * 0.75
-  args.state.player[:vy] = args.state.player[:vy] * 0.9 + dy * 0.75
-  # Move the player
-  args.state.player.x    += args.state.player[:vx]
-  args.state.player.y    += args.state.player[:vy]
-  # If the player is about to go out of bounds, put them back in bounds.
-  args.state.player.x    = args.state.player.x.clamp(0, 1201)
-  args.state.player.y    = args.state.player.y.clamp(0, 640)
-end
+  def spawn_enemies
+    should_spawn_enemy ||= Kernel.tick_count == 0
+    should_spawn_enemy ||= Kernel.tick_count.zmod?(@spawn_timer.clamp(30, 120))
+    return if !should_spawn_enemy
 
-
-def fire_player args
-  # Reduce the firing cooldown each tick
-  args.state.player[:cooldown] -= 1
-  # If the player is allowed to fire
-  if args.state.player[:cooldown] <= 0
-    dx, dy = shoot_directional_vector args # Get the bullet velocity
-    return if dx == 0 && dy == 0 # If the velocity is zero, the player doesn't want to fire. Therefore, we just return early.
-    # Add a new bullet to the list of player bullets.
-    args.state.player_bullets << {
-        x:     args.state.player.x + 30 + 40 * dx,
-        y:     args.state.player.y + 30 + 40 * dy,
-        w:     20, h: 20,
-        path:  'sprites/circle-white.png',
-        r:     0, g: 0, b: 0,
-        vx:    10 * dx + args.state.player[:vx] / 7.5, vy: 10 * dy + args.state.player[:vy] / 7.5, # Factor in a bit of the player's velocity
-        kills: 0
+    angle = rand 360
+    @enemies << {
+      x: 600 + angle.vector_x * 800,
+      y: 320 + angle.vector_y * 800,
+      w: 80, h: 80, path: "sprites/circle/solid.png",
+      r: 128 + rand(128), g: 128 + rand(128), b: 128 + rand(128)
     }
-    args.state.player[:cooldown] = 30 # Reset the cooldown
+  end
+
+  def kill_enemies
+    enemy_collision = Geometry.find_intersect_rect(@player, @enemies)
+    if enemy_collision
+      @enemies.delete enemy_collision
+      @player.health -= 1
+    end
+
+    @bullets.each do |bullet|
+      bullet_collision = Geometry.find_intersect_rect(bullet, @enemies)
+      next if !bullet_collision
+
+      @enemies.delete bullet_collision
+      bullet.kills ||= 0
+      bullet.kills += 1
+      @player.score += bullet.kills
+      @spawn_timer -= bullet.kills * 2
+      @player.health += 1 if @player.health < 10 && bullet.kills > 1
+    end
+
+    @player.health_perc = @player.health_perc.lerp(@player.health.fdiv(10), 0.1)
+  end
+
+  def move_enemies
+    @enemies.each do |enemy|
+      angle = Geometry.angle @player, enemy
+      enemy.x -= angle.vector_x * 2.5
+      enemy.y -= angle.vector_y * 2.5
+    end
+  end
+
+  def move_bullets
+    @bullets.each do |bullet|
+      bullet.x += bullet.vx
+      bullet.y += bullet.vy
+    end
+
+    @bullets.reject! do |bullet|
+      bullet.x < -20 || bullet.y < -20 || bullet.x > 1300 || bullet.y > 740
+    end
+  end
+
+  def move_player
+    @player.vx = @player.vx * 0.9
+    @player.vy = @player.vy * 0.9
+
+    @player.x += @player.vx
+    @player.y += @player.vy
+    @player.x = @player.x.clamp 0, 1200
+    @player.y = @player.y.clamp 0, 640
+
+    dir = inputs.keyboard.directional_vector_wasd ||
+          inputs.controller_one.directional_vector_left_analog_cardinal ||
+          @on_screen_gamepad_left.dpad_vector
+
+    return if !dir
+
+    @player.vx += dir.x * 0.75
+    @player.vy += dir.y * 0.75
+  end
+
+  def fire_player
+    @player.cooldown -= 1
+
+    return if @player.cooldown > 0
+
+    dir = inputs.keyboard.directional_vector_arrow ||
+          inputs.controller_one.directional_vector_right_analog_cardinal ||
+          @on_screen_gamepad_right.dpad_vector
+
+    return if !dir
+
+    @bullets << {
+      x: @player.x + 30 + 40 * dir.x,
+      y: @player.y + 30 + 40 * dir.y,
+      w: 20, h: 20, path: "sprites/circle/solid.png", r: 232, g: 232, b: 232,
+      vx: dir.x * 10 + @player.vx / 7.5, vy: dir.y * 10 + @player.vy / 7.5
+    }
+
+    @player.cooldown = 30
   end
 end
 
-# Custom function for getting a directional vector just for movement using WASD
-def move_directional_vector args
-  dx = 0
-  dx += 1 if args.inputs.keyboard.d
-  dx -= 1 if args.inputs.keyboard.a
-  dy = 0
-  dy += 1 if args.inputs.keyboard.w
-  dy -= 1 if args.inputs.keyboard.s
-  if dx != 0 && dy != 0
-    dx *= 0.7071
-    dy *= 0.7071
+module Main
+  def tick args
+    @game ||= Game.new args
+    @game.args = args
+    @game.tick
   end
-  [dx, dy]
+
+  def reset args
+    @game = nil
+  end
 end
 
-# Custom function for getting a directional vector just for shooting using the arrow keys
-def shoot_directional_vector args
-  dx = 0
-  dx += 1 if args.inputs.keyboard.key_down.right || args.inputs.keyboard.key_held.right
-  dx -= 1 if args.inputs.keyboard.key_down.left || args.inputs.keyboard.key_held.left
-  dy = 0
-  dy += 1 if args.inputs.keyboard.key_down.up || args.inputs.keyboard.key_held.up
-  dy -= 1 if args.inputs.keyboard.key_down.down || args.inputs.keyboard.key_held.down
-  if dx != 0 && dy != 0
-    dx *= 0.7071
-    dy *= 0.7071
+# On screen game pad implementation from DragonRuby's sample code
+class OnScreenGamepad
+  attr :inputs, :directional_vector, :directional_angle, :dpad_vector
+
+  def initialize inputs, side: :left
+    @side = side
+    @inputs = inputs
   end
-  [dx, dy]
+
+  def tick
+    if finger
+      @joystick ||= {
+        center: { x: inputs.mouse.x, y: inputs.mouse.y },
+        a: 0
+      }
+      @joystick.distance = Geometry.distance(inputs.mouse, @joystick.center)
+      @joystick.angle = Geometry.angle(inputs.mouse, @joystick.center)
+      @joystick.vector = @joystick.angle.to_vector
+      if @joystick.distance > 160
+        @joystick.center.x = @joystick.center.x.lerp(finger.x + @joystick.vector.x * 160, 0.1)
+        @joystick.center.y = @joystick.center.y.lerp(finger.y + @joystick.vector.y * 160, 0.1)
+      end
+
+      perc = @joystick.distance.clamp(0, 48).fdiv(48)
+      @directional_angle = (@joystick.angle + 180) % 360
+
+      @directional_vector = {
+        x: @directional_angle.to_vector.x * perc ** 4,
+        y: @directional_angle.to_vector.y * perc ** 4,
+      }
+
+      if perc > 0.8
+        @dpad_vector = {
+          x: Geometry.angle_cardinal_vec2(@directional_angle).x,
+          y: Geometry.angle_cardinal_vec2(@directional_angle).y,
+        }
+      else
+        @dpad_vector = nil
+      end
+
+      @joystick.a = @joystick.a.lerp(128, 0.01)
+    elsif @joystick
+      @joystick.a = @joystick.a.lerp(0, 0.25)
+      @directional_vector = nil
+      @dpad_vector = nil
+      @joystick = nil if @joystick.a < 1
+    end
+  end
+
+  def joystick_primitive
+    return nil if !@joystick
+    {
+      **@joystick.center,
+      w: 64,
+      h: 64,
+      path: "sprites/circle/solid.png",
+      anchor_x: 0.5,
+      anchor_y: 0.5,
+      r: 255,
+      g: 255,
+      b: 255,
+      a: @joystick.a
+    }
+  end
+
+  def finger
+    if @side == :left
+      inputs.finger_left
+    else
+      inputs.finger_right
+    end
+  end
+
+  def direction_indicator_primitive
+    return nil if !finger
+    return nil if !@joystick
+
+    joystick_center = if @joystick.distance > 48
+                        { x: @joystick.center.x + 48 * -@joystick.vector.x,
+                          y: @joystick.center.y + 48 * -@joystick.vector.y }
+                      else
+                        finger
+                      end
+
+    {
+      x: joystick_center.x,
+      y: joystick_center.y,
+      w: 16,
+      h: 16,
+      path: "sprites/circle/solid.png",
+      r: 255,
+      g: 0,
+      b: 0,
+      a: @joystick.a,
+      anchor_x: 0.5,
+      anchor_y: 0.5
+    }
+  end
+
+  def primitives
+    [
+      joystick_primitive,
+      direction_indicator_primitive
+    ]
+  end
 end
+
+
+GTK.reset

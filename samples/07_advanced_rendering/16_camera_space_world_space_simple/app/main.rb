@@ -44,7 +44,7 @@ def tick args
 
   # "r" to reset
   if args.inputs.keyboard.key_down.r
-    GTK.reset_next_tick
+    DR.reset_next_tick
   end
 
   # define scene
@@ -133,7 +133,7 @@ class Camera
 
     def to_world_space camera, rect
       if rect.is_a? Array
-        rect.map { |r| to_world_space camera, rect }
+        rect.map { |r| to_world_space camera, r }
       else
         __to_world_space__ camera, rect
       end
@@ -192,4 +192,4 @@ class Camera
   end
 end
 
-GTK.reset
+DR.reset

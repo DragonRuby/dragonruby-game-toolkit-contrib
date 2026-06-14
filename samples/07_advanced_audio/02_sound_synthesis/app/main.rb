@@ -31,13 +31,13 @@ begin # region: top level tick methods
     args.state.buttons.each do |b|
       if args.inputs.mouse.click && (args.inputs.mouse.click.inside_rect? b[:rect])
         parameter_string = (b.slice :frequency, :note, :octave).map { |k, v| "#{k}: #{v}" }.join ", "
-        GTK.notify! "#{b[:method_to_call]} #{parameter_string}"
+        DR.notify! "#{b[:method_to_call]} #{parameter_string}"
         send b[:method_to_call], args, b
       end
     end
 
     if args.inputs.mouse.click && (args.inputs.mouse.click.inside_rect? (Layout.rect(row: 0).yield_self { |r| r.merge y: r.y + r.h.half, h: r.h.half }))
-      GTK.openurl 'https://www.youtube.com/watch?v=zEzovM5jT-k&ab_channel=AmirRajan'
+      DR.openurl 'https://www.youtube.com/watch?v=zEzovM5jT-k&ab_channel=AmirRajan'
     end
   end
 
@@ -584,4 +584,4 @@ begin # region: wave generation
   end
 end
 
-GTK.reset
+DR.reset

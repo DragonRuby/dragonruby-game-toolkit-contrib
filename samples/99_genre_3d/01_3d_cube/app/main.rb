@@ -47,4 +47,4 @@ def tick args
   end
 end
 
-GTK.reset
+DR.reset

@@ -1,18 +1,34 @@
-# Runtime (`GTK`)
+# Runtime (`DR`)
 
-The `GTK::Runtime` class is the core of DragonRuby.
+The `DR::Runtime` class is the core of DragonRuby.
 
-?> All functions `$gtk`, `GTK`, via `args.gtk` (it's recommended to use `GTK`).
 ```ruby
 def tick args
-  # recommended access to GTK
-  GTK.function(...)
+  # recommended access to DR
+  DR.function(...)
 end
 ```
 
 ## Top Level Functions
 
 DragonRuby is aware of the following top level functions (top level functions are functions defined outside of a class or a module).
+
+?> Defining "bare" `tick`, `boot`, `reset`, `did_reset` pollutes
+`Object` with these functions. As the complexity of your game increases, you'll want to eventually
+migrate to using either `self` scoping or the `Main` module (see the
+Scoping subsection for more details). Don't worry to much about this
+while in the prototyping phase for your game.
+
+### `boot`
+
+This function will be called once when your game boots. It will never be called again after that initial startup.
+
+```ruby
+def boot args
+  puts "The current tick count is: #{Kernel.tick_count}"
+  puts "The global tick count is: #{Kernel.global_tick_count}"
+end
+```
 
 ### `tick`
 
@@ -28,20 +44,9 @@ def tick args
 end
 ```
 
-### `boot`
-
-This function will be called once when your game boots. It will never be called again after that initial startup.
-
-```ruby
-def boot args
-  puts "The current tick count is: #{Kernel.tick_count}"
-  puts "The global tick count is: #{Kernel.global_tick_count}"
-end
-```
-
 ### `reset`
 
-This function will be called if `GTK.reset` is invoked. It will be called before DragonRuby resets game state and
+This function will be called if `DR.reset` is invoked. It will be called before DragonRuby resets game state and
 is useful for capturing state information before a reset occurs (you can use this override to reset state external
 to DragonRuby's `args.state` construct).
 
@@ -79,12 +84,12 @@ def tick args
   
   # at T=600, invoke reset
   if Kernel.tick_count == 600
-    GTK.reset
+    DR.reset
   end
 end
 
 # this function will be invoked before
-# GTK.reset occurs
+# DR.reset occurs
 def reset args
   puts "resetting"
   puts "foo is: #{$game.foo}"
@@ -96,19 +101,106 @@ def reset args
 end
 ```
 
-### `reboot`
+### `did_reset`
 
-Invoking `GTK.reboot` will reset your game as if it were started for the first time. Any
-methods that were added to classes during hotload will be removed (leaving you with a pristine
-environment). This function is in a beta state (report issues on the Discord Server).
+Similar to `reset` except this function is called _after_ DR's interal reset completes.
 
 ### `shutdown`
 
-This function will be called before your game exits.
+This function will be called before your game exits. This function will also be invoked as a part of `DR.reboot`.
 
 ```ruby
 def shutdown args
   puts "Shutting down at #{Kernel.tick_count}"
+end
+```
+
+#### `Main` Scoping
+
+Defining "bare" `tick`, `boot`, `reset`, `did_reset`, `shutdown` pollutes
+`Object` with these functions. As the complexity of your game
+increases, using teh `Main` module will keep `Object` from being
+polluted and give you a bit more control over the entry point of your
+game.
+
+Using `Main` gives you the following capabilities
+
+- `Main` supports `args`, `inputs`, `outputs`, `audio`, `state`, and `events` top level functions (no need to pass `args` around or use `args.` these top level methods).
+- `Main` supports an additional `start` function. This function will be invoked if `Kernel.tick_count == 0`, before `tick` is invoked.
+- Ability to use `iVars` without polluting `Object`.
+
+```ruby
+# using the Main module removes the need to prefix and removes the need
+# to accept args
+module Main
+  def boot
+    puts "boot: #{Kernel.tick_count}"
+  end
+
+  def start
+    puts "start: #{Kernel.tick_count}"
+    state.some_variable = 0
+  end
+
+  def tick
+    if Kernel.tick_count.zmod?(30)
+      state.some_variable += 1
+      puts "state.some_variable: #{state.some_variable}"
+    end
+
+    if Kernel.tick_count.zmod?(60)
+      puts "tick: #{Kernel.tick_count}"
+    end
+
+    if inputs.keyboard.key_down.enter
+      puts "inputs.keyboard.key_down.enter #{Kernel.tick_count}"
+    end
+
+    outputs.background_color = [30, 30, 30]
+  end
+
+  def reset
+    puts "reset #{Kernel.tick_count}"
+  end
+
+  def did_reset
+    puts "did_reset #{Kernel.tick_count}"
+  end
+
+  def shutdown
+    puts "shutdown #{Kernel.tick_count}"
+  end
+end
+
+DR.reset
+```
+
+!> The tick function has the following execution precedence:
+`Main.tick`, `self.tick`, `Object.tick`. If you recently made changes
+to top level `tick` behavior, it's a good idea to call `DR.reboot` to start with
+a pristine hot load state.
+
+## Pretty Printing
+
+The following functions will help you format objects: `pp`, `pretty_print`, `pretty_inspect`
+
+`Object#pretty_inspect` exists and `pp` exists at the top level. Functions are use to print Ruby objects as a indented, readable structure:
+
+```ruby
+def tick args
+  args.state.rects ||= 10.map do
+    {
+      x: rand(100),
+      y: rand(100),
+      w: rand(100),
+      h: rand(100)
+    }
+  end
+
+  if args.inputs.keyboard.key_down.enter
+    pp args.state.rects
+    puts args.state.rects.pretty_inspect
+  end
 end
 ```
 
@@ -136,9 +228,9 @@ class Player
 end
 ```
 
-### `attr_gtk`
+### `attr_dr`
 
-As the size/complexity of your game increases. You may want to create classes to organize everything. The `attr_gtk` class macro adds DragonRuby's environment methods (such as `args.state`, `args.inputs`, `args.outputs`, `args.audio`, etc) to your class so you don't have to pass `args` around everywhere.
+As the size/complexity of your game increases. You may want to create classes to organize everything. The `attr_dr` class macro adds DragonRuby's environment methods (such as `args.state`, `args.inputs`, `args.outputs`, `args.audio`, etc) to your class so you don't have to pass `args` around everywhere.
 
 Instead of:
 
@@ -181,7 +273,7 @@ You can do:
 
 ```ruby
 class Game
-  attr_gtk # attr_gtk class macro
+  attr_dr # attr_gtk class macro
 
   def tick
     defaults
@@ -262,12 +354,12 @@ This function takes in a single `boolean` parameter. `true` to make the game ful
 def tick args
   # make the game full screen after 600 frames (10 seconds)
   if Kernel.tick_count == 600
-    GTK.set_window_fullscreen true
+    DR.set_window_fullscreen true
   end
 
   # return the game to windowed mode after 20 seconds
   if Kernel.tick_count == 1200
-    GTK.set_window_fullscreen false
+    DR.set_window_fullscreen false
   end
 end
 ```
@@ -284,14 +376,14 @@ Takes in two parameters representing the width and height of the window. The win
 
 ```ruby
 # setting window size to 720p
-GTK.set_window_size 1280, 720
+DR.set_window_size 1280, 720
 
 # setting window size to 1080p
-GTK.set_window_size 1920, 1080
+DR.set_window_size 1920, 1080
 
 # setting window to a non-standard 16:9 aspect ratio
 # for letterbox/allscreen testing purposes
-GTK.set_window_size 720, 720
+DR.set_window_size 720, 720
 ```
 
 ### `set_window_position`
@@ -305,7 +397,7 @@ Takes in two parameters representing the `x` and `y` destination position (the
 only use this function for development/debugging purposes).
 
 ```ruby
-GTK.set_window_position 0, 0
+DR.set_window_position 0, 0
 ```
 
 ### `set_window_scale`
@@ -329,10 +421,10 @@ representation of your game on various form factors.
 
 ```ruby
 # how your game will look on an iPad
-GTK.set_window_scale 1.0, 4, 3
+DR.set_window_scale 1.0, 4, 3
 
 # how your game will look on a wide aspect ratio
-GTK.set_window_scale 1.0, 21, 9
+DR.set_window_scale 1.0, 21, 9
 ```
 
 ### `set_window_title`
@@ -357,14 +449,14 @@ monitor if needed.
 
 ```ruby
 def boot args
-  if !GTK.production?
-    GTK.move_window_to_next_display
+  if !DR.production?
+    DR.move_window_to_next_display
   end
 end
 
 def tick args
-  if args.inputs.keyboard.key_down.zero && !GTK.production?
-    GTK.move_window_to_next_display
+  if args.inputs.keyboard.key_down.zero && !DR.production?
+    DR.move_window_to_next_display
   end
 end
 ```
@@ -455,14 +547,14 @@ Given a tick_count and a block, this function will schedule the block to be exec
 def tick args
   # if space is pressed, show a notification 5 seconds (300 frames) later
   if args.inputs.keyboard.key_down.space
-    GTK.notify "Scheduling block to be executed... (tick_count: #{Kernel.tick_count})"
+    DR.notify "Scheduling block to be executed... (tick_count: #{Kernel.tick_count})"
     # schedule a block to be executed (with an optional
     # argument being the args at that point in time)
-    GTK.on_tick_count Kernel.tick_count + 300 do |args_300|
-      GTK.notify "Block executed! (tick_count: #{Kernel.tick_count})"
+    DR.on_tick_count Kernel.tick_count + 300 do |args_300|
+      DR.notify "Block executed! (tick_count: #{Kernel.tick_count})"
       # within the execution of this block, schedule another execution
-      GTK.on_tick_count Kernel.tick_count + 300 do
-        GTK.notify "Nested block executed! (tick_count: #{Kernel.tick_count})"
+      DR.on_tick_count Kernel.tick_count + 300 do
+        DR.notify "Nested block executed! (tick_count: #{Kernel.tick_count})"
       end
     end
   end
@@ -486,7 +578,7 @@ def tick args
   font = "fonts/courier-new.ttf"
 
   # get the render width and height
-  string_w, string_h = GTK.calcstringbox text, size_enum, font
+  string_w, string_h = DR.calcstringbox text, size_enum, font
 
   # render the label
   args.outputs.labels << {
@@ -514,10 +606,10 @@ end
 
 ```ruby
   # size_enum, and font named parameters
-  string_w, string_h = GTK.calcstringbox text, size_enum: 0, font: "fonts/example.ttf"
+  string_w, string_h = DR.calcstringbox text, size_enum: 0, font: "fonts/example.ttf"
   
   # size_px, and font named parameters
-  string_w, string_h = GTK.calcstringbox text, size_px: 20, font: "fonts/example.ttf"
+  string_w, string_h = DR.calcstringbox text, size_px: 20, font: "fonts/example.ttf"
 ```
 
 ### `calcstringbox_h`
@@ -540,7 +632,7 @@ Here's an example of how to get the color data for a pixel:
 ```ruby
 def tick args
   # load the pixels from the image
-  args.state.image ||= GTK.get_pixels "sprites/square/blue.png"
+  args.state.image ||= DR.get_pixels "sprites/square/blue.png"
 
   # initialize state variables for the pixel coordinates
   args.state.x_px ||= 0
@@ -589,7 +681,7 @@ Call this function to exit your game. You will be given one additional tick if y
 def tick args
   # exit the game after 600 frames (10 seconds)
   if Kernel.tick_count == 600
-    GTK.request_quit
+    DR.request_quit
   end
 end
 ```
@@ -602,34 +694,34 @@ This function will return `true` if the game is about to exit (either from the u
 
 You can ask DragonRuby which platform your game is currently being run on. This can be useful if you want to perform different pieces of logic based on where the game is running.
 
-The raw platform string value is available via `GTK.platform` which takes in a `symbol` representing the platform's categorization/mapping.
+The raw platform string value is available via `DR.platform` which takes in a `symbol` representing the platform's categorization/mapping.
 
-You can see all available platform categorizations via the `GTK.platform_mappings` function.
+You can see all available platform categorizations via the `DR.platform_mappings` function.
 
-Here's an example of how to use `GTK.platform? category_symbol`:
+Here's an example of how to use `DR.platform? category_symbol`:
 
 ```ruby
 def tick args
   label_style = { x: 640, y: 360, anchor_x: 0.5, anchor_y: 0.5 }
-  if    GTK.platform? :macos
+  if    DR.platform? :macos
     args.outputs.labels << { text: "I am running on MacOS.", **label_style }
-  elsif GTK.platform? :win
+  elsif DR.platform? :win
     args.outputs.labels << { text: "I am running on Windows.", **label_style }
-  elsif GTK.platform? :linux
+  elsif DR.platform? :linux
     args.outputs.labels << { text: "I am running on Linux.", **label_style }
-  elsif GTK.platform? :web
+  elsif DR.platform? :web
     args.outputs.labels << { text: "I am running on a web page.", **label_style }
-  elsif GTK.platform? :android
+  elsif DR.platform? :android
     args.outputs.labels << { text: "I am running on Android.", **label_style }
-  elsif GTK.platform? :ios
+  elsif DR.platform? :ios
     args.outputs.labels << { text: "I am running on iOS.", **label_style }
-  elsif GTK.platform? :touch
+  elsif DR.platform? :touch
     args.outputs.labels << { text: "I am running on a device that supports touch (either iOS/Android native or mobile web).", **label_style }
-  elsif GTK.platform? :steam
+  elsif DR.platform? :steam
     args.outputs.labels << { text: "I am running via steam (covers both desktop and steamdeck).", **label_style }
-  elsif GTK.platform? :steam_deck
+  elsif DR.platform? :steam_deck
     args.outputs.labels << { text: "I am running via steam on the Steam Deck (not steam desktop).", **label_style }
-  elsif GTK.platform? :steam_desktop
+  elsif DR.platform? :steam_desktop
     args.outputs.labels << { text: "I am running via steam on desktop (not steam deck).", **label_style }
   end
 end
@@ -643,7 +735,7 @@ If you want to simulate a production build. Add an empty file called `dragonruby
 
 ### `platform_mappings`
 
-These are the current platform categorizations (`GTK.platform_mappings`):
+These are the current platform categorizations (`DR.platform_mappings`):
 
 ```ruby
 {
@@ -657,7 +749,7 @@ These are the current platform categorizations (`GTK.platform_mappings`):
 }
 ```
 
-Given the mappings above, `GTK.platform? :desktop` would return `true` if the game is running on a player's computer irrespective of OS (MacOS, Linux, and Windows are all categorized as `:desktop` platforms).
+Given the mappings above, `DR.platform? :desktop` would return `true` if the game is running on a player's computer irrespective of OS (MacOS, Linux, and Windows are all categorized as `:desktop` platforms).
 
 ### `openurl`
 
@@ -667,7 +759,7 @@ Given a uri represented as a string. This function will open the uri in the user
 def tick args
   # open a url after 600 frames (10 seconds)
   if Kernel.tick_count == 600
-    GTK.openurl "http://dragonruby.org"
+    DR.openurl "http://dragonruby.org"
   end
 end
 ```
@@ -682,7 +774,7 @@ Given an OS dependent cli command represented as a string, this function execute
 def tick args
   # execute ls on the current directory in 10 seconds
   if Kernel.tick_count == 600
-    GTK.system "ls ."
+    DR.system "ls ."
   end
 end
 ```
@@ -697,7 +789,7 @@ Given an OS dependent cli command represented as a string, this function execute
 def tick args
   # execute ls on the current directory in 10 seconds
   if Kernel.tick_count == 600
-    results = GTK.exec "ls ."
+    results = DR.exec "ls ."
     puts "The results of the command are:"
     puts results
   end
@@ -737,7 +829,7 @@ def tick args
   if Kernel.tick_count == 0
     # assumes a sprite of size 80x80 and centers the sprite
     # relative to the cursor position.
-    GTK.set_cursor "sprites/square/blue.png", 40, 40
+    DR.set_cursor "sprites/square/blue.png", 40, 40
   end
 end
 ```
@@ -769,7 +861,7 @@ altered and games are built using that starter template.
 
 The following functions give you the ability to interact with the file system.
 
-DragonRuby uses a sandboxed filesystem which will automatically read from and write to a location appropriate for your platform so you don't have to worry about theses details in your code. You can just use `GTK.read_file`, `GTK.write_file`, and `GTK.append_file` with a relative path and the engine will take care of the rest.
+DragonRuby uses a sandboxed filesystem which will automatically read from and write to a location appropriate for your platform so you don't have to worry about theses details in your code. You can just use `DR.read_file`, `DR.write_file`, and `DR.append_file` with a relative path and the engine will take care of the rest.
 
 The data directories that will be written to in a production build are:
 - Windows: `C:\Users\YourWindowsUsername\AppData\Roaming\[devtitle]\[gametitle]`
@@ -806,10 +898,10 @@ This function takes in one parameter. The parameter is the file path and assumes
 
 def tick args
   if args.inputs.mouse.click
-    GTK.write_file "last-mouse-click.txt", "Mouse was clicked at #{Kernel.tick_count}."
+    DR.write_file "last-mouse-click.txt", "Mouse was clicked at #{Kernel.tick_count}."
   end
 
-  file_info = GTK.stat_file "last-mouse-click.txt"
+  file_info = DR.stat_file "last-mouse-click.txt"
 
   if file_info
     args.outputs.labels << {
@@ -840,7 +932,7 @@ This function takes in two parameters. The first parameter is the file path and 
 ```ruby
 def tick args
   if args.inputs.mouse.click
-    GTK.write_file "last-mouse-click.txt", "Mouse was clicked at #{Kernel.tick_count}."
+    DR.write_file "last-mouse-click.txt", "Mouse was clicked at #{Kernel.tick_count}."
   end
 end
 ```
@@ -852,8 +944,8 @@ This function takes in two parameters. The first parameter is the file path and 
 ```ruby
 def tick args
   if args.inputs.mouse.click
-    GTK.append_file "click-history.txt", "Mouse was clicked at #{Kernel.tick_count}.\n"
-    puts GTK.read_file("click-history.txt")
+    DR.append_file "click-history.txt", "Mouse was clicked at #{Kernel.tick_count}.\n"
+    puts DR.read_file("click-history.txt")
   end
 end
 ```
@@ -880,16 +972,16 @@ Notes:
 def tick args
   if args.inputs.keyboard.key_down.w
     # press w to write file
-    GTK.append_file "example-file.txt", "File written at #{Kernel.tick_count}\n"
-    GTK.notify "File written/appended."
+    DR.append_file "example-file.txt", "File written at #{Kernel.tick_count}\n"
+    DR.notify "File written/appended."
   elsif args.inputs.keyboard.key_down.d
     # press d to delete file "unsafely"
-    GTK.delete_file "example-file.txt"
-    GTK.notify "File deleted."
+    DR.delete_file "example-file.txt"
+    DR.notify "File deleted."
   elsif args.inputs.keyboard.key_down.r
     # press r to read file
-    contents = GTK.read_file "example-file.txt"
-    GTK.notify "File contents written to console."
+    contents = DR.read_file "example-file.txt"
+    DR.notify "File contents written to console."
     puts contents
   end
 end
@@ -904,7 +996,7 @@ The following functions help with parsing xml and json.
 Given a json string, this function returns a hash representing the json data.
 
 ```
-hash = GTK.parse_json '{ "name": "John Doe", "aliases": ["JD"] }'
+hash = DR.parse_json '{ "name": "John Doe", "aliases": ["JD"] }'
 # structure of hash: { "name"=>"John Doe", "aliases"=>["JD"] }
 ```
 
@@ -939,7 +1031,7 @@ Returns an object that represents an http response which will eventually have a 
 ```ruby
 def tick args
   # perform an http get and print the response when available
-  args.state.result ||= GTK.http_get "https://httpbin.org/html"
+  args.state.result ||= DR.http_get "https://httpbin.org/html"
 
   if args.state.result && args.state.result[:complete] && !args.state.printed
     if args.state.result[:http_response_code] == 200
@@ -953,7 +1045,7 @@ def tick args
     args.state.printed = true
 
     # show the console
-    GTK.show_console
+    DR.show_console
   end
 end
 ```
@@ -971,7 +1063,7 @@ def tick args
   # perform an http get and print the response when available
 
   args.state.form_fields ||= { "userId" => "#{Time.now.to_i}" }
-  args.state.result ||= GTK.http_post "http://httpbin.org/post",
+  args.state.result ||= DR.http_post "http://httpbin.org/post",
                                            args.state.form_fields,
                                            ["Content-Type: application/x-www-form-urlencoded"]
 
@@ -988,7 +1080,7 @@ def tick args
     args.state.printed = true
 
     # show the console
-    GTK.show_console
+    DR.show_console
   end
 end
 ```
@@ -1006,7 +1098,7 @@ def tick args
   # perform an http get and print the response when available
 
   args.state.json ||= "{ "userId": "#{Time.now.to_i}"}"
-  args.state.result ||= GTK.http_post_body "http://httpbin.org/post",
+  args.state.result ||= DR.http_post_body "http://httpbin.org/post",
                                                 args.state.json,
                                                 ["Content-Type: application/json", "Content-Length: #{args.state.json.length}"]
 
@@ -1023,7 +1115,7 @@ def tick args
     args.state.printed = true
 
     # show the console
-    GTK.show_console
+    DR.show_console
   end
 end
 ```
@@ -1039,7 +1131,7 @@ You can start an in-game http server in production via:
 ```ruby
 def tick args
   # server explicitly enabled in production
-  GTK.start_server! port: 9001, enable_in_prod: true
+  DR.start_server! port: 9001, enable_in_prod: true
 end
 ```
 
@@ -1048,7 +1140,7 @@ Here's how you would respond to http requests:
 ```ruby
 def tick args
   # server explicitly enabled in production
-  GTK.start_server! port: 9001, enable_in_prod: true
+  DR.start_server! port: 9001, enable_in_prod: true
 
   # loop through pending requests and respond to them
   args.inputs.http_requests.each do |request|
@@ -1079,7 +1171,7 @@ To get other values from `mygame/game_metadata.txt`, you can do:
 ```ruby
 def tick args
   if Kernel.tick_count == 0
-    puts GTK.game_version
+    puts DR.game_version
     args.cvars["game_metadata.version"].value
   end
 end
@@ -1095,12 +1187,12 @@ end
 
 # reset the game if this file is hotloaded/required
 # (removes the need to press "r" when I file is updated)
-GTK.reset
+DR.reset
 ```
 
 1.  Resetting iVars (advanced)
 
-    NOTE: `GTK.reset` does not reset global variables or instance of classes you have have constructed. If you want to also reset global variables or instances of classes when `GTK.reset` is called. Define a `reset` method. Here's an example:
+    NOTE: `DR.reset` does not reset global variables or instance of classes you have have constructed. If you want to also reset global variables or instances of classes when `DR.reset` is called. Define a `reset` method. Here's an example:
     
     ```ruby
     class Game
@@ -1118,7 +1210,7 @@ GTK.reset
     
       # if r is pressed on the keyboard, reset the game
       if args.inputs.keyboard.key_down.r
-        GTK.reset
+        DR.reset
       end
     end
     
@@ -1131,17 +1223,17 @@ GTK.reset
 
 2.  `rng_seed` RNG (advanced)
 
-    Optionally, `GTK.reset` can take in a named parameter for RNG called `seed:`. Passing in `seed:` will reset RNG so that `rand` returns a repeatable set of random numbers. This `seed` value is initialized with the start time of your game (`GTK.started_at`). Having this option is is helpful for replays and unit tests.
+    Optionally, `DR.reset` can take in a named parameter for RNG called `seed:`. Passing in `seed:` will reset RNG so that `rand` returns a repeatable set of random numbers. This `seed` value is initialized with the start time of your game (`DR.started_at`). Having this option is is helpful for replays and unit tests.
     
     Don't worry about this capability if you aren't using DragonRuby's unit testing, or replay capabilities.
     
-    Here is the behavior of `GTK.reset` when given a seed:
+    Here is the behavior of `DR.reset` when given a seed:
     
-    -   RNG is seeded initially with the `Time` value of the launch of your game (retrievable via `GTK.started_at`).
-    -   Calling `GTK.reset` will reset your game and re-initialize your RNG with this initial seed value.
-    -   Calling `GTK.reset` with a `:seed` parameter will update the seed value for the current and subsequent resets.
-    -   You can get the value used to seed RNG via `GTK.seed`.
-    -   You can set your RNG seed back to its original value by using `GTK.started_at`.
+    -   RNG is seeded initially with the `Time` value of the launch of your game (retrievable via `DR.started_at`).
+    -   Calling `DR.reset` will reset your game and re-initialize your RNG with this initial seed value.
+    -   Calling `DR.reset` with a `:seed` parameter will update the seed value for the current and subsequent resets.
+    -   You can get the value used to seed RNG via `DR.seed`.
+    -   You can set your RNG seed back to its original value by using `DR.started_at`.
     
     ```ruby
     def tick args
@@ -1154,37 +1246,37 @@ GTK.reset
     end
     
     puts "Started at (RNG seed initial value)"
-    puts GTK.started_at # Time as an integer that your game was started at
+    puts DR.started_at # Time as an integer that your game was started at
     
     puts "Seed value that will be used on reset"
-    puts GTK.seed # current value that RNG was seeded with
+    puts DR.seed # current value that RNG was seeded with
     
     # reset the game and use the last seed to reset RNG
-    GTK.reset
+    DR.reset
     
     # === OR ===
     # sets the seed value to predefined value
     # subsequent resets will use the new predefined value
-    # GTK.reset seed: 100
+    # DR.reset seed: 100
     # (or shorthand)
-    # GTK.reset 100
+    # DR.reset 100
     
     # sets the seed back to its original value
-    # GTK.reset seed: GTK.started_at
+    # DR.reset seed: DR.started_at
     ```
     
     If you want a new RNG seed with every reset while in dev mode:
 
     ```ruby
     # reset is a top-level function that DR is aware of
-    # and will be invoked before GTK.reset occurs.
+    # and will be invoked before DR.reset occurs.
     def reset args
-      # A new rng will be used GTK.reset is invoked
-      GTK.set_rng (Time.now.to_f * 100).to_i
+      # A new rng will be used DR.reset is invoked
+      DR.set_rng (Time.now.to_f * 100).to_i
     end
     ```
 
-    If you want to set RNG without resetting your game state, you can use `GTK.set_rng VALUE`.
+    If you want to set RNG without resetting your game state, you can use `DR.set_rng VALUE`.
 
 ### `reset_next_tick`
 
@@ -1194,13 +1286,13 @@ Has the same behavior as `reset` except the reset occurs before `tick` is execut
 def tick args
   # reset the game if "r" is pressed on the keyboard
   if args.inputs.keyboard.key_down.r
-    GTK.reset_next_tick # use reset_next_tick instead of reset
+    DR.reset_next_tick # use reset_next_tick instead of reset
   end
 end
 
 # reset the game if this file is hotloaded/required
 # (removes the need to press "r" when I file is updated)
-GTK.reset
+DR.reset
 ```
 
 ### `reset_and_replay`
@@ -1212,7 +1304,7 @@ DragonRuby has the ability to record game play that is executed against your cur
 3. Click "Record Gameplay".
 4. Play your game and when you've got a replay you like, press `~` again to stop recording.
 5. The console will be populated with a command to save the replay as `replay.txt`.
-6. You can then put `GTK.reset_and_replay` at the bottom of `main.rb`. Every time you save, the replay will be automatically executed against your current code.
+6. You can then put `DR.reset_and_replay` at the bottom of `main.rb`. Every time you save, the replay will be automatically executed against your current code.
 
 ```ruby
 def tick args
@@ -1220,7 +1312,7 @@ def tick args
 end
 
 # speed parameter can be increased to run the replay at a higher speed
-GTK.reset_and_replay "replay.txt", speed: 1
+DR.reset_and_replay "replay.txt", speed: 1
 ```
 
 ### `reset_sprite`
@@ -1239,7 +1331,13 @@ were reset (default value for `log:` is `true`).
 
 ### `reset_sprites`
 
-Sprites when loaded are cached. This method invalidates the cache record of all sprites so that updates on from the disk can be loaded. This function is automatically called when `GTK.reset` is invoked.
+Sprites when loaded are cached. This method invalidates the cache record of all sprites so that updates on from the disk can be loaded. This function is automatically called when `DR.reset` is invoked.
+
+### `reboot`
+
+Invoking `DR.reboot` will reset your game as if it were started for the first time. Any
+methods that were added to classes during hotload will be removed (leaving you with a pristine
+environment). This function is in a beta state (report issues on the Discord Server).
 
 ### `calcspritebox`
 
@@ -1259,7 +1357,7 @@ Returns a float value representing the framerate of your game. This is an approx
 def tick args
   # render a label to the screen that shows the current framerate
   # formatted as a floating point number with two decimal places
-  args.outputs.labels << { x: 30, y: 30.from_top, text: "#{GTK.current_framerate.to_sf}" }
+  args.outputs.labels << { x: 30, y: 30.from_top, text: "#{DR.current_framerate.to_sf}" }
 end
 ```
 
@@ -1269,7 +1367,7 @@ Returns a set of primitives that can be rendered to the screen which provide mor
 
 ```ruby
 def tick args
-  args.outputs.primitives << GTK.framerate_diagnostics_primitives
+  args.outputs.primitives << DR.framerate_diagnostics_primitives
 end
 ```
 
@@ -1280,7 +1378,7 @@ This function helps you audit your game of usages of array-based primitives. Whi
 ```ruby
 def tick args
   # enable array based primitives warnings
-  GTK.warn_array_primitives!
+  DR.warn_array_primitives!
 
   # array-based primitive elsewhere in code
   # an log message will be posted giving the location of the array
@@ -1312,8 +1410,8 @@ If `seconds` is provided, the winner will be determined by the most completed it
 def tick args
   # press i to run benchmark using iterations
   if args.inputs.keyboard.key_down.i
-    GTK.console.show
-    GTK.benchmark iterations: 1000, # number of iterations
+    DR.console.show
+    DR.benchmark iterations: 1000, # number of iterations
                        # label for experiment
                        using_numeric_map: lambda {
                          # experiment body
@@ -1333,8 +1431,8 @@ def tick args
 
   # press s to run benchmark using seconds
   if args.inputs.keyboard.key_down.s
-    GTK.console.show
-    GTK.benchmark seconds: 1, # number of seconds to run each experiment
+    DR.console.show
+    DR.benchmark seconds: 1, # number of seconds to run each experiment
                        # label for experiment
                        using_numeric_map: lambda {
                          # experiment body
@@ -1363,12 +1461,12 @@ An optional parameter of duration (number value representing ticks) can also be 
 ```ruby
 def tick args
   if args.inputs.mouse.click
-    GTK.notify! "Mouse was clicked!"
+    DR.notify! "Mouse was clicked!"
   end
 
   if args.inputs.keyboard.key_down.r
     # optional duration parameter
-    GTK.notify! "R key was pressed!", 600 # present message for 10 seconds/600 frames
+    DR.notify! "R key was pressed!", 600 # present message for 10 seconds/600 frames
   end
 end
 ```
@@ -1380,7 +1478,7 @@ Has similar behavior as notify! except you have additional options to show messa
 ```ruby
 def tick args
   if args.inputs.mouse.click
-    GTK.notify_extended! message: "message",
+    DR.notify_extended! message: "message",
                               duration: 300,
                               env: :prod
   end
@@ -1393,10 +1491,10 @@ Given a numeric value representing the factor of 60fps. This function will bring
 
 ```ruby
 def tick args
-  # set your simulation speed to (15 fps): GTK.slowmo! 4
-  # set your simulation speed to (1 fps): GTK.slowmo! 60
+  # set your simulation speed to (15 fps): DR.slowmo! 4
+  # set your simulation speed to (1 fps): DR.slowmo! 60
   # set your simulation speed to (30 fps):
-  GTK.slowmo! 2
+  DR.slowmo! 2
 end
 ```
 
@@ -1416,11 +1514,11 @@ Enables the DragonRuby Console so that it can be presented by pressing the tilde
 
 ### `disable_console`
 
-Disables the DragonRuby Console so that it won't show up even if you press the tilde key or call `GTK.show_console`.
+Disables the DragonRuby Console so that it won't show up even if you press the tilde key or call `DR.show_console`.
 
 ### `disable_reset_via_ctrl_r`
 
-By default, pressing `CTRL+R` invokes `GTK.reset_next_tick` (safely resetting your game with a convenient key combo).
+By default, pressing `CTRL+R` invokes `DR.reset_next_tick` (safely resetting your game with a convenient key combo).
 
 If you want to disable this behavior, add the following to the `main.rb`:
 
@@ -1429,18 +1527,18 @@ def tick args
   ...
 end
 
-GTK.disable_reset_via_ctrl_r
+DR.disable_reset_via_ctrl_r
 ```
 
-NOTE: `GTK.disable_console` will also disable the `CTRL+R` reset behavior.
+NOTE: `DR.disable_console` will also disable the `CTRL+R` reset behavior.
 
 ### `disable_controller_config`
 
-DragonRuby has a built-in controller configuration/mapping wizard. You can disable this wizard by adding `GTK.disable_controller_config` at the top of main.rb.
+DragonRuby has a built-in controller configuration/mapping wizard. You can disable this wizard by adding `DR.disable_controller_config` at the top of main.rb.
 
 ### `enable_controller_config`
 
-DragonRuby has a built-in controller configuration/mapping wizard. You can re-enable this wizard by adding `GTK.enable_controller_config` at the top of main.rb (this is enabled by default).
+DragonRuby has a built-in controller configuration/mapping wizard. You can re-enable this wizard by adding `DR.enable_controller_config` at the top of main.rb (this is enabled by default).
 
 ### `start_recording`
 
@@ -1519,16 +1617,16 @@ end
 # option 1:
 # source code will be downloaded from the specified GitHub url, and saved locally with a
 # predefined folder convention.
-GTK.download_lib "https://github.com/xenobrain/ruby_vectormath/blob/main/vectormath_2d.rb"
+DR.download_lib "https://github.com/xenobrain/ruby_vectormath/blob/main/vectormath_2d.rb"
 
 # option 2:
 # source code will be downloaded from the specified GitHub username, repository, and file.
 # code will be saved locally with a predefined folder convention.
-GTK.download_lib "xenobrain", "ruby_vectormath", "vectormath_2d.rb"
+DR.download_lib "xenobrain", "ruby_vectormath", "vectormath_2d.rb"
 
 # option 3:
 # source code will be downloaded from a direct/raw url and saved to a direct/raw local path.
-GTK.download_lib_raw "https://raw.githubusercontent.com/xenobrain/ruby_vectormath/main/vectormath_2d.rb",
+DR.download_lib_raw "https://raw.githubusercontent.com/xenobrain/ruby_vectormath/main/vectormath_2d.rb",
                      "lib/xenobrain/ruby_vectionmath/vectormath_2d.rb"
 ```
 
@@ -1540,7 +1638,7 @@ Returns a `Hash` representing the code files that have be loaded for your game a
 def tick args
   # every second print the reload history
   if Kernel.tick_count % 60 == 0
-    puts GTK.reload_history
+    puts DR.reload_history
   end
 end
 ```
@@ -1561,7 +1659,7 @@ If you need to hunt down rogue `puts` statements in your code do:
 def tick args
   # adding the following line to the TOP of your tick method
   # will print ~caller~ along side each ~puts~ statement
-  GTK.trace_puts!
+  DR.trace_puts!
 end
 ```
 
@@ -1577,7 +1675,7 @@ Here's how you can explicitly display the thermal state on the screen:
 def tick args
   args.outputs.labels << { x: Grid.w / 2,
                            y: Grid.h / 2,
-                           text: "thermal state: #{GTK.current_thermal_state || :unknown}",
+                           text: "thermal state: #{DR.current_thermal_state || :unknown}",
                            r: 255,
                            g: 255,
                            b: 255,
@@ -1628,7 +1726,7 @@ Entity cast to a `Hash` so you can update values as if you were updating a `Hash
 
 ## `tick_count`
 
-Returns the current tick of the game. `Kernel.tick_count` is `0` when the game is first started or if the game is reset via `GTK.reset`.
+Returns the current tick of the game. `Kernel.tick_count` is `0` when the game is first started or if the game is reset via `DR.reset`.
 
 # `Kernel`
 
@@ -1636,7 +1734,7 @@ Kernel in the DragonRuby Runtime has patches for how standard out is handled and
 
 ## `tick_count`
 
-Returns the current tick of the game. This value is reset if you call GTK.reset.
+Returns the current tick of the game. This value is reset if you call DR.reset.
 
 ## `global_tick_count`
 

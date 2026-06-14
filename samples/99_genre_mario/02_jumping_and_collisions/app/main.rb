@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   def tick
     defaults
@@ -172,13 +172,13 @@ class Game
                   y: b.y + 2,
                   size_enum: -3,
                   vertical_alignment_enum: 0,
-                  blendmode_enum: 0),
+                  blendmode: 0),
           b.merge(text: "#{b.x},#{b.y}",
                   x: b.x + 2,
                   y: b.y + 2 + 20,
                   size_enum: -3,
                   vertical_alignment_enum: 0,
-                  blendmode_enum: 0)
+                  blendmode: 0)
         ]
       end
     end
@@ -222,4 +222,4 @@ def tick args
   $game.tick
 end
 
-GTK.reset
+DR.reset

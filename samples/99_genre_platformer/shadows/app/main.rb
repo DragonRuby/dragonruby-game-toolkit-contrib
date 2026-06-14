@@ -2,10 +2,10 @@
 # this is the core game class. the game is
 # pretty small so this is the only class that was created
 class Game
-  # attr_gtk is a ruby class macro (mixin) that
+  # attr_dr is a ruby class macro (mixin) that
   # adds the .args, .inputs, .outputs, and .state
   # properties to a class
-  attr_gtk
+  attr_dr
 
   # this is the main tick method that
   # will be called every frame
@@ -795,4 +795,4 @@ def reset args
   $game = nil
 end
 
-GTK.reset_and_replay "replay.txt", speed: 1
+DR.reset_and_replay "replay.txt", speed: 1

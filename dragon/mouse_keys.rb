@@ -229,7 +229,7 @@ module GTK
       # buffered held returns true if the held duration is greater than 12
       # or if the distance between the previous mouse location and the current
       # mouse location is greater than 10
-      if held && held_duration > 1
+      if held && held_duration > 1 && @previous_click
         if (Geometry.distance(self, @previous_click) >= 10 || held_duration >= buffered_duration_threshold)
           @buffered_held ||= MousePoint.new @x, @y
           @buffered_held.x = @x

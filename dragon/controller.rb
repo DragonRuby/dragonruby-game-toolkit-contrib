@@ -102,16 +102,32 @@ module GTK
       @key_down.up || @key_held.up
     end
 
+    def up_dpad
+      @key_down.up_dpad || @key_held.up_dpad
+    end
+
     def down
       @key_down.down || @key_held.down
+    end
+
+    def down_dpad
+      @key_down.down_dpad || @key_held.down_dpad
     end
 
     def left
       @key_down.left || @key_held.left
     end
 
+    def left_dpad
+      @key_down.left_dpad || @key_held.left_dpad
+    end
+
     def right
       @key_down.right || @key_held.right
+    end
+
+    def right_dpad
+      @key_down.right_dpad || @key_held.right_dpad
     end
 
     # Activates a key into the down position.
@@ -164,34 +180,74 @@ module GTK
       last_directional_vector&.y&.sign || 0
     end
 
+    def directional_vector_left
+      directional_vector_left_analog || directional_vector_dpad
+    end
+
+    def directional_vector_right
+      directional_vector_right_analog || directional_vector_buttons
+    end
+
+    def directional_vector_buttons
+      lr = if self.w
+             -1
+           elsif self.e
+             1
+           else
+             0
+           end
+
+      ud = if self.s
+             -1
+           elsif self.n
+             1
+           else
+             0
+           end
+
+      Geometry.vec2_normalize(x: lr, y: ud)
+    end
+
     def directional_vector
-      lr = if self.left && self.right && self.last_left_right != 0
-             last_left_right
-           elsif self.left
-             -1
-           elsif self.right
-             1
-           else
-             0
-           end
+      __directional_vector__ self.left,
+                             self.right,
+                             self.up,
+                             self.down,
+                             self.last_left_right,
+                             self.last_up_down
+    end
 
-      ud = if self.up && self.down && last_up_down != 0
-             last_up_down
-           elsif self.up
-             1
-           elsif self.down
-             -1
-           else
-             0
-           end
+    def directional_vector_dpad
+      __directional_vector__ self.left_dpad,
+                             self.right_dpad,
+                             self.up_dpad,
+                             self.down_dpad,
+                             0,
+                             0
+    end
 
-      if lr == 0 && ud == 0
-        return nil
-      elsif lr.abs == ud.abs
-        return { x: 45.vector_x * lr.sign, y: 45.vector_y * ud.sign }
-      else
-        return { x: lr, y: ud }
-      end
+    def directional_vector_left_analog
+      Geometry.vec2_normalize(x: left_analog_x_perc, y: left_analog_y_perc)
+    end
+
+    def directional_vector_left_analog_cardinal
+      return nil if left_analog_x_raw == 0 && left_analog_y_raw == 0
+
+      angle = Math.atan2(left_analog_y_perc, left_analog_x_perc).to_degrees
+
+      Geometry.angle_cardinal_vec2 angle
+    end
+
+    def directional_vector_right_analog
+      Geometry.vec2_normalize(x: right_analog_x_perc, y: right_analog_y_perc)
+    end
+
+    def directional_vector_right_analog_cardinal
+      return nil if right_analog_x_raw == 0 && right_analog_y_raw == 0
+
+      angle = Math.atan2(right_analog_y_perc, right_analog_x_perc).to_degrees
+
+      Geometry.angle_cardinal_vec2 angle
     end
 
     def directional_angle
@@ -277,6 +333,53 @@ module GTK
           return true
         end
       end
+    end
+
+    def __directional_vector__ l, r, u, d, last_lr, last_ud
+      # if both left right keys are held, then return last left right key
+      lr = if l && r && last_lr != 0
+             last_lr
+           elsif l
+             -1
+           elsif r
+             1
+           else
+             0
+           end
+
+      # if both up down keys are held, then return last up down key
+      ud = if u && d && last_ud != 0
+             last_ud
+           elsif u
+             1
+           elsif d
+             -1
+           else
+             0
+           end
+
+      if lr == 0 && ud == 0
+        return nil
+      elsif lr.abs == ud.abs
+        return { x: 45.vector_x * lr.sign, y: 45.vector_y * ud.sign }
+      else
+        return { x: lr, y: ud }
+      end
+    end
+
+    # VR (needs to be reworked if/when Steam Frame comes out)
+    def left_hand
+      @left_hand  ||= {
+        position: { x: 0, y: 0, z: 0 },
+        orientation: { x: 0, y: 0, z: 0 }
+      }
+    end
+
+    def right_hand
+      @right_hand ||= {
+        position: { x: 0, y: 0, z: 0 },
+        orientation: { x: 0, y: 0, z: 0 }
+      }
     end
   end
 end

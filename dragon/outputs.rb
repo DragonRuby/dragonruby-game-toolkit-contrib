@@ -78,21 +78,12 @@ module GTK
     end
 
     def __push__ other
-      $perf_counter_outputs_push_count += 1
-      return self if !other
-      if other.is_a? Hash
-        return add_dwim other
-      elsif other.is_a? Array
-        return add_dwim other
-      elsif !other.is_a? Enumerable
-        return add_dwim other
-      else
-        return add_dwim other.to_a
-      end
+      return add_dwim other
     end
 
     alias_method :<<, :__push__
     alias_method :push, :__push__
+    alias_method :push_back, :__push__
   end
 
   module WatchLabels
@@ -485,6 +476,7 @@ module GTK
     end
 
     def background_color= value
+      return if !value
       return if value == @background_color || value == @background_color_as_hash
 
       value_as_array = value
@@ -532,6 +524,16 @@ S
       b ||= 230
       a ||= 255
       [r, g, b, a]
+    end
+
+    def background_color_h
+      r, g, b, a = background_color
+      {
+        r: r,
+        g: g,
+        b: b,
+        a: a,
+      }
     end
 
     def clear_before_render= value
@@ -905,14 +907,21 @@ S
     def audio
       @args.audio
     end
+
+    def set background_color: nil
+      self.background_color = background_color if background_color
+    end
   end
 
   class RenderTargets
     include Enumerable
 
+    attr :global_last_changed_at
+
     attr_reader :__data__
 
     def initialize args
+      @global_last_changed_at = 0
       @args = args
       @__data__ = {}
     end
@@ -930,7 +939,7 @@ S
     end
 
     def each(&block)
-      @___data__.each(&data)
+      @___data__.each(&block)
     end
   end
 
@@ -1008,6 +1017,13 @@ S
     def reset
       super
       @render_targets.clear
+    end
+
+    def set w: nil, h: nil, background_color: nil, clear_before_render: nil
+      self.w = w if w
+      self.h = h if h
+      self.background_color = background_color if background_color
+      self.clear_before_render = clear_before_render if !clear_before_render.nil?
     end
   end
 end

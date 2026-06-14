@@ -23,11 +23,17 @@ module GTK
           log_info "--record switch found. Recording will be started with a seed value of #{seed} (--seed)."
           start_recording seed.to_i
         elsif cli_arguments.keys.include? :replay
-          if Kernel.global_tick_count >=0
+          # if a replay switch is passed in via startup,
+          # then capture the value in @argsv_replay_args so that it can
+          # be executed at the same point in time that a replay would occur if started
+          # from the console. We need to do this so that RNG is reset the same way
+          # regardless of if replay was kicked off from the console or from cli.
+          # proof: shadows sample app generates lights in a different place if we kick the
+          #        replay off via the cli (vs doing it via the console)
+          if Kernel.global_tick_count >= 0
             @argsv_processed = true
             replay = cli_arguments[:replay] || "last_replay.txt"
-            log_info "--replay switch found. Replay will be started using file [#{replay}] (--replay FILENAME) with replay speed [#{@simulation_speed}] (--speed SPEED)."
-            start_replay replay, speed: @simulation_speed
+            @argsv_replay_args = { simulation_speed: (cli_arguments[:speed] || "1").to_i, replay: replay }
           end
         elsif cli_arguments.keys.include? :eval
           @argsv_processed = true

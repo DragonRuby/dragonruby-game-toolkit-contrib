@@ -1,5 +1,5 @@
 class RootScene
-  attr_gtk
+  attr_dr
 
   attr :level_editor
 

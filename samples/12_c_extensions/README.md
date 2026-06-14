@@ -83,8 +83,8 @@ clang -shared \
 Now, somewhere within `main.rb` do the following:
 
 ```rb
-# Teach DRGTK about the bindings
-GTK.ffi_misc.dlopen("bindings")
+# Teach DRDR about the bindings
+DR.ffi_misc.dlopen("bindings")
 # Use the `square` function seamlessly
 puts FFI::CExt::square(42)
 # yeilds: 1764.0
@@ -99,7 +99,7 @@ Now, more complex parts.
 It is a good idea to include `dragonruby.h` into the C bridging file. It comes with
 a number of helpful macros. As an example, you can specify for which functions
 to generate bindings or change the name under which the function is available from
-DRGTK:
+DRDR:
 
 ```c
 #include <dragonruby.h>
@@ -128,7 +128,7 @@ third-party libraries._
 
 ### Structs
 
-It is possible to use C structs from DRGTK. Here is a C example and its
+It is possible to use C structs from DRDR. Here is a C example and its
 corresponding usage from Ruby.
 
 ```c
@@ -156,7 +156,7 @@ Point fourtyPoint() {
 Here is how to use it in the Ruby code:
 
 ```ruby
-GTK.ffi_misc.gtk_dlopen("bindings")
+DR.ffi_misc.gtk_dlopen("bindings")
 include FFI::CExt
 p = Point.new
 p.x = 15
@@ -208,7 +208,7 @@ void free_ints(int *ints) {
 The usage:
 
 ```rb
-GTK.ffi_misc.gtk_dlopen("bindings")
+DR.ffi_misc.gtk_dlopen("bindings")
 include FFI::CExt
 ints = createInts(10)
 10.times do |i|
@@ -237,7 +237,7 @@ it should be deallocated in the C land. It is a responsibility of developer to
 take care of this memory.
 
 In the case of `IntPointer.new` the pointer is allocated in the Ruby land, and
-therefore it will be deallocated by DRGTK, without any need to worry about the
+therefore it will be deallocated by DRDR, without any need to worry about the
 ownership.
 
 ### C Strings
@@ -279,7 +279,7 @@ char *getStaticString() {
 Usage:
 
 ```rb
-GTK.ffi_misc.gtk_dlopen("bindings")
+DR.ffi_misc.gtk_dlopen("bindings")
 include FFI::CExt
 s1 = allocateString()
 printString(s1)

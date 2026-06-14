@@ -2,9 +2,9 @@
 # W to move forward, A to strafe left, D to strafe right
 # Q to turn left, E to turn right
 
-# Top level game with attr_gtk macro so we're not having to pass args everywhere
+# Top level game with attr_dr macro so we're not having to pass args everywhere
 class Game
-  attr_gtk
+  attr_dr
 
   def initialize
     # on initialization put the player in the center of the world
@@ -233,4 +233,4 @@ def reset args
   $game = nil
 end
 
-GTK.reset
+DR.reset

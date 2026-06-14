@@ -11,7 +11,7 @@ def tick args
 
   # cycle between labels in top level args.outputs
   # and labels inside of render target
-  if Kernel.tick_count.zmod? 300
+  if Kernel.tick_count.zmod? 60
     if args.state.output_cycle == :top_level
       args.state.output_cycle = :render_target
     else
@@ -23,10 +23,10 @@ def tick args
   if args.inputs.keyboard.key_down.space
     if args.state.window_scale == 1
       args.state.window_scale = 2
-      GTK.set_window_scale 2
+      DR.set_window_scale 2
     else
       args.state.window_scale = 1
-      GTK.set_window_scale 1
+      DR.set_window_scale 1
     end
   end
 end
@@ -53,7 +53,7 @@ def render_main args
 end
 
 def render_scene args
-  args.outputs[:scene].background_color = [255, 255, 255, 0]
+  args.outputs[:scene].background_color = [255, 255, 255, 255]
 
   # center line
   args.outputs[:scene].lines   << { x:   0, y: 360, x2: 1280, y2: 360 }
@@ -67,12 +67,12 @@ def render_scene args
   args.outputs[:scene].lines   << { x:  575, y: 0, x2: 575, y2: 720 }
   args.outputs[:scene].lines   << { x:  701, y: 0, x2: 701, y2: 720 }
 
-  args.outputs[:scene].sprites << { x: 640 - 50, y: 360 - 50, w: 100, h: 100, path: "sprites/square/blue.png", a: 128, blendmode_enum: 0 }
-  args.outputs[:scene].labels  << { x:  640, y:   0, text: "(bottom)",      alignment_enum: 1, vertical_alignment_enum: 0, blendmode_enum: 0 }
-  args.outputs[:scene].labels  << { x:  640, y: 425, text: "render target", alignment_enum: 1, vertical_alignment_enum: 1, blendmode_enum: 0 }
-  args.outputs[:scene].labels  << { x:  640, y: 720, text: "(top)",         alignment_enum: 1, vertical_alignment_enum: 2, blendmode_enum: 0 }
-  args.outputs[:scene].labels  << { x:    0, y: 360, text: "(left)",        alignment_enum: 0, vertical_alignment_enum: 1, blendmode_enum: 0 }
-  args.outputs[:scene].labels  << { x: 1280, y: 360, text: "(right)",       alignment_enum: 2, vertical_alignment_enum: 1, blendmode_enum: 0 }
+  args.outputs[:scene].sprites << { x: 640 - 50, y: 360 - 50, w: 100, h: 100, path: "sprites/square/blue.png", a: 128, blendmode: 0 }
+  args.outputs[:scene].labels  << { x:  640, y:   0, text: "(bottom)",      alignment_enum: 1, vertical_alignment_enum: 0, blendmode: 0 }
+  args.outputs[:scene].labels  << { x:  640, y: 425, text: "render target", alignment_enum: 1, vertical_alignment_enum: 1, blendmode: 0 }
+  args.outputs[:scene].labels  << { x:  640, y: 720, text: "(top)",         alignment_enum: 1, vertical_alignment_enum: 2, blendmode: 0 }
+  args.outputs[:scene].labels  << { x:    0, y: 360, text: "(left)",        alignment_enum: 0, vertical_alignment_enum: 1, blendmode: 0 }
+  args.outputs[:scene].labels  << { x: 1280, y: 360, text: "(right)",       alignment_enum: 2, vertical_alignment_enum: 1, blendmode: 0 }
 
   args.outputs.sprites << { x: 0, y: 0, w: 1280, h: 720, path: :scene }
 end

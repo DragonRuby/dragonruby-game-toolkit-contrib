@@ -2,7 +2,7 @@
 
 !> It's strongly recommended that you do NOT keep DragonRuby Game Toolkit in a shared location and
 instead unzip a clean copy for every game (and commit everything to source control). <br/> <br/>
-File access functions are sandoxed and assume that the `dragonruby` binary lives alongside
+File access functions are sandboxed and assume that the `dragonruby` binary lives alongside
 the game you are building. Do not expect file access functions to return correct values if you are attempting
 to run the `dragonruby` binary from a shared location. It's recommended that the directory
 structure contained in the zip is not altered and games are built using that starting directory structure.
@@ -15,8 +15,8 @@ channel!
 
 Log into Itch.io and go to <https://itch.io/game/new>.
 
--   Title: Give your game a Title. This value represents your \`gametitle\`.
--   Project URL: Set your project url. This value represents your \`gameid\`.
+-   Title: Give your game a Title. This value represents your `gametitle`.
+-   Project URL: Set your project url. This value represents your `gameid`.
 -   Classification: Keep this as Game.
 -   Kind of Project: Select HTML from the drop down list. Don't worry,
     the HTML project type <span class="underline">also supports binary downloads</span>.
@@ -63,10 +63,16 @@ binaries. You can upload this to Itch.io manually.
 
 For the HTML version of your game, the following configuration is required for your game to run correctly:
 
--   Check the checkbox labeled `This file will be played in the browser` for the html version of your game (it's one of the zip files you'll upload).
--   Ensure that `Embed options -> SharedArrayBuffer support` is checked.
--   Be sure to set the `Viewport dimensions` to `1280x720` for landscape games or your game will not be positioned correctly on your Itch.io page.
--   Be sure to set the `Viewport dimensions` to `540x960` for portrait games or your game will not be positioned correctly on your Itch.io page.
+- Check the checkbox labeled **"This file will be played in the browser"** for the html version of your game (it's one of the zip files you'll upload).
+- Ensure that **"Embed options -> SharedArrayBuffer support"** is checked.
+- Set the **"Viewport dimensions"** to **960x540** for **landscape**.
+- Set the **"Viewport dimensions"** to **540x960** for **portrait**.
+- Ensure that **"Fullscreen button"** is checked.
+
+?> On the first creation of your game page, Itch may not
+save your Embed options (it was a bug in the past and may have been
+fixed). So after the initial creation of your game page, **be sure and
+double check that the Embed options denoted above were correctly saved**.
 
 For subsequent updates you can use an automated deployment to Itch.io:
 
@@ -79,6 +85,23 @@ friends to go to your game's very own webpage and buy it!
 
 If you make changes to your game, just re-run dragonruby-publish and it'll
 update the downloads for you.
+
+### Audio
+
+It's important that your audio files are encoded correctly. Be sure to
+run your audio files through `ffmpeg` and re-encode them. `ogg` for
+audio is recomended because of its file size. It's strongly
+recommended that you convert all sound files to `ogg`, especially for
+web builds (`wav` files are much much larger).
+
+```
+# re-encode ogg
+ffmpeg -i ./mygame/sounds/SOUND.ogg -ac 2 -b:a 160k -ar 44100 -acodec libvorbis ./mygame/sounds/SOUND-converted.ogg
+mv ./mygame/sounds/SOUND-converted.ogg ./mygame/sounds/SOUND.ogg
+
+# convert wav to ogg
+ffmpeg -i ./mygame/sounds/SOUND.wav -ac 2 -b:a 160k -ar 44100 -acodec libvorbis ./mygame/sounds/SOUND.ogg
+```
 
 ### Consider Adding Pause When Game is In Background
 

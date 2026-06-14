@@ -5,7 +5,7 @@ def boot args
 end
 
 def default args
-  args.outputs.watch GTK.current_framerate
+  args.outputs.watch DR.current_framerate
   args.outputs.labels << { x: 0,
                            y: 30.from_top,
                            text: "W,A,S,D to move. Mouse to look.",
@@ -273,4 +273,4 @@ def new_random_cube
   cube
 end
 
-GTK.reset
+DR.reset

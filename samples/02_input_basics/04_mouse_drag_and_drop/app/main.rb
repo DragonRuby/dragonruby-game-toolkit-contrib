@@ -66,6 +66,6 @@ def tick args
   end
 end
 
-GTK.recording.on_replay_completed_successfully do |args|
+DR.recording.on_replay_completed_successfully do |args|
   raise "Square was not in the right place" if args.state.squares[2].x.floor != 746
 end

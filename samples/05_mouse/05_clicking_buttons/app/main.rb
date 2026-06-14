@@ -74,4 +74,4 @@ def create_button args, id:, row:, col:, text:;
   }
 end
 
-GTK.reset
+DR.reset

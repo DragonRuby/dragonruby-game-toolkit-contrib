@@ -411,7 +411,7 @@ development tools like level editors.
 For more details on the implementation of the sandboxed filesystem, see Ryan
 C. Gordon's PhysicsFS documentation: [[https://icculus.org/physfs/]]
 
-IMPORTANT: File access functions are sandoxed and assume that the
+IMPORTANT: File access functions are sandboxed and assume that the
 ~dragonruby~ binary lives alongside the game you are building. Do not
 expect file access functions to return correct values if you are attempting
 to run the ~dragonruby~ binary from a shared location. It's

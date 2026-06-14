@@ -13,7 +13,7 @@ module GTK
       reinitialize w, h, aspect_ratio_w, aspect_ratio_h, orientation
     end
 
-    def tick_after left, bottom, w, h, aspect_ratio_w, aspect_ratio_h, orientation, origin_name
+    def tick_before left, bottom, w, h, aspect_ratio_w, aspect_ratio_h, orientation, origin_name
       if @grid_origin_name != origin_name
         @debug_primitives = nil
         @debug_primitives_allscreen = nil
@@ -71,6 +71,10 @@ module GTK
 
       @safe_area_bottom_right_dx = (w - rect(row: 0, col: 0, w: @col_count, h: 1).w).idiv(2) - @gutter
       @safe_area_bottom_right_dy = (h - rect(row: 0, col: 0, w: 1, h: @row_count).h).idiv(2) - @gutter
+    end
+
+    def allscreen_rect(*ignore_splat, **kwargs)
+      rect(*ignore_splat, **{ **kwargs, allscreen: true })
     end
 
     def rect(*ignore_splat,
@@ -469,7 +473,7 @@ module GTK
       { x: target.x - delta_x, y: target.y - delta_y, w: reference.w, h: reference.h }
     end
 
-    def __debug_primitives_crosshair__(allscreen:)
+    def __debug_primitives_crosshair__(color:, allscreen:)
       dx = allscreen ? Grid.allscreen_offset_x : 0
       dy = allscreen ? Grid.allscreen_offset_y : 0
       [
@@ -483,18 +487,20 @@ module GTK
           anchor_x: 0.5,
           anchor_y: 0.5,
           r: 200, g: 200, b: 200,
+          a: color.a,
           path: :solid,
         },
         {
           id: :crosshair_diagonal_bottom_left_to_top_right,
           x: @left + Grid.w / 2 + dx,
           y: @bottom + Grid.h / 2 + dy,
-          w: Grid.w * 2,
+          w: Grid.h * 2,
           h: gutter,
           angle: 45,
           anchor_x: 0.5,
           anchor_y: 0.5,
           r: 200, g: 200, b: 200,
+          a: color.a,
           path: :solid,
         },
         {
@@ -506,7 +512,8 @@ module GTK
           anchor_x: 0.5,
           anchor_y: 0.5,
           path: :solid,
-          r: 128, g: 128, b: 128
+          r: 128, g: 128, b: 128,
+          a: color.a,
         },
         {
           id: :crosshair_right,
@@ -517,7 +524,8 @@ module GTK
           anchor_x: 0.5,
           anchor_y: 0.5,
           path: :solid,
-          r: 128, g: 128, b: 128
+          r: 128, g: 128, b: 128,
+          a: color.a,
         },
         {
           id: :crosshair_bottom,
@@ -528,7 +536,8 @@ module GTK
           anchor_x: 0.5,
           anchor_y: 0.5,
           path: :solid,
-          r: 128, g: 128, b: 128
+          r: 128, g: 128, b: 128,
+          a: color.a,
         },
         {
           id: :crosshair_top,
@@ -539,12 +548,13 @@ module GTK
           anchor_x: 0.5,
           anchor_y: 0.5,
           path: :solid,
-          r: 128, g: 128, b: 128
+          r: 128, g: 128, b: 128,
+          a: color.a,
         },
       ]
     end
 
-    def __debug_primitives_seperators__(allscreen:)
+    def __debug_primitives_seperators__(color:, allscreen:)
       dx          = allscreen ? Grid.allscreen_offset_x : 0
       dy          = allscreen ? Grid.allscreen_offset_y : 0
       single_cell = rect row: row_count - 1, col: 0, w: 1, h: 1
@@ -563,6 +573,7 @@ module GTK
                                  r: 200,
                                  g: 200,
                                  b: 200,
+                                 a: color.a,
                                  anchor_x: 0.5 }
       two_quarter_vertical   = { id: :two_quarter_vertical,
                                  x: Layout.rect(col: @col_count.idiv(4) * 2, dx: dx).x - @gutter / 2,
@@ -573,6 +584,7 @@ module GTK
                                  r: 128,
                                  g: 128,
                                  b: 128,
+                                 a: color.a,
                                  anchor_x: 0.5 }
       three_quarter_vertical = { id: :three_quarter_vertical,
                                  x: Layout.rect(col: @col_count.idiv(4) * 3, dx: dx).x - @gutter / 2,
@@ -583,6 +595,7 @@ module GTK
                                  r: 200,
                                  g: 200,
                                  b: 200,
+                                 a: color.a,
                                  anchor_x: 0.5}
 
       one_quarter_horizontal = { id: :one_quarter_horizontal,
@@ -594,6 +607,7 @@ module GTK
                                  r: 200,
                                  g: 200,
                                  b: 200,
+                                 a: color.a,
                                  anchor_y: 0.5 }
 
       two_quarter_horizontal = { id: :two_quarter_horizontal,
@@ -605,6 +619,7 @@ module GTK
                                  r: 128,
                                  g: 128,
                                  b: 128,
+                                 a: color.a,
                                  anchor_y: 0.5 }
 
       three_quarter_horizontal = { id: :three_quarter_horizontal,
@@ -616,6 +631,7 @@ module GTK
                                    r: 200,
                                    g: 200,
                                    b: 200,
+                                   a: color.a,
                                    anchor_y: 0.5 }
 
       single_cell_border = { id: :single_cell_border, **safe_area, primitive_marker: :border }
@@ -667,11 +683,11 @@ module GTK
       single_cell_label_bottom = { id: :single_cell_label_bottom,
                                    x: safe_area.center.x + dx,
                                    y: @bottom + 0 + 14 + dy,
-                                   text: "To invert colors use Layout.debug_primitives(invert_colors: true)",
+                                   text: "To invert colors and/or change opacity use Layout.debug_primitives(invert_colors: true, a: 255)",
                                    anchor_x: 0.5,
                                    anchor_y: 0.5,
                                    r: 255, g: 255, b: 255, a: 255,
-                                   size_px: 18 }
+                                   size_px: 16 }
 
       [one_quarter_horizontal,
        two_quarter_horizontal,
@@ -732,15 +748,15 @@ module GTK
 
     def __debug_primitives__(color:, allscreen:)
       __debug_primitives_cell_prefabs__(color: color, allscreen: allscreen) +
-      __debug_primitives_crosshair__(allscreen: allscreen) +
-      __debug_primitives_seperators__(allscreen: allscreen)
+      __debug_primitives_crosshair__(color: color, allscreen: allscreen) +
+      __debug_primitives_seperators__(color: color, allscreen: allscreen)
     end
 
-    def debug_primitives(invert_colors: false, allscreen: false)
+    def debug_primitives(invert_colors: false, allscreen: false, a: 255)
       color = if invert_colors
-                { r: 255, g: 255, b: 255 }
+                { r: 255, g: 255, b: 255, a: a }
               else
-                { r: 0, g: 0, b: 0 }
+                { r: 0, g: 0, b: 0, a: a }
               end
 
       @debug_primitives_colors ||= color

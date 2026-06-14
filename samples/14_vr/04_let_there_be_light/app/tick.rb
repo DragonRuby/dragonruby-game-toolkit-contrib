@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   def tick
     grid.origin_center!
@@ -101,4 +101,4 @@ def tick_game args
   $game.tick
 end
 
-GTK.reset
+DR.reset

@@ -236,7 +236,7 @@ end
 # def test_string_split_benchmark args, assert
 #   contents = "846,360,25,50,orange,1,sprites/bricks/orange_brick.png,v"
 
-#   GTK.benchmark seconds: 1, # number of seconds to run each experiment
+#   DR.benchmark seconds: 1, # number of seconds to run each experiment
 #                             # label for experiment
 #                 split: -> () {
 #                   # experiment body

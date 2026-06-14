@@ -304,6 +304,25 @@ Here are all the properties that you can set on a sprite. The only required ones
 - `h`: The render height.
 - `path`: The path of the sprite relative to the game folder.
 
+<div class="tip">
+  IMPORTANT NOTE wrt sprite's <code>path</code> property:
+  <br/>
+  To ensure your files are accessible regardless of the platform your game is running on, <b>your file names and directories should <u>NOT</u> contain whitespace, <u>NOR</u> capital letters</b>.
+  <br/>
+  <br/>
+  <b>ONLY</b> use lowercase letters (special characters such as <code>_</code>, <code>-</code>, <code>@</code>, <code>.</code> are okay to use).
+  <br/>
+  Examples:
+  <br/>
+  <ul>
+  <li>BAD:&nbsp;&nbsp;&nbsp;&nbsp;<code>./Map Data/World1.json</code></li>
+  <li>GOOD: <code>./map-data/world1.json</code></li>
+  <li>BAD:&nbsp;&nbsp;&nbsp;&nbsp;<code>./Sprites/Player/Jump Action.png</code></li>
+  <li>GOOD: <code>./sprites/player/jump-action.png</code></li>
+  </ul>
+</div>
+
+
 #### Anchors and Rotations
 
 - `flip_horizontally`: This value can be either `true` or `false` and controls if the sprite will be flipped horizontally (default value is false).
@@ -357,13 +376,88 @@ See the sample apps under `./samples/03_rendering_sprites` for examples of how t
 - `r`: Level of red saturation for the sprite (default value is 255). Example: Setting the value to zero will remove all red coloration from the sprite.
 - `g`: Level of green saturation for the sprite (default value is 255).
 - `b`: Level of blue saturation for the sprite (default value is 255).
-- `blendmode_enum`: Valid options are `0`: no blending, `1`: default/alpha blending, `2`: additive blending, `3`: modulo blending, `4`: multiply blending.
-- `scale_quality_enum`: Valid options are `0`: nearest neighbor, `1`: linear scaling, `2`: anti-aliasing. If the value is `nil` then the `scale_quality` value that was set in `mygame/game_metadata.txt` will be used.
+- `blendmode_enum` (deprecated): Valid options are `0`: no blending, `1`: default/alpha blending, `2`: additive blending, `3`: modulo blending, `4`: multiply blending.
+- `scale_quality_enum`: Valid options are `0`: nearest neighbor, `1` and `2`: linear scaling, `3`: pixel art scaling. If the value is `nil` then the `scale_quality` value that was set in `mygame/game_metadata.txt` will be used.
+- `blendmode`: If both `blendmode_enum` and `blendmode` are given, `blendmode` will take precedence. Valid options are `0`: no blending, `1`: default/alpha blending, `2`: additive blending, `4`: modulo blending, `8`: multiply blending, and custom blend modes (see section below).
 
-The following sample apps show how `blendmode_enum` can be leveraged to create coloring and lighting effects:
+#### `blendmode`
+
+The new `blendmode` property allows you to compose a custom blend mode
+outside of the defaults listed above.
+
+A blend mode controls how the pixels from a drawing operation (source)
+get combined with the pixels from the render target
+(destination). First, the components of the source and destination
+pixels get multiplied with their blend factors. Then, the blend
+operation takes the two products and calculates the result that will
+get stored in the render target. 
+
+Expressed in pseudocode, it would look like this:
+
+```
+dstRGB = colorOperation(srcRGB * srcColorFactor, dstRGB * dstColorFactor);
+dstA = alphaOperation(srcA * srcAlphaFactor, dstA * dstAlphaFactor);
+```
+
+Where the functions `colorOperation(src, dst)` and `alphaOperation(src, dst)` can return one of the following:
+
+```
+src + dst
+src - dst
+dst - src
+min(src, dst)
+max(src, dst)
+```
+
+The red, green, and blue components are always multiplied with the
+first, second, and third components of the `BLENDFACTOR_`,
+respectively. The fourth component is not used.
+
+The alpha component is always multiplied with the fourth component of
+`BLENDFACTOR_`. The other components are not used in the alpha
+calculation. 
+
+These are the predefined constants that are available:
+
+- `BLENDOPERATION_ADD`
+- `BLENDOPERATION_SUBTRACT`
+- `BLENDOPERATION_REV_SUBTRACT`
+- `BLENDOPERATION_MINIMUM`
+- `BLENDOPERATION_MAXIMUM`
+- `BLENDFACTOR_ZERO`
+- `BLENDFACTOR_ONE`
+- `BLENDFACTOR_SRC_COLOR`
+- `BLENDFACTOR_ONE_MINUS_SRC_COLOR`
+- `BLENDFACTOR_SRC_ALPHA`
+- `BLENDFACTOR_ONE_MINUS_SRC_ALPHA`
+- `BLENDFACTOR_DST_COLOR`
+- `BLENDFACTOR_ONE_MINUS_DST_COLOR`
+- `BLENDFACTOR_DST_ALPHA`
+- `BLENDFACTOR_ONE_MINUS_DST_ALPHA`
+
+Here is an example of creating a blendmode that performs a "holepunch"
+within a render target:
+
+```ruby
+HOLE_PUNCH_BLENDMODE = Numeric.compose_blendmode(BLENDFACTOR_ZERO,
+                                                 BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+                                                 BLENDOPERATION_ADD,
+                                                 BLENDFACTOR_ZERO,
+                                                 BLENDFACTOR_ONE_MINUS_SRC_ALPHA,
+                                                 BLENDOPERATION_ADD)
+```
+
+For examples of using custom blendmodes see:
+
+- `samples/07_advanced_rendering/20_rings`
+- `samples/07_advanced_rendering/21_line_of_sight`
+- `samples/07_advanced_rendering/22_circular_minimap_clip_area`
+
+The following sample apps show how `blendmode` can be leveraged to create coloring and lighting effects:
 
 - `./samples/07_advanced_rendering/11_blend_modes`
 - `./samples/07_advanced_rendering/13_lighting`
+- `./samples/07_advanced_rendering/20_rings`
 
 #### Triangles
 
@@ -453,7 +547,7 @@ class Sprite
                 :angle_x, :angle_y, :z,
                 :source_x, :source_y, :source_w, :source_h, :blendmode_enum,
                 :source_x2, :source_y2, :source_x3, :source_y3, :x2, :y2, :x3, :y3,
-                :anchor_x, :anchor_y, :scale_quality_enum
+                :anchor_x, :anchor_y, :scale_quality_enum, :blendmode
 
   def primitive_marker
     :sprite
@@ -508,7 +602,7 @@ class BlueSquare
     @y = y
     @w = w
     @h = h
-    @path = 'sprites/square-blue.png'
+    @path = 'sprites/square/blue.png'
   end
 end
 
@@ -653,7 +747,8 @@ def tick args
       anchor_x:                0, # if provided, alignment_enum is ignored
       anchor_y:                1, # if provided, vertical_alignment_enum is ignored,
       size_px:                 30, # if provided, size_enum is ignored.
-      blendmode_enum:          1
+      blendmode_enum:          1,
+      scale_quality_enum:      0  # defaults to value in metadata/game_metadata.txt 0=NEAREST, 1=LINEAR, 2=PIXELART
   }
 end
 ```
@@ -665,7 +760,7 @@ end
 class Label
   attr_accessor :x, :y, :w, :h, :r, :g, :b, :a, :text, :font, :anchor_x,
                 :anchor_y, :blendmode_enum, :size_px, :size_enum, :alignment_enum,
-                :vertical_alignment_enum
+                :vertical_alignment_enum, :scale_quality_enum
 
   def primitive_marker
     :label

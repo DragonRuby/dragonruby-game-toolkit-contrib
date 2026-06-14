@@ -23,7 +23,7 @@ def tick args
   end
 
   if @show_fps
-    args.outputs.primitives << GTK.current_framerate_primitives
+    args.outputs.primitives << DR.current_framerate_primitives
   end
 end
 
@@ -34,7 +34,7 @@ def reset args
 end
 
 class RootScene
-  attr_gtk
+  attr_dr
 
   def initialize
     @args = args
@@ -176,7 +176,7 @@ end
 # it contains a PulseButton that starts the game by setting the next_scene to :game and
 # setting the started_at time
 class StartScene
-  attr_gtk
+  attr_dr
 
   def initialize
     @play_button = PulseButton.new pulse_button_location, "play" do
@@ -223,7 +223,7 @@ end
 # it contains a PulseButton that restarts the game by setting the next_scene to :game and
 # setting the game_retried_at time
 class GameOverScene
-  attr_gtk
+  attr_dr
 
   def initialize
     @replay_button = PulseButton.new replay_button_location, "replay" do
@@ -473,7 +473,7 @@ end
 
 # the game scene contains the game logic
 class GameScene
-  attr_gtk
+  attr_dr
 
   attr :scale_down_particles_queue, :launch_particle_queue
 

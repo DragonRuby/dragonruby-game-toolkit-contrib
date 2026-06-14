@@ -116,7 +116,6 @@ module GTK
               end
             end,
             'state'    => lambda { $gtk.args.state.autocomplete_methods },
-            'fn'       => lambda { $gtk.args.fn.autocomplete_methods },
             '$gtk'     => lambda { $gtk.autocomplete_methods },
             'gtk'      => lambda { $gtk.autocomplete_methods },
             'mouse'    => lambda { $gtk.args.inputs.mouse.autocomplete_methods },

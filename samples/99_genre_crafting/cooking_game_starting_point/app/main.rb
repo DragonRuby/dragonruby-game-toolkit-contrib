@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   def initialize
     @ingredients_in_hand = []
@@ -133,4 +133,4 @@ def reset args
   $game = nil
 end
 
-GTK.reset
+DR.reset

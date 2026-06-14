@@ -160,4 +160,4 @@ def tick args
                                                 group: colors)
 end
 
-GTK.reset
+DR.reset

@@ -3,8 +3,8 @@
 # MIT License
 # tweetcart.rb has been released under MIT (*only this file*).
 
-def $top_level.TICK &block
-  $top_level.define_method(:tick) do |args|
+def $main.TICK &block
+  $main.define_method(:tick) do |args|
     args.outputs[:scene].transient!
     args.outputs[:scene].w = 160
     args.outputs[:scene].h = 90
@@ -30,24 +30,24 @@ def $top_level.TICK &block
     end
   end
 
-  def $top_level.pixels!
+  def $main.pixels!
     return if $args.state.tweetcart_state.render_method == :pixels
     $args.state.tweetcart_state.render_method = :pixels
   end
 
-  def $top_level.color pallet_number
+  def $main.color pallet_number
     $args.state.tweetcart_state.pallet_number = pallet_number
   end
 
-  def $top_level.no_clr! render_target_name = :scene
-    $top_level.no_clear! render_target_name
+  def $main.no_clr! render_target_name = :scene
+    $main.no_clear! render_target_name
   end
 
-  def $top_level.no_clear! render_target_name = :scene
+  def $main.no_clear! render_target_name = :scene
     $args.outputs[render_target_name].clear_before_render = false
   end
 
-  def $top_level.bg! *rgb
+  def $main.bg! *rgb
     r,g,b = rgb
     r ||= 255
     g ||= r
@@ -55,11 +55,11 @@ def $top_level.TICK &block
     $args.outputs.background_color = [r, g, b]
   end
 
-  def $top_level.slds
+  def $main.slds
     $args.outputs[:scene].sprites
   end
 
-  def $top_level.slds! *os
+  def $main.slds! *os
     if (os.first.is_a? Numeric)
       sld!(*os)
     else
@@ -67,7 +67,7 @@ def $top_level.TICK &block
     end
   end
 
-  def $top_level.sld! *params
+  def $main.sld! *params
     x, y, w, h, r, g, b, a = nil
     if params.length == 2
       x, y = params
@@ -110,35 +110,35 @@ def $top_level.TICK &block
               path: :pixel }
   end
 
-  def $top_level.sin_r radians
+  def $main.sin_r radians
     Math.sin radians
   end
 
-  def $top_level.cos_r radians
+  def $main.cos_r radians
     Math.cos radians
   end
 
-  def $top_level.sin degrees
+  def $main.sin degrees
     Math.sin degrees.to_radians
   end
 
-  def $top_level.cos degrees
+  def $main.cos degrees
     Math.cos degrees.to_radians
   end
 
-  def $top_level.sin_d degrees
+  def $main.sin_d degrees
     Math.sin degrees.to_radians
   end
 
-  def $top_level.cos_d degrees
+  def $main.cos_d degrees
     Math.cos degrees.to_radians
   end
 
-  def $top_level.tc
+  def $main.tc
     Kernel.tick_count
   end
 
-  def $top_level.scene! w = 1280, h = 720, scale = nil
+  def $main.scene! w = 1280, h = 720, scale = nil
     scale ||= begin
                 x_scale = $args.grid.w / w
                 y_scale = $args.grid.h / h
@@ -190,7 +190,7 @@ def $top_level.TICK &block
     ]
   end
 
-  def $top_level.pal
+  def $main.pal
     $tweetcart_palette
   end
 end

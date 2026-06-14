@@ -1,5 +1,5 @@
 class DuelingSpaceships
-  attr_gtk
+  attr_dr
 
   def tick
     defaults

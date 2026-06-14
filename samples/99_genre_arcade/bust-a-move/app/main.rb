@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   attr :shooting_ball, :launch_angle
 
@@ -177,4 +177,4 @@ def reset args
   $game = nil
 end
 
-GTK.reset
+DR.reset

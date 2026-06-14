@@ -1,7 +1,7 @@
 class Game
   include MatrixFunctions
 
-  attr_gtk
+  attr_dr
 
   def tick
     defaults
@@ -332,4 +332,4 @@ def set_angles x, y, z
   $game.state.angle_z = z
 end
 
-GTK.reset
+DR.reset

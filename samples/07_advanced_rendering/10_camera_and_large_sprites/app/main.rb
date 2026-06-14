@@ -37,7 +37,7 @@ class Game
     }
 
     if !@args.state.orbit_sprite_size
-      w, h = GTK.calcspritebox("sprites/ring-1280.png")
+      w, h = DR.calcspritebox("sprites/ring-1280.png")
       @args.state.orbit_sprite_size = {
         w: w,
         h: h
@@ -240,4 +240,4 @@ def reset args
   $game = nil
 end
 
-GTK.reset
+DR.reset

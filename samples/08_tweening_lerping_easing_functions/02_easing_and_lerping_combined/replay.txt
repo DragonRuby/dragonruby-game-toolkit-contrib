@@ -1,0 +1,24 @@
+replay_version 2.1
+stopped_at 579
+seed 100
+recorded_at 2026-03-06 20:38:16 -0600
+[:mouse_button_up, 1, 0, 1, 1, 4]
+[:mouse_move, 920, 140, 2, 2, 15]
+[:mouse_move, 920, 142, 2, 3, 17]
+[:mouse_move, 920, 145, 2, 4, 18]
+[:mouse_move, 920, 150, 2, 5, 19]
+[:mouse_move, 920, 156, 2, 6, 20]
+[:mouse_move, 920, 162, 2, 7, 21]
+[:mouse_move, 920, 173, 2, 8, 22]
+[:mouse_move, 920, 188, 2, 9, 23]
+[:mouse_move, 917, 204, 2, 10, 24]
+[:mouse_move, 911, 220, 2, 11, 25]
+[:mouse_move, 902, 239, 2, 12, 26]
+[:mouse_move, 892, 256, 2, 13, 27]
+[:mouse_move, 885, 267, 2, 14, 28]
+[:key_down_raw, 1073741905, 0, 2, 15, 113]
+[:scancode_down_raw, 81, 0, 2, 16, 113]
+[:key_up_raw, 1073741905, 0, 2, 17, 116]
+[:scancode_up_raw, 81, 0, 2, 18, 116]
+[:scancode_down_raw, 53, 0, 2, 19, 575]
+[:textinput, "`", 0, 1, 20, 575]

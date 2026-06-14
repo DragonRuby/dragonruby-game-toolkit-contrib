@@ -24,14 +24,14 @@ def tick args
                                                    anchor_y: 0.5 })
 
   args.outputs.primitives << thick_border_prefab(args.outputs,
-                                                 { x: 640,
+                                                 { x: 700,
                                                    y: 360,
                                                    w: 50,
                                                    h: 50,
                                                    r: 0,
                                                    g: 128,
                                                    b: 80,
-                                                   a: 128,
+                                                   a: 255,
                                                    angle: -Kernel.tick_count,
                                                    thickness: 10,
                                                    anchor_x: 0.5,
@@ -88,11 +88,9 @@ def thick_border_prefab outputs, border
       w: border.w - border.thickness * 2,
       h: border.h - border.thickness * 2,
       path: :empty,
-      blendmode_enum: 0
+      blendmode: 0
     }
   ]
 
   thick_border_prefab outputs, border
 end
-
-GTK.reset

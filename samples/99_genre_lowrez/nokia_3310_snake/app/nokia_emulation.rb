@@ -61,7 +61,7 @@ def tick args
   }
 end
 
-# if GTK.reset is called
+# if DR.reset is called
 # clear out the game so that it can be re-initialized
 def reset args
   $game = nil

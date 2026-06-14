@@ -1,5 +1,5 @@
 class YouSoBasicGorillas
-  attr_gtk
+  attr_dr
 
   def tick
     defaults

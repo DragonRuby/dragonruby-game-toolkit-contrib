@@ -4,11 +4,11 @@
 game. It's useful for rapid prototyping, especially when you're not ready to
 commit to using classes. Values in `args.state` are retained across
 invocations of the `tick` method. Values within `args.state` are automatically cleared
-if `GTK.reset` is invoked.
+if `DR.reset` is invoked.
 
 For rapid prototyping (without using classes). It's recommended to use
 `args.state` as opposed to `iVars` (class-less `iVars` will pollute the
-global object space and would not be cleared via `GTK.reset`). 
+global object space and would not be cleared via `DR.reset`). 
 
 To use `args.state`, you'll need to initialize it to an empty `Hash` within `boot`. 
 
@@ -43,7 +43,7 @@ def tick args
 end
 ```
 
-Opening up the DragonRuby Console and invoking `GTK.reset` will clear
+Opening up the DragonRuby Console and invoking `DR.reset` will clear
 out the values in `args.state` automatically. You can also directly
 access `args.state` information from within the console using the
 `$state` global variable. It's recommended that you use the global
@@ -52,7 +52,7 @@ variables everywhere can lead to spaghetti code).
 
 ## Using iVars instead of `args.state`
 
-If you are using classes and the `attr_gtk` class macro, `args.state`
+If you are using classes and the `attr_dr` class macro, `args.state`
 usage is optional (though still available). Resetting game state that
 isn't housed in `args.state` requires you to provide a `reset`
 function at the top level.
@@ -64,7 +64,7 @@ maintainable long term).
 
 ```ruby
 class Game
-  attr_gtk
+  attr_dr
   
   def initialize
   end

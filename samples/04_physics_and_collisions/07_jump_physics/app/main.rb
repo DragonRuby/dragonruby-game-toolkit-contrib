@@ -24,7 +24,7 @@
 # As the player successfully clears platforms, they become smaller and move faster.
 
 class VerticalPlatformer
-  attr_gtk
+  attr_dr
 
   # declares vertical platformer as new entity
   def s

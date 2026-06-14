@@ -120,10 +120,10 @@ def tick args
   end
 
   args.outputs.labels << { x: 60, y: 60.from_top, text: "Hold SPACEBAR to add boxes. Hold BACKSPACE to remove boxes." }
-  args.outputs.labels << { x: 60, y: 90.from_top, text: "FPS: #{GTK.current_framerate.to_sf}" }
+  args.outputs.labels << { x: 60, y: 90.from_top, text: "FPS: #{DR.current_framerate.to_sf}" }
   args.outputs.labels << { x: 60, y: 120.from_top, text: "Count: #{args.state.boxes.length}" }
   args.outputs.borders << args.state.terrain
   args.outputs.sprites << args.state.boxes
 end
 
-# GTK.reset
+# DR.reset

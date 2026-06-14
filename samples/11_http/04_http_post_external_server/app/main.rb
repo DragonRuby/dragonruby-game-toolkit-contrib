@@ -1,9 +1,9 @@
 def tick args
   if Kernel.tick_count == 60
-    GTK.notify("Performing HTTP/POST to https://httpbin.org/anything")
+    DR.notify("Performing HTTP/POST to https://httpbin.org/anything")
     url = "https://httpbin.org/anything"
     content = '{ "message": "hello world" }'
-    args.state.auth_result ||= GTK.http_post_body(url, content,
+    args.state.auth_result ||= DR.http_post_body(url, content,
                                                   [
                                                     "Content-Type: application/json",
                                                     "Content-Length: #{content.length.to_i}"

@@ -29,7 +29,7 @@ def tick args
   h = args.state.camera[:screen_height]
   args.outputs.sprites << { x: 0, y: 0, w: w, h: h, source_h: h, path: :screen }
   debug_text = <<~LABEL
-    FPS: #{GTK.current_framerate.to_sf}
+    FPS: #{DR.current_framerate.to_sf}
     angle: #{args.state.player.angle.to_i}°
     X: #{args.state.player.x.to_sf}
     Y: #{args.state.player.y.to_sf}

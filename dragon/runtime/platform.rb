@@ -10,6 +10,7 @@ module GTK
         if !@platform_mappings
           baseline = {
             "Mac OS X"   => [:desktop, :macos, :osx, :mac, :macosx],
+            "macOS"      => [:desktop, :macos, :osx, :mac, :macosx],
             "Windows"    => [:desktop, :windows, :win],
             "Linux"      => [:desktop, :linux, :nix],
             "Emscripten" => [:web, :wasm, :html, :emscripten],
@@ -26,6 +27,9 @@ module GTK
             baseline["Mac OS X"] << :steam
             baseline["Mac OS X"] << :steam_desktop
             baseline["Mac OS X"] << :steamdesktop
+            baseline["macOS"] << :steam
+            baseline["macOS"] << :steam_desktop
+            baseline["macOS"] << :steamdesktop
             baseline["Windows"] << :steam
             baseline["Windows"] << :steam_desktop
             baseline["Windows"] << :steamdesktop

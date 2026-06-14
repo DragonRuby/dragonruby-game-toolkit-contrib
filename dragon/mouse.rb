@@ -122,24 +122,31 @@ module GTK
       @buttons_left.held&.global_created_at
     end
 
-    def point
-      { x: @x, y: @y, w: 0, h: 0 }
+    def point offset: nil
+      if offset
+        { x: @x + offset.x, y: @y + offset.y, w: 0, h: 0 }
+      else
+        { x: @x, y: @y, w: 0, h: 0 }
+      end
     end
 
-    def inside_rect? rect
-      point.inside_rect? rect
+    def inside_rect? rect, offset: nil
+      point(offset: offset).inside_rect? rect
     end
 
     def inside_circle? center, radius
       point.point_inside_circle? center, radius
     end
 
-    def intersect_rect? other_rect
-      rect.intersect_rect? other_rect
+    def intersect_rect? other_rect, offset: nil
+      rect(offset: nil).intersect_rect? other_rect
     end
 
-    def rect
-      { x: point.x, y: point.y, w: 0, h: 0 }
+    def rect offset: nil
+      { x: point(offset: offset).x,
+        y: point(offset: offset).y,
+        w: 0,
+        h: 0 }
     end
 
     def merge o
@@ -251,6 +258,10 @@ module GTK
       result[:up] = @up.to_hash if @up
       result[:x] = @x
       result[:y] = @y
+      result[:point] = self.point.to_h
+      result[:point_offset_allscreen_offset] = self.point(offset: Grid.allscreen_offset).to_h
+      result[:rect] = self.rect.to_h
+      result[:rect_offset_allscreen_offset] = self.rect(offset: Grid.allscreen_offset).to_h
       result[:moved] = @moved
       result[:moved_at] = @moved_at
       result[:has_focus] = @has_focus
@@ -278,6 +289,14 @@ module GTK
       @buttons_right.buffered_held  ||
       @buttons_x1.buffered_held     ||
       @buttons_x2.buffered_held
+    end
+
+    def point_allscreen_offset
+      point offset: Grid.allscreen_offset
+    end
+
+    def rect_allscreen_offset
+      rect offset: Grid.allscreen_offset
     end
   end
 
@@ -328,7 +347,6 @@ module GTK
       result[:global_moved_at] = @global_moved_at
       result[:down_at] = @down_at
       result[:global_down_at] = @global_down_at
-
       result
     end
 
@@ -337,5 +355,10 @@ module GTK
     end
 
     alias_method :inspect, :to_s
+
+    def has_focus
+      return true if $gtk.platform?(:mobile)
+      @has_focus
+    end
   end
 end

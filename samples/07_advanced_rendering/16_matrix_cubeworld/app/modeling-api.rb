@@ -106,4 +106,4 @@ def cube_side &block
   m.__mul_triangles__ square_verticies, *m.matricies
 end
 
-GTK.reset
+DR.reset

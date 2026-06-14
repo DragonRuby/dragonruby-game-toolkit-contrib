@@ -31,7 +31,6 @@ def tick args
   # OR
 
   # module variants
-  puts args.geometry.intersect_rect?(rect_1, rect_2)
   puts Geometry.intersect_rect?(rect_1, rect_2)
 end
 ```
@@ -42,7 +41,6 @@ end
 
 Invocation variants:
 
-- `args.geometry.angle start_point, end_point`
 - `Geometry.angle start_point, end_point`
 
 Returns an angle in degrees from the `start_point` to the `end_point` (if you want the value in radians call `.to_radians` on the value returned).
@@ -51,7 +49,6 @@ Returns an angle in degrees from the `start_point` to the `end_point` (if you wa
 
 Invocation variants:
 
-- `args.geometry.angle_from start_point, end_point`
 - `Geometry.angle_from start_point, end_point`
 - `start_point.angle_from end_point`
 
@@ -73,7 +70,7 @@ def tick args
   angle_radians = angle.to_radians
   args.outputs.labels << { x: 30, y: 30.from_top, text: "#{angle}, #{angle_radians}" }
 
-  angle = args.geometry.angle_from rect_1, rect_2 # returns 225 degrees
+  angle = Geometry.angle_from rect_1, rect_2 # returns 225 degrees
   angle_radians = angle.to_radians
   args.outputs.labels << { x: 30, y: 60.from_top, text: "#{angle}, #{angle_radians}" }
 end
@@ -83,8 +80,6 @@ end
 
 Invocation variants:
 
-- `args.geometry.angle_to start_point, end_point`
-- `args.geometry.angle start_point, end_point` (alias)
 - `Geometry.angle_to start_point, end_point`
 - `Geometry.angle start_point, end_point` (alias)
 - `start_point.angle_to end_point`
@@ -107,7 +102,7 @@ def tick args
   angle_radians = angle.to_radians
   args.outputs.labels << { x: 30, y: 30.from_top, text: "#{angle}, #{angle_radians}" }
 
-  angle = args.geometry.angle_to rect_1, rect_2 # returns 45 degrees
+  angle = Geometry.angle_to rect_1, rect_2 # returns 45 degrees
   angle_radians = angle.to_radians
   args.outputs.labels << { x: 30, y: 60.from_top, text: "#{angle}, #{angle_radians}" }
 end
@@ -117,7 +112,6 @@ end
 
 Invocation variants:
 
-- `args.geometry.angle_turn_direction angle, target_angle`
 - `Geometry.angle_turn_direction angle, target_angle`
 
 Returns `1` or -1 depending on which direction the `angle` needs to turn to reach the `target_angle` most efficiently. The angles are assumed to be in degrees. `1` means turn clockwise, and `-1` means turn counter-clockwise.
@@ -126,7 +120,6 @@ Returns `1` or -1 depending on which direction the `angle` needs to turn to reac
 
 Invocation variants:
 
-- `args.geometry.angle_delta angle, target_angle`
 - `Geometry.angle_delta angle, target_angle`
 
 Given an `angle` and a `target_angle`, this function will return the
@@ -137,7 +130,6 @@ be in degrees.
 
 Invocation variants:
 
-- `args.geometry.angle_within_range? test_angle, target_angle, range`
 - `Geometry.angle_within_range? test_angle, target_angle, range`
 
 Given a `test_angle`, `target_angle`, and `range` (all in degrees),
@@ -215,8 +207,8 @@ def tick args
   }
 
   # rotate point around 0, 0
-  rotated_point_1 = args.geometry.rotate_point point_1,
-                                               args.state.rotate_amount
+  rotated_point_1 = Geometry.rotate_point point_1,
+                                          args.state.rotate_amount
 
   args.outputs.solids << {
     x: rotated_point_1.x - 5,
@@ -231,9 +223,9 @@ def tick args
   }
 
   # rotate point around center screen
-  rotated_point_2 = args.geometry.rotate_point point_2,
-                                               args.state.rotate_amount,
-                                               x: 640, y: 360
+  rotated_point_2 = Geometry.rotate_point point_2,
+                                          args.state.rotate_amount,
+                                          x: 640, y: 360
 
   args.outputs.solids << {
     x: rotated_point_2.x - 5,
@@ -244,13 +236,21 @@ def tick args
 end
 ```
 
-### `angle_vec`
+### `angle_vec2`
 
 Given an angle in degrees, a `Hash` will be returned with `x`, `y` representing the vector components of the angle.
 
-### `angle_vec_r`
+### `angle_vec2_r`
 
 Given an angle in radians, a `Hash` will be returned with `x`, `y` representing the vector components of the angle.
+
+### `angle_cardinal_vec2`
+
+Given an angle in degrees, a `Hash` will be returned with `x`, `y` representing the vector components of the angle snapped to 45 degree angles (mirroring the directional options for a DPAD).
+
+### `angle_cardinal_vec2_r`
+
+Given an angle in radians, a `Hash` will be returned with `x`, `y` representing the vector components of the angle snapped to 45 degree angles (mirroring the directional options for a DPAD)..
 
 ### `distance`
 
@@ -268,7 +268,7 @@ def tick args
     y: 100,
   }
 
-  distance = args.geometry.distance rect_1, rect_2
+  distance = Geometry.distance rect_1, rect_2
   args.outputs.labels << {
     x: 30,
     y: 30.from_top,
@@ -296,7 +296,7 @@ Given a line, this function will return the angle of the line in degrees.
 
 ### `line_rise_run`
 
-Given a line, this function returns a Hash with `x` and `y` keys representing a normalized representation of the rise and run of the line.
+Given a line, this function returns a `Hash[x:, y:]` representing a normalized representation of the rise and run of the line.
 
 ```ruby
 def tick args
@@ -309,7 +309,7 @@ def tick args
   }
 
   # get rise and run of line
-  rise_run = args.geometry.line_rise_run line
+  rise_run = Geometry.line_rise_run line
 
   # output the rise and run of line
   args.outputs.labels << {
@@ -382,7 +382,6 @@ Given a `Hash` with `x` and `y` keys (or an `Object` that responds to `x` and `y
 Invocation variants:
 
 - `instance.intersect_rect?(other, tolerance)`
-- `args.geometry.intersect_rect?(rect_1, rect_2, tolerance)`
 - `Geometry.intersect_rect?(rect_1, rect_2, tolerance)`
 - `args.inputs.mouse.intersect_rect?(other, tolerance)`
 
@@ -455,7 +454,6 @@ end
 Invocation variants:
 
 - `instance.inside_rect?(other)`
-- `args.geometry.inside_rect?(rect_1, rect_2)`
 - `Geometry.inside_rect?(rect_1, rect_2)`
 
 Given two rectangle primitives this function will return `true` or `false` depending on if the first rectangle (or `self`) is inside of the second rectangle.
@@ -594,7 +592,6 @@ end
 Invocation variants:
 
 - `point_1.point_inside_circle? circle_center, circle_radius`
-- `args.geometry.point_inside_circle? point_1, circle_center, circle_radius`
 - `Geometry.point_inside_circle? point_1, circle_center, circle_radius`
 
 `circle_center` can also contain the `radius` value (instead of passing it as a separate argument).
@@ -623,9 +620,9 @@ def tick args
   args.state.point_1.y += args.inputs.up_down * 5
 
   # determine if point is inside of circle
-  intersection = args.geometry.point_inside_circle? args.state.point_1,
-                                                    args.state.circle_center,
-                                                    args.state.circle_radius
+  intersection = Geometry.point_inside_circle? args.state.point_1,
+                                               args.state.circle_center,
+                                               args.state.circle_radius
 
   # render point as a square
   args.outputs.sprites << {
@@ -681,7 +678,7 @@ def tick args
   }
 
   # perform ray_test on point and line
-  ray = args.geometry.ray_test point, line
+  ray = Geometry.ray_test point, line
 
   # output the results of ray test at mouse location
   args.outputs.labels << {
@@ -711,14 +708,13 @@ Given two lines (`:x`, `:y`, `:x2`, `:y2`), this function returns point of inter
 
 Invocation variants:
 
-- `args.geometry.line_intersect line_1, line_2`
 - `Geometry.line_intersect line_1, line_2`
 
 ```ruby
 def tick args
   args.state.line_one ||= { x: 0, y: 0, x2: 1280, y2: 720 }
   line_two = { x: 0, y: 720, x2: args.inputs.mouse.x, y2: args.inputs.mouse.y }
-  args.state.intersect_point = args.geometry.line_intersect args.state.line_one, line_two
+  args.state.intersect_point = Geometry.line_intersect args.state.line_one, line_two
   args.outputs.lines << { x: 0, y: 0, x2: 1280, y2: 720 }
   args.outputs.lines << line_two
   if args.state.intersect_point
@@ -743,7 +739,6 @@ Given two lines (`:x`, `:y`, `:x2`, `:y2`), this function returns point of inter
 
 Invocation variants:
 
-- `args.geometry.ray_intersect line_1, line_2`
 - `Geometry.ray_intersect line_1, line_2`
 
 ```ruby
@@ -755,7 +750,7 @@ def tick args
   line_two = { x: 0, y: 720, x2: args.inputs.mouse.x, y2: args.inputs.mouse.y }
 
   # calc if line_one and line_two intersect and if so, the point of intersection
-  args.state.intersect_point = args.geometry.ray_intersect args.state.line_one, line_two
+  args.state.intersect_point = Geometry.ray_intersect args.state.line_one, line_two
 
   # draw line_one
   args.outputs.lines << { x: 0, y: 0, x2: 1280, y2: 720 }
@@ -794,7 +789,7 @@ collision = args.state.terrain.find { |t| t.intersect_rect? args.state.player }
 Consider using `find_intersect_rect` instead (it's more descriptive and faster):
 
 ```ruby
-collision = args.geometry.find_intersect_rect args.state.player, args.state.terrain
+collision = Geometry.find_intersect_rect args.state.player, args.state.terrain
 ```
 
 ?> Function returns `nil` if either parameter is `nil` (`nil` values within the collection are skipped).
@@ -814,10 +809,12 @@ collisions = args.state.terrain.find_all { |t| t.intersect_rect? args.state.play
 Consider using `find_all_intersect_rect` instead (it's more descriptive and faster):
 
 ```ruby
-collisions = args.geometry.find_all_intersect_rect args.state.player, args.state.terrain
+collisions = Geometry.find_all_intersect_rect args.state.player, args.state.terrain
 ```
 
 ?> Function returns an empty `Array` if either parameter is `nil` (`nil` values within the collection are skipped).
+
+The third parameter is optional and is a `Numeric` value representing the `tolerance` (defaulted to `0.1`).
 
 An optional named parameter called `using` can be included to tell the function what value contains rect information.
 
@@ -926,10 +923,21 @@ An implicit block is required for this function. The block will be called with e
 #### Simple Usage
 
 ```ruby
+rects = [
+  { x: 0, y: 0, w: 100, h: 100 },
+  { x: 50, y: 50, w: 100, h: 100 }
+]
+
+Geometry.each_intersect_rect(rects) do |rect_1, rect_2|
+  # do something with the intersecting rectangles
+end
+
+# OR
+
 rects_1 = [{ x: 0, y: 0, w: 100, h: 100 }]
 rects_2 = [{ x: 50, y: 50, w: 100, h: 100 }]
 
-args.geometry.each_intersect_rect(rects_1, rects_2) do |rect_1, rect_2|
+Geometry.each_intersect_rect(rects_1, rects_2) do |rect_1, rect_2|
   # do something with the intersecting rectangles
 end
 ```
@@ -982,57 +990,67 @@ end
 
 Given an `Array` of rects, returns a `Hash` of collisions. Each entry in the return `Hash` maps two rects from the input `Array` that intersect.
 
-Note that in the event of an intersection of rects `A` and `B`, the returned `Hash` will contain two entries: `{A=>B,B=>A}`
+This function only returns the _first_ collision that was found (within a quad tree partition) for each entry in the `Array` that's passed in.
 
 ```ruby
-def tick(args)
-  args.state.squares ||= []
-  args.state.alphabet ||= ('A'..'Z').to_a
+rects = [
+  { id: :a, x: 0, y: 0, w: 100, h: 100 },
+  { id: :b, x: 0, y: 0, w: 25, h: 25 },
+  { id: :c, x: 0, y: 0, w: 50, h: 50 },
+]
 
-  # reset the squares if the user presses 'R'
-  args.state.squares = [] if args.inputs.keyboard.r
+collisions = Geometry.find_collisions(rects)
+```
 
-  # add a new square every 4 ticks until we get to 26
-  # the last part of the condition is to make sure we always have at least 1 square before
-  # we start checking for collisions, otherwise #find_collisions will throw an error
-  if (Kernel.tick_count % 4 == 0 && args.state.squares.size < 26) || args.state.squares.size == 0
+`collisions` would be:
 
-    # add a new square to the array with a random position, with some padding
-    # so that the squares don't spawn too close to the edge of the screen
-    # we also set the text to a random letter from the alphabet so we can re-use
-    # the same hash for both the squares and their labels
-    args.state.squares << {
-      x: rand(1280 - 200) + 100, y: rand(720 - 300) + 100,
-      w: 50, h: 50,
-      text: args.state.alphabet[args.state.squares.size],
-      alignment_enum: 1, # center the text
-      r: 0, g: 255, b: 0, a: 128
-    }
-  end
+```ruby
+{
+  # only first collision is returned even though :a collides with both :b and :c
+  { id: :a, ... } => { id: :c, ... },
+  
+  { id: :b, ... } => { id: :a, ... },
+  { id: :c, ... } => { id: :a, ... },
+}
+```
 
-  # check for collisions between the squares. this returns a hash of the
-  # colliding squares, with the key being the first square and the value
-  # being the second square
-  collisions = args.geometry.find_collisions(args.state.squares)
-  collisions.each do |key, value|
-    key.merge!(r: 255, g: 0, b: 0)
-    value.merge!(r: 0, g: 0, b: 255)
-  end
+Multiple rects can be provided (the first being the source rect collection, the second being the target rect collection):
 
-  # render instructions and collision info
-  args.outputs.labels << {x: 30, y: 20.from_top, text: "Press 'R' to reset" }
-  args.outputs.labels << {x: 30, y: 45.from_top, text: "#{args.state.squares.size} squares, #{collisions.size} collisions" }
-  args.outputs.labels << {x: 30, y: 70.from_top, text: "#{collisions.map { |k, v| "{#{k.text}=>#{v.text}}" }.join(', ')}" }
+```ruby
+rects_1 = [
+  { id: :a, x: 0, y: 0, w: 100, h: 100 },
+]
 
-  # render the squares and their labels
-  args.outputs.solids << args.state.squares
-  args.outputs.labels << args.state.squares.map_with_index do |square, i|
-    square.merge(
-      x: square.x + 25, y: square.y + 35, # center the text in the square
-      r: 0, g: 0, b: 0                    # make it black
-    )
-  end
-end
+rects_2 = [
+  { id: :b, x: 0, y: 0, w: 25, h: 25 },
+  { id: :c, x: 0, y: 0, w: 50, h: 50 },
+]
+
+
+collisions = Geometry.find_collisions(rects_1, rects_2)
+```
+
+`collisions` would be:
+
+```ruby
+{
+  { id: :a, ... } => { id: :c, ... },
+}
+```
+
+Flipping the source and target parameters:
+
+```ruby
+collisions = Geometry.find_collisions(rects_2, rects_1)
+```
+
+would give:
+
+```ruby
+{
+  { id: :b, ... } => { id: :a, ... },
+  { id: :c, ... } => { id: :a, ... },
+}
 ```
 
 ### `find_intersect_rect_quad_tree`
@@ -1067,11 +1085,11 @@ def tick args
   # the quad tree should only be generated once for
   # a given array of rectangles. if the rectangles
   # change, then the quad tree must be regenerated
-  args.state.quad_tree ||= args.geometry.quad_tree_create args.state.boxes
+  args.state.quad_tree ||= Geometry.quad_tree_create args.state.boxes
 
   # use quad tree and find_intersect_rect_quad_tree to determine collision with player
-  collision = args.geometry.find_intersect_rect_quad_tree args.state.player,
-                                                          args.state.quad_tree
+  collision = Geometry.find_intersect_rect_quad_tree args.state.player,
+                                                     args.state.quad_tree
 
   # if there is a collision render a red box
   if collision
@@ -1118,11 +1136,11 @@ def tick args
   # the quad tree should only be generated once for
   # a given array of rectangles. if the rectangles
   # change, then the quad tree must be regenerated
-  args.state.quad_tree ||= args.geometry.quad_tree_create args.state.boxes
+  args.state.quad_tree ||= Geometry.quad_tree_create args.state.boxes
 
   # use quad tree and find_intersect_rect_quad_tree to determine collision with player
-  collisions = args.geometry.find_all_intersect_rect_quad_tree args.state.player,
-                                                              args.state.quad_tree
+  collisions = Geometry.find_all_intersect_rect_quad_tree args.state.player,
+                                                          args.state.quad_tree
 
   # if there is a collision render a red box
   args.outputs.solids << collisions.map { |c| c.merge(r: 255) }
@@ -1148,17 +1166,17 @@ Invocation variants:
 
 - `Geometry.rect_props rect`
 
-Given a `Hash` with `x`, `y`, `w`, `h`, (and optionally `anchor_x`, `anchor_y`), this function returns a `Hash` in the following form.
+Given a `Hash[x:, y:, w:, h:, anchor_x: nil, anchor_y: nil]`, this function returns a `Hash` in the following form.
 
 ```ruby
 {
-  x: ...,
-  y: ...,
-  w: ...,
-  h: ...,
+  x:,
+  y:,
+  w:,
+  h:,
   center: {
-    x: ...,
-    y: ...,
+    x:,
+    y:,
   }
 }
 ```
@@ -1168,30 +1186,23 @@ Notes:
 - Any object that responds to `x`, `y`, `w`, `h`, `anchor_x`, `anchor_y` can leverage this function.
 - The returned `Hash` will not include `anchor_(x|y)` (recomputes `x`, `y` to take the anchors into consideration).
 
-### `rect_center_point`
+### `rect_center_point`, `center`
 
 - `Geometry.rect_center_point rect`
 
-Given a `Hash` with `x`, `y`, `w`, `h`, (and optionally `anchor_x`, `anchor_y`), this function returns a `Hash` representing the center point of the rect in the following form.
-
-```ruby
-  {
-    x: ...,
-    y: ...,
-  }
-```
+Given a `Hash[x:, y:, w:, h:, anchor_x: nil, anchor_y: nil]`, this function returns a `Hash[x:, y:]` representing the center point of the rect.
 
 ### `line_center_point`
 
 - `Geometry.line_center_point line`
 
-Given a `Hash` with `x`, `y`, `x2`, `y2` this function returns a `Hash` representing the center point of the line in the following form.
+Given a `Hash[x:, y:, x2:, y2:]` returns a `Hash[x:, y:]` representing the center point of the line.
 
 ### `center`
 
 - `Geometry.line_center_point rect_or_line`
 
-Given a `Hash` with `x`, `y`, `w`, `h`, (and optionally `anchor_x`, `anchor_y`) or a `Hash` with `x`, `y`, `x2`, `y2`, this function returns a `Hash` representing the center point of the rect or line.
+Given a `Hash[x:, y:, w:, h:, anchor_x: nil, anchor_y: nil]` or a `Hash[x:, y:, x2:, y2:]`, this function returns a `Hash[x:, y:]` representing the center point of the rect or line.
 
 Here's an example usage of `rect_center_point`, `rect_props`, and `line_center_point`:
 
@@ -1435,7 +1446,6 @@ end
 Invocation variants:
 
 - `target_rect.center_inside_rect reference_rect`
-- `args.geometry.center_inside_rect target_rect, reference_rect`
 - `Geometry.center_inside_rect target_rect, reference_rect`
 
 Given a target rect and a reference rect, the target rect is centered inside the reference rect (a new rect is returned).
@@ -1456,7 +1466,7 @@ def tick args
     h: 200
   }
 
-  centered_rect = args.geometry.center_inside_rect rect_1, rect_2
+  centered_rect = Geometry.center_inside_rect rect_1, rect_2
   # OR
   # centered_rect = rect_1.center_inside_rect rect_2
 
@@ -1465,3 +1475,500 @@ def tick args
   args.outputs.solids << centered_rect.merge(g: 255)
 end
 ```
+
+### `points_to_line`
+
+Invocation variants:
+
+- `Geometry.points_to_line p1, p2`
+
+Given two points (each with `x` and `y` properties), this function returns a `Hash[x:, y:, x2:, y2:]` representing a line. The line starts at point `p1` and ends at point `p2`.
+
+```ruby
+def tick args
+  # define two points
+  point_1 = { x: 100, y: 100 }
+  point_2 = { x: 200, y: 300 }
+
+  # convert points to a line
+  line = Geometry.points_to_line(point_1, point_2)
+  # returns { x: 100, y: 100, x2: 200, y2: 300 }
+
+  # render the line
+  args.outputs.lines << line
+end
+```
+
+### `line_midpoint`
+
+Invocation variants:
+
+- `Geometry.line_midpoint line`
+
+Given a `Hash` with `x`, `y`, `x2`, `y2` properties, this function returns a `Hash[x:, y:]` representing the midpoint of the line.
+
+```ruby
+def tick args
+  # define a line
+  line = { x: 100, y: 100, x2: 300, y: 300 }
+
+  # get the midpoint
+  midpoint = Geometry.line_midpoint(line)
+  # returns { x: 200, y: 200 }
+
+  # render the line
+  args.outputs.lines << line
+
+  # render a square at the midpoint
+  args.outputs.sprites << {
+    x: midpoint.x - 5,
+    y: midpoint.y - 5,
+    w: 10,
+    h: 10,
+    path: :solid,
+    r: 255,
+    g: 0,
+    b: 0
+  }
+end
+```
+
+### `rect_to_lines`
+
+Invocation variants:
+
+- `Geometry.rect_to_lines rect`
+
+Given a rectangle (with `x`, `y`, `w`, `h`, and optionally `anchor_x`, `anchor_y` properties), this function returns an array of four lines representing the edges of the rectangle. The lines are ordered as: bottom, right, top, left.
+
+```ruby
+def tick args
+  # define a rectangle
+  rect = { x: 100, y: 100, w: 200, h: 150 }
+
+  # convert rect to lines
+  lines = Geometry.rect_to_lines(rect)
+  # returns an array of 4 lines:
+  # [
+  #   { x: 100, y: 100, x2: 300, y2: 100 },   # bottom edge
+  #   { x: 300, y: 100, x2: 300, y2: 250 },   # right edge
+  #   { x: 300, y: 250, x2: 100, y2: 250 },   # top edge
+  #   { x: 100, y: 250, x2: 100, y2: 100 }    # left edge
+  # ]
+
+  # render the rectangle
+  args.outputs.borders << rect
+
+  # render each line in a different color
+  args.outputs.lines << lines[0].merge(r: 255, g: 0, b: 0)     # red
+  args.outputs.lines << lines[1].merge(r: 0, g: 255, b: 0)     # green
+  args.outputs.lines << lines[2].merge(r: 0, g: 0, b: 255)     # blue
+  args.outputs.lines << lines[3].merge(r: 255, g: 255, b: 0)   # yellow
+end
+```
+
+### `zoom_rect`
+
+Invocation variants:
+
+- `Geometry.zoom_rect(rect:, ratio:, w_ratio:, h_ratio:)`
+- `Geometry.zoom_rect(rect:, px:, w_px:, h_px:)`
+
+Given a rectangle, this function returns a new rectangle with adjusted dimensions while maintaining the center point. You can zoom using either ratio-based or pixel-based parameters, but not both.
+
+Returns `Hash[x:, y:, w:, h:, center: Hash[x:, y:]]`.
+
+Ratio-based parameters:
+- `ratio`: uniform scaling ratio for both width and height
+- `w_ratio`: scaling ratio for width (overrides `ratio` for width)
+- `h_ratio`: scaling ratio for height (overrides `ratio` for height)
+
+Pixel-based parameters:
+- `px`: uniform pixel adjustment for both width and height
+- `w_px`: pixel adjustment for width (overrides `px` for width)
+- `h_px`: pixel adjustment for height (overrides `px` for height)
+
+The function ensures the resulting rectangle stays centered on the
+original rectangle's center point. Negative ratios or pixel values
+that would result in negative dimensions are clamped to 0.
+
+```ruby
+def tick args
+  args.state.rect ||= { x: 640,
+                        y: 360,
+                        w: 256,
+                        h: 256,
+                        anchor_x: 0.5,
+                        anchor_y: 0.5 }
+
+  args.outputs.primitives << args.state.rect.merge(path: :solid, r: 30, g: 128, b: 30, a: 64)
+  args.outputs.primitives << Geometry.zoom_rect(rect: args.state.rect, ratio: 1.5)
+                                     .merge(path: :solid, r: 30, g: 30, b: 128, a: 64)
+end
+```
+
+### `lerp_rect`
+
+Invocation variants:
+
+- `Geometry.lerp_rect from, to, step, tolerance: 0`
+
+Given two rectangles and an interpolation step, this function returns
+a new rectangle that represents the linear interpolation between the
+`from` and `to` rectangles. This is useful for animating smooth
+transitions between two rectangle states.
+
+Returns `Hash[x:, y:, w:, h:, center: Hash[x:, y:]]`.
+
+Parameters:
+- `from`: the starting rectangle
+- `to`: the ending rectangle
+- `step`: the interpolation step (typically a value between `0.0` and `1.0`, where `0.0` returns the `from` rect and `1.0` returns the `to` rect)
+- `tolerance`: optional tolerance parameter passed to the underlying `lerp` function (default `0`)
+
+Each property (`x`, `y`, `w`, `h`) is independently interpolated from the `from` rectangle to the `to` rectangle.
+
+```ruby
+def tick args
+  args.state.current_rect ||= { x: 0, y: 0, w: 10, h: 10 }
+  args.state.final_rect ||= { x: 640, y: 360, w: 256, h: 256, anchor_x: 0.5, anchor_y: 0.5 }
+  args.state.current_rect = Geometry.lerp_rect(args.state.current_rect,
+                                               args.state.final_rect, 0.05)
+  args.outputs.primitives << args.state
+                                 .current_rect
+                                 .merge(path: :solid, r: 30, g: 30, b: 30)
+end
+```
+
+Here's another example that uses `Easing.smooth_stop` (the benefit being that the duration of the lerp can be predefined):
+
+```ruby
+def tick args
+  args.state.start_rect ||= { x: 0, y: 0, w: 10, h: 10 }
+  args.state.final_rect ||= { x: 640, y: 360, w: 256, h: 256, anchor_x: 0.5, anchor_y: 0.5 }
+  perc = Easing.smooth_stop(start_at: 0, duration: 120, tick_count: Kernel.tick_count, power: 2)
+  progress_rect = Geometry.lerp_rect(args.state.start_rect, args.state.final_rect, perc)
+  args.outputs.primitives << progress_rect.merge(path: :solid, r: 30, g: 30, b: 30)
+end
+```
+
+## Perlin Noise Functions
+
+The following functions provide access to various Perlin noise
+algorithms for procedural content generation. All noise functions
+expect normalized coordinates (x, y, z) in the range [-1, 1] and
+return float values typically in the range [-1, 1].
+
+?> See sample app `./samples/08_procgen/01_perlin_noise` for visualization of each of these functions.
+
+### `perlin_noise`
+
+Invocation variants:
+
+- `Geometry.perlin_noise(x, y, z, x_wrap, y_wrap, z_wrap)`
+
+Generates basic 3D Perlin noise at the given coordinates.
+
+Parameters:
+- `x`, `y`, `z`: Normalized coordinates in the range [-1, 1]
+- `x_wrap`, `y_wrap`, `z_wrap`: Wrapping values for tiling (use 0 for no wrapping)
+
+Returns a float value representing the noise at the given coordinates.
+
+```ruby
+def tick args
+  # Initialize results hash once
+  args.state.perlin_noise_results ||= generate_perlin_noise_texture(args)
+
+  # Render the noise texture
+  args.outputs.primitives << { x: 100, y: 100, w: 196, h: 196, path: :perlin_noise }
+end
+
+def generate_perlin_noise_texture args
+  results = {}
+
+  # Set up render target
+  args.outputs[:perlin_noise].set w: 196, h: 196, background_color: [0, 0, 0]
+
+  # Generate noise for each pixel
+  196.times do |x|
+    results[x] = {}
+    196.times do |y|
+      # Normalize coordinates to range centered at 0
+      normalized_x = (x - 98).fdiv(196)
+      normalized_y = (y - 98).fdiv(196)
+
+      # Generate noise value
+      noise = Geometry.perlin_noise(normalized_x, normalized_y, 0, 0, 0, 0)
+      results[x][y] = noise
+
+      # Convert noise to grayscale and render
+      gray_color = 128 + 128 * noise
+      args.outputs[:perlin_noise] << { x: x, y: y, w: 1, h: 1,
+                                       path: :solid,
+                                       r: gray_color, g: gray_color, b: gray_color }
+    end
+  end
+
+  results
+end
+```
+
+### `perlin_noise_seed`
+
+Invocation variants:
+
+- `Geometry.perlin_noise_seed(x, y, z, x_wrap, y_wrap, z_wrap, seed)`
+
+Generates 3D Perlin noise with a custom seed value for reproducible results.
+
+Parameters:
+- `x`, `y`, `z`: Normalized coordinates in the range [-1, 1]
+- `x_wrap`, `y_wrap`, `z_wrap`: Wrapping values for tiling (use 0 for no wrapping)
+- `seed`: Integer seed value for reproducible noise generation
+
+Returns a float value representing the noise at the given coordinates.
+
+```ruby
+PERLIN_SIZE = 196
+
+def tick args
+  # Initialize results hash once
+  args.state.perlin_noise_seed_results ||= generate_perlin_noise_seed_texture(args)
+
+  # Render the noise texture
+  args.outputs.primitives << { x: 100, y: 100, w: PERLIN_SIZE, h: PERLIN_SIZE,
+                               path: :perlin_noise_seed }
+end
+
+def generate_perlin_noise_seed_texture args
+  results = {}
+  seed = DR.rng_seed
+
+  # Set up render target
+  args.outputs[:perlin_noise_seed].set w: PERLIN_SIZE,
+                                       h: PERLIN_SIZE,
+                                       background_color: [0, 0, 0]
+
+  # Generate noise for each pixel
+  PERLIN_SIZE.times do |x|
+    results[x] = {}
+    PERLIN_SIZE.times do |y|
+      # Normalize coordinates to range centered at 0
+      normalized_x = (x - PERLIN_SIZE.idiv(2)).fdiv(PERLIN_SIZE)
+      normalized_y = (y - PERLIN_SIZE.idiv(2)).fdiv(PERLIN_SIZE)
+
+      # Generate noise value with seed
+      noise = Geometry.perlin_noise_seed(normalized_x, normalized_y, 0, 0, 0, 0, seed)
+      results[x][y] = noise
+
+      # Convert noise to grayscale and render
+      gray_color = 128 + 128 * noise
+      args.outputs[:perlin_noise_seed] << { x: x, y: y, w: 1, h: 1,
+                                            path: :solid,
+                                            r: gray_color, g: gray_color, b: gray_color }
+    end
+  end
+
+  results
+end
+```
+
+### `perlin_ridge_noise`
+
+Invocation variants:
+
+- `Geometry.perlin_ridge_noise(x, y, z, lacunarity, gain, offset, octaves)`
+
+Generates ridge noise, useful for creating mountain ridges and sharp terrain features.
+
+Parameters:
+- `x`, `y`, `z`: Normalized coordinates in the range [-1, 1]
+- `lacunarity`: Controls the frequency increase per octave (typically 2.0)
+- `gain`: Controls the amplitude decrease per octave (typically 0.5)
+- `offset`: Ridge offset value (typically 1.0)
+- `octaves`: Number of noise layers to combine (typically 6)
+
+Returns a float value representing the ridge noise at the given coordinates.
+
+```ruby
+PERLIN_SIZE = 196
+
+def tick args
+  # Initialize results hash once
+  args.state.perlin_ridge_noise_results ||= generate_perlin_ridge_noise_texture(args)
+
+  # Render the noise texture
+  args.outputs.primitives << { x: 100, y: 100, w: PERLIN_SIZE, h: PERLIN_SIZE,
+                               path: :perlin_ridge_noise }
+end
+
+def generate_perlin_ridge_noise_texture args
+  results = {}
+
+  # Set up render target
+  args.outputs[:perlin_ridge_noise].set w: PERLIN_SIZE,
+                                        h: PERLIN_SIZE,
+                                        background_color: [0, 0, 0]
+
+  # Generate noise for each pixel
+  PERLIN_SIZE.times do |x|
+    results[x] = {}
+    PERLIN_SIZE.times do |y|
+      # Normalize coordinates to range centered at 0
+      normalized_x = (x - PERLIN_SIZE.idiv(2)).fdiv(PERLIN_SIZE)
+      normalized_y = (y - PERLIN_SIZE.idiv(2)).fdiv(PERLIN_SIZE)
+
+      # Generate ridge noise with standard parameters
+      noise = Geometry.perlin_ridge_noise(normalized_x, normalized_y, 0,
+                                          2.0,  # lacunarity
+                                          0.5,  # gain
+                                          1.0,  # offset
+                                          6)    # octaves
+      results[x][y] = noise
+
+      # Convert noise to grayscale and render
+      gray_color = 128 + 128 * noise
+      args.outputs[:perlin_ridge_noise] << { x: x, y: y, w: 1, h: 1,
+                                             path: :solid,
+                                             r: gray_color, g: gray_color, b: gray_color }
+    end
+  end
+
+  results
+end
+```
+
+### `perlin_fbm_noise`
+
+Invocation variants:
+
+- `Geometry.perlin_fbm_noise(x, y, z, lacunarity, gain, octaves)`
+
+Generates Fractional Brownian Motion (fBm) noise, useful for natural-looking textures like clouds, terrain, and wood grain.
+
+Parameters:
+- `x`, `y`, `z`: Normalized coordinates in the range [-1, 1]
+- `lacunarity`: Controls the frequency increase per octave (typically 2.0)
+- `gain`: Controls the amplitude decrease per octave (typically 0.5)
+- `octaves`: Number of noise layers to combine (typically 6)
+
+Returns a float value representing the fBm noise at the given coordinates.
+
+```ruby
+PERLIN_SIZE = 196
+
+def tick args
+  # Initialize results hash once
+  args.state.perlin_fbm_noise_results ||= generate_perlin_fbm_noise_texture(args)
+
+  # Render the noise texture
+  args.outputs.primitives << { x: 100, y: 100, w: PERLIN_SIZE, h: PERLIN_SIZE,
+                               path: :perlin_fbm_noise }
+end
+
+def generate_perlin_fbm_noise_texture args
+  results = {}
+
+  # Set up render target
+  args.outputs[:perlin_fbm_noise].set w: PERLIN_SIZE,
+                                      h: PERLIN_SIZE,
+                                      background_color: [0, 0, 0]
+
+  # Generate noise for each pixel
+  PERLIN_SIZE.times do |x|
+    results[x] = {}
+    PERLIN_SIZE.times do |y|
+      # Normalize coordinates to range centered at 0
+      normalized_x = (x - PERLIN_SIZE.idiv(2)).fdiv(PERLIN_SIZE)
+      normalized_y = (y - PERLIN_SIZE.idiv(2)).fdiv(PERLIN_SIZE)
+
+      # Generate fBm noise with standard parameters
+      noise = Geometry.perlin_fbm_noise(normalized_x, normalized_y, 0,
+                                        2.0,  # lacunarity
+                                        0.5,  # gain
+                                        6)    # octaves
+      results[x][y] = noise
+
+      # Convert noise to grayscale and render
+      gray_color = 128 + 128 * noise
+      args.outputs[:perlin_fbm_noise] << { x: x, y: y, w: 1, h: 1,
+                                           path: :solid,
+                                           r: gray_color, g: gray_color, b: gray_color }
+    end
+  end
+
+  results
+end
+```
+
+### `perlin_turbulence_noise`
+
+Invocation variants:
+
+- `Geometry.perlin_turbulence_noise(x, y, z, lacunarity, gain, octaves)`
+
+Generates turbulence noise using absolute values, useful for marble, fire, and liquid effects.
+
+Parameters:
+- `x`, `y`, `z`: Normalized coordinates in the range [-1, 1]
+- `lacunarity`: Controls the frequency increase per octave (typically 2.0)
+- `gain`: Controls the amplitude decrease per octave (typically 0.5)
+- `octaves`: Number of noise layers to combine (typically 6)
+
+Returns a float value representing the turbulence noise at the given coordinates.
+
+```ruby
+PERLIN_SIZE = 196
+
+def tick args
+  # Initialize results hash once
+  args.state.perlin_turbulence_noise_results ||= generate_perlin_turbulence_noise_texture(args)
+
+  # Render the noise texture
+  args.outputs.primitives << { x: 100, y: 100, w: PERLIN_SIZE, h: PERLIN_SIZE,
+                               path: :perlin_turbulence_noise }
+end
+
+def generate_perlin_turbulence_noise_texture args
+  results = {}
+
+  # Set up render target
+  args.outputs[:perlin_turbulence_noise].set w: PERLIN_SIZE,
+                                             h: PERLIN_SIZE,
+                                             background_color: [0, 0, 0]
+
+  # Generate noise for each pixel
+  PERLIN_SIZE.times do |x|
+    results[x] = {}
+    PERLIN_SIZE.times do |y|
+      # Normalize coordinates to range centered at 0
+      normalized_x = (x - PERLIN_SIZE.idiv(2)).fdiv(PERLIN_SIZE)
+      normalized_y = (y - PERLIN_SIZE.idiv(2)).fdiv(PERLIN_SIZE)
+
+      # Generate turbulence noise with standard parameters
+      noise = Geometry.perlin_turbulence_noise(normalized_x, normalized_y, 0,
+                                               2.0,  # lacunarity
+                                               0.5,  # gain
+                                               6)    # octaves
+      results[x][y] = noise
+
+      # Convert noise to grayscale and render
+      gray_color = 128 + 128 * noise
+      args.outputs[:perlin_turbulence_noise] << { x: x, y: y, w: 1, h: 1,
+                                                  path: :solid,
+                                                  r: gray_color, g: gray_color, b: gray_color }
+    end
+  end
+
+  results
+end
+```
+
+### `cubic_bezier_vec2`
+
+Given control points `p0`, `p1`, `p2`, `p3` (each with type `Hash[:x, :y]`),
+and `t` (`Float` value between `0.0` and `1.0`). This function
+returns a point interpolated for time `t`. 
+
+See the following sample for non-trivial usage of this function: `./samples/08_tweening_lerping_easing_functions/02_cubic_bezier`.

@@ -36,7 +36,7 @@ module GTK
             'dragon/math.rb',
             'dragon/geometry.rb',
             'dragon/geometry_docs.rb',
-            'dragon/attr_gtk.rb',
+            'dragon/attr_dr.rb',
             'dragon/attr_sprite.rb',
             'dragon/object.rb',
             'dragon/object_matrix.rb',
@@ -66,6 +66,7 @@ module GTK
             'dragon/keyboard.rb',
             'dragon/inputs.rb',
             'dragon/mouse.rb',
+            'dragon/controller/keys.rb',
             'dragon/controller.rb',
             'dragon/inputs_docs.rb',
             'dragon/mouse_docs.rb',
@@ -85,6 +86,7 @@ module GTK
             'dragon/assert.rb',
             'dragon/tests.rb',
             'dragon/controller_config.rb',
+            'dragon/runtime/tick.rb',
             'dragon/runtime/draw.rb',
             'dragon/runtime/deprecated.rb',
             'dragon/runtime/framerate.rb',
@@ -106,7 +108,6 @@ module GTK
             'dragon/runtime/developer_support.rb',
             'dragon/api.rb',
             'dragon/runtime.rb',
-            'dragon/runtime_docs.rb',
             'dragon/readme_docs.rb',
             'dragon/hotload_client.rb',
             'dragon/wizards.rb',
@@ -114,6 +115,8 @@ module GTK
             'dragon/itch_wizard.rb',
             'dragon/runtime/benchmark.rb',
             'dragon/tweetcart.rb',
+            'dragon/vendor/pretty_print.rb',
+            'dragon/vendor/pp.rb',
           ] + core_files_to_reload + @required_files
         end
       end
@@ -150,6 +153,7 @@ module GTK
       end
 
       def tick_hotload
+        return if @production && !@remote_hotload_enabled
         return if Kernel.tick_count <= 0 && !paused?
         hotload_source_files
       end
@@ -174,8 +178,17 @@ module GTK
       end
 
       def reload_if_needed file, force = false
-        @file_mtimes[file] ||= { current: @ffi_file.mtime(file), last: @ffi_file.mtime(file) }
-        @file_mtimes[file].current = @ffi_file.mtime(file)
+        file_mtime = @ffi_file.mtime(file)
+
+        if !file_mtime
+          @required_files.delete file
+          @file_mtimes.delete file
+          log_debug "* INFO - Removed #{file} from hotload list because it no longer exists."
+          return
+        end
+
+        @file_mtimes[file] ||= { current: file_mtime, last: file_mtime }
+        @file_mtimes[file].current = file_mtime
         return if !force && @file_mtimes[file].current == @file_mtimes[file].last
         @hotload_global_at = Kernel.global_tick_count
         # in the event that an exception was thrown on initial load, if

@@ -1,5 +1,5 @@
 class Game
-  attr_gtk
+  attr_dr
 
   def initialize
     # items to render within the menu
@@ -66,7 +66,7 @@ class Game
       @hovered_item = moused_item || @hovered_item
 
       # if mouse is clicked then select the item
-      if inputs.mouse.click
+      if inputs.mouse.click && @hovered_item
         item_selected! @hovered_item
       end
     else
@@ -87,7 +87,7 @@ class Game
 
   # item selection logic would go here
   def item_selected! item
-    GTK.notify "#{item.id} was selected."
+    DR.notify "#{item.id} was selected."
   end
 
   def render
@@ -171,4 +171,4 @@ def reset args
   $game = nil
 end
 
-GTK.reset
+DR.reset

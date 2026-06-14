@@ -4,3 +4,5 @@ gameid=sample-app
 gametitle=Sample App
 version=1.0
 icon=metadata/icon.png
+hd=true
+highdpi=true

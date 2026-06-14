@@ -100,7 +100,7 @@ end
 begin :render_methods
   def render_instructions args
     #gtk.current_framerate
-    args.outputs.labels << [20, Grid.top-20, "FPS: " + GTK.current_framerate.to_s]
+    args.outputs.labels << [20, Grid.top-20, "FPS: " + DR.current_framerate.to_s]
     if (args.state.balls != nil && args.state.balls[0] != nil)
         bx =  args.state.balls[0].velocity.x
         by =  args.state.balls[0].velocity.y

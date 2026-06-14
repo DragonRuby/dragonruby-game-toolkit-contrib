@@ -109,7 +109,7 @@ def tick args
   args.state.toast_queue.reject! { |t| t.at.elapsed_time > args.state.spline_duration }
 end
 
-GTK.reset
+DR.reset
 ```
 
 ## `smooth_start`

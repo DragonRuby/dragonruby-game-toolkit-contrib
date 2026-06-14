@@ -1,190 +1,268 @@
-=begin
+# class that encapsulates all game logic and state
+class Game
+  # attr_dr is a helper class macro that adds `args` attribuets to the class so you don't have to pass `args` around to every method
+  attr_dr
 
- APIs Listing that haven't been encountered in previous sample apps:
+  # this is the constructor
+  def initialize
+    # list of available notes
+    @available_notes = [:C3, :D3, :E3, :F3, :G3, :A3, :B3, :C4]
 
- - sample: Chooses random element from array.
-   In this sample app, the target note is set by taking a sample from the collection
-   of available notes.
+    # queue of click effects to render
+    @click_fx_queue = []
 
- Reminders:
- - args.grid.(left|right|top|bottom): Pixel value for the boundaries of the virtual
-   720 p screen (Dragon Ruby Game Toolkits's virtual resolution is always 1280x720).
+    # location of play again and play note buttons
+    @play_again_button = Layout.rect(row: 2, col: 10, w: 4, h: 2)
+    @play_note_button = Layout.rect(row: 2, col: 10, w: 4, h: 2)
 
- - args.state.new_entity: Used when we want to create a new object, like a sprite or button.
-   For example, if we want to create a new button, we would declare it as a new entity and
-   then define its properties.
+    # location of guess note buttons, generated based on available notes
+    @guess_note_buttons = @available_notes.map_with_index do |note, index|
+      Layout.rect(row: 6, col: 4 + index * 2, w: 2, h: 2).merge(note: note)
+    end
 
- - String interpolation: Uses #{} syntax; everything between the #{ and the } is evaluated
-   as Ruby code, and the placeholder is replaced with its corresponding value or result.
-
- - args.outputs.labels: An array. The values generate a label.
-   The parameters are [X, Y, TEXT, SIZE, ALIGNMENT, RED, GREEN, BLUE, ALPHA, FONT STYLE]
-   For more information about labels, go to mygame/documentation/02-labels.md.
-
- - find_all: Finds all elements from a collection that meet a certain requirements (and excludes the ones that don't).
-
- - first: Returns the first element of an array.
-
- - inside_rect: Returns true or false depending on if the point is inside the rect.
-
- - to_sym: Returns symbol corresponding to string. Will create a symbol if it does
-   not already exist.
-
-=end
-
-# This sample app allows users to test their musical skills by matching the piano sound that plays in each
-# level to the correct note.
-
-# Runs all the methods necessary for the game to function properly.
-def tick args
-  defaults args
-  render args
-  calc args
-  input_mouse args
-  tick_instructions args, "Sample app shows how to play sounds. args.outputs.sounds << \"path_to_wav.wav\""
-end
-
-# Sets default values and creates empty collections
-# Initialization happens in the first frame only
-def defaults args
-  args.state.notes ||= []
-  args.state.click_feedbacks ||= []
-  args.state.current_level ||= 1
-  args.state.times_wrong ||= 0 # when game starts, user hasn't guessed wrong yet
-end
-
-# Uses a label to display current level, and shows the score
-# Creates a button to play the sample note, and displays the available notes that could be a potential match
-def render args
-
-  # grid.w_half positions the label in the horizontal center of the screen.
-  args.outputs.labels << [args.grid.w_half, args.grid.top.shift_down(40), "Hole #{args.state.current_level} of 9", 0, 1, 0, 0, 0]
-
-  render_score args # shows score on screen
-
-  args.state.play_again_button ||= { x: 560, y: args.grid.h * 3 / 4 - 40, w: 160, h: 60, label: 'again' } # array definition, text/title
-  args.state.play_note_button ||= { x: 560, y: args.grid.h * 3 / 4 - 40, w: 160, h: 60, label: 'play' }
-
-  if args.state.game_over # if game is over, a "play again" button is shown
-    # Calculations ensure that Play Again label is displayed in center of border
-    # Remove calculations from y parameters and see what happens to border and label placement
-    args.outputs.labels <<  [args.grid.w_half, args.grid.h * 3 / 4, "Play Again", 0, 1, 0, 0, 0] # outputs label
-    args.outputs.borders << args.state.play_again_button # outputs border
-  else # otherwise, if game is not over
-    # Calculations ensure that label appears in center of border
-    args.outputs.labels <<  [args.grid.w_half, args.grid.h * 3 / 4, "Play Note ##{args.state.current_level}", 0, 1, 0, 0, 0] # outputs label
-    args.outputs.borders << args.state.play_note_button # outputs border
+    # start a new game
+    new_game!
   end
 
-  return if args.state.game_over # return if game is over
+  def new_game!
+    # current level is set to 1 and time stamp is captured so that items can fade in based on how long the player has been on the current level
+    @current_level = 1
+    @current_level_at = Kernel.tick_count
 
-  args.outputs.labels <<   [args.grid.w_half, 400, "I think the note is a(n)...",  0, 1, 0, 0, 0] # outputs label
+    # pre-generate the solutions for each level
+    @level_notes = {}
+    9.times do |i|
+      # exclude notes that have been recently played in the previous 2 levels
+      previous_level_notes = [@level_notes[i], @level_notes[i - 1]].compact
 
-  # Shows all of the available notes that can be potential matches.
-  available_notes.each_with_index do |note, i|
-    args.state.notes[i] ||= piano_button(args, note, i + 1) # calls piano_button method on each note (creates label and border)
-    args.outputs.labels <<   args.state.notes[i].label # outputs note on screen with a label and a border
-    args.outputs.borders <<  args.state.notes[i].border
+      # take a random note from the available notes that isn't in the previous level notes and assign it to the current level
+      @level_notes[i + 1] = @available_notes.reject do |note|
+        previous_level_notes.include?(note)
+      end.sample
+    end
+
+    # keeps track of how many times the player has guessed wrong for scoring purposes
+    @times_wrong = 0
+
+    # markes the game as over so that they get the option to play again
+    @game_over = false
   end
 
-  # Shows whether or not the user is correct by filling the screen with either red or green
-  args.outputs.solids << args.state.click_feedbacks.map { |c| c.solid }
-end
-
-# Shows the score (number of times the user guesses wrong) onto the screen using labels.
-def render_score args
-  if args.state.times_wrong == 0 # if the user has guessed wrong zero times, the score is par
-    args.outputs.labels << [args.grid.w_half, args.grid.top.shift_down(80), "Score: PAR", 0, 1, 0, 0, 0]
-  else # otherwise, number of times the user has guessed wrong is shown
-    args.outputs.labels << [args.grid.w_half, args.grid.top.shift_down(80), "Score: +#{args.state.times_wrong}", 0, 1, 0, 0, 0] # shows score using string interpolation
+  def tick
+    calc
+    render
   end
-end
 
-# Sets the target note for the level and performs calculations on click_feedbacks.
-def calc args
-  args.state.target_note ||= available_notes.sample # chooses a note from available_notes collection as target note
-  args.state.click_feedbacks.each    { |c| c.solid[-1] -= 5 } # remove this line and solid color will remain on screen indefinitely
-  # comment this line out and the solid color will keep flashing on screen instead of being removed from click_feedbacks collection
-  args.state.click_feedbacks.reject! { |c| c.solid[-1] <= 0 }
-end
+  def calc
+    # process the click fx queue by lerping the width, height, and alpha of each
+    # effect towards their final values and removing them from the queue once they are fully faded out
+    @click_fx_queue.each do |fx|
+      fx.w_final ||= fx.w * 2
+      fx.h_final ||= fx.h * 2
+      fx.w = fx.w.lerp(fx.w_final, 0.2, tolerance: 1)
+      fx.h = fx.h.lerp(fx.h_final, 0.2, tolerance: 1)
+      fx.a = fx.a.lerp(0, 0.2, tolerance: 1)
+    end
 
-# Uses input from the user to play the target note, as well as the other notes that could be a potential match.
-def input_mouse args
-  return unless args.inputs.mouse.click # return unless the mouse is clicked
+    @click_fx_queue.reject! { |fx| fx.a <= 0 }
 
-  # finds button that was clicked by user
-  button_clicked = args.outputs.borders.find_all do |b| # go through borders collection to find all borders that meet requirements
-    args.inputs.mouse.click.point.inside_rect? b # find button border that mouse was clicked inside of
-  end.find_all { |b| b.is_a? Hash }.first # reject, return first element
+    # automatically play the current level note after 60 frames (1 second)
+    if @current_level_at.elapsed_time == 60
+      play_current_level_note!
+    end
 
-  return unless button_clicked # return unless button_clicked as a value (a button was clicked)
+    # if the mouse is clicked...
+    if inputs.mouse.click
+      # if the game is over, check if they clicked the play again button
+      if @game_over
+        if Geometry.intersect_rect?(inputs.mouse.rect, @play_again_button)
+          queue_click_fx!(rect: @play_again_button, r: 0, g: 160, b: 160)
+          new_game!
+        end
+      else
+        # if the game isn't over, check if they clicked the play note button or one of the guess note buttons
+        if Geometry.intersect_rect?(inputs.mouse.rect, @play_note_button)
+          play_current_level_note!
+        else
+          # see if they clicked any of the guess note buttons by finding the first button that intersects with the mouse click
+          clicked_button = @guess_note_buttons.find do |button|
+            Geometry.intersect_rect?(inputs.mouse.rect, button)
+          end
 
-  queue_click_feedback args, # calls queue_click_feedback method on the button that was clicked
-                       button_clicked.x,
-                       button_clicked.y,
-                       button_clicked.w,
-                       button_clicked.h,
-                       150, 100, 200 # sets color of button to shade of purple
-
-  if button_clicked[:label] == 'play' # if "play note" button is pressed
-    args.outputs.sounds << "sounds/#{args.state.target_note}.wav" # sound of target note is output
-  elsif button_clicked[:label] == 'again' # if "play game again" button is pressed
-    args.state.target_note = nil # no target note
-    args.state.current_level = 1 # starts at level 1 again
-    args.state.times_wrong = 0 # starts off with 0 wrong guesses
-    args.state.game_over = false # the game is not over (because it has just been restarted)
-  else # otherwise if neither of those buttons were pressed
-    args.outputs.sounds << "sounds/#{button_clicked[:label]}.wav" # sound of clicked note is played
-    if button_clicked[:label] == args.state.target_note # if clicked note is target note
-      args.state.target_note = nil # target note is emptied
-
-      if args.state.current_level < 9 # if game hasn't reached level 9
-        args.state.current_level += 1 # game goes to next level
-      else # otherwise, if game has reached level 9
-        args.state.game_over = true # the game is over
+          check_guess clicked_button
+        end
       end
-
-      queue_click_feedback args, 0, 0, args.grid.w, args.grid.h, 100, 200, 100 # green shown if user guesses correctly
-    else # otherwise, if clicked note is not target note
-      args.state.times_wrong += 1 # increments times user guessed wrong
-      queue_click_feedback args, 0, 0, args.grid.w, args.grid.h, 200, 100, 100 # red shown is user guesses wrong
     end
   end
-end
 
-# Creates a collection of all of the available notes as symbols
-def available_notes
-  [:C3, :D3, :E3, :F3, :G3, :A3, :B3, :C4]
-end
+  def play_current_level_note!
+    queue_click_fx!(rect: @play_note_button, r: 0, g: 160, b: 160)
+    outputs.sounds << "sounds/#{@level_notes[@current_level].to_s.downcase}.ogg"
+  end
 
-# Creates buttons for each note, and sets a label (the note's name) and border for each note's button.
-def piano_button args, note, position
-  args.state.new_entity(:button) do |b| # declares button as new entity
-    b.label  =  [460 + 40.mult(position), args.grid.h * 0.4, "#{note}", 0, 1, 0, 0, 0] # label definition
-    b.border =  { x: 460 + 40.mult(position) - 20, y: args.grid.h * 0.4 - 32, w: 40, h: 40, label: note } # border definition, text/title; 20 subtracted so label is in center of border
+  # check guess function compares the note they clicked to the note of the current level
+  def check_guess button
+    # ignore if they button is nil
+    return if !button
+
+    # if the button's note matches the level's note...
+    if button.note == @level_notes[@current_level]
+      queue_click_fx!(rect: button, r: 0, g: 160, b: 0)
+
+      # mark the game as over if it's the last level
+      if @current_level == 9
+        @game_over = true
+      else
+        # otherwise, move on to the next level by incrementing the current level and capturing a new time stamp for the fade in effect
+        @current_level += 1
+        @current_level_at = Kernel.tick_count
+      end
+    else
+      # if they guessed wrong then queue a red click effect and increment the times wrong for scoring purposes
+      queue_click_fx!(rect: button, r: 160, g: 0, b: 0)
+      @times_wrong += 1
+    end
+
+    # play the note of the button they clicked as feedback for what they clicked on
+    outputs.sounds << "sounds/#{button.note.to_s.downcase}.ogg"
+  end
+
+  def render
+    outputs.background_color = [30, 30, 30]
+
+    # render current hole and current score
+    outputs.primitives << hole_prefab
+    outputs.primitives << score_prefab
+
+    if @game_over
+      # only render the play again button if the game is over
+      outputs.primitives << play_again_button_prefab
+    else
+      # otherwise, render the play note button and the guess note buttons
+      outputs.primitives << play_note_button_prefab
+      outputs.primitives << instructions_prefab
+      outputs.primitives << @guess_note_buttons.map { |button| button_prefab(button, button.note.to_s) }
+    end
+
+    # render click effects
+    outputs.primitives << @click_fx_queue
+
+    # this helper method was used to position controls
+    # outputs.debug << Layout.debug_primitives(invert_colors: true, a: 128)
+  end
+
+  def queue_click_fx!(rect:, r:, g:, b:)
+    # function for adding a click effect
+    center = Geometry.center rect
+    @click_fx_queue << { x: center.x,
+                         y: center.y,
+                         w: rect.w,
+                         h: rect.h,
+                         r: r,
+                         g: g,
+                         b: b,
+                         a: 255,
+                         anchor_x: 0.5,
+                         anchor_y: 0.5,
+                         path: :solid }
+  end
+
+  def hole_prefab
+    # label representing the current level
+    Layout.rect(row: 0, col: 11, w: 2, h: 1)
+          .center
+          .merge text: "Hole #{@current_level} of 9",
+                 anchor_x: 0.5,
+                 anchor_y: 0.5,
+                 r: 255,
+                 g: 255,
+                 b: 255,
+                 a: round_fade_in_alpha,
+                 size_px: 32
+  end
+
+  def score_prefab
+    # label representing the current score
+    text = if @times_wrong == 0
+             "Score: PAR"
+           else
+             "Score: +#{@times_wrong}"
+           end
+
+    Layout.rect(row: 0, col: 11, w: 2, h: 1)
+          .center
+          .merge(text: text,
+                 anchor_x: 0.5,
+                 anchor_y: 0.5,
+                 anchor_y: 2.0,
+                 size_px: 32,
+                 a: round_fade_in_alpha,
+                 r: 255,
+                 g: 255,
+                 b: 255)
+  end
+
+  def instructions_prefab
+    # label providing instructions
+    Layout.rect(row: 3, col: 11, w: 2, h: 2)
+          .center
+          .merge(text: "Click one of the notes below to guess the note being played",
+                 anchor_x: 0.5,
+                 anchor_y: 0.5,
+                 anchor_y: 2.0,
+                 size_px: 32,
+                 a: round_fade_in_alpha,
+                 r: 255,
+                 g: 255,
+                 b: 255)
+  end
+
+  def play_again_button_prefab
+    button_prefab(@play_again_button, "Play Again")
+  end
+
+  def play_note_button_prefab
+    button_prefab(@play_note_button, "Play Note")
+  end
+
+  def round_fade_in_alpha
+    (@current_level_at.elapsed_time.fdiv(30) ** 2) * 255
+  end
+
+  def button_prefab rect, text
+    # the button prefab is a composition of a solid rectangle with the text centered within the rect.
+    [
+      rect.merge(path: :solid,
+                 r: 0,
+                 g: 60,
+                 b: 60,
+                 a: 255),
+      rect.center.merge(text: text,
+                        anchor_x: 0.5,
+                        anchor_y: 0.5,
+                        a: 255,
+                        r: 255,
+                        g: 255,
+                        b: 255,
+                        size_px: 32)
+    ]
   end
 end
 
-# Color of click feedback changes depending on what button was clicked, and whether the guess is right or wrong
-# If a button is clicked, the inside of button is purple (see input_mouse method)
-# If correct note is clicked, screen turns green
-# If incorrect note is clicked, screen turns red (again, see input_mouse method)
-def queue_click_feedback args, x, y, w, h, *color
-  args.state.click_feedbacks << args.state.new_entity(:click_feedback) do |c| # declares feedback as new entity
-    c.solid =  [x, y, w, h, *color, 255] # sets color
-  end
+def boot args
+  args.state = {}
 end
 
-def tick_instructions args, text, y = 715
-  return if args.state.key_event_occurred
-  if args.inputs.mouse.click ||
-     args.inputs.keyboard.directional_vector ||
-     args.inputs.keyboard.key_down.enter ||
-     args.inputs.keyboard.key_down.escape
-    args.state.key_event_occurred = true
-  end
-
-  args.outputs.debug << [0, y - 50, 1280, 60].solid
-  args.outputs.debug << [640, y, text, 1, 1, 255, 255, 255].label
-  args.outputs.debug << [640, y - 25, "(click to dismiss instructions)" , -2, 1, 255, 255, 255].label
+def tick args
+  # entry point of the game
+  $game ||= Game.new
+  $game.args = args
+  $game.tick
 end
+
+def reset args
+  # set the game to nil if DR.reset is invoked so that it gets re-initialized on the next tick
+  $game = nil
+end
+
+DR.reset

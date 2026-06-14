@@ -6,11 +6,11 @@
 #import <UIKit/UIKit.h>
 #import "ext.h"
 
-@interface DRGTKBridge : NSObject
+@interface DRDRBridge : NSObject
 - (void) hello_world;
 @end
 
-@implementation DRGTKBridge {
+@implementation DRDRBridge {
 }
 
 - (void) hello_world {
@@ -19,11 +19,11 @@
 
 @end
 
-DRGTKBridge *bridge;
+DRDRBridge *bridge;
 
 int hello_world()
 {
-  bridge = [[DRGTKBridge alloc] init];
+  bridge = [[DRDRBridge alloc] init];
   [bridge performSelectorOnMainThread: @selector(hello_world) withObject: nil waitUntilDone: YES];
   return 1;
 }

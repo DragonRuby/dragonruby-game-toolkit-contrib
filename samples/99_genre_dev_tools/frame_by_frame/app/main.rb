@@ -81,4 +81,4 @@ def calc_game args
   end
 end
 
-GTK.reset
+DR.reset

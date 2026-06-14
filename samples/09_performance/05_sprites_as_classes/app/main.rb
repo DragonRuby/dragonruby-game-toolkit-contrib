@@ -31,7 +31,7 @@ def tick args
     puts "========================================================="
     puts "* INFO: Sprites, Classes"
     puts "* INFO: Please specify the number of sprites to render."
-    GTK.console.set_command "reset_with count: 100"
+    DR.console.set_command "reset_with count: 100"
   end
 
   args.state.star_count ||= 0
@@ -51,11 +51,11 @@ def tick args
   # render
   args.outputs.sprites << args.state.stars
   args.outputs.background_color = [0, 0, 0]
-  args.outputs.primitives << GTK.current_framerate_primitives
+  args.outputs.primitives << DR.current_framerate_primitives
 end
 
 # resets game, and assigns star count given by user
 def reset_with count: count
-  GTK.reset
-  GTK.args.state.star_count = count
+  DR.reset
+  DR.args.state.star_count = count
 end

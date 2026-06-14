@@ -1,6 +1,6 @@
 # creation of a game class
 class Game
-  attr_gtk # adds arg properties to the class
+  attr_dr # adds arg properties to the class
 
   def initialize
     # have the hero start at the center and the npc be at the far right
@@ -172,4 +172,4 @@ def reset args
   $game = nil
 end
 
-GTK.reset
+DR.reset

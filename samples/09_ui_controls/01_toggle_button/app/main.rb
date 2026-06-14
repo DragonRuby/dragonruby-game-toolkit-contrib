@@ -114,4 +114,4 @@ def init_state args
   ]
 end
 
-GTK.reset
+DR.reset

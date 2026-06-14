@@ -84,7 +84,7 @@ class FlappyDragon
     outputs.labels << { x: 10, y: 100, z: menu_text_z, text: "Code:   @amirrajan",     **white }
     outputs.labels << { x: 10, y:  80, z: menu_text_z, text: "Art:    @mobypixel",     **white }
     outputs.labels << { x: 10, y:  60, z: menu_text_z, text: "Music:  @mobypixel",     **white }
-    outputs.labels << { x: 10, y:  40, z: menu_text_z, text: "Engine: DragonRuby GTK", **white }
+    outputs.labels << { x: 10, y:  40, z: menu_text_z, text: "Engine: DragonRuby DR", **white }
   end
 
   def render_overlay
@@ -472,4 +472,4 @@ def tick_game args
   $flappy_dragon.tick
 end
 
-GTK.reset
+DR.reset
