@@ -1,3 +1,6 @@
+#Contributors outside of DragonRuby who also hold Copyright:
+#Carlo Sefcek (Shatzune)
+
 # State (`args.state`)
 
 `args.state` is a property bag that can be used to hold state for your
@@ -36,7 +39,7 @@ def tick args
   args.outputs.labels << {
     x: 640,
     y: 360,
-    text: "player's x, y: #{args.state.player.x}, #{args.state.player.x}",
+    text: "player's x, y: #{args.state.player.x}, #{args.state.player.y}",
     anchor_x: 0.5,
     anchor_y: 0.5
   }
