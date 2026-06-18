@@ -69,6 +69,11 @@ DragonRuby ships with support for Android on arm32, arm64, x86, and x86-64. This
 be overkill, but it allows for maximum hardware compatibility. You should plan to
 compile for all four architectures too, but of course this is optional.
 
+### Web
+
+Web builds are automatically compiled with WASM using [emscripten](https://emscripten.org/). As long as emscripten can compile your C extension to WASM, your C extension will work as expected without needing to precompile any binaries.
+
+To see the list of things to do to prepare your C code for emscripten compilation, check out this page: <https://emscripten.org/docs/porting/index.html#integrating-porting-index>
 
 ## Hello World
 
